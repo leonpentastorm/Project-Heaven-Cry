@@ -2191,6 +2191,30 @@
         "44": "art/traits/wick/production-v1/exports/44/lowland-born.png",
         "40": "art/traits/wick/production-v1/exports/40/lowland-born.png"
       }
+    },
+    "central-city-kid": {
+      "label": "Wick — Central City Kid",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/central-city-kid.png",
+      "sha256": "e53f36e0543c40f6e6f1593e634a2e6400c26597b3c9cc4df229b7ca6fabb234",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "central_city_kid",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/central-city-kid.png",
+        "128": "art/traits/wick/production-v1/exports/128/central-city-kid.png",
+        "64": "art/traits/wick/production-v1/exports/64/central-city-kid.png",
+        "56": "art/traits/wick/production-v1/exports/56/central-city-kid.png",
+        "48": "art/traits/wick/production-v1/exports/48/central-city-kid.png",
+        "44": "art/traits/wick/production-v1/exports/44/central-city-kid.png",
+        "40": "art/traits/wick/production-v1/exports/40/central-city-kid.png"
+      }
     }
   },
   "character_collections": {

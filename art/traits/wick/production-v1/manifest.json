@@ -557,6 +557,29 @@
       },
       "batch": "B",
       "source_sha256": "21f118a1ca3b462422e399a4599b1669d6f60f36f134af5886947f5106d893d2"
+    },
+    {
+      "id": "central-city-kid",
+      "data_id": "central_city_kid",
+      "name": "Central City Kid",
+      "family": "traits",
+      "order": 31,
+      "mood": "Comic, Ugly",
+      "action": "Wick lounges back, held aloft by two partial hands rising from the bottom of the frame, flashing an oversized bank card",
+      "screen": "Snooty half-lids",
+      "prop": "Bank card",
+      "path": "art/traits/wick/production-v1/central-city-kid.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/central-city-kid.png",
+        "128": "art/traits/wick/production-v1/exports/128/central-city-kid.png",
+        "64": "art/traits/wick/production-v1/exports/64/central-city-kid.png",
+        "56": "art/traits/wick/production-v1/exports/56/central-city-kid.png",
+        "48": "art/traits/wick/production-v1/exports/48/central-city-kid.png",
+        "44": "art/traits/wick/production-v1/exports/44/central-city-kid.png",
+        "40": "art/traits/wick/production-v1/exports/40/central-city-kid.png"
+      },
+      "batch": "B",
+      "source_sha256": "a99a3b139c72a37f428bdc43f2368b08fcf318025a41b1303200ce1dd9c42ffe"
     }
   ]
 }

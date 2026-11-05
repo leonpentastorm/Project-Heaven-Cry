@@ -40,10 +40,11 @@
     "headbanger",
     "underground-sound",
     "worldline-fracture",
-    "lowland-born"
+    "lowland-born",
+    "central-city-kid"
   ],
   "catalog_coverage": {
-    "traits": 33,
+    "traits": 34,
     "perks": 2
   },
   "revision_rounds": {
