@@ -1711,6 +1711,30 @@
         "44": "art/traits/wick/production-v1/exports/44/glass-runner.png",
         "40": "art/traits/wick/production-v1/exports/40/glass-runner.png"
       }
+    },
+    "pain-eater": {
+      "label": "Wick — Pain Eater",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/pain-eater.png",
+      "sha256": "dfbac65aba5734224e292af07123c291035aa46effb33d709d549b4d4d1d57a8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "pain_eater",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/pain-eater.png",
+        "128": "art/traits/wick/production-v1/exports/128/pain-eater.png",
+        "64": "art/traits/wick/production-v1/exports/64/pain-eater.png",
+        "56": "art/traits/wick/production-v1/exports/56/pain-eater.png",
+        "48": "art/traits/wick/production-v1/exports/48/pain-eater.png",
+        "44": "art/traits/wick/production-v1/exports/44/pain-eater.png",
+        "40": "art/traits/wick/production-v1/exports/40/pain-eater.png"
+      }
     }
   },
   "character_collections": {

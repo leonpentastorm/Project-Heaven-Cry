@@ -97,6 +97,29 @@
       },
       "batch": "A",
       "source_sha256": "a4f732b76bd2ce407dc008485ba0f35a2ecdf0ca3d574c5320c8bd99f37b0bf7"
+    },
+    {
+      "id": "pain-eater",
+      "data_id": "pain_eater",
+      "name": "Pain Eater",
+      "family": "traits",
+      "order": 8,
+      "mood": "Grim",
+      "action": "Wick crouches like a coiled spring, its shell split by one big crack, wiping its screen with the back of a mitten beneath a segmented bar drained below half",
+      "screen": "Manic grin",
+      "prop": "Segmented health bar, under half full",
+      "path": "art/traits/wick/production-v1/pain-eater.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/pain-eater.png",
+        "128": "art/traits/wick/production-v1/exports/128/pain-eater.png",
+        "64": "art/traits/wick/production-v1/exports/64/pain-eater.png",
+        "56": "art/traits/wick/production-v1/exports/56/pain-eater.png",
+        "48": "art/traits/wick/production-v1/exports/48/pain-eater.png",
+        "44": "art/traits/wick/production-v1/exports/44/pain-eater.png",
+        "40": "art/traits/wick/production-v1/exports/40/pain-eater.png"
+      },
+      "batch": "A",
+      "source_sha256": "b2d643bf3807f673ab94e271daad4eb31260856df7df32ab07a97d8de7a48898"
     }
   ]
 }

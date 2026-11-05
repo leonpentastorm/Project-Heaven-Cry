@@ -20,10 +20,11 @@
     "southern-fist",
     "blade-recluse",
     "grenadiers-arm",
-    "glass-runner"
+    "glass-runner",
+    "pain-eater"
   ],
   "catalog_coverage": {
-    "traits": 13,
+    "traits": 14,
     "perks": 2
   },
   "revision_rounds": {
