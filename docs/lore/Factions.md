@@ -2,6 +2,8 @@
 
 **Status: Suggested, except where marked canon** (Bazaim and the Thousand-Planet City's naming, accepted 5 Nov 2026). A proposal for how the EPCCG's factions relate, for Leon to keep, change or cut. Canon facts it builds on are in the [EPCCG](EPCCG-Player-Character-Creation-Guide.md) and the [World Bible](Narrators-World-Bible.md). It uses only names and details already in those texts, and adds relationships.
 
+**Scope.** This web covers one region: the one the EPCCG describes, around Central City and the Thousand-Planet City. Humanity spans trillions of worlds (World Bible, "Scale"); other regions have their own powers. Anti-Heaven Operations Command is the only faction found everywhere.
+
 ## The five tensions
 
 Every faction sits on at least one of these. Each is a campaign engine.
