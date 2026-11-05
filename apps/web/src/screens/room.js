@@ -4,7 +4,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, IMG, lightboxVals, zoomer } from './shared';
 import { STARTS } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
-import { act, getState, go, leaveRoom, setNarrator, toast } from '../game/store';
+import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
 import { validateSheet } from '@engine';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
@@ -54,7 +54,10 @@ export class RoomLogic extends DCLogic {
       connStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url)); },
-      leave: () => leaveRoom(),
+      leave: () => leaveRoom(), leaveLabel: isHost ? 'Save and leave' : 'Leave', leaveTitle: 'Back to the title screen. Resume this room any time from Saved sessions.',
+      isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save',
+      saveTitle: 'The game also saves itself after every action, in this browser and on the room server.',
+      inSession: g.phase !== 'lobby', backToSession: () => go(g.phase === 'combat' ? 'combat' : 'main'),
       players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', hostAI: S.mode === 'ai' && isHost, guestAI: S.mode === 'ai' && !isHost, hostName: host?.name || 'The host', tones,
       create: () => go('create', { draft: null }), cantAdd: g.phase !== 'lobby' || mine.length >= 2,
       toggleBring: () => this.setState({ bring: !this.state.bring }), bringOpen: this.state.bring, noSaved: !lib.length,

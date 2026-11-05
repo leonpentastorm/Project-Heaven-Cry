@@ -12,6 +12,8 @@ export interface Player { id: string; name: string; initials: string; color: str
 export interface Entry {
   id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene';
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
+  /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */
+  ooc?: boolean;
 }
 export interface Hook { id: string; skill: string; tn: number; truth: 'true' | 'partial' | 'misleading'; line: string }
 export interface Check {
@@ -107,7 +109,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.players.length >= 4) fail('The room is full (4 players).');
       const used = new Set(g.players.map((x) => x.color));
       g.players.push({ id: a.id, name: a.name || 'Player', initials: initialsOf(a.name || 'P'), color: PLAYER_COLOURS.find((c) => !used.has(c)) || '#A3AEC2', online: true });
-      push(g, { kind: 'system', text: (a.name || 'A player') + ' joined the room.' });
+      push(g, { kind: 'system', text: (a.name || 'A player') + ' joined the room.', ooc: true });
       return;
     }
     case 'player/online': { if (!isHost(g, by)) fail('Host only.'); const p = g.players.find((x) => x.id === a.id); if (p) p.online = a.online; return; }
@@ -150,7 +152,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.story.await !== 'players') return;
       g.story.spoken[a.playerId] = '';
       const p = g.players.find((x) => x.id === a.playerId);
-      push(g, { kind: 'system', text: (p?.name || 'A player') + ' is skipped this round.' });
+      push(g, { kind: 'system', text: (p?.name || 'A player') + ' is skipped this round.', ooc: true });
       closeRoundIfDone(g);
       return;
     }

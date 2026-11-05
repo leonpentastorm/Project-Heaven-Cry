@@ -75,7 +75,7 @@ class Component extends DCLogic {
         (S.origin === i ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'),
     }));
     const o = S.origin === null ? null : D.origins[S.origin];
-    const origin = o ? { ...o, knows: o['You know'], seen: o['People see you as'], traitsFit: o['Traits that fit'] } : {};
+    const origin = o ? { ...o, knows: o['You know'], seen: o[Object.keys(o).find((k) => k.startsWith('People see you as'))] || '', traitsFit: o['Traits that fit'] } : {};
     const portrait = D.portraits[S.portrait];
     const portraitThumbs = D.portraits.map((p, i) => ({ ...p, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
       style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
@@ -206,8 +206,8 @@ class Component extends DCLogic {
       ['Association', sample ? '258th Medical Unit' : ''], ['Favourite song', ''], ['Last dream', ''],
       ['History', sample ? 'Seven years with the 258th Medical Unit. Last posting: Outpost-813, on the rim of B813.' : '']]
       .map(([k, v]) => ({ k, v: v || 'Not filled in', vStyle: 'font-size: 14px; line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
-    const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], ['People see you as', o['People see you as']], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
-      .map(([k, v]) => ({ k: k.toUpperCase(), v: v.charAt(0).toUpperCase() + v.slice(1) })) : [];
+    const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], [Object.keys(o).find((k) => k.startsWith('People see you as')) || 'People see you as', o[Object.keys(o).find((k) => k.startsWith('People see you as'))] || ''], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
+      .filter(([, v]) => typeof v === 'string' && v).map(([k, v]) => ({ k: k.toUpperCase(), v: v.charAt(0).toUpperCase() + v.slice(1) })) : [];
     const n2 = (x) => (Math.round(x * 100) / 100).toString();
     const stats = [['Max HP', 100 + 15 * (AV.endurance - 1)], ['HP per level', 5 + 2 * PT('durability')], ['Max MP', 100 + 100 * (AV.virtue - 1)], ['AP per turn', 6],
       ['Echo', '1 at session start'], ['Initiative', fmt(AV.agility - 1 + MD('reaction_speed'))], ['Movement', (1 + 0.5 * (AV.agility - 1)) + ' tiles per AP'],

@@ -11,11 +11,11 @@ export interface ClientState {
   me: Me; role: 'host' | 'guest' | null; code: string | null; game: GameState | null;
   conn: 'offline' | 'connecting' | 'online' | 'host-away' | 'error'; connNote: string;
   library: (Sheet & { savedAt: number })[]; draft: Partial<Sheet> | null;
-  screen: Screen; levelupChar: string | null; toast: { text: string; at: number } | null;
+  screen: Screen; levelupChar: string | null; toast: { text: string; at: number; ok?: boolean } | null; savedAt?: number;
   narrator: { key: string; model: string; effort: 'low' | 'medium' | 'high'; remember: boolean; scripted: boolean };
 }
 
-const LS = { me: 'phc.me', lib: 'phc.library', key: 'phc.narrator', room: 'phc.room', game: (c: string) => 'phc.game.' + c };
+const LS = { me: 'phc.me', lib: 'phc.library', key: 'phc.narrator', room: 'phc.room', sessions: 'phc.sessions', game: (c: string) => 'phc.game.' + c };
 const read = (k: string, d: any) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
 const write = (k: string, v: any) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* full or private mode */ } };
 const rid = (n = 10) => Array.from(crypto.getRandomValues(new Uint8Array(n)), (b) => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
@@ -33,7 +33,7 @@ const subs = new Set<() => void>();
 export const getState = () => S;
 export const subscribe = (f: () => void) => { subs.add(f); return () => { subs.delete(f); }; };
 function set(patch: Partial<ClientState>) { S = { ...S, ...patch }; subs.forEach((f) => f()); }
-export const toast = (text: string) => { set({ toast: { text, at: Date.now() } }); setTimeout(() => { if (S.toast && Date.now() - S.toast.at >= 4500) set({ toast: null }); }, 5000); };
+export const toast = (text: string, ok = false) => { set({ toast: { text, at: Date.now(), ok } }); setTimeout(() => { if (S.toast && Date.now() - S.toast.at >= 4500) set({ toast: null }); }, 5000); };
 
 let conn: Conn | null = null;
 let hostState: GameState | null = null;
@@ -70,7 +70,30 @@ export function joinRoom(code: string) {
   set({ role: 'guest', code, game: null, screen: 'room', conn: 'connecting' });
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'guest' }, onMessage, onConn);
 }
-export function leaveRoom() { conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
+// ---------- saved sessions (the title screen's list) ----------
+export interface SessionInfo { code: string; role: 'host' | 'guest'; title: string; chars: string; players: string; phase: string; round: number; savedAt: number }
+export const listSessions = (): SessionInfo[] => read(LS.sessions, []);
+function noteSession(g: GameState, role: 'host' | 'guest') {
+  const info: SessionInfo = { code: g.code, role, title: g.story.scene.title || (g.phase === 'lobby' ? 'In the lobby' : 'Story under way'), chars: Object.values(g.characters).map((c) => c.name).join(', '),
+    players: g.players.map((p) => p.name).join(', '), phase: g.phase, round: g.story.round, savedAt: Date.now() };
+  write(LS.sessions, [info, ...listSessions().filter((x) => x.code !== g.code)].slice(0, 20));
+}
+export function forgetSession(code: string) {
+  write(LS.sessions, listSessions().filter((x) => x.code !== code));
+  try { localStorage.removeItem(LS.game(code)); } catch { /* */ }
+  if (read(LS.room, null)?.code === code) write(LS.room, null);
+  set({});
+}
+/** Save now: the host writes this browser's save and the room server's copy; guests are saved by the host. */
+export function saveNow() {
+  if (S.role !== 'host' || !hostState) return toast('The host\'s browser keeps the save for everyone. Ask the host to save.');
+  persist(); if (conn) conn.send({ t: 'save', state: hostState }); lastSave = Date.now();
+  set({ savedAt: Date.now() });
+  toast('Saved · room ' + hostState.code + '. Find it under Saved sessions on the title screen.', true);
+}
+export function resumeSession(code: string) { const x = listSessions().find((s) => s.code === code); if (!x) return; x.role === 'host' ? hostRoom(code) : joinRoom(code); }
+
+export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: hostState }); } conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
 export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.me.name) (r.role === 'host' ? hostRoom(r.code) : joinRoom(r.code)); }
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;
 function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
@@ -90,7 +113,7 @@ function onMessage(m: any) {
     }
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
   } else {
-    if (m.t === 'view') { const prev = S.game; set({ game: m.state, conn: 'online' }); followPhase(prev, m.state); }
+    if (m.t === 'view') { const prev = S.game; set({ game: m.state, conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); }
     if (m.t === 'err') toast(m.message);
     if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
   }
@@ -132,7 +155,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
 }
 
 let lastSave = 0;
-function persist() { if (hostState) write(LS.game(hostState.code), hostState); }
+function persist() { if (hostState) { write(LS.game(hostState.code), hostState); noteSession(hostState, 'host'); } }
 function broadcast(force: boolean) {
   if (!conn || !hostState) return;
   for (const p of hostState.players) if (p.id !== S.me.id) conn.send({ t: 'view', pid: p.id, state: viewFor(hostState, p.id) });

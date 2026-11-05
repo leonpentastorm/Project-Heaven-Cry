@@ -14,6 +14,18 @@ const ok = (body: any) => new Response(JSON.stringify(body), { status: 200, head
 const message = { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: 'end_turn', stop_sequence: null,
   content: [{ type: 'text', text: JSON.stringify(TURN) }], usage: { input_tokens: 1200, output_tokens: 300, cache_read_input_tokens: 20000, cache_creation_input_tokens: 0 } };
 
+describe('Narrator context', () => {
+  it('never shows the Narrator a player\'s real name, only character names', () => {
+    let g = game();
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Zephyrine' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: TURN } as any, 'host');
+    g = apply(g, { type: 'story/speak', text: 'I check the ramp.' }, 'host');
+    const all = [RULES_PROMPT, campaignPrompt(g), partyPrompt(g), turnPrompt({ ...g, story: { ...g.story, work: { kind: 'round' } as any } })].join('\n');
+    expect(all).not.toMatch(/Leon|Zephyrine/);
+    expect(all).toContain('[MPAT] I check the ramp.');
+  });
+});
+
 describe('Anthropic Narrator adapter', () => {
   it('sends one cached, schema-bound request from the browser and parses the turn', async () => {
     const calls: { url: string; headers: Headers; body: any }[] = [];

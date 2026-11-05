@@ -8,6 +8,9 @@ import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
 import m813 from '../../../../docs/lore/MPAT-and-M813.md?raw';
 import { STARTS } from '../game/starts';
 
+/** Lore docs carry design notes (bylines, "a proposal for Leon"). The Narrator must not learn a real person's name from them. */
+const clean = (t: string) => t.replace(/^.*\bLeon PT\b.*$/gm, '').replace(/a proposal for Leon/g, 'a proposal, not yet canon').replace(/\bLeon\b/g, 'the designer');
+
 const TRAIT = Object.fromEntries(TRAITS.map((t: any) => [t.id, t]));
 
 export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
@@ -18,6 +21,7 @@ THE SPLIT
 
 TURNS
 - Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Address every player's action in your narration; keep each player's character at the centre of their own beat.
+- Names: speak to and about the characters by their character names only. You are never told the players' real names; never invent, guess or use one, and never call anyone "player" in the story.
 - narration: second person plural when addressing the party, present tense, vivid and specific. 90 to 220 words. No headings, no lists, no dice talk, no meta commentary. End on something the players can act on.
 - When an action's outcome is uncertain and interesting, don't resolve it: request a check (checks[]) and narrate the lead-up only. The engine rolls when the player clicks, then you get the results next turn and narrate the outcome. Use 1 to 3 skills per check (combined checks are allowed). TN is one of 8 Easy, 12 Standard, 16 Hard, 20 Heroic. Ask for at most one check per character per turn; skip checks for trivial or impossible actions.
 - On a natural 20 add a benefit; on a natural 1 add a complication.
@@ -59,23 +63,22 @@ export function campaignPrompt(g: GameState): string {
   return [
     `CAMPAIGN START: ${st.title} (${st.kicker})`, st.lore.join('\n'), st.meta,
     `TONE CHOSEN BY THE HOST: ${g.settings.tone}.`,
-    st.id === 'm813' ? '\nM813 SOURCE (the canon behind this one-shot; the incident is history the players are about to live):\n' + m813 : '',
-    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + worldBible,
-    '\nTHE EARTH SECTOR AND ORIGINS:\n' + sectorEarth,
-    '\nTHE EPCCG CAST AND FACTIONS:\n' + cast,
+    st.id === 'm813' ? '\nM813 SOURCE (the canon behind this one-shot; the incident is history the players are about to live):\n' + clean(m813) : '',
+    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(worldBible),
+    '\nTHE EARTH SECTOR AND ORIGINS:\n' + clean(sectorEarth),
+    '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
   ].join('\n');
 }
 
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
-  const p = g.players.find((x) => x.id === c.owner);
   const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
   const traits = c.traits.map((t) => TRAIT[t] ? `${TRAIT[t].name}: ${String(TRAIT[t].text).replace(/\n/g, ' ')}` : t).join(' | ') || 'none';
   const perks = c.perks.filter((x) => PERK[x.id]?.tier !== 'ultimate').map((x) => `${PERK[x.id].name} (${x.tier})`).join(', ') || 'none';
   const over = pts(c).filter(([, n]) => n >= 5).map(([id]) => `${SKILL[id].name}: ${(SKILL[id] as any).overreach?.text || ''}`).join(' | ') || 'none yet';
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
   const id = c.identity || {};
-  return `CHARACTER ${c.name} (charId ${c.id}), played by ${p?.name || '?'}${c.dead ? ' — DEAD' : ''}
+  return `CHARACTER ${c.name} (charId ${c.id})${c.dead ? ' — DEAD' : ''}
   Origin: ${c.origin}. Level ${c.level} (${c.xp} XP; next level at ${xpForLevel(c.level + 1)}). Class: ${c.classId ? CLASS[c.classId].name : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
   HP ${c.hp}/${maxHp(c)}. Echo ${c.echo}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([, v]) => v).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}.
   Skills: ${skills}.
@@ -93,8 +96,8 @@ export function partyPrompt(g: GameState): string {
 /** The uncached part: memory, recent transcript, and what this call must do. */
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
-  const recent = g.story.entries.filter((e) => !e.to).slice(-40).map((e) => {
-    if (e.kind === 'player') return `[${g.players.find((p) => p.id === e.who)?.name || 'Player'} as ${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
+  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$/.test(e.text)).slice(-40).map((e) => {
+    if (e.kind === 'player') return `[${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
     if (e.kind === 'narration') return `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
     if (e.kind === 'scene') return `[New scene] ${e.text}`;

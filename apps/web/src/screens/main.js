@@ -5,7 +5,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText } from '@engine';
 import { STARTS } from '../game/starts';
-import { act, getState, go, polishText, retryNarrator, toast } from '../game/store';
+import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
 const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall oak', '#5B3A22', '#3D2716'], ['velvet', 'Lumeri velvet', '#4A1830', '#2E0F1E'],
   ['slate', 'Outpost slate', '#2B3138', '#1B2026'], ['hull', 'Ship hull', '#3A3F47', '#5B6270'], ['void', 'Black-hole glass', '#0B0F1E', '#AE9BFF']];
@@ -204,7 +204,7 @@ export class MainLogic extends DCLogic {
 
     return {
       ...epccgVals(this), ...lightboxVals(this), code: g.code, costText: (u.calls ? '$' + u.costUsd.toFixed(2) + ' · ' + u.calls + ' Narrator turns' : 'no Narrator turns yet'),
-      toRoom: () => go('room'), toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
+      toRoom: () => go('room'), isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save', toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
       narrChip: 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
       narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',

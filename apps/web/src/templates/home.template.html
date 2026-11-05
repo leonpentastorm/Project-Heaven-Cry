@@ -31,14 +31,23 @@
 <input value="{{code}}" onChange="{{onCode}}" placeholder="ROOM CODE" maxlength="6" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 20px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase">
 <button type="button" onClick="{{join}}" style="min-height: 46px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Join ›</button>
 </div>
-<sc-if value="{{hasLast}}" hint-placeholder-val="{{false}}">
-<div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
-<span style="font-size: 11px; letter-spacing: 0.18em; color: #FFFFFF">CONTINUE</span>
-<span style="font-family: 'Spectral', serif; font-size: 22px; font-weight: 600">Room {{lastCode}}</span>
-<span style="font-size: 13px; color: #A3AEC2">{{lastRole}}</span>
-<button type="button" onClick="{{resume}}" style="margin-top: auto; min-height: 46px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Back to the room ›</button>
+
 </div>
-</sc-if>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SAVED SESSIONS</span>
+<sc-if value="{{noSessions}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #A3AEC2">None yet. A room you host is saved after every action, in this browser and on the room server. Leave any time and resume it here.</p></sc-if>
+<sc-for list="{{sessions}}" as="x" hint-placeholder-count="2">
+<div style="{{x.style}}">
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="display: flex; gap: 8px; align-items: center"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em">{{x.code}}</span><sc-if value="{{x.active}}"><span style="padding: 1px 8px; border-radius: 999px; background: #FFFFFF; color: #0A0D13; font-size: 10px; font-weight: 700; letter-spacing: 0.12em">{{x.badge}}</span></sc-if></span>
+<span style="font-family: 'Spectral', serif; font-size: 18px; font-weight: 600">{{x.title}}</span>
+<span style="font-size: 13px; color: #E7EBF3">{{x.line}}</span>
+<span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{x.meta}}</span>
+</div>
+<button type="button" onClick="{{x.resume}}" style="min-height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">{{x.resumeLabel}}</button>
+<button type="button" onClick="{{x.forget}}" aria-label="Remove room {{x.code}}" style="min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; cursor: pointer">✕</button>
+</div>
+</sc-for>
 </div>
 </section>
 <aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
