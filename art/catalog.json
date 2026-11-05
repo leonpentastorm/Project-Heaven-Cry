@@ -4139,6 +4139,30 @@
         "44": "art/perks/wick/production-v1/exports/44/crowd-pleaser.png",
         "40": "art/perks/wick/production-v1/exports/40/crowd-pleaser.png"
       }
+    },
+    "shared-breath": {
+      "label": "Wick — Shared Breath",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/shared-breath.png",
+      "sha256": "6c86bc6c428761f0f5cc217707ba0b351cb9fa0a3bc2a4e9a0e75d7f907fa36b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "shared_breath",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shared-breath.png",
+        "128": "art/perks/wick/production-v1/exports/128/shared-breath.png",
+        "64": "art/perks/wick/production-v1/exports/64/shared-breath.png",
+        "56": "art/perks/wick/production-v1/exports/56/shared-breath.png",
+        "48": "art/perks/wick/production-v1/exports/48/shared-breath.png",
+        "44": "art/perks/wick/production-v1/exports/44/shared-breath.png",
+        "40": "art/perks/wick/production-v1/exports/40/shared-breath.png"
+      }
     }
   },
   "illustrations": {

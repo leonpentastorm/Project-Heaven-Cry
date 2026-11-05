@@ -117,11 +117,12 @@
     "detectives-eye",
     "pattern-lock",
     "talks-broke-down",
-    "crowd-pleaser"
+    "crowd-pleaser",
+    "shared-breath"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 38
+    "perks": 39
   },
   "revision_rounds": {
     "field-surgeon": 3,

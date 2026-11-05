@@ -833,6 +833,29 @@
       },
       "batch": "E",
       "source_sha256": "a1175d9471c1b5cdf0793236fe67b60a9df76ba0b9dc46e62737e74d1e3226e8"
+    },
+    {
+      "id": "shared-breath",
+      "data_id": "shared_breath",
+      "name": "Shared Breath",
+      "family": "perks",
+      "order": 37,
+      "mood": "Tender, Calm",
+      "action": "Wick kneels, eyes closed, one mitten on its lantern heart; a single ribbon runs from the heart out of frame to a hand gripping it.",
+      "screen": "Soft closed-eye arcs",
+      "prop": "Ribbon from the heart",
+      "path": "art/perks/wick/production-v1/shared-breath.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shared-breath.png",
+        "128": "art/perks/wick/production-v1/exports/128/shared-breath.png",
+        "64": "art/perks/wick/production-v1/exports/64/shared-breath.png",
+        "56": "art/perks/wick/production-v1/exports/56/shared-breath.png",
+        "48": "art/perks/wick/production-v1/exports/48/shared-breath.png",
+        "44": "art/perks/wick/production-v1/exports/44/shared-breath.png",
+        "40": "art/perks/wick/production-v1/exports/40/shared-breath.png"
+      },
+      "batch": "E",
+      "source_sha256": "3dd8bc945eaf945f683f8841f78582b4ddb2a308ecd2ee372340e5b2c1a0b552"
     }
   ]
 }
