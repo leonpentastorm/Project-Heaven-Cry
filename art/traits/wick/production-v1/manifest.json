@@ -189,6 +189,29 @@
       },
       "batch": "A",
       "source_sha256": "8a3935b3500fd02e1a8d926613347225d489e6531bab930752af72de83b6940f"
+    },
+    {
+      "id": "right-of-way",
+      "data_id": "right_of_way",
+      "name": "Right of Way",
+      "family": "traits",
+      "order": 12,
+      "mood": "Proud, Comic",
+      "action": "Wick limps forward on a stout cane, elbow out and chin high, while two motion arrows bend aside around it like traffic parting",
+      "screen": "Unbothered half-lids",
+      "prop": "Cane",
+      "path": "art/traits/wick/production-v1/right-of-way.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/right-of-way.png",
+        "128": "art/traits/wick/production-v1/exports/128/right-of-way.png",
+        "64": "art/traits/wick/production-v1/exports/64/right-of-way.png",
+        "56": "art/traits/wick/production-v1/exports/56/right-of-way.png",
+        "48": "art/traits/wick/production-v1/exports/48/right-of-way.png",
+        "44": "art/traits/wick/production-v1/exports/44/right-of-way.png",
+        "40": "art/traits/wick/production-v1/exports/40/right-of-way.png"
+      },
+      "batch": "A",
+      "source_sha256": "f8c6ec4de3aadbc71b80399615ff821c15f2e44140bf02f70adf7f2f83039e77"
     }
   ]
 }

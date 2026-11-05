@@ -1807,6 +1807,30 @@
         "44": "art/traits/wick/production-v1/exports/44/machine-faced.png",
         "40": "art/traits/wick/production-v1/exports/40/machine-faced.png"
       }
+    },
+    "right-of-way": {
+      "label": "Wick — Right of Way",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/right-of-way.png",
+      "sha256": "c34f970b48c5fcd36200fbc72edbf870e284fd65ff939db2c39e88da55e98276",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "right_of_way",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/right-of-way.png",
+        "128": "art/traits/wick/production-v1/exports/128/right-of-way.png",
+        "64": "art/traits/wick/production-v1/exports/64/right-of-way.png",
+        "56": "art/traits/wick/production-v1/exports/56/right-of-way.png",
+        "48": "art/traits/wick/production-v1/exports/48/right-of-way.png",
+        "44": "art/traits/wick/production-v1/exports/44/right-of-way.png",
+        "40": "art/traits/wick/production-v1/exports/40/right-of-way.png"
+      }
     }
   },
   "character_collections": {
