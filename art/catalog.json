@@ -3023,6 +3023,30 @@
         "44": "art/traits/wick/production-v1/exports/44/heavens-faithful.png",
         "40": "art/traits/wick/production-v1/exports/40/heavens-faithful.png"
       }
+    },
+    "occultist": {
+      "label": "Wick — Occultist",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/occultist.png",
+      "sha256": "e40ae58d03174161828357d41afaded741634bf0358e71548dcc72ca0a122b3b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "occultist",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/occultist.png",
+        "128": "art/traits/wick/production-v1/exports/128/occultist.png",
+        "64": "art/traits/wick/production-v1/exports/64/occultist.png",
+        "56": "art/traits/wick/production-v1/exports/56/occultist.png",
+        "48": "art/traits/wick/production-v1/exports/48/occultist.png",
+        "44": "art/traits/wick/production-v1/exports/44/occultist.png",
+        "40": "art/traits/wick/production-v1/exports/40/occultist.png"
+      }
     }
   },
   "character_collections": {

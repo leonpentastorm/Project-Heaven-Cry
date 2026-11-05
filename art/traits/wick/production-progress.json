@@ -74,10 +74,11 @@
     "drone-handler",
     "augmented",
     "true-believer",
-    "heavens-faithful"
+    "heavens-faithful",
+    "occultist"
   ],
   "catalog_coverage": {
-    "traits": 67,
+    "traits": 68,
     "perks": 2
   },
   "revision_rounds": {

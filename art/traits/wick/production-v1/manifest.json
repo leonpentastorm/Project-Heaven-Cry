@@ -1355,6 +1355,29 @@
       },
       "batch": "C",
       "source_sha256": "485971feee0f2be88ef4354049b5b90ef6f69d2c059149f3ec4633191e678b6a"
+    },
+    {
+      "id": "occultist",
+      "data_id": "occultist",
+      "name": "Occultist",
+      "family": "traits",
+      "order": 68,
+      "mood": "Eerie, Comic",
+      "action": "Wick tiptoes away hugging an enormous chained grimoire, whose cover has grown a little mouth whispering at Wick's side hinge",
+      "screen": "Shifty side-eyes",
+      "prop": "Grimoire",
+      "path": "art/traits/wick/production-v1/occultist.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/occultist.png",
+        "128": "art/traits/wick/production-v1/exports/128/occultist.png",
+        "64": "art/traits/wick/production-v1/exports/64/occultist.png",
+        "56": "art/traits/wick/production-v1/exports/56/occultist.png",
+        "48": "art/traits/wick/production-v1/exports/48/occultist.png",
+        "44": "art/traits/wick/production-v1/exports/44/occultist.png",
+        "40": "art/traits/wick/production-v1/exports/40/occultist.png"
+      },
+      "batch": "C",
+      "source_sha256": "f7c5c7b0a7cc663ca3c0b92eac56255358169625e4f0fa6857601d905514e844"
     }
   ]
 }
