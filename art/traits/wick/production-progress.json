@@ -95,11 +95,12 @@
     "grim-reaper",
     "bone-talk",
     "wall-run",
-    "roll-with-it"
+    "roll-with-it",
+    "origami-hands"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 16
+    "perks": 17
   },
   "revision_rounds": {
     "field-surgeon": 3,

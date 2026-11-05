@@ -327,6 +327,29 @@
       },
       "batch": "D",
       "source_sha256": "72cce8656d47e640a9555456b4b4fc2e19c4dfc19b57fa764b8c3735c6dacec2"
+    },
+    {
+      "id": "origami-hands",
+      "data_id": "origami_hands",
+      "name": "Origami Hands",
+      "family": "perks",
+      "order": 15,
+      "mood": "Comic, Calm",
+      "action": "Wick squats on its heels folding a scrap sheet into a big toothy bear trap, the last fold snapping into place.",
+      "screen": "Tongue-out concentration",
+      "prop": "Folded bear trap",
+      "path": "art/perks/wick/production-v1/origami-hands.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/origami-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/origami-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/origami-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/origami-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/origami-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/origami-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/origami-hands.png"
+      },
+      "batch": "D",
+      "source_sha256": "650c722a1b6d3ff3e6653df0de4160a4ee9fd98d409db18509530408fe0f21d0"
     }
   ]
 }

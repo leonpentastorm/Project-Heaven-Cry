@@ -3611,6 +3611,30 @@
         "44": "art/perks/wick/production-v1/exports/44/roll-with-it.png",
         "40": "art/perks/wick/production-v1/exports/40/roll-with-it.png"
       }
+    },
+    "origami-hands": {
+      "label": "Wick — Origami Hands",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/origami-hands.png",
+      "sha256": "3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "origami_hands",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/origami-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/origami-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/origami-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/origami-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/origami-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/origami-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/origami-hands.png"
+      }
     }
   },
   "illustrations": {
