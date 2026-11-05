@@ -2,7 +2,7 @@
 // Each skill in D.skills carries `ep` (data/skills.json `epccg`, plus the First-Patch Revival portrait blob).
 const EP_SLOT = { alpha: 'α', beta: 'β', gamma: 'γ' };
 const EP_ATTR = {}; D.attrs.forEach((a) => { EP_ATTR[a.id] = a; });
-const EP_BLANK = { zoom: () => {}, title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 // The "?" button that opens a skill's entry. `ink` is the attribute's UI ink.
 const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 // The Mastered perk's gilded card (automatic at 10 points), shared by the "?" pop-up and the Status perk panel.
@@ -46,6 +46,13 @@ function epccgVals(self) {
     perkHead: 'PERKS · ONE STEP AT EACH MASTERY LEVEL',
     perkNote: 'At 3, 5, 7 and 9 points in ' + s.name + ', take one step: one of these perks at Tier I, or a Tier I you hold upgraded to Tier II. By 9 points both are at Tier II. At 10, the Mastered perk is yours.',
     m: masteredVals(self, e.mastered, ink, s.name),
+    // Combo perks: earned with 5 points in every listed skill plus a deed. Ultimates are secret and never appear here.
+    hasCombos: e.combos.length > 0,
+    combos: e.combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
+      zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk') : () => {}, alt: c.name + ' combo perk icon (Wick)',
+      segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
+      chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
+        style: 'padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),
     perkNameStyle: 'font-size: 15px; font-weight: 700; color: ' + ink,
     rows: [['EFFECT', e.effect], ['AT HIGH LEVELS', e.high], ['GOOD FOR', e.good], ['BAD FOR', e.bad]].filter((r) => r[1]).map(([k, v]) => ({ k, v: v.charAt(0).toUpperCase() + v.slice(1) })),
     boxStyle: 'width: min(960px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 22px 24px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,

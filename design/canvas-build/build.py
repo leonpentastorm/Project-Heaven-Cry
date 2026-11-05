@@ -46,7 +46,7 @@ def epccg(x):
     e = x["epccg"]
     return {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
             "quote": e["quote"], "intro": e["intro"], "effect": e["effect"], "high": e["high_levels"],
-            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"])}
+            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"]), "combos": skill_combos(x["id"])}
 
 PERK_TYPE = {"active_skill": "Active skill", "combat_interaction": "Combat interaction", "passive": "Passive", "ap_mod": "AP modifier", "combat_starter": "Combat starter", "conversation_quirk": "Conversation quirk"}
 
@@ -66,6 +66,39 @@ def skill_mastered(sid):
     p = next(p for p in load("perks.json")["items"] if p["tier"] == "mastered" and p["skills"] == [sid])
     return {"id": p["id"], "name": p["name"], "flavour": p["flavour"], "text": p["text"], "meta": perk_meta(p),
             "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), "")}
+
+def perk_icon(pid):
+    return BLOBS.get("wick-perk-" + pid.replace("_", "-"), "")
+
+def skill_chip(sid):
+    sk = {x["id"]: x for x in load("skills.json")["items"]}[sid]
+    return {"id": sid, "name": sk["name"], "ink": INK[sk["attribute"]]}
+
+def skill_combos(sid):
+    """Combo (Achieved) perks that use this skill. Ultimates are secret and never listed here."""
+    out = []
+    for p in load("perks.json")["items"]:
+        if p["tier"] == "achieved" and sid in p["skills"]:
+            mins = {r["skill"]: r["min"] for r in p["requires"] if "skill" in r}
+            out.append({"id": p["id"], "name": p["name"], "icon": perk_icon(p["id"]), "text": cap(p["text"]), "deed": cap(p["deed"]),
+                        "skills": [dict(skill_chip(s_), min=mins[s_]) for s_ in p["skills"]]})
+    return out
+
+def ultimates():
+    """The six Ultimate perks, for the award screen only (they're secret everywhere else)."""
+    P = {p["id"]: p for p in load("perks.json")["items"]}
+    out = []
+    for p in P.values():
+        if p["tier"] != "ultimate":
+            continue
+        src = [P[r["perk"]] for r in p["requires"] if "perk" in r]
+        skills_ = []
+        for q in src:
+            skills_ += [s_ for s_ in q["skills"] if s_ not in skills_]
+        out.append({"id": p["id"], "name": p["name"], "flavour": p.get("flavour", ""), "text": cap(p["text"]), "icon": perk_icon(p["id"]),
+                    "sources": [{"name": q["name"], "icon": perk_icon(q["id"]), "skills": [skill_chip(s_) for s_ in q["skills"]]} for q in src],
+                    "skills": [skill_chip(s_) for s_ in skills_]})
+    return out
 
 def skill_perks(sid):
     """A skill's two Acquired perks (take one at Mastery 1), with the Wick icon when the artist has drawn it."""
@@ -180,6 +213,9 @@ input,select,textarea{{font-family:'Chakra Petch',sans-serif}}
 @keyframes phcThrow{{0%{{transform:translate(-220px,140px) rotate(-540deg) scale(.55);opacity:0}}55%{{transform:translate(40px,-30px) rotate(40deg) scale(1.05);opacity:1}}75%{{transform:translate(-12px,8px) rotate(-14deg)}}100%{{transform:translate(0,0) rotate(0) scale(1)}}}}
 @keyframes phcThrow2{{0%{{transform:translate(220px,140px) rotate(540deg) scale(.55);opacity:0}}55%{{transform:translate(-40px,-30px) rotate(-40deg) scale(1.05);opacity:1}}75%{{transform:translate(12px,8px) rotate(14deg)}}100%{{transform:translate(0,0) rotate(0) scale(1)}}}}
 .phc-icon{{transition:transform .15s ease;transform-origin:center}}.phc-icon:hover{{transform:scale(1.35)}}
+@keyframes phcUltIn{{0%{{transform:scale(.55);opacity:0}}60%{{transform:scale(1.06);opacity:1}}100%{{transform:scale(1)}}}}
+@keyframes phcUltSpin{{to{{transform:rotate(360deg)}}}}
+@keyframes phcUltGlow{{0%,100%{{box-shadow:0 0 0 1px #FFFFFF,0 0 40px rgba(255,255,255,.28)}}50%{{box-shadow:0 0 0 1px #FFFFFF,0 0 70px rgba(255,255,255,.5)}}}}
 .phc-help{{opacity:.3;transition:opacity .15s}}.phc-card:hover .phc-help,.phc-help:hover,.phc-help:focus-visible{{opacity:1}}
 @media (prefers-reduced-motion: reduce){{*{{animation:none!important;transition:none!important}}}}
 </style>
@@ -250,6 +286,11 @@ def build():
                              (BUILD / (name + ".logic.js")).read_text().replace("__DATA__", json.dumps(common, ensure_ascii=False)))
         (OUT / fname).write_text(page(title, tpl, js, '{"$preview":{"width":1440,"height":%d}}' % h))
     print("built Combat, Room, LevelUp")
+    udata = {"ults": ultimates(), "attrs": attrs(), "big": BIG, "pc": BLOBS["char-mpat"]}
+    tpl, js = with_epccg((BUILD / "ultimate.template.html").read_text(),
+                         (BUILD / "ultimate.logic.js").read_text().replace("__DATA__", json.dumps(udata, ensure_ascii=False)))
+    (OUT / "UltimateAward.dc.html").write_text(page("PHC · Ultimate perk awarded", tpl, js, '{"$preview":{"width":1440,"height":1000}}'))
+    print("built UltimateAward")
 
 
 if __name__ == "__main__":

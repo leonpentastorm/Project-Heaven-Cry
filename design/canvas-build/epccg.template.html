@@ -43,6 +43,25 @@
 </div>
 </div></sc-for>
 </div>
+<sc-if value="{{ep.hasCombos}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0 4px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBO PERKS · EARNED, NOT CHOSEN</span>
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">5 points in every skill on the card, then do the deed in play. The Narrator grants it when you do.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
+<sc-for list="{{ep.combos}}" as="c" hint-placeholder-count="2"><div style="display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50">
+<div aria-hidden="true" style="display: flex; gap: 2px"><sc-for list="{{c.segs}}" as="g" hint-placeholder-count="2"><span style="{{g.style}}"></span></sc-for></div>
+<div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px">
+<sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{c.zoom}}" aria-label="Enlarge {{c.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{c.icon}}" alt="{{c.alt}}" style="display: block; width: 60px; height: 60px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #2E3A50"></button></sc-if>
+<sc-if value="{{c.none}}" hint-placeholder-val="{{true}}"><div aria-label="Icon not drawn yet" style="width: 60px; height: 60px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.1em; color: #7F8BA1">ICON<br>SOON</div></sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="padding: 1px 8px; border-radius: 4px; border: 1px solid #E7EBF3; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #E7EBF3">COMBO</span><span style="font-size: 16px; font-weight: 700; color: #E7EBF3">{{c.name}}</span></span>
+<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><sc-for list="{{c.chips}}" as="k" hint-placeholder-count="2"><sc-if value="{{k.plus}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="font-size: 14px; font-weight: 700; color: #A3AEC2">+</span></sc-if><span style="{{k.style}}">{{k.label}}</span></sc-for></span>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #DCE2EC">{{c.text}}</p>
+<div style="display: flex; flex-direction: column; gap: 2px; padding-left: 10px; border-left: 2px solid #E7EBF3"><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">THE DEED</span><span style="font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.4; color: #E7EBF3">{{c.deed}}</span></div>
+</div>
+</div>
+</div></sc-for>
+</div>
+</div></sc-if>
 <!--MASTERED:ep.m-->
 </section>
 </article>

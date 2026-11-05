@@ -5,8 +5,8 @@
   "rules": {
     "acquired": "Each Mastery level in the skill (3, 5, 7, 9 points) gives one perk step: one of its two perks at Tier I, or an upgrade of one you hold to Tier II (Tier I first). At 9 points both are at Tier II. Tier II replaces Tier I effects.",
     "mastered": "10 points: the skill's Mastered perk, granted automatically. One per skill. Provisional (spec 14, item 49).",
-    "achieved": "Mastery 1 in every listed skill plus the deed. Narrator grants; engine checks skills and records the deed.",
-    "ultimate": "Granted automatically when both named Achieved perks are held.",
+    "achieved": "Combo perks. Mastery 2 (5 points) in every listed skill plus the deed. Narrator grants; engine checks skills and records the deed.",
+    "ultimate": "Granted automatically when both named Achieved perks are held. Secret: never listed, hinted or tracked in any UI until granted.",
     "ap_ceiling": {
       "turn_max": 9,
       "turn_min": 2,
@@ -5656,11 +5656,11 @@
       "requires": [
         {
           "skill": "intimidation",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "athletics",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "open a fight by charging the enemy line, and win it."
@@ -5699,11 +5699,11 @@
       "requires": [
         {
           "skill": "intimidation",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "charisma",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "walk through a hostile crowd with no weapon drawn."
@@ -5746,11 +5746,11 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "eloquence",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "talk your way past a guard who caught you somewhere you shouldn't be."
@@ -5789,15 +5789,15 @@
       "requires": [
         {
           "skill": "brain_power",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "rumination",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "eloquence",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "teach someone a Sigil."
@@ -5842,11 +5842,11 @@
       "requires": [
         {
           "skill": "lore_master",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "camaraderie",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "win someone over with a story, a song or a painting."
@@ -5889,11 +5889,11 @@
       "requires": [
         {
           "skill": "proficiency",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "camaraderie",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "bring a squadmate back from below 10% HP."
@@ -5939,11 +5939,11 @@
       "requires": [
         {
           "skill": "dexterity",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "athletics",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "dodge three attacks in one round."
@@ -5982,11 +5982,11 @@
       "requires": [
         {
           "skill": "empathy",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "analysis",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "close a case with a confession."
@@ -6022,11 +6022,11 @@
       "requires": [
         {
           "skill": "faith",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "eloquence",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "convert an enemy mid-fight."
@@ -6071,11 +6071,11 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "camaraderie",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "get the whole squad through a guarded area unseen."
@@ -6112,11 +6112,11 @@
       "requires": [
         {
           "skill": "implication",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "will_power",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "cast an Outburst that ends a fight, and say something worth remembering while you do it."
@@ -6162,11 +6162,11 @@
       "requires": [
         {
           "skill": "reaction_speed",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "composure",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "come through an ambush without being hit."
@@ -6204,11 +6204,11 @@
       "requires": [
         {
           "skill": "raw_power",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "durability",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "break through a wall to win a fight."
@@ -6257,11 +6257,11 @@
       "requires": [
         {
           "skill": "proficiency",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "shut down a security system without anyone noticing."
@@ -6302,11 +6302,11 @@
       "requires": [
         {
           "skill": "will_power",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "lore_master",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "survive a Mana Short."
@@ -6348,11 +6348,11 @@
       "requires": [
         {
           "skill": "authority",
-          "min": 3
+          "min": 5
         },
         {
           "skill": "composure",
-          "min": 3
+          "min": 5
         },
         {
           "deed": "stare down an enemy officer until they back off."
@@ -6383,6 +6383,134 @@
       "tags": [
         "command",
         "control"
+      ]
+    },
+    {
+      "id": "bite_the_bullet",
+      "name": "Bite the Bullet",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "guts",
+        "pain_threshold"
+      ],
+      "requires": [
+        {
+          "skill": "guts",
+          "min": 5
+        },
+        {
+          "skill": "pain_threshold",
+          "min": 5
+        },
+        {
+          "deed": "fight through an entire combat below a quarter of your max HP."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "deed": "fight through an entire combat below a quarter of your max HP.",
+      "text": "Once per combat, when you would drop to 0 HP, take one more full turn first. You drop at the end of it unless you've been healed above 0 by then.",
+      "effects": [
+        {
+          "op": "state",
+          "state": "last_turn",
+          "when": "would_drop_to_0",
+          "uses": "per_combat",
+          "context": "act one full turn, then drop unless healed above 0"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "provisional": true,
+      "tags": [
+        "survival",
+        "grit"
+      ]
+    },
+    {
+      "id": "sixth_sense",
+      "name": "Sixth Sense",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "sensory",
+        "vigilant"
+      ],
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 5
+        },
+        {
+          "skill": "vigilant",
+          "min": 5
+        },
+        {
+          "deed": "catch someone tailing the squad before they strike."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "catch someone tailing the squad before they strike.",
+      "text": "Hidden enemies within 3 tiles of you are revealed to you and your whole squad.",
+      "effects": [
+        {
+          "op": "reveal",
+          "target": "hidden enemies",
+          "radius": 3,
+          "shared_with": "squad"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "provisional": true,
+      "tags": [
+        "awareness",
+        "squad"
+      ]
+    },
+    {
+      "id": "what_could_be",
+      "name": "What Could Be",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "visualization",
+        "conscience"
+      ],
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 5
+        },
+        {
+          "skill": "conscience",
+          "min": 5
+        },
+        {
+          "deed": "talk someone out of a terrible choice by showing them where it leads."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_session",
+      "deed": "talk someone out of a terrible choice by showing them where it leads.",
+      "text": "Once per session, before a major decision, the Narrator shows you a brief vision of the best outcome within reach, and one way to get there.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once per session, before a major decision: describe the best reachable outcome and one honest route to it. It can still fail."
+        }
+      ],
+      "adjudication": "narrator",
+      "recovered": null,
+      "provisional": true,
+      "tags": [
+        "foresight",
+        "narrative"
       ]
     },
     {

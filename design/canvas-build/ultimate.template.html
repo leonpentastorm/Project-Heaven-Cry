@@ -1,0 +1,59 @@
+<div style="position: relative; min-height: 1000px; overflow: hidden; background: #05070B; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+<div aria-hidden="true" style="position: absolute; left: 50%; top: 330px; width: 1400px; height: 1400px; margin: -700px 0 0 -700px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.07) 0deg 1.2deg, transparent 1.2deg 12deg); animation: phcUltSpin 90s linear infinite; pointer-events: none"></div>
+<header style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 32px; border-bottom: 1px solid #1C2536">
+<img src="{{pc}}" alt="MPAT" style="display: block; flex: none; width: 40px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #2E3A50; background: #000">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">AWARDED TO</span><span style="font-weight: 700">MPAT · 258th Medical Unit</span></span>
+<span style="margin-left: auto; font-family: 'Spectral', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; color: #A3AEC2">PROJECT HEAVEN CRY</span>
+</header>
+<main style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 26px; padding: 40px 32px 28px; text-align: center">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.4em; color: #FFFFFF">ULTIMATE PERK</span>
+<span style="font-family: 'Spectral', serif; font-size: 18px; font-style: italic; color: #A3AEC2">Nobody is told these exist. You found one.</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: center; gap: 0; width: min(1180px, 100%)">
+<div style="flex: 0 1 300px; min-width: 0; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50; text-align: left">
+<div aria-hidden="true" style="display: flex; gap: 2px"><sc-for list="{{left.segs}}" as="g" hint-placeholder-count="2"><span style="{{g.style}}"></span></sc-for></div>
+<div style="display: flex; gap: 12px; align-items: center; padding: 12px">
+<sc-if value="{{left.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{left.zoom}}" aria-label="Enlarge {{left.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{left.icon}}" alt="{{left.alt}}" style="display: block; width: 52px; height: 52px; border-radius: 8px; background: #10151F"></button></sc-if>
+<sc-if value="{{left.none}}" hint-placeholder-val="{{false}}"><span style="display: grid; place-items: center; width: 52px; height: 52px; flex: none; box-sizing: border-box; border-radius: 8px; border: 1px dashed #3B475D; font-size: 9px; letter-spacing: 0.1em; color: #7F8BA1">ICON</span></sc-if>
+<span style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">COMBO · HELD</span><span style="font-weight: 700">{{left.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{left.skills}}</span></span>
+</div>
+</div>
+<span aria-hidden="true" style="{{left.lineStyle}}"></span>
+<div style="flex: none; display: grid; place-items: center; width: 236px; height: 236px">
+<div style="display: grid; place-items: center; width: 220px; height: 220px; border-radius: 50%; background: #0A0D13; border: 1px solid #FFFFFF; box-shadow: inset 0 0 0 7px #0A0D13, inset 0 0 0 8px rgba(255, 255, 255, 0.55); animation: phcUltIn 0.9s cubic-bezier(.2, .9, .3, 1.2) both, phcUltGlow 3.2s ease-in-out 0.9s infinite">
+<sc-if value="{{has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{zoom}}" aria-label="Enlarge {{name}}" style="{{zoomBtn}}"><img src="{{icon}}" alt="{{alt}}" style="display: block; width: 160px; height: 160px"></button></sc-if>
+<sc-if value="{{none}}" hint-placeholder-val="{{true}}"><span style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: #FFFFFF"><span aria-hidden="true" style="font-size: 54px; line-height: 1">&#10022;</span><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">ICON TO COME</span></span></sc-if>
+</div>
+</div>
+<span aria-hidden="true" style="{{right.lineStyle}}"></span>
+<div style="flex: 0 1 300px; min-width: 0; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50; text-align: left">
+<div aria-hidden="true" style="display: flex; gap: 2px"><sc-for list="{{right.segs}}" as="g" hint-placeholder-count="2"><span style="{{g.style}}"></span></sc-for></div>
+<div style="display: flex; gap: 12px; align-items: center; padding: 12px">
+<sc-if value="{{right.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{right.zoom}}" aria-label="Enlarge {{right.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{right.icon}}" alt="{{right.alt}}" style="display: block; width: 52px; height: 52px; border-radius: 8px; background: #10151F"></button></sc-if>
+<sc-if value="{{right.none}}" hint-placeholder-val="{{true}}"><span style="display: grid; place-items: center; width: 52px; height: 52px; flex: none; box-sizing: border-box; border-radius: 8px; border: 1px dashed #3B475D; font-size: 9px; letter-spacing: 0.1em; color: #7F8BA1">ICON</span></sc-if>
+<span style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">COMBO · HELD</span><span style="font-weight: 700">{{right.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{right.skills}}</span></span>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 760px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 58px; font-weight: 600; line-height: 1.05; letter-spacing: 0.01em; color: #FFFFFF">{{name}}</h1>
+<sc-if value="{{hasFlavour}}" hint-placeholder-val="{{true}}"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 19px; font-style: italic; line-height: 1.5; color: #E7EBF3">{{flavour}}</p></sc-if>
+<span aria-hidden="true" style="width: 80px; height: 1px; background: #FFFFFF"></span>
+<p style="margin: 0; font-size: 17px; line-height: 1.55; color: #DCE2EC">{{text}}</p>
+<span style="font-size: 13px; color: #A3AEC2">{{from}}</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><sc-for list="{{chips}}" as="k" hint-placeholder-count="4"><span style="{{k.style}}">{{k.label}}</span></sc-for></div>
+</div>
+<sc-if value="{{notTaken}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{take}}" style="min-height: 52px; padding: 0 44px; border-radius: 999px; border: 0; background: #FFFFFF; color: #05070B; font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer">TAKE IT</button></sc-if>
+<sc-if value="{{taken}}" hint-placeholder-val="{{false}}"><span role="status" style="display: flex; align-items: center; gap: 10px; min-height: 52px; font-size: 15px; color: #6FEA77"><span aria-hidden="true">&#10003;</span>{{takenLine}}</span></sc-if>
+</main>
+<footer style="position: relative; display: flex; justify-content: center; padding: 0 32px 24px">
+<div style="display: flex; align-items: center; gap: 14px; padding: 8px 14px; border-radius: 10px; border: 1px dashed #3B475D; font-size: 12px; color: #A3AEC2">
+<span style="letter-spacing: 0.14em">PROTOTYPE ONLY · PREVIEW ALL SIX</span>
+<button type="button" onClick="{{prev}}" aria-label="Previous Ultimate" style="min-width: 40px; min-height: 40px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">&#8249;</button>
+<span style="min-width: 60px; font-weight: 700; color: #E7EBF3">{{counter}}</span>
+<button type="button" onClick="{{next}}" aria-label="Next Ultimate" style="min-width: 40px; min-height: 40px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">&#8250;</button>
+</div>
+</footer>
+<!--LIGHTBOX-->
+</div>

@@ -91,6 +91,15 @@
       "w": 1440,
       "x": 7600,
       "y": 1920
+    },
+    "UltimateAward.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Ultimate perk awarded · the secret reveal (preview all six)",
+      "w": 1440,
+      "x": 6080,
+      "y": 0
     }
   },
   "createdOnFiles": {
@@ -108,7 +117,7 @@
   "notes": {
     "title": {
       "kind": "title1",
-      "maxW": 5920,
+      "maxW": 7520,
       "text": "Project Heaven Cry — play screens",
       "w": 240,
       "x": 0,
@@ -128,6 +137,7 @@
     "Combat.dc.html",
     "Room.dc.html",
     "LevelUp.dc.html",
+    "UltimateAward.dc.html",
     "Create.dc.html",
     "CreateArchetype.dc.html",
     "CreateSkills.dc.html",
