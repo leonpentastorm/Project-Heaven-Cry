@@ -1,6 +1,6 @@
 # PHC tech plan, v1
 
-**Status:** proposed, 5 November 2026. The rules spec (`docs/rules/PHC-Core-Rules-v1.0.md`) and the data pack (`data/`) stay the source of truth; this plan says how the web game is built on them. Decisions in section 10 wait for Leon's approval.
+**Status:** proposed 5 November 2026; first playable build shipped the same day (decision 62: host-authoritative rooms, site from Workers KV). Live at https://project-heaven-cry.leonpentastorm.workers.dev. The rules spec (`docs/rules/PHC-Core-Rules-v1.0.md`) and the data pack (`data/`) stay the source of truth; this plan says how the web game is built on them. Decisions in section 10 wait for Leon's approval.
 
 ## 1. The plan in one screen
 

@@ -47,6 +47,12 @@ design/canvas/            UI prototypes (.dc.html) + canvas.json layout, generat
 art/                      art library: catalog.json, skills/, character-portraits/, traits/ (Wick), emblems/ (AHOC seal), mascot/ (Wick's mark),
                           style-guide/v1.3/PHC-Style-Guide.md, briefs/
 scripts/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
+packages/engine/          the rules engine (TypeScript, deterministic, seeded): checks, characters, creation, voices,
+                          progression, perks, grid combat; one reducer for every action; tests from the spec's tables
+apps/web/                 the game client: React + Vite rendering the prototype templates (src/templates) with
+                          per-screen logic (src/screens), the store and room link (src/game), the AI Narrator
+                          (src/narrator); e2e/ holds the two-browser tests
+apps/server/              Cloudflare Worker: serves the site (from KV) and one Durable Object per room (relay, saves)
 source/2020/              original material; english/ holds the 2020 trait book in English (superseded)
 ```
 
@@ -88,7 +94,9 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Co-op up to **4 players per room**; solo works too.
 - **Speaking order:** in story mode each player speaks once per round, then the Narrator answers everyone together. Players can request a turn; the host can skip an away player.
 - **Characters are locked in before a session starts** (or saved as drafts and brought into any room).
-- Stack: proposed in `docs/design/tech-plan.md` (TypeScript monorepo, React + Vite, Cloudflare Durable Objects for rooms), pending Leon's approval. No app skeleton yet.
+- Stack (built, decision 62): TypeScript monorepo; React + Vite client rendering the prototype templates; Cloudflare Worker + Durable Objects; host-authoritative rooms. **Live: https://project-heaven-cry.leonpentastorm.workers.dev**
+- Run locally: `npm install`, `npm run assets` (web images from art/), `python3 design/canvas-build/build.py --web` (screen data), `npm run build`, then `npm run dev -w @phc/server` (http://127.0.0.1:8787). Tests: `npm test -w @phc/engine`, `npm test -w @phc/web`, `node apps/web/e2e/two-players.mjs`.
+- Deploy: `npm run build`, then `python3 tools/deploy_site.py` (site files to KV) and `npx wrangler deploy` in apps/server (needs a Cloudflare token with Workers and KV edit rights).
 
 ## UI direction (see `docs/design/ui-screens.md` and the canvas)
 
@@ -113,7 +121,8 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 
 ## Next steps
 
-1. **Tech plan:** proposed in `docs/design/tech-plan.md` (one deterministic TypeScript engine used by the browser and the room server; everything is an action; the event log is the save; the Narrator is a client of the engine with one tool per Narrator-owned job; BYOK in the host's browser; milestones M0–M7 to the M813 starter slice and then co-op). Waiting on Leon's decisions in its section 10.
+0. **First playtest** (Leon + a friend, AI Narrator on Leon's key): the build is live; collect what breaks.
+1. **Tech plan:** in `docs/design/tech-plan.md`; M0–M5 are built in a first form (decision 62) (one deterministic TypeScript engine used by the browser and the room server; everything is an action; the event log is the save; the Narrator is a client of the engine with one tool per Narrator-owned job; BYOK in the host's browser; milestones M0–M7 to the M813 starter slice and then co-op). Waiting on Leon's decisions in its section 10.
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
 4. Settle the 52 open items in spec section 14 through playtests.

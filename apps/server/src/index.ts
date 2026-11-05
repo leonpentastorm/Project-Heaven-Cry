@@ -4,11 +4,11 @@
 // host's save for reconnects, and reports who is online. It never sees an API key.
 import { DurableObject } from 'cloudflare:workers';
 
-interface Env { ROOMS: DurableObjectNamespace<Room>; ASSETS: Fetcher }
+interface Env { ROOMS: DurableObjectNamespace<Room>; ASSETS?: Fetcher; SITE?: KVNamespace }
 interface Tag { pid: string; role: 'host' | 'guest'; name: string }
 
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(req.url);
     const m = url.pathname.match(/^\/room\/([A-Z0-9]{6})\/ws$/);
     if (m) {
@@ -16,9 +16,31 @@ export default {
       return env.ROOMS.get(env.ROOMS.idFromName(m[1])).fetch(req);
     }
     if (url.pathname === '/health') return new Response('ok');
-    return env.ASSETS.fetch(req);
+    if (env.ASSETS) return env.ASSETS.fetch(req); // local dev (wrangler.dev.jsonc)
+    return serveSite(req, env, ctx);
   },
 } satisfies ExportedHandler<Env>;
+
+/** The built web game, from Workers KV (uploaded by tools/deploy_site.py), cached at the edge. */
+async function serveSite(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
+  const url = new URL(req.url);
+  const cache = caches.default, cacheKey = new Request(url.origin + url.pathname, { method: 'GET' });
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
+  let key = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
+  let got = await env.SITE!.getWithMetadata<{ ct: string }>(key, 'arrayBuffer');
+  if (!got.value && !key.includes('.')) { key = 'index.html'; got = await env.SITE!.getWithMetadata<{ ct: string }>(key, 'arrayBuffer'); }
+  if (!got.value) return new Response('Not found', { status: 404 });
+  const hashed = /^assets\/index-[\w-]+\.(js|css)$/.test(key);
+  const res = new Response(got.value, { headers: {
+    'content-type': got.metadata?.ct || 'application/octet-stream',
+    'cache-control': key === 'index.html' ? 'no-cache' : hashed ? 'public, max-age=31536000, immutable' : 'public, max-age=86400',
+    'x-content-type-options': 'nosniff',
+  } });
+  if (key !== 'index.html') ctx.waitUntil(cache.put(cacheKey, res.clone()));
+  return res;
+}
 
 export class Room extends DurableObject<Env> {
   async fetch(req: Request): Promise<Response> {
