@@ -6,7 +6,7 @@
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 279a7bae7b7563fdd24a1eda577f1fcd7499b5ce12767c4d33aa0642b31b4e64  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-d6ef08a2070cb4610068838fa1b5f6b47036df78168a30a0b2861005ab7194e6  art/catalog.json
+b1709a45322fc28a54cb66932c09ba09fc3b9f597a6b2e16b97f49c2af1210b3  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -192,7 +192,7 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-32668f1f031270726a98431ad595c2de36e8abd1b34e0ac1d0600dbaeb70477b  art/traits/wick/production-progress.json
+86e9c5103ad3235de31b849bcb588ab3e8df41954d5db35c456487b83893de19  art/traits/wick/production-progress.json
 9e6746fe11e2c0d41184e0c6c63eb7d83cd3c937cfc8ad4485d3c1405f646c5c  art/traits/wick/production-v1/README.md
 3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a  art/traits/wick/production-v1/augmented.png
 38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3  art/traits/wick/production-v1/blade-recluse.png
@@ -260,6 +260,7 @@ f05e90c81f0ab5cc0beebb7275afb8d82f8234b4ae824ac4dc0df13092e01842  art/traits/wic
 b50272bf9866fc81e7ad8e8d09f72ebbc859bf74c351ed07b4435243d541fbb0  art/traits/wick/production-v1/exports/128/the-mask.png
 0a25ea0625b64f6244ef4b01f59597d2d83b27ce890ff30136bc1db7c78aa3c5  art/traits/wick/production-v1/exports/128/the-soundscape-of-the-soul.png
 aa5c5953db5e56656ae1936a908208b92883134d8262ae931f4d82f2b32dbfce  art/traits/wick/production-v1/exports/128/trench-poet.png
+ebd43b0e771b9eb5883ca2612995bd06876c44147de8863b9614190193de9ecd  art/traits/wick/production-v1/exports/128/true-believer.png
 6cb8d1779399a9016253d807d792051a8ef5d17ed723097346aa39b5694262fd  art/traits/wick/production-v1/exports/128/underground-sound.png
 115ac034441574278876e666ac3369b4d20bd370a37ea79f02c6fef5d5cac613  art/traits/wick/production-v1/exports/128/upper-touched.png
 aa8cc4b3f57b172f1c92bf240c2ce16be378fae8af08d7778eb7dfe84d0aecc1  art/traits/wick/production-v1/exports/128/wanted.png
@@ -316,6 +317,7 @@ f868f8756e06035b0b0dbca05a30ffcf61c51c615ffc3dc125ff97386e9f2b47  art/traits/wic
 bb77b5e8463d01cb63fc8e9305585a1c2ef6867a9cdafbf611584564b8fdd04c  art/traits/wick/production-v1/exports/256/the-mask.png
 1357c9e272dd2eb8db01161b8a1fa42efab601f6349ae07fd5cafaad3f4c355c  art/traits/wick/production-v1/exports/256/the-soundscape-of-the-soul.png
 4864eef26d946c146c6e2a566fc81af12899ac86031c8d1d69f2b140a94840a8  art/traits/wick/production-v1/exports/256/trench-poet.png
+9bc6cefdb214635e235d0b6cca7fcd2b2da30cf2a1e674cb13345c6451719e52  art/traits/wick/production-v1/exports/256/true-believer.png
 7d107330bebd70c8791d470f20f95efaeedab6c9fef87e167f056d354321713c  art/traits/wick/production-v1/exports/256/underground-sound.png
 ce6db174edc229d8229d99c8ba9cdc1a5c4fca22828be23b67208dccfa148efa  art/traits/wick/production-v1/exports/256/upper-touched.png
 3ce759aba8b8a228481b965ad68dcf3ec82e56b40a08eb20990fd8dd3b148946  art/traits/wick/production-v1/exports/256/wanted.png
@@ -372,6 +374,7 @@ a03ca7dc4495a95d2ac5f290619a5b5e72b3491e729e2df06d6975bfbf99e729  art/traits/wic
 f62dd3b4e258f482632346c62802651ee365dc70838137d7ad3a249f49cb13a5  art/traits/wick/production-v1/exports/40/the-mask.png
 78bc89d6f617c9c565e36ef818447bcda3cc7aa3f41d87a184d9404cecda2dc7  art/traits/wick/production-v1/exports/40/the-soundscape-of-the-soul.png
 77042a0bd2d2e1f912657d8b60f53e5cf548e9580ef9b18e18171cae1180d24f  art/traits/wick/production-v1/exports/40/trench-poet.png
+2404e24ebbf4491c86d373d7bd3beae8280a428f14bb584382abe55426e71003  art/traits/wick/production-v1/exports/40/true-believer.png
 470c354c50cc1656074112f1e2c1e6f966c3173a34c3eaa3ccc58ab19d63806e  art/traits/wick/production-v1/exports/40/underground-sound.png
 86dcdee0f0f87b2296b1f8cfe70bd47af216c6fc6b5f41727bdf8ae75eb81e37  art/traits/wick/production-v1/exports/40/upper-touched.png
 029ebe2bc5008afe204807feebdeaa2cd385db4bf520fc4fa7394f475b8f9c1b  art/traits/wick/production-v1/exports/40/wanted.png
@@ -428,6 +431,7 @@ dc614e4c6e3002f3617fb83b9af3797ce8ccbdc1685d8217eb41a5beef2196b2  art/traits/wic
 5aa6d7daf2daacc6848c99703a024c2796b45a6619a073c398958a738dfa1a02  art/traits/wick/production-v1/exports/44/the-mask.png
 9cae0c92f7185aaf20716a5694f444d1f99bb5360abb93b8ddc291a3c28767ad  art/traits/wick/production-v1/exports/44/the-soundscape-of-the-soul.png
 9812ecaeb74e6ef2e63df828614a47c7aed9e3cb444fdf000abe377c0ff25c9b  art/traits/wick/production-v1/exports/44/trench-poet.png
+67cc55758a657e12d8eb20eade9edb3186904a567e0ab916ccf1e3d77b6f0583  art/traits/wick/production-v1/exports/44/true-believer.png
 96aa9192e76dc5f098859d120a432c0b16883c303cab68cfd4158c6df9e8ae10  art/traits/wick/production-v1/exports/44/underground-sound.png
 0b5fd047ce67642ff3424a026ced244729c775da68c4aa274ddd8dee1fd1d0a7  art/traits/wick/production-v1/exports/44/upper-touched.png
 3a9a2866857e673bbf1cdd72387a58940a0fb1b42e2afc534297d99d849c6139  art/traits/wick/production-v1/exports/44/wanted.png
@@ -484,6 +488,7 @@ f26de62696e06c1749d075543b7667cf228b55688e635a84cfa2f22d35933413  art/traits/wic
 3b2d480f1de0264805f10d20b9419248886101a74b83181cee4e6d84258e10e6  art/traits/wick/production-v1/exports/48/the-mask.png
 424840f78f49e00dce02d334faa372a82caae96b1aa90f14262435a193a3e992  art/traits/wick/production-v1/exports/48/the-soundscape-of-the-soul.png
 fdcb1ad9e8571c2de8c73e908de8feb8d0f00a4387f510d4a50f116916f4454a  art/traits/wick/production-v1/exports/48/trench-poet.png
+53f53599d976be9fc55c81ed9576db93f75cac9d96bfb6a7efb8d50947690ef0  art/traits/wick/production-v1/exports/48/true-believer.png
 162c2ceea1e472c18adfac2df528539b74f89fdf2d2f7765315758576698c273  art/traits/wick/production-v1/exports/48/underground-sound.png
 8fc7dd62dcde2d96b9f50267e57b44a651b8269a068136605733595c8f991800  art/traits/wick/production-v1/exports/48/upper-touched.png
 6e9cca954451359d399c26804ddcd780cedb1d4b57deec899368c373d94c1c0d  art/traits/wick/production-v1/exports/48/wanted.png
@@ -540,6 +545,7 @@ e0b565e66cc680e0de58de145b4e28ae0baa2f6acd1c8f875c6399bdd05626e4  art/traits/wic
 81cbb0ab69921a385825bd2b6782a81b77ddc00365eb7b983fb5a8ca1e302518  art/traits/wick/production-v1/exports/56/the-mask.png
 c92d2f6d634bcd4ae7cd57c01a6a9dc7f4bbeedb58b6ceb54d277ad8bd22f75b  art/traits/wick/production-v1/exports/56/the-soundscape-of-the-soul.png
 0d571e075212ab2cf9108f0127ea1dbb646c321e7f5a3ef4675a3f92143b51a3  art/traits/wick/production-v1/exports/56/trench-poet.png
+8339cfbaa00034650054fa5dd27e0358e9eed0829b48299b7960f2ad1bd35e77  art/traits/wick/production-v1/exports/56/true-believer.png
 89c547d90d4b3502f925d60919240bd077b7c206bdf3e3718067f2c5b7d3b680  art/traits/wick/production-v1/exports/56/underground-sound.png
 6f24379d622b93f0b43fe7a911caff8413e9d06f9b6189001d44786739eec5ba  art/traits/wick/production-v1/exports/56/upper-touched.png
 1b121896d7e19e5964b14b20aa040e60da712cf5bb8e96ced21280928232bda3  art/traits/wick/production-v1/exports/56/wanted.png
@@ -596,6 +602,7 @@ b0e79cc7e0b0e55d11bd9615514366024270394b6c22b60411225eb36f25c235  art/traits/wic
 090a96f60fcbe5cf93398e3c65766c273f9120e8175a4b41b271bbe5fb46e0e4  art/traits/wick/production-v1/exports/64/the-mask.png
 45bbea766b6914a3a89bf4c0527ede28f72093e0c47cd7e3e62255db46a24b38  art/traits/wick/production-v1/exports/64/the-soundscape-of-the-soul.png
 1e18f6d03998357795af84d31ecf21e48501e30fbfdd067658d7647a00aa4f90  art/traits/wick/production-v1/exports/64/trench-poet.png
+8ff5f6d14e93c792a35563dbdbad2cf67bbe71b1292f4b3046796c54afec5aa6  art/traits/wick/production-v1/exports/64/true-believer.png
 3acac216e1f7b3566340d315cf1e6007d1c422cf31a2aefddac713187d8a1616  art/traits/wick/production-v1/exports/64/underground-sound.png
 3b7e6b81f63648fb26bb2f36f05ef0116f8844534e3efb42f9b3b2a3c258f547  art/traits/wick/production-v1/exports/64/upper-touched.png
 35ed1c2c7350f9036b550d6bc1da9314fbdae7ee866d172eb2e0dccc6f232a54  art/traits/wick/production-v1/exports/64/wanted.png
@@ -619,7 +626,7 @@ d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37  art/traits/wic
 444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe  art/traits/wick/production-v1/lowland-born.png
 5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098  art/traits/wick/production-v1/lunarshine.png
 f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4  art/traits/wick/production-v1/machine-faced.png
-ddaa5bcba2209a3e6a544181a13dfe6c17f766623b7b4c37e45f384bb46784e5  art/traits/wick/production-v1/manifest.json
+0f816172331705888177876b8e8e58046f96e159a1807af6d2ddccdd996e9f6c  art/traits/wick/production-v1/manifest.json
 744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91  art/traits/wick/production-v1/market-blood.png
 9878f6fb218e1574259e0bb70e577b2d3c839874b6ad8e48af46253642000fc1  art/traits/wick/production-v1/oil-in-my-mind.png
 ea9590ff45b24ea8bf0e63c92a8c08d3e09db7e9a816f8a141fe80fbba463990  art/traits/wick/production-v1/oil-in-my-soul.png
@@ -638,13 +645,13 @@ a1d132d5890d9177f4da7b542e9264a6fd5cad7c21f8050f63a0288ecc26afbc  art/traits/wic
 f411d6d31b2b0eefe2f144f55a18b8a00479fc6af71bd4a5285c98ecbcc31be1  art/traits/wick/production-v1/previews/batch-b-48px.png
 e1310f34ede43fde815586999c744fc210e91d1e9cd2d228dd353a065d9c69bc  art/traits/wick/production-v1/previews/batch-b-56px.png
 8a062fdba26bdca9f09317b34a103968fa781757b32fcf39849254c7f7a58047  art/traits/wick/production-v1/previews/batch-b-light-dark-64px.png
-fcfd2bec2600781b6f94edaa2cfc8327382f140c55a20135f48980635bf8add3  art/traits/wick/production-v1/previews/batch-c-128px.png
-f56f55372f04e439061f47245c9218c66439344df8083f6c6fbe5645562dacf3  art/traits/wick/production-v1/previews/batch-c-40px.png
-bf2c02babd65f789d1e934d5c55cd8c3d88520be28a12c2a7173b87402fdc263  art/traits/wick/production-v1/previews/batch-c-44px.png
-274890233223a5189e0ee03f9f26c764eb3c85ca419970bcbc0ce607032ff567  art/traits/wick/production-v1/previews/batch-c-48px.png
-19d87c2deeec32e64509515bf3ea1e8553b05154376961792562ea8514281a1f  art/traits/wick/production-v1/previews/batch-c-56px.png
-3b2085fc432013729015bee2667073148fefa7482e7cbe2ad01ebdef0816920a  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
-a6b27ef6b1f5116ed23e791f4dae7b1a390c14177fe8a7c8cf8001e11fa5cda2  art/traits/wick/production-v1/previews/latest.png
+3b0155839a1ac70bd672e6bb004dad7927779ecffdb2c9e7307bb5e28957eba6  art/traits/wick/production-v1/previews/batch-c-128px.png
+1109bc809f9d11e37bd5c48c6e3914ac397a0f741934bb6264d8c86fd51a77de  art/traits/wick/production-v1/previews/batch-c-40px.png
+c916009d092735f5975a5ac2e519fab073aa31ec7c83f777c38975ec4975abf4  art/traits/wick/production-v1/previews/batch-c-44px.png
+0c118948c4a9a37aa7a2cebfa127a3242f688a3abab50adca4aefc835f32fe50  art/traits/wick/production-v1/previews/batch-c-48px.png
+1c43671d26c3b9350e036634975061bca9bb8fa7b96ce3a82669a43a1481c269  art/traits/wick/production-v1/previews/batch-c-56px.png
+a6beb796d155ec42d0b5d745cc3d25ab9e82aebad60d80562b565cc071564e2e  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
+a9914a61770ba2a0116b181404bb911ee934c3d7f0289e5b1bc7ca17cfc15532  art/traits/wick/production-v1/previews/latest.png
 902bc507c6d0acecfb529b14ac173dc1d8b1a3964aee6e6a2a45190c83dec031  art/traits/wick/production-v1/revisions/v2/README.md
 cc4601921e1e5e379cc051209918cbb398b26476db18cf14f26ea86b44477844  art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png
 ceeae9e2b6259ca2a0a06bb6a739ee94681c7bbd82a04400e5ffa27988f2334f  art/traits/wick/production-v1/revisions/v2/exports/128/daggerfall-veteran.png
@@ -707,6 +714,7 @@ d5c4d9f644b91a5661da63bd4ebdb2afd34cf594d159ab62112dd46d963a7fee  art/traits/wic
 3672b5338cc56d84827ba510dbce5cd5bf2539c05315a7c890177fb71dab0bee  art/traits/wick/production-v1/the-mask.png
 cbf2249859ad80bc3b842a7f9a19f24b5e7bb21b9052a0ee02e52bcae3be3d3a  art/traits/wick/production-v1/the-soundscape-of-the-soul.png
 a4f05c4eb5143842c45dcecbda21fb6d25460882757d054f27e86094b814efcc  art/traits/wick/production-v1/trench-poet.png
+21b86740434fe6f491660221227eac28acae1de891397843ab2ad901e178672f  art/traits/wick/production-v1/true-believer.png
 8dfa99de802b32bf675d5976387753167941271b6592ab4ec57f6d5e3500f351  art/traits/wick/production-v1/underground-sound.png
 148ef6cd692904a5a00032daadc3132a7c2b1eb4115ba4cb77d10dd484a342a2  art/traits/wick/production-v1/upper-touched.png
 786aed28338e0256e0fd7a420788e606e551e61aca557c70a6f61b16c587349b  art/traits/wick/production-v1/wanted.png

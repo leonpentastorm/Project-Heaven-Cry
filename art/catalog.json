@@ -2975,6 +2975,30 @@
         "44": "art/traits/wick/production-v1/exports/44/augmented.png",
         "40": "art/traits/wick/production-v1/exports/40/augmented.png"
       }
+    },
+    "true-believer": {
+      "label": "Wick — True Believer",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/true-believer.png",
+      "sha256": "21b86740434fe6f491660221227eac28acae1de891397843ab2ad901e178672f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "true_believer",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/true-believer.png",
+        "128": "art/traits/wick/production-v1/exports/128/true-believer.png",
+        "64": "art/traits/wick/production-v1/exports/64/true-believer.png",
+        "56": "art/traits/wick/production-v1/exports/56/true-believer.png",
+        "48": "art/traits/wick/production-v1/exports/48/true-believer.png",
+        "44": "art/traits/wick/production-v1/exports/44/true-believer.png",
+        "40": "art/traits/wick/production-v1/exports/40/true-believer.png"
+      }
     }
   },
   "character_collections": {

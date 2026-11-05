@@ -72,10 +72,11 @@
     "slicer",
     "demolitionist",
     "drone-handler",
-    "augmented"
+    "augmented",
+    "true-believer"
   ],
   "catalog_coverage": {
-    "traits": 65,
+    "traits": 66,
     "perks": 2
   },
   "revision_rounds": {

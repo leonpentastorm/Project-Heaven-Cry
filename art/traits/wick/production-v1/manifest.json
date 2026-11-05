@@ -1309,6 +1309,29 @@
       },
       "batch": "C",
       "source_sha256": "72a7cef1559b9e8c47c5e8daa096712ab8f0858128037302a7df797fb1e35a8f"
+    },
+    {
+      "id": "true-believer",
+      "data_id": "true_believer",
+      "name": "True Believer",
+      "family": "traits",
+      "order": 66,
+      "mood": "Tender",
+      "action": "Wick kneels head bowed, cupped mittens raised, as a small star drops gently into them from above",
+      "screen": "Soft closed-eye smile",
+      "prop": "Falling star",
+      "path": "art/traits/wick/production-v1/true-believer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/true-believer.png",
+        "128": "art/traits/wick/production-v1/exports/128/true-believer.png",
+        "64": "art/traits/wick/production-v1/exports/64/true-believer.png",
+        "56": "art/traits/wick/production-v1/exports/56/true-believer.png",
+        "48": "art/traits/wick/production-v1/exports/48/true-believer.png",
+        "44": "art/traits/wick/production-v1/exports/44/true-believer.png",
+        "40": "art/traits/wick/production-v1/exports/40/true-believer.png"
+      },
+      "batch": "C",
+      "source_sha256": "c4c2e496bf75e46bb636c245ed0ab7efa8f4a6e94c9733a4db5a2876b3aa8525"
     }
   ]
 }
