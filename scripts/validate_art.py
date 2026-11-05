@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate the PHC art handoff. Python 3 standard library only."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
 import struct
@@ -8,6 +9,8 @@ import sys
 import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
+PIXEL_ASSET = None
+COMPLETE_ICONS = False
 WICK_TEST_IDS = {
     'humanity-first', 'the-old-blood', 'factory-made', 'chain-smoker',
     'raised-by-orks', 'the-brightest-light', 'rabbits-foot', 'forlorn-hope',
@@ -76,17 +79,23 @@ def validate_brief_assets(catalog):
                 f'Missing rules-data binding: {icon["id"]}')
         require(asset['status'] == 'review-candidate' and asset['production_approved'] is False,
                 f'Unreviewed icon marked approved: {icon["id"]}')
-        require(icon['path'] == asset['path'] and (asset['width'], asset['height']) == (1024, 1024),
+        revised = asset['path'] != icon['path']
+        require((not revised or asset.get('previous_path') == icon['path'])
+                and (asset['width'], asset['height']) == (1024, 1024),
                 f'Bad Wick master: {icon["id"]}')
-        require(icon['exports'] == asset['exports'] and set(asset['exports']) == {'40', '64', '128', '256'},
+        local(icon['path'])  # First versions remain available for comparison.
+        sizes = {'40', '44', '48', '56', '64', '128', '256'} if revised else {'40', '64', '128', '256'}
+        require((revised or icon['exports'] == asset['exports']) and set(asset['exports']) == sizes,
                 f'Missing Wick review sizes: {icon["id"]}')
-        validate_white_rgba(local(asset['path']).read_bytes(), asset['path'])
+        if PIXEL_ASSET is None or PIXEL_ASSET == icon['id']:
+            validate_white_rgba(local(asset['path']).read_bytes(), asset['path'])
         for size, path in asset['exports'].items():
             data = local(path).read_bytes()
             require(data[:8] == b'\x89PNG\r\n\x1a\n', f'Not a PNG export: {path}')
             require(struct.unpack('>IIBB', data[16:26]) == (int(size), int(size), 8, 6),
                     f'Bad Wick export format: {path}')
-            validate_white_rgba(data, path)
+            if PIXEL_ASSET is None or PIXEL_ASSET == icon['id']:
+                validate_white_rgba(data, path)
     for family, manifest_path, key, expected in [
         ('characters', 'art/character-portraits/m813/manifest.json', 'portraits', {'mpat', 'mpat-comrade'}),
         ('illustrations', 'art/illustrations/m813/v1/manifest.json', 'illustrations',
@@ -105,6 +114,58 @@ def validate_brief_assets(catalog):
                 require('/spoilers/' in asset['path'], 'Ending artwork must live under spoilers/')
             size = (800, 1000) if family == 'characters' else (1600, 900)
             require((asset['width'], asset['height']) == size, f'M813 dimensions: {entry["id"]}')
+
+def validate_production_icons(catalog):
+    """Validate incremental deliveries without claiming the full run is finished."""
+    rules = {family: {x['id'] for x in json.loads(local(f'data/{family}.json').read_text())['items']}
+             for family in ['traits', 'perks']}
+    for family in ['traits', 'perks']:
+        ids = {a.get('data_id', asset_id.replace('-', '_')) for asset_id, a in catalog[family].items()}
+        require(ids <= rules[family], f'Unknown rules-data IDs in {family}')
+        require(len(ids) == len(catalog[family]), f'Duplicate rules-data bindings: {family}')
+        if COMPLETE_ICONS:
+            require(ids == rules[family], f'Incomplete {family} icon coverage: {sorted(rules[family] - ids)}')
+    folders = ['art/traits/wick/test-set-1/revisions',
+               'art/traits/wick/production-v1', 'art/perks/wick/production-v1']
+    for folder in folders:
+        manifest_path = ROOT / folder / 'manifest.json'
+        if not manifest_path.exists():
+            continue
+        manifest = json.loads(manifest_path.read_text())
+        require(manifest['production_approved'] is False and manifest['status'] == 'review-candidate',
+                f'Production candidates require review: {folder}')
+        require(len({i['id'] for i in manifest['icons']}) == len(manifest['icons']), f'Duplicate manifest IDs: {folder}')
+        for item in manifest['icons']:
+            family = item['family']
+            asset = catalog[family][item['id']]
+            require(item['data_id'] in rules[family] and item['data_id'] == asset['data_id'],
+                    f'Bad production rules binding: {item["id"]}')
+            require(item['path'] == asset['path'] and item['path'].startswith(folder + '/'),
+                    f'Production path mismatch: {item["id"]}')
+            require((asset['width'], asset['height']) == (1024, 1024), f'Production dimensions: {item["id"]}')
+            require(item['exports'] == asset['exports'] and set(asset['exports']) == {'40','44','48','56','64','128','256'},
+                    f'Production UI sizes missing: {item["id"]}')
+            require(asset['production_approved'] is False and asset['status'] == 'review-candidate',
+                    f'Unreviewed production asset marked approved: {item["id"]}')
+            # Revised tests are checked by validate_brief_assets already.
+            if item['id'] in WICK_TEST_IDS:
+                continue
+            if PIXEL_ASSET is None or PIXEL_ASSET == item['id']:
+                validate_white_rgba(local(asset['path']).read_bytes(), asset['path'])
+            for size, path in asset['exports'].items():
+                data = local(path).read_bytes()
+                require(data[:8] == b'\x89PNG\r\n\x1a\n'
+                        and struct.unpack('>IIBB', data[16:26]) == (int(size), int(size), 8, 6),
+                        f'Bad production export format: {path}')
+                if PIXEL_ASSET is None or PIXEL_ASSET == item['id']:
+                    validate_white_rgba(data, path)
+    progress_path = ROOT / 'art/traits/wick/production-progress.json'
+    if progress_path.exists():
+        progress = json.loads(progress_path.read_text())
+        for family in ['traits', 'perks']:
+            require(progress['catalog_coverage'][family] == len(catalog[family]), f'Stale {family} production progress')
+        require(len(progress['revisions_delivered']) <= 7 and len(progress['new_icons_delivered']) <= 139,
+                'Production progress exceeds brief')
 
 def require(condition, message):
     if not condition:
@@ -169,14 +230,18 @@ def validate():
     require(catalog['style_guide_version'] == palette['version'], 'Style guide version mismatch')
     require(catalog['skill_palette_version'] == palette['skill_palette_version'], 'Palette version mismatch')
     paths = set()
-    for family, count in [('skills', 27), ('characters', 83), ('traits', 9), ('perks', 2), ('illustrations', 2)]:
-        require(len(catalog[family]) == count, f'Expected {count} {family}')
+    if PIXEL_ASSET is not None:
+        require(any(PIXEL_ASSET in catalog[f] for f in ['traits', 'perks']), f'Unknown selected icon: {PIXEL_ASSET}')
+    for family, minimum, maximum in [('skills', 27, 27), ('characters', 83, 83),
+                                     ('traits', 9, 74), ('perks', 2, 76), ('illustrations', 2, 2)]:
+        require(minimum <= len(catalog[family]) <= maximum, f'Unexpected {family} count')
         for asset_id, asset in catalog[family].items():
             path = asset['path']
             require(path not in paths, f'Duplicate primary asset path: {path}')
             paths.add(path)
             folder = {'characters': 'character-portraits', 'perks': 'traits'}.get(family, family)
-            require(path.startswith(f'art/{folder}/'), f'Wrong family for {asset_id}')
+            require(path.startswith(f'art/{folder}/') or (family == 'perks' and path.startswith('art/perks/')),
+                    f'Wrong family for {asset_id}')
             data = local(path).read_bytes()
             require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Checksum mismatch: {path}')
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')
@@ -190,15 +255,23 @@ def validate():
     require(set(catalog['skills']) == set(palette['skills']), 'Skill list differs from palette')
     validate_ui_colours(catalog, palette)
     validate_brief_assets(catalog)
+    validate_production_icons(catalog)
     checksums = local('art/checksums.sha256').read_text().splitlines()
     for line in checksums:
         expected, path = line.split('  ', 1)
         require(hashlib.sha256(local(path).read_bytes()).hexdigest() == expected, f'File integrity mismatch: {path}')
     require(paths <= {line.split('  ', 1)[1] for line in checksums}, 'Primary assets missing from checksums')
-    print(f'OK: 27 skills, 83 characters, 9 traits, 2 perks, 2 illustrations; '
-          f'{len(checksums)} file checksums; brief coverage, exports, white ink, alpha, spoilers and palette valid.')
+    print(f'OK: 27 skills, 83 characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, 2 illustrations; '
+          f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
+          f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--asset', help='Check pixels for this icon only; still check all metadata and checksums.')
+    parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 76-perk coverage.')
+    args = parser.parse_args()
+    PIXEL_ASSET = args.asset
+    COMPLETE_ICONS = args.complete_icons
     try:
         validate()
     except (ValueError, KeyError, OSError, struct.error) as error:

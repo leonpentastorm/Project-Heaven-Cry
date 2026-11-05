@@ -1427,9 +1427,9 @@
     },
     "humanity-first": {
       "label": "Wick — Humanity First",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/humanity-first.png",
-      "sha256": "de80a4d18bcecafe2912842f74f2b95c63c33bdc1ed181ab4a340af77490a1c1",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/humanity-first.png",
+      "sha256": "6c488328cb2198f9fae9f8834563ccdbaaae9e006f25f79bd76a5d49fd070a47",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1438,18 +1438,24 @@
       "data_id": "humanity_first",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/humanity-first.png",
-        "128": "art/traits/wick/test-set-1/exports/128/humanity-first.png",
-        "64": "art/traits/wick/test-set-1/exports/64/humanity-first.png",
-        "40": "art/traits/wick/test-set-1/exports/40/humanity-first.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/humanity-first.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/humanity-first.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/humanity-first.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/humanity-first.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/humanity-first.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/humanity-first.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/humanity-first.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/humanity-first.png"
     },
     "the-old-blood": {
       "label": "Wick — The Old Blood",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/the-old-blood.png",
-      "sha256": "173006109905ffa63f519f620790093c076dcfb64e320cfeba53c1371a8ac6f5",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/the-old-blood.png",
+      "sha256": "becf8562aa9d2b2ab7a7ff247b71236b53037734fee5f74a1ff3185fa7cd073e",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1458,18 +1464,24 @@
       "data_id": "the_old_blood",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/the-old-blood.png",
-        "128": "art/traits/wick/test-set-1/exports/128/the-old-blood.png",
-        "64": "art/traits/wick/test-set-1/exports/64/the-old-blood.png",
-        "40": "art/traits/wick/test-set-1/exports/40/the-old-blood.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/the-old-blood.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/the-old-blood.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/the-old-blood.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/the-old-blood.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/the-old-blood.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/the-old-blood.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/the-old-blood.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/the-old-blood.png"
     },
     "factory-made": {
       "label": "Wick — Factory Made",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/factory-made.png",
-      "sha256": "d6d6b9e4be979fcba317410fc0d3cc3c22e27654038fdf5e2a98c7e9d135c42e",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/factory-made.png",
+      "sha256": "297a666b89b98f8ca42cdd6dd498c53cc6b10fd8e4d999225c944e3564a9973d",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1478,12 +1490,18 @@
       "data_id": "factory_made",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/factory-made.png",
-        "128": "art/traits/wick/test-set-1/exports/128/factory-made.png",
-        "64": "art/traits/wick/test-set-1/exports/64/factory-made.png",
-        "40": "art/traits/wick/test-set-1/exports/40/factory-made.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/factory-made.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/factory-made.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/factory-made.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/factory-made.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/factory-made.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/factory-made.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/factory-made.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/factory-made.png"
     },
     "chain-smoker": {
       "label": "Wick — Chain Smoker",
@@ -1507,9 +1525,9 @@
     },
     "raised-by-orks": {
       "label": "Wick — Raised by Orks",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/raised-by-orks.png",
-      "sha256": "204c96223869e0f5e492ea0a970ded6a9a0908e4d83e35f9aaf5aa6390e059ba",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/raised-by-orks.png",
+      "sha256": "3aea8cea3c68efc95389544f4fa5529e494a23e34f167451bfded671177620d6",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1518,12 +1536,18 @@
       "data_id": "raised_by_orks",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/raised-by-orks.png",
-        "128": "art/traits/wick/test-set-1/exports/128/raised-by-orks.png",
-        "64": "art/traits/wick/test-set-1/exports/64/raised-by-orks.png",
-        "40": "art/traits/wick/test-set-1/exports/40/raised-by-orks.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/raised-by-orks.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/raised-by-orks.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/raised-by-orks.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/raised-by-orks.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/raised-by-orks.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/raised-by-orks.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/raised-by-orks.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/raised-by-orks.png"
     },
     "the-brightest-light": {
       "label": "Wick — The Brightest Light",
@@ -1547,9 +1571,9 @@
     },
     "rabbits-foot": {
       "label": "Wick — Rabbit's Foot",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/rabbits-foot.png",
-      "sha256": "166d75c43e1c34bb7bd627060c1b3bad7e080ebb1eea40e6a6a23b6f71d66488",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/rabbits-foot.png",
+      "sha256": "c6988e937c31b81cdb9bc364c2a51f12ca3bceafb74be7884e2dac4e271419d1",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1558,12 +1582,18 @@
       "data_id": "rabbits_foot",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/rabbits-foot.png",
-        "128": "art/traits/wick/test-set-1/exports/128/rabbits-foot.png",
-        "64": "art/traits/wick/test-set-1/exports/64/rabbits-foot.png",
-        "40": "art/traits/wick/test-set-1/exports/40/rabbits-foot.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/rabbits-foot.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/rabbits-foot.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/rabbits-foot.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/rabbits-foot.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/rabbits-foot.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/rabbits-foot.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/rabbits-foot.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/rabbits-foot.png"
     },
     "forlorn-hope": {
       "label": "Wick — Forlorn Hope",
@@ -1618,9 +1648,9 @@
   "perks": {
     "field-surgeon": {
       "label": "Wick — Field Surgeon",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/field-surgeon.png",
-      "sha256": "79dec9a4cb8b099b493f278c367087155c2d7f6e38b9533a6d47b2cb46f2ece3",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/field-surgeon.png",
+      "sha256": "421d74b16fa7370b6738879ef7f3478abd8e87f3051683aa9caebce285dd5504",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1629,18 +1659,24 @@
       "data_id": "field_surgeon",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/field-surgeon.png",
-        "128": "art/traits/wick/test-set-1/exports/128/field-surgeon.png",
-        "64": "art/traits/wick/test-set-1/exports/64/field-surgeon.png",
-        "40": "art/traits/wick/test-set-1/exports/40/field-surgeon.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/field-surgeon.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/field-surgeon.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/field-surgeon.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/field-surgeon.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/field-surgeon.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/field-surgeon.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/field-surgeon.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/field-surgeon.png"
     },
     "supreme-command": {
       "label": "Wick — Supreme Command",
-      "collection": "wick-test-set-1",
-      "path": "art/traits/wick/test-set-1/supreme-command.png",
-      "sha256": "cb5f426ee1b384f6c04f15a816a2eeb4a73366d4144197e83bbb34d27d780c41",
+      "collection": "wick-test-set-1-revisions",
+      "path": "art/traits/wick/test-set-1/revisions/supreme-command.png",
+      "sha256": "a5c0fbc18d2ca2e2b78e57f59c3bf746b5b9d601f61596722e8175b832bd3613",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1649,12 +1685,18 @@
       "data_id": "supreme_command",
       "status": "review-candidate",
       "production_approved": false,
+      "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/exports/256/supreme-command.png",
-        "128": "art/traits/wick/test-set-1/exports/128/supreme-command.png",
-        "64": "art/traits/wick/test-set-1/exports/64/supreme-command.png",
-        "40": "art/traits/wick/test-set-1/exports/40/supreme-command.png"
-      }
+        "256": "art/traits/wick/test-set-1/revisions/exports/256/supreme-command.png",
+        "128": "art/traits/wick/test-set-1/revisions/exports/128/supreme-command.png",
+        "64": "art/traits/wick/test-set-1/revisions/exports/64/supreme-command.png",
+        "56": "art/traits/wick/test-set-1/revisions/exports/56/supreme-command.png",
+        "48": "art/traits/wick/test-set-1/revisions/exports/48/supreme-command.png",
+        "44": "art/traits/wick/test-set-1/revisions/exports/44/supreme-command.png",
+        "40": "art/traits/wick/test-set-1/revisions/exports/40/supreme-command.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/test-set-1/supreme-command.png"
     }
   },
   "illustrations": {

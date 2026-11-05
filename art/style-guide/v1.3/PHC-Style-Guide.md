@@ -386,6 +386,8 @@ Review 1 (5 November 2026) approved Chain Smoker, The Brightest Light and Forlor
 
 Keep the approved Mind Without Fog anchor unchanged. Candidates stay `production_approved: false` until Leon passes them.
 
+Delivery update: Leon requested the seven fixes first, then continuous generation with each new icon shown in chat and pushed immediately. Round-2 files are in `art/traits/wick/test-set-1/revisions/`. This changes delivery timing, not style rules or candidate approval. Production coverage is recorded in `art/traits/wick/production-progress.json`.
+
 M813 portrait candidates are in `art/character-portraits/m813/`; world images are in `art/illustrations/m813/v1/`. The repair-bay image is ending-only and excluded from the opening-safe preview. Painted construction choices remain proposals under the brief.
 
 ![14 / Approved perk and trait icon lock](references/approved-wick-trait-mind-without-fog.png)

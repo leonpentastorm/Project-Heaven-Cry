@@ -54,6 +54,10 @@ Wick trait and perk icons are both pure white; they never take a skill colour. S
 
 ## Updating the collection
 
+Wick production is delivered incrementally on `art/briefs-complete`. Seven round-2 fixes resolve through `art/traits/wick/test-set-1/revisions/`; later traits use `art/traits/wick/production-v1/` and perks use `art/perks/wick/production-v1/`. New masters include 44, 48 and 56 px exports alongside 256/128/64/40. Read `art/traits/wick/production-progress.json` for delivered IDs and current coverage; missing items are not silently reported complete. All new candidates retain `production_approved: false`. The source requirements are in `art/briefs/wick-production-icons.md`.
+
+`python3 scripts/validate_art.py --asset <catalog-id>` checks all metadata and checksums and checks pixel ink/alpha for the selected incremental delivery. The default checks every icon's pixels. Add `--complete-icons` only when all 74 traits and 76 perks have been delivered. `scripts/export_wick_icon.py` uses Pillow for technical white-ink separation, safe padding, exact-size exports and review layouts; it does not draw artwork.
+
 The [Wick tests](../art/traits/wick/test-set-1/README.md) bind to rules data through `data_id` (underscores), while catalog IDs use hyphens. Two perk icons live in the shared test folder but resolve through `catalog.perks`, not `catalog.traits`. All ten have `production_approved: false`; no icon production lock was inferred from generation.
 
 Use `catalog.characters.mpat` and `catalog.characters['mpat-comrade']` for the M813 cast. Use `catalog.illustrations.outpost813` for the opening. `catalog.illustrations['outpost1-repair-bay']` has `spoiler: true`, `visibility: "ending-only"` and a `spoilers/` path. Resolve it only after the ending; exclude it from opening galleries and preload lists. These flags are not security for publicly served files. See the [world collection](../art/illustrations/m813/v1/README.md).

@@ -1,5 +1,7 @@
 # Wick test set 1
 
+**Round 2 delivery:** the seven revised masters and real-size review sheets are in [`revisions/`](revisions/README.md). Catalog entries select those new files; the originals below are retained for comparison. Chain Smoker, The Brightest Light and Forlorn Hope remain unchanged.
+
 Ten new **review candidates**, generated from the ten actions in [the brief](../../../briefs/wick-test-icons.md) and the approved Mind Without Fog reference. Eight traits and two perks; all use pure white ink. These are not approved production anchors. The 150-icon production run has not started.
 
 ![128 px review](previews/review-128px.png)

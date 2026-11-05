@@ -2,6 +2,8 @@
 
 **Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
 
+**Leon's current delivery instruction, 5 November 2026:** fix the seven first and push them, then continue the full run, showing each newly drawn image in chat and pushing it immediately. This replaces the stop-between-batches timing below. It does not mark new images production-approved. The run needs 139 new icons plus seven revisions; the four existing approved designs are retained to complete 150 distinct items.
+
 **Attach to every job:** `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` (the only style anchor), the three approved test icons (Chain Smoker, The Brightest Light, Forlorn Hope) as quality references, and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Item texts are in `data/traits.json` and `data/perks.json`: read what the item **does** before drawing it.
 
 ## What the artist needs to do, in order
