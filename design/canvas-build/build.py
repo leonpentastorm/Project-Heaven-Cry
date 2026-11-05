@@ -4,6 +4,9 @@
 Usage: python3 design/canvas-build/build.py
 Data comes from data/*.json, docs/lore (origins) and the canvas blob map (blobs.json),
 so the prototype always shows the real skills, voices, archetypes, origins and traits.
+
+Publishing: on the canvas artifact the boards live under project/ (project/Create.dc.html,
+project/canvas.json, ...). A file published at the top level is not a board and never shows up.
 """
 import json, pathlib
 
