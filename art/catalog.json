@@ -2047,6 +2047,30 @@
         "44": "art/traits/wick/production-v1/exports/44/symbol-of-order.png",
         "40": "art/traits/wick/production-v1/exports/40/symbol-of-order.png"
       }
+    },
+    "rogue-element": {
+      "label": "Wick — Rogue Element",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/rogue-element.png",
+      "sha256": "32fe56d4124bb1d59ea8c336fee3152572e9a40759f38a7e6de1412feff145d9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "rogue_element",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/rogue-element.png",
+        "128": "art/traits/wick/production-v1/exports/128/rogue-element.png",
+        "64": "art/traits/wick/production-v1/exports/64/rogue-element.png",
+        "56": "art/traits/wick/production-v1/exports/56/rogue-element.png",
+        "48": "art/traits/wick/production-v1/exports/48/rogue-element.png",
+        "44": "art/traits/wick/production-v1/exports/44/rogue-element.png",
+        "40": "art/traits/wick/production-v1/exports/40/rogue-element.png"
+      }
     }
   },
   "character_collections": {

@@ -419,6 +419,29 @@
       },
       "batch": "A",
       "source_sha256": "48be62b8eefe5b65fe06cb713fbe6edef36315c7e551ea96b9086f1f23d8edae"
+    },
+    {
+      "id": "rogue-element",
+      "data_id": "rogue_element",
+      "name": "Rogue Element",
+      "family": "traits",
+      "order": 24,
+      "mood": "Comic",
+      "action": "Wick hangs from an oversized spanner it has wedged into the teeth of a huge cog, legs kicking, a cracked tooth flying off",
+      "screen": "Gleeful grin",
+      "prop": "Spanner jammed in a cog",
+      "path": "art/traits/wick/production-v1/rogue-element.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/rogue-element.png",
+        "128": "art/traits/wick/production-v1/exports/128/rogue-element.png",
+        "64": "art/traits/wick/production-v1/exports/64/rogue-element.png",
+        "56": "art/traits/wick/production-v1/exports/56/rogue-element.png",
+        "48": "art/traits/wick/production-v1/exports/48/rogue-element.png",
+        "44": "art/traits/wick/production-v1/exports/44/rogue-element.png",
+        "40": "art/traits/wick/production-v1/exports/40/rogue-element.png"
+      },
+      "batch": "A",
+      "source_sha256": "4d25543cf64f9f413da7ca79c90071d52ee58e4ce5b157a173691856f874c788"
     }
   ]
 }

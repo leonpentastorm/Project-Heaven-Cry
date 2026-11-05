@@ -34,10 +34,11 @@
     "heavyworlder",
     "born-performer",
     "ghost-soldier",
-    "symbol-of-order"
+    "symbol-of-order",
+    "rogue-element"
   ],
   "catalog_coverage": {
-    "traits": 27,
+    "traits": 28,
     "perks": 2
   },
   "revision_rounds": {
