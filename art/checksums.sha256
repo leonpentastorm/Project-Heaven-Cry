@@ -1,9 +1,9 @@
 60c9bdd905fcf45ac485c680d32e9773962cf061b6f041dcddd033911558a672  .gitignore
 0625236d0a822fc2bb1a65694f1d09d50f2c9312fe7dfea8b4a22e97227195e0  README.md
 6a3d7cda584eba6d5e0d8e7bf902be608316dfe71da982f115412569e6d1fcd3  art/AGENTS.md
-d757e312727d7c41df3a2ae4ca6bf789e64685e3f6bc1dbe6c911bf79d06fb08  art/README.md
+1573121090df22ee50c94a05018db806549a50d9e51f1b7825e77351f444cddd  art/README.md
 07ebf47ed1fe81c406d7a86a95318912d296c5683d8ad862c56a8bebb5e0aa39  art/briefs/m813-mpat.md
-00e241955c831a1a2077e02713be17e667122122c8f32c7f6b96662973a17c3f  art/briefs/wick-test-icons.md
+6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
 a01d3f79f7e83bceabcd0e5a16b47c939b6d7f5946259ac57073090200228ead  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
@@ -167,8 +167,8 @@ ea79ff6402b1ac01f425949662d4e6f21db821465c5b77a8f1deeba3471c82e4  art/style-guid
 a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guide/v1.2/references/original-mind-brain-power.png
 80c2bba532b91ee06d7564f7f890c88cb06e2ad013539e19e0047e0e6220c3d9  art/style-guide/v1.2/references/original-soul-authority.png
 01dfa53b9cd5b635b7f8dbc40fd2028e9373df09c1533b5dad22f7ed4042e35b  art/style-guide/v1.2/references/wick-model-study.png
-438b4aaa6733c3ec4cfb996d886a9b2276ac0cd5022f876f38d6f0e76e5ffc4a  art/style-guide/v1.3/CHANGELOG.md
-c45c12bcf8a27aceb931b2855c6ec4f10855ca807caf25d32fbe4eb73abdd3c0  art/style-guide/v1.3/PHC-Style-Guide.md
+db7bbae1ee55e0a632199ea409957d358f9336ba9527b11b371d48bd9b2b9336  art/style-guide/v1.3/CHANGELOG.md
+bdd490d9863c32b8bcd062ec42ef47792e05fa29387dbc58a44df8df53bff802  art/style-guide/v1.3/PHC-Style-Guide.md
 6defadaf604b2fd9d8928122be5097ef08e171e85631b1c62555efae08adabf7  art/style-guide/v1.3/palette.json
 4129df36029966a0d2bb876d5496c64f0bb9ad15be437843774e9188e60fd963  art/style-guide/v1.3/reference-index.json
 888759c80611ca5e859181576d5c458629c6bf862e017471c0acbf37fffaff29  art/style-guide/v1.3/references/approved-new-faces-27.jpg
@@ -187,7 +187,7 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-8e39510d403c856d67cb0874fbc18fb0c53b8ed4ff060efe24ba7cfc30ca1e06  art/traits/wick/test-set-1/README.md
+1e37883a9fd1b96c6d0ae462eced139639c86ebb189411262605b283dd735d0a  art/traits/wick/test-set-1/README.md
 bf9efba0b96b583029481b026f98b7fc0958f3128ef1e966cb80af3542b4662b  art/traits/wick/test-set-1/chain-smoker.png
 92a1a1685f84bf56e3d87b60ed122d7a273611e32837b41782b0c9a1bd000328  art/traits/wick/test-set-1/exports/128/chain-smoker.png
 0a4be44d3f3f855f22cfb7dc94059fbbf9274d9f2485cb38b4c2ac745df327b9  art/traits/wick/test-set-1/exports/128/factory-made.png
@@ -245,3 +245,4 @@ baeaf49173e6c5ee4d9cef9598139582c30b20cfe12eb3411debb9a33e97c5f3  art/traits/wic
 6e6f301c6ccd62041c64f728fbf375d498f26f54a9aaab52d5b49798c7489a3e  docs/ART-INTEGRATION.md
 7a6351db533018a4d8cab75559f28b55e9ac040dbc7c0d10d7c7101a8f822191  docs/ASSET-DIRECTORY.md
 7dc566d3d4109f89e5c40bd98434fd08420f6dd160291cc3a01e6fe2f285789f  scripts/validate_art.py
+049533fb48d460e13267be34a889d71e3b6f8116df9f08a0bbeda014c1f206a7  art/briefs/wick-production-icons.md

@@ -1,5 +1,7 @@
 # Version 1.3 — 5 November 2026
 
+- **Wick review 1 and production rules:** three test icons approved, six to revise, one redo. New binding rules for every trait and perk icon (no lettering, one full figure, a big single prop, an ink-weight range, checks at the UI's 44/48/56 px) in section 14. Production brief for all 74 traits and 76 perks: `art/briefs/wick-production-icons.md`.
+
 - **Brief delivery:** two M813 portraits, two world illustrations and ten Wick test candidates added in new collections. Exact-size exports, 40/128 px reviews, separate perk catalog entries, source hashes and ending-only metadata accompany them. Candidate status does not approve a new style anchor or start icon production. Approved artwork is unchanged.
 - **Perks are white.** Trait and perk icons both use pure white #FFFFFF flat ink. The v1.2 rule that mixed a perk's requirement colours into one ink is retired; mixed inks collided with real attribute colours (crimson + gold = Strength's orange). The UI shows requirements as labelled skill chips instead.
 - **Pigment vs UI ink.** The nine skill pigments are unchanged. Each attribute gains a `ui_ink`: the same hue, lightened only until it reaches 4.5:1 on the raised UI surface. Changed inks: Endurance #F65157, Expression #5394AC, Determination #9D7ADC, Virtue #D36A90. Pigments stay inside artwork.
