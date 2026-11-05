@@ -116,5 +116,5 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 1. **Tech plan:** proposed in `docs/design/tech-plan.md` (one deterministic TypeScript engine used by the browser and the room server; everything is an action; the event log is the save; the Narrator is a client of the engine with one tool per Narrator-owned job; BYOK in the host's browser; milestones M0–M7 to the M813 starter slice and then co-op). Waiting on Leon's decisions in its section 10.
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
-4. Settle the 51 open items in spec section 14 through playtests.
+4. Settle the 52 open items in spec section 14 through playtests.
 5. Lock the UI on the canvas (prototype v2, branch `ui-prototype-v2`; Leon comments, Claude fixes), then implement the real client from it.

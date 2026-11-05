@@ -1,0 +1,55 @@
+{
+  "$schema_version": "1.0",
+  "kind": "enemies",
+  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52)",
+  "items": [
+    {
+      "id": "minion",
+      "name": "Minion",
+      "hp": 30,
+      "defense": 10,
+      "attack_bonus": 1,
+      "armour": 0,
+      "movement": 1.5,
+      "ap": 6,
+      "kills": 1,
+      "provisional": true
+    },
+    {
+      "id": "soldier",
+      "name": "Soldier",
+      "hp": 60,
+      "defense": 12,
+      "attack_bonus": 3,
+      "armour": 5,
+      "movement": 1.5,
+      "ap": 6,
+      "kills": 1,
+      "provisional": true
+    },
+    {
+      "id": "elite",
+      "name": "Elite",
+      "hp": 100,
+      "defense": 13,
+      "attack_bonus": 5,
+      "armour": 10,
+      "movement": 2,
+      "ap": 6,
+      "kills": 1,
+      "provisional": true
+    },
+    {
+      "id": "boss",
+      "name": "Boss",
+      "hp": 200,
+      "defense": 14,
+      "attack_bonus": 6,
+      "armour": 10,
+      "movement": 2,
+      "ap": 6,
+      "kills": 3,
+      "provisional": true
+    }
+  ]
+}

@@ -10,12 +10,14 @@ project/canvas.json, ...). A file published at the top level is not a board and 
 Images must be canvas uploads (upload_asset -> /_blob/<id>, mapped in blobs.json); a PNG published as a
 file under project/ does not load in the boards.
 """
-import json, pathlib
+import json, pathlib, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "design" / "canvas"
 BUILD = ROOT / "design" / "canvas-build"
-BLOBS = json.loads((BUILD / "blobs.json").read_text())
+# --web: build the same screen data for the web game (apps/web), with its own image URLs (tools/build_web_assets.py).
+WEB = "--web" in sys.argv
+BLOBS = json.loads(((ROOT / "apps/web/src/game/assets.json") if WEB else (BUILD / "blobs.json")).read_text())
 PAL = json.loads((ROOT / "art/style-guide/v1.3/palette.json").read_text())
 
 def load(name):
@@ -293,5 +295,19 @@ def build():
     print("built UltimateAward")
 
 
+def build_web():
+    """Screen data for the web game: what each prototype board's logic reads as D, with the app's image URLs."""
+    out = {
+        "skills": skills(), "attrs": attrs(), "classes": classes(), "classesFull": classes_full(), "arch": archetypes(), "origins": origins(),
+        "traits": traits(), "portraits": PORTRAITS, "kits": KITS, "core": CORE, "coreText": CORE_TEXT, "wm": weapon_mastery(),
+        "ults": ultimates(), "big": BIG, "img": {k: BLOBS[k] for k in ("wick-mind-without-fog", "wick-welcome", "emblem-ahoc-seal", "world-outpost813",
+                 "world-pilot", "wick-narrator-placeholder", "char-mpat", "char-drava-keel", "char-inspectant-latch-7", "wick-trait-factory-made")},
+        "helmetCss": HELMET.split("<style>")[1].split("</style>")[0],
+    }
+    dst = ROOT / "apps/web/src/game/protodata.json"
+    dst.write_text(json.dumps(out, ensure_ascii=False) + "\n")
+    print("built", dst.relative_to(ROOT), round(dst.stat().st_size / 1024), "KB")
+
+
 if __name__ == "__main__":
-    build()
+    build_web() if WEB else build()

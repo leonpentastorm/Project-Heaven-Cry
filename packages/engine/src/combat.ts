@@ -1,0 +1,286 @@
+// Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
+import { type Character, ARMOUR, critMult, defense, healingMult, initiativeBonus, maxHp, mod, movement, physicalMult } from './character';
+import { type Rng, d20, die } from './rng';
+
+export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
+
+/** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
+export const MAPS: Record<string, MapDef> = {
+  rear_pad: {
+    id: 'rear_pad', name: 'Outpost-813 rear landing pad', w: 16, h: 11,
+    solid: (() => { const s: string[] = []; for (let x = 13; x < 16; x++) for (let y = 0; y < 6; y++) s.push(x + ',' + y); return s; })(),
+    cover: ['11,2', '11,3', '11,4', '10,6'],
+    difficult: ['1,9', '2,9', '3,9', '4,9', '6,9', '7,9', '1,10', '3,10', '5,10', '8,10'],
+    pcStart: ['3,6', '2,8', '5,8', '2,5', '4,7', '3,4'], foeStart: ['12,3', '12,6', '12,1', '11,7', '12,8', '10,1', '9,4'],
+  },
+  yard: {
+    id: 'yard', name: 'Open ground', w: 16, h: 11, solid: [],
+    cover: ['5,3', '5,4', '10,6', '10,7', '7,1', '8,9'], difficult: ['7,5', '8,5', '7,6'],
+    pcStart: ['1,4', '1,6', '2,5', '1,8', '2,2', '1,2'], foeStart: ['14,5', '14,3', '14,7', '13,4', '13,6', '15,5', '13,9'],
+  },
+};
+
+export interface Unit {
+  id: string; side: 'pc' | 'foe'; name: string; short: string; charId?: string; img?: string; tier?: string;
+  pos: string; hp: number; maxHp: number; def: number; armour: number; attack: number; weapon: string; movement: number; init: number; agility: number;
+  ap: number; bank: number; ammo: number; heat: number; jammed: boolean; shotsThisTurn: number;
+  downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
+}
+export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string }
+
+export const key = (x: number, y: number) => x + ',' + y;
+export const xy = (k: string) => k.split(',').map(Number) as [number, number];
+export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
+
+export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
+  const w = WEAPON[c.weapon] || WEAPON.service_pistol;
+  return {
+    id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait,
+    pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: ARMOUR[c.armourClass]?.value || 0, attack: mod(c.skills[w.skill] || 0), weapon: w.id,
+    movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
+    downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
+  };
+}
+
+export function unitFromEnemy(id: string, name: string, tierId: string, weaponId: string, pos: string, rng: Rng): Unit {
+  const t = ENEMY[tierId] || ENEMY.minion, w = WEAPON[weaponId] || WEAPON.service_pistol;
+  return {
+    id, side: 'foe', name, short: name.split(/\s+/).map((x) => x[0]).join('').slice(0, 2).toUpperCase() || 'EN', tier: t.id,
+    pos, hp: t.hp, maxHp: t.hp, def: t.defense, armour: t.armour, attack: t.attack_bonus, weapon: w.id, movement: t.movement,
+    init: d20(rng) + t.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
+    downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
+  };
+}
+
+export const alive = (u: Unit) => !u.dead && !u.downed;
+export const active = (cb: Combat) => cb.units.find((u) => u.id === cb.order[cb.turn]);
+
+// ---------- movement (spec: Moving; port of the prototype's paths()) ----------
+export function paths(cb: Combat, from: string, self: string) {
+  const { w, h } = cb.map, solid = new Set([...cb.map.solid, ...cb.map.cover]), diff = new Set(cb.map.difficult);
+  const blocked = new Set(cb.units.filter((u) => u.id !== self && !u.dead).map((u) => u.pos));
+  const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
+  while (open.length) {
+    open.sort((a, b) => d[a] - d[b]);
+    const k = open.shift()!, [x, y] = xy(k);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      if (!dx && !dy) continue;
+      const nx = x + dx, ny = y + dy, n = key(nx, ny);
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h || solid.has(n) || blocked.has(n)) continue;
+      const nd = d[k] + (diff.has(n) ? 2 : 1) + (dx && dy ? 0.001 : 0);
+      if (d[n] === undefined || nd < d[n] - 1e-9) { d[n] = nd; prev[n] = k; open.push(n); }
+    }
+  }
+  for (const k of Object.keys(d)) d[k] = Math.round(d[k]);
+  return { dist: d, prev };
+}
+/** Moving N tiles costs N ÷ Movement AP, rounded up, after tiles already paid for this turn. */
+export const apForTiles = (tiles: number, bank: number, mov: number) => Math.ceil(Math.max(0, tiles - bank) / mov - 1e-9);
+
+// ---------- line of sight and cover ----------
+export function lineOfSight(cb: Combat, a: string, b: string): boolean {
+  const solid = new Set([...cb.map.solid, ...cb.map.cover]);
+  let [x0, y0] = xy(a); const [x1, y1] = xy(b);
+  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  while (!(x0 === x1 && y0 === y1)) {
+    const e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x0 += sx; }
+    if (e2 <= dx) { err += dx; y0 += sy; }
+    const k = key(x0, y0);
+    if (k !== b && solid.has(k)) return false;
+  }
+  return true;
+}
+/** Half cover (+2 Defense) when a cover tile next to the target sits between it and the attacker. */
+export function coverBonus(cb: Combat, from: string, to: string): number {
+  const [tx, ty] = xy(to);
+  for (const c of cb.map.cover) {
+    const [cx, cy] = xy(c);
+    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return 2;
+  }
+  return 0;
+}
+
+// ---------- attacks ----------
+export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
+export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
+  typeof w.damage === 'number' ? w.damage : w.damage?.within_4 ? (range <= 4 ? w.damage.within_4 : w.damage.within_8) : w.id === 'recurve_bow' ? 20 + 5 * rawPower : 20;
+export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
+export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
+
+export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; rangePenalty: number }
+export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | 'aimed' | 'melee'): AttackPreview {
+  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
+  const ap = attackApCost(useW, mode);
+  const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
+  if (!alive(tgt) && !tgt.downed) return fail('Target is out of the fight.');
+  if (att.ap < ap) return fail('Needs ' + ap + ' AP.');
+  const r = dist(att.pos, tgt.pos);
+  if (melee && r > (useW.properties?.includes('reach_2') || useW.id === 'lance' ? 2 : 1)) return fail('Out of melee reach.');
+  if (!melee && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
+  if (!melee && w.magazine != null && att.ammo <= 0) return fail('Empty: reload (2 AP).');
+  if (!melee && !lineOfSight(cb, att.pos, tgt.pos)) return fail('No line of sight.');
+  const eff = effectiveRange(useW), bands = melee ? 0 : Math.max(0, Math.ceil(r / eff) - 1);
+  if (bands > 2) return fail('Out of range.');
+  const cover = melee ? 0 : coverBonus(cb, att.pos, tgt.pos);
+  const rangePenalty = -2 * bands;
+  const heat = melee ? 0 : -Math.floor(att.heat / 2);
+  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + (tgt.downed ? 2 : 0);
+  const need = tgt.def + cover - toHit;
+  const pct = Math.max(5, Math.min(95, (21 - need) * 5));
+  return { ok: true, ap, toHit, need: tgt.def + cover, pct, cover, rangePenalty };
+}
+
+export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean }
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 'shot' | 'aimed' | 'melee', who: Character | null): AttackResult {
+  const pv = previewAttack(cb, att, tgt, mode);
+  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
+  att.ap -= pv.ap;
+  const roll = d20(rng), total = roll + pv.toHit;
+  const crit = roll === 20 || (mode === 'aimed' && roll >= 19), fumble = roll === 1;
+  const hit = !fumble && (crit || total >= pv.need);
+  if (!melee) {
+    if (w.magazine != null) att.ammo = Math.max(0, att.ammo - 1);
+    att.heat += 1; att.shotsThisTurn++;
+    if (fumble || (w.heat_limit && att.heat >= w.heat_limit)) att.jammed = true;
+  } else if (fumble) att.stunnedNext = 1;
+  let damage = 0, killed = false;
+  if (hit) {
+    const base = weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0);
+    let dmg = base * (who ? physicalMult(who) : 1);
+    if (crit) dmg *= who ? critMult(who) : 2;
+    damage = Math.max(1, Math.floor(dmg) - (useW.properties?.includes('ignores_10_armour') ? Math.max(0, tgt.armour - 10) : tgt.armour));
+    if (tgt.downed) { tgt.saves.fail += crit ? 2 : 1; if (tgt.saves.fail >= 3) { tgt.dead = true; killed = true; } }
+    else {
+      tgt.hp = Math.max(0, tgt.hp - damage);
+      if (tgt.hp === 0) { if (tgt.side === 'foe') { tgt.dead = true; } else { tgt.downed = true; } killed = true; }
+    }
+    if (killed) att.kills += tgt.tier === 'boss' ? 3 : 1;
+  }
+  const verb = melee ? 'strikes' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
+  const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + ' = ' + total + ' vs ' + pv.need +
+    (fumble ? (melee ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') : ' · miss');
+  cb.log.push(line);
+  return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
+}
+
+// ---------- turns ----------
+export function startCombat(name: string, mapId: string, pcs: { c: Character }[], foes: { name: string; tier: string; weapon: string }[], difficulty: string, rng: Rng): Combat {
+  const map = MAPS[mapId] || MAPS.rear_pad;
+  const units: Unit[] = [];
+  pcs.forEach(({ c }, i) => units.push(unitFromCharacter(c, map.pcStart[i % map.pcStart.length], rng)));
+  foes.slice(0, map.foeStart.length).forEach((f, i) => units.push(unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, map.foeStart[i], rng)));
+  const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
+  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null };
+  beginTurn(cb, rng);
+  return cb;
+}
+
+/** Start the active unit's turn: AP, heat cooldown, Downed death saves (spec: Downed and dying). */
+export function beginTurn(cb: Combat, rng: Rng) {
+  const u = active(cb);
+  if (!u) return;
+  u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0)));
+  u.stunnedNext = 0; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  if (u.downed && !u.dead) {
+    const r = d20(rng);
+    if (r >= 10) u.saves.ok++; else u.saves.fail++;
+    cb.log.push(u.name + ' is Downed: death save d20 ' + r + (r >= 10 ? ' · success (' + u.saves.ok + '/3)' : ' · failure (' + u.saves.fail + '/3)'));
+    if (u.saves.ok >= 3) { u.downed = false; u.hp = 1; u.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stabilises at 1 HP.'); }
+    else if (u.saves.fail >= 3) { u.dead = true; cb.log.push(u.name + ' dies.'); }
+    u.ap = 0;
+  }
+}
+
+export function checkOver(cb: Combat) {
+  const foes = cb.units.filter((u) => u.side === 'foe'), pcs = cb.units.filter((u) => u.side === 'pc');
+  if (foes.every((u) => u.dead || u.downed)) cb.over = 'win';
+  else if (pcs.every((u) => u.dead || u.downed)) cb.over = 'loss';
+  return cb.over;
+}
+
+/** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). */
+export function endTurn(cb: Combat, rng: Rng) {
+  if (checkOver(cb)) return;
+  for (let guard = 0; guard < cb.units.length * 2; guard++) {
+    cb.turn++;
+    if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; }
+    const u = active(cb)!;
+    if (u.dead || (u.side === 'foe' && u.downed)) continue;
+    beginTurn(cb, rng);
+    if (u.dead || (u.downed && u.side === 'pc')) { checkOver(cb); if (cb.over) return; continue; }
+    return;
+  }
+}
+
+export function moveUnit(cb: Combat, u: Unit, to: string): string | null {
+  if (u.downed || u.dead) return 'Downed units can\'t move.';
+  const P = paths(cb, u.pos, u.id);
+  const tiles = P.dist[to];
+  if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
+  const ap = apForTiles(tiles, u.bank, u.movement);
+  if (ap > u.ap) return 'Needs ' + ap + ' AP.';
+  u.ap -= ap; u.bank = u.bank + ap * u.movement - tiles; u.pos = to;
+  cb.log.push(u.name + ' moves ' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ' for ' + ap + ' AP.');
+  return null;
+}
+
+export function reload(cb: Combat, u: Unit): string | null {
+  const w = WEAPON[u.weapon];
+  if (w.magazine == null) return 'Nothing to reload.';
+  if (u.ap < 2) return 'Needs 2 AP.';
+  u.ap -= 2; u.ammo = w.magazine; u.jammed = false;
+  cb.log.push(u.name + ' reloads.');
+  return null;
+}
+export function clearJam(cb: Combat, u: Unit): string | null {
+  if (!u.jammed) return 'Not jammed.';
+  if (u.ap < 2) return 'Needs 2 AP.';
+  u.ap -= 2; u.jammed = false; u.heat = 0;
+  cb.log.push(u.name + ' clears the jam.');
+  return null;
+}
+/** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others). Else heal 30 × Healing given. */
+export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
+  if (who.stims <= 0) return 'No stims left.';
+  if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
+  if (t.dead) return 'Too late.';
+  const cost = t.downed ? (isMedic ? 1 : 2) : 1;
+  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  u.ap -= cost; who.stims--;
+  if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); }
+  else { const heal = Math.floor(30 * healingMult(who)); t.hp = Math.min(t.maxHp, t.hp + heal); cb.log.push(u.name + ' stims ' + t.name + ': +' + heal + ' HP.'); }
+  return null;
+}
+
+/** Enemy turn: shoot the most hurt PC in sight and range; otherwise close in. Deterministic given the RNG. */
+export function enemyTurn(cb: Combat, rng: Rng) {
+  const u = active(cb)!;
+  for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
+    if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
+    const w = WEAPON[u.weapon];
+    if (w.magazine != null && u.ammo <= 0 && u.ap >= 2) { reload(cb, u); continue; }
+    const targets = cb.units.filter((t) => t.side === 'pc' && !t.dead)
+      .map((t) => ({ t, pv: previewAttack(cb, u, t, isMelee(w) ? 'melee' : 'shot') }))
+      .filter((x) => x.pv.ok)
+      .sort((a, b) => (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
+    if (targets.length) { resolveAttack(cb, rng, u, targets[0].t, isMelee(w) ? 'melee' : 'shot', null); checkOver(cb); continue; }
+    // close in: the reachable tile that is nearest a living PC and has line of sight to one
+    const P = paths(cb, u.pos, u.id), pcs = cb.units.filter((t) => t.side === 'pc' && !t.dead);
+    if (!pcs.length) break;
+    let best: string | null = null, bestScore = Infinity;
+    for (const [k, tiles] of Object.entries(P.dist)) {
+      if (k === u.pos || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+      const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
+      const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= effectiveRange(w));
+      const score = (sees ? 0 : 100) + near + tiles * 0.1;
+      if (score < bestScore) { bestScore = score; best = k; }
+    }
+    if (!best || moveUnit(cb, u, best)) break;
+  }
+}
+
+export const combatXp = (cb: Combat) => COMBAT_XP[cb.difficulty] || 50;
+export const die6 = (rng: Rng) => die(rng, 6);

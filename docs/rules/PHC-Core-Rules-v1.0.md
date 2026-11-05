@@ -318,6 +318,17 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Every death releases bots.** When any person or beast dies, the ambient mana meter rises (see Mana).
 
+**Enemy stat blocks** (enemies.json, provisional). Hostiles that aren't full characters use one of four tiers. The Narrator picks the tier, a name and a weapon from weapons.json when it starts a fight; the engine runs them.
+
+| Tier | HP | Defense | Attack bonus | Armour | Movement (tiles per AP) |
+|---|---|---|---|---|---|
+| Minion | 30 | 10 | +1 | 0 | 1.5 |
+| Soldier | 60 | 12 | +3 | 5 | 1.5 |
+| Elite | 100 | 13 | +5 | 10 | 2 |
+| Boss | 200 | 14 | +6 | 10 | 2 |
+
+Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery.
+
 ## Weapons
 
 **Guns.**
@@ -568,6 +579,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
 | traits.json | 74 | Upsides, downsides, excludes, Narrator hooks |
 | archetypes.json | 46 | Creation presets (guidance only): role, blurb, 10-point skill preset, all attributes and cores (every creation point spent), class leans |
+| enemies.json | 4 | Enemy stat tiers for hostiles that aren't full characters (provisional) |
 | perks.json | 106 | 54 Acquired, 27 Mastered, 19 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons, each with its mastery family |
@@ -654,3 +666,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 49. **A perk step at every Mastery level, and 27 Mastered perks** (Leon). Replaces Tier I at 3 / Tier II or second perk at 7 / both Tier II at 10. A skill at 5 points now holds two steps (Tier II can arrive at 5, two points earlier), and a 7/3 creation spread holds 4 steps instead of 3. The Mastered perks' numbers are all new: check Last Wall, Earthbreaker, Nothing Gets Past, Judgement Day and On My Mark against the AP ceiling and the action economy first.
 50. **Rival's Neck and Neck** (Leon: rivals help each other grow): 50 XP (tagged `bond`) when your rival reaches a new level, and +10% XP from every source but Essence while your rival is a higher level; both ways. Check that two rivals don't pull ahead of the rest of the squad.
 51. **Combo perks at Mastery 2** (Leon: combos are for high levels in 2–3 skills): 5 points in every listed skill, up from 3, now that each Mastery level also gives a perk step. A two-skill combo costs 10 points, a three-skill one 15. Plus three new combos so every skill is in one: Bite the Bullet (Guts + Pain Threshold), Sixth Sense (Sensory + Vigilant), What Could Be (Visualization + Conscience).
+52. **Enemy stat tiers** (Minion, Soldier, Elite, Boss): HP 30/60/100/200, Defense 10/12/13/14, attack +1/+3/+5/+6, armour 0/5/10/10. Written for the first playable build; tune from playtest fights.
