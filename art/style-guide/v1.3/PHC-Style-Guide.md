@@ -384,7 +384,7 @@ This lock applies to perk and trait icons; it does not change the two approved p
 Review 1 (5 November 2026) approved Chain Smoker, The Brightest Light and Forlorn Hope, asked for six revisions and one redo (Raised by Orks). Verdicts: `art/traits/wick/test-set-1/README.md`. Production follows `art/briefs/wick-production-icons.md`. These rules now bind every trait and perk icon:
 
 1. **No lettering, numbers or readable text** inside an icon. Symbols only (a crossed-out shape, an arrow, a tally).
-2. **One full figure: Wick.** Anyone else appears only as a partial (a hand, a leg, a shadow) or as tiny Wick silhouettes. Never skull-and-crossbones as a stand-in for people.
+2. **One full figure: Wick.** Anyone else appears only as a partial (a hand, a leg, a shadow) or as tiny Wick silhouettes. Never skull-and-crossbones as a stand-in for people. **Leon’s explicit exception (5 November 2026): Sworn Sibling v3 uses two full Wicks facing inward and sharing an oath toast, following his supplied two-person pose reference.**
 3. **One dominant prop, big:** roughly a third of the frame, held close so Wick and prop read as one silhouette.
 4. **Ink weight** between The Old Blood (lightest acceptable) and The Brightest Light (heaviest acceptable).
 5. **Check at the UI's real sizes:** 44, 48 and 56 px on `#10151F`, plus 40 px. The UI zooms icons ×1.35 on hover; the resting size is the one that must read.

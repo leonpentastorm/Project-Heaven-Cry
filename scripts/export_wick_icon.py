@@ -110,13 +110,14 @@ def export(args):
     revision_folder = 'art/traits/wick/test-set-1/revisions' + (f'/round-{args.round}' if args.round > 2 else '')
     folder = ROOT / (revision_folder if args.revision
                      else f'art/{family}/wick/production-v1')
-    path = folder / f'{job["id"]}.png'
+    version_folder = folder / f'revisions/v{args.production_revision}' if args.production_revision else folder
+    path = version_folder / f'{job["id"]}.png'
     path.parent.mkdir(parents=True, exist_ok=True)
     im = master(args.source)
     im.save(path)
     exports = {}
     for size in SIZES:
-        target = folder / f'exports/{size}/{job["id"]}.png'
+        target = version_folder / f'exports/{size}/{job["id"]}.png'
         target.parent.mkdir(parents=True, exist_ok=True)
         small = im.resize((size, size), Image.Resampling.LANCZOS)
         white = Image.new('RGBA', small.size, (255, 255, 255, 0))
@@ -135,6 +136,13 @@ def export(args):
         if args.round > 2:
             asset['previous_revision_path'] = (previous.get('previous_revision_path')
                 if previous['path'] == relative(path) else previous['path'])
+    elif args.production_revision:
+        if previous is None:
+            raise ValueError('A production revision requires an existing icon')
+        asset['revision'] = args.production_revision
+        asset['previous_path'] = previous.get('previous_path', previous['path'])
+        if previous['path'] != relative(path):
+            asset['previous_revision_path'] = previous['path']
     catalog[family][job['id']] = asset
     dump(ROOT / 'art/catalog.json', catalog)
     manifest_path = folder / 'manifest.json'
@@ -145,9 +153,18 @@ def export(args):
         'icons': []}
     entry = {k: job[k] for k in ('id', 'data_id', 'name', 'family', 'order', 'mood', 'action', 'screen', 'prop')}
     entry.update(path=relative(path), exports=exports, batch=asset['batch'], source_sha256=sha(args.source))
+    if job.get('user_override'):
+        asset['user_override'] = entry['user_override'] = job['user_override']
+        catalog[family][job['id']] = asset
+        dump(ROOT / 'art/catalog.json', catalog)
     if args.revision:
         entry['previous_path'] = asset['previous_path']
         entry['revision'] = args.round
+        if 'previous_revision_path' in asset:
+            entry['previous_revision_path'] = asset['previous_revision_path']
+    elif args.production_revision:
+        entry['revision'] = args.production_revision
+        entry['previous_path'] = asset['previous_path']
         if 'previous_revision_path' in asset:
             entry['previous_revision_path'] = asset['previous_revision_path']
     manifest['icons'] = [i for i in manifest['icons'] if i['id'] != job['id']] + [entry]
@@ -169,7 +186,10 @@ def export(args):
         progress[key].append(job['id'])
     if args.revision:
         progress.setdefault('revision_rounds', {})[job['id']] = args.round
+    elif args.production_revision:
+        progress.setdefault('production_revisions', {})[job['id']] = args.production_revision
     progress['catalog_coverage'] = {family: len(catalog[family]) for family in ('traits', 'perks')}
+    progress.pop('generation_pause', None)
     dump(PROGRESS, progress)
     update_checksums()
     print(json.dumps({'id': job['id'], 'family': family, 'path': relative(path), 'preview': str(preview),
@@ -183,4 +203,5 @@ if __name__ == '__main__':
     parser.add_argument('--queue', type=Path, required=True)
     parser.add_argument('--revision', action='store_true')
     parser.add_argument('--round', type=int, default=2, help='Revision round; later rounds preserve earlier files.')
+    parser.add_argument('--production-revision', type=int, default=0, help='Version an existing production icon without replacing earlier files.')
     export(parser.parse_args())

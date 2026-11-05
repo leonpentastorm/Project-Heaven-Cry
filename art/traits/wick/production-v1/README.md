@@ -25,3 +25,7 @@ Reviewed by Claude for Leon on 128 px and actual 44 px sheets of every delivered
 **Silhouettes:** most of the run is standing or striding, three-quarter view, prop on the viewer's right. Still inside the brief's limit, but the remaining 14 traits and the perks should lean on seated, lying, crouched, upside-down and from-behind poses, and put the prop on the left now and then.
 
 Keep `production_approved: false` on all 51 until Leon signs off.
+
+## Sworn Sibling — Leon’s reference revision
+
+Version 3 uses two full Wick figures facing inward and raising oath cups, following Leon’s supplied two-person reference for composition and gesture. His explicit request overrides the default one-full-figure rule for this icon. The rope-bound version 2 and original remain preserved; the catalog selects [version 3](revisions/v3/sworn-sibling.png).
