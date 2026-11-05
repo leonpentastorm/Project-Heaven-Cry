@@ -62,10 +62,11 @@
     "squad-anchor",
     "born-officer",
     "cold-case",
-    "interrogator"
+    "interrogator",
+    "trench-poet"
   ],
   "catalog_coverage": {
-    "traits": 55,
+    "traits": 56,
     "perks": 2
   },
   "revision_rounds": {

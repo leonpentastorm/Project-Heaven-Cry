@@ -2719,6 +2719,30 @@
         "44": "art/traits/wick/production-v1/exports/44/interrogator.png",
         "40": "art/traits/wick/production-v1/exports/40/interrogator.png"
       }
+    },
+    "trench-poet": {
+      "label": "Wick — Trench Poet",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/trench-poet.png",
+      "sha256": "a4f05c4eb5143842c45dcecbda21fb6d25460882757d054f27e86094b814efcc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "trench_poet",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/trench-poet.png",
+        "128": "art/traits/wick/production-v1/exports/128/trench-poet.png",
+        "64": "art/traits/wick/production-v1/exports/64/trench-poet.png",
+        "56": "art/traits/wick/production-v1/exports/56/trench-poet.png",
+        "48": "art/traits/wick/production-v1/exports/48/trench-poet.png",
+        "44": "art/traits/wick/production-v1/exports/44/trench-poet.png",
+        "40": "art/traits/wick/production-v1/exports/40/trench-poet.png"
+      }
     }
   },
   "character_collections": {

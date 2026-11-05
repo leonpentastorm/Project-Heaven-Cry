@@ -1063,6 +1063,29 @@
       },
       "batch": "C",
       "source_sha256": "252a807e4041a0050a94057a4df60395b72150ad03c19893f1dce2d0c635cbe8"
+    },
+    {
+      "id": "trench-poet",
+      "data_id": "trench_poet",
+      "name": "Trench Poet",
+      "family": "traits",
+      "order": 56,
+      "mood": "Tender, Comic",
+      "action": "Wick sits on a trench sandbag in a tin helmet, legs dangling, one arm raised, its big speech bubble holding only a drooping flower",
+      "screen": "Soulful closed eyes",
+      "prop": "Speech bubble with a flower",
+      "path": "art/traits/wick/production-v1/trench-poet.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/trench-poet.png",
+        "128": "art/traits/wick/production-v1/exports/128/trench-poet.png",
+        "64": "art/traits/wick/production-v1/exports/64/trench-poet.png",
+        "56": "art/traits/wick/production-v1/exports/56/trench-poet.png",
+        "48": "art/traits/wick/production-v1/exports/48/trench-poet.png",
+        "44": "art/traits/wick/production-v1/exports/44/trench-poet.png",
+        "40": "art/traits/wick/production-v1/exports/40/trench-poet.png"
+      },
+      "batch": "C",
+      "source_sha256": "33c789846085afd9abb25da865dbb490a387a69abb4ff044a1445b6d92c4c9b4"
     }
   ]
 }
