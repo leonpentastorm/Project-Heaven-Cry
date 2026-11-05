@@ -3971,6 +3971,30 @@
         "44": "art/perks/wick/production-v1/exports/44/overruled.png",
         "40": "art/perks/wick/production-v1/exports/40/overruled.png"
       }
+    },
+    "burden-of-proof": {
+      "label": "Wick — Burden of Proof",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/burden-of-proof.png",
+      "sha256": "3ddae6b09d2c6a3a650ef861a5e54bcf1368b47603b6fde8582c19bd05962369",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "burden_of_proof",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/burden-of-proof.png",
+        "128": "art/perks/wick/production-v1/exports/128/burden-of-proof.png",
+        "64": "art/perks/wick/production-v1/exports/64/burden-of-proof.png",
+        "56": "art/perks/wick/production-v1/exports/56/burden-of-proof.png",
+        "48": "art/perks/wick/production-v1/exports/48/burden-of-proof.png",
+        "44": "art/perks/wick/production-v1/exports/44/burden-of-proof.png",
+        "40": "art/perks/wick/production-v1/exports/40/burden-of-proof.png"
+      }
     }
   },
   "illustrations": {

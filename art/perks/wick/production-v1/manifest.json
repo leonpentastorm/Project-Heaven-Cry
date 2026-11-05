@@ -672,6 +672,29 @@
       },
       "batch": "E",
       "source_sha256": "a179cdfe8ab1665d00600a17e8dd30e48dd046765b6cb6e7e0d8f84780b19041"
+    },
+    {
+      "id": "burden-of-proof",
+      "data_id": "burden_of_proof",
+      "name": "Burden of Proof",
+      "family": "perks",
+      "order": 30,
+      "mood": "Comic",
+      "action": "Wick holds an empty box upside down at arm's length and shakes it; nothing falls out but a single dust puff.",
+      "screen": "One raised brow, flat mouth",
+      "prop": "Empty box",
+      "path": "art/perks/wick/production-v1/burden-of-proof.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/burden-of-proof.png",
+        "128": "art/perks/wick/production-v1/exports/128/burden-of-proof.png",
+        "64": "art/perks/wick/production-v1/exports/64/burden-of-proof.png",
+        "56": "art/perks/wick/production-v1/exports/56/burden-of-proof.png",
+        "48": "art/perks/wick/production-v1/exports/48/burden-of-proof.png",
+        "44": "art/perks/wick/production-v1/exports/44/burden-of-proof.png",
+        "40": "art/perks/wick/production-v1/exports/40/burden-of-proof.png"
+      },
+      "batch": "E",
+      "source_sha256": "c858b74abc5afa828bfa031449160213aa919c94d54edab2e4d52047a8a678ba"
     }
   ]
 }

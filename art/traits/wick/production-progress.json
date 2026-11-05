@@ -110,11 +110,12 @@
     "parallel-thought",
     "footnote",
     "lab-coat",
-    "overruled"
+    "overruled",
+    "burden-of-proof"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 31
+    "perks": 32
   },
   "revision_rounds": {
     "field-surgeon": 3,
