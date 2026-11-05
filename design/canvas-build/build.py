@@ -102,11 +102,13 @@ def traits():
             "flavour": t["text"].split("\n")[0],
             "up": t.get("upsides", []), "down": t.get("downsides", []),
             "ex": t.get("excludes", []) or [],
+            "icon": BLOBS.get("wick-trait-" + t["id"].replace("_", "-"), BLOBS["wick-mind-without-fog"]),
         })
     return out
 
 PORTRAITS = [
-    {"id": "mallow-3", "label": "Automaton (stand-in for MPAT)", "img": BLOBS["char-mallow-3"]},
+    {"id": "mpat", "label": "MPAT", "img": BLOBS["char-mpat"]},
+    {"id": "mallow-3", "label": "Automaton", "img": BLOBS["char-mallow-3"]},
     {"id": "drava-keel", "label": "Drava Keel", "img": BLOBS["char-drava-keel"]},
     {"id": "ilyen-taal", "label": "Ilyen Taal", "img": BLOBS["char-ilyen-taal"]},
     {"id": "ketta-flint", "label": "Ketta Flint", "img": BLOBS["char-ketta-flint"]},
@@ -132,6 +134,7 @@ a{{color:#8BDEEE}}a:hover{{color:#E7EBF3}}
 input,select,textarea{{font-family:'Chakra Petch',sans-serif}}
 @keyframes phcThrow{{0%{{transform:translate(-220px,140px) rotate(-540deg) scale(.55);opacity:0}}55%{{transform:translate(40px,-30px) rotate(40deg) scale(1.05);opacity:1}}75%{{transform:translate(-12px,8px) rotate(-14deg)}}100%{{transform:translate(0,0) rotate(0) scale(1)}}}}
 @keyframes phcThrow2{{0%{{transform:translate(220px,140px) rotate(540deg) scale(.55);opacity:0}}55%{{transform:translate(-40px,-30px) rotate(-40deg) scale(1.05);opacity:1}}75%{{transform:translate(12px,8px) rotate(14deg)}}100%{{transform:translate(0,0) rotate(0) scale(1)}}}}
+.phc-help{{opacity:.3;transition:opacity .15s}}.phc-card:hover .phc-help,.phc-help:hover,.phc-help:focus-visible{{opacity:1}}
 @media (prefers-reduced-motion: reduce){{*{{animation:none!important}}}}
 </style>
 </helmet>"""
@@ -181,18 +184,18 @@ def build():
         ("CreateSkills.dc.html", "PHC · Creation · skills", "skills", "field_medic", "MPAT", 1500),
         ("CreateTraits.dc.html", "PHC · Creation · traits", "traits", "field_medic", "MPAT", 1400),
         ("CreateKit.dc.html", "PHC · Creation · kit", "kit", "field_medic", "MPAT", 900),
-        ("CreateLockIn.dc.html", "PHC · Creation · lock in", "lockin", "field_medic", "MPAT", 1000),
+        ("CreateLockIn.dc.html", "PHC · Creation · lock in", "lockin", "field_medic", "MPAT", 1900),
     ]:
         (OUT / fname).write_text(wrapper(title, step, arch, name, h))
     print("built Create + 5 step artboards")
-    mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
-             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery()}
+    mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mpat"], "p2": BLOBS["char-inspectant-latch-7"],
+             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "outpost": BLOBS["world-outpost813"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery(), "factoryIcon": BLOBS["wick-trait-factory-made"]}
     tpl, js = with_epccg((BUILD / "main.template.html").read_text(),
                          (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False)))
     (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))
     print("built Main")
-    common = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
-              "p3": BLOBS["char-drava-keel"], "npc": BLOBS["char-drava-keel"], "wick": BLOBS["wick-mind-without-fog"], "pilot": BLOBS["world-pilot"], "classes": classes_full()}
+    common = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mpat"], "p2": BLOBS["char-inspectant-latch-7"],
+              "p3": BLOBS["char-drava-keel"], "npc": BLOBS["char-drava-keel"], "wick": BLOBS["wick-mind-without-fog"], "pilot": BLOBS["world-pilot"], "outpost": BLOBS["world-outpost813"], "classes": classes_full()}
     for name, fname, title, h in [("combat", "Combat.dc.html", "PHC · Combat · M813 rear pad", 1160),
                                   ("room", "Room.dc.html", "PHC · Room · squad and Narrator", 1500),
                                   ("levelup", "LevelUp.dc.html", "PHC · Level up · level 3 and class", 1200)]:

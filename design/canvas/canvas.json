@@ -58,7 +58,7 @@
     },
     "CreateSkills.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1150,
       "is_interactive": true,
       "title": "Creation 3 · Skills, all 27 at once (sample: Field Medic preset)",
       "w": 1440,
@@ -85,7 +85,7 @@
     },
     "CreateLockIn.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1900,
       "is_interactive": true,
       "title": "Creation 6 · Lock in",
       "w": 1440,

@@ -4,7 +4,7 @@ const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; fo
 const PLAYERS = [['leon', 'Leon', 'LE', '#7FD4FF', 'Host · plays 2'], ['guest1', 'Mai', 'MA', '#FF9EC7', 'Plays 1'], ['guest2', 'Tuan', 'TU', '#B8E986', 'Building a character'], ['open', 'Open seat', '+', '#3B475D', 'Invite someone']];
 const PC = {}; PLAYERS.forEach((p) => { PC[p[0]] = p; });
 const STARTS = [
-  ['m813', 'M813', 'M813 · ONE-SHOT · 2–3 SESSIONS', 'The Last Ship Out', 'center 30%', 'Planned art: the M813 rear pad under B813 (brief ready)',
+  ['m813', 'M813', 'M813 · ONE-SHOT · 2–3 SESSIONS', 'The Last Ship Out', 'center 45%', 'Outpost-813: the rear landing pad under B813',
     ['27 July 4084, Central City reckoning. Regiment 093 of the Thousand World Legion has met its quota on M813 and is pulling out. The Colonel has ordered a hundred infantry robots and twenty medic robots to hold the line.',
      'Five squads hold it. What\'s left of them walks back to the rear pad, where one ship is still loading, and its hold is full of platinum.'], 'You play the 258th Medical Unit\'s robots. Starts on the rear pad.'],
   ['godplot', 'A god-plot', 'EARTH SECTOR · CAMPAIGN START', 'A God-Plot on a Mining World', 'center 70%', 'Placeholder art',
@@ -39,7 +39,7 @@ class Component extends DCLogic {
       style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + p[3] }; });
     const st = STARTS.find((x) => x[0] === S.start);
     const starts = STARTS.map(([id, short]) => ({ short, pick: () => this.setState({ start: id }), pressed: S.start === id ? 'true' : 'false', style: pill(S.start === id) }));
-    const start = { kicker: st[2], title: st[3], img: D.pilot, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st[4], artNote: st[5], lore: st[6].map((text) => ({ text })), meta: st[7] };
+    const start = { kicker: st[2], title: st[3], img: st[0] === 'm813' ? D.outpost : D.pilot, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st[4], artNote: st[5], lore: st[6].map((text) => ({ text })), meta: st[7] };
     const modes = [['ai', 'AI Narrator', 'Bring your own key, any provider.'], ['human', "I'll narrate", 'A private Narrator screen.']].map(([id, name, desc]) => ({ name, desc, pick: () => this.setState({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
       style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') }));
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: () => this.setState({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
