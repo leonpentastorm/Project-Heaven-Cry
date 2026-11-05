@@ -36,10 +36,11 @@
     "ghost-soldier",
     "symbol-of-order",
     "rogue-element",
-    "the-soundscape-of-the-soul"
+    "the-soundscape-of-the-soul",
+    "headbanger"
   ],
   "catalog_coverage": {
-    "traits": 29,
+    "traits": 30,
     "perks": 2
   },
   "revision_rounds": {

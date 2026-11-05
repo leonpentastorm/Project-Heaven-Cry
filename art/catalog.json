@@ -2095,6 +2095,30 @@
         "44": "art/traits/wick/production-v1/exports/44/the-soundscape-of-the-soul.png",
         "40": "art/traits/wick/production-v1/exports/40/the-soundscape-of-the-soul.png"
       }
+    },
+    "headbanger": {
+      "label": "Wick — Headbanger",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/headbanger.png",
+      "sha256": "dc6f46936ae04afbc34afd55c97f01159acd3459b4ca818a578e51209519395a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "headbanger",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/headbanger.png",
+        "128": "art/traits/wick/production-v1/exports/128/headbanger.png",
+        "64": "art/traits/wick/production-v1/exports/64/headbanger.png",
+        "56": "art/traits/wick/production-v1/exports/56/headbanger.png",
+        "48": "art/traits/wick/production-v1/exports/48/headbanger.png",
+        "44": "art/traits/wick/production-v1/exports/44/headbanger.png",
+        "40": "art/traits/wick/production-v1/exports/40/headbanger.png"
+      }
     }
   },
   "character_collections": {

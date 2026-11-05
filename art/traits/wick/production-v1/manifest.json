@@ -465,6 +465,29 @@
       },
       "batch": "A",
       "source_sha256": "397cf23bc185e837d68ddc1a5d59edcff2cf11edb5cfe53ce00b2bde46eb37fd"
+    },
+    {
+      "id": "headbanger",
+      "data_id": "headbanger",
+      "name": "Headbanger",
+      "family": "traits",
+      "order": 26,
+      "mood": "Comic",
+      "action": "Wick is bent double mid-headbang, head whipping down, a Musek Blestor big as its torso slung on a strap and blasting jagged sound waves",
+      "screen": "Screwed-shut eyes, open yell",
+      "prop": "Musek Blestor: a portable box-shaped music player with two bold round speaker grilles and a carrying handle; no brand, lettering or numbers. Reuse this proposed construction for both music traits.",
+      "path": "art/traits/wick/production-v1/headbanger.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/headbanger.png",
+        "128": "art/traits/wick/production-v1/exports/128/headbanger.png",
+        "64": "art/traits/wick/production-v1/exports/64/headbanger.png",
+        "56": "art/traits/wick/production-v1/exports/56/headbanger.png",
+        "48": "art/traits/wick/production-v1/exports/48/headbanger.png",
+        "44": "art/traits/wick/production-v1/exports/44/headbanger.png",
+        "40": "art/traits/wick/production-v1/exports/40/headbanger.png"
+      },
+      "batch": "B",
+      "source_sha256": "88adf002f0498fb636688016c45dc4d86e78de530ae45f240f5b27bcf8a69fb7"
     }
   ]
 }
