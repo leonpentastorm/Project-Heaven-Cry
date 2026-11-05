@@ -2222,8 +2222,8 @@
     "daggerfall-veteran": {
       "label": "Wick — Daggerfall Veteran",
       "collection": "wick-production-v1",
-      "path": "art/traits/wick/production-v1/daggerfall-veteran.png",
-      "sha256": "58abb0e16abb7effeabbaab0369fff0473595ce005be42739a84f204d9d43af6",
+      "path": "art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png",
+      "sha256": "cc4601921e1e5e379cc051209918cbb398b26476db18cf14f26ea86b44477844",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -2234,14 +2234,17 @@
       "production_approved": false,
       "batch": "B",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/daggerfall-veteran.png",
-        "128": "art/traits/wick/production-v1/exports/128/daggerfall-veteran.png",
-        "64": "art/traits/wick/production-v1/exports/64/daggerfall-veteran.png",
-        "56": "art/traits/wick/production-v1/exports/56/daggerfall-veteran.png",
-        "48": "art/traits/wick/production-v1/exports/48/daggerfall-veteran.png",
-        "44": "art/traits/wick/production-v1/exports/44/daggerfall-veteran.png",
-        "40": "art/traits/wick/production-v1/exports/40/daggerfall-veteran.png"
-      }
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/daggerfall-veteran.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/daggerfall-veteran.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/daggerfall-veteran.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/daggerfall-veteran.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/daggerfall-veteran.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/daggerfall-veteran.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/daggerfall-veteran.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/daggerfall-veteran.png",
+      "previous_revision_path": "art/traits/wick/production-v1/daggerfall-veteran.png"
     },
     "upper-touched": {
       "label": "Wick — Upper-Touched",

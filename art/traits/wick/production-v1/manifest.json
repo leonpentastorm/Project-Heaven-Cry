@@ -591,21 +591,24 @@
       "family": "traits",
       "order": 32,
       "mood": "Grim",
-      "action": "Wick sits on an upturned dented helmet, knees up, calmly ignoring a shell burst behind it",
+      "action": "REVIEW3 FIX: Wick sits calmly on a large upturned DENTED HELMET, knees up, ignoring ONE CLEAN SIMPLE BLAST SILHOUETTE behind it. REMOVE all debris, scattered stones, tiny blast clouds and extra burst marks. Just one bold clean blast shape at left behind the shoulder, small enough not to swallow Wick or helmet. Keep the pixel MUSHROOM CLOUD on the screen. The helmet and seated body must be distinct and readable at44px.",
       "screen": "Tiny mushroom-cloud symbol",
       "prop": "Dented helmet",
-      "path": "art/traits/wick/production-v1/daggerfall-veteran.png",
+      "path": "art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/daggerfall-veteran.png",
-        "128": "art/traits/wick/production-v1/exports/128/daggerfall-veteran.png",
-        "64": "art/traits/wick/production-v1/exports/64/daggerfall-veteran.png",
-        "56": "art/traits/wick/production-v1/exports/56/daggerfall-veteran.png",
-        "48": "art/traits/wick/production-v1/exports/48/daggerfall-veteran.png",
-        "44": "art/traits/wick/production-v1/exports/44/daggerfall-veteran.png",
-        "40": "art/traits/wick/production-v1/exports/40/daggerfall-veteran.png"
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/daggerfall-veteran.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/daggerfall-veteran.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/daggerfall-veteran.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/daggerfall-veteran.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/daggerfall-veteran.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/daggerfall-veteran.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/daggerfall-veteran.png"
       },
       "batch": "B",
-      "source_sha256": "008355366ee22e397773dbb0c90bf703dd0f20d4875710ff930074b16635541f"
+      "source_sha256": "9e8e6ca35fe7687d6e469d409bd4e7541af440e3b591c5ea0a45c838d0509733",
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/daggerfall-veteran.png",
+      "previous_revision_path": "art/traits/wick/production-v1/daggerfall-veteran.png"
     },
     {
       "id": "upper-touched",
