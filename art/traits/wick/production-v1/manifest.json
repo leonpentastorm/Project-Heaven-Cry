@@ -120,6 +120,29 @@
       },
       "batch": "A",
       "source_sha256": "b2d643bf3807f673ab94e271daad4eb31260856df7df32ab07a97d8de7a48898"
+    },
+    {
+      "id": "bottle-butts-for-eyes",
+      "data_id": "bottle_butts_for_eyes",
+      "name": "Bottle Butts for Eyes",
+      "family": "traits",
+      "order": 9,
+      "mood": "Comic",
+      "action": "Wick crawls on hands and knees, groping blindly along the floor for an enormous pair of round glasses lying just past its fingertips",
+      "screen": "Blurry squiggle eyes",
+      "prop": "Round glasses",
+      "path": "art/traits/wick/production-v1/bottle-butts-for-eyes.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/bottle-butts-for-eyes.png",
+        "128": "art/traits/wick/production-v1/exports/128/bottle-butts-for-eyes.png",
+        "64": "art/traits/wick/production-v1/exports/64/bottle-butts-for-eyes.png",
+        "56": "art/traits/wick/production-v1/exports/56/bottle-butts-for-eyes.png",
+        "48": "art/traits/wick/production-v1/exports/48/bottle-butts-for-eyes.png",
+        "44": "art/traits/wick/production-v1/exports/44/bottle-butts-for-eyes.png",
+        "40": "art/traits/wick/production-v1/exports/40/bottle-butts-for-eyes.png"
+      },
+      "batch": "A",
+      "source_sha256": "735ab142d328f92eccb28e9d9c7a347cd30541a380076dd97ed3463d0c111183"
     }
   ]
 }

@@ -1735,6 +1735,30 @@
         "44": "art/traits/wick/production-v1/exports/44/pain-eater.png",
         "40": "art/traits/wick/production-v1/exports/40/pain-eater.png"
       }
+    },
+    "bottle-butts-for-eyes": {
+      "label": "Wick — Bottle Butts for Eyes",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/bottle-butts-for-eyes.png",
+      "sha256": "a51298f06cd66e3889e5c87cd04468f1a5ea3a3344eea26814dce2c1d36a9319",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "bottle_butts_for_eyes",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/bottle-butts-for-eyes.png",
+        "128": "art/traits/wick/production-v1/exports/128/bottle-butts-for-eyes.png",
+        "64": "art/traits/wick/production-v1/exports/64/bottle-butts-for-eyes.png",
+        "56": "art/traits/wick/production-v1/exports/56/bottle-butts-for-eyes.png",
+        "48": "art/traits/wick/production-v1/exports/48/bottle-butts-for-eyes.png",
+        "44": "art/traits/wick/production-v1/exports/44/bottle-butts-for-eyes.png",
+        "40": "art/traits/wick/production-v1/exports/40/bottle-butts-for-eyes.png"
+      }
     }
   },
   "character_collections": {
