@@ -1221,8 +1221,8 @@
     "first-patch-revival--analysis": {
       "label": "D12.9.6",
       "collection": "first-patch-revival",
-      "path": "art/character-portraits/first-patch-revival/mind/expression/analysis.png",
-      "sha256": "b6271bd26e576071f6417ec912c593a62fb1b2428dac850866b1acdf4096556c",
+      "path": "art/character-portraits/first-patch-revival/revisions/mind/expression/analysis.png",
+      "sha256": "1ced059572bc00dbfbf581cdba7b9ee0405ae1862ab19d18cd7f0d21fee1c2d4",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -1231,7 +1231,9 @@
       "epccg_entry": 17,
       "epccg_skill": "Analysis",
       "faction": "CCEC (Central City Espionage Commission)",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "revision": 3,
+      "previous_path": "art/character-portraits/first-patch-revival/mind/expression/analysis.png"
     },
     "first-patch-revival--charisma": {
       "label": "Damian Nox",
@@ -1251,8 +1253,8 @@
     "first-patch-revival--empathy": {
       "label": "Paul Remarque",
       "collection": "first-patch-revival",
-      "path": "art/character-portraits/first-patch-revival/soul/insight/empathy.png",
-      "sha256": "fcfe9e5703f107599f6849cd589cccf582f423c3591800e2d6ea0d7d15e1b606",
+      "path": "art/character-portraits/first-patch-revival/revisions/soul/insight/empathy.png",
+      "sha256": "31bfb56a4b9c7ef90120ce859349aea56593f3675569d80b6b1f0cd202dd643b",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -1260,13 +1262,15 @@
       "usage": "character portrait",
       "epccg_entry": 19,
       "epccg_skill": "Empathy",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "revision": 3,
+      "previous_path": "art/character-portraits/first-patch-revival/soul/insight/empathy.png"
     },
     "first-patch-revival--camaraderie": {
       "label": "Souji",
       "collection": "first-patch-revival",
-      "path": "art/character-portraits/first-patch-revival/soul/insight/camaraderie.png",
-      "sha256": "6884338cc74d53ce695bf9cc017c96e47ce054ff9c99c517b2737db100b2a81e",
+      "path": "art/character-portraits/first-patch-revival/revisions/soul/insight/camaraderie.png",
+      "sha256": "eca1f6a3c4e61a04a89c392b8072ced4c973a130bd94eb0396d4f4be853b2801",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -1276,7 +1280,9 @@
       "epccg_skill": "Camaraderie",
       "epccg_quoted_by": "Anastasia Vandenberg",
       "faction": "Kemizuchi Military Academy",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "revision": 3,
+      "previous_path": "art/character-portraits/first-patch-revival/soul/insight/camaraderie.png"
     },
     "first-patch-revival--implication": {
       "label": "Aleksandr Donovik Artem",
@@ -1311,8 +1317,8 @@
     "first-patch-revival--lore-master": {
       "label": "Andrade Lovelace",
       "collection": "first-patch-revival",
-      "path": "art/character-portraits/first-patch-revival/soul/determination/lore-master.png",
-      "sha256": "cfd738e1b60bef6ede4b786a21d9de87377e7f49999affb605401a83fb8e11eb",
+      "path": "art/character-portraits/first-patch-revival/revisions/soul/determination/lore-master.png",
+      "sha256": "d3d53991ae46dcd8087c94a6dc199ca9230b744ac6b6c04cbe0b7a6f666492b9",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -1321,7 +1327,9 @@
       "epccg_entry": 23,
       "epccg_skill": "Lore Master",
       "faction": "Institute of Forgotten Knowledge",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "revision": 3,
+      "previous_path": "art/character-portraits/first-patch-revival/soul/determination/lore-master.png"
     },
     "first-patch-revival--composure": {
       "label": "Kaizer Meyer Reinch Wolf",
@@ -1356,8 +1364,8 @@
     "first-patch-revival--conscience": {
       "label": "The Azure Blood Holder",
       "collection": "first-patch-revival",
-      "path": "art/character-portraits/first-patch-revival/soul/virtue/conscience.png",
-      "sha256": "a8c5d5cb3a93672ac20b13fc9232681eb07f06f11cfa24d6ce7e4d50a3cb2d61",
+      "path": "art/character-portraits/first-patch-revival/revisions/soul/virtue/conscience.png",
+      "sha256": "40abd6ba9adaaa670d989e0ec6d649bef98824193fcd6ed99ecfede54dd20770",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -1365,7 +1373,9 @@
       "usage": "character portrait",
       "epccg_entry": 26,
       "epccg_skill": "Conscience",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "revision": 3,
+      "previous_path": "art/character-portraits/first-patch-revival/soul/virtue/conscience.png"
     },
     "first-patch-revival--authority": {
       "label": "Hank Ladan",
