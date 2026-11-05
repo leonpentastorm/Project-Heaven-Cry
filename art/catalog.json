@@ -2575,6 +2575,30 @@
         "44": "art/traits/wick/production-v1/exports/44/wanted.png",
         "40": "art/traits/wick/production-v1/exports/40/wanted.png"
       }
+    },
+    "company-man": {
+      "label": "Wick — Company Man",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/company-man.png",
+      "sha256": "9998663d58da03056790b37b55517869044fa496118910593981270cdcc41af3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "company_man",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/company-man.png",
+        "128": "art/traits/wick/production-v1/exports/128/company-man.png",
+        "64": "art/traits/wick/production-v1/exports/64/company-man.png",
+        "56": "art/traits/wick/production-v1/exports/56/company-man.png",
+        "48": "art/traits/wick/production-v1/exports/48/company-man.png",
+        "44": "art/traits/wick/production-v1/exports/44/company-man.png",
+        "40": "art/traits/wick/production-v1/exports/40/company-man.png"
+      }
     }
   },
   "character_collections": {

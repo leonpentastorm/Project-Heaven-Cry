@@ -56,10 +56,11 @@
     "live-to-fight-another-day",
     "sworn-sibling",
     "rival",
-    "wanted"
+    "wanted",
+    "company-man"
   ],
   "catalog_coverage": {
-    "traits": 49,
+    "traits": 50,
     "perks": 2
   },
   "revision_rounds": {

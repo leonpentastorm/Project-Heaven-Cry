@@ -925,6 +925,29 @@
       },
       "batch": "B",
       "source_sha256": "20223049404628d917ebb79d185d5828be7753378ed195f75e0135ad1028f31f"
+    },
+    {
+      "id": "company-man",
+      "data_id": "company_man",
+      "name": "Company Man",
+      "family": "traits",
+      "order": 50,
+      "mood": "Comic, Ugly",
+      "action": "Wick dances on puppet strings, toes barely touching, the strings rising to a control bar held by a hand at the top edge",
+      "screen": "Cheerful ^_^, oblivious",
+      "prop": "Puppet control bar and strings",
+      "path": "art/traits/wick/production-v1/company-man.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/company-man.png",
+        "128": "art/traits/wick/production-v1/exports/128/company-man.png",
+        "64": "art/traits/wick/production-v1/exports/64/company-man.png",
+        "56": "art/traits/wick/production-v1/exports/56/company-man.png",
+        "48": "art/traits/wick/production-v1/exports/48/company-man.png",
+        "44": "art/traits/wick/production-v1/exports/44/company-man.png",
+        "40": "art/traits/wick/production-v1/exports/40/company-man.png"
+      },
+      "batch": "B",
+      "source_sha256": "006fecfbd15a1464e6e088fa969ff95162f462d89861b35e9ea93bf681085a87"
     }
   ]
 }
