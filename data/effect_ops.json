@@ -621,7 +621,7 @@
       ],
       "example": {
         "op": "gate_check",
-        "skill": "composure",
+        "skill": "visualization",
         "context": "unglamorous_action",
         "on_fail": "refuse_or_-3"
       }
