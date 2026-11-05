@@ -131,11 +131,12 @@
     "you-get-used-to-it",
     "flat-line",
     "litany",
-    "holy-ordnance"
+    "holy-ordnance",
+    "red-line"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 52
+    "perks": 53
   },
   "revision_rounds": {
     "field-surgeon": 3,

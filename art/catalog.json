@@ -4475,6 +4475,30 @@
         "44": "art/perks/wick/production-v1/exports/44/holy-ordnance.png",
         "40": "art/perks/wick/production-v1/exports/40/holy-ordnance.png"
       }
+    },
+    "red-line": {
+      "label": "Wick — Red Line",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/red-line.png",
+      "sha256": "9998a9892e26b748e7fe5982dde860a293717f434f338a14be6ec22d9d784f9e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "red_line",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/red-line.png",
+        "128": "art/perks/wick/production-v1/exports/128/red-line.png",
+        "64": "art/perks/wick/production-v1/exports/64/red-line.png",
+        "56": "art/perks/wick/production-v1/exports/56/red-line.png",
+        "48": "art/perks/wick/production-v1/exports/48/red-line.png",
+        "44": "art/perks/wick/production-v1/exports/44/red-line.png",
+        "40": "art/perks/wick/production-v1/exports/40/red-line.png"
+      }
     }
   },
   "illustrations": {

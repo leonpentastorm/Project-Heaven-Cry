@@ -1155,6 +1155,29 @@
       },
       "batch": "E",
       "source_sha256": "e3ca733e535c6ca7cb6b792442c7c121433a8392f940540f3dac692b262ff531"
+    },
+    {
+      "id": "red-line",
+      "data_id": "red_line",
+      "name": "Red Line",
+      "family": "perks",
+      "order": 51,
+      "mood": "Tense, Proud",
+      "action": "Wick leans far back, heels dug in at a thick line on the ground, as a crooked beckoning hand reaches from the far side.",
+      "screen": "Stubborn frown",
+      "prop": "Thick ground line",
+      "path": "art/perks/wick/production-v1/red-line.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/red-line.png",
+        "128": "art/perks/wick/production-v1/exports/128/red-line.png",
+        "64": "art/perks/wick/production-v1/exports/64/red-line.png",
+        "56": "art/perks/wick/production-v1/exports/56/red-line.png",
+        "48": "art/perks/wick/production-v1/exports/48/red-line.png",
+        "44": "art/perks/wick/production-v1/exports/44/red-line.png",
+        "40": "art/perks/wick/production-v1/exports/40/red-line.png"
+      },
+      "batch": "E",
+      "source_sha256": "b92fa45c782fd3547652f85cf9a889cbbbeeb06f78319480d1eb5e68f34130f8"
     }
   ]
 }
