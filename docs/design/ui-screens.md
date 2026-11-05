@@ -19,6 +19,7 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 - **Right column:**
   - **Area map.** A top-down map drawn by the AI Narrator: a cube on an object, zones, a sound trail, fog over unexplored areas. A human Narrator gets the drawing tools (Select, Cube, Zone, Arrow, Label, Erase); players see it read-only.
   - **Speaking order.** Who is speaking now, who has spoken, who has requested a turn, and who is waiting, plus Pass and Request buttons.
+- **Voices** (rules 1.1): each story beat can bring up to 2 private voice cards per player ("ANALYSIS [Passive 13 vs 12]" plus the line in that skill's voice). Clicking a skill in the sheet **asks** it (once per scene). When an Overreach fires, the skill's push appears as a card with two buttons: **Indulge (+1 Echo)** and **Resist (−1 Echo**, −2 if Mastered).
 - **Dice overlay:** a full-screen d20 spin showing the skill, TN and modifier, then the sum ("d20 11 + 1 = 12") and the verdict (Success, Failure, Critical Success, Complication). Spend Echo to reroll.
 
 ## Combat mode — `Combat.dc.html`
@@ -38,16 +39,14 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 
 ## Character creation — `Create.dc.html` (+ `CreateCores`, `CreateSkills` open it at those steps)
 
-Steps: **Identity → Cores → Skills → Traits → Kit → Lock in.**
+Steps: **Identity → Skills → Traits → Kit → Lock in.** (Rules 1.1: creation is 10 skill points, at most 5 in one skill; Attributes and Cores rise automatically. **The prototype's three-pool logic predates this and needs rebuilding.**)
 
 1. **Identity:** name, origin, race, association, last dream, favourite song, history, and a portrait (upload or generate).
-2. **Cores** (modelled on Disco Elysium's "Adjust abilities"): three big rows, each with a descriptor word (Feeble → Legendary), a `‹ N ›` stepper with diamonds, the core name, a description, the attributes it governs and its economy. Random and Reset. **Your archetype** appears live beside the rows with a portrait, chosen by how the points are spread:
-   - **One core leads:** Soldier, Scholar or Believer.
-   - **Two cores lead together:** Operator (Body+Mind), Crusader (Body+Soul) or Mystic (Mind+Soul).
-   - **All three even:** Drifter.
-3. **Skills:** one core at a time (three big tabs). Each attribute is a row: an attribute block with its stepper, diamonds capped by the core, and a plain-words effect, then its **three skill cards** with portrait slots, descriptions, diamonds and a stepper. Hovering a stepper previews the cost (for example "−1 skill · Endurance 3→4 · Mastery 1") and lights the budget bars. Raising a skill past its attribute auto-raises the attribute and core. Class presets fill a class's signature skills. Refund unused gives back attribute and core points no skill needs.
-4. **Traits:** pick up to two. Incompatible traits grey out.
-5. **Kit:** three starting kits.
-6. **Lock in:** a checklist, Lock in (only once all points are spent) and Save as draft.
+2. **Skills:** one core at a time (three big tabs). Each attribute is a row: an attribute block with diamonds, a plain-words effect, then its **three skill cards** with portrait slots, descriptions, diamonds and a stepper. One budget only: **10 skill points**. Raising a skill raises its Attribute and Core for free; the stepper preview says so ("−1 skill · Endurance 3→4 · Body 3→4 · Mastery 1"). Class presets fill a class's signature skills. **Your archetype** (Soldier, Scholar, Believer, Operator, Crusader, Mystic, Drifter) shows live beside the tabs, chosen from the Cores the skills produced, with its portrait.
+3. **Traits:** pick up to two. Incompatible traits grey out.
+4. **Kit:** three starting kits.
+5. **Lock in:** a checklist, Lock in (only once all 10 points are spent) and Save as draft.
+
+The old **Cores** screen (modelled on Disco Elysium's "Adjust abilities": big rows, descriptor words Feeble → Legendary, `‹ N ›` steppers) moves to **level-up**, where Core and Attribute points are spent.
 
 The Identity, Traits, Kit and Lock-in steps have a side panel with a live preview and the classes you'd qualify for at level 3.

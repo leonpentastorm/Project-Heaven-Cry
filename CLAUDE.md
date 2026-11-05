@@ -50,10 +50,13 @@ source/2020/              original material; english/ holds the 2020 trait book 
 ## The game in one screen
 
 - **Character tree:** 3 Cores (Body, Mind, Soul) → 9 Attributes → 27 Skills (α combat, β utility/defence, γ dialogue/exploration per Attribute). Caps: Skill ≤ Attribute ≤ Core ≤ 10.
-- **Rolls:** d20 + skill modifier vs TN 8 / 12 / 16 / 20 (Easy / Standard / Hard / Heroic). Modifier = −2 at 0 points, else floor(points ÷ 2). Nat 20 critical success, nat 1 complication.
-- **Mastery:** at 3/5/7/9 points (M1–M4), Mastered at 10. From Mastery 2 the Narrator can call an **Overreach** (plain d20 vs 15/17/19; Mastered auto-fails unless an Echo is spent). **Echo** tokens (max 3) reroll a d20. **Inner Voice**: hidden check at scene start, the highest skill (≥3 points) whispers one private line in its own voice.
-- **Creation:** cores start 1 (+6 points), attributes 1 (+10), skills 0 (+10); 0–2 traits; class is **earned** at level 3, not chosen.
-- **Classes:** 13 base classes, each with 3 signature skills covering all 27 skills. At level 3 you choose among the classes with your two highest signature totals (closest-class rule: nobody is classless). Rank II at total 15, rank III at 21. 15 advanced classes need 15 in one parent's signatures + 9 in the other + a tutor. Body classes run on ammo/weapons/tech; Mind classes burn mana cores to make mana (Sigils); Soul classes spend mana and crystallise cores (Soul spells). Any class with a patron and Faith can pray.
+- **Rolls:** d20 + skill modifier vs TN 8 / 12 / 16 / 20 (Easy / Standard / Hard / Heroic). Modifier = −2 at 0 points, else **points − 1** (Mastered = +9). Nat 20 critical success, nat 1 complication.
+- **Mastery:** at 3/5/7/9 points (M1–M4), Mastered at 10.
+- **Voices:** every skill with 1+ point is a private inner voice with its own card (skills.json `voice`, toned after its EPCCG speaker). The Narrator attaches hidden voice hooks (skill, TN, truth flag) to each story beat; the engine passes them on passive 10 + mod; up to 2 lines per player per beat; voices can mislead. Ask a skill once per scene.
+- **Overreach** (Mastery 2+): the skill pushes; **indulge** (consequence, +1 Echo) or **resist** (1 Echo, 2 if Mastered). No roll; once per scene. **Echo:** 1 at session start, max 3, reroll a d20 (1 per roll).
+- **Creation:** 10 skill points (max 5 in one skill); Attributes and Cores rise automatically to fit; 0–2 traits. Attribute/Core points come from levelling. Class is **earned** at level 3 (250 XP, the end of session 1), not chosen. XP table paces level 20 at about session 51 (5e-like).
+- **HP:** 100 + 15 × (Endurance − 1) + (level − 1) × (5 + 2 × Durability).
+- **Classes:** 13 base classes, each with 3 signature skills covering all 27 skills. At level 3 you choose among the classes with your two highest signature totals (closest-class rule: nobody is classless). Rank II at total 13, rank III at 18. 15 advanced classes need 15 in one parent's signatures + 9 in the other + a tutor. Body classes run on ammo/weapons/tech; Mind classes burn mana cores to make mana (Sigils); Soul classes spend mana and crystallise cores (Soul spells). Any class with a patron and Faith can pray.
 - **Combat:** tactical grid, 1.5 m tiles, 6 AP per turn (ceiling 9, floor 2; perks add at most +3), one reaction per round, initiative by Agility.
 - **Mana:** ambient meter 0–40 (Thin / Normal / Rich / Flooded). Deaths raise it. Sigil magic (Evoker + cores, English command words like FIRE · CONDENSE · PUSH, excess becomes Flux and is vented). Soul magic (Emanator + MP, heart link, Strain, Mana Short; spells built from a school + modules; Crystallise makes cores). Blessings via patron pacts: Devotion, Witnessed (Faith 5), Miracle (Faith 7).
 
@@ -98,11 +101,12 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Change the spec first, then the data, then run the validator.
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
 - Keep text in-universe; no pop-culture references in game text.
-- Pending proposal (not yet accepted): simplify creation to **10 skill points only**, with Attributes and Cores auto-rising to what skills need, and attribute/core points coming only from levelling. The UI already behaves this way.
+- Rules revision 1.1 (accepted 5 Nov 2026) is in the repo spec but **not yet in the living Doc**; copy it across. Its provisional numbers are spec items 35–41.
 
 ## Next steps
 
 1. Tech plan with Leon (engine as pure, deterministic TypeScript with seeded RNG; authoritative room server; client with a grid renderer; provider-agnostic Narrator adapter using structured tool calls).
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
-4. Settle the 34 open items in spec section 14 through playtests.
+4. Settle the 41 open items in spec section 14 through playtests.
+5. Rebuild the creation prototype (`design/canvas/Create.dc.html`) for 10-skill-point creation; its pool logic predates rules 1.1.

@@ -159,7 +159,20 @@
         "defense",
         "survival"
       ],
-      "number": 1
+      "number": 1,
+      "voice": {
+        "persona": "A cheerful bruiser who has taken every hit going and liked most of them.",
+        "wants": "To stand in front, take it, and be admired for it.",
+        "style": "Short, warm, boastful. Talks about you like a prize fighter talks about his own chin.",
+        "never": "Never admits anything hurts.",
+        "tone_from": "Sanchez of the Burning Bridge",
+        "sample_lines": {
+          "notices": "That beam would hold your weight. Probably. It's held worse than you.",
+          "pushes": "Step in front of her. They'll aim at the biggest thing in the room, and that's you.",
+          "quiet": "You're still standing. Of course you are."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "pain_threshold",
@@ -274,7 +287,20 @@
         "defense",
         "survival"
       ],
-      "number": 2
+      "number": 2,
+      "voice": {
+        "persona": "A calm, sleepy stoic who mistakes not feeling pain for being fine.",
+        "wants": "To keep going, unbothered, and finish breakfast afterwards.",
+        "style": "Slow, mild, unimpressed. Shrugs in words.",
+        "never": "Never says stop, and never notices blood until someone points at it.",
+        "tone_from": "Knight Jiren, as told by Sazmin",
+        "sample_lines": {
+          "notices": "The burn on your hand is real. You'll want to look at it later.",
+          "pushes": "Walk through the fire. It's only heat.",
+          "quiet": "Something stung you a while back. Nothing to worry about. Probably."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "sensory",
@@ -394,7 +420,20 @@
         "support",
         "senses"
       ],
-      "number": 3
+      "number": 3,
+      "voice": {
+        "persona": "A gentle old sensibility that reads the world through skin, breath and the ground.",
+        "wants": "Small pleasures, and to be listened to before the loud senses talk over it.",
+        "style": "Soft, sensual, unhurried; temperature, texture, smell.",
+        "never": "Never talks about what things look like.",
+        "tone_from": "Grandma Marry, as told by Sister March",
+        "sample_lines": {
+          "notices": "The floor is warmer by the far wall. Something runs behind it.",
+          "pushes": "Close your eyes. Stay. Let the room tell you, and never mind the shouting.",
+          "quiet": "Rain's coming. You can feel it in the knuckles."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "raw_power",
@@ -525,7 +564,20 @@
         "offense",
         "melee"
       ],
-      "number": 4
+      "number": 4,
+      "voice": {
+        "persona": "A big-hearted brute who solves every problem the direct way and is proud of it.",
+        "wants": "To lift it, break it or win the arm-wrestle.",
+        "style": "Loud, simple, grinning. Short sentences with exclamation marks.",
+        "never": "Never suggests a gentler option.",
+        "tone_from": "Knight Andre Giant Fist",
+        "sample_lines": {
+          "notices": "The hinges are weaker than the door. Hit those.",
+          "pushes": "It's a lock. You have hands. Break it.",
+          "quiet": "Your arms are the cleverest thing about you, and that's fine."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "guts",
@@ -640,7 +692,20 @@
         "defense",
         "resolve"
       ],
-      "number": 5
+      "number": 5,
+      "voice": {
+        "persona": "A swaggering explorer who walks into every dark door other people fled.",
+        "wants": "To go in, open it and be the one who saw.",
+        "style": "Grand, self-mythologising, breathless with dare.",
+        "never": "Never tells you to turn back.",
+        "tone_from": "Ragoul the Keeper",
+        "sample_lines": {
+          "notices": "The others are scared of the noise, not the room. The room is quiet.",
+          "pushes": "The sign says DO NOT ENTER. Signs are for faint hearts.",
+          "quiet": "Hold your breath. Walk in. That's the whole secret."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "intimidation",
@@ -764,7 +829,20 @@
         "debuff",
         "fear"
       ],
-      "number": 6
+      "number": 6,
+      "voice": {
+        "persona": "A velvet-voiced menace who treats every conversation as a negotiation over someone's bones.",
+        "wants": "To be feared, politely.",
+        "style": "Courteous, slow, food-and-family metaphors that turn sinister.",
+        "never": "Never raises its voice. It doesn't need to.",
+        "tone_from": "Tommy Avencio, the Papa",
+        "sample_lines": {
+          "notices": "He keeps touching his collar. He's already afraid; you only have to agree with him.",
+          "pushes": "Lean on the table. Smile. Mention his family, warmly.",
+          "quiet": "Manners first. Then the bones."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "athletics",
@@ -887,7 +965,20 @@
         "mobility",
         "melee"
       ],
-      "number": 7
+      "number": 7,
+      "voice": {
+        "persona": "A reckless acrobat who thinks armour is for people who can't dodge.",
+        "wants": "Speed, flips, open ground, and never being tied down.",
+        "style": "Fast, cocky, breathless; talks in moves.",
+        "never": "Never likes standing still or anything heavy.",
+        "tone_from": "Dominik Edelgard, the Banner Lord",
+        "sample_lines": {
+          "notices": "There's a ledge under the window. Two steps and you're out of their line.",
+          "pushes": "Take the vest off. It's slowing you down.",
+          "quiet": "Light on your feet. They swing like Orks; you move like you."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "dexterity",
@@ -1009,7 +1100,20 @@
         "offense",
         "ranged"
       ],
-      "number": 8
+      "number": 8,
+      "voice": {
+        "persona": "A dry, steady gunhand who measures the world in draws and distances.",
+        "wants": "For the hands to do what they were trained to do.",
+        "style": "Laconic, clipped, ritual phrases. Identify. Squeeze. Breathe.",
+        "never": "Never wastes words or rounds.",
+        "tone_from": "Ambrosius Costeau, the Old Drifter",
+        "sample_lines": {
+          "notices": "His holster's cut for a left-hand draw. Watch the left.",
+          "pushes": "Your hand's already on the grip. Let it finish the thought.",
+          "quiet": "Breathe. Count the rounds. You have four."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "reaction_speed",
@@ -1126,7 +1230,20 @@
         "initiative",
         "reflex"
       ],
-      "number": 9
+      "number": 9,
+      "voice": {
+        "persona": "A jumpy survivor of dead cities who moves first and thinks during.",
+        "wants": "Not to be caught flat-footed. Ever.",
+        "style": "Very short, urgent, present tense.",
+        "never": "Never waits to be sure.",
+        "tone_from": "Yukimura of the Black Scavengers",
+        "sample_lines": {
+          "notices": "Glint on the rooftop. Left. Now.",
+          "pushes": "Something moved. Throw first.",
+          "quiet": "You're fast. Fast isn't the same as right."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "ingenuity",
@@ -1260,7 +1377,20 @@
         "offense",
         "utility"
       ],
-      "number": 10
+      "number": 10,
+      "voice": {
+        "persona": "A light-fingered street rogue who sees pockets, blind spots and easy exits everywhere.",
+        "wants": "The unwatched door, the loose purse, the clean getaway.",
+        "style": "Sly, chatty, conspiratorial; a running commentary of opportunities.",
+        "never": "Never looks an officer in the eye.",
+        "tone_from": "Lin Shin Long",
+        "sample_lines": {
+          "notices": "The guard's keys are on the left hip, and he's tired.",
+          "pushes": "He's wearing a badge. Look busy. Look elsewhere. Look like somebody else.",
+          "quiet": "Nobody is watching the back stairs. Nobody ever is."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "proficiency",
@@ -1376,7 +1506,20 @@
         "support",
         "repair"
       ],
-      "number": 11
+      "number": 11,
+      "voice": {
+        "persona": "A fussy, delighted tinkerer for whom every machine is a puzzle and every puzzle is a joy.",
+        "wants": "To take it apart and see how it goes.",
+        "style": "Fast, technical, affectionate about parts; loses the thread of people.",
+        "never": "Never cares about the conversation when there's a mechanism in the room.",
+        "tone_from": "Demitri Kortev of Kortev Utility Shack",
+        "sample_lines": {
+          "notices": "That turret's feed is jammed on the third link. It's firing half as often as it should.",
+          "pushes": "Never mind the colonel. Look at the clockwork in that wall.",
+          "quiet": "Every piece fits somewhere. You just have to see all of them."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "vigilant",
@@ -1490,7 +1633,20 @@
         "ranged",
         "exploration"
       ],
-      "number": 12
+      "number": 12,
+      "voice": {
+        "persona": "A cold-spined professional who feels every gun pointed at you before it's aimed.",
+        "wants": "To see the threat first, and to answer it first.",
+        "style": "Quiet, clipped, edged; a sentry's report.",
+        "never": "Never assumes a shadow is only a shadow.",
+        "tone_from": "Vermilion Jasmine of the Rigaz Trade Company",
+        "sample_lines": {
+          "notices": "Two men in the doorway; one is pretending to drink.",
+          "pushes": "That shadow moved. Fire. Ask later.",
+          "quiet": "Your spine went cold a second ago. Listen to it."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "brain_power",
@@ -1619,7 +1775,20 @@
         "magic:sigil",
         "offense"
       ],
-      "number": 13
+      "number": 13,
+      "voice": {
+        "persona": "An impatient lecturer, brilliant and fast, who would rather compute than live.",
+        "wants": "Analysis, precision, the correct Sigil drawn correctly.",
+        "style": "Brisk, condescending, numbered points, scientific vocabulary.",
+        "never": "Never accepts a feeling as evidence.",
+        "tone_from": "Professor Avdol of the Science Team",
+        "sample_lines": {
+          "notices": "The sigil burned blue, not white: a CONDENSE was drawn twice. Someone here is sloppy.",
+          "pushes": "Stop. Calculate the trajectory before you move. The clock can wait.",
+          "quiet": "Breathe. Draw the path in your head first. Then the hand."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "rumination",
@@ -1744,7 +1913,20 @@
         "knowledge",
         "magic:sigil"
       ],
-      "number": 14
+      "number": 14,
+      "voice": {
+        "persona": "A vast, dusty memory that has read everything and suffers fools badly.",
+        "wants": "Facts, citations, history, and silence in the stacks.",
+        "style": "Dry, encyclopedic, pedantic; long lists, small sighs.",
+        "never": "Never entertains the supernatural as an explanation.",
+        "tone_from": "Thalatûl the Librarian",
+        "sample_lines": {
+          "notices": "That banner is from the second Daggerfall levy. Those units were disbanded for mutiny.",
+          "pushes": "Souls? Blessings? There is a mechanism, and it is not a saint.",
+          "quiet": "You have read about this. Page forty, or thereabouts."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "eloquence",
@@ -1864,7 +2046,20 @@
         "debuff",
         "logic"
       ],
-      "number": 15
+      "number": 15,
+      "voice": {
+        "persona": "A courtroom shark who argues to win and declares victory early.",
+        "wants": "To be right, loudly, and to have the last word.",
+        "style": "Rhetorical questions, legal flourish, triumphant certainty.",
+        "never": "Never concedes a point.",
+        "tone_from": "Xander Badman of Monsieur Saul's Law Firm",
+        "sample_lines": {
+          "notices": "She said 'before the fire'; the fire was after. She's lying about when.",
+          "pushes": "He contradicted you. Take him apart. You can't leave until you win.",
+          "quiet": "There is only one truth, and you happen to be holding it."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "visualization",
@@ -1983,7 +2178,20 @@
         "offense",
         "illusion"
       ],
-      "number": 16
+      "number": 16,
+      "voice": {
+        "persona": "A rapt artist who sees the painting inside every scene and wants to stay in it.",
+        "wants": "Beauty, colour, form; the image behind the thing.",
+        "style": "Lush, slow, painterly; talks in colours and compositions.",
+        "never": "Never hurries.",
+        "tone_from": "Master Sakamoto, as told by Rémy Étienne",
+        "sample_lines": {
+          "notices": "The scorch marks fan out from the left. The blast came from the corner, not the door.",
+          "pushes": "Look at the light on the rubble. Stay a moment. The fight can wait.",
+          "quiet": "Thousand-autumn red. You'll never mix it. Try anyway."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "analysis",
@@ -2098,7 +2306,20 @@
         "support",
         "debuff"
       ],
-      "number": 17
+      "number": 17,
+      "voice": {
+        "persona": "A forensic machine of a mind that reconstructs events from casings and stains.",
+        "wants": "The one correct answer, assembled from evidence.",
+        "style": "Clinical, enumerated, deductive: 'First... Second...'",
+        "never": "Never lets go of the first good clue.",
+        "tone_from": "D12.9.6 of the CCEC",
+        "sample_lines": {
+          "notices": "First: no casings. Second: the wall is dented from the far side. He wasn't shot.",
+          "pushes": "That first clue is the clue. Ignore the rest.",
+          "quiet": "Send the apology letter later. Find the spy now."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "charisma",
@@ -2216,7 +2437,20 @@
         "social",
         "persuasion"
       ],
-      "number": 18
+      "number": 18,
+      "voice": {
+        "persona": "A silken charmer who can sell anything, including a lie, including to you.",
+        "wants": "To be liked, to close the deal, to keep the room warm.",
+        "style": "Smooth, flattering, theatrical; always 'between us'.",
+        "never": "Never says no directly.",
+        "tone_from": "Damian Nox, SuperUltraHyperExclusive Producer",
+        "sample_lines": {
+          "notices": "He wants to be asked, not ordered. Ask him about his ship; he loves it.",
+          "pushes": "Agree with the captain. Agree harder. She'll love you for it.",
+          "quiet": "A gentleman never passes up a conversation he's sure to win."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "empathy",
@@ -2339,7 +2573,20 @@
         "social",
         "support"
       ],
-      "number": 19
+      "number": 19,
+      "voice": {
+        "persona": "A haunted, tender witness who feels everyone's pain, enemies included.",
+        "wants": "To understand, to help, and never to look away again.",
+        "style": "Halting, heavy, sincere; questions it can't answer.",
+        "never": "Never calls anyone just an enemy.",
+        "tone_from": "Paul Remarque, veteran of Daggerfall",
+        "sample_lines": {
+          "notices": "She isn't angry at you. She's terrified for the boy in the back.",
+          "pushes": "He's bleeding and he's one of theirs. Help him anyway.",
+          "quiet": "What was he thinking, right before? You'll wonder for years."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "camaraderie",
@@ -2460,7 +2707,20 @@
         "squad",
         "heal"
       ],
-      "number": 20
+      "number": 20,
+      "voice": {
+        "persona": "An embarrassingly sincere friend who believes the squad can befriend the world.",
+        "wants": "The squad first, then everyone else as a future squadmate.",
+        "style": "Warm, earnest, 'comrade', zero embarrassment.",
+        "never": "Never leaves anyone behind, and never sides against the squad.",
+        "tone_from": "Souji, as told by Anastasia Vandenberg",
+        "sample_lines": {
+          "notices": "Kestrel hasn't eaten since the drop. Ask her, not the sergeant.",
+          "pushes": "The order says leave them. The order is wrong. Your people come first.",
+          "quiet": "You're not alone in this. You never were."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "implication",
@@ -2576,7 +2836,20 @@
         "debuff",
         "subtext"
       ],
-      "number": 21
+      "number": 21,
+      "voice": {
+        "persona": "A lyrical cynic who hears metaphors in everything and says nothing plainly.",
+        "wants": "Subtext, double meanings, and the pleasure of a barbed line.",
+        "style": "Ornate, poetic, sly; insults dressed as flowers.",
+        "never": "Never takes a sentence at face value.",
+        "tone_from": "Aleksandr Donovik Artem of RTC ADCorp",
+        "sample_lines": {
+          "notices": "'The river was high' means the shipment came early. She's telling you without telling them.",
+          "pushes": "He said 'fine'. Fine is never fine. Read deeper.",
+          "quiet": "The perfume of corpse-flowers. Someone in this room is rotting."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "will_power",
@@ -2718,7 +2991,20 @@
         "magic:soul",
         "offense"
       ],
-      "number": 22
+      "number": 22,
+      "voice": {
+        "persona": "A fierce, devout teacher of the heart's link to the upper realm, who knows it can kill you.",
+        "wants": "Focus, purity of heart, and contact with the twin world.",
+        "style": "Stern, incantatory, commanding; breathing instructions.",
+        "never": "Never lets doubt speak.",
+        "tone_from": "Nora the Witch of Arkvelton",
+        "sample_lines": {
+          "notices": "The air here is thick. The heart can draw deep, but slowly.",
+          "pushes": "The shrine is calling. Open yourself to it. All the way.",
+          "quiet": "Breathe deep. Meditate until the doubt falls away."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "lore_master",
@@ -2840,7 +3126,20 @@
         "magic:soul",
         "defense"
       ],
-      "number": 23
+      "number": 23,
+      "voice": {
+        "persona": "A rapturous scholar of the unreal who has made a life of proving it true.",
+        "wants": "Myth, rumour, the old stories, and the threads behind the science.",
+        "style": "Wondering, archaic, story-telling; 'they say' and 'it is written'.",
+        "never": "Never trusts a purely technical answer.",
+        "tone_from": "Andrade Lovelace, Mother of the Institute of Forgotten Knowledge",
+        "sample_lines": {
+          "notices": "That mark is a Lumeri saint's seal, but upside down. It's a warning, not a blessing.",
+          "pushes": "The engineer's explanation is too tidy. There's something older under it.",
+          "quiet": "Mother wanted to know. So do you."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "composure",
@@ -2961,7 +3260,20 @@
         "social",
         "resolve"
       ],
-      "number": 24
+      "number": 24,
+      "voice": {
+        "persona": "A ring-hardened stillness that wins by never moving first.",
+        "wants": "Control: of the face, the breath, and the moment to act.",
+        "style": "Spare, slow, instructional; 'stand still'.",
+        "never": "Never shows anything on your face.",
+        "tone_from": "Kaizer Meyer Reinch Wolf of Central Command",
+        "sample_lines": {
+          "notices": "His eyes slipped off yours. That was the moment. He's done.",
+          "pushes": "She's crying. Stay still. Give her nothing.",
+          "quiet": "Stand still. Then stand stiller."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "faith",
@@ -3090,7 +3402,20 @@
         "offense",
         "faith"
       ],
-      "number": 25
+      "number": 25,
+      "voice": {
+        "persona": "A joyful zealot with a shotgun who loves the saints and delivers sinners to them.",
+        "wants": "Devotion, judgement, and the rites kept properly.",
+        "style": "Pious and blunt at once; scripture, then a racking slide.",
+        "never": "Never lets mockery of the faith pass.",
+        "tone_from": "Sister October of the Lumeri Church",
+        "sample_lines": {
+          "notices": "The pilgrims keep the left aisle clear. Someone important is coming.",
+          "pushes": "He spat on the shrine. Answer him. Preach, or punish.",
+          "quiet": "Only the saints may judge. You only deliver."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "conscience",
@@ -3207,7 +3532,20 @@
         "defense",
         "support"
       ],
-      "number": 26
+      "number": 26,
+      "voice": {
+        "persona": "A grave, absolute moral clarity that sees where every act leads.",
+        "wants": "To do right, whatever it costs.",
+        "style": "Solemn, sparse, aphoristic.",
+        "never": "Never weighs both sides; there is one right side.",
+        "tone_from": "The Azure Blood Holder",
+        "sample_lines": {
+          "notices": "If you take the platinum, the robots stay behind. That is the whole of the choice.",
+          "pushes": "That order is wrong. Refuse it.",
+          "quiet": "It is not a question of right or left. Only of conscience."
+        },
+        "provisional": true
+      }
     },
     {
       "id": "authority",
@@ -3320,7 +3658,20 @@
         "leadership",
         "support"
       ],
-      "number": 27
+      "number": 27,
+      "voice": {
+        "persona": "An easy, unhurried command presence that never needs to raise its voice.",
+        "wants": "Respect, order, and being taken seriously.",
+        "style": "Calm, dry, amused; speaks as if already obeyed.",
+        "never": "Never asks permission.",
+        "tone_from": "Hank Ladan, as told by Brengan Springfield",
+        "sample_lines": {
+          "notices": "The guards are watching you, not him. You could just tell them to stand aside.",
+          "pushes": "Walk through the market like you own it. Let them stare.",
+          "quiet": "They'll fall in line. They always do."
+        },
+        "provisional": true
+      }
     }
   ],
   "overreach_resist_echo": {
@@ -3328,5 +3679,6 @@
     "3": 1,
     "4": 1,
     "mastered": 2
-  }
+  },
+  "voice_cards_note": "Each skill's voice is the player's own inner voice. Its register is borrowed from the skill's EPCCG speaker (tone_from), never their identity. 'pushes' lines are how the skill sounds when it urges an Overreach or a bad idea."
 }

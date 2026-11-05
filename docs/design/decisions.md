@@ -28,7 +28,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 19. **Character creation flow:** Identity → Cores → Skills → Traits → Kit → Lock in. Separate screens for Cores and Skills, so it's clear which skill belongs to which attribute.
 20. **No archetype picker.** You place core points and the screen names your archetype live, with a portrait: Soldier, Scholar or Believer when one core leads; Operator, Crusader or Mystic for two; Drifter when all three are even.
 21. **Skills screen = attribute rows.** One core at a time; each attribute is a row with its three skill cards to the right, each card with room for 4:5 portrait art. Raising a skill auto-raises its Attribute and Core, with the cost shown before the click.
-22. **Pending (proposed, not accepted):** creation gives only 10 skill points, with attributes and cores following automatically; attribute and core points come only from levelling.
+22. **Accepted in rules 1.1:** creation gives only 10 skill points (max 5 in one skill), with attributes and cores following automatically; attribute and core points come only from levelling.
 23. **Colour system (art v1.3).** Skills keep 9 attribute colours. Art uses the pigment; the UI uses a contrast-safe ink of the same hue (Expression and Virtue pigments were about 2.2:1 on the UI). Cores keep amber/cyan/violet for core-level UI. State colours moved off the skill hues: success green `#6FEA77`, MP blue `#5C9EFF`, HP/damage `#F65157` (shared with Endurance on purpose), failure muted, Echo white. → `docs/design/colour-system.md`, `art/style-guide/v1.3/palette.json`.
 24. **Trait and perk icons are white.** The perk rule that mixed requirement colours into one ink is dropped (mixes collided with real attribute colours). Requirements show as skill chips beside the icon.
 25. **Wick is canon:** the EPCCG's mascot, drawn after the 258th Medical Unit's field automata (MPAT's unit). A printed figure, not an NPC. → `docs/lore/Wick.md`.
@@ -36,3 +36,9 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 27. **Skills are abstract figures, not people.** All three Heavenprint portrait sets (Original Heavenprint, First-Patch Revival, New Faces) were painted as skill icons, one character per skill. Playtesters said it made no sense for the player's own skills to be represented by other people in the world, so the skill page moved to faceless abstract figures. The 81 paintings are character portraits in `art/character-portraits/`: First-Patch Revival is the EPCCG cast; the other two are a pool of world characters for NPCs.
 28. **One style guide.** Art v1.3 is a single file, `art/style-guide/v1.3/PHC-Style-Guide.md`; the six overlapping v1.2 files kept drifting apart.
 29. **One main branch.** The art library (`main`) and the game context (`game-context`) were merged so rules, data, lore, UI and art live in one tree.
+30. **Rules 1.1 (5 Nov 2026).** From the gameplay review (`proposals/2026-11-gameplay-fixes.md`):
+    - **Skill modifier = points − 1**, so builds show on the dice; Mastered is +9. Dodge, saves, debuff strength and counter use the modifier; crits are natural 20 (19–20 Aimed or from Hidden).
+    - **Voices replace Inner Voice:** every trained skill can speak through Narrator hooks and engine passive checks, toned after its EPCCG speaker. Disco Elysium's core, at last.
+    - **Overreach is indulge or resist**, no roll: the old 70–90% failure TNs made rolling pointless.
+    - **HP:** +15 per Endurance (was +50), 5 + 2 × Durability per level, so tanks last twice as long, not four times, and conditions matter.
+    - **XP and classes:** level 3 (the class) at the end of session 1; a 5e-like curve to level 20 at about session 51; class ranks at 13 / 18.

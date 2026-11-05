@@ -1,6 +1,6 @@
 # Proposal: gameplay fixes (review points 1–4 and 7)
 
-Status: **draft for Leon.** Nothing in the spec or data changes until this is accepted. After acceptance the order is spec → data → validator, as usual. New numbers are marked *(provisional)* and would go into spec section 14.
+Status: **accepted 5 Nov 2026 and applied as rules 1.1** (spec, then data, validator 0 errors). Leon's answers: dice and voices as recommended; creation simplification accepted; campaigns are **long**, with the basic class inside the first session and a pace to max level like D&D 5e / Pathfinder. So section 7 was applied as: XP table with level 3 at 250 XP and level 20 at about session 51; rank thresholds **13 / 18** (13, not 12, because 10-point creation lets a focused build start at a signature total of 10); advanced classes stay 15 + 9. New numbers are spec items 35–41.
 
 The five fixes fit together. Skills get voices (1). The Overreach becomes a voice pushing you, and you decide whether to listen (2). Skill points count fully on the dice, so builds show (3). HP shrinks so fights end and conditions matter (4). Class pacing is set to the campaign length (7).
 
