@@ -3071,6 +3071,30 @@
         "44": "art/traits/wick/production-v1/exports/44/crawler-blooded.png",
         "40": "art/traits/wick/production-v1/exports/40/crawler-blooded.png"
       }
+    },
+    "old-timer": {
+      "label": "Wick — Old Timer",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/old-timer.png",
+      "sha256": "48e89f878f7f0b634f9706cc3bae4617db4d06599ee25a6eb1d42987c5d19b52",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "old_timer",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/old-timer.png",
+        "128": "art/traits/wick/production-v1/exports/128/old-timer.png",
+        "64": "art/traits/wick/production-v1/exports/64/old-timer.png",
+        "56": "art/traits/wick/production-v1/exports/56/old-timer.png",
+        "48": "art/traits/wick/production-v1/exports/48/old-timer.png",
+        "44": "art/traits/wick/production-v1/exports/44/old-timer.png",
+        "40": "art/traits/wick/production-v1/exports/40/old-timer.png"
+      }
     }
   },
   "character_collections": {

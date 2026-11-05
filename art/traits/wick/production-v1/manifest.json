@@ -1401,6 +1401,29 @@
       },
       "batch": "C",
       "source_sha256": "75fdf0ad623f815301f6c12601de53f037c0da7ef9614935ab53a0952bd0c8dc"
+    },
+    {
+      "id": "old-timer",
+      "data_id": "old_timer",
+      "name": "Old Timer",
+      "family": "traits",
+      "order": 70,
+      "mood": "Comic, Tender",
+      "action": "Wick reclines in a rocking chair, a long drooping beard hooked over its screen, waving one mitten dismissively",
+      "screen": "Unimpressed half-lids",
+      "prop": "Rocking chair",
+      "path": "art/traits/wick/production-v1/old-timer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/old-timer.png",
+        "128": "art/traits/wick/production-v1/exports/128/old-timer.png",
+        "64": "art/traits/wick/production-v1/exports/64/old-timer.png",
+        "56": "art/traits/wick/production-v1/exports/56/old-timer.png",
+        "48": "art/traits/wick/production-v1/exports/48/old-timer.png",
+        "44": "art/traits/wick/production-v1/exports/44/old-timer.png",
+        "40": "art/traits/wick/production-v1/exports/40/old-timer.png"
+      },
+      "batch": "C",
+      "source_sha256": "cd3e30e095ba5bc494aae5c751d5b993b9d8160d91e8b3a89fa750887d9b795f"
     }
   ]
 }
