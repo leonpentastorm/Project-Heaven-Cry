@@ -1424,6 +1424,29 @@
       },
       "batch": "C",
       "source_sha256": "cd3e30e095ba5bc494aae5c751d5b993b9d8160d91e8b3a89fa750887d9b795f"
+    },
+    {
+      "id": "pacifist",
+      "data_id": "pacifist",
+      "name": "Pacifist",
+      "family": "traits",
+      "order": 71,
+      "mood": "Tender",
+      "action": "Wick sits back on its heels, carefully knotting a big ribbon around a sheathed sword so the blade can't be drawn",
+      "screen": "Soft closed-eye smile",
+      "prop": "Ribbon-tied sheathed sword",
+      "path": "art/traits/wick/production-v1/pacifist.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/pacifist.png",
+        "128": "art/traits/wick/production-v1/exports/128/pacifist.png",
+        "64": "art/traits/wick/production-v1/exports/64/pacifist.png",
+        "56": "art/traits/wick/production-v1/exports/56/pacifist.png",
+        "48": "art/traits/wick/production-v1/exports/48/pacifist.png",
+        "44": "art/traits/wick/production-v1/exports/44/pacifist.png",
+        "40": "art/traits/wick/production-v1/exports/40/pacifist.png"
+      },
+      "batch": "C",
+      "source_sha256": "285b3dec7f20f9cd76dc636fc002c322f7c7e664ceef89bd6249b6583d64dd47"
     }
   ]
 }

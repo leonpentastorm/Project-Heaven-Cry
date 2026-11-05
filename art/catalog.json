@@ -3095,6 +3095,30 @@
         "44": "art/traits/wick/production-v1/exports/44/old-timer.png",
         "40": "art/traits/wick/production-v1/exports/40/old-timer.png"
       }
+    },
+    "pacifist": {
+      "label": "Wick — Pacifist",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/pacifist.png",
+      "sha256": "3e911ffa8a9febc8fa3165dd99b4b1947ee3c839e7da86990303f5cdf189a916",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "pacifist",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/pacifist.png",
+        "128": "art/traits/wick/production-v1/exports/128/pacifist.png",
+        "64": "art/traits/wick/production-v1/exports/64/pacifist.png",
+        "56": "art/traits/wick/production-v1/exports/56/pacifist.png",
+        "48": "art/traits/wick/production-v1/exports/48/pacifist.png",
+        "44": "art/traits/wick/production-v1/exports/44/pacifist.png",
+        "40": "art/traits/wick/production-v1/exports/40/pacifist.png"
+      }
     }
   },
   "character_collections": {
