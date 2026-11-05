@@ -80,10 +80,11 @@
     "old-timer",
     "pacifist",
     "moon-hunter",
-    "beast-handler"
+    "beast-handler",
+    "ace-pilot"
   ],
   "catalog_coverage": {
-    "traits": 73,
+    "traits": 74,
     "perks": 2
   },
   "revision_rounds": {

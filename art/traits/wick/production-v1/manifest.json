@@ -1493,6 +1493,29 @@
       },
       "batch": "C",
       "source_sha256": "e571090a085db3abb6c14f08cc0bcdae518151c4c67ddb1dc838a9d1cde96963"
+    },
+    {
+      "id": "ace-pilot",
+      "data_id": "ace_pilot",
+      "name": "Ace Pilot",
+      "family": "traits",
+      "order": 74,
+      "mood": "Heroic, Comic",
+      "action": "Wick leans hard into a bank, gripping a big steering yoke with nothing around it, goggles up, capelet whipping, speed lines streaming",
+      "screen": "Wild grin",
+      "prop": "Steering yoke",
+      "path": "art/traits/wick/production-v1/ace-pilot.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/ace-pilot.png",
+        "128": "art/traits/wick/production-v1/exports/128/ace-pilot.png",
+        "64": "art/traits/wick/production-v1/exports/64/ace-pilot.png",
+        "56": "art/traits/wick/production-v1/exports/56/ace-pilot.png",
+        "48": "art/traits/wick/production-v1/exports/48/ace-pilot.png",
+        "44": "art/traits/wick/production-v1/exports/44/ace-pilot.png",
+        "40": "art/traits/wick/production-v1/exports/40/ace-pilot.png"
+      },
+      "batch": "C",
+      "source_sha256": "cbf2241e7cf4118da26963de505820421921a12b9e8a3489eb10f3323d8d8b16"
     }
   ]
 }

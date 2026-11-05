@@ -3167,6 +3167,30 @@
         "44": "art/traits/wick/production-v1/exports/44/beast-handler.png",
         "40": "art/traits/wick/production-v1/exports/40/beast-handler.png"
       }
+    },
+    "ace-pilot": {
+      "label": "Wick — Ace Pilot",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/ace-pilot.png",
+      "sha256": "a5989b18d518aef797b912484dca317c85036f2939f91d555d8f176a0783a4cb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "ace_pilot",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/ace-pilot.png",
+        "128": "art/traits/wick/production-v1/exports/128/ace-pilot.png",
+        "64": "art/traits/wick/production-v1/exports/64/ace-pilot.png",
+        "56": "art/traits/wick/production-v1/exports/56/ace-pilot.png",
+        "48": "art/traits/wick/production-v1/exports/48/ace-pilot.png",
+        "44": "art/traits/wick/production-v1/exports/44/ace-pilot.png",
+        "40": "art/traits/wick/production-v1/exports/40/ace-pilot.png"
+      }
     }
   },
   "character_collections": {

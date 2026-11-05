@@ -6,7 +6,7 @@
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 279a7bae7b7563fdd24a1eda577f1fcd7499b5ce12767c4d33aa0642b31b4e64  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-785beb24b4809ff003ba6adaac5aeaf5a85183a934fc538de62e816bbe34b2e2  art/catalog.json
+ec086f86530681434d0d4016494e11427632bbe7e339c767bb6ba5c432483e23  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -192,8 +192,9 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-a71990f7c5d3faf43c2f56aebb1df6135815e37753bd767a227111680e373351  art/traits/wick/production-progress.json
+0610f53526d346c952c36ae624b26d4bd5e8db1c7357124edf206d06e760832f  art/traits/wick/production-progress.json
 9e6746fe11e2c0d41184e0c6c63eb7d83cd3c937cfc8ad4485d3c1405f646c5c  art/traits/wick/production-v1/README.md
+a5989b18d518aef797b912484dca317c85036f2939f91d555d8f176a0783a4cb  art/traits/wick/production-v1/ace-pilot.png
 3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a  art/traits/wick/production-v1/augmented.png
 3fb0f35869d7dd730a0f956b7545da688635249b3c2037bf54e49c3ee0cda2fb  art/traits/wick/production-v1/beast-handler.png
 38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3  art/traits/wick/production-v1/blade-recluse.png
@@ -210,6 +211,7 @@ e48ef15aacfc2d174c333700a4f54c826079600807e25966393f3986a1f5499c  art/traits/wic
 a62fb11217093689ca91ccd94efa150b0ad13d30d605ba6f36ffb31407185183  art/traits/wick/production-v1/demolitionist.png
 9033d99591e2a898af82f45fda6ed7255c7351fc39d33300840e911effb80979  art/traits/wick/production-v1/drill-echo.png
 15e00687692bede0c93a7f1255bd57d464cf85a9091585cd5bfcd495bc40649f  art/traits/wick/production-v1/drone-handler.png
+e6cd3dbafa2eab51d5fc51a7f307fbcef9261a4aac7955eb6042fdd543ea3cda  art/traits/wick/production-v1/exports/128/ace-pilot.png
 50e7fc6ca3f8250086bebe27c32ea1dc753ca896b21f489fb6c7775a19ac4a17  art/traits/wick/production-v1/exports/128/augmented.png
 6fa57afb5c23d15479437805576d796e1be1bdf59b83f9b30e4571bf2bd8da07  art/traits/wick/production-v1/exports/128/beast-handler.png
 7a7f23655b1a462dd3f922140670e52993d97de1ceb79d45ba46fc23df68a9fe  art/traits/wick/production-v1/exports/128/blade-recluse.png
@@ -274,6 +276,7 @@ ebd43b0e771b9eb5883ca2612995bd06876c44147de8863b9614190193de9ecd  art/traits/wic
 115ac034441574278876e666ac3369b4d20bd370a37ea79f02c6fef5d5cac613  art/traits/wick/production-v1/exports/128/upper-touched.png
 aa8cc4b3f57b172f1c92bf240c2ce16be378fae8af08d7778eb7dfe84d0aecc1  art/traits/wick/production-v1/exports/128/wanted.png
 12f1a02ed8c26b5a0cd9ac17aacffa2c3d0a53f7b77a164302b5642ace711d2c  art/traits/wick/production-v1/exports/128/worldline-fracture.png
+577227e6b86a15a14f8785f22712819e282c978a1157a597f0a6f0ef6eb56a03  art/traits/wick/production-v1/exports/256/ace-pilot.png
 31e3ac959ed6918f8ffdf67742016b9e834b6c306efb6410e857e8ac7de2bc32  art/traits/wick/production-v1/exports/256/augmented.png
 cc7fd4b2e39de9ae6ec5683b771c94857e5ad806abbd6738dd67b23d713301d4  art/traits/wick/production-v1/exports/256/beast-handler.png
 920775ce7cfdc32a4cdd39d596e4cbc98a482501dba126d7c0a518128171e428  art/traits/wick/production-v1/exports/256/blade-recluse.png
@@ -338,6 +341,7 @@ bb77b5e8463d01cb63fc8e9305585a1c2ef6867a9cdafbf611584564b8fdd04c  art/traits/wic
 ce6db174edc229d8229d99c8ba9cdc1a5c4fca22828be23b67208dccfa148efa  art/traits/wick/production-v1/exports/256/upper-touched.png
 3ce759aba8b8a228481b965ad68dcf3ec82e56b40a08eb20990fd8dd3b148946  art/traits/wick/production-v1/exports/256/wanted.png
 e9d7459772f2279d0501d78daa9aa0d5dd6234f6972bb505a79961c584478d19  art/traits/wick/production-v1/exports/256/worldline-fracture.png
+428fa64939049be542337857c05bd25569827898bbcf0ce8a1162cc4e18e1735  art/traits/wick/production-v1/exports/40/ace-pilot.png
 3b72a7dd61a0ada3ac488593331802c0c10e2cecc1b1c0dbdceab8fa5ba3e5e8  art/traits/wick/production-v1/exports/40/augmented.png
 bd9614f10649ee55fe2a937e003d7b1ebb972c18c9a34d3cd7deef6a4f0195a8  art/traits/wick/production-v1/exports/40/beast-handler.png
 66b5b865ac4fb70156ac7e80070492641e3e9c0d485962b8ac8c052b7e23e335  art/traits/wick/production-v1/exports/40/blade-recluse.png
@@ -402,6 +406,7 @@ f62dd3b4e258f482632346c62802651ee365dc70838137d7ad3a249f49cb13a5  art/traits/wic
 86dcdee0f0f87b2296b1f8cfe70bd47af216c6fc6b5f41727bdf8ae75eb81e37  art/traits/wick/production-v1/exports/40/upper-touched.png
 029ebe2bc5008afe204807feebdeaa2cd385db4bf520fc4fa7394f475b8f9c1b  art/traits/wick/production-v1/exports/40/wanted.png
 91e68d10a9382251381f51f355053ad24c8fec1d884db1595f0296e350b1df89  art/traits/wick/production-v1/exports/40/worldline-fracture.png
+10c8e295ba629d1d9635fdc9a7a396067b0be239fcac80674acd4fc4cd7c3717  art/traits/wick/production-v1/exports/44/ace-pilot.png
 96b326695893d60e4c7a806647efd74e1e3ff12f0595bac87e572739af325c3b  art/traits/wick/production-v1/exports/44/augmented.png
 bff479b18f48de9d924b0b369a05114942552075e0213c3cc3eab0b390669fb7  art/traits/wick/production-v1/exports/44/beast-handler.png
 2744991f0aedf830949e1b3674582a140919bd4d851af3f89d550832cfd0d6aa  art/traits/wick/production-v1/exports/44/blade-recluse.png
@@ -466,6 +471,7 @@ dc614e4c6e3002f3617fb83b9af3797ce8ccbdc1685d8217eb41a5beef2196b2  art/traits/wic
 0b5fd047ce67642ff3424a026ced244729c775da68c4aa274ddd8dee1fd1d0a7  art/traits/wick/production-v1/exports/44/upper-touched.png
 3a9a2866857e673bbf1cdd72387a58940a0fb1b42e2afc534297d99d849c6139  art/traits/wick/production-v1/exports/44/wanted.png
 caf105c1222b6014305292e26e28b12a9b4232ede96f12770b42a79affb0c064  art/traits/wick/production-v1/exports/44/worldline-fracture.png
+d66525bd9201122d69226f55fc151c1a1e436780e9dbf29f39bc9c0778928f34  art/traits/wick/production-v1/exports/48/ace-pilot.png
 9df60b2c84901e6a426f9bdc6f612d6560dab31cbaa91c9ee29e99104fe5ed5d  art/traits/wick/production-v1/exports/48/augmented.png
 c040c4bc6adebd398f768211ef909d9b0bf8d311c9c40138373d63d7bae56c56  art/traits/wick/production-v1/exports/48/beast-handler.png
 7d42d1c8f78f821634fe7468b8dc546febbbd7b8938838c492e29f00fb0df461  art/traits/wick/production-v1/exports/48/blade-recluse.png
@@ -530,6 +536,7 @@ fdcb1ad9e8571c2de8c73e908de8feb8d0f00a4387f510d4a50f116916f4454a  art/traits/wic
 8fc7dd62dcde2d96b9f50267e57b44a651b8269a068136605733595c8f991800  art/traits/wick/production-v1/exports/48/upper-touched.png
 6e9cca954451359d399c26804ddcd780cedb1d4b57deec899368c373d94c1c0d  art/traits/wick/production-v1/exports/48/wanted.png
 e15577d9452a54c677f06ea400bb799db661648101aa23a6bda737e47599601e  art/traits/wick/production-v1/exports/48/worldline-fracture.png
+d5d1c7f3fddc4c0a17b7540dc38242bd83ae2ab5cc387cfcf5a236010ea0a54f  art/traits/wick/production-v1/exports/56/ace-pilot.png
 3107db96f35e26d9a8e5b23ca52e071f9aace26b7d8c2ebd42a1996c3914e496  art/traits/wick/production-v1/exports/56/augmented.png
 72f52381e07aa2ac4177ac4431d0be0f1e2aa20e6adb92698a1e262a9a1de3e8  art/traits/wick/production-v1/exports/56/beast-handler.png
 7ef101ae64167c1163d31ff7d1f30cb16f5ad1004f1560a68381d2f2abcbbaf0  art/traits/wick/production-v1/exports/56/blade-recluse.png
@@ -594,6 +601,7 @@ c92d2f6d634bcd4ae7cd57c01a6a9dc7f4bbeedb58b6ceb54d277ad8bd22f75b  art/traits/wic
 6f24379d622b93f0b43fe7a911caff8413e9d06f9b6189001d44786739eec5ba  art/traits/wick/production-v1/exports/56/upper-touched.png
 1b121896d7e19e5964b14b20aa040e60da712cf5bb8e96ced21280928232bda3  art/traits/wick/production-v1/exports/56/wanted.png
 531e3aa875dbe0511965411f259694997ac560b0bd228de95824bce3bab7c041  art/traits/wick/production-v1/exports/56/worldline-fracture.png
+2f40f27647809b89536e2a414a2e2ffbdc7567c91597083f46d6149a9054677f  art/traits/wick/production-v1/exports/64/ace-pilot.png
 12c003cecccc5bd7fdadb9f71ca88ca72a3754073ec7b3846d2802905aa1ebd3  art/traits/wick/production-v1/exports/64/augmented.png
 62957e47054646b8624ae22aed72490119cd03570c0d35d872443f3d173d6313  art/traits/wick/production-v1/exports/64/beast-handler.png
 fca37f4cdb84a920aca315e863a2fd03651a66118334f32768b2ee47f29c4be9  art/traits/wick/production-v1/exports/64/blade-recluse.png
@@ -678,7 +686,7 @@ d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37  art/traits/wic
 444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe  art/traits/wick/production-v1/lowland-born.png
 5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098  art/traits/wick/production-v1/lunarshine.png
 f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4  art/traits/wick/production-v1/machine-faced.png
-3e5455f3a614cb4507acd78b7708050076dc061759b2d807c13a6c133e8e66f5  art/traits/wick/production-v1/manifest.json
+c34757fb9a4c8bcbb25b66070e2a7d03593753aebe88033c8b7a99ecfd535d34  art/traits/wick/production-v1/manifest.json
 744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91  art/traits/wick/production-v1/market-blood.png
 d3ae20d433e911f02170ed92767fd36f6f0f9bdb0264c754b6ecd2e3a2fcffb7  art/traits/wick/production-v1/moon-hunter.png
 e40ae58d03174161828357d41afaded741634bf0358e71548dcc72ca0a122b3b  art/traits/wick/production-v1/occultist.png
@@ -701,13 +709,13 @@ a1d132d5890d9177f4da7b542e9264a6fd5cad7c21f8050f63a0288ecc26afbc  art/traits/wic
 f411d6d31b2b0eefe2f144f55a18b8a00479fc6af71bd4a5285c98ecbcc31be1  art/traits/wick/production-v1/previews/batch-b-48px.png
 e1310f34ede43fde815586999c744fc210e91d1e9cd2d228dd353a065d9c69bc  art/traits/wick/production-v1/previews/batch-b-56px.png
 8a062fdba26bdca9f09317b34a103968fa781757b32fcf39849254c7f7a58047  art/traits/wick/production-v1/previews/batch-b-light-dark-64px.png
-4957afbba6882601c04f5eba6b032c837f701fc427b4f11f8556dddc9ffa1840  art/traits/wick/production-v1/previews/batch-c-128px.png
-b9de2b66786c298b61f617624490a3f5be2cd4f6ed366803d9e05a3a410591d0  art/traits/wick/production-v1/previews/batch-c-40px.png
-e2d6231ef385c5a3fc189424459cb6d0a7155eea1270ca994e0fe74dd0906571  art/traits/wick/production-v1/previews/batch-c-44px.png
-68aa113e088686d75af99656226cc624fb3ad2405089e891f02791d2fb0781d3  art/traits/wick/production-v1/previews/batch-c-48px.png
-635fa5726cdef80b1d04f63cc0692c0b926d1f5fecd32ca85a8153fca51abc3e  art/traits/wick/production-v1/previews/batch-c-56px.png
-96dc89c0d04a67e0d0382d257fbeb7957178f0d1b10c4a73b964a202b5bb2406  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
-9853978ff90c8e0a50e64d756fe0b8942441cf1e5d878ae98f4f99110b5f10e1  art/traits/wick/production-v1/previews/latest.png
+657a9ac3b62c8366ecbc5cc8d57ab756d599620f7052c6457c1de574eaac8668  art/traits/wick/production-v1/previews/batch-c-128px.png
+e9e0bfd20ac1617cfa8da64afb1f7636b14ac67ce537a0c9895acf3da21ca60e  art/traits/wick/production-v1/previews/batch-c-40px.png
+08705496a1165c116e97c176aa54bb258d0d03d9722f6cebb2b0ada6fee4d972  art/traits/wick/production-v1/previews/batch-c-44px.png
+f6d7c931eabc29765652ae857f82539e21ef4808b2272f5bd872831d315e9042  art/traits/wick/production-v1/previews/batch-c-48px.png
+d0fc78cfba42750d5df865efdd48f8baa254ee8e835d6be65b68d7e54ec242af  art/traits/wick/production-v1/previews/batch-c-56px.png
+46c04d565fe8649563c26e804455022be68e8228bad8ea314b96aac3c30e4867  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
+986c5c6e404d81d358db7e8495a3ea174d21930faa9fe2910be3ad43bed21702  art/traits/wick/production-v1/previews/latest.png
 902bc507c6d0acecfb529b14ac173dc1d8b1a3964aee6e6a2a45190c83dec031  art/traits/wick/production-v1/revisions/v2/README.md
 cc4601921e1e5e379cc051209918cbb398b26476db18cf14f26ea86b44477844  art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png
 ceeae9e2b6259ca2a0a06bb6a739ee94681c7bbd82a04400e5ffa27988f2334f  art/traits/wick/production-v1/revisions/v2/exports/128/daggerfall-veteran.png
