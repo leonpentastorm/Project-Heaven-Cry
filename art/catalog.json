@@ -2927,6 +2927,30 @@
         "44": "art/traits/wick/production-v1/exports/44/demolitionist.png",
         "40": "art/traits/wick/production-v1/exports/40/demolitionist.png"
       }
+    },
+    "drone-handler": {
+      "label": "Wick — Drone Handler",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/drone-handler.png",
+      "sha256": "15e00687692bede0c93a7f1255bd57d464cf85a9091585cd5bfcd495bc40649f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "drone_handler",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/drone-handler.png",
+        "128": "art/traits/wick/production-v1/exports/128/drone-handler.png",
+        "64": "art/traits/wick/production-v1/exports/64/drone-handler.png",
+        "56": "art/traits/wick/production-v1/exports/56/drone-handler.png",
+        "48": "art/traits/wick/production-v1/exports/48/drone-handler.png",
+        "44": "art/traits/wick/production-v1/exports/44/drone-handler.png",
+        "40": "art/traits/wick/production-v1/exports/40/drone-handler.png"
+      }
     }
   },
   "character_collections": {

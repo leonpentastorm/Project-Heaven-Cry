@@ -1263,6 +1263,29 @@
       },
       "batch": "C",
       "source_sha256": "523eb1d872c9dae40a462991d16e64922822bf8b574a28c4a5f93b5064a4c172"
+    },
+    {
+      "id": "drone-handler",
+      "data_id": "drone_handler",
+      "name": "Drone Handler",
+      "family": "traits",
+      "order": 64,
+      "mood": "Tender",
+      "action": "Wick lies on its belly kicking its feet, chin in its mittens, gazing up at a little drone hovering overhead with a tiny parcel",
+      "screen": "Heart eyes",
+      "prop": "Drone",
+      "path": "art/traits/wick/production-v1/drone-handler.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/drone-handler.png",
+        "128": "art/traits/wick/production-v1/exports/128/drone-handler.png",
+        "64": "art/traits/wick/production-v1/exports/64/drone-handler.png",
+        "56": "art/traits/wick/production-v1/exports/56/drone-handler.png",
+        "48": "art/traits/wick/production-v1/exports/48/drone-handler.png",
+        "44": "art/traits/wick/production-v1/exports/44/drone-handler.png",
+        "40": "art/traits/wick/production-v1/exports/40/drone-handler.png"
+      },
+      "batch": "C",
+      "source_sha256": "2e7963a74f50e2e21453629f52eb1755e1ec15f2fc98524f304d523a5f4e43ff"
     }
   ]
 }

@@ -70,10 +70,11 @@
     "cover-story",
     "inner-ring-heir",
     "slicer",
-    "demolitionist"
+    "demolitionist",
+    "drone-handler"
   ],
   "catalog_coverage": {
-    "traits": 63,
+    "traits": 64,
     "perks": 2
   },
   "revision_rounds": {
