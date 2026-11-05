@@ -92,10 +92,16 @@ class Component extends DCLogic {
       ['ENGINEERS\u2019 SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]].map(([name, note, l, t2, w, h]) => ({ name, note,
       style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + w + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' }));
 
-    const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '20 kg'],
-      ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5']].map(([k, v]) => ({ k, v }));
-    const gear = [['Service pistol (.32 Decrkm)', '20 dmg · 8 tiles · 9/12'], ['Stim injector', '3 stims'], ['Medic plate', 'Armour Class II'], ['Field kit', 'Supplies 3'], ['Surgical manipulators', 'Right hand']].map(([name, note]) => ({ name, note }));
-    const bio = [['Unit', '258th Medical Unit'], ['Origin', 'The Factory · Thousand-Planet frontier'], ['Race', 'Robot'], ['Age', '7'], ['Height', '180 cm'], ['Blood type', 'Oil'],
+    // Leadership from Authority (spec: 0 Unfit, 1-2 Squad, 3-4 Platoon, 5+ Command); carry 20 kg + 5 kg x (Strength - 1).
+    const au = PTS.authority || 0, lead = au >= 5 ? 'Command' : au >= 3 ? 'Platoon' : au >= 1 ? 'Squad' : 'Unfit';
+    const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '9 / 20 kg'],
+      ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5'], ['Leadership', lead], ['Karma', '0 · Neutral']].map(([k, v]) => ({ k, v }));
+    const rep = [['258th Medical Unit', 'Known', '+24'], ['Thousand World Legion', 'Unknown', '0'], ['The engineers', 'Hostile', '−22']].map(([k, band, v]) => ({ k, v: band + ' ' + v }));
+    // Slots follow the 2020 sheet (main hand, off hand, head, torso, hands, footwear, backpack); torso armour sets Armour Class.
+    const gear = [['MAIN HAND', 'Service pistol (.32 Decrkm)', '20 dmg · 8 tiles · 9/12'], ['OFF HAND', 'Empty', ''], ['HEAD', 'Empty', ''], ['TORSO', 'Medic plate', 'Armour Class II'],
+      ['HANDS', 'Surgical manipulators', 'Built in'], ['FOOTWEAR', 'Mag-lock feet', 'Built in'], ['BACKPACK', 'Stim injector', '3 stims · 1 kg'], ['BACKPACK', 'Field kit', 'Supplies 3 · 4 kg']]
+      .map(([slot, name, note]) => ({ slot, name, note, nameStyle: 'font-weight: 600; color: ' + (name === 'Empty' ? '#7F8BA1' : '#E7EBF3') }));
+    const bio = [['Original name', 'M1.4 8R4-D83-RRY'], ['Unit', '258th Medical Unit'], ['Origin', 'The Factory · Thousand-Planet frontier'], ['Race', 'Robot'], ['Age', '7'], ['Height', '180 cm'], ['Blood type', 'Oil'],
       ['Gender', 'Plug'], ['Main hand', 'Right'], ['Trivia', 'Can\'t tell a joke. Cooks well. Never leaves a teammate behind.']].map(([k, v]) => ({ k, v }));
 
     let roll = {};
@@ -130,7 +136,7 @@ class Component extends DCLogic {
       waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
       throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
       ...epccgVals(this), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
-      status, gear, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
+      status, rep, gear, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),
       reroll: () => { if (this.state.echo < 1) return; const ix = this.state.rollIx + 1; this.setState({ echo: this.state.echo - 1, rollIx: ix, throws: this.state.throws + 1, roll: { ...this.state.roll, die: DICE[ix % DICE.length] } }); },

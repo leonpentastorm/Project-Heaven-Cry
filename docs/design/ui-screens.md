@@ -9,8 +9,8 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 - **Header:** wordmark, Story/Combat switch, Narrator chip ("AI · your key"), room code, settings.
 - **Left: character panel.** Portrait, HP/MP/XP bars, Echo, Supplies and Karma. Five tabs, which together cover the 2020 Excel character sheet:
   - **Skills:** core tabs, attributes and skills, modifiers, signature tags.
-  - **Status:** derived combat stats, traits, perks, buffs and debuffs.
-  - **Gear:** both hands, weapon mastery, 9 armour slots, backpack weight and inventory.
+  - **Status:** derived combat stats, Leadership, Karma, Reputation per faction, traits, perks, buffs and debuffs.
+  - **Gear:** both hands, weapon mastery, the armour slots (head, torso, hands, footwear…; torso sets Armour Class), backpack load against carry weight, and inventory. The prototype shows the slot list; weapon mastery waits on the spec (the One Blade trait refers to it, but the spec doesn't define it yet).
   - **Magic:** Sigils, Soul spells, Blessing.
   - **Bio:** the Character Bio sheet fields.
 

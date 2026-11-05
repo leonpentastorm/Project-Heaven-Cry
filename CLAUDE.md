@@ -25,7 +25,7 @@ Living versions (edit there, then re-export here):
 | Recovered Design Notes (2020) | https://claude.ai/artifact/8zMzay23SbWCiPC97cDbuC |
 | UI design canvas (play screens + character creation) | https://claude.ai/artifact/9kVVNppZERUaCxBCMWbZgM |
 
-The 2020 originals (`Official_EPCCG.docx`, `PHC_Official_Character_Sheet.xlsx`, the MPAT sheet `M1.4_8R4-D83-RRY_A5.xlsx`) live in the claude.ai Project "Project Heaven Cry". `source/2020/` holds what could be exported (see its README).
+The 2020 originals (`Official_EPCCG.docx`, the trait book, `PHC_Official_Character_Sheet.xlsx` and the MPAT sheet `M1.4_8R4-D83-RRY_A5.xlsx`) are in `source/2020/` (see its README).
 
 ## Repo map
 
