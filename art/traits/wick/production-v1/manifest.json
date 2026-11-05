@@ -166,6 +166,29 @@
       },
       "batch": "A",
       "source_sha256": "4a7aa38c7d8e873eec1737d904ceffd971d3beaf25f539e8ae25dcda88049a87"
+    },
+    {
+      "id": "machine-faced",
+      "data_id": "machine_faced",
+      "name": "Machine-Faced",
+      "family": "traits",
+      "order": 11,
+      "mood": "Eerie, Comic",
+      "action": "Wick bends at the waist toward a big round hand mirror held at arm's length; the reflection shows the same blank screen staring back",
+      "screen": "Flat dash eyes, flat mouth",
+      "prop": "Hand mirror",
+      "path": "art/traits/wick/production-v1/machine-faced.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/machine-faced.png",
+        "128": "art/traits/wick/production-v1/exports/128/machine-faced.png",
+        "64": "art/traits/wick/production-v1/exports/64/machine-faced.png",
+        "56": "art/traits/wick/production-v1/exports/56/machine-faced.png",
+        "48": "art/traits/wick/production-v1/exports/48/machine-faced.png",
+        "44": "art/traits/wick/production-v1/exports/44/machine-faced.png",
+        "40": "art/traits/wick/production-v1/exports/40/machine-faced.png"
+      },
+      "batch": "A",
+      "source_sha256": "8a3935b3500fd02e1a8d926613347225d489e6531bab930752af72de83b6940f"
     }
   ]
 }

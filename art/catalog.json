@@ -1783,6 +1783,30 @@
         "44": "art/traits/wick/production-v1/exports/44/the-mask.png",
         "40": "art/traits/wick/production-v1/exports/40/the-mask.png"
       }
+    },
+    "machine-faced": {
+      "label": "Wick — Machine-Faced",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/machine-faced.png",
+      "sha256": "f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "machine_faced",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/machine-faced.png",
+        "128": "art/traits/wick/production-v1/exports/128/machine-faced.png",
+        "64": "art/traits/wick/production-v1/exports/64/machine-faced.png",
+        "56": "art/traits/wick/production-v1/exports/56/machine-faced.png",
+        "48": "art/traits/wick/production-v1/exports/48/machine-faced.png",
+        "44": "art/traits/wick/production-v1/exports/44/machine-faced.png",
+        "40": "art/traits/wick/production-v1/exports/40/machine-faced.png"
+      }
     }
   },
   "character_collections": {
