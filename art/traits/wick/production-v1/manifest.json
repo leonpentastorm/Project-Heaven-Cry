@@ -994,6 +994,29 @@
       },
       "batch": "C",
       "source_sha256": "c80cb7dcc60e02dd0d1083aa6e51ea4f4e7144e6867934d856894eb6d994e787"
+    },
+    {
+      "id": "born-officer",
+      "data_id": "born_officer",
+      "name": "Born Officer",
+      "family": "traits",
+      "order": 53,
+      "mood": "Proud, Comic",
+      "action": "Wick barks into an oversized loudhailer, the blast so strong its own capelet blows straight back",
+      "screen": "Shouting",
+      "prop": "Loudhailer",
+      "path": "art/traits/wick/production-v1/born-officer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/born-officer.png",
+        "128": "art/traits/wick/production-v1/exports/128/born-officer.png",
+        "64": "art/traits/wick/production-v1/exports/64/born-officer.png",
+        "56": "art/traits/wick/production-v1/exports/56/born-officer.png",
+        "48": "art/traits/wick/production-v1/exports/48/born-officer.png",
+        "44": "art/traits/wick/production-v1/exports/44/born-officer.png",
+        "40": "art/traits/wick/production-v1/exports/40/born-officer.png"
+      },
+      "batch": "C",
+      "source_sha256": "021e204d1cfef83b7a1a924d937c52cc744a3b91159f46e941e2442a5fe265ae"
     }
   ]
 }

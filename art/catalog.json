@@ -2647,6 +2647,30 @@
         "44": "art/traits/wick/production-v1/exports/44/squad-anchor.png",
         "40": "art/traits/wick/production-v1/exports/40/squad-anchor.png"
       }
+    },
+    "born-officer": {
+      "label": "Wick — Born Officer",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/born-officer.png",
+      "sha256": "39716f2b9f97045dd60d83ea7adc682619073a29f822971e04864c3d55051230",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "born_officer",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/born-officer.png",
+        "128": "art/traits/wick/production-v1/exports/128/born-officer.png",
+        "64": "art/traits/wick/production-v1/exports/64/born-officer.png",
+        "56": "art/traits/wick/production-v1/exports/56/born-officer.png",
+        "48": "art/traits/wick/production-v1/exports/48/born-officer.png",
+        "44": "art/traits/wick/production-v1/exports/44/born-officer.png",
+        "40": "art/traits/wick/production-v1/exports/40/born-officer.png"
+      }
     }
   },
   "character_collections": {

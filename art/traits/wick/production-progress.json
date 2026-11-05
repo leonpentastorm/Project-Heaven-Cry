@@ -59,10 +59,11 @@
     "wanted",
     "company-man",
     "field-medic",
-    "squad-anchor"
+    "squad-anchor",
+    "born-officer"
   ],
   "catalog_coverage": {
-    "traits": 52,
+    "traits": 53,
     "perks": 2
   },
   "revision_rounds": {
