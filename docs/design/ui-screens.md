@@ -38,6 +38,7 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 
 - Initiative strip across the top.
 - **Grid:** 16 × 11 tiles of 1.5 m, with move range, half and full cover, round party tokens and square hostile tokens, and an Overwatch line.
+- **Moving:** with Move selected, the reachable tiles are highlighted. Hovering one draws the cheapest path as white arrows (around the hull and other units; wreck tiles count double) and a badge on the destination with the AP it costs and the tiles walked ("−2 AP · 4 tiles"); the AP bar previews the spend. Movement is tiles per AP (MPAT: 2, from Agility 3); tiles paid for but not walked stay available that turn and show as "Paid".
 - **Turn panel:** the AP bar previews the selected action's cost. The action list scrolls and is grouped as Class, Movement, Attack and Utility (20 actions). **Hover for detail**: rule text, AP cost and requirements. Rank-locked moves are shown locked. Confirm and End turn.
 - **Below:** target card and a short combat log in prose.
 
@@ -64,7 +65,7 @@ Steps: **Identity → Archetype → Skills → Traits → Kit → Lock in.** (Cr
 6. **Lock in:** the full **personnel record**, stamped with the AHOC seal, so a player sees everything about the character before committing:
    - portrait, name and the identity fields (race, gender, blood type, main hand, association, favourite song, last dream, history);
    - the origin in full (home, upbringing, what you know, how people see you, suggested skills, hook);
-   - level-1 stats from the spec's formulas (Max HP, HP per level, Max MP, AP, Echo, initiative, tiles per Move, Defense, carry, vision, saves, healing given);
+   - level-1 stats from the spec's formulas (Max HP, HP per level, Max MP, AP, Echo, initiative, Movement (tiles per AP), Defense, carry, vision, saves, healing given);
    - every Core, Attribute and Skill with points, modifier and Mastery;
    - each trait with its icon, flavour and every upside and downside;
    - the kit, plus the Essence of Experience everyone starts with;

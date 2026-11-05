@@ -81,7 +81,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "Half Tiles per Move.",
+      "text": "Half Movement.",
       "effects": [
         {
           "op": "stat_mod",

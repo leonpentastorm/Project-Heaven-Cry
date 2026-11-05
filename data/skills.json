@@ -2958,7 +2958,7 @@
           "name": "Nobody Left Behind",
           "category": "Passive",
           "mastery": 2,
-          "text": "Carry a Downed ally at full Tiles per Move, and stabilise them for 1 AP.",
+          "text": "Carry a Downed ally at full Movement, and stabilise them for 1 AP.",
           "effects": [
             {
               "op": "stat_mod",

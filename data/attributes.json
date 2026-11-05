@@ -112,7 +112,7 @@
         },
         {
           "stat": "move",
-          "formula": "3 + 0.5 × (Agility − 1) tiles per Move",
+          "formula": "1 + 0.5 × (Agility − 1) tiles per AP (Movement), minimum 0.5",
           "per_point_above_1": 0.5
         }
       ]

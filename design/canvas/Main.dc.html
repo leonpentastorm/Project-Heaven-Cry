@@ -470,7 +470,7 @@ class Component extends DCLogic {
 
     // Leadership from Authority (spec: 0 Unfit, 1-2 Squad, 3-4 Platoon, 5+ Command); carry 20 kg + 5 kg x (Strength - 1).
     const au = PTS.authority || 0, lead = au >= 5 ? 'Command' : au >= 3 ? 'Platoon' : au >= 1 ? 'Squad' : 'Unfit';
-    const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '9 / 20 kg'],
+    const status = [['Defense', '12'], ['Initiative', '+0'], ['Movement', '2 tiles per AP'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '9 / 20 kg'],
       ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5'], ['Leadership', lead], ['Karma', '0 · Neutral']].map(([k, v]) => ({ k, v }));
     const rep = [['258th Medical Unit', 'Known', '+24'], ['Thousand World Legion', 'Unknown', '0'], ['The engineers', 'Hostile', '−22']].map(([k, band, v]) => ({ k, v: band + ' ' + v }));
     // Slots follow the 2020 sheet (spec: Equipment slots); outer torso sets Armour Class; the Veil is reserved.

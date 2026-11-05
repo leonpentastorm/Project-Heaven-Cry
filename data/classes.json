@@ -1486,7 +1486,7 @@
           "name": "Called Shot",
           "ap_cost": 3,
           "uses": "at_will",
-          "text": "Name head, arm or leg and shoot at -2. On a hit, apply that injury result (head: Dazed; arm: -2 to attacks with it; leg: half Tiles per Move) without needing a critical.",
+          "text": "Name head, arm or leg and shoot at -2. On a hit, apply that injury result (head: Dazed; arm: -2 to attacks with it; leg: half Movement) without needing a critical.",
           "effects": [
             {
               "op": "tn_mod",
@@ -1712,7 +1712,7 @@
           "name": "Banner Thread",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "With no torso armour (Class 0) you get +2 Defense and +1 Tiles per Move.",
+          "text": "With no torso armour (Class 0) you get +2 Defense and +1 Movement.",
           "effects": [
             {
               "op": "stat_mod",

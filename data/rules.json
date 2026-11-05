@@ -292,7 +292,7 @@
       "hp_per_level": "5 + 2*durability",
       "ap_per_turn": 6,
       "initiative_bonus": "(agility-1) + mod(reaction_speed)",
-      "tiles_per_move": "3 + 0.5*(agility-1)",
+      "movement": "1 + 0.5*(agility-1) tiles per AP, minimum 0.5",
       "carry_kg": "20 + 5*(strength-1)",
       "defense": "10 + dodge",
       "dodge": "max(0, mod(athletics))",
@@ -447,13 +447,14 @@
     "actions": [
       {
         "id": "move",
-        "ap": 1,
-        "text": "move up to Tiles per Move; difficult terrain costs double"
+        "ap": "1 per Movement tiles",
+        "text": "each AP buys your Movement in tiles; a difficult-terrain tile counts double; paid-for tiles not yet walked carry over to the rest of the turn; cost = ceil((tiles - carried) / Movement)",
+        "provisional": true
       },
       {
         "id": "sprint",
         "ap": 2,
-        "text": "move 3 x Tiles per Move",
+        "text": "move 3 x Movement tiles",
         "blocked_by": [
           "armor_class_v"
         ]
@@ -656,7 +657,7 @@
           "name": "Heavy",
           "value": 15,
           "penalty": {
-            "tiles_per_move": -1
+            "movement": -0.5
           }
         },
         {
@@ -664,7 +665,7 @@
           "name": "Assault",
           "value": 20,
           "penalty": {
-            "tiles_per_move": -1,
+            "movement": -0.5,
             "dodge": -1
           }
         },
@@ -673,7 +674,7 @@
           "name": "Juggernaut",
           "value": 25,
           "penalty": {
-            "tiles_per_move": -2,
+            "movement": -1,
             "no_sprint": true
           }
         }
@@ -716,7 +717,7 @@
             6
           ],
           "location": "leg",
-          "effect": "half tiles_per_move",
+          "effect": "half movement",
           "duration": "until treated"
         }
       ]

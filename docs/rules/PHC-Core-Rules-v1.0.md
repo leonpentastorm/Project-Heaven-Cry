@@ -129,7 +129,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | HP per level | 5 + 2 × Durability |
 | AP per turn | 6 |
 | Initiative bonus | (Agility − 1) + Reaction Speed modifier |
-| Tiles per Move | 3 + 0.5 × (Agility − 1) |
+| Movement (tiles per AP) | 1 + 0.5 × (Agility − 1); never below 0.5 |
 | Carry weight | 20 kg + 5 kg × (Strength − 1) |
 | Defense | 10 + Dodge, where Dodge = mod(Athletics), minimum 0 |
 | Counter bonus | mod(Raw Power), minimum 0 |
@@ -227,14 +227,16 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 **Reactions.** Each character gets one reaction per round, used outside their turn: an opportunity attack, or a perk that says "reaction." Reactions cost no AP unless stated.
 
+**Moving.** Movement is tiles per AP: at Agility 1 every tile costs 1 AP; Agility 3 moves 2 tiles per AP, Agility 5 three, Agility 7 four. Moving N tiles costs N ÷ Movement AP, rounded up. Tiles you've paid for but not walked carry over to the rest of the turn, so half a Movement is never wasted. Before you commit, the grid shows your path and its AP cost.
+
 **Opportunity attacks.** When an enemy leaves your melee reach without Disengaging, you may make one free melee attack against it as your reaction.
 
 **Action costs**
 
 | Action | AP |
 |---|---|
-| Move (your Tiles per Move; difficult terrain costs double) | 1 |
-| Sprint (3 × your Tiles per Move) | 2 |
+| Move: each AP buys your Movement in tiles (difficult terrain: each tile counts double) | 1 per Movement tiles |
+| Sprint (3 × your Movement in tiles) | 2 |
 | Disengage (move 1 tile, no opportunity attacks) | 1 |
 | Drop prone / stand up | 1 |
 | Melee attack | 2 |
@@ -299,15 +301,15 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | 0 | None | 0 | none |
 | I | Light | 5 | none |
 | II | Medium | 10 | none |
-| III | Heavy | 15 | −1 Tiles per Move |
-| IV | Assault | 20 | −1 Tiles per Move, −1 Dodge |
-| V | Juggernaut | 25 | −2 Tiles per Move, no Sprint |
+| III | Heavy | 15 | −0.5 Movement |
+| IV | Assault | 20 | −0.5 Movement, −1 Dodge |
+| V | Juggernaut | 25 | −1 Movement, no Sprint |
 
 **Equipment slots** (from the 2020 sheet): main hand, off hand, head, head accessory, outer torso, inner torso, lower torso, legs, hands, footwear, **Veil**, and a backpack. The armour in the **outer torso** slot sets your Armour Class. Pieces in the other slots carry their own small effects, listed per item.
 
 **The Veil** is a special equipment type with its own slot. Its rules aren't written yet: the engine records what's worn there and applies nothing, and the Narrator reads the item's text.
 
-**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Tiles per Move. Arm and leg injuries last until treated.
+**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated.
 
 **Shields** are temporary HP, used up before real HP, and gone at the end of combat unless a rule says otherwise. Healing can't raise HP above its maximum.
 
@@ -409,7 +411,7 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Bleeding | Body | 5 damage at the start of each turn; a stim ends it | 3 rounds |
 | Burning | Body | 10 damage at the start of each turn | until someone spends 1 AP to put it out |
 | Weakened | Body | −25% damage dealt | 2 rounds |
-| Slowed | Body | half Tiles per Move | 2 rounds |
+| Slowed | Body | half Movement | 2 rounds |
 | Nausea | Body | −1 AP | 2 rounds |
 | Pinned | Body | can't move; −2 to hit | until the end of your next turn |
 | Stunned | Body | lose your next turn | 1 turn |
@@ -595,7 +597,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 9. **Armour slots.** The slot list is settled (the 2020 sheet's, see Attacks, damage and armour). Head, hands, feet and the other non-torso pieces still have no items. The Veil slot is reserved: rules to come.
 10. **Braced and Emplaced bonuses** aren't stated. *Data: Emplaced gives +2 to attacks and halves Recoil.*
 11. **Crossbow** reload cost per bolt.
-12. **Fractional tiles per Move.** *Data: rounds down.*
+12. ~~Fractional tiles per Move.~~ *Settled: Movement is tiles per AP, and paid-for tiles carry over within the turn (item 48).*
 13. **Prayer cooldown** outside combat.
 14. **Class resources** need numbers: Momentum, Guard, Supplies, Marks and toxins, and how Marksman Heat interacts with weapon Heat.
 15. **Sigil stroke pool.** Hold the Stroke needs a maximum-strokes stat that doesn't exist yet.
@@ -646,3 +648,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25.
 47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
+48. **Movement is tiles per AP** (Leon: moving 4 tiles costs 4 AP unless you have good Agility). Restores the 2020 rule: Movement 1 + 0.5 × (Agility − 1) tiles per AP, never below 0.5, paid-for tiles carry over within the turn. Replaces 1.1's "3 + 0.5 × (Agility − 1) tiles for 1 AP". Check the pace in playtest (an Agility 1 character spending 4 of 6 AP to cross 4 tiles), and the converted armour penalties (−0.5 / −0.5 / −1 Movement).
