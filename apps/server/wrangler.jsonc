@@ -1,0 +1,12 @@
+{
+  // PHC: the web game plus multiplayer rooms (one Durable Object per room).
+  "name": "project-heaven-cry",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "account_id": "0ccc1209e3e871897b9ab6feeef79210",
+  "workers_dev": true,
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/room/*", "/health"] },
+  "durable_objects": { "bindings": [{ "name": "ROOMS", "class_name": "Room" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room"] }],
+  "observability": { "enabled": true }
+}

@@ -1,0 +1,272 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
+<nav aria-label="Mode" style="display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F"><button type="button" aria-current="page" style="padding: 8px 16px; border-radius: 7px; border: 0; background: #1C2536; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">STORY</button><button type="button" onClick="{{toCombat}}" disabled="{{noCombat}}" style="padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px; cursor: pointer">COMBAT</button></nav>
+<span style="{{narrChipStyle}}">{{narrChip}}</span><sc-if value="{{narrError}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{retry}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{retryLabel}}</button></sc-if>
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ROOM {{code}} · {{costText}}</span><button type="button" onClick="{{toRoom}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Room</button>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ECHO</span>
+<sc-for list="{{echoPips}}" as="e" hint-placeholder-count="3"><span style="{{e.style}}" aria-hidden="true"></span></sc-for>
+<span style="font-size: 13px; font-weight: 700; color: #FFFFFF">{{echo}} / 3</span>
+</div>
+</header>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 0; min-height: 0">
+
+<aside aria-label="Character sheet" style="flex: 1 1 340px; max-width: 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
+<sc-if value="{{multi}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px"><sc-for list="{{myChars}}" as="c" hint-placeholder-count="2"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.name}}</button></sc-for></div></sc-if>
+<div style="display: flex; gap: 14px">
+<button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{pc.name}}" style="{{zoomBtn}}"><img src="{{pc.img}}" alt="{{pc.name}}" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F"></button>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">{{pc.name}}</span>
+<span style="font-size: 12px; color: #A3AEC2; line-height: 1.4">{{pc.line1}}</span>
+<span style="font-size: 12px; color: #A3AEC2; line-height: 1.4">{{pc.line2}}</span>
+<sc-if value="{{canLevel}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{toLevelUp}}" style="align-self: flex-start; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{levelLabel}}</button></sc-if>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 34px minmax(0, 1fr) 76px; gap: 8px; align-items: center">
+<span style="{{b.labelStyle}}">{{b.label}}</span>
+<div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div>
+<span style="font-size: 12px; text-align: right; color: #C9D3E3">{{b.text}}</span>
+</div>
+</sc-for>
+</div>
+<div role="tablist" aria-label="Sheet" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+
+<sc-if value="{{tabSkills}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 6px">
+<sc-for list="{{coreTabs}}" as="c" hint-placeholder-count="3"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #A3AEC2">Ask a skill what it thinks: once per scene each.</span>
+<sc-for list="{{sheetSkills}}" as="s" hint-placeholder-count="9">
+<div style="display: grid; grid-template-columns: 36px minmax(0, 1fr) 28px 52px 54px; gap: 8px; align-items: center">
+<button type="button" onClick="{{s.zoom}}" aria-label="Enlarge the {{s.name}} skill portrait" style="{{zoomBtn}}"><img src="{{s.img}}" alt="" style="width: 36px; height: 45px; object-fit: cover; border-radius: 4px; background: #000"></button>
+<span style="display: flex; flex-direction: column; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.attr}}</span></span>
+<button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{s.helpStyle}}">?</button>
+<span style="{{s.modStyle}}">{{s.pts}} · {{s.mod}}</span>
+<button type="button" onClick="{{s.ask}}" disabled="{{s.noAsk}}" aria-label="Ask {{s.name}}" style="{{s.askStyle}}">{{s.askLabel}}</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{tabStatus}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
+<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{r.k}}</span><span>{{r.v}}</span></div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; padding-top: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">REPUTATION</span>
+<sc-for list="{{rep}}" as="r" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{r.k}}</span><span>{{r.v}}</span></div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</span>
+<sc-if value="{{noTraits}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No traits.</span></sc-if><sc-for list="{{traits}}" as="t" hint-placeholder-count="1"><div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 44px; height: 44px"></button><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">{{t.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{t.text}}</span></span></div></sc-for>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">PERKS</span>
+<sc-if value="{{noPerks}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">None yet. Each Mastery level (3, 5, 7, 9 points) gives a perk step.</span></sc-if>
+<sc-for list="{{perks}}" as="k" hint-placeholder-count="2">
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
+<button type="button" onClick="{{k.zoom}}" aria-label="Enlarge the {{k.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{k.icon}}" alt="" style="width: 44px; height: 44px; flex: none"></button>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 700">{{k.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{k.tier}}</span><span style="{{k.chipStyle}}">{{k.chip}}</span></span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{k.text}}</span>
+</span>
+</div>
+</sc-for>
+<sc-if value="{{hasMp}}" hint-placeholder-val="{{true}}"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 10px">MASTERED PERK IN REACH</span>
+<!--MASTERED:mp--></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{tabGear}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{gear}}" as="g" hint-placeholder-count="8"><div style="display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; font-size: 13px"><span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{g.slot}}</span><span style="{{g.nameStyle}}">{{g.name}}</span><span style="color: #A3AEC2">{{g.note}}</span></div></sc-for>
+<span style="font-size: 12px; color: #A3AEC2">Empty: {{emptySlots}}</span>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<span style="font-size: 12px; color: #A3AEC2">{{load}}</span>
+<button type="button" disabled="{{eoe.locked}}" title="{{eoe.why}}" style="margin-left: auto; min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 12px; font-weight: 600">Crack the Essence</button>
+</div>
+<span style="font-size: 12px; line-height: 1.4; color: #7F8BA1">{{eoe.why}}</span>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 8px">WEAPON MASTERY</span>
+<sc-if value="{{noMastery}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No kills yet. Weapon mastery grows with kills per weapon family.</span></sc-if>
+<sc-for list="{{mastery}}" as="m" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px"><span style="font-weight: 700">{{m.name}}</span><span>{{m.level}} · {{m.bonus}}</span></div>
+<div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{m.fill}}"></div></div>
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: #A3AEC2"><span>{{m.kills}}</span><span>{{m.perk}}</span></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{tabBio}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{bio}}" as="b" hint-placeholder-count="8"><div style="display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{b.k}}</span><span>{{b.v}}</span></div></sc-for>
+</div>
+</sc-if>
+</aside>
+
+<main aria-label="Story" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
+<figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
+<img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}">
+<figcaption style="position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px; background: rgba(10, 13, 19, 0.82); display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; letter-spacing: 0.24em; color: #A3AEC2">{{hero.kicker}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{hero.title}}</span>
+</figcaption>
+</figure>
+<sc-for list="{{stream}}" as="e" hint-placeholder-count="6">
+<sc-if value="{{e.isScene}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 12px; padding-top: 8px"><span style="flex: none; font-size: 12px; font-weight: 700; letter-spacing: 0.22em; color: #A3AEC2">{{e.text}}</span><span style="flex: 1; height: 1px; background: #232D3F"></span></div></sc-if>
+<sc-if value="{{e.isNarration}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 12px"><sc-for list="{{e.paras}}" as="p" hint-placeholder-count="2"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC">{{p.text}}</p></sc-for></div></sc-if>
+<sc-if value="{{e.isPlayer}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 12px; align-items: flex-start"><img src="{{e.img}}" alt="" style="{{e.imgStyle}}"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 17px; line-height: 1.6; color: #C9D3E3"><span style="{{e.nameStyle}}">{{e.head}}</span> {{e.text}}<sc-if value="{{e.roll}}" hint-placeholder-val="{{false}}"><span style="font-family: 'Chakra Petch', sans-serif; font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2"> · ASKS FOR A ROLL</span></sc-if></p></div></sc-if>
+<sc-if value="{{e.isVoice}}" hint-placeholder-val="{{false}}"><div style="{{e.style}}"><button type="button" onClick="{{e.zoom}}" aria-label="Enlarge the skill portrait" style="{{zoomBtn}}"><img src="{{e.img}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none"></button><div style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="{{e.headStyle}}">{{e.head}}</span><p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 17px; line-height: 1.55">{{e.text}}</p></div></div></sc-if>
+<sc-if value="{{e.isCheck}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 14px; color: #A3AEC2"><span style="{{e.headStyle}}">{{e.head}}</span> · {{e.text}}</p></sc-if>
+<sc-if value="{{e.isNote}}" hint-placeholder-val="{{false}}"><p style="{{e.noteStyle}}">{{e.text}}</p></sc-if>
+</sc-for>
+<sc-if value="{{thinking}}" hint-placeholder-val="{{false}}"><div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F"><img src="{{narratorImg}}" alt="" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover"><span style="font-family: 'Spectral', serif; font-style: italic; font-size: 16px; color: #C9D3E3">{{thinkingText}}</span></div></sc-if>
+<sc-if value="{{narrError}}" hint-placeholder-val="{{false}}"><div role="alert" style="display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #F65157"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #F65157">THE NARRATOR IS STUCK</span><span style="font-size: 14px; line-height: 1.5; color: #E7EBF3">{{narrErrorText}}</span></div></sc-if>
+<sc-for list="{{pushes}}" as="o" hint-placeholder-count="0">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #EB95B7">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<button type="button" onClick="{{o.zoom}}" aria-label="Enlarge the skill portrait" style="{{zoomBtn}}"><img src="{{o.img}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none"></button>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="{{o.headStyle}}">{{o.head}}</span>
+<p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 18px; line-height: 1.55">{{o.text}}</p>
+<span style="font-size: 13px; color: #A3AEC2">{{o.consequence}}</span>
+</div>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" onClick="{{o.indulge}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Indulge · +1 Echo</button>
+<button type="button" onClick="{{o.resist}}" disabled="{{o.cantResist}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">{{o.resistLabel}}</button>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="position: sticky; bottom: 0; border-top: 1px solid #232D3F; background: #0A0D13; padding: 14px 32px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-if value="{{hasChecks}}" hint-placeholder-val="{{false}}"><span style="width: 100%; font-size: 11px; letter-spacing: 0.18em; color: #FFFFFF">THE NARRATOR CALLS FOR A CHECK · CLICK TO ROLL</span></sc-if>
+<sc-for list="{{actions}}" as="a" hint-placeholder-count="4">
+<button type="button" onClick="{{a.roll}}" style="{{a.style}}"><span style="font-weight: 600">{{a.title}}</span><span style="{{a.tagStyle}}">{{a.tag}}</span></button>
+</sc-for>
+</div>
+<span style="{{turnStyle}}">{{turnText}}</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<textarea aria-label="What do you do?" rows="2" value="{{draft}}" onChange="{{onDraft}}" disabled="{{cantSpeak}}" placeholder="{{placeholder}}" style="flex: 1 1 360px; min-height: 52px; padding: 10px 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 16px; resize: vertical"></textarea>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<button type="button" onClick="{{polish}}" disabled="{{cantPolish}}" title="{{polishTitle}}" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{polishLabel}}</button>
+<button type="button" onClick="{{send}}" disabled="{{cantSpeak}}" style="min-height: 40px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Send</button>
+</div>
+</div>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #C9D3E3; cursor: pointer">
+<input type="checkbox" checked="{{pickRoll}}" onChange="{{togglePick}}" style="width: 20px; height: 20px; accent-color: #E7EBF3">
+Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(it chooses the skills; the engine rolls)</span>
+</label>
+</div>
+</main>
+
+<aside aria-label="Map and speaking order" style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{zoneLabel}}</span>
+<button type="button" onClick="{{openArea}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Area map</button></div>
+<button type="button" onClick="{{toCombat}}" aria-label="{{zoneAria}}" style="{{zoneStyle}}">
+<div style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 1px">
+<sc-for list="{{mini}}" as="m" hint-placeholder-count="176"><span style="{{m.style}}"></span></sc-for>
+</div>
+<span style="{{zoneNoteStyle}}">{{zoneNote}}</span>
+</button>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
+<sc-for list="{{order}}" as="o" hint-placeholder-count="3">
+<div style="display: flex; gap: 10px; align-items: center"><button type="button" onClick="{{o.zoom}}" aria-label="Enlarge {{o.name}}" style="{{zoomBtn}}"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"></button><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
+</sc-for>
+<div style="display: flex; gap: 8px">
+<button type="button" onClick="{{pass}}" disabled="{{cantSpeak}}" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button>
+<button type="button" onClick="{{skipRest}}" disabled="{{cantSkip}}" title="Host: skip players who are away" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Skip the rest</button>
+</div>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">Everyone speaks once; then the Narrator answers all of it together.</span>
+</aside>
+</div>
+
+<sc-if value="{{area}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="Area map" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(900px, 100%); box-sizing: border-box">
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">AREA MAP · PLANET M813 · OUTPOST-813</span><button type="button" onClick="{{closeArea}}" style="margin-left: auto; min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close</button></div>
+<div style="position: relative; height: 480px; border-radius: 12px; background: #0B0F16; border: 1px solid #232D3F; overflow: hidden">
+<sc-for list="{{regions}}" as="r" hint-placeholder-count="6"><div style="{{r.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">{{r.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{r.note}}</span></div></sc-for>
+<button type="button" onClick="{{toCombat}}" style="font-family: inherit; text-align: left; cursor: pointer; position: absolute; left: 47%; top: 52%; width: 22%; height: 26%; box-sizing: border-box; border: 2px solid #F65157; border-radius: 10px; background: rgba(246, 81, 87, 0.08); padding: 8px; text-decoration: none; color: #F65157; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">⚠ COMBAT ZONE · REAR PAD</span><span style="font-size: 11px; color: #E7EBF3">Round 2 · click to enter</span></button>
+<span style="position: absolute; left: 54%; top: 63%; width: 12px; height: 12px; border-radius: 50%; background: #7FD4FF; border: 2px solid #0A0D13" aria-hidden="true"></span>
+<span style="position: absolute; left: 57%; top: 66%; width: 12px; height: 12px; border-radius: 50%; background: #FF9EC7; border: 2px solid #0A0D13" aria-hidden="true"></span>
+</div>
+<span style="font-size: 12px; color: #A3AEC2">The campaign runs on this map. When a fight starts, the Narrator opens a combat zone here; everyone in it moves to the grid.</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{dice}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="Dice table" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(760px, 100%); box-sizing: border-box">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 11px; letter-spacing: 0.2em; color: #A3AEC2">{{roll.kicker}}</span>
+<span style="{{roll.headStyle}}">{{roll.head}}</span>
+</div>
+<button type="button" onClick="{{toggleCustom}}" aria-pressed="{{customPressed}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{customLabel}}</button>
+</div>
+
+<div style="{{tableStyle}}">
+<span style="position: absolute; left: 16px; top: 12px; font-size: 11px; letter-spacing: 0.18em; color: rgba(231, 235, 243, 0.55)">{{tableName}}</span>
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg width="72" height="72" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="20" font-weight="700" fill="{{skin.ink}}">20</text></svg>
+<span style="font-size: 12px; color: rgba(231, 235, 243, 0.7)">In your hand</span>
+</div>
+</sc-if>
+<sc-if value="{{rolledA}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; animation: phcThrow 0.9s cubic-bezier(.2,.7,.3,1) both">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="d20 shows {{roll.die}}"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" font-weight="700" fill="{{skin.ink}}">{{roll.die}}</text></svg>
+</div>
+</sc-if>
+<sc-if value="{{rolledB}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; animation: phcThrow2 0.9s cubic-bezier(.2,.7,.3,1) both">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="d20 shows {{roll.die}}"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" font-weight="700" fill="{{skin.ink}}">{{roll.die}}</text></svg>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{custom}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TABLE</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{tables}}" as="t" hint-placeholder-count="6"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}"><span style="{{t.swatch}}"></span><span>{{t.name}}</span></button></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">DICE</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{skins}}" as="k" hint-placeholder-count="6"><button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}"><span style="{{k.swatch}}"></span><span>{{k.name}}</span></button></sc-for>
+</div>
+</div>
+<span style="grid-column: 1 / -1; font-size: 12px; color: #A3AEC2">Your choices follow you to every room. Co-op players see each other's dice on their own tables.</span>
+</div>
+</sc-if>
+
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; min-height: 48px">
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}"><span style="font-size: 16px; color: #C9D3E3">{{roll.pre}}</span></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; color: #C9D3E3">{{roll.math}}</span><span style="{{roll.verdictStyle}}">{{roll.verdict}}</span></span></sc-if>
+<div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap">
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{throwDie}}" style="min-height: 46px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Throw the d20</button></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{reroll}}" disabled="{{noReroll}}" style="min-height: 46px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">◆ Spend Echo · throw again</button></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{closeDice}}" style="min-height: 46px; padding: 0 20px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Continue</button></sc-if>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+<!--EPCCG-->
+<!--LIGHTBOX-->
+</div>

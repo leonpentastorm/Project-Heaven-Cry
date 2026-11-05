@@ -1,0 +1,87 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+<header style="display: flex; align-items: center; gap: 16px; padding: 14px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ROOM {{code}}</span><span style="{{connStyle}}">{{connText}}</span>
+<button type="button" onClick="{{copyInvite}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{copyLabel}}</button><button type="button" onClick="{{leave}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Leave</button>
+</header>
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 28px; padding: 28px 32px">
+<section aria-label="Players and squad" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">The squad</h1>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PLAYERS · UP TO 4 · EACH CAN PLAY MORE THAN ONE CHARACTER</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{players}}" as="p" hint-placeholder-count="4">
+<div style="{{p.style}}"><span style="{{p.badgeStyle}}">{{p.initials}}</span><span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{p.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{p.note}}</span></span></div>
+</sc-for>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
+<sc-for list="{{squad}}" as="s" hint-placeholder-count="4">
+<div style="{{s.style}}">
+<div style="display: flex; gap: 12px">
+<sc-if value="{{s.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{s.zoom}}" aria-label="Enlarge {{s.name}}" style="{{zoomBtn}}"><img src="{{s.img}}" alt="" style="width: 84px; height: 105px; object-fit: cover; border-radius: 8px; background: #000"></button></sc-if>
+<sc-if value="{{s.noImg}}" hint-placeholder-val="{{false}}"><span style="display: grid; place-items: center; width: 84px; height: 105px; border-radius: 8px; border: 1px dashed #3B475D; color: #A3AEC2; font-size: 12px">NO PORTRAIT</span></sc-if>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="{{s.ownerStyle}}">{{s.owner}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 21px; font-weight: 600">{{s.name}}</span>
+<span style="font-size: 12px; color: #C9D3E3; line-height: 1.4">{{s.line}}</span>
+<span style="{{s.stateStyle}}">{{s.state}}</span>
+<sc-if value="{{s.canRemove}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{s.remove}}" style="align-self: flex-start; min-height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; cursor: pointer">Take back</button></sc-if>
+</div>
+</div>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; border: 1px dashed #3B475D; justify-content: center">
+<button type="button" onClick="{{create}}" disabled="{{cantAdd}}" style="display: grid; place-items: center; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Create a character</button>
+<button type="button" onClick="{{toggleBring}}" disabled="{{cantAdd}}" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Bring a saved character</button>
+<sc-if value="{{bringOpen}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><sc-if value="{{noSaved}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No locked-in characters saved in this browser yet.</span></sc-if><sc-for list="{{saved}}" as="c" hint-placeholder-count="2"><button type="button" onClick="{{c.bring}}" style="display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 4px 8px; border-radius: 8px; border: 1px solid #232D3F; background: #10151F; color: #E7EBF3; font-family: inherit; text-align: left; cursor: pointer"><img src="{{c.img}}" alt="" style="width: 30px; height: 38px; object-fit: cover; border-radius: 4px"><span style="display: flex; flex-direction: column"><span style="font-weight: 700">{{c.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{c.line}}</span></span></button></sc-for></div></sc-if>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHERE IT STARTS · THE EARTH SECTOR</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{starts}}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.short}}</button></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #10151F; border: 1px solid #232D3F">
+<div style="position: relative">
+<img src="{{start.img}}" alt="{{start.title}}" style="{{start.imgStyle}}">
+<span style="position: absolute; right: 12px; top: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(10, 13, 19, 0.8); font-size: 11px; color: #A3AEC2">{{start.artNote}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 18px 20px">
+<span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">{{start.kicker}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">{{start.title}}</span>
+<sc-for list="{{start.lore}}" as="l" hint-placeholder-count="2"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.65; color: #DCE2EC">{{l.text}}</p></sc-for>
+<span style="font-size: 13px; color: #A3AEC2">{{start.meta}}</span>
+</div>
+</div>
+</div>
+</section>
+<aside aria-label="Narrator" style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHO NARRATES?</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2"><button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="font-size: 17px; font-weight: 700">{{m.name}}</span><span style="font-size: 13px; color: #A3AEC2; line-height: 1.4">{{m.desc}}</span></button></sc-for>
+</div>
+<sc-if value="{{guestAI}}" hint-placeholder-val="{{false}}"><div style="padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; font-size: 14px; line-height: 1.5; color: #C9D3E3">{{hostName}} runs the AI Narrator on their own key. You just play.</div></sc-if>
+<sc-if value="{{hostAI}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">PROVIDER<select disabled style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"><option>Anthropic</option><option>OpenAI (later)</option><option>Google (later)</option><option>OpenRouter (later)</option><option>Local (later)</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">API KEY<input type="password" value="{{key}}" onChange="{{onKey}}" autocomplete="off" placeholder="sk-ant-… · stays in this browser" style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">MODEL<select value="{{model}}" onChange="{{onModel}}" style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"><sc-for list="{{models}}" as="o" hint-placeholder-count="4"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">THINKING EFFORT<select value="{{effort}}" onChange="{{onEffort}}" style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"><option value="low">Low · fastest</option><option value="medium">Medium · recommended</option><option value="high">High · slowest</option></select></label>
+<label style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #C9D3E3"><input type="checkbox" checked="{{remember}}" onChange="{{onRemember}}"> Remember the key in this browser</label>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">The key goes only to Anthropic. The engine still rolls every die and owns every number. {{costNote}}</span>
+</div>
+</sc-if>
+<sc-if value="{{isHuman}}" hint-placeholder-val="{{false}}">
+<div style="padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; font-size: 14px; line-height: 1.5; color: #C9D3E3">You take the Narrator seat: a private screen with voice hooks, the area map tools and every player's passed lines. The engine still handles dice, grid and numbers.</div>
+</sc-if>
+<h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">TONE</h2>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{tones}}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}">{{t.name}}</button></sc-for>
+</div>
+<button type="button" onClick="{{startSession}}" disabled="{{notReady}}" style="{{startStyle}}">{{startLabel}}</button>
+</aside>
+</div>
+<!--LIGHTBOX-->
+</div>

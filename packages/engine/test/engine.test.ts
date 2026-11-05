@@ -83,6 +83,8 @@ function play(seed: string) {
   act({ type: 'narrator/turn', turn: { narration: 'Keel blocks the ramp.', checks: [{ charId: mpat.id, skills: ['authority', 'camaraderie'], tn: 12, stakes: 'Stare him down.' }], xp: [{ charId: 'all', source: 'quest', amount: 250 }] } });
   expect(g.story.await).toBe('rolls');
   act({ type: 'check/roll', checkId: g.checks[0].id });
+  expect(g.story.await).toBe('rolls');
+  act({ type: 'check/accept', checkId: g.checks[0].id });
   expect(g.story.await).toBe('narrator');
   expect(g.characters[mpat.id].level).toBe(3);
   const cls = eligibleClasses(g.characters[mpat.id].skills)[0].id;

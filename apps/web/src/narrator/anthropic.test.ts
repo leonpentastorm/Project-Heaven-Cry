@@ -1,0 +1,56 @@
+import { describe, expect, it } from 'vitest';
+import { apply, newGame, ARCHETYPES, type GameState } from '@engine';
+import { anthropicProvider } from './anthropic';
+import { RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt } from './context';
+
+function game(): GameState {
+  let g = newGame('ABC123', { id: 'host', name: 'Leon' });
+  const a = ARCHETYPES.find((x: any) => x.id === 'field_medic')!;
+  g = apply(g, { type: 'char/add', sheet: { name: 'MPAT', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } }, 'host');
+  return apply(g, { type: 'session/start' }, 'host');
+}
+const TURN = { narration: 'The pad hums.', sceneTitle: 'The rear pad', hooks: [], checks: [], overreach: [], xp: [], deeds: [], combat: null, endScene: null };
+const ok = (body: any) => new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json', 'request-id': 'req_test' } });
+const message = { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: 'end_turn', stop_sequence: null,
+  content: [{ type: 'text', text: JSON.stringify(TURN) }], usage: { input_tokens: 1200, output_tokens: 300, cache_read_input_tokens: 20000, cache_creation_input_tokens: 0 } };
+
+describe('Anthropic Narrator adapter', () => {
+  it('sends one cached, schema-bound request from the browser and parses the turn', async () => {
+    const calls: { url: string; headers: Headers; body: any }[] = [];
+    const fake = (async (url: any, init: any) => { calls.push({ url: String(url), headers: new Headers(init.headers), body: JSON.parse(init.body) }); return ok(message); }) as typeof fetch;
+    const { turn, usage } = await anthropicProvider('sk-test', 'claude-opus-5-5', 'medium', fake).turn(game());
+    expect(turn.narration).toBe('The pad hums.');
+    const c = calls[0];
+    expect(c.url).toContain('api.anthropic.com/v1/messages');
+    expect(c.headers.get('anthropic-dangerous-direct-browser-access')).toBe('true');
+    expect(c.headers.get('authorization')).toBe('Bearer sk-test'); // SDK 1.x sends the player's key as a bearer token
+    expect(c.body.model).toBe('claude-opus-5-5');
+    expect(c.body.system).toHaveLength(3);
+    expect(c.body.system.every((b: any) => b.cache_control?.type === 'ephemeral')).toBe(true);
+    expect(c.body.output_config.format.type).toBe('json_schema');
+    expect(c.body.output_config.effort).toBe('medium');
+    expect(c.body.output_config.format.schema.required).toContain('narration');
+    expect(c.body.thinking).toBeUndefined();
+    expect(c.body.temperature).toBeUndefined();
+    expect(c.body.fallbacks).toBe('default');
+    expect(usage.costUsd).toBeCloseTo((1200 * 4 + 20000 * 0.2 + 300 * 20) / 1e6, 6);
+  });
+  it('retries without the fallback option if the API rejects it', async () => {
+    const bodies: any[] = [];
+    const fake = (async (_u: any, init: any) => { const b = JSON.parse(init.body); bodies.push(b);
+      return b.fallbacks ? new Response(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'fallbacks not supported here' } }), { status: 400, headers: { 'content-type': 'application/json' } }) : ok(message); }) as typeof fetch;
+    const { turn } = await anthropicProvider('sk-test', 'claude-opus-5-5', 'low', fake).turn(game());
+    expect(turn.sceneTitle).toBe('The rear pad');
+    expect(bodies.length).toBe(2); expect(bodies[1].fallbacks).toBeUndefined();
+  });
+  it('explains a bad key in plain words', async () => {
+    const fake = (async () => new Response(JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }), { status: 401, headers: { 'content-type': 'application/json' } })) as typeof fetch;
+    await expect(anthropicProvider('bad', 'claude-opus-5-5', 'low', fake).turn(game())).rejects.toThrow(/rejected the API key/);
+  });
+  it('keeps the context inside the token budget', () => {
+    const g = game(), approx = (s: string) => Math.round(s.length / 4);
+    const sizes = { rules: approx(RULES_PROMPT), campaign: approx(campaignPrompt(g)), party: approx(partyPrompt(g)), turn: approx(turnPrompt({ ...g, story: { ...g.story, work: { kind: 'opening' } } })) };
+    console.log('approx tokens', sizes);
+    expect(sizes.rules + sizes.campaign + sizes.party + sizes.turn).toBeLessThan(40000);
+  });
+});

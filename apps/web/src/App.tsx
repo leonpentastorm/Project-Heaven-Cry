@@ -1,0 +1,52 @@
+// Routes between the screens. Each screen is a prototype template plus its logic (src/screens/*), rendered by the
+// Design Component runtime (src/dc/runtime.tsx). A thin bar shows the connection and any rule message.
+import React from 'react';
+import { makeScreen } from './dc/runtime';
+import { expand } from './screens/shared';
+import { getState, subscribe, type Screen } from './game/store';
+import homeT from './templates/home.template.html?raw';
+import createT from './templates/create.template.html?raw';
+import roomT from './templates/room.template.html?raw';
+import mainT from './templates/main.template.html?raw';
+import combatT from './templates/combat.template.html?raw';
+import levelupT from './templates/levelup.template.html?raw';
+import ultimateT from './templates/ultimate.template.html?raw';
+import { HomeLogic } from './screens/home';
+import { CreateLogic } from './screens/create';
+import { RoomLogic } from './screens/room';
+import { MainLogic } from './screens/main';
+import { CombatLogic } from './screens/combat';
+import { LevelUpLogic } from './screens/levelup';
+import { UltimateLogic } from './screens/ultimate';
+
+const SCREENS: Record<Screen, React.ComponentType<any>> = {
+  home: makeScreen(expand(homeT), HomeLogic as any),
+  create: makeScreen(expand(createT), CreateLogic as any),
+  room: makeScreen(expand(roomT), RoomLogic as any),
+  main: makeScreen(expand(mainT), MainLogic as any),
+  combat: makeScreen(expand(combatT), CombatLogic as any),
+  levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
+  ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
+};
+
+export function App() {
+  const st = React.useSyncExternalStore(subscribe, getState);
+  const Screen = SCREENS[st.screen];
+  React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
+  // Keep the newest story lines in view when the player is already near the bottom.
+  const n = st.game?.story.entries.length || 0;
+  React.useEffect(() => {
+    if (st.screen !== 'main') return;
+    const nearBottom = window.innerHeight + window.scrollY > document.body.scrollHeight - 400;
+    if (nearBottom) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, [n, st.screen, st.game?.narrator.busy]);
+  const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
+  return (
+    <>
+      {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
+      <Screen key={st.screen + (st.levelupChar || '')} tick={st} />
+      {bar && <div role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{bar}</div>}
+      {st.toast && <div role="alert" style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 70, maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid #F65157', color: '#E7EBF3', fontSize: 14, boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{st.toast.text}</div>}
+    </>
+  );
+}

@@ -1,0 +1,132 @@
+// The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
+// 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
+// then, uncached: memory, the recent transcript, and this turn's job.
+import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel } from '@engine';
+import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
+import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
+import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
+import m813 from '../../../../docs/lore/MPAT-and-M813.md?raw';
+import { STARTS } from '../game/starts';
+
+const TRAIT = Object.fromEntries(TRAITS.map((t: any) => [t.id, t]));
+
+export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
+
+THE SPLIT
+- The engine rolls every die, applies damage, tracks HP, AP, XP, levels and conditions, runs the combat grid and enemy turns. Never invent a roll result, never say a number changed unless the engine reported it.
+- You describe the world, play every NPC, set difficulties (TN), attach voice hooks, call Overreach, award XP within the allowed ranges, record deeds for combo perks, start fights and close scenes. You reply with ONE JSON object in the required schema each turn; the engine validates every field and drops anything outside the rules.
+
+TURNS
+- Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Address every player's action in your narration; keep each player's character at the centre of their own beat.
+- narration: second person plural when addressing the party, present tense, vivid and specific. 90 to 220 words. No headings, no lists, no dice talk, no meta commentary. End on something the players can act on.
+- When an action's outcome is uncertain and interesting, don't resolve it: request a check (checks[]) and narrate the lead-up only. The engine rolls when the player clicks, then you get the results next turn and narrate the outcome. Use 1 to 3 skills per check (combined checks are allowed). TN is one of 8 Easy, 12 Standard, 16 Hard, 20 Heroic. Ask for at most one check per character per turn; skip checks for trivial or impossible actions.
+- On a natural 20 add a benefit; on a natural 1 add a complication.
+
+VOICES (the heart of the game)
+- Every skill with 1+ point is a private inner voice in its character's head (voice cards below). Each turn add 2 to 5 hooks[]: something a skill would notice or want in this beat. Each hook has a skill id, a TN (8/12/16/20; lower = more obvious), a truth flag (true, partial, misleading; misleading hooks sound just as sure), and the line itself: one or two sentences IN THAT SKILL'S VOICE, addressed to the character ("you"), following the voice card's persona and style. The engine shows a line only to players whose passive score (10 + skill modifier) meets the TN, at most 2 per player. Spread hooks across skills the party actually has.
+
+OVERREACH
+- A skill with 5+ points can push when its trigger happens (listed under each character). Then add an overreach[] entry with the push in the skill's voice. The player chooses to indulge (the consequence happens, +1 Echo) or resist (spends Echo). At most once per scene per skill; use it sparingly, at dramatic moments.
+
+XP (per character, or charId "all")
+- Sources and allowed amounts: dialogue 25-100 (a scene won through talk), discovery 25-75 (a secret, a place, a truth), quest 50-300 (an objective completed). The engine awards combat XP itself. Pacing: session 1 (about one story scene and one fight) should reach about 250 XP per character, so classes arrive at level 3. Award XP when it is earned, with a short reason.
+
+COMBO PERKS (deeds)
+- When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
+
+FIGHTS
+- When violence breaks out, start a fight with combat: give it a name, a map (rear_pad for the Outpost-813 rear landing pad, yard for anything else), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
+- Enemy tiers: ${ENEMIES.map((e: any) => `${e.id} (HP ${e.hp}, Defense ${e.defense}, attack +${e.attack_bonus}, armour ${e.armour})`).join('; ')}.
+- Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
+
+SCENES
+- sceneTitle: set a short new title (2-6 words) when the scene changes location or time; otherwise an empty string. endScene: when a scene closes, a 1-3 sentence summary of what matters later (facts, NPCs, promises, open threads); otherwise null.
+
+WORLD RULES THAT NEVER BREAK
+- The Unspoken Name: no real-world (real Earth) person, brand, place or work is ever named in the world. Celestials may imitate things; characters never name the originals.
+- In-universe language only. The world is a simulation, but NPCs must not learn it (the Knowing); keep that truth as subtext.
+- Tone: NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them. The tragedy belongs to the NPCs.
+- Keep traits that are deliberately ugly in clean in-world language.
+
+OUTPUT
+- Reply with the JSON object only. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
+
+export function campaignPrompt(g: GameState): string {
+  const st = STARTS.find((s) => s.id === g.settings.start) || STARTS[0];
+  return [
+    `CAMPAIGN START: ${st.title} (${st.kicker})`, st.lore.join('\n'), st.meta,
+    `TONE CHOSEN BY THE HOST: ${g.settings.tone}.`,
+    st.id === 'm813' ? '\nM813 SOURCE (the canon behind this one-shot; the incident is history the players are about to live):\n' + m813 : '',
+    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + worldBible,
+    '\nTHE EARTH SECTOR AND ORIGINS:\n' + sectorEarth,
+    '\nTHE EPCCG CAST AND FACTIONS:\n' + cast,
+  ].join('\n');
+}
+
+const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
+export function characterBrief(g: GameState, c: Character): string {
+  const p = g.players.find((x) => x.id === c.owner);
+  const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
+  const traits = c.traits.map((t) => TRAIT[t] ? `${TRAIT[t].name}: ${String(TRAIT[t].text).replace(/\n/g, ' ')}` : t).join(' | ') || 'none';
+  const perks = c.perks.filter((x) => PERK[x.id]?.tier !== 'ultimate').map((x) => `${PERK[x.id].name} (${x.tier})`).join(', ') || 'none';
+  const over = pts(c).filter(([, n]) => n >= 5).map(([id]) => `${SKILL[id].name}: ${(SKILL[id] as any).overreach?.text || ''}`).join(' | ') || 'none yet';
+  const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
+  const id = c.identity || {};
+  return `CHARACTER ${c.name} (charId ${c.id}), played by ${p?.name || '?'}${c.dead ? ' — DEAD' : ''}
+  Origin: ${c.origin}. Level ${c.level} (${c.xp} XP; next level at ${xpForLevel(c.level + 1)}). Class: ${c.classId ? CLASS[c.classId].name : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
+  HP ${c.hp}/${maxHp(c)}. Echo ${c.echo}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([, v]) => v).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}.
+  Skills: ${skills}.
+  Traits: ${traits}
+  Perks: ${perks}. Overreach triggers: ${over}
+  Voices:
+${voices}`;
+}
+
+export function partyPrompt(g: GameState): string {
+  const combos = PERKS.filter((p: any) => p.tier === 'achieved').map((p: any) => `${p.id} (${p.skills.map((s: string) => SKILL[s].name).join(' + ')} 5 each): deed "${p.deed}"`).join('\n');
+  return 'THE PARTY\n' + Object.values(g.characters).map((c) => characterBrief(g, c)).join('\n\n') + '\n\nSKILL IDS: ' + SKILLS.map((s) => s.id).join(', ') + '\n\nCOMBO PERKS (perkId, skills, deed):\n' + combos;
+}
+
+/** The uncached part: memory, recent transcript, and what this call must do. */
+export function turnPrompt(g: GameState): string {
+  const w = g.story.work!;
+  const recent = g.story.entries.filter((e) => !e.to).slice(-40).map((e) => {
+    if (e.kind === 'player') return `[${g.players.find((p) => p.id === e.who)?.name || 'Player'} as ${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
+    if (e.kind === 'narration') return `[Narrator] ${e.text}`;
+    if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
+    if (e.kind === 'scene') return `[New scene] ${e.text}`;
+    return `[${e.kind}] ${e.text}`;
+  }).join('\n');
+  const choices = g.overreach.filter((o) => o.choice).map((o) => `${g.characters[o.charId]?.name} ${o.choice === 'resist' ? 'resisted' : 'indulged'} ${SKILL[o.skill].name}'s push: "${o.push}"`).join('\n');
+  const job = w.kind === 'opening'
+    ? 'This is the OPENING of session 1. Set the first scene (give a sceneTitle), introduce the situation from the campaign start, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
+    : w.kind === 'round' ? `Round ${g.story.round}: every player has acted (see the transcript's last [Player] lines). Answer all of them together. Request checks where outcomes are uncertain.`
+    : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
+    : `The fight is over. Engine summary: ${w.note || ''}. Narrate the aftermath and what it means, then open the next round. The engine already gave combat XP.`;
+  const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+}
+
+/** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
+export function turnSchema(g: GameState) {
+  const charIds = Object.keys(g.characters);
+  const skillIds = SKILLS.map((s) => s.id);
+  const combos = PERKS.filter((p: any) => p.tier === 'achieved').map((p) => p.id);
+  const obj = (props: Record<string, any>) => ({ type: 'object', additionalProperties: false, properties: props, required: Object.keys(props) });
+  const tn = { type: 'integer', enum: [8, 12, 16, 20] };
+  const charId = { type: 'string', enum: charIds.length ? charIds : ['none'] };
+  return obj({
+    narration: { type: 'string' },
+    sceneTitle: { type: 'string' },
+    hooks: { type: 'array', items: obj({ skill: { type: 'string', enum: skillIds }, tn, truth: { type: 'string', enum: ['true', 'partial', 'misleading'] }, line: { type: 'string' } }) },
+    checks: { type: 'array', items: obj({ charId, skills: { type: 'array', items: { type: 'string', enum: skillIds } }, tn, stakes: { type: 'string' } }) },
+    overreach: { type: 'array', items: obj({ charId, skill: { type: 'string', enum: skillIds }, push: { type: 'string' } }) },
+    xp: { type: 'array', items: obj({ charId: { type: 'string', enum: [...charIds, 'all'] }, source: { type: 'string', enum: ['dialogue', 'discovery', 'quest'] }, amount: { type: 'integer' }, reason: { type: 'string' } }) },
+    deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string', enum: combos }, deed: { type: 'string' } }) },
+    combat: { anyOf: [{ type: 'null' }, obj({
+      name: { type: 'string' }, map: { type: 'string', enum: ['rear_pad', 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
+      enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string', enum: WEAPONS.map((w: any) => w.id) } }) },
+    })] },
+    endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
+  });
+}

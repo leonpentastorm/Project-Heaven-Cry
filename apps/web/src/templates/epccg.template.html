@@ -1,0 +1,69 @@
+<sc-if value="{{epOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="{{ep.title}}" style="position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 7, 11, 0.86)">
+<article style="{{ep.boxStyle}}">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{ep.kicker}}</span>
+<h2 style="{{ep.nameStyle}}">{{ep.name}}</h2>
+<span style="font-size: 13px; color: #A3AEC2">{{ep.line}}</span>
+</div>
+<button type="button" onClick="{{closeEpccg}}" aria-label="Close the EPCCG entry" style="margin-left: auto; flex: none; min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close ✕</button>
+</div>
+<div style="display: flex; gap: 24px; flex-wrap: wrap">
+<figure style="margin: 0; flex: 0 0 240px; display: flex; flex-direction: column; gap: 8px">
+<button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 240px; height: 300px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F"></button>
+<figcaption style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 700">{{ep.pictured}}</span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{ep.caption}}</span>
+</figcaption>
+</figure>
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<blockquote style="{{ep.quoteStyle}}">
+<sc-for list="{{ep.quote}}" as="q" hint-placeholder-count="2"><p style="{{q.style}}">{{q.text}}</p></sc-for>
+<footer style="font-size: 13px; color: #A3AEC2">{{ep.speaker}}</footer>
+</blockquote>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.6; color: #E7EBF3">{{ep.intro}}</p>
+<dl style="margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 8px 14px; font-size: 14px; line-height: 1.45">
+<sc-for list="{{ep.rows}}" as="r" hint-placeholder-count="4"><dt style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; padding-top: 3px">{{r.k}}</dt><dd style="margin: 0; color: #DCE2EC">{{r.v}}</dd></sc-for>
+</dl>
+</div>
+</div>
+<section aria-label="Perks" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #232D3F; padding-top: 16px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{ep.perkHead}}</span>
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">{{ep.perkNote}}</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
+<sc-for list="{{ep.perks}}" as="p" hint-placeholder-count="2"><div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
+<sc-if value="{{p.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{p.zoom}}" aria-label="Enlarge {{p.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{p.icon}}" alt="{{p.alt}}" style="width: 64px; height: 64px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"></button></sc-if>
+<sc-if value="{{p.none}}" hint-placeholder-val="{{false}}"><div aria-label="Icon not drawn yet" style="width: 64px; height: 64px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.1em; color: #7F8BA1">ICON<br>SOON</div></sc-if>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="{{ep.perkNameStyle}}">{{p.name}}</span>
+<span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{p.meta}}</span>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 1.45; color: #DCE2EC"><b style="color: #E7EBF3">I</b> · {{p.t1}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #A3AEC2"><b style="color: #E7EBF3">II</b> · {{p.t2}} <span style="color: #7F8BA1">(a later step)</span></p>
+</div>
+</div></sc-for>
+</div>
+<sc-if value="{{ep.hasCombos}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0 4px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBO PERKS · EARNED, NOT CHOSEN</span>
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">5 points in every skill on the card, then do the deed in play. The Narrator grants it when you do.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
+<sc-for list="{{ep.combos}}" as="c" hint-placeholder-count="2"><div style="display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50">
+<div aria-hidden="true" style="display: flex; gap: 2px"><sc-for list="{{c.segs}}" as="g" hint-placeholder-count="2"><span style="{{g.style}}"></span></sc-for></div>
+<div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px">
+<sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{c.zoom}}" aria-label="Enlarge {{c.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{c.icon}}" alt="{{c.alt}}" style="display: block; width: 60px; height: 60px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #2E3A50"></button></sc-if>
+<sc-if value="{{c.none}}" hint-placeholder-val="{{true}}"><div aria-label="Icon not drawn yet" style="width: 60px; height: 60px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.1em; color: #7F8BA1">ICON<br>SOON</div></sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="padding: 1px 8px; border-radius: 4px; border: 1px solid #E7EBF3; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #E7EBF3">COMBO</span><span style="font-size: 16px; font-weight: 700; color: #E7EBF3">{{c.name}}</span></span>
+<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><sc-for list="{{c.chips}}" as="k" hint-placeholder-count="2"><sc-if value="{{k.plus}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="font-size: 14px; font-weight: 700; color: #A3AEC2">+</span></sc-if><span style="{{k.style}}">{{k.label}}</span></sc-for></span>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #DCE2EC">{{c.text}}</p>
+<div style="display: flex; flex-direction: column; gap: 2px; padding-left: 10px; border-left: 2px solid #E7EBF3"><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">THE DEED</span><span style="font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.4; color: #E7EBF3">{{c.deed}}</span></div>
+</div>
+</div>
+</div></sc-for>
+</div>
+</div></sc-if>
+<!--MASTERED:ep.m-->
+</section>
+</article>
+</div>
+</sc-if>

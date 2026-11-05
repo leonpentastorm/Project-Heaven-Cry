@@ -11,7 +11,7 @@ import { type Rng, d20, seedFrom } from './rng';
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
   id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene';
-  text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean;
+  text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
 }
 export interface Hook { id: string; skill: string; tn: number; truth: 'true' | 'partial' | 'misleading'; line: string }
 export interface Check {
@@ -67,10 +67,10 @@ export type Action =
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
-  | { type: 'story/speak'; text: string } | { type: 'story/skip'; playerId: string }
+  | { type: 'story/speak'; text: string; roll?: boolean } | { type: 'story/skip'; playerId: string }
   | { type: 'narrator/begin' } | { type: 'narrator/turn'; turn: NarratorTurn } | { type: 'narrator/error'; message: string }
   | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number } | { type: 'narrator/retry' }
-  | { type: 'check/roll'; checkId: string } | { type: 'check/reroll'; checkId: string }
+  | { type: 'check/roll'; checkId: string } | { type: 'check/reroll'; checkId: string } | { type: 'check/accept'; checkId: string }
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
   | { type: 'levelup/perk'; charId: string; perkId: string }
@@ -139,7 +139,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.story.spoken[by] != null) fail('You already spoke this round.');
       const text = a.text.trim().slice(0, 1200); if (!text) fail('Say something.');
       g.story.spoken[by] = text;
-      push(g, { kind: 'player', who: by, text, head: mine.map((c) => c.name).join(' & ') });
+      push(g, { kind: 'player', who: by, text, head: mine.map((c) => c.name).join(' & '), roll: !!a.roll });
       closeRoundIfDone(g);
       return;
     }
@@ -162,14 +162,15 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'narrator/turn': { if (!isHost(g, by)) fail('Only the Narrator (the host\'s client) can do that.'); narratorTurn(g, a.turn); return; }
     case 'check/roll':
-    case 'check/reroll': {
+    case 'check/reroll':
+    case 'check/accept': {
       const ck = g.checks.find((x) => x.id === a.checkId); if (!ck) fail('No such check.');
       const c = g.characters[ck!.charId]; if (c.owner !== by) fail('Only ' + c.name + '\'s player rolls this.');
-      if (a.type === 'check/roll') { if (ck!.roll) fail('Already rolled.'); rollCheck(g, ck!, c, false); }
-      else {
-        if (!ck!.roll) fail('Roll first.'); if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.');
-        c.echo--; rollCheck(g, ck!, c, true);
-      }
+      if (ck!.done) fail('That check is settled.');
+      if (a.type === 'check/roll') { if (ck!.roll) fail('Already rolled.'); rollCheck(g, ck!, c, false); return; }
+      if (!ck!.roll) fail('Roll first.');
+      // Echo (spec: Echo): spend 1 to reroll a d20, at most 1 per roll. The reroll stands.
+      if (a.type === 'check/reroll') { if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.'); c.echo--; rollCheck(g, ck!, c, true); }
       ck!.done = true;
       afterPending(g);
       return;

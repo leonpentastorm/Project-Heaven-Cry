@@ -1,0 +1,14 @@
+<div role="group" aria-label="Mastered perk: {{X.name}}" style="{{X.boxStyle}}">
+<sc-for list="{{X.corners}}" as="c" hint-placeholder-count="4"><span aria-hidden="true" style="{{c.style}}"></span></sc-for>
+<sc-if value="{{X.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{X.zoom}}" aria-label="Enlarge {{X.name}}" style="{{zoomBtn}}"><span style="{{X.ringStyle}}"><img class="phc-icon" src="{{X.icon}}" alt="{{X.alt}}" style="{{X.imgStyle}}"></span></button></sc-if>
+<sc-if value="{{X.none}}" hint-placeholder-val="{{true}}"><span style="{{X.ringStyle}}"><span style="{{X.starStyle}}"><span aria-hidden="true">&#10022;</span><span style="font-size: 9px; letter-spacing: 0.14em; color: #A3AEC2">ICON TO COME</span></span></span></sc-if>
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<span style="{{X.kickerStyle}}">{{X.kicker}}</span>
+<h3 style="{{X.nameStyle}}">{{X.name}}</h3>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; font-style: italic; line-height: 1.5; color: #E7EBF3">{{X.flavour}}</p>
+<div aria-hidden="true" style="{{X.ruleStyle}}"></div>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #DCE2EC">{{X.text}}</p>
+<span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{X.meta}}</span>
+<sc-if value="{{X.locked}}" hint-placeholder-val="{{false}}"><span style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 2px"><span style="display: flex; gap: 6px; align-items: center"><sc-for list="{{X.pips}}" as="q" hint-placeholder-count="10"><span aria-hidden="true" style="{{q.style}}"></span></sc-for></span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #E7EBF3">{{X.lockLabel}}</span></span></sc-if>
+</div>
+</div>
