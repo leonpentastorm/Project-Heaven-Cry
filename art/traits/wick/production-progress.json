@@ -52,10 +52,11 @@
     "hollow-heart",
     "heretic",
     "gambler",
-    "insomniac"
+    "insomniac",
+    "live-to-fight-another-day"
   ],
   "catalog_coverage": {
-    "traits": 45,
+    "traits": 46,
     "perks": 2
   },
   "revision_rounds": {

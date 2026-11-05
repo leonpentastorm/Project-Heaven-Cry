@@ -833,6 +833,29 @@
       },
       "batch": "B",
       "source_sha256": "e46185205f9e48116ee8419afa5936dde9f27a1bc3b42a4f2981d4ed06b149a9"
+    },
+    {
+      "id": "live-to-fight-another-day",
+      "data_id": "live_to_fight_another_day",
+      "name": "Live to Fight Another Day",
+      "family": "traits",
+      "order": 45,
+      "mood": "Comic, Grim",
+      "action": "Seen from behind, capelet flying, Wick sprints away from a blank headstone, looking back over its shoulder",
+      "screen": "Wide eyes, sweat drop",
+      "prop": "Blank headstone",
+      "path": "art/traits/wick/production-v1/live-to-fight-another-day.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/live-to-fight-another-day.png",
+        "128": "art/traits/wick/production-v1/exports/128/live-to-fight-another-day.png",
+        "64": "art/traits/wick/production-v1/exports/64/live-to-fight-another-day.png",
+        "56": "art/traits/wick/production-v1/exports/56/live-to-fight-another-day.png",
+        "48": "art/traits/wick/production-v1/exports/48/live-to-fight-another-day.png",
+        "44": "art/traits/wick/production-v1/exports/44/live-to-fight-another-day.png",
+        "40": "art/traits/wick/production-v1/exports/40/live-to-fight-another-day.png"
+      },
+      "batch": "B",
+      "source_sha256": "cd1f358e4b8600e4b4f1b3f300c5aef15e68d0d7c9d89d88267a52886a0cf5fe"
     }
   ]
 }

@@ -2479,6 +2479,30 @@
         "44": "art/traits/wick/production-v1/exports/44/insomniac.png",
         "40": "art/traits/wick/production-v1/exports/40/insomniac.png"
       }
+    },
+    "live-to-fight-another-day": {
+      "label": "Wick — Live to Fight Another Day",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/live-to-fight-another-day.png",
+      "sha256": "93b29a07c776a206d494c5491f85cafb384198a3394a5c09a1daa17e9c35d36b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "live_to_fight_another_day",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/live-to-fight-another-day.png",
+        "128": "art/traits/wick/production-v1/exports/128/live-to-fight-another-day.png",
+        "64": "art/traits/wick/production-v1/exports/64/live-to-fight-another-day.png",
+        "56": "art/traits/wick/production-v1/exports/56/live-to-fight-another-day.png",
+        "48": "art/traits/wick/production-v1/exports/48/live-to-fight-another-day.png",
+        "44": "art/traits/wick/production-v1/exports/44/live-to-fight-another-day.png",
+        "40": "art/traits/wick/production-v1/exports/40/live-to-fight-another-day.png"
+      }
     }
   },
   "character_collections": {
