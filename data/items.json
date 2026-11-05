@@ -1,0 +1,44 @@
+{
+  "$schema_version": "1.0",
+  "kind": "items",
+  "source": "PHC Core Rules v1.0, Levels and XP: Essence of Experience (added after 1.1; the 2020 sheet's starting inventory)",
+  "items": [
+    {
+      "id": "essence_of_experience",
+      "name": "Essence of Experience",
+      "category": "consumable",
+      "weight_kg": 0,
+      "price_credits": 300,
+      "start_quantity": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Experience sealed in mana. Someone with Mastery 2 in Brain Power and an Evoker, or Will Power and an Emanator, can crack it in 10 minutes out of combat; they choose who absorbs it, themselves or a party member present. Worth 100 XP. A character can absorb one per long rest. Sells well.",
+      "requires_to_use": [
+        {
+          "any_of": [
+            {
+              "skill": "brain_power",
+              "min": 5,
+              "focus": "evoker"
+            },
+            {
+              "skill": "will_power",
+              "min": 5,
+              "focus": "emanator"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "op": "xp_grant",
+          "value": 100,
+          "source": "essence",
+          "target": "self_or_party_member_present",
+          "when": "cracked out of combat (10 minutes)",
+          "limit": "one absorbed per character per long rest"
+        }
+      ]
+    }
+  ]
+}

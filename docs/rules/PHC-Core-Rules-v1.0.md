@@ -103,6 +103,13 @@ Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at
 | Dialogue: a scene won through talk | 25–100 |
 | Discovery: a secret, a place, a truth | 25–75 |
 | Quest: an objective completed | 50–300 |
+| Essence: one Essence of Experience absorbed | 100 |
+
+**Essence of Experience** is experience sealed in mana: an item worth 100 XP to whoever absorbs it. It weighs nothing, sells for 300 credits, and every character starts with one.
+
+- **Cracking it** takes someone with Mastery 2 (5 points) in the skill that drives their focus: **Brain Power with an Evoker**, or **Will Power with an Emanator**. It takes 10 minutes out of combat.
+- **Absorbing it:** whoever cracks it chooses who takes the XP: themselves or a party member present. A character can absorb **one per long rest**.
+- Essence XP counts toward the Narrator's pacing target. It is tagged `essence`, so traits that change combat or dialogue XP don't touch it.
 
 ## Derived stats
 
@@ -290,7 +297,9 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | IV | Assault | 20 | −1 Tiles per Move, −1 Dodge |
 | V | Juggernaut | 25 | −2 Tiles per Move, no Sprint |
 
-Other armour slots on the sheet (head, hands, footwear and so on) carry their own small effects, listed per item.
+**Equipment slots** (from the 2020 sheet): main hand, off hand, head, head accessory, outer torso, inner torso, lower torso, legs, hands, footwear, **Veil**, and a backpack. The armour in the **outer torso** slot sets your Armour Class. Pieces in the other slots carry their own small effects, listed per item.
+
+**The Veil** is a special equipment type with its own slot. Its rules aren't written yet: the engine records what's worn there and applies nothing, and the Narrator reads the item's text.
 
 **Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Tiles per Move. Arm and leg injuries last until treated.
 
@@ -347,6 +356,39 @@ Other armour slots on the sheet (head, hands, footwear and so on) carry their ow
 | Frag grenade | Thrown | 40 to everyone within 2 tiles | throwing range | none | none | none | 0.5 kg |
 | Smoke grenade | Thrown | blocks sight within 3 tiles for 2 rounds | throwing range | none | none | none | 0.5 kg |
 | Flashbang | Thrown | Blinded for 1 round within 2 tiles (Body save) | throwing range | none | none | none | 0.5 kg |
+
+### Weapon mastery
+
+Weapon mastery is the second way a character grows, beside character level. It's tracked by **kills**, separately for each of ten weapon families:
+
+| Family | Weapons |
+|---|---|
+| Sidearms | pistols, revolvers |
+| SMGs | submachine guns |
+| Rifles | service rifles, carbines, long rifles |
+| Shotguns | scatterguns |
+| Heavy weapons | LMGs, anti-materiel rifles |
+| Bows | bows, crossbows |
+| Light blades | knives, sabres and other light melee weapons |
+| Heavy melee | machetes, mauls, polearms |
+| Unarmed | fists, gloves |
+| Thrown | grenades, thrown knives |
+
+**What counts as a kill.** Your attack with a weapon of that family takes a hostile out of the fight: dead or Downed. A boss counts as 3. Only fights that award combat XP count, so executions, captives and harmless targets add nothing.
+
+| Level | Name | Kills | Attack bonus | Weapon perk |
+|---|---|---|---|---|
+| 0 | Untested | 0 | +0 | none |
+| 1 | Blooded | 5 | +0 | Tier I |
+| 2 | Practised | 15 | +1 | none |
+| 3 | Veteran | 40 | +1 | Tier II |
+| 4 | Expert | 80 | +2 | none |
+| 5 | Master | 140 | +2 | Tier III |
+
+- The **attack bonus** adds to attack rolls with every weapon of that family.
+- **Weapon perks** come automatically at levels 1, 3 and 5: each family has one perk per tier (weapon_mastery.json). They aren't skill perks: they don't count toward Achieved perks, and every AP gain from them obeys the AP ceiling.
+- Changing weapons inside a family keeps your mastery. Evokers and Emanators aren't weapons for mastery.
+- **Pacing:** a character who sticks to one family makes about 4 kills a session, so Blooded comes in session 2, Veteran around session 10 and Master around session 35.
 
 ## Conditions and saves
 
@@ -510,7 +552,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 
 | File | Items | Holds |
 |---|---|---|
-| rules.json | object | Every constant in sections 2–12, plus the lists of what the engine owns and what the Narrator owns |
+| rules.json | object | Every constant in sections 2–12 (including the equipment slots), plus the lists of what the engine owns and what the Narrator owns |
 | attributes.json | 9 + 3 cores | Attribute → α/β/γ skills, derived-stat formulas, core economies |
 | skills.json | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, signature-of |
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
@@ -518,13 +560,15 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | archetypes.json | 37 | Creation presets (guidance only): role, blurb, 10-point skill preset, cores, class leans |
 | perks.json | 76 | 54 Acquired, 16 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
-| weapons.json | 20 | Starter weapons |
+| weapons.json | 20 | Starter weapons, each with its mastery family |
+| weapon_mastery.json | 10 + 30 | Weapon mastery families and levels, and 30 weapon perks (3 per family) |
+| items.json | 1 | Items with rules of their own: Essence of Experience |
 | sigils.json | 24 | Sigil words and grammar (provisional numbers) |
 | soul_modules.json | 4 + 20 | Soul schools and modules (provisional numbers) |
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
-| effect_ops.json | 131 | Registry of every effect op: 50 core, 81 bespoke |
+| effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
 
-**Effect ops.** The engine implements the 50 core ops generically. The 81 bespoke ops cover about 10% of effect uses, each in one or two items: implement each as a hook on its item, or until then hand that item's text to the Narrator. An op the engine doesn't recognise always falls back to the Narrator; it is never silently ignored.
+**Effect ops.** The engine implements the 50 core ops generically. The 82 bespoke ops cover about 10% of effect uses, each in one or two items: implement each as a hook on its item, or until then hand that item's text to the Narrator. An op the engine doesn't recognise always falls back to the Narrator; it is never silently ignored.
 
 **AI Narrator context.** Each Narrator call gets the scene, the `narrator_owns` list, and the `text` of every item in play that is tagged hybrid or narrator. It never gets authority over numbers in the engine's list.
 
@@ -542,7 +586,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 6. ~~Echo rerolls.~~ *Settled in 1.1: at most 1 Echo per roll.*
 7. **Durability gains.** Does extra HP per level apply retroactively when Durability rises? *Suggested: yes.*
 8. **Mana over time.** Does the ambient meter rise on its own (the World Bible's Tide), and on what interval do new bots spawn?
-9. **Armour slots.** Head, hands and feet pieces aren't defined.
+9. **Armour slots.** The slot list is settled (the 2020 sheet's, see Attacks, damage and armour). Head, hands, feet and the other non-torso pieces still have no items. The Veil slot is reserved: rules to come.
 10. **Braced and Emplaced bonuses** aren't stated. *Data: Emplaced gives +2 to attacks and halves Recoil.*
 11. **Crossbow** reload cost per bolt.
 12. **Fractional tiles per Move.** *Data: rounds down.*
@@ -571,7 +615,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Balance and design passes**
 
 28. The numbers for Sigil words, Soul modules and patron blessings are all new and provisional.
-29. Of the 81 bespoke effect ops, merge any that turn out to be the same rule in disguise.
+29. Of the 82 bespoke effect ops, merge any that turn out to be the same rule in disguise.
 30. Is a 15/9 signature split plus a tutor the right bar for advanced classes?
 31. Can a character gain a second base class later?
 32. Do enhanced rounds stay, as rare bought ammo?
@@ -588,3 +632,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 40. **HP rescale** (+15 per Endurance, 5 + 2 × Durability per level). Mid and high levels need a pass; Last Charge's shield (item 20) should drop to 15 × Armour Class.
 41. **Crits** on a natural 20, or 19–20 for Aimed shots and attacks from Hidden.
 42. **Combined checks of two or three skills:** lowest modifier, +2 per other trained skill in the check.
+
+**Added after 1.1: weapon mastery, the Veil, Essence of Experience (provisional, settle in playtest)**
+
+43. **Weapon mastery thresholds** (5 / 15 / 40 / 80 / 140 kills), the attack bonus (+1 at level 2, +2 at level 4), a boss counting as 3 kills, and only XP-awarding fights counting. Check the pacing (Master around session 35 for a one-family character).
+44. **The 30 weapon perks** are all new.
+45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
+46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25.

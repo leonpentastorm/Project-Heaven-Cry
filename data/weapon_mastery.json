@@ -1,0 +1,730 @@
+{
+  "$schema_version": "1.0",
+  "kind": "weapon_mastery",
+  "source": "PHC Core Rules v1.0, Weapons: Weapon mastery (added after 1.1; the 2020 sheet's Weapons Mastery table: weapon type, kills, level, roll bonus, perk tier)",
+  "rules": {
+    "tracked_by": "kills, per family",
+    "kill": "your attack with a weapon of the family takes a hostile out of the fight (dead or downed)",
+    "boss_kill_counts": 3,
+    "counts_only_in": "fights that award combat XP",
+    "attack_bonus_applies_to": "attack rolls with every weapon of the family",
+    "perks": "automatic at the levels listed; not skill perks; don't count toward Achieved perks; obey the AP ceiling",
+    "not_weapons": [
+      "evoker",
+      "emanator"
+    ],
+    "adjudication": "engine",
+    "provisional": true,
+    "levels": [
+      {
+        "level": 0,
+        "name": "Untested",
+        "kills": 0,
+        "attack_bonus": 0,
+        "perk_tier": null
+      },
+      {
+        "level": 1,
+        "name": "Blooded",
+        "kills": 5,
+        "attack_bonus": 0,
+        "perk_tier": "I"
+      },
+      {
+        "level": 2,
+        "name": "Practised",
+        "kills": 15,
+        "attack_bonus": 1,
+        "perk_tier": null
+      },
+      {
+        "level": 3,
+        "name": "Veteran",
+        "kills": 40,
+        "attack_bonus": 1,
+        "perk_tier": "II"
+      },
+      {
+        "level": 4,
+        "name": "Expert",
+        "kills": 80,
+        "attack_bonus": 2,
+        "perk_tier": null
+      },
+      {
+        "level": 5,
+        "name": "Master",
+        "kills": 140,
+        "attack_bonus": 2,
+        "perk_tier": "III"
+      }
+    ]
+  },
+  "families": [
+    {
+      "id": "sidearms",
+      "name": "Sidearms",
+      "categories": [
+        "pistol",
+        "revolver"
+      ],
+      "perks": [
+        "quick_draw",
+        "double_tap",
+        "last_word"
+      ]
+    },
+    {
+      "id": "smgs",
+      "name": "SMGs",
+      "categories": [
+        "smg"
+      ],
+      "perks": [
+        "spray_control",
+        "hose",
+        "run_and_gun"
+      ]
+    },
+    {
+      "id": "rifles",
+      "name": "Rifles",
+      "categories": [
+        "rifle"
+      ],
+      "perks": [
+        "steady_breath",
+        "long_sight",
+        "one_round_one_body"
+      ]
+    },
+    {
+      "id": "shotguns",
+      "name": "Shotguns",
+      "categories": [
+        "shotgun"
+      ],
+      "perks": [
+        "breacher",
+        "room_clearer",
+        "pump_rhythm"
+      ]
+    },
+    {
+      "id": "heavy",
+      "name": "Heavy weapons",
+      "categories": [
+        "heavy"
+      ],
+      "perks": [
+        "set_up",
+        "suppress",
+        "heat_sink"
+      ]
+    },
+    {
+      "id": "bows",
+      "name": "Bows",
+      "categories": [
+        "bow"
+      ],
+      "perks": [
+        "nock_and_draw",
+        "pin_down",
+        "ghost_arrow"
+      ]
+    },
+    {
+      "id": "light_blades",
+      "name": "Light blades",
+      "categories": [
+        "light_melee"
+      ],
+      "perks": [
+        "feint",
+        "open_vein",
+        "flow"
+      ]
+    },
+    {
+      "id": "heavy_melee",
+      "name": "Heavy melee",
+      "categories": [
+        "heavy_melee"
+      ],
+      "perks": [
+        "follow_through",
+        "sunder",
+        "cleave"
+      ]
+    },
+    {
+      "id": "unarmed",
+      "name": "Unarmed",
+      "categories": [
+        "unarmed"
+      ],
+      "perks": [
+        "hard_hands",
+        "clinch",
+        "bell_ringer"
+      ]
+    },
+    {
+      "id": "thrown",
+      "name": "Thrown",
+      "categories": [
+        "thrown"
+      ],
+      "perks": [
+        "long_arm",
+        "cooked",
+        "quick_toss"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "quick_draw",
+      "name": "Quick Draw",
+      "family": "sidearms",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, drawing or swapping to a sidearm costs 0 AP.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "draw_or_swap_sidearm",
+          "set": 0,
+          "uses": "per_turn"
+        }
+      ]
+    },
+    {
+      "id": "double_tap",
+      "name": "Double Tap",
+      "family": "sidearms",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your second single shot at the same target in a turn gets +2 to hit.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 2,
+          "context": "second single shot at the same target this turn, sidearm"
+        }
+      ]
+    },
+    {
+      "id": "last_word",
+      "name": "Last Word",
+      "family": "sidearms",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "When a hostile moves into a tile adjacent to you, you may use your reaction to take a single shot at it with your sidearm.",
+      "effects": [
+        {
+          "op": "reaction",
+          "action": "single_shot_sidearm",
+          "trigger": "a hostile moves adjacent to you",
+          "limit": "once_per_round"
+        }
+      ]
+    },
+    {
+      "id": "spray_control",
+      "name": "Spray Control",
+      "family": "smgs",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Bursts with an SMG add 1 Heat instead of 2.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "heat_per_burst",
+          "value": -1,
+          "context": "smg"
+        }
+      ]
+    },
+    {
+      "id": "hose",
+      "name": "Hose",
+      "family": "smgs",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Full auto with an SMG can split its attack rolls among up to 3 targets standing within 2 tiles of each other.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "auto_split_3",
+          "ap": 0,
+          "uses": "at_will"
+        }
+      ]
+    },
+    {
+      "id": "run_and_gun",
+      "name": "Run and Gun",
+      "family": "smgs",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, a burst with an SMG right after a Move costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "burst",
+          "value": -1,
+          "uses": "per_turn",
+          "context": "smg, directly after a Move"
+        }
+      ]
+    },
+    {
+      "id": "steady_breath",
+      "name": "Steady Breath",
+      "family": "rifles",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Aimed shots with a rifle get +1 more to hit (+3 in all).",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 1,
+          "context": "aimed shot with a rifle"
+        }
+      ]
+    },
+    {
+      "id": "long_sight",
+      "name": "Long Sight",
+      "family": "rifles",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your rifles' effective range is 25% longer (round down).",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "effective_range_pct",
+          "value": 25,
+          "context": "rifle"
+        }
+      ]
+    },
+    {
+      "id": "one_round_one_body",
+      "name": "One Round, One Body",
+      "family": "rifles",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Aimed shots with a rifle crit on 18–20.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "crit_range",
+          "value": 1,
+          "context": "aimed shot with a rifle"
+        }
+      ]
+    },
+    {
+      "id": "breacher",
+      "name": "Breacher",
+      "family": "shotguns",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A shotgun hit within 4 tiles knocks the target back 1 tile.",
+      "effects": [
+        {
+          "op": "knockback",
+          "tiles": 1,
+          "target": "target"
+        }
+      ]
+    },
+    {
+      "id": "room_clearer",
+      "name": "Room Clearer",
+      "family": "shotguns",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Shotgun attacks within 4 tiles ignore half cover.",
+      "effects": [
+        {
+          "op": "ignore_cover",
+          "context": "shotgun within 4 tiles; half cover only"
+        }
+      ]
+    },
+    {
+      "id": "pump_rhythm",
+      "name": "Pump Rhythm",
+      "family": "shotguns",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, after a shotgun kill, your next shotgun shot this turn costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "shotgun_shot",
+          "value": -1,
+          "uses": "per_turn",
+          "context": "after a shotgun kill this turn"
+        }
+      ]
+    },
+    {
+      "id": "set_up",
+      "name": "Set Up",
+      "family": "heavy",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Bracing or emplacing a heavy weapon costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "brace_or_emplace",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "id": "suppress",
+      "name": "Suppress",
+      "family": "heavy",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "When a burst or full auto from a heavy weapon misses a target, that target is Pinned until its next turn (Body save).",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "pinned",
+          "target": "target",
+          "save": "body",
+          "when": "heavy burst or auto misses",
+          "rounds": 1
+        }
+      ]
+    },
+    {
+      "id": "heat_sink",
+      "name": "Heat Sink",
+      "family": "heavy",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your heavy weapons' Heat limit is 4 higher.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "heat_limit",
+          "value": 4,
+          "context": "heavy weapon"
+        }
+      ]
+    },
+    {
+      "id": "nock_and_draw",
+      "name": "Nock and Draw",
+      "family": "bows",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, an Aimed shot with a bow or crossbow costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "aimed_shot",
+          "value": -1,
+          "uses": "per_turn",
+          "context": "bow or crossbow"
+        }
+      ]
+    },
+    {
+      "id": "pin_down",
+      "name": "Pin Down",
+      "family": "bows",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "On a bow hit you may deal half damage to pin the target where it stands: Pinned for 1 round (Body save).",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "pinned",
+          "target": "target",
+          "save": "body",
+          "when": "bow hit, if you choose half damage",
+          "rounds": 1
+        }
+      ]
+    },
+    {
+      "id": "ghost_arrow",
+      "name": "Ghost Arrow",
+      "family": "bows",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your first bow shot from Hidden in each fight deals +50% damage.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "value": 0.5,
+          "context": "first bow shot from Hidden each combat"
+        }
+      ]
+    },
+    {
+      "id": "feint",
+      "name": "Feint",
+      "family": "light_blades",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, after a light melee attack misses, your next one this turn costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "light_melee_attack",
+          "value": -1,
+          "uses": "per_turn",
+          "context": "after a light melee miss this turn"
+        }
+      ]
+    },
+    {
+      "id": "open_vein",
+      "name": "Open Vein",
+      "family": "light_blades",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A critical with a light blade also leaves the target Bleeding, with no injury roll needed.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "bleeding",
+          "target": "target",
+          "when": "light blade critical"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "family": "light_blades",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "After a kill with a light blade, move up to 2 tiles for free.",
+      "effects": [
+        {
+          "op": "free_move",
+          "tiles": 2,
+          "when": "after a light blade kill"
+        }
+      ]
+    },
+    {
+      "id": "follow_through",
+      "name": "Follow Through",
+      "family": "heavy_melee",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A heavy melee hit knocks the target back 1 tile.",
+      "effects": [
+        {
+          "op": "knockback",
+          "tiles": 1,
+          "target": "target"
+        }
+      ]
+    },
+    {
+      "id": "sunder",
+      "name": "Sunder",
+      "family": "heavy_melee",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Each heavy melee hit lowers the target's armour value by 5 for the rest of the fight, to a minimum of 0.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "armor",
+          "value": -5,
+          "target": "target",
+          "duration": "combat",
+          "min": 0
+        }
+      ]
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "family": "heavy_melee",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, when a heavy melee attack takes a hostile out of the fight, make a free heavy melee attack against another adjacent hostile.",
+      "effects": [
+        {
+          "op": "free_attack",
+          "ap": 0,
+          "attack": "heavy_melee",
+          "target": "another adjacent hostile",
+          "when": "heavy melee kill, once per turn"
+        }
+      ]
+    },
+    {
+      "id": "hard_hands",
+      "name": "Hard Hands",
+      "family": "unarmed",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Unarmed attacks deal +5 damage.",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "value": 5,
+          "context": "unarmed"
+        }
+      ]
+    },
+    {
+      "id": "clinch",
+      "name": "Clinch",
+      "family": "unarmed",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "An unarmed hit can also Grapple the target (Body save), at no extra AP.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "grappled",
+          "target": "target",
+          "save": "body",
+          "when": "unarmed hit, if you choose"
+        }
+      ]
+    },
+    {
+      "id": "bell_ringer",
+      "name": "Bell Ringer",
+      "family": "unarmed",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "An unarmed critical also leaves the target Dazed for 1 turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "dazed",
+          "target": "target",
+          "when": "unarmed critical",
+          "rounds": 1
+        }
+      ]
+    },
+    {
+      "id": "long_arm",
+      "name": "Long Arm",
+      "family": "thrown",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your Throwing range is 2 tiles longer.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "throwing_range",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "cooked",
+      "name": "Cooked",
+      "family": "thrown",
+      "tier": "II",
+      "mastery_level": 3,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Your grenades' blast radius is 1 tile bigger.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "blast_radius",
+          "value": 1,
+          "context": "grenade"
+        }
+      ]
+    },
+    {
+      "id": "quick_toss",
+      "name": "Quick Toss",
+      "family": "thrown",
+      "tier": "III",
+      "mastery_level": 5,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Once per turn, a throw costs 1 AP less.",
+      "effects": [
+        {
+          "op": "action_cost",
+          "action": "throw",
+          "value": -1,
+          "uses": "per_turn"
+        }
+      ]
+    }
+  ]
+}

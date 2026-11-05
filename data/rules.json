@@ -270,7 +270,12 @@
         "max": 300
       },
       "tagged_by_source": true,
-      "awarded_by": "narrator"
+      "awarded_by": "narrator",
+      "essence": {
+        "value": 100,
+        "item": "essence_of_experience",
+        "counts_toward_pacing": true
+      }
     }
   },
   "derived": {
@@ -1187,5 +1192,36 @@
       "keeping the Veil and the Knowing",
       "trait and perk effects flagged narrator"
     ]
+  },
+  "equipment_slots": {
+    "slots": [
+      "main_hand",
+      "off_hand",
+      "head",
+      "head_accessory",
+      "torso_outer",
+      "torso_inner",
+      "lower_torso",
+      "legs",
+      "hands",
+      "footwear",
+      "veil",
+      "backpack"
+    ],
+    "armour_class_from": "torso_outer",
+    "source": "2020 sheet",
+    "veil": {
+      "kind": "special equipment type",
+      "rules": null,
+      "engine": "record what is worn; apply nothing",
+      "narrator": "reads the item's text",
+      "reserved": true,
+      "provisional": true
+    },
+    "other_slots": "each item lists its own small effects; none defined yet (spec 14 item 9)"
+  },
+  "weapon_mastery": {
+    "data": "weapon_mastery.json",
+    "provisional": true
   }
 }

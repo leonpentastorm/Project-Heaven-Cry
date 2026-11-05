@@ -53,7 +53,7 @@ known = {
 }
 
 # uniqueness
-for name in ["skills", "traits", "perks", "conditions", "weapons", "sigils", "soul_modules", "patrons"]:
+for name in ["skills", "traits", "perks", "conditions", "weapons", "sigils", "soul_modules", "patrons", "weapon_mastery", "items"]:
     c = collections.Counter(x.get("id") for x in items(name) if isinstance(x, dict))
     for k, n in c.items():
         if n > 1:
@@ -132,6 +132,39 @@ def words(o):
             words(v)
 for d in data.values():
     words(d)
+
+# weapon mastery: families, levels, perks, and every weapon's family
+wm = data.get("weapon_mastery")
+if isinstance(wm, dict):
+    fam_ids = ids_of(wm.get("families", []))
+    wperks = {x.get("id"): x for x in wm.get("items", []) if isinstance(x, dict)}
+    for pid in set(wperks) & known["perk"]:
+        errors.append(f"weapon_mastery: perk id '{pid}' clashes with perks.json")
+    cats = {c for f in wm.get("families", []) for c in f.get("categories", [])}
+    for f in wm.get("families", []):
+        tiers = sorted(wperks[p]["tier"] for p in f.get("perks", []) if p in wperks)
+        if tiers != ["I", "II", "III"]:
+            errors.append(f"weapon_mastery: family {f.get('id')} needs one perk per tier, has {tiers}")
+        for p in f.get("perks", []):
+            if p not in wperks:
+                errors.append(f"weapon_mastery: family {f.get('id')} lists unknown perk {p}")
+    for x in wperks.values():
+        if x.get("family") not in fam_ids:
+            errors.append(f"weapon_mastery: perk {x.get('id')} has unknown family {x.get('family')}")
+    lv = wm.get("rules", {}).get("levels", [])
+    kills = [l.get("kills") for l in lv]
+    if kills != sorted(kills) or len(set(kills)) != len(kills):
+        errors.append("weapon_mastery: level kill thresholds must rise")
+    for w in items("weapons"):
+        if w.get("mastery_family") not in fam_ids:
+            errors.append(f"weapons:{w.get('id')}: unknown mastery_family {w.get('mastery_family')}")
+        if w.get("category") not in cats:
+            errors.append(f"weapons:{w.get('id')}: category {w.get('category')} is in no mastery family")
+
+# equipment slots: the armour class slot must be one of the slots
+slots = data.get("rules", {}).get("equipment_slots", {})
+if slots and slots.get("armour_class_from") not in slots.get("slots", []):
+    errors.append("rules.equipment_slots: armour_class_from is not a slot")
 
 # archetypes: creation presets (guidance only)
 arch = data.get("archetypes")

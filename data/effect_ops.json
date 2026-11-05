@@ -7,7 +7,7 @@
       "id": "stat_mod",
       "tier": "core",
       "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
-      "count": 179,
+      "count": 186,
       "params": [
         "basis",
         "context",
@@ -70,7 +70,7 @@
       "id": "grant_action",
       "tier": "core",
       "summary": "Give a new action with an AP cost and a use limit.",
-      "count": 91,
+      "count": 92,
       "params": [
         "action",
         "ap",
@@ -165,7 +165,7 @@
       "id": "condition",
       "tier": "core",
       "summary": "Apply a condition (or family:x / a choice list).",
-      "count": 43,
+      "count": 48,
       "params": [
         "choose",
         "condition",
@@ -267,6 +267,39 @@
       }
     },
     {
+      "id": "action_cost",
+      "tier": "core",
+      "summary": "Change (value) or fix (set) the AP cost of an action.",
+      "count": 22,
+      "params": [
+        "action",
+        "context",
+        "set",
+        "uses",
+        "value"
+      ],
+      "used_by": [
+        "classes:case_file",
+        "classes:fire_discipline",
+        "classes:sword_form",
+        "classes:triage",
+        "traits:cold_case",
+        "traits:demolitionist",
+        "traits:drill_echo",
+        "traits:field_medic",
+        "traits:glass_runner",
+        "traits:grenadiers_arm",
+        "traits:gun_nut",
+        "traits:live_to_fight_another_day"
+      ],
+      "example": {
+        "op": "action_cost",
+        "action": "burst",
+        "value": -1,
+        "uses": "per_turn"
+      }
+    },
+    {
       "id": "cost_mod",
       "tier": "core",
       "summary": "Change what a spell, blessing or item costs in its resource.",
@@ -293,6 +326,42 @@
         "action": "move",
         "value": "zero",
         "when": "first move into an unexplored room or area"
+      }
+    },
+    {
+      "id": "damage_mult",
+      "tier": "core",
+      "summary": "Multiply damage dealt.",
+      "count": 16,
+      "params": [
+        "context",
+        "count",
+        "duration",
+        "max",
+        "per",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:finisher",
+        "classes:heart_surge",
+        "classes:inscribe_gear",
+        "classes:judgement",
+        "classes:love_made_manifest",
+        "classes:one_shot",
+        "classes:sanctuary",
+        "classes:stitch",
+        "perks:breaching_strike",
+        "perks:holy_ordnance",
+        "perks:last_charge",
+        "perks:origami_hands"
+      ],
+      "example": {
+        "op": "damage_mult",
+        "value": 0.2,
+        "per": "momentum_spent",
+        "max": 1.0
       }
     },
     {
@@ -352,75 +421,6 @@
       }
     },
     {
-      "id": "action_cost",
-      "tier": "core",
-      "summary": "Change (value) or fix (set) the AP cost of an action.",
-      "count": 15,
-      "params": [
-        "action",
-        "context",
-        "set",
-        "uses",
-        "value"
-      ],
-      "used_by": [
-        "classes:case_file",
-        "classes:fire_discipline",
-        "classes:sword_form",
-        "classes:triage",
-        "traits:cold_case",
-        "traits:demolitionist",
-        "traits:drill_echo",
-        "traits:field_medic",
-        "traits:glass_runner",
-        "traits:grenadiers_arm",
-        "traits:gun_nut",
-        "traits:live_to_fight_another_day"
-      ],
-      "example": {
-        "op": "action_cost",
-        "action": "burst",
-        "value": -1,
-        "uses": "per_turn"
-      }
-    },
-    {
-      "id": "damage_mult",
-      "tier": "core",
-      "summary": "Multiply damage dealt.",
-      "count": 15,
-      "params": [
-        "context",
-        "count",
-        "duration",
-        "max",
-        "per",
-        "target",
-        "value",
-        "when"
-      ],
-      "used_by": [
-        "classes:finisher",
-        "classes:heart_surge",
-        "classes:inscribe_gear",
-        "classes:judgement",
-        "classes:love_made_manifest",
-        "classes:one_shot",
-        "classes:sanctuary",
-        "classes:stitch",
-        "perks:breaching_strike",
-        "perks:holy_ordnance",
-        "perks:last_charge",
-        "perks:origami_hands"
-      ],
-      "example": {
-        "op": "damage_mult",
-        "value": 0.2,
-        "per": "momentum_spent",
-        "max": 1.0
-      }
-    },
-    {
       "id": "immunity",
       "tier": "core",
       "summary": "Can't gain a condition or damage type.",
@@ -455,7 +455,7 @@
       "id": "damage_mod",
       "tier": "core",
       "summary": "Add flat damage.",
-      "count": 13,
+      "count": 14,
       "params": [
         "context",
         "source",
@@ -545,6 +545,34 @@
       }
     },
     {
+      "id": "attack_mod",
+      "tier": "core",
+      "summary": "Bonus or penalty to attack rolls.",
+      "count": 10,
+      "params": [
+        "context",
+        "duration",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:fire_discipline",
+        "conditions:emplaced",
+        "conditions:grappled",
+        "perks:flat_line",
+        "perks:spoon_feed",
+        "traits:spray_and_pray",
+        "weapon_mastery:double_tap",
+        "weapon_mastery:steady_breath"
+      ],
+      "example": {
+        "op": "attack_mod",
+        "context": "aimed_shot_with_bow",
+        "value": 1
+      }
+    },
+    {
       "id": "state",
       "tier": "core",
       "summary": "A named toggled state with its own rules.",
@@ -571,32 +599,6 @@
         "op": "state",
         "state": "full_cover",
         "tiles": 2
-      }
-    },
-    {
-      "id": "attack_mod",
-      "tier": "core",
-      "summary": "Bonus or penalty to attack rolls.",
-      "count": 8,
-      "params": [
-        "context",
-        "duration",
-        "target",
-        "value",
-        "when"
-      ],
-      "used_by": [
-        "classes:fire_discipline",
-        "conditions:emplaced",
-        "conditions:grappled",
-        "perks:flat_line",
-        "perks:spoon_feed",
-        "traits:spray_and_pray"
-      ],
-      "example": {
-        "op": "attack_mod",
-        "context": "aimed_shot_with_bow",
-        "value": 1
       }
     },
     {
@@ -734,6 +736,44 @@
       }
     },
     {
+      "id": "ignore_cover",
+      "tier": "core",
+      "summary": "Attacks ignore a level of cover.",
+      "count": 5,
+      "params": [
+        "context"
+      ],
+      "used_by": [
+        "perks:breaching_strike",
+        "traits:one_shot",
+        "weapon_mastery:room_clearer"
+      ],
+      "example": {
+        "op": "ignore_cover",
+        "context": "breaching_strike"
+      }
+    },
+    {
+      "id": "knockback",
+      "tier": "core",
+      "summary": "Push a target a number of tiles.",
+      "count": 5,
+      "params": [
+        "target",
+        "tiles"
+      ],
+      "used_by": [
+        "perks:breaching_strike",
+        "weapon_mastery:breacher",
+        "weapon_mastery:follow_through"
+      ],
+      "example": {
+        "op": "knockback",
+        "tiles": 1,
+        "target": "target"
+      }
+    },
+    {
       "id": "cleanse",
       "tier": "core",
       "summary": "Remove a condition or family.",
@@ -779,6 +819,25 @@
       }
     },
     {
+      "id": "free_move",
+      "tier": "core",
+      "summary": "Movement that costs no AP.",
+      "count": 4,
+      "params": [
+        "tiles",
+        "when"
+      ],
+      "used_by": [
+        "perks:roll_with_it",
+        "weapon_mastery:flow"
+      ],
+      "example": {
+        "op": "free_move",
+        "tiles": 1,
+        "when": "successful dodge"
+      }
+    },
+    {
       "id": "heal",
       "tier": "core",
       "summary": "Restore HP.",
@@ -799,23 +858,6 @@
         "value": 20,
         "target": "ally_adjacent",
         "scale": "healing_given"
-      }
-    },
-    {
-      "id": "ignore_cover",
-      "tier": "core",
-      "summary": "Attacks ignore a level of cover.",
-      "count": 4,
-      "params": [
-        "context"
-      ],
-      "used_by": [
-        "perks:breaching_strike",
-        "traits:one_shot"
-      ],
-      "example": {
-        "op": "ignore_cover",
-        "context": "breaching_strike"
       }
     },
     {
@@ -859,6 +901,27 @@
         "buy_pct": 20,
         "sell_pct": -20,
         "context": "trader_other_race"
+      }
+    },
+    {
+      "id": "reaction",
+      "tier": "core",
+      "summary": "An action taken off-turn; uses the one reaction per round unless it says otherwise.",
+      "count": 4,
+      "params": [
+        "action",
+        "limit",
+        "trigger"
+      ],
+      "used_by": [
+        "perks:catch",
+        "weapon_mastery:last_word"
+      ],
+      "example": {
+        "op": "reaction",
+        "action": "catch_throwable",
+        "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+        "limit": "once_per_round"
       }
     },
     {
@@ -1063,24 +1126,6 @@
       }
     },
     {
-      "id": "free_move",
-      "tier": "core",
-      "summary": "Movement that costs no AP.",
-      "count": 3,
-      "params": [
-        "tiles",
-        "when"
-      ],
-      "used_by": [
-        "perks:roll_with_it"
-      ],
-      "example": {
-        "op": "free_move",
-        "tiles": 1,
-        "when": "successful dodge"
-      }
-    },
-    {
       "id": "heal_received_mult",
       "tier": "core",
       "summary": "Multiply healing received.",
@@ -1140,24 +1185,6 @@
       }
     },
     {
-      "id": "knockback",
-      "tier": "core",
-      "summary": "Push a target a number of tiles.",
-      "count": 3,
-      "params": [
-        "target",
-        "tiles"
-      ],
-      "used_by": [
-        "perks:breaching_strike"
-      ],
-      "example": {
-        "op": "knockback",
-        "tiles": 1,
-        "target": "target"
-      }
-    },
-    {
       "id": "movement_mode",
       "tier": "core",
       "summary": "A new way to move (climb, swim, jump).",
@@ -1174,26 +1201,6 @@
         "op": "movement_mode",
         "mode": "wall_run",
         "max_tiles": 2
-      }
-    },
-    {
-      "id": "reaction",
-      "tier": "core",
-      "summary": "An action taken off-turn; uses the one reaction per round unless it says otherwise.",
-      "count": 3,
-      "params": [
-        "action",
-        "limit",
-        "trigger"
-      ],
-      "used_by": [
-        "perks:catch"
-      ],
-      "example": {
-        "op": "reaction",
-        "action": "catch_throwable",
-        "trigger": "grenade or thrown weapon targets you or an adjacent ally",
-        "limit": "once_per_round"
       }
     },
     {
@@ -1458,6 +1465,29 @@
           "fear"
         ],
         "rounds": 1
+      }
+    },
+    {
+      "id": "free_attack",
+      "tier": "core",
+      "summary": "An attack that costs no AP.",
+      "count": 2,
+      "params": [
+        "ap",
+        "attack",
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "perks:dance_of_iron",
+        "weapon_mastery:cleave"
+      ],
+      "example": {
+        "op": "free_attack",
+        "when": "successful dodge",
+        "target": "attacker",
+        "ap": 0,
+        "attack": "single_shot"
       }
     },
     {
@@ -2122,28 +2152,6 @@
         "ap": 2,
         "target": "all_allies",
         "when": "supreme_command"
-      }
-    },
-    {
-      "id": "free_attack",
-      "tier": "core",
-      "summary": "An attack that costs no AP.",
-      "count": 1,
-      "params": [
-        "ap",
-        "attack",
-        "target",
-        "when"
-      ],
-      "used_by": [
-        "perks:dance_of_iron"
-      ],
-      "example": {
-        "op": "free_attack",
-        "when": "successful dodge",
-        "target": "attacker",
-        "ap": 0,
-        "attack": "single_shot"
       }
     },
     {
@@ -2931,6 +2939,30 @@
       "example": {
         "op": "weapon_mastery_rate",
         "value_pct": 25
+      }
+    },
+    {
+      "id": "xp_grant",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "limit",
+        "source",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "items:essence_of_experience"
+      ],
+      "example": {
+        "op": "xp_grant",
+        "value": 100,
+        "source": "essence",
+        "target": "self_or_party_member_present",
+        "when": "cracked out of combat (10 minutes)",
+        "limit": "one absorbed per character per long rest"
       }
     }
   ]

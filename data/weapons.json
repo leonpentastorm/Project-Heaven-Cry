@@ -26,7 +26,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "sidearms"
     },
     {
       "id": "drifter_revolver",
@@ -50,7 +51,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "sidearms"
     },
     {
       "id": "decrkm_smg",
@@ -78,7 +80,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "smgs"
     },
     {
       "id": "hellraiser_service_rifle",
@@ -106,7 +109,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "rifles"
     },
     {
       "id": "lever_carbine",
@@ -130,7 +134,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "rifles"
     },
     {
       "id": "lumeri_scattergun",
@@ -159,7 +164,8 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "shotguns"
     },
     {
       "id": "long_rifle",
@@ -183,7 +189,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "rifles"
     },
     {
       "id": "blackpoint_700",
@@ -210,7 +217,8 @@
         "armor_ignore_10",
         "requires_braced_or_prone"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "heavy"
     },
     {
       "id": "hellraiser_lmg",
@@ -237,7 +245,8 @@
       "properties": [
         "minus2_to_hit_unless_emplaced"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "heavy"
     },
     {
       "id": "recurve_bow",
@@ -266,7 +275,8 @@
         "no_recoil",
         "quiver"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "bows"
     },
     {
       "id": "crossbow",
@@ -294,7 +304,8 @@
         "no_heat",
         "no_recoil"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "bows"
     },
     {
       "id": "combat_knife",
@@ -319,7 +330,8 @@
         "throwable_6_tiles"
       ],
       "text": "",
-      "thrown_range_tiles": 6
+      "thrown_range_tiles": 6,
+      "mastery_family": "light_blades"
     },
     {
       "id": "sabre",
@@ -340,7 +352,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "light_blades"
     },
     {
       "id": "ork_machete",
@@ -361,7 +374,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "heavy_melee"
     },
     {
       "id": "maul",
@@ -382,7 +396,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "heavy_melee"
     },
     {
       "id": "lance",
@@ -405,7 +420,8 @@
       "properties": [
         "polearm"
       ],
-      "text": ""
+      "text": "",
+      "mastery_family": "heavy_melee"
     },
     {
       "id": "fists",
@@ -426,7 +442,8 @@
       "accuracy": 0,
       "price_credits": null,
       "properties": [],
-      "text": ""
+      "text": "",
+      "mastery_family": "unarmed"
     },
     {
       "id": "frag_grenade",
@@ -450,7 +467,8 @@
         "area_radius_2",
         "consumable"
       ],
-      "text": "40 to everyone within 2 tiles."
+      "text": "40 to everyone within 2 tiles.",
+      "mastery_family": "thrown"
     },
     {
       "id": "smoke_grenade",
@@ -475,7 +493,8 @@
         "blocks_sight_2_rounds",
         "consumable"
       ],
-      "text": "Blocks sight within 3 tiles for 2 rounds."
+      "text": "Blocks sight within 3 tiles for 2 rounds.",
+      "mastery_family": "thrown"
     },
     {
       "id": "flashbang",
@@ -503,7 +522,8 @@
       "applies": {
         "condition": "blinded",
         "save": "body"
-      }
+      },
+      "mastery_family": "thrown"
     }
   ]
 }
