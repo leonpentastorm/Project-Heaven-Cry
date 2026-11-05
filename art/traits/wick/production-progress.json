@@ -105,11 +105,12 @@
     "jury-rig",
     "hot-swap",
     "got-you-in-my-sight",
-    "eyes-in-the-back"
+    "eyes-in-the-back",
+    "hold-the-stroke"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 26
+    "perks": 27
   },
   "revision_rounds": {
     "field-surgeon": 3,

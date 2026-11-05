@@ -557,6 +557,29 @@
       },
       "batch": "E",
       "source_sha256": "acf8ca2d23434e4b7734feccc4c00309e99e1594398a4bbf650ae4774b4f8b5e"
+    },
+    {
+      "id": "hold-the-stroke",
+      "data_id": "hold_the_stroke",
+      "name": "Hold the Stroke",
+      "family": "perks",
+      "order": 25,
+      "mood": "Tense",
+      "action": "Wick braces an Evoker in both mittens, knees buckling, as a tall stack of unreleased geometric sigil strokes hovers queued over its muzzle.",
+      "screen": "Strained, full loading bar",
+      "prop": "Evoker",
+      "path": "art/perks/wick/production-v1/hold-the-stroke.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/hold-the-stroke.png",
+        "128": "art/perks/wick/production-v1/exports/128/hold-the-stroke.png",
+        "64": "art/perks/wick/production-v1/exports/64/hold-the-stroke.png",
+        "56": "art/perks/wick/production-v1/exports/56/hold-the-stroke.png",
+        "48": "art/perks/wick/production-v1/exports/48/hold-the-stroke.png",
+        "44": "art/perks/wick/production-v1/exports/44/hold-the-stroke.png",
+        "40": "art/perks/wick/production-v1/exports/40/hold-the-stroke.png"
+      },
+      "batch": "E",
+      "source_sha256": "e8bd3aed06a6f0ea8d980fb59ad481960e485aedcee288c87b40647c329446a2"
     }
   ]
 }
