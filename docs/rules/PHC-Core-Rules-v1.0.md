@@ -2,7 +2,7 @@
 
 > Exported from the living Claude Doc https://claude.ai/artifact/Mm2PsQVYuBKoFybSUTFii5 on 2026-11-05. The Doc is the source of truth; re-export after edits.
 >
-> **Revision 1.1 (2026-11-05), not yet in the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18. Copy these sections into the Doc. Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
+> **Revision 1.1 (2026-11-05), synced to the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18. Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
 
 2026-11-03 · Leon PT
 

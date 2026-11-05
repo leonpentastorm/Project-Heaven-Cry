@@ -102,11 +102,12 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 
 ## Working agreements with Leon
 
+- **Branches:** work happens on `develop`; `main` only receives merges from it.
 - He wants **direct pushback**, **numbered feedback** and **full drafts**, not hedged options.
 - Change the spec first, then the data, then run the validator.
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
 - Keep text in-universe: no real-Earth names in game text (the Unspoken Name). Recognisable homages through Celestials are fine.
-- Rules revision 1.1 (accepted 5 Nov 2026) is in the repo spec but **not yet in the living Doc**; copy it across. Its provisional numbers are spec items 35–41.
+- Rules revision 1.1 (accepted 5 Nov 2026) is in both the repo spec and the living Doc. Its provisional numbers are spec items 35–41.
 
 ## Next steps
 

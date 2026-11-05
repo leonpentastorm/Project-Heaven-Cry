@@ -2,7 +2,7 @@
 
 > Exported from the living Claude Doc https://claude.ai/artifact/Ctq7fiFpGoiw9uCP7Cuzak on 2026-11-05. The Doc is the source of truth; re-export after edits.
 >
-> **Added 2026-11-05, not yet in the living Doc:** the Unspoken Name, the tone line, the worlds and Earth, how campaigns start, the Crawlers, Operation Daggerfall, the timeline, the canon Accord clauses (hands off, create never erase, only by cause), Anti-Heaven Operations Command and the Progenitors. Copy them across. The faction web is a separate draft: `Factions.md`.
+> **Updated 2026-11-05 and synced to the living Doc:** the Unspoken Name, the tone line, canon Accord clauses, the Veil exception, heroes as patches, Celestial politics, the worlds and Earth, scale, how campaigns start, the Crawlers, Anti-Heaven Operations Command and the Progenitors, Operation Daggerfall, the timeline. The faction web is a repo-only draft: `Factions.md`.
 >
 > **Naming in this document:** *real Earth* is the world of the players and the Celestials' bodies, the layer above. *Earth* with no qualifier, from this revision on, is the in-world homeworld where Central City stands. Older lines below that say "Earth" for the layer above mean real Earth.
 
