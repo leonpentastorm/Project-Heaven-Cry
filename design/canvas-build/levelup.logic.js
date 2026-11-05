@@ -1,5 +1,6 @@
 const D = __DATA__;
 /*EPCCG*/
+/*LIGHTBOX*/
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
@@ -38,7 +39,7 @@ class Component extends DCLogic {
       nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 40px; font-weight: 700; color: ' + D.core[c] }));
     const done = !!S.spent && !!cls;
     const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
-    return { ...epccgVals(this), pc: D.pc, classCards, skillRows, coreRows, pointChip: S.spent ? '✓ SKILL POINT SPENT' : '◆ 1 SKILL POINT', pointChipStyle: chip(!!S.spent),
+    return { ...epccgVals(this), ...lightboxVals(this), zoomPc: zoomer(this, D.pc, 'MPAT', 'portrait'), pc: D.pc, classCards, skillRows, coreRows, pointChip: S.spent ? '✓ SKILL POINT SPENT' : '◆ 1 SKILL POINT', pointChipStyle: chip(!!S.spent),
       classChip: cls ? '✓ ' + D.classes.find((c) => c.id === cls).name.toUpperCase() : '◆ CHOOSE A CLASS', classChipStyle: chip(!!cls), notDone: !done,
       doneLabel: done ? 'Confirm level 3' : 'Spend the point and choose a class',
       doneStyle: 'min-height: 50px; border-radius: 12px; border: 0; font-family: inherit; font-size: 15px; font-weight: 700; ' + (done ? 'background: #6FEA77; color: #0A0D13; cursor: pointer' : 'background: #1C2536; color: #A3AEC2') };

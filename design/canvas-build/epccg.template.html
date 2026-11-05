@@ -11,7 +11,7 @@
 </div>
 <div style="display: flex; gap: 24px; flex-wrap: wrap">
 <figure style="margin: 0; flex: 0 0 240px; display: flex; flex-direction: column; gap: 8px">
-<img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 240px; height: 300px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F">
+<button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 240px; height: 300px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F"></button>
 <figcaption style="display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 14px; font-weight: 700">{{ep.pictured}}</span>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{ep.caption}}</span>

@@ -1,4 +1,5 @@
 const D = __DATA__;
+/*LIGHTBOX*/
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 // Player colours mark ownership only; always shown with the player's initials (colour-system.md, "Players").
 const PLAYERS = [['leon', 'Leon', 'LE', '#7FD4FF', 'Host · plays 2'], ['guest1', 'Mai', 'MA', '#FF9EC7', 'Plays 1'], ['guest2', 'Tuan', 'TU', '#B8E986', 'Building a character'], ['open', 'Open seat', '+', '#3B475D', 'Invite someone']];
@@ -33,7 +34,7 @@ class Component extends DCLogic {
       { owner: 'leon', name: '4-Ten', img: null, line: 'Robot · Thousand-Planet frontier · Bulwark preset · second character', locked: true },
       { owner: 'guest1', name: 'Ninety-Two', img: D.p2, line: 'Robot · Thousand-Planet frontier · Bodyguard preset', locked: true },
       { owner: 'guest2', name: 'Drava Keel', img: D.p3, line: 'Human · Mandestra and the trade lanes', locked: false },
-    ].map((c) => { const p = PC[c.owner]; return { ...c, hasImg: !!c.img, noImg: !c.img, img: c.img || '', owner: p[2] + ' · ' + p[1].toUpperCase(),
+    ].map((c) => { const p = PC[c.owner]; return { ...c, zoom: zoomer(this, c.img || '', c.name, 'portrait'), hasImg: !!c.img, noImg: !c.img, img: c.img || '', owner: p[2] + ' · ' + p[1].toUpperCase(),
       ownerStyle: 'align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; background: ' + p[3] + '; color: #0A0D13',
       state: c.locked ? '✓ LOCKED IN' : '◆ STILL BUILDING', stateStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: ' + (c.locked ? '#6FEA77' : '#FFFFFF'),
       style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + p[3] }; });
@@ -44,7 +45,7 @@ class Component extends DCLogic {
       style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') }));
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: () => this.setState({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
     const notReady = true;
-    return { players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', tones, notReady,
+    return { ...lightboxVals(this), players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', tones, notReady,
       startLabel: 'Start session · waiting for Tuan to lock in Drava Keel',
       startStyle: 'min-height: 52px; border-radius: 12px; border: 0; font-family: inherit; font-size: 15px; font-weight: 700; ' + (notReady ? 'background: #1C2536; color: #A3AEC2' : 'background: #6FEA77; color: #0A0D13; cursor: pointer') };
   }

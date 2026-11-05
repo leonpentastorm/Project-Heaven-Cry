@@ -19,7 +19,7 @@
 
 <aside aria-label="Character sheet" style="flex: 1 1 340px; max-width: 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
 <div style="display: flex; gap: 14px">
-<img src="{{pc.img}}" alt="MPAT" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F">
+<button type="button" onClick="{{zoomPc}}" aria-label="Enlarge MPAT" style="{{zoomBtn}}"><img src="{{pc.img}}" alt="MPAT" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F"></button>
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">MPAT</span>
 <span style="font-size: 12px; color: #A3AEC2; line-height: 1.4">M1.4 8R4-D83-RRY · 258th Medical Unit</span>
@@ -47,7 +47,7 @@
 <span style="font-size: 12px; color: #A3AEC2">Ask a skill what it thinks: once per scene each.</span>
 <sc-for list="{{sheetSkills}}" as="s" hint-placeholder-count="9">
 <div style="display: grid; grid-template-columns: 36px minmax(0, 1fr) 28px 52px 54px; gap: 8px; align-items: center">
-<img src="{{s.img}}" alt="" style="width: 36px; height: 45px; object-fit: cover; border-radius: 4px; background: #000">
+<button type="button" onClick="{{s.zoom}}" aria-label="Enlarge the {{s.name}} skill portrait" style="{{zoomBtn}}"><img src="{{s.img}}" alt="" style="width: 36px; height: 45px; object-fit: cover; border-radius: 4px; background: #000"></button>
 <span style="display: flex; flex-direction: column; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.attr}}</span></span>
 <button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{s.helpStyle}}">?</button>
 <span style="{{s.modStyle}}">{{s.pts}} · {{s.mod}}</span>
@@ -67,11 +67,11 @@
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</span>
-<div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><img class="phc-icon" src="{{factoryIcon}}" alt="" style="width: 44px; height: 44px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">Factory Made</span><span style="font-size: 12px; color: #A3AEC2">Immune to poison, bleed and suffocation</span></span></div>
+<div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><button type="button" onClick="{{zoomFactory}}" aria-label="Enlarge the Factory Made icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{factoryIcon}}" alt="" style="width: 44px; height: 44px"></button><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">Factory Made</span><span style="font-size: 12px; color: #A3AEC2">Immune to poison, bleed and suffocation</span></span></div>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">PERKS</span>
 <sc-for list="{{perks}}" as="k" hint-placeholder-count="2">
 <div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
-<img class="phc-icon" src="{{k.icon}}" alt="" style="width: 44px; height: 44px; flex: none">
+<button type="button" onClick="{{k.zoom}}" aria-label="Enlarge the {{k.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{k.icon}}" alt="" style="width: 44px; height: 44px; flex: none"></button>
 <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 700">{{k.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{k.tier}}</span><span style="{{k.chipStyle}}">{{k.chip}}</span></span>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{k.text}}</span>
@@ -121,7 +121,7 @@
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC">The last ship's engines are idling. Its hold is full of platinum. At the top of the ramp, <span style="color: #F2A54A; font-weight: 600">Chief Engineer Keel</span> wipes her hands on a rag and doesn't look at any of you.</p>
 
 <div style="display: flex; gap: 14px; align-items: flex-start">
-<img src="{{npc}}" alt="Chief Engineer Keel" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex: none">
+<button type="button" onClick="{{zoomNpc}}" aria-label="Enlarge Chief Engineer Keel" style="{{zoomBtn}}"><img src="{{npc}}" alt="Chief Engineer Keel" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex: none"></button>
 <div style="display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 12px; letter-spacing: 0.16em; color: #F2A54A">CHIEF ENGINEER KEEL</span>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.6">“Not enough thrust. We take you, we never shake their targeting. You're scrap. Shut yourselves down.”</p>
@@ -129,13 +129,13 @@
 </div>
 
 <div style="display: flex; gap: 12px; align-items: flex-start">
-<img src="{{p2}}" alt="Ninety-Two, player 2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; background: #000; flex: none">
+<button type="button" onClick="{{zoomP2}}" aria-label="Enlarge Ninety-Two" style="{{zoomBtn}}"><img src="{{p2}}" alt="Ninety-Two, player 2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; background: #000; flex: none"></button>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 17px; line-height: 1.6; color: #C9D3E3"><span style="color: #4FC8DF; font-weight: 600">Ninety-Two</span> hoists 4-Ten's torso onto its shoulders. “I'm carrying him up that ramp. She can shoot me first.”</p>
 </div>
 
 <sc-for list="{{voices}}" as="v" hint-placeholder-count="2">
 <div style="{{v.style}}">
-<img src="{{v.img}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none">
+<button type="button" onClick="{{v.zoom}}" aria-label="Enlarge the skill portrait" style="{{zoomBtn}}"><img src="{{v.img}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none"></button>
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="{{v.headStyle}}">{{v.head}}</span>
 <p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 17px; line-height: 1.55">{{v.line}}</p>
@@ -146,7 +146,7 @@
 <sc-if value="{{showPush}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #EB95B7">
 <div style="display: flex; gap: 14px; align-items: flex-start">
-<img src="{{pushImg}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none">
+<button type="button" onClick="{{zoomPush}}" aria-label="Enlarge the Camaraderie skill portrait" style="{{zoomBtn}}"><img src="{{pushImg}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none"></button>
 <div style="display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: #EB95B7">CAMARADERIE PUSHES · OVERREACH · ONLY YOU SEE THIS</span>
 <p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 18px; line-height: 1.55">The order says leave them. The order is wrong. Your people come first.</p>
@@ -198,7 +198,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </a>
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
 <sc-for list="{{order}}" as="o" hint-placeholder-count="3">
-<div style="display: flex; gap: 10px; align-items: center"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
+<div style="display: flex; gap: 10px; align-items: center"><button type="button" onClick="{{o.zoom}}" aria-label="Enlarge {{o.name}}" style="{{zoomBtn}}"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"></button><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
 </sc-for>
 <div style="display: flex; gap: 8px">
 <button type="button" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button>
@@ -285,4 +285,5 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 </sc-if>
 <!--EPCCG-->
+<!--LIGHTBOX-->
 </div>

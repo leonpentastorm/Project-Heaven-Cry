@@ -7,6 +7,7 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 ## Story mode — `Main.dc.html`
 
 - **Header:** wordmark, Story/Combat switch, Narrator chip ("AI · your key"), room code, settings.
+- **Click to enlarge (every screen):** any character portrait, skill portrait or Wick trait/perk icon opens full size in a lightbox (800 × 1000 portraits, 512 px icons) with its name and kind, over everything including the EPCCG pop-up. Level-up's skill rows are the exception: the row itself is the pick button.
 - **Narrator avatar:** Wick, fully 3D and rendered (flat white ink is only for trait and perk icons). Placeholder until the render arrives: a crop of the painted model study.
 - **Left: character panel.** Portrait, HP/MP/XP bars, Echo, Supplies and Karma. Five tabs, which together cover the 2020 Excel character sheet:
   - **Skills:** core tabs, attributes and skills, modifiers, signature tags.

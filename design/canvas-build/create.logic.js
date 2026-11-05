@@ -1,5 +1,6 @@
 const D = __DATA__;
 /*EPCCG*/
+/*LIGHTBOX*/
 const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['kit', 'Kit'], ['lockin', 'Lock in']];
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const CORES = ['body', 'mind', 'soul'];
@@ -155,13 +156,13 @@ class Component extends DCLogic {
             modStyle: 'font-size: 11px; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
             nameStyle: 'font-size: 12px; font-weight: 700; line-height: 1.2; min-height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
             inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: !costOf(s.id).ok, incTitle: costOf(s.id).text, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
-            help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'position: absolute; top: 10px; right: 10px'),
+            zoom: zoomer(this, s.img, s.name, 'skill'), help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'position: absolute; top: 10px; right: 10px'),
             style: 'position: relative; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
         }),
       })),
     }));
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
-    const detail = { img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(mod(hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
+    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(mod(hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
@@ -177,7 +178,7 @@ class Component extends DCLogic {
     D.traits.forEach((t) => { if (t.ex.some((e) => picked.includes(e))) blocked.add(t.id); });
     const traitCards = D.traits.filter((t) => S.tcat === 'All' || t.cat === S.tcat).map((t) => {
       const on = picked.includes(t.id), ex = blocked.has(t.id) && !on, full = picked.length >= 2 && !on;
-      return { name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
+      return { zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
         toggle: () => this.setState({ traits: on ? picked.filter((x) => x !== t.id) : [...picked, t.id] }), disabled: ex || full, pressed: on ? 'true' : 'false',
         btn: on ? 'Remove' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
         btnStyle: 'margin-top: auto; min-height: 40px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
@@ -218,7 +219,7 @@ class Component extends DCLogic {
         skills: D.skills.filter((sk) => sk.attr === a.id).map((sk) => { const p = PT(sk.id), m = mod(p);
           return { name: sk.name, pts: p, mod: fmt(m) + (p >= 10 ? ' · Mastered' : p >= 9 ? ' · M4' : p >= 7 ? ' · M3' : p >= 5 ? ' · M2' : p >= 3 ? ' · M1' : ''),
             style: 'display: flex; justify-content: space-between; gap: 6px; font-size: 13px; color: ' + (p ? '#E7EBF3' : '#7F8BA1') }; }) })) }));
-    const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
+    const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
       up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })) }));
     const kit = S.kit ? D.kits.find((k) => k.id === S.kit) : null;
     const kitItems = [...(kit ? kit.items : []), 'Essence of Experience ×1'].map((text) => ({ text }));
@@ -227,7 +228,7 @@ class Component extends DCLogic {
     const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id);
       return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
 
-    return { ...epccgVals(this),
+    return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, portrait.label, 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,

@@ -19,7 +19,7 @@
 <sc-for list="{{squad}}" as="s" hint-placeholder-count="4">
 <div style="{{s.style}}">
 <div style="display: flex; gap: 12px">
-<sc-if value="{{s.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{s.img}}" alt="" style="width: 84px; height: 105px; object-fit: cover; border-radius: 8px; background: #000"></sc-if>
+<sc-if value="{{s.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{s.zoom}}" aria-label="Enlarge {{s.name}}" style="{{zoomBtn}}"><img src="{{s.img}}" alt="" style="width: 84px; height: 105px; object-fit: cover; border-radius: 8px; background: #000"></button></sc-if>
 <sc-if value="{{s.noImg}}" hint-placeholder-val="{{false}}"><span style="display: grid; place-items: center; width: 84px; height: 105px; border-radius: 8px; border: 1px dashed #3B475D; color: #A3AEC2; font-size: 12px">NO PORTRAIT</span></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="{{s.ownerStyle}}">{{s.owner}}</span>
@@ -78,4 +78,5 @@
 <button type="button" disabled="{{notReady}}" style="{{startStyle}}">{{startLabel}}</button>
 </aside>
 </div>
+<!--LIGHTBOX-->
 </div>

@@ -1,4 +1,5 @@
 const D = __DATA__;
+/*LIGHTBOX*/
 const W = 16, H = 11;
 // Movement is tiles per AP (spec: Moving): 1 + 0.5 x (Agility - 1). MPAT has Agility 3, so 2 tiles per AP.
 const AGILITY = 3, MOV = 1 + 0.5 * (AGILITY - 1);
@@ -80,7 +81,7 @@ class Component extends DCLogic {
     }
     const RING = { MPAT: '#7FD4FF', 'Ninety-Two': '#FF9EC7' };
     const initiative = [['Keel', 17, 'foe', D.npc], ['MPAT', 14, 'pc', D.pc], ['E1', 11, 'foe'], ['Ninety-Two', 9, 'pc', D.p2], ['E2', 6, 'foe']].map(([name, init, side, img]) => ({
-      name, init, hasImg: !!img, noImg: !img, img: img || '', short: name.slice(0, 2).toUpperCase(),
+      zoom: zoomer(this, img || '', name === 'Keel' ? 'Chief Engineer Keel' : name, 'portrait'), name, init, hasImg: !!img, noImg: !img, img: img || '', short: name.slice(0, 2).toUpperCase(),
       imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + RING[name] : 'border-radius: 4px; border: 2px solid #F65157'),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: 4px; border: 2px solid #F65157; color: #F65157; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (name === 'MPAT' ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F'),
@@ -96,9 +97,9 @@ class Component extends DCLogic {
       extra: isMove ? (S.bank ? S.bank + ' paid-for tile' + (S.bank > 1 ? 's' : '') + ' left this turn. ' : '') + 'Hover a highlighted tile to see the path and its AP cost; click to move.' : (S.action === 'shot' || S.action === 'aimed') ? 'Click a hostile to target it.' : '' };
     const h = HOSTILES[S.target];
     const bonus = S.action === 'aimed' ? 3 : 1, need = h.def - bonus, pct = Math.max(5, Math.min(95, (21 - need) * 5));
-    const target = { name: h.name, img: h.img || '', hasImg: !!h.img, hpFill: 'width: ' + Math.round(h.hp / h.max * 100) + '%; height: 100%; background: #F65157',
+    const target = { zoom: zoomer(this, h.img || '', h.name, 'portrait'), name: h.name, img: h.img || '', hasImg: !!h.img, hpFill: 'width: ' + Math.round(h.hp / h.max * 100) + '%; height: 100%; background: #F65157',
       line: 'HP ' + h.hp + ' / ' + h.max + ' · Defense ' + h.def + ' (' + h.cover + ')', odds: (S.action === 'shot' || S.action === 'aimed') ? 'Hit ' + pct + '% · crit ' + (S.action === 'aimed' ? '10' : '5') + '%' : 'Pick Shot or Aimed shot to see odds' };
-    return {
+    return { ...lightboxVals(this), zoomPc: zoomer(this, D.pc, 'MPAT', 'portrait'),
       initiative, tiles, pc: D.pc, apPips, apText: (S.ap - cost) + ' / 6 after this', groups, sel, hasTarget: !!h, target,
       log: S.log.slice(-4).map((text) => ({ text })), cantConfirm: cost > S.ap || S.action === 'move',
       confirm: () => this.confirm(), endTurn: () => this.setState({ ap: 6, bank: 0, log: [...this.state.log, 'MPAT ends the turn. The engineers reload behind the crates.'] }),

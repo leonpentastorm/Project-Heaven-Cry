@@ -66,7 +66,7 @@
 
 <aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
-<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000">
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge {{portrait.label}}" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000"></button>
 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PORTRAIT</span>
 <span style="font-size: 13px; color: #C9D3E3">{{portrait.label}}</span>
@@ -174,7 +174,7 @@
 <span style="{{a.barStyle}}" aria-hidden="true"></span>
 <sc-for list="{{a.cards}}" as="k" hint-placeholder-count="3">
 <div class="phc-card" onMouseEnter="{{k.hover}}" style="{{k.style}}">
-<img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 6px; background: #000">
+<button type="button" onClick="{{k.zoom}}" aria-label="Enlarge the {{k.name}} skill portrait" style="{{zoomBtn}}; width: 100%"><img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 6px; background: #000"></button>
 <button type="button" class="phc-help" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
 <span style="{{k.nameStyle}}">{{k.name}}</span>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px">
@@ -191,7 +191,7 @@
 </sc-for>
 </div>
 <div style="{{detail.style}}">
-<img src="{{detail.img}}" alt="" style="width: 48px; height: 60px; object-fit: cover; border-radius: 6px; background: #000">
+<button type="button" onClick="{{detail.zoom}}" aria-label="Enlarge the {{detail.name}} skill portrait" style="{{zoomBtn}}"><img src="{{detail.img}}" alt="" style="width: 48px; height: 60px; object-fit: cover; border-radius: 6px; background: #000"></button>
 <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
 <span style="{{detail.nameStyle}}">{{detail.name}} · {{detail.attr}} · {{detail.mod}}</span>
 <span style="font-size: 13px; color: #C9D3E3">{{detail.summary}}</span>
@@ -218,7 +218,7 @@
 <sc-for list="{{traitCards}}" as="t" hint-placeholder-count="6">
 <article style="{{t.style}}">
 <div style="display: flex; gap: 12px; align-items: flex-start">
-<img class="phc-icon" src="{{t.icon}}" alt="" style="width: 56px; height: 56px; flex: none">
+<button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 56px; height: 56px; flex: none"></button>
 <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 18px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
 </div>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
@@ -253,7 +253,7 @@
 
 <div style="position: relative; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
 <img src="__SEAL__" alt="Stamped by the Anti-Heaven Operation Commands" style="position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; transform: rotate(-12deg); opacity: 0.55">
-<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000">
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge {{portrait.label}}" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000"></button>
 <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; padding-right: 110px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">EPCCG · PERSONNEL RECORD</span>
 <span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>
@@ -305,7 +305,7 @@
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
 <sc-for list="{{traitFull}}" as="t" hint-placeholder-count="1">
 <article style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
-<div style="display: flex; gap: 12px; align-items: center"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 48px; height: 48px; flex: none"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></span></div>
+<div style="display: flex; gap: 12px; align-items: center"><button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 48px; height: 48px; flex: none"></button><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></span></div>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
 <sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
 <sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>
@@ -355,4 +355,5 @@
 <button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Next ›</button>
 </footer>
 <!--EPCCG-->
+<!--LIGHTBOX-->
 </div>

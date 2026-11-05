@@ -1,5 +1,6 @@
 const D = __DATA__;
 /*EPCCG*/
+/*LIGHTBOX*/
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
 // MPAT: the EPCCG's own 10-point build (Athletics 3, Dexterity 2, Camaraderie 3, Authority 2), levelled to 5.
@@ -26,7 +27,7 @@ const SKINS = [['ivory', 'Ivory', '#EFE6D2', '#8C7B5A', '#1A1A1A'], ['obsidian',
 
 const voiceCard = (id, head, line) => {
   const s = SK[id], ink = ATTR[s.attr].ink;
-  return { img: s.img, head, line, headStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
+  return { skillName: s.name, img: s.img, head, line, headStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
     style: 'display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink };
 };
 
@@ -56,7 +57,7 @@ class Component extends DCLogic {
     };
     const sheetSkills = D.skills.filter((s) => s.core === S.core).map((s) => {
       const p = PTS[s.id] || 0, m = mod(p), ink = ATTR[s.attr].ink, done = !!S.asked[s.id];
-      return { img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), ask: ask(s.id), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink), noAsk: done || p === 0, askLabel: done ? 'Asked' : 'Ask',
+      return { zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), ask: ask(s.id), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink), noAsk: done || p === 0, askLabel: done ? 'Asked' : 'Ask',
         nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (p ? ink : '#A3AEC2'), modStyle: 'font-size: 13px; text-align: right; color: ' + (p ? '#E7EBF3' : '#7F8BA1'),
         askStyle: 'min-height: 32px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' + (done || p === 0 ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + ink + '; background: transparent; color: ' + ink) };
     });
@@ -66,6 +67,7 @@ class Component extends DCLogic {
       voiceCard('athletics', 'ATHLETICS · PASSIVE 12 vs STANDARD 12 · ONLY YOU', 'There\'s a gap between Keel and the hatch control. Two steps. She swings like an engineer; you move like you.'),
       ...S.extra,
     ];
+    voices.forEach((v) => { v.zoom = zoomer(this, v.img, v.skillName, 'skill'); });
     const indulge = () => this.setState({ push: 'indulged', echo: Math.min(3, this.state.echo + 1) });
     const resist = () => { if (this.state.echo >= 1) this.setState({ push: 'resisted', echo: this.state.echo - 1 }); };
     const pushResult = S.push === 'indulged' ? 'You indulged: MPAT sides with the squad, whatever the orders say. +1 Echo.' : 'You resisted: MPAT holds the line and waits for orders. −1 Echo.';
@@ -85,6 +87,7 @@ class Component extends DCLogic {
     const order = [{ img: D.pc, name: 'MPAT (you)', ...who('leon'), state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
       { img: D.p2, name: 'Ninety-Two', ...who('guest'), state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
       { img: D.narrator, name: 'Narrator', player: 'AI', playerStyle: 'font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+    order.forEach((o) => { o.zoom = zoomer(this, o.img, o.name.replace(' (you)', ''), 'portrait'); });
     const mini = [];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = x + ',' + y, tok = TOKENS[k];
       mini.push({ style: 'aspect-ratio: 1; border-radius: ' + (tok ? '50%' : '1px') + '; background: ' + (tok || (HULL.has(k) ? '#1C2536' : CRATES.has(k) ? '#4A3A20' : WRECK.has(k) ? '#232D3F' : '#0D1119')) }); }
@@ -114,7 +117,7 @@ class Component extends DCLogic {
     });
     // Acquired perks at Mastery 1 (3 points). Requirement chips use the attribute's UI ink (colour-system.md, Icons).
     const perks = [['rally_cry', 'camaraderie'], ['roll_with_it', 'athletics']].map(([id, sk]) => { const k = D.perks.find((x) => x.id === id), ink = ATTR[SK[sk].attr].ink;
-      return { name: k.name, tier: 'ACQUIRED · TIER I', text: k.text, icon: k.icon, chip: SK[sk].name + ' ' + PTS[sk],
+      return { zoom: zoomer(this, k.icon, k.name, 'icon'), name: k.name, tier: 'ACQUIRED · TIER I', text: k.text, icon: k.icon, chip: SK[sk].name + ' ' + PTS[sk],
         chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink }; });
     const eoe = { locked: true, why: 'Needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator. Nobody in the squad can crack it yet.' };
     const bio = [['Original name', 'M1.4 8R4-D83-RRY'], ['Unit', '258th Medical Unit'], ['Origin', 'The Factory · Thousand-Planet frontier'], ['Race', 'Robot'], ['Age', '7'], ['Height', '180 cm'], ['Blood type', 'Oil'],
@@ -151,7 +154,8 @@ class Component extends DCLogic {
       custom: S.custom, toggleCustom: () => this.setState({ custom: !this.state.custom }), customPressed: S.custom ? 'true' : 'false', customLabel: S.custom ? 'Done' : 'Customise',
       waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
       throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
-      ...epccgVals(this), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
+      ...epccgVals(this), ...lightboxVals(this), zoomPc: zoomer(this, D.pc, 'MPAT', 'portrait'), zoomNpc: zoomer(this, D.npc, 'Chief Engineer Keel', 'portrait'),
+      zoomP2: zoomer(this, D.p2, 'Ninety-Two', 'portrait'), zoomPush: zoomer(this, SK.camaraderie.img, 'Camaraderie', 'skill'), zoomFactory: zoomer(this, D.factoryIcon, 'Factory Made', 'icon'), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       status, rep, perks, gear, emptySlots, mastery, eoe, bio, wick: D.wick, factoryIcon: D.factoryIcon, pilot: D.pilot, outpost: D.outpost, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),

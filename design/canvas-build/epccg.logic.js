@@ -2,7 +2,7 @@
 // Each skill in D.skills carries `ep` (data/skills.json `epccg`, plus the First-Patch Revival portrait blob).
 const EP_SLOT = { alpha: 'α', beta: 'β', gamma: 'γ' };
 const EP_ATTR = {}; D.attrs.forEach((a) => { EP_ATTR[a.id] = a; });
-const EP_BLANK = { title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', note: '', quote: [], rows: [], boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', note: '', quote: [], rows: [], boxStyle: '', nameStyle: '', quoteStyle: '' };
 // The "?" button that opens a skill's entry. `ink` is the attribute's UI ink.
 const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 function epccgVals(self) {
@@ -14,7 +14,7 @@ function epccgVals(self) {
   return { epOpen: true, closeEpccg, ep: {
     title: s.name + ': EPCCG entry', kicker: 'EPCCG · ARTICLE 5 · ENTRY ' + String(e.entry).padStart(2, '0'),
     name: s.name, line: EP_SLOT[s.slot] + ' skill of ' + a.name + ' · ' + s.core.charAt(0).toUpperCase() + s.core.slice(1),
-    img: e.img, alt: e.portrait + ', First-Patch Revival portrait for ' + s.name, pictured: e.portrait,
+    img: e.img, zoom: zoomer(self, e.img, e.portrait, 'portrait'), alt: e.portrait + ', First-Patch Revival portrait for ' + s.name, pictured: e.portrait,
     caption: same ? 'Speaks for ' + s.name + ' in the EPCCG.' : 'The one these words are about. Words by ' + e.speaker + '.',
     quote: e.quote.map((t) => { const stage = /^\*.*\*$/.test(t); return { text: stage ? t.slice(1, -1) : t.replace(/\*/g, ''),
       style: 'margin: 0; font-family: \'Spectral\', serif; line-height: 1.55; ' + (stage ? 'font-size: 14px; color: #A3AEC2; letter-spacing: 0.04em' : 'font-size: 17px; font-style: italic; color: #E7EBF3') }; }),

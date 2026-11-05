@@ -17,7 +17,7 @@
 <div aria-label="Initiative order" style="display: flex; gap: 10px; padding: 10px 24px; border-bottom: 1px solid #232D3F; overflow-x: auto">
 <sc-for list="{{initiative}}" as="i" hint-placeholder-count="5">
 <div style="{{i.style}}">
-<sc-if value="{{i.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{i.img}}" alt="" style="{{i.imgStyle}}"></sc-if>
+<sc-if value="{{i.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{i.zoom}}" aria-label="Enlarge {{i.name}}" style="{{zoomBtn}}"><img src="{{i.img}}" alt="" style="{{i.imgStyle}}"></button></sc-if>
 <sc-if value="{{i.noImg}}" hint-placeholder-val="{{false}}"><span style="{{i.badgeStyle}}">{{i.short}}</span></sc-if>
 <span style="display: flex; flex-direction: column"><span style="font-size: 13px; font-weight: 700">{{i.name}}</span><span style="font-size: 11px; color: #A3AEC2">INIT {{i.init}}</span></span>
 </div>
@@ -53,7 +53,7 @@
 
 <aside aria-label="Turn" style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; gap: 12px; align-items: center">
-<img src="{{pc}}" alt="MPAT" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000">
+<button type="button" onClick="{{zoomPc}}" aria-label="Enlarge MPAT" style="{{zoomBtn}}"><img src="{{pc}}" alt="MPAT" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000"></button>
 <div style="display: flex; flex-direction: column"><span style="font-size: 18px; font-weight: 700">MPAT's turn</span><span style="font-size: 12px; color: #A3AEC2">HP 120 / 120 · Supplies 3 · Echo 1</span></div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
@@ -79,7 +79,7 @@
 </div>
 <sc-if value="{{hasTarget}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; gap: 12px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #F65157">
-<sc-if value="{{target.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{target.img}}" alt="" style="width: 64px; height: 80px; object-fit: cover; border-radius: 6px; background: #000"></sc-if>
+<sc-if value="{{target.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{target.zoom}}" aria-label="Enlarge {{target.name}}" style="{{zoomBtn}}"><img src="{{target.img}}" alt="" style="width: 64px; height: 80px; object-fit: cover; border-radius: 6px; background: #000"></button></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
 <span style="font-size: 12px; letter-spacing: 0.14em; color: #F65157">TARGET</span>
 <span style="font-size: 16px; font-weight: 700">{{target.name}}</span>
@@ -95,4 +95,5 @@
 </div>
 </aside>
 </div>
+<!--LIGHTBOX-->
 </div>
