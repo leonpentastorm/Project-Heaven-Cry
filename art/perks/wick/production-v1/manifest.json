@@ -396,6 +396,29 @@
       },
       "batch": "D",
       "source_sha256": "be5382ccd8ae567b0f88af0a12a574171c3b57b468794705130fb3c4dd717db8"
+    },
+    {
+      "id": "catch",
+      "data_id": "catch",
+      "name": "Catch",
+      "family": "perks",
+      "order": 18,
+      "mood": "Tense, Comic",
+      "action": "Wick leaps and snatches a grenade out of the air one-handed, body already twisting to wind back for the throw.",
+      "screen": "Wide eyes \"!\"",
+      "prop": "Grenade",
+      "path": "art/perks/wick/production-v1/catch.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/catch.png",
+        "128": "art/perks/wick/production-v1/exports/128/catch.png",
+        "64": "art/perks/wick/production-v1/exports/64/catch.png",
+        "56": "art/perks/wick/production-v1/exports/56/catch.png",
+        "48": "art/perks/wick/production-v1/exports/48/catch.png",
+        "44": "art/perks/wick/production-v1/exports/44/catch.png",
+        "40": "art/perks/wick/production-v1/exports/40/catch.png"
+      },
+      "batch": "D",
+      "source_sha256": "6d48813672facdeed6b4e6ab8947b9c620ca52c1d88d237421aa3f168a6cf3b8"
     }
   ]
 }

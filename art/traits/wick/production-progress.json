@@ -98,11 +98,12 @@
     "roll-with-it",
     "origami-hands",
     "running-reload",
-    "rounding-up"
+    "rounding-up",
+    "catch"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 19
+    "perks": 20
   },
   "revision_rounds": {
     "field-surgeon": 3,

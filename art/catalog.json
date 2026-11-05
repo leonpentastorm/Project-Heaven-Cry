@@ -3683,6 +3683,30 @@
         "44": "art/perks/wick/production-v1/exports/44/rounding-up.png",
         "40": "art/perks/wick/production-v1/exports/40/rounding-up.png"
       }
+    },
+    "catch": {
+      "label": "Wick — Catch",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/catch.png",
+      "sha256": "b019edb80709a754b8966d6d158a3a748c3545ad6e257657595c9799c5db15de",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "catch",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/catch.png",
+        "128": "art/perks/wick/production-v1/exports/128/catch.png",
+        "64": "art/perks/wick/production-v1/exports/64/catch.png",
+        "56": "art/perks/wick/production-v1/exports/56/catch.png",
+        "48": "art/perks/wick/production-v1/exports/48/catch.png",
+        "44": "art/perks/wick/production-v1/exports/44/catch.png",
+        "40": "art/perks/wick/production-v1/exports/40/catch.png"
+      }
     }
   },
   "illustrations": {
