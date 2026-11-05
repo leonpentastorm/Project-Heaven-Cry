@@ -1,0 +1,3273 @@
+{
+  "$schema_version": "1.0",
+  "kind": "skills",
+  "source": "PHC Skills v2 (Revision Draft), reconciled to PHC Core Rules v1.0",
+  "modifier_by_points": {
+    "0": -2,
+    "1": 0,
+    "2": 1,
+    "3": 1,
+    "4": 2,
+    "5": 2,
+    "6": 3,
+    "7": 3,
+    "8": 4,
+    "9": 4,
+    "10": 5
+  },
+  "mastery_at": {
+    "1": 3,
+    "2": 5,
+    "3": 7,
+    "4": 9,
+    "mastered": 10
+  },
+  "overreach_tn": {
+    "2": 15,
+    "3": 17,
+    "4": 19,
+    "mastered": "auto_fail_unless_echo"
+  },
+  "unlock_categories": {
+    "alpha": [
+      "Active Skill",
+      "Combat Interaction"
+    ],
+    "beta": [
+      "Passive",
+      "AP Mod"
+    ],
+    "gamma": [
+      "Combat Starter",
+      "Conversation Quirk"
+    ]
+  },
+  "items": [
+    {
+      "id": "durability",
+      "name": "Durability",
+      "attribute": "endurance",
+      "core": "body",
+      "slot": "alpha",
+      "summary": "The tank.",
+      "per_point": {
+        "text": "+5 HP per level-up; −5% critical damage taken.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "hp_per_level",
+            "value": 5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "crit_damage_taken_pct",
+            "value": -5
+          }
+        ]
+      },
+      "gates": [
+        "armor:heavy"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Take the Hit",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "Once per round, as your reaction, become the target of an attack aimed at an adjacent ally.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "take_the_hit",
+              "ap": 0,
+              "uses": "per_round"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "durability",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Second Wind",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "2 AP, once per combat: recover 25% of your max HP.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "second_wind",
+              "ap": 2,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "durability",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "durability",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a social roll against someone weaker or nervous",
+        "consequence": "They freeze up around the walking statue: −3 on that roll.",
+        "text": "Trigger: a social roll against someone weaker or nervous. Fail: They freeze up around the walking statue: −3 on that roll.",
+        "effects": [
+          {
+            "op": "tn_mod",
+            "context": "overreach:durability:this_social_roll",
+            "value": 3
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "vanguard"
+      ],
+      "tags": [
+        "alpha",
+        "core:body",
+        "attr:endurance",
+        "combat",
+        "defense",
+        "survival"
+      ],
+      "number": 1
+    },
+    {
+      "id": "pain_threshold",
+      "name": "Pain Threshold",
+      "attribute": "endurance",
+      "core": "body",
+      "slot": "beta",
+      "summary": "Wounds don't slow you down.",
+      "per_point": {
+        "text": "−10% elemental damage taken.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "elemental_damage_taken_pct",
+            "value": -10
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Numb",
+          "category": "Passive",
+          "mastery": 1,
+          "text": "Ignore the penalty from one injured limb (arm or leg injury).",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ignored_limb_injuries",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "pain_threshold",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Still Standing",
+          "category": "AP Mod",
+          "mastery": 2,
+          "text": "When you drop to 0 HP, take one more turn with 3 AP before you fall Downed.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "still_standing",
+              "ap": 3,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "pain_threshold",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "pain_threshold",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "you take Bleeding, Burning or a toxin",
+        "consequence": "You don't notice it. The engine hides that condition from you until it deals damage.",
+        "text": "Trigger: you take Bleeding, Burning or a toxin. Fail: You don't notice it. The engine hides that condition from you until it deals damage.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "engine hides the condition from this player's UI until its first tick"
+          }
+        ],
+        "adjudication": "engine"
+      },
+      "signature_of": [
+        "vanguard"
+      ],
+      "tags": [
+        "beta",
+        "core:body",
+        "attr:endurance",
+        "combat",
+        "defense",
+        "survival"
+      ],
+      "number": 2
+    },
+    {
+      "id": "sensory",
+      "name": "Sensory",
+      "attribute": "endurance",
+      "core": "body",
+      "slot": "gamma",
+      "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilant.",
+      "per_point": {
+        "text": "+10% healing and shields received.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "heal_received_pct",
+            "value": 10
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Read the Air",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +2 on your next social roll against them.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator supplies the tell"
+            },
+            {
+              "op": "skill_mod_tag",
+              "tag": "social:next_roll_vs_target",
+              "value": 2
+            },
+            {
+              "op": "perk_choice",
+              "skill": "sensory",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "5": {
+          "name": "Tremor",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Nothing moving on the ground within your Vision range can ambush you: you act in the surprise round.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "act_in_surprise_round",
+              "ap": 3,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "sensory",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "sensory",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a blast of noise, light or stench (flashbang, crowd, gas)",
+        "consequence": "Overwhelmed: lose 2 AP next turn.",
+        "text": "Trigger: a blast of noise, light or stench (flashbang, crowd, gas). Fail: Overwhelmed: lose 2 AP next turn.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ap_next_turn",
+            "value": -2
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "combat_medic"
+      ],
+      "tags": [
+        "gamma",
+        "core:body",
+        "attr:endurance",
+        "exploration",
+        "support",
+        "senses"
+      ],
+      "number": 3
+    },
+    {
+      "id": "raw_power",
+      "name": "Raw Power",
+      "attribute": "strength",
+      "core": "body",
+      "slot": "alpha",
+      "summary": "Hit harder, bend further, lift higher.",
+      "per_point": {
+        "text": "+5% physical damage; +0.5 Counter bonus. Attack skill for heavy melee, unarmed and bows' damage.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_physical",
+            "value": 0.05
+          },
+          {
+            "op": "stat_mod",
+            "stat": "counter",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [
+        "weapon:heavy_melee",
+        "weapon:heavy"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Shove",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "2 AP: push an adjacent target back 1 tile per point of Strength, or knock it Prone.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "shove",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "prone",
+              "target": "target",
+              "when": "on_shove_choice"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "raw_power",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Break",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "3 AP: destroy a door, a lock, a piece of cover, or one armour slot on an adjacent enemy.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "break",
+              "ap": 3,
+              "uses": "at_will"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "raw_power",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "raw_power",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "handling something fragile, or restraining someone you don't want to hurt",
+        "consequence": "You break it, or them.",
+        "text": "Trigger: handling something fragile, or restraining someone you don't want to hurt. Fail: You break it, or them.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator describes what breaks or who is hurt"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "duelist"
+      ],
+      "tags": [
+        "alpha",
+        "core:body",
+        "attr:strength",
+        "combat",
+        "offense",
+        "melee"
+      ],
+      "number": 4
+    },
+    {
+      "id": "guts",
+      "name": "Guts",
+      "attribute": "strength",
+      "core": "body",
+      "slot": "beta",
+      "summary": "Fear doesn't get a vote.",
+      "per_point": {
+        "text": "+0.5 Body save.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "save_body",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Steady",
+          "category": "Passive",
+          "mastery": 1,
+          "text": "Fear can't stop you moving or acting; you only keep its −2 to hit.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "fear_movement_immune",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "guts",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Point Man",
+          "category": "Passive",
+          "mastery": 2,
+          "text": "Allies within 3 tiles roll Fear saves with your Guts in place of their own.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "aura_fear_save_guts_tiles",
+              "value": 3
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "guts",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "guts",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "something clearly marked as dangerous",
+        "consequence": "You walk in, open it or touch it anyway.",
+        "text": "Trigger: something clearly marked as dangerous. Fail: You walk in, open it or touch it anyway.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator plays out what the character walks into"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "duelist",
+        "vanguard"
+      ],
+      "tags": [
+        "beta",
+        "core:body",
+        "attr:strength",
+        "combat",
+        "defense",
+        "resolve"
+      ],
+      "number": 5
+    },
+    {
+      "id": "intimidation",
+      "name": "Intimidation",
+      "attribute": "strength",
+      "core": "body",
+      "slot": "gamma",
+      "summary": "You run the conversation through fear.",
+      "per_point": {
+        "text": "+0.5 Body debuff strength.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "debuff_body",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Marrow Talk",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "Even a failed threat leaves the target Shaken: −2 on their next roll against you.",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "shaken",
+              "target": "target",
+              "when": "on_failed_threat"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "intimidation",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Stare Down",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Before initiative, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "stare_down",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "condition",
+              "condition": "stunned",
+              "target": "target",
+              "when": "on_failed_save_before_initiative"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "intimidation",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "intimidation",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "talking with someone innocent or friendly",
+        "consequence": "They're now afraid of you; friendly dialogue options with them close.",
+        "text": "Trigger: talking with someone innocent or friendly. Fail: They're now afraid of you; friendly dialogue options with them close.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator shifts the NPC's disposition to Wary and closes friendly options"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "assassin",
+        "haunt"
+      ],
+      "tags": [
+        "gamma",
+        "core:body",
+        "attr:strength",
+        "social",
+        "debuff",
+        "fear"
+      ],
+      "number": 6
+    },
+    {
+      "id": "athletics",
+      "name": "Athletics",
+      "attribute": "agility",
+      "core": "body",
+      "slot": "alpha",
+      "summary": "Armour just slows you down.",
+      "per_point": {
+        "text": "+0.5 Dodge (Defense); +5% to the Critical multiplier. Attack skill for light melee.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "dodge",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "mult_critical",
+            "value": 0.05
+          }
+        ]
+      },
+      "gates": [
+        "armor:light",
+        "gear:agile"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Vault",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "Move over cover and obstacles at no extra movement cost.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ignore_obstacle_move_cost",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Untouchable",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
+          "effects": [
+            {
+              "op": "disadvantage",
+              "context": "attacks_against_self:armor_class_0"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "grappled, restrained, Pinned, or stuck in a tight space",
+        "consequence": "A bird without wings: lose half your AP each turn until you're free.",
+        "text": "Trigger: grappled, restrained, Pinned, or stuck in a tight space. Fail: A bird without wings: lose half your AP each turn until you're free.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ap_pct_while_restrained",
+            "value": -50
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "duelist"
+      ],
+      "tags": [
+        "alpha",
+        "core:body",
+        "attr:agility",
+        "combat",
+        "mobility",
+        "melee"
+      ],
+      "number": 7
+    },
+    {
+      "id": "dexterity",
+      "name": "Dexterity",
+      "attribute": "agility",
+      "core": "body",
+      "slot": "beta",
+      "summary": "The gun hand. Reloads, recoil, quick-draw, throws. Attack skill for guns, bows and thrown weapons.",
+      "per_point": {
+        "text": "+0.5 Throwing range. Recoil penalty reduced by floor(Dexterity ÷ 2).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "throw_range",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "recoil_reduction",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [
+        "weapon:guns",
+        "weapon:thrown"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Speed Load",
+          "category": "AP Mod",
+          "mastery": 1,
+          "text": "Reloading costs 1 AP less.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:reload",
+              "value": -1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "dexterity",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Quick Draw",
+          "category": "AP Mod",
+          "mastery": 2,
+          "text": "Your first shot in each combat costs 0 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "free_first_shot_per_combat",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "dexterity",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "dexterity",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a tense standoff, or a parley with weapons in the room",
+        "consequence": "Your hand goes to your gun. The other side sees it, and the talk may turn into a fight.",
+        "text": "Trigger: a tense standoff, or a parley with weapons in the room. Fail: Your hand goes to your gun. The other side sees it, and the talk may turn into a fight.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator decides whether the other side draws"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "marksman"
+      ],
+      "tags": [
+        "beta",
+        "core:body",
+        "attr:agility",
+        "combat",
+        "offense",
+        "ranged"
+      ],
+      "number": 8
+    },
+    {
+      "id": "reaction_speed",
+      "name": "Reaction Speed",
+      "attribute": "agility",
+      "core": "body",
+      "slot": "gamma",
+      "summary": "Spotting danger is one thing. Moving in time is another.",
+      "per_point": {
+        "text": "−10% ambush damage taken. Adds its modifier to Initiative.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ambush_damage_taken_pct",
+            "value": -10
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Shoot First",
+          "category": "Combat Starter",
+          "mastery": 1,
+          "text": "You act in the surprise round even when your side is the one surprised.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "act_in_surprise_round",
+              "ap": 3,
+              "uses": "per_combat"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "reaction_speed",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Cut In",
+          "category": "Conversation Quirk",
+          "mastery": 2,
+          "text": "Once per scene, interrupt an NPC mid-sentence or mid-action to act first: grab, draw, leave, or speak.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "cut_in",
+              "ap": 0,
+              "uses": "per_scene"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "reaction_speed",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "reaction_speed",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a sudden movement near you",
+        "consequence": "You react before you think: flinch, swing, or bolt.",
+        "text": "Trigger: a sudden movement near you. Fail: You react before you think: flinch, swing, or bolt.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator picks the reaction: flinch, swing or bolt"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "marksman",
+        "assassin"
+      ],
+      "tags": [
+        "gamma",
+        "core:body",
+        "attr:agility",
+        "combat",
+        "initiative",
+        "reflex"
+      ],
+      "number": 9
+    },
+    {
+      "id": "ingenuity",
+      "name": "Ingenuity",
+      "attribute": "perception",
+      "core": "mind",
+      "slot": "alpha",
+      "summary": "Stealth, sleight of hand, sticky fingers.",
+      "per_point": {
+        "text": "+0.5 Stealth (subtracted from enemies' Detection range against you); +5% to the Ambush multiplier.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "stealth",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "mult_ambush",
+            "value": 0.05
+          }
+        ]
+      },
+      "gates": [
+        "gear:stealth"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Lift",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "2 AP: steal one item or magazine from an adjacent enemy.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "lift",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "ingenuity",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Vanish",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "3 AP: become Hidden even while watched, if there's cover within one Move.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "vanish",
+              "ap": 3,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "target": "self",
+              "when": "on_vanish"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "ingenuity",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "ingenuity",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "dealing with guards, police or officials",
+        "consequence": "You look shifty: −3 on social rolls with them, and they may search you.",
+        "text": "Trigger: dealing with guards, police or officials. Fail: You look shifty: −3 on social rolls with them, and they may search you.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "social:vs_officials_scene",
+            "value": -3
+          },
+          {
+            "op": "narrator",
+            "note": "Narrator decides whether they search you"
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "assassin"
+      ],
+      "tags": [
+        "alpha",
+        "core:mind",
+        "attr:perception",
+        "stealth",
+        "offense",
+        "utility"
+      ],
+      "number": 10
+    },
+    {
+      "id": "proficiency",
+      "name": "Proficiency",
+      "attribute": "perception",
+      "core": "mind",
+      "slot": "beta",
+      "summary": "The mechanic. Fixes guns, gear and machines in the field, robot squadmates included.",
+      "per_point": {
+        "text": "Sigil Core saving of floor(Proficiency ÷ 3) charge per spell (minimum cost 1).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "sigil_core_saving",
+            "value": 0.3334
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Field Repair",
+          "category": "AP Mod",
+          "mastery": 1,
+          "text": "2 AP: clear a jam, fix a broken device, or restore 10 HP per point of Proficiency to a machine or robotic ally.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "field_repair",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "proficiency",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Tuned",
+          "category": "Passive",
+          "mastery": 2,
+          "text": "One weapon you personally maintain gains +10% damage and never jams.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "tuned_weapon_damage_pct",
+              "value": 10
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "proficiency",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "proficiency",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "an important conversation with an interesting mechanism nearby",
+        "consequence": "You're busy taking it apart; the Narrator withholds one detail from the scene.",
+        "text": "Trigger: an important conversation with an interesting mechanism nearby. Fail: You're busy taking it apart; the Narrator withholds one detail from the scene.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator withholds one scene detail from this player"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "combat_medic",
+        "scribe"
+      ],
+      "tags": [
+        "beta",
+        "core:mind",
+        "attr:perception",
+        "tech",
+        "support",
+        "repair"
+      ],
+      "number": 11
+    },
+    {
+      "id": "vigilant",
+      "name": "Vigilant",
+      "attribute": "perception",
+      "core": "mind",
+      "slot": "gamma",
+      "summary": "Sight, sound and hostile intent.",
+      "per_point": {
+        "text": "+1 Detection range (Detection = 2 + Vigilant).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "detection",
+            "value": 1
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Cold Spine",
+          "category": "Combat Starter",
+          "mastery": 1,
+          "text": "When a hidden enemy aims at you, you learn which direction it's in.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "reveal_aimer_direction",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "vigilant",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "The Tell",
+          "category": "Conversation Quirk",
+          "mastery": 2,
+          "text": "In any conversation, you notice concealed weapons and hostile intent.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator reveals concealed weapons and hostile intent to this player"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "vigilant",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "vigilant",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "an ambiguous noise or shadow",
+        "consequence": "You treat it as an attack: shoot, raise the alarm, or spend your AP on it.",
+        "text": "Trigger: an ambiguous noise or shadow. Fail: You treat it as an attack: shoot, raise the alarm, or spend your AP on it.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator decides what the character does with the false alarm"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "marksman",
+        "artillerist"
+      ],
+      "tags": [
+        "gamma",
+        "core:mind",
+        "attr:perception",
+        "senses",
+        "ranged",
+        "exploration"
+      ],
+      "number": 12
+    },
+    {
+      "id": "brain_power",
+      "name": "Brain Power",
+      "attribute": "intelligence",
+      "core": "mind",
+      "slot": "alpha",
+      "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
+      "per_point": {
+        "text": "+10% to the Sigil multiplier; +0.5 round Sigil duration.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_sigil",
+            "value": 0.1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "sigil_duration",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [
+        "focus:evoker"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Overclock",
+          "category": "Active Skill",
+          "mastery": 1,
+          "text": "Draw a spell one word longer than your Max Sigil words, for +2 Core charge.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "overclock",
+              "ap": 0,
+              "uses": "at_will"
+            },
+            {
+              "op": "resource",
+              "resource": "core",
+              "value": -2,
+              "when": "on_overclock"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "brain_power",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Twin Draw",
+          "category": "Combat Interaction",
+          "mastery": 2,
+          "text": "Once per combat, draw two Sigil spells with one action; pay the AP of the longer spell only.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "twin_draw",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "brain_power",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "brain_power",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "examining something under time pressure",
+        "consequence": "Lost in theory: lose 2 AP.",
+        "text": "Trigger: examining something under time pressure. Fail: Lost in theory: lose 2 AP.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ap_next_turn",
+            "value": -2
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "artillerist"
+      ],
+      "tags": [
+        "alpha",
+        "core:mind",
+        "attr:intelligence",
+        "magic:sigil",
+        "offense"
+      ],
+      "number": 13
+    },
+    {
+      "id": "rumination",
+      "name": "Rumination",
+      "attribute": "intelligence",
+      "core": "mind",
+      "slot": "beta",
+      "summary": "The scientist's library. Mirrors Lore Master.",
+      "per_point": {
+        "text": "+0.5 tile Sigil range.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "sigil_range",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Index",
+          "category": "Passive",
+          "mastery": 1,
+          "text": "Once per scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "index_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator answers truthfully"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "rumination",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Proven Formula",
+          "category": "AP Mod",
+          "mastery": 2,
+          "text": "A Sigil spell you've already drawn this combat costs 1 AP less.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:repeat_sigil_spell",
+              "value": -1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "rumination",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "rumination",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a supernatural explanation (souls, Soul spells, Blessings)",
+        "consequence": "You refuse to believe it: −2 on rolls involving it, and allied Blessings don't affect you this scene.",
+        "text": "Trigger: a supernatural explanation (souls, Soul spells, Blessings). Fail: You refuse to believe it: −2 on rolls involving it, and allied Blessings don't affect you this scene.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "context:supernatural_scene",
+            "value": -2
+          },
+          {
+            "op": "stat_mod",
+            "stat": "immune_allied_blessings_scene",
+            "value": 1
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "warden",
+        "scribe"
+      ],
+      "tags": [
+        "beta",
+        "core:mind",
+        "attr:intelligence",
+        "knowledge",
+        "magic:sigil"
+      ],
+      "number": 14
+    },
+    {
+      "id": "eloquence",
+      "name": "Eloquence",
+      "attribute": "intelligence",
+      "core": "mind",
+      "slot": "gamma",
+      "summary": "Logic as a weapon.",
+      "per_point": {
+        "text": "+0.5 Brain debuff strength.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "debuff_brain",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Objection!",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "When an NPC makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, they lose credibility with everyone listening.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN and applies the loss of credibility"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "eloquence",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "5": {
+          "name": "Opening Argument",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Debate the enemy leader before a fight. On a success, every enemy has 1 AP less in round 1.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "opening_argument",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN for the debate"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "eloquence",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "eloquence",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "someone contradicts you",
+        "consequence": "You can't concede or leave until you've won the argument.",
+        "text": "Trigger: someone contradicts you. Fail: You can't concede or leave until you've won the argument.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator holds the character in the argument"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "scribe",
+        "hexwright"
+      ],
+      "tags": [
+        "gamma",
+        "core:mind",
+        "attr:intelligence",
+        "social",
+        "debuff",
+        "logic"
+      ],
+      "number": 15
+    },
+    {
+      "id": "visualization",
+      "name": "Visualization",
+      "attribute": "expression",
+      "core": "mind",
+      "slot": "alpha",
+      "summary": "Shapes thought into images and Sigils into forms.",
+      "per_point": {
+        "text": "+10% to the Elemental multiplier.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_elemental",
+            "value": 0.1
+          }
+        ]
+      },
+      "gates": [
+        "gear:projector",
+        "gear:illusion"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Afterimage",
+          "category": "Active Skill",
+          "mastery": 1,
+          "text": "2 AP: project a decoy of yourself that draws the next enemy attack.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "afterimage",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "visualization",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Paint the Field",
+          "category": "Combat Interaction",
+          "mastery": 2,
+          "text": "When you draw a Sigil spell, choose its shape for free: line, cone or circle (no Form word needed).",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "free_sigil_shape",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "visualization",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "visualization",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "striking art, a landscape, or a vivid story",
+        "consequence": "Absorbed: lose your next turn, or miss what happens in the scene.",
+        "text": "Trigger: striking art, a landscape, or a vivid story. Fail: Absorbed: lose your next turn, or miss what happens in the scene.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "in combat: lose next turn; out of combat: Narrator withholds what happens"
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "artillerist",
+        "tempest"
+      ],
+      "tags": [
+        "alpha",
+        "core:mind",
+        "attr:expression",
+        "magic:sigil",
+        "offense",
+        "illusion"
+      ],
+      "number": 16
+    },
+    {
+      "id": "analysis",
+      "name": "Analysis",
+      "attribute": "expression",
+      "core": "mind",
+      "slot": "beta",
+      "summary": "Detective work and target analysis. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
+      "per_point": {
+        "text": "+1 Analyze range (Analyze range = 4 + Analysis).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "analyze_range",
+            "value": 1
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Quick Read",
+          "category": "AP Mod",
+          "mastery": 1,
+          "text": "Analyze costs 1 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "analysis",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Weak Point",
+          "category": "Passive",
+          "mastery": 2,
+          "text": "Enemies you've analyzed take +15% damage from your whole squad.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "analyzed_target_damage_taken_pct",
+              "value": 15
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "analysis",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "analysis",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a scene with several clues",
+        "consequence": "You fixate on the first one; the Narrator gives you no other clue until you pass.",
+        "text": "Trigger: a scene with several clues. Fail: You fixate on the first one; the Narrator gives you no other clue until you pass.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator withholds further clues from this player"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "warden",
+        "hexwright"
+      ],
+      "tags": [
+        "beta",
+        "core:mind",
+        "attr:expression",
+        "investigation",
+        "support",
+        "debuff"
+      ],
+      "number": 17
+    },
+    {
+      "id": "charisma",
+      "name": "Charisma",
+      "attribute": "expression",
+      "core": "mind",
+      "slot": "gamma",
+      "summary": "Warmth, persuasion, and lying with a smile.",
+      "per_point": {
+        "text": "+0.5 Brain save.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "save_brain",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Smooth",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "A failed lie doesn't get exposed straight away; the listener is only suspicious.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator treats failed lies as suspicion, not exposure"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "charisma",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Parley",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Before a fight, one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "parley",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN by disposition"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "charisma",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "charisma",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a proud or hostile NPC",
+        "consequence": "They read you as a bootlicker: −3 with them for the scene.",
+        "text": "Trigger: a proud or hostile NPC. Fail: They read you as a bootlicker: −3 with them for the scene.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "social:vs_target_scene",
+            "value": -3
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "hexwright"
+      ],
+      "tags": [
+        "gamma",
+        "core:mind",
+        "attr:expression",
+        "social",
+        "persuasion"
+      ],
+      "number": 18
+    },
+    {
+      "id": "empathy",
+      "name": "Empathy",
+      "attribute": "insight",
+      "core": "soul",
+      "slot": "alpha",
+      "summary": "Feeling what the other side feels, enemies included.",
+      "per_point": {
+        "text": "−0.5 AP Soul cast cost (3 − 0.5 × Empathy, minimum 1). Ready Soul designs: 2 + floor(Empathy ÷ 2).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "soul_cast_ap",
+            "value": -0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "soul_designs_ready",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [
+        "focus:emanator_foci"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Feel Their Pain",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "You see the HP state and morale of every creature in your Vision range.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "see_hp_state_in_vision",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "empathy",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Mercy",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save against your Heart debuff strength, or surrenders or flees.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "mercy",
+              "ap": 2,
+              "uses": "at_will"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "empathy",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "empathy",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "someone suffering in front of you, enemy or not",
+        "consequence": "You must help them, or take −2 on every roll for the rest of the scene.",
+        "text": "Trigger: someone suffering in front of you, enemy or not. Fail: You must help them, or take −2 on every roll for the rest of the scene.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "all:scene_unless_helped",
+            "value": -2
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "tempest"
+      ],
+      "tags": [
+        "alpha",
+        "core:soul",
+        "attr:insight",
+        "magic:soul",
+        "social",
+        "support"
+      ],
+      "number": 19
+    },
+    {
+      "id": "camaraderie",
+      "name": "Camaraderie",
+      "attribute": "insight",
+      "core": "soul",
+      "slot": "beta",
+      "summary": "The squad is a world of its own.",
+      "per_point": {
+        "text": "+10% to the Healing and shields given multiplier.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_heal_given",
+            "value": 0.1
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Hand-Off",
+          "category": "AP Mod",
+          "mastery": 1,
+          "text": "Once per round, give 1 of your AP to an adjacent ally.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "hand_off",
+              "ap": 0,
+              "uses": "per_round"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "camaraderie",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Nobody Left Behind",
+          "category": "Passive",
+          "mastery": 2,
+          "text": "Carry a Downed ally at full Tiles per Move, and stabilise them for 1 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:stabilise",
+              "value": -1
+            },
+            {
+              "op": "stat_mod",
+              "stat": "carry_ally_full_move",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "camaraderie",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "camaraderie",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "an outsider threatens the squad, or orders put the mission against your people",
+        "consequence": "You side with the squad, whatever the orders say.",
+        "text": "Trigger: an outsider threatens the squad, or orders put the mission against your people. Fail: You side with the squad, whatever the orders say.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator plays out the character siding with the squad"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "combat_medic",
+        "muse"
+      ],
+      "tags": [
+        "beta",
+        "core:soul",
+        "attr:insight",
+        "support",
+        "squad",
+        "heal"
+      ],
+      "number": 20
+    },
+    {
+      "id": "implication",
+      "name": "Implication",
+      "attribute": "insight",
+      "core": "soul",
+      "slot": "gamma",
+      "summary": "Metaphor, subtext, poetry and flirting.",
+      "per_point": {
+        "text": "+0.5 Heart debuff strength.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "debuff_heart",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Between the Lines",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "When an NPC speaks in code or hides their meaning, the Narrator tells you what they really mean.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator reveals the hidden meaning"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "implication",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Veiled Insult",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at −2 to hit.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "veiled_insult",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "implication",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "implication",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a plain, direct statement",
+        "consequence": "You hear a hidden meaning that isn't there; the Narrator gives you a false reading.",
+        "text": "Trigger: a plain, direct statement. Fail: You hear a hidden meaning that isn't there; the Narrator gives you a false reading.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator gives a false reading"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "muse",
+        "haunt"
+      ],
+      "tags": [
+        "gamma",
+        "core:soul",
+        "attr:insight",
+        "social",
+        "debuff",
+        "subtext"
+      ],
+      "number": 21
+    },
+    {
+      "id": "will_power",
+      "name": "Will Power",
+      "attribute": "determination",
+      "core": "soul",
+      "slot": "alpha",
+      "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
+      "per_point": {
+        "text": "+15% to the Soul multiplier; +10% Mana Syphon. Strain limit 3 + floor(Will Power ÷ 2); module slots 1 + floor(Will Power ÷ 3); two schools per design from 5.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_soul",
+            "value": 0.15
+          },
+          {
+            "op": "stat_mod",
+            "stat": "mana_syphon_pct",
+            "value": 10
+          },
+          {
+            "op": "stat_mod",
+            "stat": "strain_limit",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "soul_module_slots",
+            "value": 0.3334
+          }
+        ]
+      },
+      "gates": [
+        "focus:emanator"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Overdraw",
+          "category": "Active Skill",
+          "mastery": 1,
+          "text": "Cast a Soul spell at +50% damage, then make a Mana Short check.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "overdraw",
+              "ap": 0,
+              "uses": "at_will"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "will_power",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Pure Heart",
+          "category": "Combat Interaction",
+          "mastery": 2,
+          "text": "Ignore your first failed Mana Short check in each combat.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "pure_heart",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "will_power",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "will_power",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "contact with the upper realm (a holy site, a Blessing, a strong Soul spell)",
+        "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
+        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Fail: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator gives a vision, true or false"
+          },
+          {
+            "op": "skill_mod",
+            "skill": "rumination",
+            "value": -2
+          },
+          {
+            "op": "skill_mod",
+            "skill": "analysis",
+            "value": -2
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "tempest"
+      ],
+      "tags": [
+        "alpha",
+        "core:soul",
+        "attr:determination",
+        "magic:soul",
+        "offense"
+      ],
+      "number": 22
+    },
+    {
+      "id": "lore_master",
+      "name": "Lore Master",
+      "attribute": "determination",
+      "core": "soul",
+      "slot": "beta",
+      "summary": "The occultist's library. Mirrors Rumination.",
+      "per_point": {
+        "text": "+0.5 tile Soul range.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "soul_range",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Old Tales",
+          "category": "Passive",
+          "mastery": 1,
+          "text": "Once per scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "old_tales_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator answers truthfully"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "lore_master",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Ward",
+          "category": "AP Mod",
+          "mastery": 2,
+          "text": "1 AP: an ally gets +3 on their next save against a supernatural effect.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "ward",
+              "ap": 1,
+              "uses": "at_will"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "lore_master",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "lore_master",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a purely scientific explanation",
+        "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
+        "text": "Trigger: a purely scientific explanation. Fail: You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "context:tech_scene",
+            "value": -2
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "aegis",
+        "haunt"
+      ],
+      "tags": [
+        "beta",
+        "core:soul",
+        "attr:determination",
+        "knowledge",
+        "magic:soul",
+        "defense"
+      ],
+      "number": 23
+    },
+    {
+      "id": "composure",
+      "name": "Composure",
+      "attribute": "determination",
+      "core": "soul",
+      "slot": "gamma",
+      "summary": "A face that never moves.",
+      "per_point": {
+        "text": "+0.5 Heart save.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "save_heart",
+            "value": 0.5
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Poker Face",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "Interrogators and lie-readers take −3 against you.",
+          "effects": [
+            {
+              "op": "tn_mod",
+              "context": "insight_checks_against_self",
+              "value": 3
+            },
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Stand Still",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Until you first act in a combat, enemies attacking you take −2 to hit, and the first one to miss gives you a free attack.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "defense_until_first_act",
+              "value": 2
+            },
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a warm, intimate or emotional moment",
+        "consequence": "You stay blank; the other person reads you as cold: −3 to rapport.",
+        "text": "Trigger: a warm, intimate or emotional moment. Fail: You stay blank; the other person reads you as cold: −3 to rapport.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "social:vs_target_scene",
+            "value": -3
+          }
+        ],
+        "adjudication": "hybrid"
+      },
+      "signature_of": [
+        "warden"
+      ],
+      "tags": [
+        "gamma",
+        "core:soul",
+        "attr:determination",
+        "defense",
+        "social",
+        "resolve"
+      ],
+      "number": 24
+    },
+    {
+      "id": "faith",
+      "name": "Faith",
+      "attribute": "virtue",
+      "core": "soul",
+      "slot": "alpha",
+      "summary": "The saints judge. You deliver.",
+      "per_point": {
+        "text": "+10% Blessing power; −0.5 turn prayer cooldown. Pray needs Faith 3, Witnessed Faith 5, Miracle Faith 7, and a patron.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_blessing",
+            "value": 0.1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "prayer_cooldown",
+            "value": -0.5
+          }
+        ]
+      },
+      "gates": [
+        "gear:holy_relic"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Answered Prayer",
+          "category": "Active Skill",
+          "mastery": 1,
+          "text": "Once per combat, reset your prayer cooldown.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "answered_prayer",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "faith",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Deliver the Sinner",
+          "category": "Combat Interaction",
+          "mastery": 2,
+          "text": "2 AP: mark an enemy. Your whole squad deals +20% damage to it until it falls.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "deliver_the_sinner",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "marked",
+              "target": "target",
+              "when": "on_use"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "faith",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "faith",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "blasphemy or mockery of your faith",
+        "consequence": "You must answer it, by preaching or by punishing.",
+        "text": "Trigger: blasphemy or mockery of your faith. Fail: You must answer it, by preaching or by punishing.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator plays out the answer"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "aegis"
+      ],
+      "tags": [
+        "alpha",
+        "core:soul",
+        "attr:virtue",
+        "magic:prayer",
+        "offense",
+        "faith"
+      ],
+      "number": 25
+    },
+    {
+      "id": "conscience",
+      "name": "Conscience",
+      "attribute": "virtue",
+      "core": "soul",
+      "slot": "beta",
+      "summary": "Seeing where an act leads.",
+      "per_point": {
+        "text": "+1 Karma on every Karma award.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "karma_per_award",
+            "value": 1
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Foresight",
+          "category": "Passive",
+          "mastery": 1,
+          "text": "Before a major decision, ask the Narrator for its worst likely consequence. The answer is honest.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator states the worst likely consequence honestly"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "conscience",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Righteous",
+          "category": "AP Mod",
+          "mastery": 2,
+          "text": "While protecting innocents, your first action each turn costs 1 AP less.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:first_action_when_protecting",
+              "value": -1
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator confirms innocents are being protected"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "conscience",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "conscience",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "an order that breaks your code",
+        "consequence": "You refuse to carry it out.",
+        "text": "Trigger: an order that breaks your code. Fail: You refuse to carry it out.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator plays out the refusal"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "aegis"
+      ],
+      "tags": [
+        "beta",
+        "core:soul",
+        "attr:virtue",
+        "moral",
+        "defense",
+        "support"
+      ],
+      "number": 26
+    },
+    {
+      "id": "authority",
+      "name": "Authority",
+      "attribute": "virtue",
+      "core": "soul",
+      "slot": "gamma",
+      "summary": "The measure of cool, and your Leadership rating.",
+      "per_point": {
+        "text": "+1 Reputation on every Reputation award. Leadership: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "reputation_per_award",
+            "value": 1
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Rank Has Privileges",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "Lower-ranked NPCs (soldiers, guards, clerks) follow reasonable orders without a roll.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator judges which orders are reasonable"
+            },
+            {
+              "op": "perk_choice",
+              "skill": "authority",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "narrator"
+        },
+        "5": {
+          "name": "Five Stars",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Your squad has +1 AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−1 AP).",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "squad_ap_round1",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "authority",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Overreach TN rises to 19.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "authority",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a public place",
+        "consequence": "Someone mistakes you for someone important; you draw attention, questions and press.",
+        "text": "Trigger: a public place. Fail: Someone mistakes you for someone important; you draw attention, questions and press.",
+        "effects": [
+          {
+            "op": "narrator",
+            "note": "Narrator brings the attention"
+          }
+        ],
+        "adjudication": "narrator"
+      },
+      "signature_of": [
+        "muse"
+      ],
+      "tags": [
+        "gamma",
+        "core:soul",
+        "attr:virtue",
+        "social",
+        "leadership",
+        "support"
+      ],
+      "number": 27
+    }
+  ]
+}

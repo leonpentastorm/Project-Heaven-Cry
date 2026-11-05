@@ -1,0 +1,1121 @@
+{
+  "$schema_version": "1.0",
+  "kind": "rules",
+  "source": "PHC Core Rules v1.0 (Game Spec)",
+  "conventions": {
+    "die": "d20",
+    "tile_m": 1.5,
+    "metres_to_tiles": "tiles = metres / 1.5",
+    "rounding": "floor unless a rule says otherwise",
+    "fractional_ap": {
+      "allowed_step": 0.5,
+      "leftover_at_turn_end": "lost"
+    },
+    "attribute_counts_from": 1,
+    "additive_then_multiplicative": "per-point Attribute/Skill bonuses add into one derived multiplier; trait/perk/crit/condition multipliers then multiply (x1.3 with +50% = x1.95)",
+    "reduction_cap_pct": 60,
+    "referees": {
+      "engine": "owns every number",
+      "narrator": "owns judgement; where a rule says the Narrator decides, the engine asks and waits"
+    }
+  },
+  "resolution": {
+    "roll": "d20 + skill_mod + other_mods >= TN",
+    "tn_ladder": {
+      "easy": 8,
+      "standard": 12,
+      "hard": 16,
+      "heroic": 20
+    },
+    "tn_set_by": "narrator",
+    "nat20": {
+      "auto_success": true,
+      "critical": true,
+      "narrator_adds": "benefit"
+    },
+    "nat1": {
+      "auto_fail": true,
+      "critical": true,
+      "narrator_adds": "complication"
+    },
+    "combined_check": {
+      "add_both_mods": true,
+      "tn_increase": 4
+    },
+    "opposed_check": {
+      "higher_total_wins": true,
+      "ties": "defender"
+    },
+    "help": {
+      "helper_min_points": 1,
+      "bonus": 2,
+      "max_helpers": 1,
+      "helper_shares_crit_fail": true
+    },
+    "skill_track": {
+      "min": 0,
+      "max": 10,
+      "mod_at_0": -2,
+      "mod_formula": "points==0 ? -2 : floor(points/2)",
+      "table": {
+        "0": -2,
+        "1": 0,
+        "2": 1,
+        "3": 1,
+        "4": 2,
+        "5": 2,
+        "6": 3,
+        "7": 3,
+        "8": 4,
+        "9": 4,
+        "10": 5
+      }
+    },
+    "mastery": {
+      "thresholds": {
+        "1": 3,
+        "2": 5,
+        "3": 7,
+        "4": 9
+      },
+      "mastered": 10
+    },
+    "overreach": {
+      "from_mastery": 2,
+      "roll": "plain d20, no modifiers",
+      "called_by": "narrator",
+      "tn_by_mastery": {
+        "2": 15,
+        "3": 17,
+        "4": 19
+      },
+      "mastered": "auto_fail unless 1 Echo spent",
+      "on_fail": "skill's Overreach consequence (skills.json)"
+    },
+    "echo": {
+      "max": 3,
+      "gain": "fail an Overreach on purpose and play it out: +1",
+      "spend": "1 Echo rerolls any d20 you rolled",
+      "rerolls_per_roll": null
+    },
+    "inner_voice": {
+      "when": "start of each scene",
+      "hidden": true,
+      "skill_rule": "character's highest skill with >= 3 points",
+      "roll": "d20 + skill_mod",
+      "tn": 12,
+      "on_success": "narrator gives one private line in that skill's voice",
+      "tie_break": null
+    }
+  },
+  "character": {
+    "tree": {
+      "cores": 3,
+      "attributes_per_core": 3,
+      "skills_per_attribute": 3,
+      "skill_slots": [
+        "alpha",
+        "beta",
+        "gamma"
+      ]
+    },
+    "cores": [
+      "body",
+      "mind",
+      "soul"
+    ],
+    "attributes": [
+      "strength",
+      "endurance",
+      "agility",
+      "perception",
+      "intelligence",
+      "expression",
+      "insight",
+      "determination",
+      "virtue"
+    ],
+    "caps": {
+      "attribute_le_core": true,
+      "skill_le_attribute": true,
+      "absolute_max": 10
+    },
+    "creation": {
+      "cores": {
+        "start_each": 1,
+        "points": 6
+      },
+      "attributes": {
+        "start_each": 1,
+        "points": 10
+      },
+      "skills": {
+        "start_each": 0,
+        "points": 10
+      },
+      "traits": {
+        "min": 0,
+        "max": 2
+      }
+    },
+    "levels": {
+      "min": 1,
+      "max": 20,
+      "xp_to_next": "100 * current_level",
+      "gains": {
+        "every_level": {
+          "skill_points": 1,
+          "hp": "hp_per_level"
+        },
+        "even_levels": {
+          "attribute_points": 1
+        },
+        "every_5th_level": {
+          "core_points": 1
+        },
+        "level_3": {
+          "base_class": true
+        }
+      },
+      "extra": {
+        "skill_books_and_quests": "extra skill points (narrator/quest data)",
+        "legendary_deed": "+1 core point, narrator's call"
+      },
+      "hp_per_level_retroactive": null
+    },
+    "xp_sources": {
+      "combat": {
+        "easy": 25,
+        "standard": 50,
+        "hard": 100,
+        "boss": 200
+      },
+      "dialogue": {
+        "min": 25,
+        "max": 100
+      },
+      "discovery": {
+        "min": 25,
+        "max": 75
+      },
+      "quest": {
+        "min": 50,
+        "max": 300
+      },
+      "tagged_by_source": true,
+      "awarded_by": "narrator"
+    }
+  },
+  "derived": {
+    "note": "Attr counts from 1, Skill = points 0-10; floor results",
+    "body": {
+      "max_hp": "100 + 50*(endurance-1) + (level-1)*hp_per_level",
+      "hp_per_level": "10 + 5*durability",
+      "ap_per_turn": 6,
+      "initiative_bonus": "(agility-1) + mod(reaction_speed)",
+      "tiles_per_move": "3 + 0.5*(agility-1)",
+      "carry_kg": "20 + 5*(strength-1)",
+      "defense": "10 + dodge",
+      "dodge": "0.5*athletics",
+      "counter_bonus": "0.5*raw_power",
+      "injury_resist_pct": "10*(endurance-1)",
+      "crit_damage_taken_pct": "-10*(perception-1) - 5*durability",
+      "elemental_damage_taken_pct": "-10*pain_threshold",
+      "ambush_damage_taken_pct": "-10*reaction_speed",
+      "healing_received_pct": "10*sensory",
+      "saves": {
+        "body": "0.5*guts",
+        "brain": "0.5*charisma",
+        "heart": "0.5*composure"
+      },
+      "debuff_strength": {
+        "body": "0.5*intimidation",
+        "brain": "0.5*eloquence",
+        "heart": "0.5*implication"
+      }
+    },
+    "senses_tiles": {
+      "vision": "12 + 2*(perception-1)",
+      "vision_dark": "half",
+      "detection": "2 + vigilant",
+      "stealth": "0.5*ingenuity (subtracted from enemy detection vs you)",
+      "throwing_range": "6 + 0.5*dexterity",
+      "analyze_range": "4 + analysis"
+    },
+    "multipliers": {
+      "physical": "1 + 0.1*(strength-1) + 0.05*raw_power",
+      "elemental": "1 + 0.2*(expression-1) + 0.1*visualization",
+      "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
+      "soul": "1 + 0.1*(determination-1) + 0.15*will_power",
+      "healing_given": "1 + 0.1*(insight-1) + 0.1*camaraderie",
+      "critical": "2 + 0.1*(perception-1) + 0.05*athletics",
+      "ambush": "1.5 + 0.05*ingenuity",
+      "blessing_power": "1 + 0.1*faith"
+    },
+    "magic": {
+      "sigil_max_words": "2 + floor((intelligence-1)/2)",
+      "sigil_ap": "max(1, words - 0.5*(expression-1))",
+      "sigil_core_saving": "floor(proficiency/3) per spell; spell cost min 1",
+      "sigil_range_bonus_tiles": "0.5*rumination",
+      "sigil_duration_bonus_rounds": "0.5*brain_power",
+      "max_mp": "100 + 100*(virtue-1)",
+      "soul_cast_ap": "max(1, 3 - 0.5*empathy)",
+      "soul_cost_pct": "-5*(insight-1)",
+      "soul_range_bonus_tiles": "0.5*lore_master",
+      "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
+      "strain_limit": "3 + floor(will_power/2)",
+      "prayer_cooldown_turns": "max(1, 4 - 0.5*(virtue-1) - 0.5*faith)"
+    },
+    "social": {
+      "leadership": {
+        "source": "authority",
+        "bands": [
+          {
+            "min": 0,
+            "max": 0,
+            "name": "Unfit"
+          },
+          {
+            "min": 1,
+            "max": 2,
+            "name": "Squad"
+          },
+          {
+            "min": 3,
+            "max": 4,
+            "name": "Platoon"
+          },
+          {
+            "min": 5,
+            "max": 10,
+            "name": "Command"
+          }
+        ]
+      },
+      "karma_bonus_per_award": "+conscience",
+      "reputation_bonus_per_award": "+authority"
+    }
+  },
+  "classes": {
+    "gained_at_level": 3,
+    "chosen": false,
+    "qualify": "sum points in each base class's 3 signature skills; may take any class whose total is among your two highest totals (ties included)",
+    "classless_possible": false,
+    "rank_thresholds": {
+      "I": "on gaining",
+      "II": 15,
+      "III": 21
+    },
+    "advanced": {
+      "parent_a_total": 15,
+      "parent_b_total": 9,
+      "tutor_required": true,
+      "tutor_placed_by": "narrator",
+      "must_hold_parent": false
+    },
+    "data": "classes.json"
+  },
+  "combat": {
+    "grid": {
+      "tile_m": 1.5,
+      "shape": "square",
+      "los": "centre to centre; solid blocks",
+      "high_ground_to_hit": 1,
+      "diagonals": "melee reach counts diagonals; diagonal movement cost not specified",
+      "diagonal_move_cost": null,
+      "difficult_terrain_move_multiplier": 2
+    },
+    "initiative": {
+      "roll": "d20 + initiative_bonus",
+      "order": "high first",
+      "tie": "higher agility",
+      "tie_after_agility": null,
+      "surprise_round": {
+        "ambushers_ap": 3,
+        "surprised_can_act": false,
+        "exception": "perk says so"
+      }
+    },
+    "turn": {
+      "start": [
+        "gain 6 AP",
+        "conditions tick",
+        "weapon heat -2",
+        "strain -1 if no soul cast last turn"
+      ],
+      "end": "unspent AP lost except AP held for Overwatch"
+    },
+    "ap": {
+      "base": 6,
+      "ceiling": 9,
+      "floor": 2,
+      "perk_bonus_max_per_turn": 3
+    },
+    "reactions": {
+      "per_round": 1,
+      "uses": [
+        "opportunity_attack",
+        "perk marked reaction",
+        "overwatch shot"
+      ],
+      "ap_cost": 0
+    },
+    "opportunity_attack": {
+      "trigger": "enemy leaves your melee reach without Disengage",
+      "attack": "one free melee attack"
+    },
+    "actions": [
+      {
+        "id": "move",
+        "ap": 1,
+        "text": "move up to Tiles per Move; difficult terrain costs double"
+      },
+      {
+        "id": "sprint",
+        "ap": 2,
+        "text": "move 3 x Tiles per Move",
+        "blocked_by": [
+          "armor_class_v"
+        ]
+      },
+      {
+        "id": "disengage",
+        "ap": 1,
+        "text": "move 1 tile, provokes no opportunity attacks"
+      },
+      {
+        "id": "prone_toggle",
+        "ap": 1,
+        "text": "drop prone or stand up"
+      },
+      {
+        "id": "melee_attack",
+        "ap": 2,
+        "ap_heavy": 3,
+        "text": "light melee/unarmed 2 AP; heavy melee 3 AP"
+      },
+      {
+        "id": "ranged_shot",
+        "ap": 2,
+        "text": "single shot or loose an arrow"
+      },
+      {
+        "id": "aimed_shot",
+        "ap": 3,
+        "to_hit": 2
+      },
+      {
+        "id": "burst",
+        "ap": 3,
+        "rounds": 3,
+        "text": "3 rounds at one target; -1 to hit per round after the first"
+      },
+      {
+        "id": "full_auto",
+        "ap": 4,
+        "rounds": 10,
+        "area": "3-tile cone",
+        "to_hit": -2,
+        "text": "one roll per target"
+      },
+      {
+        "id": "reload",
+        "ap": 2,
+        "text": "reload a magazine, or swap an Evoker core"
+      },
+      {
+        "id": "clear_jam",
+        "ap": 2
+      },
+      {
+        "id": "throw",
+        "ap": 2
+      },
+      {
+        "id": "interact",
+        "ap": 1,
+        "text": "use an item, draw/swap a weapon, open a door"
+      },
+      {
+        "id": "analyze",
+        "ap": 2,
+        "text": "reveals HP, armour, resistances, weak points",
+        "range": "analyze_range"
+      },
+      {
+        "id": "overwatch",
+        "ap": "AP of the shot",
+        "text": "hold AP for one shot at the first enemy that moves into your line"
+      },
+      {
+        "id": "draw_sigil",
+        "ap": "sigil_ap"
+      },
+      {
+        "id": "cast_soul",
+        "ap": "soul_cast_ap",
+        "improvise_extra_ap": 1
+      },
+      {
+        "id": "syphon",
+        "ap": 1
+      },
+      {
+        "id": "vent",
+        "ap": 1
+      },
+      {
+        "id": "crystallise",
+        "ap": 3,
+        "requires_meter_min": 10
+      },
+      {
+        "id": "pray",
+        "ap": 3,
+        "requires": {
+          "patron": true,
+          "faith_min": 3
+        }
+      },
+      {
+        "id": "speak",
+        "ap": 0,
+        "text": "a sentence"
+      },
+      {
+        "id": "social_in_combat",
+        "ap": 2,
+        "text": "persuade, threaten or parley (skill check)"
+      },
+      {
+        "id": "extinguish",
+        "ap": 1,
+        "text": "put out Burning"
+      },
+      {
+        "id": "stabilise",
+        "ap": 2,
+        "ap_combat_medic": 1,
+        "requires_item": "stim"
+      }
+    ],
+    "attack": {
+      "roll": "d20 + attack_skill_mod + weapon_accuracy + situational",
+      "vs": "target defense (10 + dodge + cover)",
+      "weapon_accuracy_default": null,
+      "skill_by_attack": {
+        "gun": "dexterity",
+        "bow": "dexterity",
+        "thrown": "dexterity",
+        "heavy_melee": "raw_power",
+        "unarmed": "raw_power",
+        "light_melee": "athletics",
+        "sigil_strike": "brain_power",
+        "soul_strike": "will_power"
+      },
+      "modifiers": {
+        "aimed": 2,
+        "high_ground": 1,
+        "heat": "-1 per 2 heat",
+        "recoil": "-1 per earlier shot this turn, reduced by floor(dexterity/2)",
+        "beyond_effective_range": "-2 per band, max 2 bands",
+        "target_prone_melee": 2,
+        "target_prone_ranged": -2,
+        "attacker_blinded": -4,
+        "half_cover_defense": 2,
+        "full_cover_defense": 5
+      },
+      "flanking": "cover only counts if the attack line passes through the side of the tile the cover protects"
+    },
+    "damage": {
+      "formula": "weapon_damage * type_multiplier * other_multipliers - armor",
+      "minimum": 1,
+      "types": [
+        "physical",
+        "elemental",
+        "sigil",
+        "soul"
+      ],
+      "critical": {
+        "triggers": [
+          "natural 20",
+          "attack total >= defense + 10"
+        ],
+        "damage": "x critical multiplier, reduced by target crit_damage_taken",
+        "forces_injury_roll": true
+      },
+      "nat1_attack": {
+        "gun": "jam (2 AP to clear)",
+        "melee_or_spell": "fumble: -1 AP next turn"
+      }
+    },
+    "armor": {
+      "set_by": "torso",
+      "classes": [
+        {
+          "class": 0,
+          "name": "None",
+          "value": 0,
+          "penalty": {}
+        },
+        {
+          "class": 1,
+          "name": "Light",
+          "value": 5,
+          "penalty": {}
+        },
+        {
+          "class": 2,
+          "name": "Medium",
+          "value": 10,
+          "penalty": {}
+        },
+        {
+          "class": 3,
+          "name": "Heavy",
+          "value": 15,
+          "penalty": {
+            "tiles_per_move": -1
+          }
+        },
+        {
+          "class": 4,
+          "name": "Assault",
+          "value": 20,
+          "penalty": {
+            "tiles_per_move": -1,
+            "dodge": -1
+          }
+        },
+        {
+          "class": 5,
+          "name": "Juggernaut",
+          "value": 25,
+          "penalty": {
+            "tiles_per_move": -2,
+            "no_sprint": true
+          }
+        }
+      ],
+      "other_slots": "head, hands, footwear etc. carry per-item effects",
+      "other_slot_items": null
+    },
+    "injuries": {
+      "after": "critical",
+      "resist": "injury_resist_pct",
+      "roll": "d6",
+      "table": [
+        {
+          "roll": [
+            1
+          ],
+          "location": "head",
+          "effect": "dazed",
+          "duration": "1 turn"
+        },
+        {
+          "roll": [
+            2,
+            3
+          ],
+          "location": "torso",
+          "effect": "bleeding"
+        },
+        {
+          "roll": [
+            4
+          ],
+          "location": "arm",
+          "effect": "-2 to attacks with that arm",
+          "duration": "until treated"
+        },
+        {
+          "roll": [
+            5,
+            6
+          ],
+          "location": "leg",
+          "effect": "half tiles_per_move",
+          "duration": "until treated"
+        }
+      ]
+    },
+    "shields": {
+      "temporary_hp": true,
+      "consumed_first": true,
+      "expire": "end of combat unless stated"
+    },
+    "healing_cap": "max HP",
+    "downed": {
+      "at_hp": 0,
+      "can_act": false,
+      "death_save": {
+        "roll": "d20",
+        "success_on": 10,
+        "successes_to_stabilise": 3,
+        "stabilise_hp": 1,
+        "failures_to_die": 3,
+        "hit_while_downed": "+1 failure"
+      },
+      "ally_stabilise": {
+        "item": "stim",
+        "ap": 2,
+        "ap_combat_medic": 1
+      }
+    },
+    "death_releases_bots": true
+  },
+  "weapons_rules": {
+    "heat": {
+      "single": 1,
+      "burst": 2,
+      "auto": 4,
+      "to_hit": "-1 per 2 heat",
+      "at_limit": "jam",
+      "clear_ap": 2,
+      "cooldown_per_turn": 2
+    },
+    "recoil": "each shot after the first in a turn -1 cumulative, reduced by floor(dexterity/2)",
+    "range_bands": {
+      "band_length": "effective range",
+      "penalty_per_band": -2,
+      "max_extra_bands": 2
+    },
+    "bows": {
+      "silent": true,
+      "reveals_hidden": false,
+      "heat": false,
+      "recoil": false,
+      "damage_scales": "raw_power"
+    },
+    "melee": {
+      "reach": 1,
+      "reach_polearm": 2,
+      "diagonals_count": true,
+      "heavy_ap": 3,
+      "heavy_skill": "raw_power",
+      "light_ap": 2,
+      "light_skill": "athletics"
+    },
+    "ammo_types": [
+      {
+        "id": "standard",
+        "effects": []
+      },
+      {
+        "id": "armor_piercing",
+        "ignores_armor": true,
+        "damage_mult": 0.8
+      },
+      {
+        "id": "hollow_point",
+        "damage_mult": 1.3,
+        "armor_mult": 2
+      },
+      {
+        "id": "incendiary",
+        "damage_mult": 0.9,
+        "applies": "burning",
+        "save": false
+      },
+      {
+        "id": "enhanced",
+        "ignores_armor": true,
+        "damage_type": "elemental",
+        "meter_per_hit": 1,
+        "rounds_per_core": 10,
+        "rarity": "rare"
+      }
+    ],
+    "data": "weapons.json"
+  },
+  "conditions_rules": {
+    "families": [
+      "body",
+      "brain",
+      "heart"
+    ],
+    "save": "d20 + save_bonus[family] >= 12 + attacker debuff_strength[family]",
+    "save_base_tn": 12,
+    "no_save_if_from_hit": [
+      "bleeding (injury)",
+      "burning (incendiary)"
+    ],
+    "stacking": "never stacks; reapplication resets to the longer duration",
+    "data": "conditions.json"
+  },
+  "mana": {
+    "meter": {
+      "min": 0,
+      "max": 40,
+      "start": 15,
+      "start_set_by": "narrator by location",
+      "regen_per_round": null,
+      "bands": [
+        {
+          "id": "thin",
+          "min": 0,
+          "max": 9,
+          "soul_cost_mult": 1.5,
+          "syphon_mp": 10,
+          "healing_given_mult": 0.75,
+          "strain_per_cast_extra": 0
+        },
+        {
+          "id": "normal",
+          "min": 10,
+          "max": 19,
+          "soul_cost_mult": 1.0,
+          "syphon_mp": 20,
+          "healing_given_mult": 1.0,
+          "strain_per_cast_extra": 0
+        },
+        {
+          "id": "rich",
+          "min": 20,
+          "max": 29,
+          "soul_cost_mult": 0.75,
+          "syphon_mp": 30,
+          "healing_given_mult": 1.25,
+          "strain_per_cast_extra": 0
+        },
+        {
+          "id": "flooded",
+          "min": 30,
+          "max": 40,
+          "soul_cost_mult": 0.5,
+          "syphon_mp": 40,
+          "healing_given_mult": 1.25,
+          "strain_per_cast_extra": 1
+        }
+      ],
+      "events": [
+        {
+          "event": "person_dies",
+          "delta": 5
+        },
+        {
+          "event": "beast_dies",
+          "delta": 3
+        },
+        {
+          "event": "robot_destroyed",
+          "delta": 2
+        },
+        {
+          "event": "sigil_vent",
+          "delta": "+flux vented"
+        },
+        {
+          "event": "vanguard_reactive_plate_3_guard",
+          "delta": 2
+        },
+        {
+          "event": "enhanced_round_hit",
+          "delta": 1
+        },
+        {
+          "event": "syphon",
+          "delta": -2
+        },
+        {
+          "event": "soul_cast",
+          "delta": "-ceil(final_mana_cost/10)"
+        },
+        {
+          "event": "crystallise",
+          "delta": -10
+        },
+        {
+          "event": "prayer",
+          "delta": -5
+        }
+      ]
+    },
+    "cores": {
+      "standard": {
+        "charge": 10,
+        "price_credits": 150
+      },
+      "small": {
+        "charge": 5,
+        "price_credits": null
+      },
+      "heavy": {
+        "charge": 20,
+        "price_credits": null
+      },
+      "enhanced_rounds_per_standard_core": 10
+    },
+    "sigil": {
+      "tool": "evoker",
+      "core_slots": 1,
+      "grammar": "at least one subject word (element or effect) + whatever form/motion it needs; without PUSH reach is adjacent only",
+      "max_words": "sigil_max_words",
+      "cost": "sum(word charge) - sigil_core_saving, min 1",
+      "flux": {
+        "per_word": 1,
+        "safe_max": 6,
+        "overload": {
+          "damage_per_flux_over": 10,
+          "evoker_lock_turns": 1,
+          "all_flux_to_air": true
+        }
+      },
+      "vent": {
+        "ap": 1,
+        "effect": "all flux to the air"
+      },
+      "hit": "damage spells: brain_power vs defense; condition words: target save vs 12 + debuff_strength",
+      "damage": "element damage x form multiplier x sigil multiplier x elemental multiplier",
+      "example": {
+        "words": [
+          "fire",
+          "condense",
+          "push"
+        ],
+        "charge": 4,
+        "ap_at_expression_1": 3,
+        "damage": 30,
+        "range_tiles": 8
+      },
+      "data": "sigils.json"
+    },
+    "soul": {
+      "tool": "emanator",
+      "no_emanator": {
+        "max_mp": 0,
+        "cast_from_air_extra_strain": 2
+      },
+      "design": {
+        "out_of_combat": true,
+        "schools_per_spell": 1,
+        "two_schools_from_will_power": 5,
+        "second_school_extra_cost": 20,
+        "module_slots": "1 + floor(will_power/3)",
+        "ready_designs": "2 + floor(empathy/2)",
+        "improvise_in_combat_extra_ap": 1
+      },
+      "cost": "(school base + modules + 20 if second school) * band soul_cost_mult * (1 + soul_cost_pct/100)",
+      "syphon": "band syphon_mp * (1 + syphon_bonus_pct/100)",
+      "strain": {
+        "per_cast": 1,
+        "per_cast_flooded": 2,
+        "limit": "strain_limit",
+        "decay": "-1 at start of a turn after one with no cast",
+        "reset": "after combat",
+        "mana_short": {
+          "check": "d20 + mod(will_power) >= 10 + 2*excess",
+          "fail": {
+            "damage_per_strain": 15,
+            "condition": "stunned"
+          },
+          "nat1": "heart bursts: drop to 0 HP"
+        }
+      },
+      "hit": "damage: will_power vs defense; control/status: saves",
+      "crystallise": {
+        "ap": 3,
+        "meter_min": 10,
+        "meter_delta": -10,
+        "yields": "standard core"
+      },
+      "data": "soul_modules.json"
+    },
+    "prayer": {
+      "requires": {
+        "patron": true
+      },
+      "devotion": {
+        "min": 0,
+        "max": 10,
+        "start": 3,
+        "gain": {
+          "session_rites_kept": 1,
+          "convert_someone": 1
+        },
+        "loss": {
+          "broken_rite": 1,
+          "break_character_seen": 2
+        }
+      },
+      "tiers": [
+        {
+          "id": "pray",
+          "faith_min": 3,
+          "ap": 3,
+          "roll": "d20 + mod(faith) + floor(devotion/2)",
+          "tn": "patron mood (default 12, narrator moves it)",
+          "success": "one blessing from patron list x blessing_power",
+          "nat1": "-1 devotion",
+          "meter_delta": -5,
+          "cooldown": "prayer_cooldown_turns"
+        },
+        {
+          "id": "witnessed",
+          "faith_min": 5,
+          "trigger": "after a successful prayer, until your next turn",
+          "on_theme_bonus": 2,
+          "off_theme_cost_devotion": 1,
+          "theme_judged_by": "narrator"
+        },
+        {
+          "id": "miracle",
+          "faith_min": 7,
+          "uses": "once per session",
+          "cost": "all devotion",
+          "devotion_min": 5,
+          "effect": "blessing at triple power, or a story-sized intervention the narrator designs"
+        }
+      ],
+      "data": "patrons.json"
+    }
+  },
+  "social": {
+    "disposition_tn": {
+      "friendly": 8,
+      "neutral": 12,
+      "wary": 16,
+      "hostile": 20
+    },
+    "break_not_persuade": {
+      "intimidation": "body",
+      "eloquence": "brain",
+      "implication": "heart",
+      "resolved_as": "debuff vs save"
+    },
+    "karma": {
+      "min": -100,
+      "max": 100,
+      "neutral_band": [
+        -29,
+        29
+      ],
+      "low_name": "Chaotic",
+      "high_name": "Lawful",
+      "lock_trait_exit_cost_mult": 2
+    },
+    "reputation": {
+      "per_faction": true,
+      "min": -100,
+      "max": 100,
+      "bands": [
+        {
+          "name": "Hated",
+          "max": -60
+        },
+        {
+          "name": "Hostile",
+          "min": -59,
+          "max": -20
+        },
+        {
+          "name": "Unknown",
+          "min": -19,
+          "max": 19
+        },
+        {
+          "name": "Known",
+          "min": 20,
+          "max": 59
+        },
+        {
+          "name": "Revered",
+          "min": 60
+        }
+      ]
+    }
+  },
+  "rest": {
+    "short": {
+      "hours": 1,
+      "hp_pct": 25,
+      "reset": [
+        "heat",
+        "flux",
+        "strain"
+      ]
+    },
+    "long": {
+      "hours": 8,
+      "hp": "full",
+      "mp": "full if meter band normal or richer",
+      "restock": [
+        "supplies",
+        "toxins"
+      ],
+      "combat_medic_treats_injuries": true
+    }
+  },
+  "traits_rules": {
+    "max": 2,
+    "pick_at": "creation",
+    "removable": false,
+    "count_as_skill_points": false,
+    "data": "traits.json"
+  },
+  "perks_rules": {
+    "acquired": {
+      "per_skill": 2,
+      "mastery1": "take one at Tier I",
+      "mastery3": "upgrade to Tier II or take the other at Tier I",
+      "mastered": "both at Tier II"
+    },
+    "achieved": {
+      "requires": "Mastery 1 in every listed skill + a deed in play",
+      "granted_by": "narrator",
+      "engine_checks": "skills; records deed"
+    },
+    "ultimate": {
+      "granted": "automatically when holding both named Achieved perks"
+    },
+    "ap_rules": "obey AP ceiling: +3/turn, 9 max, 2 min",
+    "data": "perks.json"
+  },
+  "multiplayer": {
+    "max_players_per_room": 4,
+    "narrator_modes": [
+      "ai",
+      "human_player"
+    ],
+    "source": "product brief (not in spec text)"
+  },
+  "ownership": {
+    "engine_owns": [
+      "all dice rolls and modifiers",
+      "AP accounting and ceiling/floor",
+      "movement, LoS, cover, range bands",
+      "damage, armour, criticals, injuries",
+      "Heat, recoil, jams, ammo",
+      "conditions, saves, durations",
+      "ambient mana meter and events",
+      "Flux, overload, venting",
+      "MP, Strain, Mana Short",
+      "Devotion arithmetic, prayer roll, cooldowns",
+      "derived stats",
+      "XP totals and level-ups",
+      "class qualification and rank",
+      "trait and perk numeric effects",
+      "Inner Voice hidden roll",
+      "death saves"
+    ],
+    "narrator_owns": [
+      "setting every TN and stating the stakes",
+      "patron mood TN",
+      "describing the world",
+      "playing NPCs and Celestial patrons",
+      "calling Overreach triggers",
+      "voicing Inner Voice lines",
+      "nat20 benefit and nat1 complication",
+      "granting Achieved perks and recording deeds",
+      "awarding XP by source",
+      "placing tutors for advanced classes",
+      "judging on-theme vs off-theme while Witnessed",
+      "designing Miracles",
+      "setting the starting meter by location",
+      "Legendary Deeds",
+      "keeping the Veil and the Knowing",
+      "trait and perk effects flagged narrator"
+    ]
+  }
+}

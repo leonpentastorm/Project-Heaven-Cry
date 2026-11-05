@@ -1,0 +1,317 @@
+{
+  "$schema_version": "1.0",
+  "kind": "patrons",
+  "source": "PHC Core Rules v1.0 + Narrator's World Bible + Class Roster Rev 2",
+  "devotion": {
+    "min": 0,
+    "max": 10,
+    "start": 3,
+    "gain": {
+      "session_rites_kept": 1,
+      "convert_someone": 1
+    },
+    "loss": {
+      "broken_rite": 1,
+      "break_character_seen": 2
+    }
+  },
+  "tiers": [
+    {
+      "id": "pray",
+      "faith_min": 3,
+      "ap": 3,
+      "roll": "d20 + mod(faith) + floor(devotion/2)",
+      "tn": "patron mood (default 12, narrator moves it)",
+      "success": "one blessing from patron list x blessing_power",
+      "nat1": "-1 devotion",
+      "meter_delta": -5,
+      "cooldown": "prayer_cooldown_turns"
+    },
+    {
+      "id": "witnessed",
+      "faith_min": 5,
+      "trigger": "after a successful prayer, until your next turn",
+      "on_theme_bonus": 2,
+      "off_theme_cost_devotion": 1,
+      "theme_judged_by": "narrator"
+    },
+    {
+      "id": "miracle",
+      "faith_min": 7,
+      "uses": "once per session",
+      "cost": "all devotion",
+      "devotion_min": 5,
+      "effect": "blessing at triple power, or a story-sized intervention the narrator designs"
+    }
+  ],
+  "notes": "Blessing numbers are provisional examples (the spec defers them here). Patron mood TN defaults to 12.",
+  "items": [
+    {
+      "id": "nerukhan",
+      "name": "Holy Father Nerukhan",
+      "invented": false,
+      "faction": "lumeri",
+      "domain": "Judgement, sanctity, the Lumeri saints",
+      "costume": "a stern holy father who speaks for the saints; 'Only the saints may judge'",
+      "accord_terms": [
+        "Pacts first: answers only those sworn to the Lumeri faith",
+        "Keep the costume: never speaks as anything but the Holy Father",
+        "The Veil: miracles are always framed as the saints' judgement"
+      ],
+      "tenets": [
+        "Only the saints may judge",
+        "Confess before battle",
+        "Shelter the faithful"
+      ],
+      "rites": [
+        "a confession spoken before each fight",
+        "tithe a share of loot to a Lumeri shrine each session"
+      ],
+      "taboos": [
+        "passing final judgement on a person yourself (executing the surrendered)",
+        "desecrating a shrine"
+      ],
+      "faith_required": {
+        "pray": 3,
+        "witnessed": 5,
+        "miracle": 7
+      },
+      "blessings": [
+        {
+          "id": "saints_shield",
+          "name": "Saint's Shield",
+          "text": "An ally in sight gains a shield of 40.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "shield",
+              "value": 40
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "judgement",
+          "name": "Judgement",
+          "text": "One enemy in sight takes 40 Soul damage; double against an enemy that harmed a surrendered or helpless foe this scene.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "hp",
+              "value": -40
+            },
+            {
+              "op": "narrator",
+              "note": "double if the target harmed the helpless this scene"
+            }
+          ],
+          "adjudication": "hybrid",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "absolution",
+          "name": "Absolution",
+          "text": "One ally is cleansed of every Heart and Brain condition and heals 30.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "hp",
+              "value": 30
+            },
+            {
+              "op": "narrator",
+              "note": "clear heart/brain conditions"
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        }
+      ],
+      "on_theme_examples": [
+        "defending the helpless",
+        "sparing the surrendered",
+        "confronting a heretic"
+      ],
+      "source_note": "Named in the 2020 material; reading as a Celestial in a pact is from the World Bible. Tenets, rites and blessings are new."
+    },
+    {
+      "id": "the_quartermaster",
+      "name": "The Quartermaster",
+      "invented": true,
+      "faction": null,
+      "domain": "Supply, soldiers, the long war",
+      "costume": "a gruff, bottomless logistics officer of a war that never ended; a Celestial who loves strategy games",
+      "accord_terms": [
+        "Pacts first",
+        "Keep the costume",
+        "Quotas: asks for bots in kind, so prefers prayers made after a hard fight"
+      ],
+      "tenets": [
+        "No one fights unfed",
+        "Count your rounds",
+        "Leave no one on the field"
+      ],
+      "rites": [
+        "log every round spent and every comrade lost, read aloud after the fight"
+      ],
+      "taboos": [
+        "abandoning a wounded ally",
+        "hoarding supplies from your own squad"
+      ],
+      "faith_required": {
+        "pray": 3,
+        "witnessed": 5,
+        "miracle": 7
+      },
+      "blessings": [
+        {
+          "id": "resupply",
+          "name": "Resupply",
+          "text": "Every ally in sight refills one magazine, or regains 1 Supplies, or loads a fresh small core.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "ammo",
+              "value": "1 magazine",
+              "when": "on_blessing"
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "dig_in",
+          "name": "Dig In",
+          "text": "You and allies within 2 tiles count as in half cover until your next turn.",
+          "effects": [
+            {
+              "op": "tn_mod",
+              "context": "defense_area_2",
+              "value": 2
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "covering_fire",
+          "name": "Covering Fire",
+          "text": "An enemy in sight is Pinned (no save).",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "pinned",
+              "target": "target",
+              "when": "on_blessing"
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        }
+      ],
+      "on_theme_examples": [
+        "holding a position",
+        "carrying a wounded ally",
+        "sharing ammunition"
+      ],
+      "source_note": "Invented to give Body characters a patron."
+    },
+    {
+      "id": "the_laughing_mask",
+      "name": "The Laughing Mask",
+      "invented": true,
+      "faction": null,
+      "domain": "Tricks, luck, stagecraft",
+      "costume": "a grinning masked trickster who demands a show; a Celestial who joined the Accords to troll properly",
+      "accord_terms": [
+        "Pacts first",
+        "Keep the costume: never removes the mask",
+        "The Veil: every miracle must look like luck"
+      ],
+      "tenets": [
+        "Never be boring",
+        "A lie told well is a gift",
+        "Pay your debts in laughter"
+      ],
+      "rites": [
+        "a joke, prank or performance for the Mask each session"
+      ],
+      "taboos": [
+        "breaking a promise you made in jest",
+        "refusing a dare from an ally"
+      ],
+      "faith_required": {
+        "pray": 3,
+        "witnessed": 5,
+        "miracle": 7
+      },
+      "blessings": [
+        {
+          "id": "lucky_break",
+          "name": "Lucky Break",
+          "text": "Gain 1 Echo (max 3 still applies).",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "echo",
+              "value": 1,
+              "when": "on_blessing"
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "switcheroo",
+          "name": "Switcheroo",
+          "text": "Swap places with any creature in sight.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "engine swaps positions; narrator rules on impossible tiles"
+            }
+          ],
+          "adjudication": "hybrid",
+          "scales_with": "blessing_power",
+          "provisional": true
+        },
+        {
+          "id": "pratfall",
+          "name": "Pratfall",
+          "text": "One enemy in sight is Prone and Confused (Brain save for Confused only).",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "prone",
+              "target": "target",
+              "when": "on_blessing"
+            },
+            {
+              "op": "condition",
+              "condition": "confused",
+              "target": "target",
+              "when": "on_blessing"
+            }
+          ],
+          "adjudication": "engine",
+          "scales_with": "blessing_power",
+          "provisional": true
+        }
+      ],
+      "on_theme_examples": [
+        "a daring bluff",
+        "a stunt for an audience",
+        "a gamble against long odds"
+      ],
+      "source_note": "Invented; the World Bible says some Celestials troll for fun."
+    }
+  ]
+}

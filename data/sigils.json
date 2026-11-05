@@ -1,0 +1,316 @@
+{
+  "$schema_version": "1.0",
+  "kind": "sigils",
+  "source": "PHC Core Rules v1.0 (grammar, cost, Flux) + new word list",
+  "grammar": {
+    "requires_one_of": [
+      "subject_element",
+      "subject_effect"
+    ],
+    "max_words": "sigil_max_words",
+    "reach_without_push": "adjacent",
+    "order": "subject(s) -> form -> motion -> modifier",
+    "multiple_subjects": "allowed if length permits; damage sums, each element's own rider applies"
+  },
+  "example": {
+    "words": [
+      "fire",
+      "condense",
+      "push"
+    ],
+    "charge": 4,
+    "damage": 30,
+    "range_tiles": 8,
+    "ap_at_expression_1": 3,
+    "check": "2+1+1=4 charge; 30x1.0"
+  },
+  "notes": "The spec defers the word list to this file. Every word is provisional: charge, damage and riders are new numbers, calibrated so FIRE-CONDENSE-PUSH matches the spec example.",
+  "items": [
+    {
+      "id": "fire",
+      "word": "FIRE",
+      "class": "subject_element",
+      "charge": 2,
+      "flux": 1,
+      "text": "Heat. Damage 30, Elemental; on a critical the target is Burning.",
+      "provisional": true,
+      "damage": 30,
+      "damage_type": "elemental",
+      "on_crit": "burning"
+    },
+    {
+      "id": "freeze",
+      "word": "FREEZE",
+      "class": "subject_element",
+      "charge": 2,
+      "flux": 1,
+      "text": "Cold. Damage 25, Elemental; target is Slowed (Body save).",
+      "provisional": true,
+      "damage": 25,
+      "damage_type": "elemental",
+      "applies": {
+        "condition": "slowed",
+        "save": "body"
+      },
+      "name": "Freeze"
+    },
+    {
+      "id": "shock",
+      "word": "SHOCK",
+      "class": "subject_element",
+      "charge": 2,
+      "flux": 1,
+      "text": "Lightning. Damage 30, Elemental; ignores half cover.",
+      "provisional": true,
+      "damage": 30,
+      "damage_type": "elemental",
+      "ignores": "half_cover",
+      "name": "Shock"
+    },
+    {
+      "id": "stone",
+      "word": "STONE",
+      "class": "subject_element",
+      "charge": 2,
+      "flux": 1,
+      "text": "Earth. Damage 35, Sigil (physical-like, armour applies).",
+      "provisional": true,
+      "damage": 35,
+      "damage_type": "sigil"
+    },
+    {
+      "id": "gale",
+      "word": "GALE",
+      "class": "subject_element",
+      "charge": 1,
+      "flux": 1,
+      "text": "Wind. Damage 15, Sigil; pushes the target 2 tiles.",
+      "provisional": true,
+      "damage": 15,
+      "damage_type": "sigil",
+      "push_tiles": 2
+    },
+    {
+      "id": "ward",
+      "word": "WARD",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "A shield of 30 on the target (x Sigil multiplier), until the end of combat.",
+      "provisional": true,
+      "shield": 30
+    },
+    {
+      "id": "mend",
+      "word": "MEND",
+      "class": "subject_effect",
+      "charge": 3,
+      "flux": 1,
+      "text": "Heals 25 (x Sigil multiplier x Healing given).",
+      "provisional": true,
+      "heal": 25
+    },
+    {
+      "id": "bind",
+      "word": "BIND",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "Target is Pinned (Body save).",
+      "provisional": true,
+      "applies": {
+        "condition": "pinned",
+        "save": "body"
+      }
+    },
+    {
+      "id": "blind",
+      "word": "BLIND",
+      "class": "subject_effect",
+      "charge": 1,
+      "flux": 1,
+      "text": "Target is Blinded (Body save).",
+      "provisional": true,
+      "applies": {
+        "condition": "blinded",
+        "save": "body"
+      },
+      "name": "Blind"
+    },
+    {
+      "id": "slow",
+      "word": "BLIND",
+      "class": "subject_effect",
+      "charge": 1,
+      "flux": 1,
+      "text": "Target is Slowed (Body save). No damage.",
+      "provisional": true,
+      "applies": {
+        "condition": "blinded",
+        "save": "body"
+      },
+      "name": "Slow",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "slowed",
+          "target": "target",
+          "save": "body"
+        }
+      ]
+    },
+    {
+      "id": "muddle",
+      "word": "MUDDLE",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "Target gets a Left Brain Debuff (Brain save).",
+      "provisional": true,
+      "applies": {
+        "condition": "left_brain_debuff",
+        "save": "brain"
+      }
+    },
+    {
+      "id": "dread",
+      "word": "DREAD",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "Target is Shaken (Heart save).",
+      "provisional": true,
+      "applies": {
+        "condition": "shaken",
+        "save": "heart"
+      }
+    },
+    {
+      "id": "veil",
+      "word": "VEIL",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "The target tile fills with smoke-bots: blocks sight in radius 1.",
+      "provisional": true,
+      "blocks_sight_radius": 1
+    },
+    {
+      "id": "light",
+      "word": "LIGHT",
+      "class": "subject_effect",
+      "charge": 1,
+      "flux": 1,
+      "text": "Lights radius 4 for the scene; reveals Hidden within it.",
+      "provisional": true,
+      "reveals_hidden_radius": 4
+    },
+    {
+      "id": "condense",
+      "word": "CONDENSE",
+      "class": "form",
+      "charge": 1,
+      "flux": 1,
+      "text": "Single target. Damage x1.",
+      "provisional": true,
+      "form_mult": 1.0,
+      "area": "single"
+    },
+    {
+      "id": "spread",
+      "word": "SPREAD",
+      "class": "form",
+      "charge": 2,
+      "flux": 1,
+      "text": "Burst of radius 2 at the point of impact. Damage x0.6.",
+      "provisional": true,
+      "form_mult": 0.6,
+      "area": "radius_2"
+    },
+    {
+      "id": "line",
+      "word": "LINE",
+      "class": "form",
+      "charge": 1,
+      "flux": 1,
+      "text": "A 6-tile line from the caster. Damage x0.7.",
+      "provisional": true,
+      "form_mult": 0.7,
+      "area": "line_6"
+    },
+    {
+      "id": "wall",
+      "word": "WALL",
+      "class": "form",
+      "charge": 2,
+      "flux": 1,
+      "text": "A 4-tile wall that lasts 2 rounds; anyone entering takes the effect. Damage x0.5.",
+      "provisional": true,
+      "form_mult": 0.5,
+      "area": "wall_4",
+      "lasts_rounds": 2
+    },
+    {
+      "id": "cone",
+      "word": "CONE",
+      "class": "form",
+      "charge": 1,
+      "flux": 1,
+      "text": "A 3-tile cone. Damage x0.6.",
+      "provisional": true,
+      "form_mult": 0.6,
+      "area": "cone_3"
+    },
+    {
+      "id": "push",
+      "word": "PUSH",
+      "class": "motion",
+      "charge": 1,
+      "flux": 1,
+      "text": "Sends the spell out to 8 tiles. Without it, a spell reaches only an adjacent tile.",
+      "provisional": true,
+      "range_tiles": 8
+    },
+    {
+      "id": "stay",
+      "word": "STAY",
+      "class": "motion",
+      "charge": 1,
+      "flux": 1,
+      "text": "The spell holds its tile for 2 rounds (plus the Sigil duration bonus).",
+      "provisional": true,
+      "lasts_rounds": 2
+    },
+    {
+      "id": "seek",
+      "word": "SEEK",
+      "class": "motion",
+      "charge": 2,
+      "flux": 1,
+      "text": "The spell curves around cover: ignores half and full cover against one target. Needs PUSH.",
+      "provisional": true,
+      "ignores": "cover",
+      "requires_word": "push"
+    },
+    {
+      "id": "return",
+      "word": "RETURN",
+      "class": "motion",
+      "charge": 1,
+      "flux": 1,
+      "text": "Targets yourself or an ally you touch; replaces PUSH for support words.",
+      "provisional": true,
+      "target": "self_or_adjacent_ally"
+    },
+    {
+      "id": "twice",
+      "word": "TWICE",
+      "class": "modifier",
+      "charge": 3,
+      "flux": 2,
+      "text": "Repeat the spell at a second target within range. Counts as 1 word for length, 1 Flux extra.",
+      "provisional": true,
+      "extra_target": 1
+    }
+  ]
+}

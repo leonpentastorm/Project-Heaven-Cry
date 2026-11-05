@@ -1,4 +1,12 @@
-# Project Heaven Cry — artwork and style library
+# Project Heaven Cry
+
+A revived 2020 tabletop RPG (a Disco Elysium-style skill web with tactical squad combat), now being built as a web game with an AI or human Narrator and co-op for up to 4 players.
+
+**Start with [`CLAUDE.md`](CLAUDE.md)**, the project brief. Then read the rules in [`docs/rules/PHC-Core-Rules-v1.0.md`](docs/rules/PHC-Core-Rules-v1.0.md), the data in [`data/`](data/README.md), and the UI prototypes in [`design/canvas/`](docs/design/ui-screens.md).
+
+---
+
+## Artwork and style library
 
 This repository preserves the artwork and visual direction produced for PHC, including all four completed 27-portrait collections, the Heavenprint pilot, the Wick mascot study and icon iterations, and both style-bible versions.
 

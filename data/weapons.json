@@ -1,0 +1,509 @@
+{
+  "$schema_version": "1.0",
+  "kind": "weapons",
+  "source": "PHC Core Rules v1.0 (Game Spec)",
+  "notes": "Damage before multipliers. Range in tiles (effective range; up to 2 further bands at -2 each). accuracy and price_credits are null: the spec has no column for them. accuracy=0 is provisional (spec open item 1); price_credits=null pending open item 2.",
+  "items": [
+    {
+      "id": "service_pistol",
+      "name": "Service pistol (.32 Decrkm)",
+      "category": "pistol",
+      "damage": 20,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 12,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 1,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "drifter_revolver",
+      "name": "Drifter revolver",
+      "category": "revolver",
+      "damage": 28,
+      "damage_type": "physical",
+      "range_tiles": 10,
+      "magazine": 6,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "revolver",
+      "skill": "dexterity",
+      "weight_kg": 1.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "decrkm_smg",
+      "name": "Decrkm SMG (.32 Decrkm)",
+      "category": "smg",
+      "damage": 15,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 30,
+      "heat_limit": 10,
+      "modes": [
+        "single",
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 3,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "hellraiser_service_rifle",
+      "name": "Hellraiser service rifle",
+      "category": "rifle",
+      "damage": 30,
+      "damage_type": "physical",
+      "range_tiles": 16,
+      "magazine": 24,
+      "heat_limit": 8,
+      "modes": [
+        "single",
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 4,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "lever_carbine",
+      "name": "Lever carbine",
+      "category": "rifle",
+      "damage": 32,
+      "damage_type": "physical",
+      "range_tiles": 14,
+      "magazine": 8,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 3.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "lumeri_scattergun",
+      "name": "Lumeri scattergun",
+      "category": "shotgun",
+      "damage": {
+        "within_4": 40,
+        "within_8": 25
+      },
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 6,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "shell",
+      "skill": "dexterity",
+      "weight_kg": 4,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "damage_falloff"
+      ],
+      "text": ""
+    },
+    {
+      "id": "long_rifle",
+      "name": "Long rifle",
+      "category": "rifle",
+      "damage": 50,
+      "damage_type": "physical",
+      "range_tiles": 30,
+      "magazine": 5,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 6,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "blackpoint_700",
+      "name": ".700 Blackpoint anti-materiel",
+      "category": "heavy",
+      "damage": 90,
+      "damage_type": "physical",
+      "range_tiles": 40,
+      "magazine": 3,
+      "heat_limit": 3,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": ".700",
+      "skill": "dexterity",
+      "weight_kg": 15,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "armor_ignore_10",
+        "requires_braced_or_prone"
+      ],
+      "text": ""
+    },
+    {
+      "id": "hellraiser_lmg",
+      "name": "Hellraiser LMG",
+      "category": "heavy",
+      "damage": 25,
+      "damage_type": "physical",
+      "range_tiles": 18,
+      "magazine": 100,
+      "heat_limit": 14,
+      "modes": [
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 10,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "minus2_to_hit_unless_emplaced"
+      ],
+      "text": ""
+    },
+    {
+      "id": "recurve_bow",
+      "name": "Recurve bow",
+      "category": "bow",
+      "damage": "20 + 5*raw_power",
+      "damage_type": "physical",
+      "range_tiles": 14,
+      "magazine": 20,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "arrow",
+      "skill": "dexterity",
+      "weight_kg": 1.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "silent",
+        "no_heat",
+        "no_recoil",
+        "quiver"
+      ],
+      "text": ""
+    },
+    {
+      "id": "crossbow",
+      "name": "Crossbow",
+      "category": "bow",
+      "damage": 35,
+      "damage_type": "physical",
+      "range_tiles": 16,
+      "magazine": 1,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "bolt",
+      "skill": "dexterity",
+      "weight_kg": 4,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "silent",
+        "no_heat",
+        "no_recoil"
+      ],
+      "text": ""
+    },
+    {
+      "id": "combat_knife",
+      "name": "Combat knife",
+      "category": "light_melee",
+      "damage": 15,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2,
+        "throw": 2
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 0.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "throwable_6_tiles"
+      ],
+      "text": "",
+      "thrown_range_tiles": 6
+    },
+    {
+      "id": "sabre",
+      "name": "Sabre",
+      "category": "light_melee",
+      "damage": 28,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 1.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "ork_machete",
+      "name": "Ork machete",
+      "category": "heavy_melee",
+      "damage": 35,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 3,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "maul",
+      "name": "Maul",
+      "category": "heavy_melee",
+      "damage": 45,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 7,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "lance",
+      "name": "Lance",
+      "category": "heavy_melee",
+      "damage": 32,
+      "damage_type": "physical",
+      "range_tiles": 2,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 3,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "polearm"
+      ],
+      "text": ""
+    },
+    {
+      "id": "fists",
+      "name": "Gloves or bare fists",
+      "category": "unarmed",
+      "damage": 10,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": ""
+    },
+    {
+      "id": "frag_grenade",
+      "name": "Frag grenade",
+      "category": "thrown",
+      "damage": 40,
+      "damage_type": "physical",
+      "range_tiles": "throwing_range",
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "throw": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "area_radius_2",
+        "consumable"
+      ],
+      "text": "40 to everyone within 2 tiles."
+    },
+    {
+      "id": "smoke_grenade",
+      "name": "Smoke grenade",
+      "category": "thrown",
+      "damage": 0,
+      "damage_type": "physical",
+      "range_tiles": "throwing_range",
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "throw": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "area_radius_3",
+        "blocks_sight_2_rounds",
+        "consumable"
+      ],
+      "text": "Blocks sight within 3 tiles for 2 rounds."
+    },
+    {
+      "id": "flashbang",
+      "name": "Flashbang",
+      "category": "thrown",
+      "damage": 0,
+      "damage_type": "physical",
+      "range_tiles": "throwing_range",
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "throw": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.5,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [
+        "area_radius_2",
+        "consumable"
+      ],
+      "text": "Blinded for 1 round within 2 tiles (Body save).",
+      "applies": {
+        "condition": "blinded",
+        "save": "body"
+      }
+    }
+  ]
+}

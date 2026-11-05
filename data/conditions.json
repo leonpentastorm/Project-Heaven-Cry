@@ -1,0 +1,771 @@
+{
+  "$schema_version": "1.0",
+  "kind": "conditions",
+  "source": "PHC Core Rules v1.0 (Game Spec)",
+  "items": [
+    {
+      "id": "bleeding",
+      "name": "Bleeding",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "5 damage at the start of each turn; a stim ends it.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hp",
+          "value": -5,
+          "when": "turn_start"
+        }
+      ],
+      "duration": {
+        "rounds": 3
+      },
+      "ends_on": [
+        "duration",
+        "stim"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "burning",
+      "name": "Burning",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "10 damage at the start of each turn, until someone spends 1 AP to put it out.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hp",
+          "value": -10,
+          "when": "turn_start"
+        }
+      ],
+      "duration": {
+        "rounds": null
+      },
+      "ends_on": [
+        "extinguish (1 AP, anyone adjacent or self)"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "weakened",
+      "name": "Weakened",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "−25% damage dealt.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "damage_dealt_pct",
+          "value": -25
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "slowed",
+      "name": "Slowed",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "Half Tiles per Move.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "move_mult",
+          "value": 0.5
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "nausea",
+      "name": "Nausea",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "−1 AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "pinned",
+      "name": "Pinned",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "Can't move; −2 to hit.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "move_mult",
+          "value": 0
+        },
+        {
+          "op": "tn_mod",
+          "context": "own_attacks",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "until": "end of your next turn"
+      },
+      "ends_on": [
+        "end_of_next_turn"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "stunned",
+      "name": "Stunned",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "Lose your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": "lose_turn"
+        }
+      ],
+      "duration": {
+        "turns": 1
+      },
+      "ends_on": [
+        "after skipped turn"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "dazed",
+      "name": "Dazed",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "−2 AP on your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "turns": 1
+      },
+      "ends_on": [
+        "after next turn"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "blinded",
+      "name": "Blinded",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "text": "−4 to hit; you see only adjacent tiles.",
+      "effects": [
+        {
+          "op": "tn_mod",
+          "context": "own_attacks",
+          "value": -4
+        },
+        {
+          "op": "stat_mod",
+          "stat": "vision",
+          "value": "adjacent_only"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "prone",
+      "name": "Prone",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "Melee against you +2, ranged against you −2; 1 AP to stand.",
+      "effects": [
+        {
+          "op": "tn_mod",
+          "context": "melee_vs_self",
+          "value": 2
+        },
+        {
+          "op": "tn_mod",
+          "context": "ranged_vs_self",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "until": "you stand"
+      },
+      "ends_on": [
+        "stand (1 AP)"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "left_brain_debuff",
+      "name": "Left Brain Debuff",
+      "kind": "debuff",
+      "family": "brain",
+      "save": true,
+      "text": "−2 on Mind skill checks; Sigils cost +1 AP.",
+      "effects": [
+        {
+          "op": "skill_mod_tag",
+          "tag": "core:mind",
+          "value": -2
+        },
+        {
+          "op": "stat_mod",
+          "stat": "sigil_ap",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "right_brain_debuff",
+      "name": "Right Brain Debuff",
+      "kind": "debuff",
+      "family": "brain",
+      "save": true,
+      "text": "−2 on Expression and Soul checks; Soul spells cost +20% mana.",
+      "effects": [
+        {
+          "op": "skill_mod_tag",
+          "tag": "attr:expression",
+          "value": -2
+        },
+        {
+          "op": "skill_mod_tag",
+          "tag": "core:soul",
+          "value": -2
+        },
+        {
+          "op": "stat_mod",
+          "stat": "soul_cost_pct",
+          "value": 20
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "confused",
+      "name": "Confused",
+      "kind": "debuff",
+      "family": "brain",
+      "save": true,
+      "text": "50% chance each action targets someone at random.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "random_target_pct",
+          "value": 50
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "fear",
+      "name": "Fear",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "text": "Can't move toward or attack the source; −2 to hit anyone else.",
+      "effects": [
+        {
+          "op": "tn_mod",
+          "context": "attacks_vs_non_source",
+          "value": -2
+        },
+        {
+          "op": "stat_mod",
+          "stat": "forbid",
+          "value": "move_toward_or_attack_source"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "shaken",
+      "name": "Shaken",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "text": "−2 on Heart saves and social checks.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "save_heart",
+          "value": -2
+        },
+        {
+          "op": "tn_mod",
+          "context": "social_checks",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "rounds": 3,
+        "out_of_combat": "rest of scene"
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "hidden",
+      "name": "Hidden",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Enemies can't target you until they spot you; your first attack from Hidden uses the Ambush multiplier, then you're revealed.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "untargetable",
+          "value": true
+        },
+        {
+          "op": "stat_mod",
+          "stat": "next_attack_mult",
+          "value": "ambush"
+        }
+      ],
+      "duration": {
+        "until": "spotted or you attack"
+      },
+      "ends_on": [
+        "spotted",
+        "you attack"
+      ],
+      "stacks": false,
+      "adjudication": "hybrid"
+    },
+    {
+      "id": "marked",
+      "name": "Marked",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "The marker's squad gets +1 to hit you, and you can't become Hidden.",
+      "effects": [
+        {
+          "op": "tn_mod",
+          "context": "marker_squad_vs_self",
+          "value": 1
+        },
+        {
+          "op": "stat_mod",
+          "stat": "can_hide",
+          "value": false
+        }
+      ],
+      "duration": {
+        "set_by": "source"
+      },
+      "ends_on": [
+        "source rule"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "braced",
+      "name": "Braced / Emplaced",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Set by class moves and heavy weapons; ends when you move.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "bonus defined by the weapon or move that sets it"
+        }
+      ],
+      "duration": {
+        "until": "you move"
+      },
+      "ends_on": [
+        "move"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "overwatch",
+      "name": "Overwatch",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "AP held for one reaction shot before your next turn.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "overwatch_shot",
+          "ap": 0,
+          "uses": "per_round"
+        }
+      ],
+      "duration": {
+        "until": "your next turn"
+      },
+      "ends_on": [
+        "shot taken",
+        "your next turn"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "witnessed",
+      "name": "Witnessed",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Your patron is watching: on-theme actions get +2, off-theme ones cost 1 Devotion each.",
+      "effects": [
+        {
+          "op": "tn_mod",
+          "context": "on_theme_actions",
+          "value": 2
+        },
+        {
+          "op": "resource",
+          "resource": "devotion",
+          "value": -1,
+          "when": "off_theme_action"
+        },
+        {
+          "op": "narrator",
+          "note": "judges on-theme vs off-theme"
+        }
+      ],
+      "duration": {
+        "until": "your next turn"
+      },
+      "ends_on": [
+        "your next turn"
+      ],
+      "stacks": false,
+      "adjudication": "hybrid"
+    },
+    {
+      "id": "downed",
+      "name": "Downed",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "At 0 HP you can't act; roll death saves at the start of each turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "can_act",
+          "value": false
+        }
+      ],
+      "duration": {
+        "until": "stabilised or dead"
+      },
+      "ends_on": [
+        "3 successes",
+        "stim",
+        "3 failures (death)"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "grappled",
+      "name": "Grappled",
+      "kind": "debuff",
+      "family": "body",
+      "save": "body",
+      "text": "Held by an adjacent enemy. You can't move away; attacks other than against the grappler take a −2 to the roll. Break free with an opposed Raw Power or Athletics check (2 AP).",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "move_away"
+        },
+        {
+          "op": "attack_mod",
+          "value": -2,
+          "context": "not_vs_grappler"
+        }
+      ],
+      "duration": {
+        "until": "escape"
+      },
+      "ends_on": [
+        "escape",
+        "grappler_moves",
+        "grappler_downed"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "taunted",
+      "name": "Taunted",
+      "kind": "debuff",
+      "family": "heart",
+      "save": "heart",
+      "text": "You must spend your next attack on the one who taunted you, if you can reach or see them.",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "attack_other_than_source"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "source_downed"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "commanded",
+      "name": "Commanded",
+      "kind": "debuff",
+      "family": "heart",
+      "save": "heart",
+      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Pick the ordered action; refuse it if it is directly self-harmful."
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "hybrid"
+    },
+    {
+      "id": "puppeted",
+      "name": "Puppeted",
+      "kind": "debuff",
+      "family": "brain",
+      "save": "brain",
+      "text": "The caster controls your next turn's actions (AP still yours). You can't be made to harm yourself or drop to 0 HP by your own hand.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Caster chooses the target's actions for one turn; no self-harm."
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "damage_taken"
+      ],
+      "stacks": false,
+      "adjudication": "hybrid"
+    },
+    {
+      "id": "disarmed",
+      "name": "Disarmed",
+      "kind": "debuff",
+      "family": "heart",
+      "save": "heart",
+      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile).",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "weapon_attack"
+        },
+        {
+          "op": "grant_action",
+          "action": "recover_weapon",
+          "ap": 2,
+          "uses": "at_will"
+        }
+      ],
+      "duration": {
+        "until": "recovered"
+      },
+      "ends_on": [
+        "recover_weapon"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "injured",
+      "name": "Injured",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "A lasting wound to one location (head, torso, arm, leg). Arm: −2 to attacks with that hand. Leg: half movement. Head: −2 to Mind checks. Torso: −10 max HP. Lasts until treated at rest or by a medic.",
+      "params": {
+        "location": [
+          "head",
+          "torso",
+          "arm",
+          "leg"
+        ]
+      },
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Apply the listed penalty for the chosen location."
+        }
+      ],
+      "duration": {
+        "until": "treated"
+      },
+      "ends_on": [
+        "long_rest",
+        "surgery"
+      ],
+      "stacks": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "emplaced",
+      "name": "Emplaced",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "You've set a heavy weapon on a bipod, mount or cover edge. +2 to attacks with it and Recoil halved; moving ends Emplaced.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 2,
+          "context": "emplaced_weapon"
+        },
+        {
+          "op": "stat_mult",
+          "stat": "recoil",
+          "value": 0.5
+        }
+      ],
+      "duration": {
+        "until": "move"
+      },
+      "ends_on": [
+        "move"
+      ],
+      "stacks": false,
+      "adjudication": "engine"
+    },
+    {
+      "id": "augment_offline",
+      "name": "Augment Offline",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "One augment, prosthetic or implant stops working: it gives no bonuses and its actions are unavailable.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Pick the affected augment; suppress its effects."
+        }
+      ],
+      "duration": {
+        "until": "repaired"
+      },
+      "ends_on": [
+        "field_repair",
+        "long_rest"
+      ],
+      "stacks": true,
+      "adjudication": "hybrid"
+    }
+  ],
+  "families": {
+    "body": "Physical debuffs; resisted with a Body save.",
+    "brain": "Mental debuffs; resisted with a Brain save.",
+    "heart": "Emotional debuffs; resisted with a Heart save."
+  },
+  "family_ref": "An effect may name 'family:<body|brain|heart>' instead of a single condition id; it means any condition of that family."
+}

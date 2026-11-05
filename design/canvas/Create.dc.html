@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PHC · Character creation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0D13}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 14px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 14px 24px; border-bottom: 1px solid #232D3F; background: #0D1119">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#4FC8DF" stroke-width="1.6" aria-hidden="true"><path d="M14 2 25 8.5v11L14 26 3 19.5v-11L14 2Z"/><path d="M14 8v12M8.5 11 14 14l5.5-3"/></svg>
+    <span style="font-weight: 700; letter-spacing: 0.18em; font-size: 13px">PROJECT HEAVEN CRY</span>
+  </div>
+  <div style="flex: 1 1 40px"></div>
+  <a href="Room.dc.html" style="font-size: 13px; text-decoration: none">← Back to room 7Q-K2</a>
+</header>
+
+<div style="max-width: 1360px; margin: 0 auto; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">NEW CHARACTER · LEVEL 1</span>
+      <h1 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 40px; line-height: 1.1">Build who walks in</h1>
+    </div>
+    <span style="font-size: 13px; color: #A3AEC2; max-width: 46ch; line-height: 1.5">Lock your character in before the session starts. Drafts save to your account and can be brought into any room.</span>
+  </div>
+
+  <nav aria-label="Creation steps" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+    <sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+      <button type="button" aria-current="{{s.current}}" onClick="{{s.pick}}" style="{{s.style}}">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: {{s.numColor}}">STEP {{s.n}}</span>
+        <span style="font-weight: 700; font-size: 15px">{{s.label}}</span>
+      </button>
+    </sc-for>
+  </nav>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+    <section style="flex: 999 1 640px; min-width: 0; background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 18px">
+
+      <sc-if value="{{isIdentity}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Identity</h2>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="nm" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">NAME</label><input id="nm" value="{{name}}" onChange="{{onName}}" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="org" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ORIGIN</label><input id="org" placeholder="Where they come from" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="race" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">RACE</label><input id="race" placeholder="Human, robot, …" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="assoc" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ASSOCIATION</label><input id="assoc" placeholder="Faction, crew or none" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="dream" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">LAST DREAM</label><input id="dream" placeholder="What they dreamed last night" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+            <div style="display: flex; flex-direction: column; gap: 6px"><label for="song" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">FAVORITE SONG</label><input id="song" placeholder="A song from their world" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px"><label for="hist" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">HISTORY</label><textarea id="hist" rows="4" placeholder="A few lines the Narrator can use" style="padding: 12px 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 16px; resize: vertical"></textarea></div>
+          <div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 10px; border: 1px dashed #2E3A50">
+            <span style="width: 72px; height: 72px; border-radius: 10px; background: #151C29; border: 1px solid #232D3F; display: grid; place-items: center; color: #7F8BA1; font-size: 11px">PORTRAIT</span>
+            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1"><span style="font-weight: 600">Portrait</span><span style="font-size: 13px; color: #A3AEC2">Upload an image or generate one from the name, race and history.</span></div>
+            <button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #4FC8DF; background: transparent; color: #4FC8DF; font-family: inherit; font-weight: 600; cursor: pointer">Generate</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isCores}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: 0.08em">ADJUST CORES</h2>
+              <span style="font-size: 14px; color: #A3AEC2">Spend six points across your three cores. Your archetype takes shape as you go.</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span style="{{corePoolStyle}}">{{corePoolText}}</span>
+              <button type="button" onClick="{{randomCores}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; cursor: pointer">RANDOM</button>
+              <button type="button" onClick="{{revertCores}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; cursor: pointer">RESET</button>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
+            <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+              <sc-for list="{{coreRows}}" as="r" hint-placeholder-count="3">
+                <div style="display: grid; grid-template-columns: minmax(0, 1fr) 170px minmax(0, 1.25fr); align-items: center; gap: 14px; padding: 16px 18px; border-radius: 14px; background: #0D1119; border: 1px solid {{r.line}}">
+                  <span style="text-align: right; font-size: 34px; font-weight: 700; letter-spacing: 0.04em; color: #E7EBF3">{{r.word}}</span>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+                    <div style="display: flex; align-items: center; gap: 2px">
+                      <button type="button" aria-label="Lower {{r.name}}" onClick="{{r.dec}}" disabled="{{r.noDec}}" style="width: 44px; height: 52px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 42px; line-height: 1; cursor: pointer">‹</button>
+                      <span style="font-size: 58px; font-weight: 700; line-height: 1; min-width: 44px; text-align: center; color: {{r.color}}">{{r.val}}</span>
+                      <button type="button" aria-label="Raise {{r.name}}" onClick="{{r.inc}}" disabled="{{r.noInc}}" style="width: 44px; height: 52px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 42px; line-height: 1; cursor: pointer">›</button>
+                    </div>
+                    <div style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="7"><span style="{{d.style}}"></span></sc-for></div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 4px">
+                    <span style="font-size: 40px; font-weight: 700; letter-spacing: 0.06em; line-height: 1; color: {{r.color}}">{{r.name}}</span>
+                    <span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.45; color: #DCE2EC">{{r.desc}}</span>
+                    <span style="font-size: 11px; color: #A3AEC2; letter-spacing: 0.04em">{{r.governs}}</span>
+                  </div>
+                </div>
+              </sc-for>
+              <span style="font-size: 13px; color: #A3AEC2; line-height: 1.5">A core caps its three attributes, and attributes cap their skills. Body {{coreBody}} means Endurance, Strength and Agility, and every skill under them, can grow to {{coreBody}} until you raise Body.</span>
+            </div>
+            <section aria-live="polite" aria-label="Your archetype" style="flex: 1 1 300px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 14px; background: #10151F; border: 2px solid {{arch.color}}">
+              <span style="font-size: 11px; letter-spacing: 0.2em; color: #A3AEC2">YOUR ARCHETYPE</span>
+              <div style="position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: 10px; background: #0B0F16; overflow: hidden">
+                <svg viewBox="0 0 24 24" width="48%" fill="none" stroke="{{arch.color}}" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{arch.glyph}}"/></svg>
+                <span style="position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 9px; letter-spacing: 0.18em; color: #7F8BA1">ARCHETYPE ART · {{arch.name}}</span>
+              </div>
+              <span style="padding: 10px 6px; background: #05070B; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 0.08em; color: #E7EBF3">{{arch.name}}</span>
+              <span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5; color: #DCE2EC">{{arch.desc}}</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #A3AEC2">{{arch.leans}}</span>
+              <span style="{{arch.noteStyle}}">{{arch.note}}</span>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isSkills}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: 0.08em">SET SKILLS</h2>
+              <span style="font-size: 14px; color: #A3AEC2; line-height: 1.5; max-width: 62ch">Each row is one attribute and the three skills it holds. Raise a skill past its attribute and the attribute rises with it.</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 150px); gap: 8px">
+              <sc-for list="{{pools}}" as="p" hint-placeholder-count="3">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{p.label}}</span><span style="{{p.style}}">{{p.text}}</span></div>
+                  <div style="display: flex; gap: 2px"><sc-for list="{{p.pips}}" as="q" hint-placeholder-count="10"><span style="{{q.style}}"></span></sc-for></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+            <span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">START FROM A CLASS</span>
+            <sc-for list="{{presets}}" as="c" hint-placeholder-count="13">
+              <button type="button" onClick="{{c.pick}}" style="{{c.style}}">{{c.name}}</button>
+            </sc-for>
+            <span style="flex: 1"></span>
+            <button type="button" onClick="{{trim}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Refund unused</button>
+            <button type="button" onClick="{{clearAll}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Clear skills</button>
+          </div>
+
+          <div role="tablist" aria-label="Core" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{ctabs}}" as="t" hint-placeholder-count="3">
+              <button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">
+                <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.2em; color: {{t.color}}">{{t.name}} {{t.val}}</span>
+                <span style="font-size: 12px; color: #A3AEC2">{{t.note}}</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 210px repeat(3, minmax(0, 1fr)); gap: 10px; padding: 10px; border-radius: 14px; background: #0D1119; border: 1px solid {{r.line}}">
+              <div style="display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 10px; background: #151C29">
+                <span style="font-size: 16px; font-weight: 700; letter-spacing: 0.16em; color: {{r.color}}">{{r.name}}</span>
+                <div style="display: flex; align-items: center; gap: 2px">
+                  <button type="button" aria-label="Lower {{r.name}}" onClick="{{r.dec}}" disabled="{{r.noDec}}" style="width: 36px; height: 44px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 30px; line-height: 1; cursor: pointer">‹</button>
+                  <span style="font-size: 40px; font-weight: 700; line-height: 1; min-width: 30px; text-align: center">{{r.val}}</span>
+                  <button type="button" aria-label="Raise {{r.name}}" onClick="{{r.inc}}" disabled="{{r.noInc}}" style="width: 36px; height: 44px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 30px; line-height: 1; cursor: pointer">›</button>
+                </div>
+                <div style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="3"><span style="{{d.style}}"></span></sc-for></div>
+                <span style="font-size: 12px; color: #DCE2EC">{{r.derived}}</span>
+                <span style="font-size: 11px; color: #A3AEC2">Skills in this row can reach {{r.val}}</span>
+              </div>
+              <sc-for list="{{r.cards}}" as="k" hint-placeholder-count="3">
+                <div role="group" aria-label="{{k.name}}" style="{{k.style}}">
+                  <span style="position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: 7px; background: #0B0F16; overflow: hidden">
+                    <svg viewBox="0 0 24 24" width="58%" fill="none" stroke="{{k.color}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.glyph}}"/></svg>
+                    <sc-if value="{{k.sig}}" hint-placeholder-val="{{false}}"><span title="Signature skill of your leading class" style="position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; transform: rotate(45deg); background: #FFD27A"></span></sc-if>
+                  </span>
+                  <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+                      <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em">{{k.upper}}</span>
+                      <span style="font-size: 12px; font-weight: 700; color: {{k.modColor}}">{{k.modTxt}}</span>
+                    </div>
+                    <span style="font-family: 'Spectral', serif; font-size: 13px; line-height: 1.4; color: #A9B4C7; min-height: 36px">{{k.summary}}</span>
+                    <div style="display: flex; gap: 3px; flex-wrap: wrap; min-height: 8px"><sc-for list="{{k.dia}}" as="d" hint-placeholder-count="3"><span style="{{d.style}}"></span></sc-for></div>
+                    <div style="display: flex; align-items: center; gap: 4px; margin-top: auto">
+                      <button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" onMouseEnter="{{k.hoverDec}}" onMouseLeave="{{unhover}}" onFocus="{{k.hoverDec}}" onBlur="{{unhover}}" disabled="{{k.noDec}}" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer">‹</button>
+                      <span style="{{k.badge}}">{{k.val}}</span>
+                      <button type="button" aria-label="Raise {{k.name}}" onClick="{{k.inc}}" onMouseEnter="{{k.hoverInc}}" onMouseLeave="{{unhover}}" onFocus="{{k.hoverInc}}" onBlur="{{unhover}}" disabled="{{k.noInc}}" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid {{k.color}}; background: transparent; color: {{k.color}}; font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer">›</button>
+                    </div>
+                    <span style="{{k.hintStyle}}">{{k.hint}}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isTraits}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Traits</h2><span style="font-size: 13px; color: #A3AEC2">{{traitCount}} of 2 chosen · optional</span></div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+            <sc-for list="{{traits}}" as="t" hint-placeholder-count="8">
+              <button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" disabled="{{t.blocked}}" style="{{t.style}}">
+                <span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 700; font-size: 15px; color: #E7EBF3">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{t.cat}}</span></span>
+                <span style="font-size: 13px; color: #6FD8A0; line-height: 1.45">{{t.up}}</span>
+                <span style="font-size: 13px; color: #F0907F; line-height: 1.45">{{t.down}}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isGear}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Starting kit</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+            <sc-for list="{{kits}}" as="k" hint-placeholder-count="3">
+              <button type="button" aria-pressed="{{k.on}}" onClick="{{k.pick}}" style="{{k.style}}">
+                <span style="font-weight: 700; font-size: 16px; color: #E7EBF3">{{k.name}}</span>
+                <span style="font-size: 13px; color: #A3AEC2; line-height: 1.5; white-space: pre-line">{{k.items}}</span>
+              </button>
+            </sc-for>
+          </div>
+          <span style="font-size: 13px; color: #A3AEC2">Armour slots, backpack and the rest of the sheet fill in from the kit. More gear is bought or found in play.</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isLock}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Lock in</h2>
+          <p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.6; color: #DCE2EC; max-width: 62ch">Once you lock in, this character is yours for the session: points, traits and kit can’t change except by levelling up in play. Save a draft instead if you want to finish later or bring it to another room.</p>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{checks}}" as="k" hint-placeholder-count="4">
+              <div style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 9px; background: #151C29"><span>{{k.label}}</span><span style="{{k.style}}">{{k.state}}</span></div>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <button type="button" onClick="{{lockIn}}" disabled="{{cannotLock}}" style="min-height: 52px; padding: 0 26px; border-radius: 10px; border: 0; background: #4FC8DF; color: #06131A; font-family: inherit; font-weight: 700; letter-spacing: 0.14em; font-size: 15px; cursor: pointer">{{lockLabel}}</button>
+            <button type="button" onClick="{{saveDraft}}" style="min-height: 52px; padding: 0 22px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.1em; cursor: pointer">{{draftLabel}}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid #232D3F; padding-top: 14px">
+        <button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Back</button>
+        <button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #1C2536; color: #E7EBF3; font-family: inherit; font-weight: 700; letter-spacing: 0.08em; cursor: pointer">Next</button>
+      </div>
+    </section>
+
+    <sc-if value="{{showAside}}" hint-placeholder-val="{{false}}">
+    <aside aria-label="Preview" style="flex: 1 1 300px; max-width: 380px; display: flex; flex-direction: column; gap: 14px">
+      <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2">PREVIEW</span>
+        <span style="font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">{{name}}</span>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+          <sc-for list="{{coreSummary}}" as="c" hint-placeholder-count="3">
+            <div style="padding: 8px; border-radius: 8px; border: 1px solid #232D3F; text-align: center; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; letter-spacing: 0.12em; color: {{c.color}}">{{c.name}}</span><span style="font-size: 18px; font-weight: 700">{{c.val}}</span></div>
+          </sc-for>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Max HP</span><span style="font-weight: 600">{{hp}}</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Max MP</span><span style="font-weight: 600">{{mp}}</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Traits</span><span style="font-weight: 600; text-align: right">{{traitNames}}</span></div>
+      </section>
+      <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2">CLASS AT LEVEL 3 · IF NOTHING CHANGES</span>
+        <sc-for list="{{classes}}" as="k" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="{{k.nameStyle}}">{{k.name}}</span><span style="color: #A3AEC2; font-variant-numeric: tabular-nums">{{k.total}}</span></div>
+            <div style="height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{k.bar}}"></div></div>
+          </div>
+        </sc-for>
+        <span style="font-size: 12px; color: #A3AEC2; line-height: 1.5">Totals are points in each class’s three signature skills. You’ll choose among the top two totals when you reach level 3.</span>
+      </section>
+    </aside>
+    </sc-if>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startStep":{"editor":"enum","options":[0,1,2,3,4,5],"default":0},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      step: props && props.startStep != null ? Number(props.startStep) : 0, ctab: 'body', name: 'MPAT-813', kit: 1, traits: ['factory_made'], locked: false, saved: false,
+      core: { body: 3, mind: 3, soul: 3 },
+      attr: { endurance: 3, strength: 1, agility: 2, perception: 3, intelligence: 2, expression: 1, insight: 3, determination: 2, virtue: 1 },
+      skill: { durability: 1, sensory: 2, proficiency: 2, vigilant: 1, camaraderie: 2, empathy: 1 }
+    };
+  }
+  renderVals() {
+    const S = this.state;
+    const CORE = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF' };
+    const TREE = {
+      body: [['endurance', ['durability', 'pain_threshold', 'sensory']], ['strength', ['raw_power', 'guts', 'intimidation']], ['agility', ['athletics', 'dexterity', 'reaction_speed']]],
+      mind: [['perception', ['ingenuity', 'proficiency', 'vigilant']], ['intelligence', ['brain_power', 'rumination', 'eloquence']], ['expression', ['visualization', 'analysis', 'charisma']]],
+      soul: [['insight', ['empathy', 'camaraderie', 'implication']], ['determination', ['will_power', 'lore_master', 'composure']], ['virtue', ['faith', 'conscience', 'authority']]]
+    };
+    const title = (id) => id.split('_').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+    const sk = (id) => S.skill[id] || 0;
+    const set = (k, id, v) => this.setState({ [k]: { ...this.state[k], [id]: v }, locked: false });
+    const mod = (p) => (p === 0 ? -2 : Math.floor(p / 2));
+    const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
+
+    const SIG = { 'Marksman': ['dexterity', 'vigilant', 'reaction_speed'], 'Duelist': ['athletics', 'raw_power', 'guts'], 'Vanguard': ['durability', 'pain_threshold', 'guts'],
+      'Combat Medic': ['sensory', 'camaraderie', 'proficiency'], 'Assassin': ['ingenuity', 'intimidation', 'reaction_speed'], 'Artillerist': ['brain_power', 'visualization', 'vigilant'],
+      'Warden': ['rumination', 'composure', 'analysis'], 'Scribe': ['proficiency', 'eloquence', 'rumination'], 'Hexwright': ['analysis', 'charisma', 'eloquence'],
+      'Tempest': ['will_power', 'empathy', 'visualization'], 'Aegis': ['lore_master', 'conscience', 'faith'], 'Muse': ['camaraderie', 'implication', 'authority'],
+      'Haunt': ['intimidation', 'implication', 'lore_master'] };
+    const SUM = { durability: 'The tank. More HP every level.', pain_threshold: 'Wounds don’t slow you down; elemental damage hurts less.', sensory: 'Touch, smell, temperature, the ground under your feet. Healing works better on you.',
+      raw_power: 'Hit harder, bend further, lift higher.', guts: 'Fear doesn’t get a vote. Body saves.', intimidation: 'Run the conversation through fear.',
+      athletics: 'Run, climb, dodge. Armour slows you less.', dexterity: 'The gun hand: reloads, recoil, quick-draw, throws.', reaction_speed: 'Moving in time: initiative and ambushes.',
+      ingenuity: 'Stealth, sleight of hand, sticky fingers.', proficiency: 'The mechanic. Fixes guns, gear and machines in the field.', vigilant: 'Sight, sound and hostile intent.',
+      brain_power: 'Raw processing for Sigils; the attack skill for striking Sigils.', rumination: 'The scientist’s library.', eloquence: 'Logic as a weapon.',
+      visualization: 'Shapes thought into images and Sigils into forms.', analysis: 'Detective work; Analyze reveals an enemy’s weak points.', charisma: 'Warmth, persuasion, lying with a smile.',
+      empathy: 'Feel what the other side feels, enemies included.', camaraderie: 'The squad is a world of its own. Better healing given.', implication: 'Metaphor, subtext, poetry, flirting.',
+      will_power: 'The strength of the soul; the attack skill for Soul spells.', lore_master: 'The occultist’s library.', composure: 'A face that never moves. Heart saves.',
+      faith: 'The saints judge. You deliver. Prayers and Blessings.', conscience: 'Seeing where an act leads.', authority: 'Cool under pressure; your Leadership rating.' };
+    const DERIVED = { endurance: (v) => 'Max HP ' + (100 + 50 * (v - 1)), strength: (v) => 'Carry ' + (20 + 5 * (v - 1)) + ' kg', agility: (v) => 'Move ' + (3 + 0.5 * (v - 1)) + ' tiles',
+      perception: (v) => 'Vision ' + (12 + 2 * (v - 1)) + ' tiles', intelligence: (v) => 'Sigil length ' + (2 + Math.floor((v - 1) / 2)) + ' words', expression: (v) => 'Elemental damage ×' + (1 + 0.2 * (v - 1)).toFixed(1),
+      insight: (v) => 'Healing given ×' + (1 + 0.1 * (v - 1)).toFixed(1), determination: (v) => 'Soul power ×' + (1 + 0.1 * (v - 1)).toFixed(1), virtue: (v) => 'Max MP ' + (100 + 100 * (v - 1)) };
+    const ATTR_OF = {}, CORE_OF = {};
+    Object.entries(TREE).forEach(([c, attrs]) => attrs.forEach(([a, skills]) => { CORE_OF[a] = c; skills.forEach((x) => { ATTR_OF[x] = a; }); }));
+    const leftOf = (st) => ({ core: 6 - Object.values(st.core).reduce((x, y) => x + y - 1, 0), attr: 10 - Object.values(st.attr).reduce((x, y) => x + y - 1, 0), skill: 10 - Object.values(st.skill).reduce((x, y) => x + y, 0) });
+    const costOf = (st, sid, v) => { const a = ATTR_OF[sid], c = CORE_OF[a], s0 = st.skill[sid] || 0;
+      const aNew = Math.max(st.attr[a], v), cNew = Math.max(st.core[c], aNew);
+      return { skill: v - s0, attr: aNew - st.attr[a], core: cNew - st.core[c], aNew, cNew, a, c, s0 }; };
+    const fits = (st, k) => { const L = leftOf(st); return k.skill <= L.skill && k.attr <= L.attr && k.core <= L.core; };
+    const applySkill = (st, sid, v) => { if (v < 0 || v > 10) return null; const k = costOf(st, sid, v); if (!fits(st, k)) return null;
+      return { core: { ...st.core, [k.c]: k.cNew }, attr: { ...st.attr, [k.a]: k.aNew }, skill: { ...st.skill, [sid]: v } }; };
+    const BASE = { core: { body: 1, mind: 1, soul: 1 }, attr: { endurance: 1, strength: 1, agility: 1, perception: 1, intelligence: 1, expression: 1, insight: 1, determination: 1, virtue: 1 }, skill: {} };
+    const pre = Object.entries(SIG).map(([n, x]) => [x, x.reduce((a, id) => a + sk(id), 0)]).sort((p, q) => q[1] - p[1]);
+    const SIG_SET = new Set(pre[0][1] > 0 ? pre[0][0] : []);
+    const L = leftOf(S), coreLeft = L.core, attrLeft = L.attr, skillLeft = L.skill;
+    const GLYPH = {
+      durability: 'M12 3 20 6v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6Z',
+      pain_threshold: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10ZM12 7.5l-1.5 4 3 1.5-1.5 4',
+      sensory: 'M8 13V5a1.5 1.5 0 0 1 3 0v6M11 11V3.5a1.5 1.5 0 0 1 3 0V11M14 11V5a1.5 1.5 0 0 1 3 0v8c0 4-3 7-6.5 7S5 17 4 14l-1.5-3a1.5 1.5 0 0 1 2.6-1.5L8 13',
+      raw_power: 'M4 14h11v6H4ZM15 15h3a2 2 0 0 0 0-4h-3M7 14V9M10 14V7M13 14V9',
+      guts: 'M12 21c-4 0-6-3-6-6 0-4 4-6 4-11 3 2 8 6 8 11 0 3-2 6-6 6ZM12 21c-1.5 0-3-1-3-3 0-2 3-3 3-6 1.5 1 3 3 3 6 0 2-1.5 3-3 3',
+      intimidation: 'M5 10a7 7 0 0 1 14 0v4l-2 2v4H7v-4l-2-2ZM9 11h.01M15 11h.01M10 20v-3M14 20v-3',
+      athletics: 'M14 4a1.5 1.5 0 1 0 .01 0M10 21l2-6 3 3v3M7 12l3-4h4l2 3h3M12 15l-1-4',
+      dexterity: 'M12 3v4M12 17v4M3 12h4M17 12h4M7 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0',
+      reaction_speed: 'M13 2 4 14h7l-1 8 9-12h-7Z',
+      ingenuity: 'M12 3c-5 0-8 5-8 10v8h16v-8c0-5-3-10-8-10ZM8 15c1.5-2 6.5-2 8 0',
+      proficiency: 'M15 4a4 4 0 0 0-4 5l-7 7 3 3 7-7a4 4 0 0 0 5-4l-2 2-2-2 2-2a4 4 0 0 0-2-2Z',
+      vigilant: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0',
+      brain_power: 'M7 7h10v10H7ZM10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4',
+      rumination: 'M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1ZM12 6v14',
+      eloquence: 'M12 4v16M6 20h12M6 8h12M6 8l-3 6h6ZM18 8l-3 6h6Z',
+      visualization: 'M12 3 21 19H3ZM8 14h8M12 9v10',
+      analysis: 'M4 10a6 6 0 1 0 12 0a6 6 0 1 0-12 0M15 15l6 6',
+      charisma: 'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z',
+      empathy: 'M3 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0M11 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0',
+      camaraderie: 'M8 10a3 3 0 1 0 0-6a3 3 0 1 0 0 6M16 10a3 3 0 1 0 0-6a3 3 0 1 0 0 6M2 20c0-4 3-6 6-6s6 2 6 6M10 20c0-4 3-6 6-6s6 2 6 6',
+      implication: 'M3 16c3-4 6 4 9 0s6 4 9 0M3 9c3-4 6 4 9 0s6 4 9 0',
+      will_power: 'M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2',
+      lore_master: 'M12 3 16 8 12 13 8 8ZM12 13v8M8 21h8',
+      composure: 'M5 5h14v14H5ZM8 10h2M14 10h2M9 15h6',
+      faith: 'M7 4c0-1 2.2-2 5-2s5 1 5 2-2.2 2-5 2-5-1-5-2ZM12 8v13M7 13l5-4 5 4',
+      conscience: 'M12 21V11M12 11 6 5M12 11l6-6M4 5h4M16 5h4',
+      authority: 'M5 21V3M5 4h12l-3 4 3 4H5'
+    };
+    const hov = S.hov && S.hov.sid ? S.hov : null;
+    const pv = hov ? costOf(S, hov.sid, hov.v) : null;
+    const pvOk = pv ? fits(S, pv) : true;
+    const dia = (n, filled, col, size, gold) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
+      (i < filled ? 'background: ' + col : (gold && i < gold ? 'background: #FFD27A' : 'border: 1px solid ' + col + '99')) }));
+    const LINE = { body: '#4A3A20', mind: '#1E4552', soul: '#352E5E' };
+
+    // archetype follows the cores
+    const ARCHS = {
+      body: ['SOLDIER', 'Built for the line. Takes a hit, returns two, and thinks with the trigger finger.', 'Vanguard · Marksman · Duelist', GLYPH.durability],
+      mind: ['SCHOLAR', 'Reads Sigils like scripture and machines like open books. Brilliant, brittle, first to notice what is wrong with the room.', 'Artillerist · Scribe · Hexwright', GLYPH.brain_power],
+      soul: ['BELIEVER', 'Hears something above the sky and answers it. Holds the squad together; holds a rifle like it might bite.', 'Aegis · Muse · Tempest', GLYPH.will_power],
+      'body+mind': ['OPERATOR', 'Hands and head in step. Picks the lock, then the target, and never in the wrong order.', 'Assassin · Marksman · Combat Medic', GLYPH.proficiency],
+      'body+soul': ['CRUSADER', 'Strong arm, certain heart. Walks into the dark because someone has to, and says a word for the ones who don’t walk out.', 'Vanguard · Haunt · Aegis', GLYPH.faith],
+      'mind+soul': ['MYSTIC', 'Thinks in symbols and feels in signals. Sees the shape of the simulation where others see a wall.', 'Warden · Tempest · Muse', GLYPH.lore_master],
+      even: ['DRIFTER', 'A little of everything and no home in any of it. Adapts, survives, and is never quite who the room expects.', 'Combat Medic · any', GLYPH.conscience] };
+    const ORDER = ['body', 'mind', 'soul'];
+    const ranked = ORDER.map((k) => [k, S.core[k]]).sort((p, q) => q[1] - p[1] || ORDER.indexOf(p[0]) - ORDER.indexOf(q[0]));
+    const [[k1, v1], [k2, v2], [, v3]] = ranked;
+    let akey;
+    if (v1 === v3) akey = 'even'; else if (v1 - v2 >= 2 || v2 === v3) akey = k1; else akey = [k1, k2].sort((p, q) => ORDER.indexOf(p) - ORDER.indexOf(q)).join('+');
+    const A = ARCHS[akey];
+    const arch = { name: A[0], desc: A[1], leans: 'LEANS: ' + A[2].toUpperCase(), glyph: A[3], color: akey === 'even' ? '#E7EBF3' : CORE[k1],
+      note: coreLeft > 0 ? coreLeft + ' core points still to place.' : 'All core points placed.', noteStyle: 'font-size: 13px; font-weight: 600; color: ' + (coreLeft > 0 ? '#FFD27A' : '#6FD8A0') };
+
+    // cores screen
+    const WORD = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
+    const CDESC = { body: ['Muscle, nerve and skin. How hard you hit, how much you take, how fast you move.', 'Endurance · Strength · Agility  —  runs on ammo, weapons and tech'],
+      mind: ['Senses, logic and expression. How much you notice and how well you think it through.', 'Perception · Intelligence · Expression  —  burns mana cores to draw Sigils'],
+      soul: ['Insight, will and virtue. How you read people, hold your nerve and reach the upper realm.', 'Insight · Determination · Virtue  —  spends mana on Soul spells and prayer'] };
+    const coreRows = Object.keys(CORE).map((cid) => { const cv = S.core[cid];
+      return { name: cid.toUpperCase(), word: WORD[cv], val: cv, color: CORE[cid], line: LINE[cid], desc: CDESC[cid][0], governs: CDESC[cid][1].toUpperCase(),
+        dia: dia(7, cv, CORE[cid], 9), inc: () => set('core', cid, cv + 1), noInc: coreLeft <= 0 || cv >= 10,
+        dec: () => set('core', cid, cv - 1), noDec: cv <= 1 || TREE[cid].some(([a]) => S.attr[a] > cv - 1) }; });
+    const randomCores = () => { const c = { body: 1, mind: 1, soul: 1 }; const keys = Object.keys(c);
+      for (let i = 0; i < 6; i++) c[keys[Math.floor(Math.random() * 3)]]++;
+      this.setState({ core: c, attr: { ...BASE.attr }, skill: {}, locked: false }); };
+    const revertCores = () => this.setState({ core: { ...BASE.core }, attr: { ...BASE.attr }, skill: {}, locked: false });
+
+    // skills screen
+    const ctab = S.ctab || 'body';
+    const spentIn = (cid) => TREE[cid].reduce((a, [, skills]) => a + skills.reduce((b, x) => b + sk(x), 0), 0);
+    const ctabs = Object.keys(CORE).map((cid) => { const on = ctab === cid;
+      return { name: cid.toUpperCase(), val: S.core[cid], color: CORE[cid], note: spentIn(cid) + ' skill points here', on: on ? 'true' : 'false',
+        pick: () => this.setState({ ctab: cid, hov: null }),
+        style: 'min-height: 64px; padding: 8px 16px; border-radius: 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer; ' +
+          (on ? 'background: #1A2232; border: 2px solid ' + CORE[cid] : 'background: transparent; border: 2px solid #1C2536') }; });
+    const cv = S.core[ctab], col = CORE[ctab];
+    const rows = TREE[ctab].map(([aid, skills]) => { const av = S.attr[aid];
+      return { name: aid.toUpperCase(), val: av, color: col, line: LINE[ctab], derived: DERIVED[aid](av), dia: dia(cv, av, col, 8),
+        inc: () => set('attr', aid, av + 1), noInc: attrLeft <= 0 || av >= cv,
+        dec: () => set('attr', aid, av - 1), noDec: av <= 1 || skills.some((x) => sk(x) > av - 1),
+        cards: skills.map((sid) => { const s0 = sk(sid), m = mod(s0), isH = hov && hov.sid === sid;
+          const up1 = costOf(S, sid, s0 + 1), canUp = s0 < 10 && fits(S, up1);
+          const nextTxt = s0 >= 10 ? 'Mastered' : 'Next: 1 skill' + (up1.attr ? ' + ' + title(aid) + ' ' + up1.aNew : '') + (up1.core ? ' + ' + title(ctab) + ' ' + up1.cNew : '');
+          let hint = nextTxt, hintCol = canUp ? '#A3AEC2' : '#F0907F';
+          if (isH && pv) {
+            if (hov.v > s0) { hint = pvOk ? ('−1 skill' + (pv.attr ? ' · ' + title(aid) + ' ' + av + '→' + pv.aNew : '') + (pv.core ? ' · ' + title(ctab) + ' ' + S.core[ctab] + '→' + pv.cNew : '') + ([3, 5, 7, 9].includes(hov.v) ? ' · Mastery ' + ([3, 5, 7, 9].indexOf(hov.v) + 1) : '')) : 'Not enough points'; hintCol = pvOk ? '#FFD27A' : '#F0907F'; }
+            else { hint = '+1 skill point back'; hintCol = '#A3AEC2'; }
+          }
+          return { name: title(sid), upper: title(sid).toUpperCase(), summary: SUM[sid], val: s0, color: col, glyph: GLYPH[sid], sig: SIG_SET.has(sid),
+            modTxt: fmt(m) + (s0 === 0 ? ' untrained' : ''), modColor: m < 0 ? '#F0907F' : m === 0 ? '#A3AEC2' : col,
+            dia: dia(Math.max(av, isH && pv ? pv.aNew : 0), s0, col, 8, isH && pv && hov.v > s0 ? hov.v : 0),
+            inc: () => { const ns = applySkill(this.state, sid, sk(sid) + 1); if (ns) this.setState({ ...ns, locked: false, hov: { sid, v: sk(sid) + 2 } }); },
+            dec: () => { const ns = applySkill(this.state, sid, sk(sid) - 1); if (ns) this.setState({ ...ns, locked: false, hov: null }); },
+            hoverInc: () => this.setState({ hov: { sid, v: s0 + 1 } }), hoverDec: () => this.setState({ hov: s0 > 0 ? { sid, v: s0 - 1 } : null }),
+            noInc: !canUp, noDec: s0 <= 0, hint, hintStyle: 'font-size: 11px; line-height: 1.35; min-height: 15px; color: ' + hintCol,
+            badge: 'min-width: 40px; height: 34px; box-sizing: border-box; display: grid; place-items: center; border-radius: 6px; font-size: 18px; font-weight: 700; ' +
+              (s0 > 0 ? 'background: ' + col + '; color: #0A0D13' : 'border: 1px solid #2E3A50; color: #A3AEC2'),
+            style: 'display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (isH ? col : '#1C2536') }; }) }; });
+
+    const pools = [['CORE', 6, coreLeft, pv ? pv.core : 0], ['ATTRIBUTE', 10, attrLeft, pv ? pv.attr : 0], ['SKILL', 10, skillLeft, pv ? pv.skill : 0]].map(([label, n, left, add]) => {
+      const spent = n - left;
+      return { label, text: left + ' left', style: 'font-weight: 700; font-size: 13px; color: ' + (left === 0 ? '#6FD8A0' : '#FFD27A'),
+        pips: Array.from({ length: n }, (_, i) => {
+          let st = 'border: 1px solid #2E3A50';
+          if (i < spent) st = 'background: #4FC8DF; border: 1px solid #4FC8DF';
+          if (add > 0 && i >= spent && i < spent + add) st = 'background: ' + (pvOk ? '#FFD27A' : '#F0907F') + '; border: 1px solid transparent';
+          if (add < 0 && i < spent && i >= spent + add) st = 'background: #3A1E1E; border: 1px solid #F0907F';
+          return { style: 'flex: 1; height: 10px; border-radius: 2px; box-sizing: border-box; ' + st };
+        }) };
+    });
+    const presets = Object.keys(SIG).map((n) => ({ name: n,
+      style: 'min-height: 34px; padding: 0 11px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' +
+        (S.preset === n ? 'border: 1px solid #4FC8DF; background: #12303A; color: #E7EBF3' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2'),
+      pick: () => { let st = { core: { ...this.state.core }, attr: { ...BASE.attr }, skill: {} }, changed = true;
+        while (changed) { changed = false; for (const sid of SIG[n]) { const ns = applySkill(st, sid, (st.skill[sid] || 0) + 1); if (ns) { st = ns; changed = true; } } }
+        this.setState({ ...st, preset: n, locked: false, hov: null, ctab: CORE_OF[ATTR_OF[SIG[n][0]]] }); } }));
+    const trim = () => { const st = this.state, attr = { ...st.attr }, core = { ...st.core };
+      Object.entries(TREE).forEach(([c, attrs]) => { attrs.forEach(([a, skills]) => { attr[a] = Math.max(1, ...skills.map((x) => st.skill[x] || 0)); });
+        core[c] = Math.max(core[c], ...attrs.map(([a]) => attr[a])); });
+      this.setState({ attr, core, locked: false }); };
+    const clearAll = () => this.setState({ attr: { ...BASE.attr }, skill: {}, preset: null, locked: false, hov: null });
+    const totals = Object.entries(SIG).map(([n, s]) => ({ n, t: s.reduce((a, id) => a + sk(id), 0) })).sort((a, b) => b.t - a.t);
+    const distinct = [...new Set(totals.map((x) => x.t))].slice(0, 2);
+    const maxT = Math.max(1, totals[0].t);
+    const classes = totals.slice(0, 5).map((x) => { const ok = distinct.includes(x.t) && x.t > 0;
+      return { name: x.n + (ok ? ' · eligible' : ''), total: x.t, nameStyle: ok ? 'font-weight: 700; color: #E7EBF3' : 'color: #A3AEC2',
+        bar: 'width: ' + Math.round(100 * x.t / maxT) + '%; height: 100%; background: ' + (ok ? '#4FC8DF' : '#3B475D') }; });
+
+    const TRAITS = [
+      ['factory_made', 'Factory Made', 'ORIGIN', 'Immune to poison, bleed and suffocation.', 'Heals and Blessings at half power; lightning and EMP deal double.', ['central_city_kid']],
+      ['machine_faced', 'Machine-Faced', 'SKILL', 'Composure in dialogue always succeeds; machines trust you.', 'No Implication or Charisma in dialogue; children and animals panic.', []],
+      ['mind_without_fog', 'Mind Without Fog', 'COMBAT', '+2 Core points at creation; Heart Debuffs never land.', 'Gear bonuses to stats don’t work; Karma never changes.', []],
+      ['drill_echo', 'Drill Echo', 'SKILL', 'Sprint costs 1 AP less; running and climbing checks can’t roll under 10.', 'Concentration checks are disrupted by the count in your head.', []],
+      ['heavyworlder', 'Heavyworlder', 'SKILL', 'One size larger: can’t be shoved, carry weight doubles.', '−3 Athletics, −1 Movement, +2 to be hit, can’t hide.', []],
+      ['central_city_kid', 'Central City Kid', 'ORIGIN', 'City ID and bank card; +2 social with officials and merchants.', 'The first wound in each fight costs 2 AP from shock.', ['factory_made']],
+      ['insomniac', 'Insomniac', 'VICE', 'Can’t be ambushed while the squad rests.', 'Resting restores only half your HP and mana.', []],
+      ['beast_handler', 'Beast Handler', 'WILDS', 'A trained beast fights beside you: 60 HP, 4 AP of its own.', 'If it dies you carry a Heart Debuff for the arc.', []]];
+    const chosen = S.traits;
+    const traits = TRAITS.map(([id, name, cat, up, down, ex]) => {
+      const on = chosen.includes(id);
+      const blocked = !on && (chosen.length >= 2 || ex.some((e) => chosen.includes(e)));
+      return { name, cat, up: '+ ' + up, down: '− ' + down, on: on ? 'true' : 'false', blocked,
+        pick: () => this.setState({ traits: on ? chosen.filter((t) => t !== id) : [...chosen, id], locked: false }),
+        style: 'min-height: 104px; padding: 12px 14px; border-radius: 12px; text-align: left; display: flex; flex-direction: column; gap: 6px; font-family: inherit; ' +
+          (on ? 'border: 1px solid #4FC8DF; background: #12303A; cursor: pointer' : blocked ? 'border: 1px solid #1C2536; background: transparent; opacity: 0.45; cursor: not-allowed' : 'border: 1px solid #2E3A50; background: transparent; cursor: pointer') };
+    });
+    const KITS = [['Field medic', 'Service pistol\nStim injector · 3 stims\nMedic plate (Class II)\nField kit'], ['Line soldier', 'Carbine · 3 magazines\nCombat knife\nFlak vest (Class III)\nRation pack'], ['Sigil student', 'Evoker · 4 standard cores\nSidearm\nPadded coat (Class I)\nChalk and wax']];
+    const kits = KITS.map(([name, items], i) => ({ name, items, on: S.kit === i ? 'true' : 'false', pick: () => this.setState({ kit: i, locked: false }),
+      style: 'min-height: 150px; padding: 14px; border-radius: 12px; text-align: left; display: flex; flex-direction: column; gap: 8px; font-family: inherit; cursor: pointer; ' +
+        (S.kit === i ? 'border: 1px solid #F2A54A; background: #2A2113' : 'border: 1px solid #2E3A50; background: transparent') }));
+
+    const done = (b) => b ? 'color: #6FD8A0; font-weight: 700' : 'color: #FFD27A; font-weight: 700';
+    const checks = [['Name', !!S.name], ['All points spent', coreLeft === 0 && attrLeft === 0 && skillLeft === 0], ['Traits (0–2)', true], ['Starting kit', S.kit !== null]]
+      .map(([label, ok]) => ({ label, state: ok ? 'Done' : 'Not yet', style: done(ok) }));
+    const ready = checks.every((c) => c.state === 'Done');
+
+    const STEPS = ['Identity', 'Cores', 'Skills', 'Traits', 'Kit', 'Lock in'];
+    const steps = STEPS.map((label, i) => { const on = S.step === i;
+      return { n: i + 1, label, current: on ? 'step' : 'false', pick: () => this.setState({ step: i }), numColor: on ? '#4FC8DF' : '#7F8BA1',
+        style: 'min-height: 60px; padding: 8px 14px; border-radius: 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' +
+          (on ? 'border: 1px solid #4FC8DF; background: #12303A' : 'border: 1px solid #232D3F; background: transparent') }; });
+
+    const tname = TRAITS.filter((t) => chosen.includes(t[0])).map((t) => t[1]).join(', ') || 'None';
+    return {
+      steps, isIdentity: S.step === 0, isCores: S.step === 1, isSkills: S.step === 2, isTraits: S.step === 3, isGear: S.step === 4, isLock: S.step === 5,
+      showAside: [0, 3, 4, 5].includes(S.step), arch, coreRows, randomCores, revertCores, ctabs, rows, coreBody: S.core.body,
+      corePoolText: coreLeft + ' CORE POINTS LEFT', corePoolStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: ' + (coreLeft === 0 ? '#6FD8A0' : '#FFD27A'),
+      back: () => this.setState({ step: Math.max(0, this.state.step - 1) }), next: () => this.setState({ step: Math.min(5, this.state.step + 1) }),
+      atStart: S.step === 0, atEnd: S.step === 5,
+      name: S.name || 'Unnamed', onName: (e) => this.setState({ name: e.target.value, locked: false }),
+      pools, traits, traitCount: chosen.length, kits, checks,
+      cannotLock: !ready || S.locked, lockLabel: S.locked ? 'LOCKED IN' : 'LOCK IN CHARACTER',
+      lockIn: () => this.setState({ locked: true, saved: true }),
+      draftLabel: S.saved ? 'Saved to your characters' : 'Save as draft', saveDraft: () => this.setState({ saved: true }),
+      coreSummary: Object.keys(CORE).map((c) => ({ name: c.toUpperCase(), color: CORE[c], val: S.core[c] })),
+      presets, trim, clearAll, unhover: () => this.setState({ hov: null }),
+      hp: 100 + 50 * (S.attr.endurance - 1), mp: 100 + 100 * (S.attr.virtue - 1), traitNames: tname, classes
+    };
+  }
+}
+</script>
+</body>
+</html>
