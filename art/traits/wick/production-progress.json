@@ -69,10 +69,11 @@
     "market-blood",
     "cover-story",
     "inner-ring-heir",
-    "slicer"
+    "slicer",
+    "demolitionist"
   ],
   "catalog_coverage": {
-    "traits": 62,
+    "traits": 63,
     "perks": 2
   },
   "revision_rounds": {

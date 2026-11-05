@@ -2903,6 +2903,30 @@
         "44": "art/traits/wick/production-v1/exports/44/slicer.png",
         "40": "art/traits/wick/production-v1/exports/40/slicer.png"
       }
+    },
+    "demolitionist": {
+      "label": "Wick — Demolitionist",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/demolitionist.png",
+      "sha256": "a62fb11217093689ca91ccd94efa150b0ad13d30d605ba6f36ffb31407185183",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "demolitionist",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/demolitionist.png",
+        "128": "art/traits/wick/production-v1/exports/128/demolitionist.png",
+        "64": "art/traits/wick/production-v1/exports/64/demolitionist.png",
+        "56": "art/traits/wick/production-v1/exports/56/demolitionist.png",
+        "48": "art/traits/wick/production-v1/exports/48/demolitionist.png",
+        "44": "art/traits/wick/production-v1/exports/44/demolitionist.png",
+        "40": "art/traits/wick/production-v1/exports/40/demolitionist.png"
+      }
     }
   },
   "character_collections": {

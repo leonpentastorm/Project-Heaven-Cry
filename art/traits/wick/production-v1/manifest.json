@@ -1240,6 +1240,29 @@
       },
       "batch": "C",
       "source_sha256": "22687bf8feec90bfdd94ffd1ec9d1a36eaae6dc1025c8fc986ad66be1a281e44"
+    },
+    {
+      "id": "demolitionist",
+      "data_id": "demolitionist",
+      "name": "Demolitionist",
+      "family": "traits",
+      "order": 63,
+      "mood": "Comic",
+      "action": "Wick squats with both mittens clamped over its side hinges as a huge cone-shaped blast fans out behind it",
+      "screen": "Dazed ringing squiggles",
+      "prop": "Shaped blast cone",
+      "path": "art/traits/wick/production-v1/demolitionist.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/demolitionist.png",
+        "128": "art/traits/wick/production-v1/exports/128/demolitionist.png",
+        "64": "art/traits/wick/production-v1/exports/64/demolitionist.png",
+        "56": "art/traits/wick/production-v1/exports/56/demolitionist.png",
+        "48": "art/traits/wick/production-v1/exports/48/demolitionist.png",
+        "44": "art/traits/wick/production-v1/exports/44/demolitionist.png",
+        "40": "art/traits/wick/production-v1/exports/40/demolitionist.png"
+      },
+      "batch": "C",
+      "source_sha256": "523eb1d872c9dae40a462991d16e64922822bf8b574a28c4a5f93b5064a4c172"
     }
   ]
 }
