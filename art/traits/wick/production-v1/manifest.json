@@ -1378,6 +1378,29 @@
       },
       "batch": "C",
       "source_sha256": "f7c5c7b0a7cc663ca3c0b92eac56255358169625e4f0fa6857601d905514e844"
+    },
+    {
+      "id": "crawler-blooded",
+      "data_id": "crawler_blooded",
+      "name": "Crawler-Blooded",
+      "family": "traits",
+      "order": 69,
+      "mood": "Tense, Eerie",
+      "action": "Wick scuttles straight up a vertical wall on all fours, arms and legs plated with segmented chitin",
+      "screen": "Wary side-glance",
+      "prop": "Vertical wall face",
+      "path": "art/traits/wick/production-v1/crawler-blooded.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/crawler-blooded.png",
+        "128": "art/traits/wick/production-v1/exports/128/crawler-blooded.png",
+        "64": "art/traits/wick/production-v1/exports/64/crawler-blooded.png",
+        "56": "art/traits/wick/production-v1/exports/56/crawler-blooded.png",
+        "48": "art/traits/wick/production-v1/exports/48/crawler-blooded.png",
+        "44": "art/traits/wick/production-v1/exports/44/crawler-blooded.png",
+        "40": "art/traits/wick/production-v1/exports/40/crawler-blooded.png"
+      },
+      "batch": "C",
+      "source_sha256": "75fdf0ad623f815301f6c12601de53f037c0da7ef9614935ab53a0952bd0c8dc"
     }
   ]
 }

@@ -3047,6 +3047,30 @@
         "44": "art/traits/wick/production-v1/exports/44/occultist.png",
         "40": "art/traits/wick/production-v1/exports/40/occultist.png"
       }
+    },
+    "crawler-blooded": {
+      "label": "Wick — Crawler-Blooded",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/crawler-blooded.png",
+      "sha256": "e48ef15aacfc2d174c333700a4f54c826079600807e25966393f3986a1f5499c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "crawler_blooded",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/crawler-blooded.png",
+        "128": "art/traits/wick/production-v1/exports/128/crawler-blooded.png",
+        "64": "art/traits/wick/production-v1/exports/64/crawler-blooded.png",
+        "56": "art/traits/wick/production-v1/exports/56/crawler-blooded.png",
+        "48": "art/traits/wick/production-v1/exports/48/crawler-blooded.png",
+        "44": "art/traits/wick/production-v1/exports/44/crawler-blooded.png",
+        "40": "art/traits/wick/production-v1/exports/40/crawler-blooded.png"
+      }
     }
   },
   "character_collections": {

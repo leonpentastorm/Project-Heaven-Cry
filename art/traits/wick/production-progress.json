@@ -75,10 +75,11 @@
     "augmented",
     "true-believer",
     "heavens-faithful",
-    "occultist"
+    "occultist",
+    "crawler-blooded"
   ],
   "catalog_coverage": {
-    "traits": 68,
+    "traits": 69,
     "perks": 2
   },
   "revision_rounds": {
