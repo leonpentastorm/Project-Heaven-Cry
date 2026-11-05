@@ -3779,6 +3779,30 @@
         "44": "art/perks/wick/production-v1/exports/44/jury-rig.png",
         "40": "art/perks/wick/production-v1/exports/40/jury-rig.png"
       }
+    },
+    "hot-swap": {
+      "label": "Wick — Hot-Swap",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/hot-swap.png",
+      "sha256": "8a5119a66d6f88cbeed23261b7f6584b92f16518b44c136a2dc3632f50947fb9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "hot_swap",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/hot-swap.png",
+        "128": "art/perks/wick/production-v1/exports/128/hot-swap.png",
+        "64": "art/perks/wick/production-v1/exports/64/hot-swap.png",
+        "56": "art/perks/wick/production-v1/exports/56/hot-swap.png",
+        "48": "art/perks/wick/production-v1/exports/48/hot-swap.png",
+        "44": "art/perks/wick/production-v1/exports/44/hot-swap.png",
+        "40": "art/perks/wick/production-v1/exports/40/hot-swap.png"
+      }
     }
   },
   "illustrations": {

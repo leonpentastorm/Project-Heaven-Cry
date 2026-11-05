@@ -102,11 +102,12 @@
     "catch",
     "sleight-of-hand",
     "shadow-step",
-    "jury-rig"
+    "jury-rig",
+    "hot-swap"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 23
+    "perks": 24
   },
   "revision_rounds": {
     "field-surgeon": 3,

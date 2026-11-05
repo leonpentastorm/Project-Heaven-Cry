@@ -488,6 +488,29 @@
       },
       "batch": "E",
       "source_sha256": "d8c34be32d744766452540ee2e00a807ddb5d8446c8d533fde13e8f15f874d53"
+    },
+    {
+      "id": "hot-swap",
+      "data_id": "hot_swap",
+      "name": "Hot-Swap",
+      "family": "perks",
+      "order": 22,
+      "mood": "Comic",
+      "action": "Mid-twirl on one boot, Wick flips a pistol behind its back from one mitten to the other, a curved swap arrow looping around its waist.",
+      "screen": "Cocky smirk",
+      "prop": "Pistol",
+      "path": "art/perks/wick/production-v1/hot-swap.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/hot-swap.png",
+        "128": "art/perks/wick/production-v1/exports/128/hot-swap.png",
+        "64": "art/perks/wick/production-v1/exports/64/hot-swap.png",
+        "56": "art/perks/wick/production-v1/exports/56/hot-swap.png",
+        "48": "art/perks/wick/production-v1/exports/48/hot-swap.png",
+        "44": "art/perks/wick/production-v1/exports/44/hot-swap.png",
+        "40": "art/perks/wick/production-v1/exports/40/hot-swap.png"
+      },
+      "batch": "E",
+      "source_sha256": "23b1d42327d43166d65581baa8b21546c1ab5b9e35d8009d5475dc5316d14db2"
     }
   ]
 }
