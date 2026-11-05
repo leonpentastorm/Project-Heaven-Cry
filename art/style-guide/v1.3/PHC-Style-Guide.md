@@ -1,6 +1,27 @@
-# PHC — Heavenprint, Abstract Skills and Wick
+# PHC Style Guide — Heavenprint, Abstract Skills and Wick
 
 Version 1.3 • 5 November 2026
+
+**This is the only guide.** It replaces the separate START-HERE, Heavenprint, Wick, Abstract Skills, Icon Lock and Prompt Templates files of v1.2 (still kept, unchanged, in `../v1.2/`, with the illustrated PDF). Values are in `palette.json`; the image anchors are in `references/` (see `reference-index.json`).
+
+## How to use it
+
+Find your art mode, read that part, and attach that mode's reference images. Current user brief first, then the reference images, then this guide.
+
+| You are making | Read | Attach |
+|---|---|---|
+| A character portrait or world scene | Current art modes; sections 01–07; prompts in section 12 | `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`; for a named EPCCG character, their First-Patch Revival portrait |
+| A player skill portrait | Current art modes; sections 15–17; the abstract skill prompt in section 12 | `current-abstract-skills-27.jpg` |
+| A trait or perk icon | Current art modes; sections 08–11 and 14; the Wick icon prompt in section 12 | `approved-wick-trait-mind-without-fog.png` |
+| Painted mascot art | Sections 08–11; the Wick base prompt in section 12 | `wick-model-study.png`, the approved icon |
+
+## What changed in 1.3
+
+- Trait **and perk** icons are pure white. No skill colour ever appears in an icon.
+- Skill pigments are unchanged, but the game UI uses each attribute's contrast-safe `ui_ink` (section 16; `docs/design/colour-system.md`).
+- Wick is canon: the EPCCG's mascot, drawn after the 258th Medical Unit's automata (section 08; `docs/lore/Wick.md`).
+- All three Heavenprint sets are character portraits: First-Patch Revival is the EPCCG cast; Original Heavenprint and New Faces are a pool of world characters.
+- One guide instead of six files. Full log: `CHANGELOG.md`.
 
 # Heavenprint / Wick
 
@@ -14,7 +35,7 @@ Heavenprint is a hand-painted illustration language: expressive ink, opaque goua
 
 Wick is the mascot adaptation: an expressive chibi ceramic automaton with a changeable pixel-screen face and a lantern heart. Its shapes simplify the same material language for traits, perks, tutorials and merchandise.
 
-The portrait references are user-approved. Wick's Mind Without Fog icon is now the user-approved reference for perk and trait icons. Its cape, lantern heart and asymmetry are defining features. The earlier painted model study remains a supporting construction reference; neither image automatically establishes an NPC in world lore.
+The portrait references are user-approved. Wick's Mind Without Fog icon is now the user-approved reference for perk and trait icons. Its cape, lantern heart and asymmetry are defining features. The earlier painted model study remains a supporting construction reference. Wick is a printed army mascot in the world, not an NPC (section 08).
 
 CURRENT SKILL DIRECTION: the newest POC 4-derived set uses faceless gestural humanoids, black backgrounds, neutral cream body marks and one attribute hue. The painted human collections are now character portraits. Read the Current Art Modes and Abstract Skills sections before commissioning skill art.
 
@@ -25,7 +46,7 @@ CURRENT SKILL DIRECTION: the newest POC 4-derived set uses faceless gestural hum
 VERSION 1.3 • 5 NOVEMBER 2026
 
 ## Character portraits and world illustrations
-Use the Original 27 and New Faces sheets for Heavenprint paint, expressive believable faces, restrained stylization, lore equipment and material rendering. The latest New Faces collection is now a CHARACTER asset library. Its old skill labels are archival identifiers, not instructions to put a different person in every player-skill slot. **First-Patch Revival is the EPCCG cast:** its 27 portraits are the people quoted in the EPCCG's skill entries (Sanchez, Knight Jiren, Professor Avdol, Sister October and the rest). When painting a named EPCCG character, use that portrait as the casting reference and the EPCCG passage as the brief.
+Use the Original 27 and New Faces sheets for Heavenprint paint, expressive believable faces, restrained stylization, lore equipment and material rendering. **All three Heavenprint sets are CHARACTER portraits** (`art/character-portraits/`). They were first painted as skill icons, one character per skill; playtesters found it made no sense for the player's skills to be other people in the world, so skills became the abstract figures below. The old skill labels now only record which skill a character was painted to embody. Original Heavenprint and New Faces are a pool of world characters for NPCs. **First-Patch Revival is the EPCCG cast:** its 27 portraits are the people quoted in the EPCCG's skill entries (Sanchez, Knight Jiren, Professor Avdol, Sister October and the rest). When painting a named EPCCG character, use that portrait as the casting reference and the EPCCG passage as the brief.
 
 ## Player skill portraits
 Use the newest POC 4-derived gestural collection, Palette v3. A skill is an aspect of the player: faceless, incomplete humanoid brush forms with distinct stature and a readable action. Use only black background, cream body marks and the relevant attribute hue. Sections 15–17 define this mode. The user's latest colour changes are included here.
@@ -331,7 +352,7 @@ Mascot disappears under costume → restore the head silhouette and one other re
 Pixel face becomes blurry → reduce bloom and simplify larger square clusters.
 
 ## Reuse and revision
-Use “Heavenprint v1.3” as shorthand within a context containing this pack. For another chat, attach the pack and ask it to read START-HERE.md. Do not depend on cross-chat memory. Preserve the approved reference files; add newly approved anchors under new filenames and update the version/change log. No review rule in this bible requires asking permission before routine image generation already requested by the user.
+Use “Heavenprint v1.3” as shorthand within a context containing this pack. For another chat, attach this guide and the references for your art mode. Do not depend on cross-chat memory. Preserve the approved reference files; add newly approved anchors under new filenames and update the version/change log. No review rule in this bible requires asking permission before routine image generation already requested by the user.
 
 # 14 / Approved perk and trait icon lock
 
@@ -405,6 +426,6 @@ The newest POC 4-derived gestural set, Palette v3, is the production reference f
 
 Read the cream masses as action and the coloured masses as the attribute. Compare each group's three poses, and compare adjacent attributes at thumbnail size. The original human sheets remain character-art references; their earlier colour coding is not the current skill palette.
 
-All 27 individual 800 × 1000 PNGs are in the master pack's 04-POC4-Skill-Portraits folder. The 27 New Faces character PNGs are in 03-Character-Portraits. The exact selected Wick example is in 02-Wick-Trait-Example.
+All 27 individual 800 × 1000 PNGs are in `art/skills/poc4-palette-v3/`. The character portraits are in `art/character-portraits/`. The exact approved Wick example is in `art/traits/wick/mind-without-fog/`.
 
 ![17 / Current abstract skill reference](references/current-abstract-skills-27.jpg)

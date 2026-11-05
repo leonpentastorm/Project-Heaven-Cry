@@ -76,7 +76,8 @@ def validate():
             path = asset['path']
             require(path not in paths, f'Duplicate primary asset path: {path}')
             paths.add(path)
-            require(path.startswith(f'art/{family}/'), f'Wrong family for {asset_id}')
+            folder = {'characters': 'character-portraits'}.get(family, family)
+            require(path.startswith(f'art/{folder}/'), f'Wrong family for {asset_id}')
             data = local(path).read_bytes()
             require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Checksum mismatch: {path}')
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')

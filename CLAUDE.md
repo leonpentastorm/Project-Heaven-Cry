@@ -39,7 +39,8 @@ docs/design/              Class-Roster-Rev2.md, Recovered-Design-Notes-2020.md,
 data/                     the JSON data pack + CONVENTIONS.md + README.md
 tools/                    validate.py (cross-reference checker), fix_pack.py (normaliser)
 design/canvas/            UI prototypes (.dc.html) + canvas.json layout
-art/                      art library: catalog.json, skills, characters, Wick icons, style-guide/v1.3, briefs/
+art/                      art library: catalog.json, skills/, character-portraits/, traits/ (Wick),
+                          style-guide/v1.3/PHC-Style-Guide.md, briefs/
 scripts/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
 source/2020/              original material; english/ holds the EPCCG guide and 2020 trait book in English
 ```
@@ -86,7 +87,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
   - **States:** success `#6FEA77`, failure muted `#A3AEC2`, HP/damage/complication `#F65157` (HP comes from Endurance), MP `#5C9EFF`, Echo and still-to-do white `#FFFFFF`. Always pair with a word or glyph.
   - Neutrals: ground `#0A0D13`, panels `#10151F`, raised `#1C2536`, lines `#232D3F`, text `#E7EBF3`, muted `#A3AEC2`.
 - Type: **Spectral** for narrative prose and titles, **Chakra Petch** for UI and numbers.
-- Art has three modes (style guide `art/style-guide/v1.3/START-HERE.md`): **skill portraits** are 27 faceless gesture figures at 4:5 (800 × 1000), black + cream + the attribute pigment; **character portraits** are Heavenprint paintings (First-Patch Revival = the EPCCG field-quote speakers); **trait and perk icons** are Wick, pure white flat ink. Asset IDs resolve through `art/catalog.json`.
+- Art has three modes (one style guide: `art/style-guide/v1.3/PHC-Style-Guide.md`): **skill portraits** are 27 faceless gesture figures at 4:5 (800 × 1000), black + cream + the attribute pigment; **character portraits** are 81 Heavenprint paintings in `art/character-portraits/` (First-Patch Revival = the EPCCG cast; Original Heavenprint and New Faces = a pool of world characters for NPCs; none of them are skill icons); **trait and perk icons** are Wick, pure white flat ink. Asset IDs resolve through `art/catalog.json`.
 - Dice are transparent: the screen always shows TN and the sum, so players can see the AI isn't fudging.
 
 ## Working agreements with Leon

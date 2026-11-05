@@ -2,9 +2,9 @@
 
 The Mind Without Fog master is approved. Before 150 trait and perk icons are made from one example, make these ten. Together they test every mood the set has to carry: grim, comic, ugly and tender, two perks, a robot trait, and a crowded idea. Lock the production rules only after all ten pass review.
 
-**For every icon:** attach `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` and the Wick sections of `art/style-guide/v1.3/`. Pure white `#FFFFFF` flat ink on transparency, 1024 × 1024 master, no caption. Traits and perks are both white.
+**For every icon:** attach `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Pure white `#FFFFFF` flat ink on transparency, 1024 × 1024 master, no caption. Traits and perks are both white.
 
-**Base prompt** (from `Prompt-Templates.txt`, v1.3): *Use approved-wick-trait-mind-without-fog.png as the primary style reference. Preserve the short cape, lantern heart, off-centre details, irregular contours and lively asymmetry. New action: [action]; screen expression: [expression]; prop: [one]. Flat single-ink illustration with negative-space details, no gradients, glow or rendered shading. Ink: pure white #FFFFFF, for traits and perks alike. Transparent background unless another background is requested; no caption. 1:1 1024 × 1024 master with safe margins. Test at 64 px without replacing the character with a geometric pictogram.*
+**Base prompt** (style guide v1.3, section 12): *Use approved-wick-trait-mind-without-fog.png as the primary style reference. Preserve the short cape, lantern heart, off-centre details, irregular contours and lively asymmetry. New action: [action]; screen expression: [expression]; prop: [one]. Flat single-ink illustration with negative-space details, no gradients, glow or rendered shading. Ink: pure white #FFFFFF, for traits and perks alike. Transparent background unless another background is requested; no caption. 1:1 1024 × 1024 master with safe margins. Test at 64 px without replacing the character with a geometric pictogram.*
 
 ## Pass criteria (check every icon)
 

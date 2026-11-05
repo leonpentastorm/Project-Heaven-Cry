@@ -1,10 +1,10 @@
 # PHC art work
 
-Read `style-guide/v1.3/START-HERE.md` and the relevant mode's references before generating images. Current explicit user requests override defaults.
+Read `style-guide/v1.3/PHC-Style-Guide.md` (the only guide; its first table says what to read and attach for each art mode) before generating images. Current explicit user requests override defaults.
 
 Skill slots use the faceless gestural figures in `skills/poc4-palette-v3/`: black background, cream body and one attribute hue for all other pigment and shading. Use `style-guide/v1.3/palette.json` for the current colours. Keep each action and silhouette distinct.
 
-Characters use `characters/heavenprint-new-faces/` and the approved character references in the guide. These are not player-skill portraits. Retain Heavenprint's ink/gouache rendering, restrained face stylization and lore equipment.
+Characters live in `character-portraits/` (three sets; see its README). Match the Original Heavenprint and New Faces anchors for style; use First-Patch Revival as the casting reference for named EPCCG characters. These are never player-skill portraits. Retain Heavenprint's ink/gouache rendering, restrained face stylization and lore equipment.
 
 Traits and perks use the approved Wick icon in `traits/wick/mind-without-fog/`: cape, lantern heart, pixel face, asymmetry and flat ink. Traits and perks are both pure white; never tint an icon with a skill colour. No gradients or glow.
 

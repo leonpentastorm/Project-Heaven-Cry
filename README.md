@@ -8,49 +8,42 @@ A revived 2020 tabletop RPG (a Disco Elysium-style skill web with tactical squad
 
 ## Art library
 
-Current art assets and implementation handoff: **27 abstract player-skill portraits, 81 character portraits across three versions, the approved Wick trait icon, and Heavenprint/Wick style guide v1.3**. Skill colours use **palette v3**; the UI uses each colour's contrast-safe ink ([colour system](docs/design/colour-system.md)).
+**27 abstract skill portraits, 81 character portraits in three sets, the approved Wick icon, and one style guide (v1.3).** Skill colours are palette v3; the UI uses each colour's contrast-safe ink ([colour system](docs/design/colour-system.md)).
 
 ### Start implementing
 
 1. Read [Art integration](docs/ART-INTEGRATION.md) for asset selection, import settings and usage examples.
 2. Load [art/catalog.json](art/catalog.json) to resolve stable IDs to repository-relative PNG paths, dimensions, colours and checksums.
-3. Browse the [labelled asset directory](docs/ASSET-DIRECTORY.md) or the preview sheets below.
+3. Browse the [asset directory](docs/ASSET-DIRECTORY.md) (generated from the catalog) or the preview sheets below.
 
-### Choose the correct asset family
+### Asset families
 
 | Family | Use | Files |
 | --- | --- | --- |
-| Abstract skills — POC 4 / palette v3 | Player's internal skills and aspects; faceless brush figures | [27 skill PNGs](art/skills/poc4-palette-v3/) |
-| Heavenprint New Faces | Characters and NPCs; painted people and automata | [27 character PNGs](art/characters/heavenprint-new-faces/) |
-| Wick — Mind Without Fog | Approved trait example; white single-ink mascot for every trait and perk icon | [Transparent PNG and trait text](art/traits/wick/mind-without-fog/) |
-| Style guide v1.3 | Future artwork, all nine current skill colours, UI inks and icon rules | [Start here](art/style-guide/v1.3/START-HERE.md) · [v1.2 illustrated PDF](art/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
+| Skill portraits — POC 4 / palette v3 | The player's own skills: faceless brush figures | [27 PNGs](art/skills/poc4-palette-v3/) |
+| Character portraits — three Heavenprint sets | People in the world. First-Patch Revival is the EPCCG cast; Original Heavenprint and New Faces are a pool of world characters for NPCs | [81 PNGs](art/character-portraits/) |
+| Wick — Mind Without Fog | The approved icon; every trait and perk icon is Wick in pure white ink | [Transparent PNG and trait text](art/traits/wick/mind-without-fog/) |
+| Style guide v1.3 | The one guide for all future art | [PHC-Style-Guide.md](art/style-guide/v1.3/PHC-Style-Guide.md) · [v1.2 illustrated PDF](art/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
+| Briefs | Art that doesn't exist yet: the M813 one-shot, ten Wick test icons | [art/briefs/](art/briefs/) |
 
-The character files retain their historical skill filenames for traceability. Use the catalog's **characters** map, keyed by character name, when selecting them. Use its **skills** map for player-skill UI. These two collections are intentionally different.
+All three character sets were first painted as skill icons, one character per skill. Playtesters found it made no sense for the player's skills to be other people in the world, so skills became the abstract figures and the paintings became characters ([details](art/character-portraits/README.md)). Their filenames still record the skill each was painted to embody.
 
-### Current skill portraits
+### Skill portraits
 
-![All 27 current abstract skills](art/skills/poc4-palette-v3/previews/all-27.jpg)
+![All 27 abstract skills](art/skills/poc4-palette-v3/previews/all-27.jpg)
 
-Endurance is crimson; Strength is orange; Agility is gold. Expression is deep petrol-blue and Virtue is dark mulberry. Every skill uses black background, cream body marks and its attribute colour for all remaining pigment and shadows. See the [palette chart](art/skills/poc4-palette-v3/previews/attribute-palette.png) and [machine-readable palette](art/style-guide/v1.3/palette.json).
+Each skill uses a black background, cream body marks and its attribute pigment. See the [palette chart](art/skills/poc4-palette-v3/previews/attribute-palette.png) and the [machine-readable palette](art/style-guide/v1.3/palette.json).
 
 ### Character portraits
 
-![27 Heavenprint New Faces characters](art/characters/heavenprint-new-faces/previews/all-27.jpg)
+First-Patch Revival, the EPCCG cast:
 
-### Validate the handoff
+![First-Patch Revival](art/character-portraits/first-patch-revival/previews/all-27.jpg)
 
-Run `python3 scripts/validate_art.py` from the repository root. It checks the 109 primary images, PNG sizes and colour types, catalog paths, checksums and skill-to-attribute colour mappings. It uses the Python standard library only.
+[Original Heavenprint](art/character-portraits/original-heavenprint/previews/all-27.jpg) and [New Faces](art/character-portraits/heavenprint-new-faces/previews/all-27.jpg), the world-character pool.
 
-This is an art library, not a game build. No engine import pipeline is assumed. Source PNGs and documentation are unpacked for direct use; there is no duplicate ZIP or Git LFS download step. Older experiments are outside this current production handoff. Reference images inside the guide are intentional style anchors, not additional game-slot assets.
+### Validate
 
-The guide preserves visual decisions; invented character names and imagery do not automatically establish world canon. For future art generation, attach the relevant guide and images rather than relying on the style name alone.
+Run `python3 scripts/validate_art.py` from the repository root. It checks the 109 primary images, PNG sizes and colour types, catalog paths, checksums, skill colours, UI-ink contrast and white icon ink. Standard library only.
 
-### All three character versions
-
-| Version | Collection | Count |
-| --- | --- | --- |
-| 1 | [Original Heavenprint](art/characters/original-heavenprint/) | 27 |
-| 2 | [First-Patch Revival — the EPCCG cast](art/characters/first-patch-revival/): the people quoted in the EPCCG skill entries | 27 |
-| 3 | [New Faces](art/characters/heavenprint-new-faces/) | 27 |
-
-All 81 originals are preserved. Use `characters[*].collection` to filter the catalog. Earlier collections have namespaced IDs to prevent collisions with New Faces.
+Source PNGs are unpacked for direct use; there is no ZIP or Git LFS step. Invented character names and imagery don't establish canon by themselves. For new art, attach the guide and the references for that art mode rather than relying on the style name alone.

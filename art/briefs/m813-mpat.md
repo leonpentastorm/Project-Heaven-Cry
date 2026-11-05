@@ -2,7 +2,7 @@
 
 The M813 one-shot is the first playable product, and none of its art exists yet. These four images come before any further character portraits. Facts are from the EPCCG's MPAT sample sheet (`source/2020/english/EPCCG-Player-Character-Creation-Guide-EN.txt`) and `docs/lore/MPAT-and-M813.md`. Anything not stated there is marked *proposal*.
 
-All four use the **Heavenprint base prompt** in `art/style-guide/v1.3/Prompt-Templates.txt`. Attach the approved Original 27 and New Faces sheets, plus `art/characters/first-patch-revival/previews/all-27.jpg` as the EPCCG-cast reference. For automaton construction, compare the New Faces automata (Mallow-3, Inspectant Latch-7).
+All four use the **Heavenprint base prompt** in section 12 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Attach the approved Original 27 and New Faces sheets, plus `art/character-portraits/first-patch-revival/previews/all-27.jpg` as the EPCCG-cast reference. For automaton construction, compare the New Faces automata (Mallow-3, Inspectant Latch-7).
 
 ## Design link: MPAT and Wick
 
@@ -10,7 +10,7 @@ Wick is the EPCCG's cartoon of a 258th Medical Unit field automaton (`docs/lore/
 
 ## 1. MPAT: character portrait
 
-- **Collection:** new versioned folder `art/characters/m813/`, catalog ID `mpat`.
+- **Collection:** new versioned folder `art/character-portraits/m813/`, catalog ID `mpat`.
 - **Subject:** M1.4 8R4-D83-RRY, "MPAT". Robot combat medic of the 258th Medical Unit, built by the Factory. 7 years old, 180 cm, 73 kg, right-handed. Lean and fast (high Agility, a dodge-and-rescue medic), not a tank.
 - **Construction (proposal):** 258th field automaton. Ivory ceramic shell, chipped and field-patched with mismatched plates from other units. Charcoal screen face with sparse square pixel features. Triage lamp in the chest behind a medical-cross grille. Short, scorched field cloak. Surgical manipulators on the right hand.
 - **Action:** kneeling, with the still-running robot head of its last comrade strapped to its chest harness. MPAT's left hand rests on the head; its right hand holds a ration tin it is cooking over a small field stove. (It's a good cook, and it never leaves a teammate behind.)

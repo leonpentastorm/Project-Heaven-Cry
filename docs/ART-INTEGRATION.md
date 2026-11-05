@@ -54,4 +54,4 @@ Wick trait and perk icons are both pure white; they never take a skill colour. S
 
 Add revised art under a new versioned directory, update catalog paths and hashes, then update the palette and style guide if needed. Keep existing IDs stable. The local collection manifest describes artwork; the central catalog is the implementation map. Do not silently replace approved masters with a newly named "final" image.
 
-The source art pack used numbered folders. Their repository equivalents are: `01-Style-Guide` → `art/style-guide/v1.2`; `02-Wick-Trait-Example` → `art/traits/wick/mind-without-fog`; `03-Character-Portraits` → `art/characters/heavenprint-new-faces`; `04-POC4-Skill-Portraits` → `art/skills/poc4-palette-v3`.
+The source art pack used numbered folders. Their repository equivalents are: `01-Style-Guide` → `art/style-guide/v1.2`; `02-Wick-Trait-Example` → `art/traits/wick/mind-without-fog`; `03-Character-Portraits` → `art/character-portraits/heavenprint-new-faces`; `04-POC4-Skill-Portraits` → `art/skills/poc4-palette-v3`.

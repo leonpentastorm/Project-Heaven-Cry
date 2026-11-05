@@ -4,6 +4,8 @@
 - **Pigment vs UI ink.** The nine skill pigments are unchanged. Each attribute gains a `ui_ink`: the same hue, lightened only until it reaches 4.5:1 on the raised UI surface. Changed inks: Endurance #F65157, Expression #5394AC, Determination #9D7ADC, Virtue #D36A90. Pigments stay inside artwork.
 - **UI colour system** added to palette.json (`ui`): core colours, state colours (success #6FEA77, MP #5C9EFF, HP/damage #F65157, failure muted, Echo white) and neutrals. Rules in docs/design/colour-system.md.
 - **Wick is canon:** the EPCCG's own mascot, drawn after the 258th Medical Unit's field automata (MPAT's unit). The chest cross is the 258th's medical cross; keep its arms thick so it never reads as a gun sight. Lore in docs/lore/Wick.md.
+- **One guide.** `PHC-Style-Guide.md` replaces START-HERE, the Heavenprint, Wick and Abstract Skills bibles, the Icon Lock and Prompt Templates (all of which repeated the combined bible). Prompts are in section 12; the icon lock is section 14.
+- **Character portraits.** All three Heavenprint sets (Original, First-Patch Revival, New Faces) live in `art/character-portraits/`. First-Patch Revival is the EPCCG cast; the other two are a pool of world characters.
 - The illustrated PDF was not regenerated. It remains in v1.2; for v1.3 the Markdown files are authoritative.
 
 # Version 1.2 — 5 November 2026
