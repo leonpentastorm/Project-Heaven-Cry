@@ -1382,6 +1382,36 @@
       "epccg_quoted_by": "Brengan Springfield",
       "faction": "101st Hellraiser Division",
       "pool": "epccg-cast"
+    },
+    "mpat": {
+      "label": "MPAT — M1.4 8R4-D83-RRY",
+      "collection": "m813",
+      "version": 1,
+      "path": "art/character-portraits/m813/mpat.png",
+      "sha256": "7a88360ae51a71c757e21d8b73cf932bb228f6d677e379e54a5453340dcf385f",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "usage": "character portrait",
+      "status": "review-candidate",
+      "spoiler": false,
+      "pool": "m813-cast",
+      "visibility": "opening-safe"
+    },
+    "mpat-comrade": {
+      "label": "MPAT's unnamed comrade",
+      "collection": "m813",
+      "version": 1,
+      "path": "art/character-portraits/m813/mpat-comrade.png",
+      "sha256": "f418d56101bec84389755bda9e0e7c55c0469c82436167fdb2c9a0061770613b",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "usage": "character portrait",
+      "status": "review-candidate",
+      "spoiler": false,
+      "pool": "m813-cast",
+      "visibility": "opening-safe"
     }
   },
   "traits": {
@@ -1394,6 +1424,166 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "trait icon"
+    },
+    "humanity-first": {
+      "label": "Wick — Humanity First",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/humanity-first.png",
+      "sha256": "de80a4d18bcecafe2912842f74f2b95c63c33bdc1ed181ab4a340af77490a1c1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "humanity_first",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/humanity-first.png",
+        "128": "art/traits/wick/test-set-1/exports/128/humanity-first.png",
+        "64": "art/traits/wick/test-set-1/exports/64/humanity-first.png",
+        "40": "art/traits/wick/test-set-1/exports/40/humanity-first.png"
+      }
+    },
+    "the-old-blood": {
+      "label": "Wick — The Old Blood",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/the-old-blood.png",
+      "sha256": "173006109905ffa63f519f620790093c076dcfb64e320cfeba53c1371a8ac6f5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "the_old_blood",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/the-old-blood.png",
+        "128": "art/traits/wick/test-set-1/exports/128/the-old-blood.png",
+        "64": "art/traits/wick/test-set-1/exports/64/the-old-blood.png",
+        "40": "art/traits/wick/test-set-1/exports/40/the-old-blood.png"
+      }
+    },
+    "factory-made": {
+      "label": "Wick — Factory Made",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/factory-made.png",
+      "sha256": "d6d6b9e4be979fcba317410fc0d3cc3c22e27654038fdf5e2a98c7e9d135c42e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "factory_made",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/factory-made.png",
+        "128": "art/traits/wick/test-set-1/exports/128/factory-made.png",
+        "64": "art/traits/wick/test-set-1/exports/64/factory-made.png",
+        "40": "art/traits/wick/test-set-1/exports/40/factory-made.png"
+      }
+    },
+    "chain-smoker": {
+      "label": "Wick — Chain Smoker",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/chain-smoker.png",
+      "sha256": "bf9efba0b96b583029481b026f98b7fc0958f3128ef1e966cb80af3542b4662b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "chain_smoker",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/chain-smoker.png",
+        "128": "art/traits/wick/test-set-1/exports/128/chain-smoker.png",
+        "64": "art/traits/wick/test-set-1/exports/64/chain-smoker.png",
+        "40": "art/traits/wick/test-set-1/exports/40/chain-smoker.png"
+      }
+    },
+    "raised-by-orks": {
+      "label": "Wick — Raised by Orks",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/raised-by-orks.png",
+      "sha256": "204c96223869e0f5e492ea0a970ded6a9a0908e4d83e35f9aaf5aa6390e059ba",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "raised_by_orks",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/raised-by-orks.png",
+        "128": "art/traits/wick/test-set-1/exports/128/raised-by-orks.png",
+        "64": "art/traits/wick/test-set-1/exports/64/raised-by-orks.png",
+        "40": "art/traits/wick/test-set-1/exports/40/raised-by-orks.png"
+      }
+    },
+    "the-brightest-light": {
+      "label": "Wick — The Brightest Light",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/the-brightest-light.png",
+      "sha256": "baeaf49173e6c5ee4d9cef9598139582c30b20cfe12eb3411debb9a33e97c5f3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "the_brightest_light",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/the-brightest-light.png",
+        "128": "art/traits/wick/test-set-1/exports/128/the-brightest-light.png",
+        "64": "art/traits/wick/test-set-1/exports/64/the-brightest-light.png",
+        "40": "art/traits/wick/test-set-1/exports/40/the-brightest-light.png"
+      }
+    },
+    "rabbits-foot": {
+      "label": "Wick — Rabbit's Foot",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/rabbits-foot.png",
+      "sha256": "166d75c43e1c34bb7bd627060c1b3bad7e080ebb1eea40e6a6a23b6f71d66488",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "rabbits_foot",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/rabbits-foot.png",
+        "128": "art/traits/wick/test-set-1/exports/128/rabbits-foot.png",
+        "64": "art/traits/wick/test-set-1/exports/64/rabbits-foot.png",
+        "40": "art/traits/wick/test-set-1/exports/40/rabbits-foot.png"
+      }
+    },
+    "forlorn-hope": {
+      "label": "Wick — Forlorn Hope",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/forlorn-hope.png",
+      "sha256": "a2901e5687bb70119c3e3c3d977d465f0d8a8aeaca48e50f639601822fa21744",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "forlorn_hope",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/forlorn-hope.png",
+        "128": "art/traits/wick/test-set-1/exports/128/forlorn-hope.png",
+        "64": "art/traits/wick/test-set-1/exports/64/forlorn-hope.png",
+        "40": "art/traits/wick/test-set-1/exports/40/forlorn-hope.png"
+      }
     }
   },
   "character_collections": {
@@ -1414,7 +1604,87 @@
       "path": "art/character-portraits/first-patch-revival",
       "count": 27,
       "use": "Named EPCCG characters (the 27 people quoted in the EPCCG skill entries)."
+    },
+    "m813": {
+      "label": "M813 — MPAT and comrade",
+      "path": "art/character-portraits/m813",
+      "count": 2,
+      "version": 1,
+      "status": "review-candidate",
+      "use": "Named M813 one-shot cast; construction details remain brief proposals."
     }
   },
-  "character_collections_note": "All three sets were first painted as skill icons (one character per skill). Playtesters found it made no sense for skills to be people in the world, so skills became the abstract figures in art/skills/. All three sets are now character portraits. historical_skill_id records which skill each was painted to embody."
+  "character_collections_note": "All three sets were first painted as skill icons (one character per skill). Playtesters found it made no sense for skills to be people in the world, so skills became the abstract figures in art/skills/. All three sets are now character portraits. historical_skill_id records which skill each was painted to embody.",
+  "perks": {
+    "field-surgeon": {
+      "label": "Wick — Field Surgeon",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/field-surgeon.png",
+      "sha256": "79dec9a4cb8b099b493f278c367087155c2d7f6e38b9533a6d47b2cb46f2ece3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "field_surgeon",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/field-surgeon.png",
+        "128": "art/traits/wick/test-set-1/exports/128/field-surgeon.png",
+        "64": "art/traits/wick/test-set-1/exports/64/field-surgeon.png",
+        "40": "art/traits/wick/test-set-1/exports/40/field-surgeon.png"
+      }
+    },
+    "supreme-command": {
+      "label": "Wick — Supreme Command",
+      "collection": "wick-test-set-1",
+      "path": "art/traits/wick/test-set-1/supreme-command.png",
+      "sha256": "cb5f426ee1b384f6c04f15a816a2eeb4a73366d4144197e83bbb34d27d780c41",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "supreme_command",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/traits/wick/test-set-1/exports/256/supreme-command.png",
+        "128": "art/traits/wick/test-set-1/exports/128/supreme-command.png",
+        "64": "art/traits/wick/test-set-1/exports/64/supreme-command.png",
+        "40": "art/traits/wick/test-set-1/exports/40/supreme-command.png"
+      }
+    }
+  },
+  "illustrations": {
+    "outpost813": {
+      "label": "Outpost-813 — abandoned landing pad",
+      "collection": "m813-v1",
+      "version": 1,
+      "path": "art/illustrations/m813/v1/outpost813.png",
+      "sha256": "99eb5024c5bbbb36fccdf1baaec656443a21608e51e3b1ab3b838ceb61e78841",
+      "width": 1600,
+      "height": 900,
+      "background": "opaque painted scene",
+      "usage": "world illustration",
+      "status": "review-candidate",
+      "spoiler": false,
+      "visibility": "opening-safe"
+    },
+    "outpost1-repair-bay": {
+      "label": "Outpost-1 — the last repair",
+      "collection": "m813-v1",
+      "version": 1,
+      "path": "art/illustrations/m813/v1/spoilers/outpost1-repair-bay.png",
+      "sha256": "29b9b8c9f8181353f87e22632938d84778d61db8912f9ff9d9da913fee64b628",
+      "width": 1600,
+      "height": 900,
+      "background": "opaque painted scene",
+      "usage": "world illustration",
+      "status": "review-candidate",
+      "spoiler": true,
+      "visibility": "ending-only"
+    }
+  }
 }
