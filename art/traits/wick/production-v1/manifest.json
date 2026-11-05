@@ -1,0 +1,33 @@
+{
+  "collection": "wick-production-v1",
+  "version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "brief": "art/briefs/wick-production-icons.md",
+  "workflow": "Leon requested seven fixes first, then the full run with each new icon pushed and shown immediately.",
+  "icons": [
+    {
+      "id": "southern-fist",
+      "data_id": "southern_fist",
+      "name": "Southern Fist",
+      "family": "traits",
+      "order": 3,
+      "mood": "Comic, Proud",
+      "action": "Wick drops into a deep low stance, throwing a punch with one wrapped mitten while the other pinches a rifle away at arm's length like something smelly",
+      "screen": "Disdainful side-eye",
+      "prop": "Rifle held at arm's length",
+      "path": "art/traits/wick/production-v1/southern-fist.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/southern-fist.png",
+        "128": "art/traits/wick/production-v1/exports/128/southern-fist.png",
+        "64": "art/traits/wick/production-v1/exports/64/southern-fist.png",
+        "56": "art/traits/wick/production-v1/exports/56/southern-fist.png",
+        "48": "art/traits/wick/production-v1/exports/48/southern-fist.png",
+        "44": "art/traits/wick/production-v1/exports/44/southern-fist.png",
+        "40": "art/traits/wick/production-v1/exports/40/southern-fist.png"
+      },
+      "batch": "A",
+      "source_sha256": "66fb4b150d54b83367000f51f5702e929e50242eb413839c00218664caa553eb"
+    }
+  ]
+}

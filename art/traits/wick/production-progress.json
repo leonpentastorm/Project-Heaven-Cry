@@ -16,9 +16,11 @@
     "field-surgeon",
     "supreme-command"
   ],
-  "new_icons_delivered": [],
+  "new_icons_delivered": [
+    "southern-fist"
+  ],
   "catalog_coverage": {
-    "traits": 9,
+    "traits": 10,
     "perks": 2
   }
 }
