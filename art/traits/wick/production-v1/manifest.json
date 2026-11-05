@@ -327,6 +327,29 @@
       },
       "batch": "A",
       "source_sha256": "405dd6b3f8a843377a9afb3c5358cad1ba08dd199a7975f83413b36773f054ef"
+    },
+    {
+      "id": "heavyworlder",
+      "data_id": "heavyworlder",
+      "name": "Heavyworlder",
+      "family": "traits",
+      "order": 19,
+      "mood": "Comic",
+      "action": "Wick is wedged sideways in a doorframe far too small for it, shoulders jammed, boots braced against the jamb",
+      "screen": "Grumpy flat brows",
+      "prop": "Doorframe",
+      "path": "art/traits/wick/production-v1/heavyworlder.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heavyworlder.png",
+        "128": "art/traits/wick/production-v1/exports/128/heavyworlder.png",
+        "64": "art/traits/wick/production-v1/exports/64/heavyworlder.png",
+        "56": "art/traits/wick/production-v1/exports/56/heavyworlder.png",
+        "48": "art/traits/wick/production-v1/exports/48/heavyworlder.png",
+        "44": "art/traits/wick/production-v1/exports/44/heavyworlder.png",
+        "40": "art/traits/wick/production-v1/exports/40/heavyworlder.png"
+      },
+      "batch": "A",
+      "source_sha256": "d586a104b6febe4671171351501f854e36a2c396e655da011f80c909b032b6d7"
     }
   ]
 }

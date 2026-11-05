@@ -1951,6 +1951,30 @@
         "44": "art/traits/wick/production-v1/exports/44/lunarshine.png",
         "40": "art/traits/wick/production-v1/exports/40/lunarshine.png"
       }
+    },
+    "heavyworlder": {
+      "label": "Wick — Heavyworlder",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/heavyworlder.png",
+      "sha256": "8fff15dca376a2345263d042170651d8648a23a5f52bfb67b50257d723571f4d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "heavyworlder",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heavyworlder.png",
+        "128": "art/traits/wick/production-v1/exports/128/heavyworlder.png",
+        "64": "art/traits/wick/production-v1/exports/64/heavyworlder.png",
+        "56": "art/traits/wick/production-v1/exports/56/heavyworlder.png",
+        "48": "art/traits/wick/production-v1/exports/48/heavyworlder.png",
+        "44": "art/traits/wick/production-v1/exports/44/heavyworlder.png",
+        "40": "art/traits/wick/production-v1/exports/40/heavyworlder.png"
+      }
     }
   },
   "character_collections": {
