@@ -2335,6 +2335,30 @@
         "44": "art/traits/wick/production-v1/exports/44/spray-and-pray.png",
         "40": "art/traits/wick/production-v1/exports/40/spray-and-pray.png"
       }
+    },
+    "one-shot": {
+      "label": "Wick — One Shot",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/one-shot.png",
+      "sha256": "c053d65b30338f108433ad71932f45b15fde3682483fbb5dcc356f1509436841",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "one_shot",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/one-shot.png",
+        "128": "art/traits/wick/production-v1/exports/128/one-shot.png",
+        "64": "art/traits/wick/production-v1/exports/64/one-shot.png",
+        "56": "art/traits/wick/production-v1/exports/56/one-shot.png",
+        "48": "art/traits/wick/production-v1/exports/48/one-shot.png",
+        "44": "art/traits/wick/production-v1/exports/44/one-shot.png",
+        "40": "art/traits/wick/production-v1/exports/40/one-shot.png"
+      }
     }
   },
   "character_collections": {

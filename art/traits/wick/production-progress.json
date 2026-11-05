@@ -46,10 +46,11 @@
     "upper-touched",
     "gun-nut",
     "old-school",
-    "spray-and-pray"
+    "spray-and-pray",
+    "one-shot"
   ],
   "catalog_coverage": {
-    "traits": 39,
+    "traits": 40,
     "perks": 2
   },
   "revision_rounds": {

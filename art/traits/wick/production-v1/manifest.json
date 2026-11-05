@@ -695,6 +695,29 @@
       },
       "batch": "B",
       "source_sha256": "1bd766027d8292d066cb0168f2b8305a0ba1d1d20751166829e607dfcb4b247d"
+    },
+    {
+      "id": "one-shot",
+      "data_id": "one_shot",
+      "name": "One Shot",
+      "family": "traits",
+      "order": 38,
+      "mood": "Tense",
+      "action": "Wick lies prone behind a long scoped rifle, perfectly still, capelet flat over its back",
+      "screen": "Two pinhole eyes",
+      "prop": "Long rifle",
+      "path": "art/traits/wick/production-v1/one-shot.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/one-shot.png",
+        "128": "art/traits/wick/production-v1/exports/128/one-shot.png",
+        "64": "art/traits/wick/production-v1/exports/64/one-shot.png",
+        "56": "art/traits/wick/production-v1/exports/56/one-shot.png",
+        "48": "art/traits/wick/production-v1/exports/48/one-shot.png",
+        "44": "art/traits/wick/production-v1/exports/44/one-shot.png",
+        "40": "art/traits/wick/production-v1/exports/40/one-shot.png"
+      },
+      "batch": "B",
+      "source_sha256": "297b5b0d1bc1bca0298b0c616203a264bcd6094fcc97ace42ac37e0ecce2b812"
     }
   ]
 }
