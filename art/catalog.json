@@ -2551,6 +2551,30 @@
         "44": "art/traits/wick/production-v1/exports/44/rival.png",
         "40": "art/traits/wick/production-v1/exports/40/rival.png"
       }
+    },
+    "wanted": {
+      "label": "Wick — Wanted",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/wanted.png",
+      "sha256": "786aed28338e0256e0fd7a420788e606e551e61aca557c70a6f61b16c587349b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "wanted",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/wanted.png",
+        "128": "art/traits/wick/production-v1/exports/128/wanted.png",
+        "64": "art/traits/wick/production-v1/exports/64/wanted.png",
+        "56": "art/traits/wick/production-v1/exports/56/wanted.png",
+        "48": "art/traits/wick/production-v1/exports/48/wanted.png",
+        "44": "art/traits/wick/production-v1/exports/44/wanted.png",
+        "40": "art/traits/wick/production-v1/exports/40/wanted.png"
+      }
     }
   },
   "character_collections": {

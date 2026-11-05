@@ -55,10 +55,11 @@
     "insomniac",
     "live-to-fight-another-day",
     "sworn-sibling",
-    "rival"
+    "rival",
+    "wanted"
   ],
   "catalog_coverage": {
-    "traits": 48,
+    "traits": 49,
     "perks": 2
   },
   "revision_rounds": {

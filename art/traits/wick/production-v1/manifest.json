@@ -902,6 +902,29 @@
       },
       "batch": "B",
       "source_sha256": "568a1ba217658be6e16410b507f642aead187c76f0f9c5545983d918789baaa2"
+    },
+    {
+      "id": "wanted",
+      "data_id": "wanted",
+      "name": "Wanted",
+      "family": "traits",
+      "order": 49,
+      "mood": "Comic",
+      "action": "Wick leans in, fist on hip, jabbing a finger at a nailed-up torn poster showing a lumpy, wrong scribble of its own head",
+      "screen": "Outraged",
+      "prop": "Poster (no words)",
+      "path": "art/traits/wick/production-v1/wanted.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/wanted.png",
+        "128": "art/traits/wick/production-v1/exports/128/wanted.png",
+        "64": "art/traits/wick/production-v1/exports/64/wanted.png",
+        "56": "art/traits/wick/production-v1/exports/56/wanted.png",
+        "48": "art/traits/wick/production-v1/exports/48/wanted.png",
+        "44": "art/traits/wick/production-v1/exports/44/wanted.png",
+        "40": "art/traits/wick/production-v1/exports/40/wanted.png"
+      },
+      "batch": "B",
+      "source_sha256": "20223049404628d917ebb79d185d5828be7753378ed195f75e0135ad1028f31f"
     }
   ]
 }
