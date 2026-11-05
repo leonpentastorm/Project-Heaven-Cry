@@ -2,7 +2,7 @@
 
 > Exported from the living Claude Doc https://claude.ai/artifact/Ctq7fiFpGoiw9uCP7Cuzak on 2026-11-05. The Doc is the source of truth; re-export after edits.
 >
-> **Added 2026-11-05, not yet in the living Doc:** the Unspoken Name, the tone line, the worlds and Earth, how campaigns start, the Crawlers, Operation Daggerfall, the timeline. Copy them across. The faction web is a separate draft: `Factions.md`.
+> **Added 2026-11-05, not yet in the living Doc:** the Unspoken Name, the tone line, the worlds and Earth, how campaigns start, the Crawlers, Operation Daggerfall, the timeline, the canon Accord clauses (hands off, create never erase, only by cause), Anti-Heaven Operations Command and the Progenitors. Copy them across. The faction web is a separate draft: `Factions.md`.
 >
 > **Naming in this document:** *real Earth* is the world of the players and the Celestials' bodies, the layer above. *Earth* with no qualifier, from this revision on, is the in-world homeworld where Central City stands. Older lines below that say "Earth" for the layer above mean real Earth.
 
@@ -27,7 +27,7 @@ What they became varies:
 
 Any religion, brand or legend from the real world can appear in the setting, because a Celestial brought it in.
 
-**The Celestial Accords.** The Celestials aren't lawless. They live under rules and treaties agreed among themselves, and breaking them causes drama between Celestials. Within the Accords, a Celestial can play any role they like, and that's the loose rule for silly play: a player who wants a legendary infiltrator in the story gets one, because some Celestial gamer loves playing that role.
+**The Celestial Accords.** The Celestials aren't lawless. They live under rules and treaties agreed among themselves. **They don't fight each other (canon):** Celestials are friends, or at least amicable. What's the point of fighting, when you're immortal and stuck together? Within the Accords, a Celestial can play any role they like, and that's the loose rule for silly play: a player who wants a legendary infiltrator in the story gets one, because some Celestial gamer loves playing that role.
 
 **The Unspoken Name (Accord clause, canon).** A Celestial may play anything from real Earth: a hero from a game they loved, a god, a band, a whole genre. What the Accords forbid is saying a real-Earth name aloud inside the world. So they rename it. A Celestial who wants to live out a famous game's teenage-detective-with-a-summoned-spirit fantasy can, but in the world the spirit is called a "Ghost", and it is "a robot-looking ghost with a huge spear that throws lightning", never its real name. The rule for every scene:
 
@@ -37,6 +37,15 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 - **The Narrator (AI or human) never says or writes a real-Earth proper noun in the world:** not in narration, NPC dialogue or item names. If a player says the real name at the table, NPCs answer to the in-world one.
 - **Official content stays generic.** Shipped data, art and published campaigns use archetypes ("a sneaking-soldier legend"), not recognisable recreations of specific characters. What a group imports at its own table is its own business.
 
+**Canon Accord clauses**
+
+- **Hands off.** No Celestial directly intervenes in the human world.
+- **Create, never erase.** A Celestial can create (a people, a monster, a curse, a whole plot) but can't intervene to remove what exists. So plots get started for fun and abandoned when their maker gets bored, and the consequences stay. The world is full of them.
+- **Only by cause.** A Celestial appears in the world only through a cause: a summoning, a miracle answering a prayer, a pact. **A Celestial appearing without a cause is a very big deal.**
+- **The Unspoken Name** (above).
+
+**Suggested: the Veil exception.** The Progenitors were hunted, which looks like intervention to erase. Proposed reconciliation: the Veil is the one exception the Accords allow. An NPC who *proves* the truth may be erased. Suspicion isn't proof, which is why the Progenitors' descendants are still alive. (Needs Leon's confirmation.)
+
 **Suggested Accord clauses**
 
 - **Pacts first.** No Celestial works miracles for NPCs without a pact.
@@ -44,7 +53,7 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 - **The Veil.** No NPC may learn the truth (see the Knowing, below).
 - **Quotas.** Each Celestial may scrape only so many bots. That's why prayer and war matter to them.
 
-**The Knowing.** An NPC who learns the truth is either killed or raised to demigod. **Suggested:** under the Accords, the Celestial who finds out has to choose, and one who raises an NPC answers for them. The Celestials split into Erasers and Elevators over it. Demigods are the bridge between the layers, and the obvious endgame for a player character.
+**The Knowing.** An NPC who learns the truth is either killed or raised to demigod. **Suggested:** under the Accords, the Celestial who finds out has to choose, and one who raises an NPC answers for them. The Celestials argue about it, as friends do: some prefer erasing, some elevating, and it's a standing argument, not a war. Demigods are the bridge between the layers, and the obvious endgame for a player character.
 
 **The people.** Everyone the player characters know, themselves included, are NPCs: written into the code, or created by Celestials as set dressing. Over millennia they spread across galaxies and built billions of years of history. To the Celestials, they are still NPCs. They know none of this. From where they stand, they are humanity, fighting gods.
 
@@ -58,7 +67,7 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 **Earth, the homeworld.** The first planet the simulation's builders made, where humanity began. Central City stands on Earth: bank cards, shock batons, Central Command Center, the CCEC. Humanity has since spread across many worlds in many galaxies; the great centres, such as Central City and the Thousand-Planet City, lie in different galaxies. *Thousand-Planet City* is a faction name; its army is the **Thousand World Legion**, which the EPCCG calls the Thousand-Planet City Army (the 093rd Regiment is one of its regiments). **Suggested:** Earth was named before the Accords existed, which is why the homeworld can carry a real-Earth name when nothing else may.
 
-**How campaigns start.** A Celestial shows up and causes mayhem: a god walks onto a battlefield, a moon gets rewritten, a legend from nowhere starts a war. Anti-Heaven Operations Command answers. That collision is the usual first scene of a campaign.
+**How campaigns start.** With a Celestial's mess. Usually it's the fallout of a plot someone started for fun and walked away from: a people made for a story nobody finished, a monster left running, a curse nobody lifts. Sometimes it's an appearance with a cause: a summoning, a miracle, a pact gone wrong. Rarely, and it's a catastrophe-level event, a Celestial appears with no cause at all. Anti-Heaven Operations Command answers whichever it is. That collision is the usual first scene of a campaign.
 
 **The Crawlers (NPC version 2).** A Celestial created a second patch of people, ordinary humans with supernatural abilities (espers), because she wanted a battle-academy story. Another Celestial hated it ("anime is cringe") and cursed the whole patch: to the original humans (NPC version 1), every NPC-2 person appears as a malformed creature, shaped by whatever the local humans fear most. The first NPC-1 settlement to meet them lived on a world with crawling, humanoid zombie-like things, so they saw crawlers, and the name *Crawler* stuck.
 
@@ -71,7 +80,10 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 - **What's left:** semi-powered descendants of the Progenitors. They hold the high posts, and they fight politics more than enemies.
 - **Decay:** the organisation began by trying to overthrow Heaven. Now it tries to limit the damage every time a Celestial appears.
 - **Desperation:** the descendants will do anything for power, because they know what happens if they're taken out: the next time a Celestial shows up, humanity gets wiped out.
-- The EPCCG, the cheerful manual with Wick on it, is this organisation's training manual.
+- **What the descendants know:** the founding myth and the old stories. They suspect the truth, and they can't do anything about it.
+- **Everywhere:** like a containment foundation, it has bases on every human planet and on many frontier worlds. It's the one faction that turns up in every campaign. Each **local chapter** takes its character from whoever leads it, so chapters differ wildly: zealous, corrupt, paranoid, decent, bankrupt.
+- **Player characters are not members by default.** But character creation always uses its document: the EPCCG is the intake form humanity's Anti-Heaven chapters use for anyone they process, recruit or need on file.
+- The EPCCG, the cheerful manual with Wick on it, is this organisation's training manual and form.
 
 **Operation Daggerfall (around year 3800).** A huge number of NPC-2 people were spawned on a world next to Earth. War followed. The original humans won, and the NPC-2 main world was nuked from orbit. Humanity celebrates it as a turning point; veterans like Paul Remarque remember what they shelled. (Suggested, as before: every one of those deaths released bots. Who benefited?)
 

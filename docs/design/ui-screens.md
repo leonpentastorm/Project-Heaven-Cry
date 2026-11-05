@@ -39,6 +39,8 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 
 ## Character creation — `Create.dc.html` (+ `CreateCores`, `CreateSkills` open it at those steps)
 
+In-world framing: creation is filling in the EPCCG, Anti-Heaven Operations Command's intake form, whatever the character's affiliation.
+
 Steps: **Identity → Skills → Traits → Kit → Lock in.** (Rules 1.1: creation is 10 skill points, at most 5 in one skill; Attributes and Cores rise automatically. **The prototype's three-pool logic predates this and needs rebuilding.**)
 
 1. **Identity:** name, origin, race, association, last dream, favourite song, history, and a portrait (upload or generate).

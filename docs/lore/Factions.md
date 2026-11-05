@@ -18,11 +18,18 @@ The last row is the World Bible's "each side is half right", made into politics.
 
 ## The blocs
 
+### 0. Anti-Heaven Operations Command: everywhere *(canon)*
+
+- **Origin:** founded about 5,000 years before Central City by **the Progenitors**, a thousand isekai-powered humans who learned the truth and were hunted to extinction.
+- **Now:** run by the Progenitors' semi-powered descendants, who have the myth and the stories and suspect the truth but can't act on it. They fight politics more than enemies and will do anything for power, because without them a Celestial's next uncaused appearance wipes humanity out. The mission has decayed from overthrowing Heaven to damage control.
+- **Reach:** bases on every human planet and many frontier worlds, like a containment foundation. Officially it serves every human power; in Central City it sits inside the state as the Department of Extra-Celestial Defense.
+- **The constant:** it appears in every campaign. **Player characters aren't members by default**, but character creation always uses its document, the EPCCG. Wick is its mascot.
+- **Chapters** are where its variety lives (template below).
+
 ### 1. Central City (Earth): the old centre
 
 - **Central Command Center** commands humanity's war with Heaven. Kaizer Meyer Reinch Wolf is its face: stillness as policy.
-- **Anti-Heaven Operations Command** *(origin canon)* is older than Central City by about 5,000 years: founded by **the Progenitors**, a thousand isekai-powered humans who learned the truth and were hunted to extinction. Now it lives inside Central City's state as the Department of Extra-Celestial Defense, run by the Progenitors' semi-powered descendants, who fight politics more than enemies and will do anything for power, because without them a Celestial's next visit wipes humanity out. Its mission has decayed from overthrowing Heaven to damage control. It **issues the EPCCG**; Wick is its mascot.
-- **Hellraiser Divisions (101st, 237th)** are AHOC's frontline. They fight Orks on frontier worlds and go wherever a Celestial has torn something open. Dominik Edelgard, Brengan Springfield and Hank Ladan.
+- **Hellraiser Divisions (101st, 237th)** are Central City's frontline army, often seconded to Anti-Heaven Operations Command. They fight Orks on frontier worlds and go wherever a Celestial has torn something open. Dominik Edelgard, Brengan Springfield and Hank Ladan.
 - **CCEC (Central City Espionage Commission)** hunts spies from Bazaim. D12.9.6.
 - **Science Team** is state-funded Sigil research, scientists not philosophers. Professor Avdol.
 - **Wants:** order, the Veil kept (without knowing it), Celestials contained.
@@ -65,6 +72,8 @@ The last row is the World Bible's "each side is half right", made into politics.
 
 ## Who stands where
 
+Anti-Heaven Operations Command isn't in the table: its relations depend on the chapter (see the template).
+
 | | Central City | Thousand-Planet City | Lumeri Church | RTC | Smetanita | Bazaim |
 |---|---|---|---|---|---|---|
 | **Central City** | — | uneasy master | ally | supplier | tolerated | enemy |
@@ -74,12 +83,25 @@ The last row is the World Bible's "each side is half right", made into politics.
 | **Smetanita** | bribes | supplies | confesses | rival | — | smuggles for |
 | **Bazaim** | hunted by | raided by | damned by | quiet buyer | smuggling partner | — |
 
+## Anti-Heaven chapter template
+
+Each campaign meets a local chapter. Fill in:
+
+| Field | Examples |
+|---|---|
+| **Leader** | a Progenitor descendant (which bloodline, how much power left), or a mundane official who outlived one |
+| **What it contains** | the local Celestial fallout it's sitting on: an abandoned plot, a sealed summoning site, a monster that can't be erased |
+| **Temper** | zealous, corrupt, paranoid, decent, bankrupt, captured by a local power |
+| **Who it answers to locally** | Central City, the Thousand-Planet City, the Lumeri Church, the Rigaz Trade Company, nobody |
+| **What it wants from the party** | forms filled in (the EPCCG), a job done quietly, someone to blame |
+
 ## Starting a campaign from the web
 
-A Celestial causes mayhem (World Bible, "How campaigns start"). Then ask which tension it lands on:
+Start from a Celestial's mess (World Bible, "How campaigns start"), let the local Anti-Heaven chapter answer, then ask which tension it lands on:
 
-- A god demands worship on a mining world: centre vs frontier, plus saints vs demons.
-- A Celestial "frees" a regiment's robots: profit vs people.
-- A Celestial lifts the curse on a whole Crawler town for a day: curse vs love.
+- A god-plot abandoned on a mining world still demands worship: centre vs frontier, plus saints vs demons.
+- A miracle answered a regiment's prayers, and its robots woke up with wills of their own: profit vs people.
+- A Celestial's old love story left one Crawler town where the curse is lifted for everyone inside the walls: curse vs love.
+- Someone summoned a Celestial on purpose: every tension at once, and the chapter wants it buried.
 
 The party's factions decide whose side they're forced onto.
