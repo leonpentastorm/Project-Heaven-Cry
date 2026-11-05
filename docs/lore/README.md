@@ -8,6 +8,7 @@ PHC's lore comes in layers. Each layer keeps everything below it and adds to it.
 | 2. Truth | [Narrator's World Bible](Narrators-World-Bible.md) | What is really going on: the simulation, the bots (mana), the Celestials and their Accords, the Knowing, the mana loop, and how to reread the EPCCG under the truth | **Narrator only.** |
 | 3. Stories and figures | [MPAT and M813](MPAT-and-M813.md), [Wick](Wick.md) | The first one-shot's history; the EPCCG's mascot | Players meet these in play. |
 | Index | [EPCCG cast and factions](EPCCG-Cast-and-Factions.md) | Who's who in the EPCCG, their factions, and their portraits | Writers and artists. |
+| Sectors | [Sectors](Sectors.md), [the Earth Sector](Sector-Earth.md) | What a Sector is, the sheet template, and the first Sector filled in, with 14 human origins for character creation | Writers; Narrator; character creation. |
 | Draft | [Factions](Factions.md) | **Suggested** web of how the factions relate: five tensions, six blocs, who stands where | Writers; Narrator once accepted. |
 
 ## Rules of thumb

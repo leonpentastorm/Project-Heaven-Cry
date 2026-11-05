@@ -43,7 +43,7 @@ In-world framing: creation is filling in the EPCCG, Anti-Heaven Operations Comma
 
 Steps: **Identity → Skills → Traits → Kit → Lock in.** (Rules 1.1: creation is 10 skill points, at most 5 in one skill; Attributes and Cores rise automatically. **The prototype's three-pool logic predates this and needs rebuilding.**)
 
-1. **Identity:** name, origin, race, association, last dream, favourite song, history, and a portrait (upload or generate).
+1. **Identity:** name; **Sector** (the Earth Sector by default), then **origin** from that Sector's list (`docs/lore/Sector-Earth.md`), shown as cards with what you know and how people see you; race (once races exist); association, last dream, favourite song, history, and a portrait (upload or generate).
 2. **Skills:** one core at a time (three big tabs). Each attribute is a row: an attribute block with diamonds, a plain-words effect, then its **three skill cards** with portrait slots, descriptions, diamonds and a stepper. One budget only: **10 skill points**. Raising a skill raises its Attribute and Core for free; the stepper preview says so ("−1 skill · Endurance 3→4 · Body 3→4 · Mastery 1"). Class presets fill a class's signature skills. **Your archetype** (Soldier, Scholar, Believer, Operator, Crusader, Mystic, Drifter) shows live beside the tabs, chosen from the Cores the skills produced, with its portrait.
 3. **Traits:** pick up to two. Incompatible traits grey out.
 4. **Kit:** three starting kits.
