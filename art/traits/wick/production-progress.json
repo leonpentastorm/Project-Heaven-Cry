@@ -119,11 +119,12 @@
     "talks-broke-down",
     "crowd-pleaser",
     "shared-breath",
-    "lay-down-arms"
+    "lay-down-arms",
+    "soulmate"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 40
+    "perks": 41
   },
   "revision_rounds": {
     "field-surgeon": 3,

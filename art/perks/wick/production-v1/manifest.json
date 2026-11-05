@@ -879,6 +879,29 @@
       },
       "batch": "E",
       "source_sha256": "36ba6333a483d53f1f5e196965e389c5770567990ba327999900761140969f5a"
+    },
+    {
+      "id": "soulmate",
+      "data_id": "soulmate",
+      "name": "Soulmate",
+      "family": "perks",
+      "order": 39,
+      "mood": "Tender",
+      "action": "Wick curls over a tiny Wick silhouette, cape spread over both like a tent, as cracks from a blow spread across Wick's own back.",
+      "screen": "Tender closed eyes",
+      "prop": "Spread cape",
+      "path": "art/perks/wick/production-v1/soulmate.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/soulmate.png",
+        "128": "art/perks/wick/production-v1/exports/128/soulmate.png",
+        "64": "art/perks/wick/production-v1/exports/64/soulmate.png",
+        "56": "art/perks/wick/production-v1/exports/56/soulmate.png",
+        "48": "art/perks/wick/production-v1/exports/48/soulmate.png",
+        "44": "art/perks/wick/production-v1/exports/44/soulmate.png",
+        "40": "art/perks/wick/production-v1/exports/40/soulmate.png"
+      },
+      "batch": "E",
+      "source_sha256": "3d5f66f4c2893a549d2cced3dd735488b996e5205a970b727f1f182c08add531"
     }
   ]
 }

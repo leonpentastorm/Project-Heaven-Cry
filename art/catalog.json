@@ -4187,6 +4187,30 @@
         "44": "art/perks/wick/production-v1/exports/44/lay-down-arms.png",
         "40": "art/perks/wick/production-v1/exports/40/lay-down-arms.png"
       }
+    },
+    "soulmate": {
+      "label": "Wick — Soulmate",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/soulmate.png",
+      "sha256": "3476404f20dd0e61ed4a40d33639e9168ea038605cd751aad2790c27490bcea8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "soulmate",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/soulmate.png",
+        "128": "art/perks/wick/production-v1/exports/128/soulmate.png",
+        "64": "art/perks/wick/production-v1/exports/64/soulmate.png",
+        "56": "art/perks/wick/production-v1/exports/56/soulmate.png",
+        "48": "art/perks/wick/production-v1/exports/48/soulmate.png",
+        "44": "art/perks/wick/production-v1/exports/44/soulmate.png",
+        "40": "art/perks/wick/production-v1/exports/40/soulmate.png"
+      }
     }
   },
   "illustrations": {
