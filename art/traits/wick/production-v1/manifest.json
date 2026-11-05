@@ -235,6 +235,29 @@
       },
       "batch": "A",
       "source_sha256": "fbac6a4f3ec22598ccc2fc3284aea9dc5ad09c6d43224464245d220108892aa2"
+    },
+    {
+      "id": "holo-drama-addict",
+      "data_id": "holo_drama_addict",
+      "name": "Holo-Drama Addict",
+      "family": "traits",
+      "order": 15,
+      "mood": "Comic",
+      "action": "Wick swoons backward theatrically, back of a mitten pressed to its brow, recoiling from an open manhole with stink lines curling out of it",
+      "screen": "Sparkly dramatic tear",
+      "prop": "Open manhole",
+      "path": "art/traits/wick/production-v1/holo-drama-addict.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/holo-drama-addict.png",
+        "128": "art/traits/wick/production-v1/exports/128/holo-drama-addict.png",
+        "64": "art/traits/wick/production-v1/exports/64/holo-drama-addict.png",
+        "56": "art/traits/wick/production-v1/exports/56/holo-drama-addict.png",
+        "48": "art/traits/wick/production-v1/exports/48/holo-drama-addict.png",
+        "44": "art/traits/wick/production-v1/exports/44/holo-drama-addict.png",
+        "40": "art/traits/wick/production-v1/exports/40/holo-drama-addict.png"
+      },
+      "batch": "A",
+      "source_sha256": "8f93c13cd4f68b69451c068229c69a22939f6c0fb4fcf1387e6f296d41af2731"
     }
   ]
 }

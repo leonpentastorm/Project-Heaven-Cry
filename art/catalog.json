@@ -1855,6 +1855,30 @@
         "44": "art/traits/wick/production-v1/exports/44/drill-echo.png",
         "40": "art/traits/wick/production-v1/exports/40/drill-echo.png"
       }
+    },
+    "holo-drama-addict": {
+      "label": "Wick — Holo-Drama Addict",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/holo-drama-addict.png",
+      "sha256": "95e83b6e7cedd86b5c5c998406aa79b3153e0969dfadc1f1ccbcfa3418940e3d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "holo_drama_addict",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/holo-drama-addict.png",
+        "128": "art/traits/wick/production-v1/exports/128/holo-drama-addict.png",
+        "64": "art/traits/wick/production-v1/exports/64/holo-drama-addict.png",
+        "56": "art/traits/wick/production-v1/exports/56/holo-drama-addict.png",
+        "48": "art/traits/wick/production-v1/exports/48/holo-drama-addict.png",
+        "44": "art/traits/wick/production-v1/exports/44/holo-drama-addict.png",
+        "40": "art/traits/wick/production-v1/exports/40/holo-drama-addict.png"
+      }
     }
   },
   "character_collections": {

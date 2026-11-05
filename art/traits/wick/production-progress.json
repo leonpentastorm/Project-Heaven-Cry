@@ -26,10 +26,11 @@
     "the-mask",
     "machine-faced",
     "right-of-way",
-    "drill-echo"
+    "drill-echo",
+    "holo-drama-addict"
   ],
   "catalog_coverage": {
-    "traits": 19,
+    "traits": 20,
     "perks": 2
   },
   "revision_rounds": {
