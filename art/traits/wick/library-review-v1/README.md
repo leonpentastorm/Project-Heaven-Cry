@@ -12,7 +12,7 @@ Sworn Sibling version 3 follows Leon’s two-person oath-toast reference; older 
 
 ## Remaining work
 
-Image generation returned HTTP 429 `usage_limit_reached` on Real Power. The service reports a reset at **5 November 2026, 23:59:27 UTC**. Every completed image was pushed separately. The complete remaining briefs are retained in [the queue snapshot](../pending-at-usage-limit-2026-11-05.json); resume with Real Power, then Batch F. This is a dated review snapshot, not a complete-production claim.
+Image generation returned HTTP 429 `usage_limit_reached` on Real Power. The service reports a reset at **5 November 2026, 23:59:27 UTC**. Every completed image was pushed separately. The complete remaining briefs are retained in [the queue snapshot](../pending-at-usage-limit-2026-11-05.json); resume with the four Review 4 fixes, then Real Power, then Batch F, then **the new Batch G: 27 Mastered perks** ([brief](../../../briefs/wick-production-icons.md#mastered-27)). The perk target is now 103. This is a dated review snapshot, not a complete-production claim.
 
 | Batch | Remaining perk |
 |---|---|
