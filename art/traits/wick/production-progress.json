@@ -43,10 +43,11 @@
     "lowland-born",
     "central-city-kid",
     "daggerfall-veteran",
-    "upper-touched"
+    "upper-touched",
+    "gun-nut"
   ],
   "catalog_coverage": {
-    "traits": 36,
+    "traits": 37,
     "perks": 2
   },
   "revision_rounds": {
