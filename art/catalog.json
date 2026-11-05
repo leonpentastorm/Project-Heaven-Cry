@@ -3491,6 +3491,30 @@
         "44": "art/perks/wick/production-v1/exports/44/into-the-dark.png",
         "40": "art/perks/wick/production-v1/exports/40/into-the-dark.png"
       }
+    },
+    "iron-stomach": {
+      "label": "Wick — Iron Stomach",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/iron-stomach.png",
+      "sha256": "6825d55077dce6315b2b1a333634bced5cd4ac91d03a1a88bde713ceae445ab3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "iron_stomach",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/iron-stomach.png",
+        "128": "art/perks/wick/production-v1/exports/128/iron-stomach.png",
+        "64": "art/perks/wick/production-v1/exports/64/iron-stomach.png",
+        "56": "art/perks/wick/production-v1/exports/56/iron-stomach.png",
+        "48": "art/perks/wick/production-v1/exports/48/iron-stomach.png",
+        "44": "art/perks/wick/production-v1/exports/44/iron-stomach.png",
+        "40": "art/perks/wick/production-v1/exports/40/iron-stomach.png"
+      }
     }
   },
   "illustrations": {

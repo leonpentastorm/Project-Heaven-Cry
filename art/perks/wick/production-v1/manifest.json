@@ -212,6 +212,29 @@
       },
       "batch": "D",
       "source_sha256": "46ce7da176340a276be57bbe4bcb52a642dfaeeafa4cbc067f228fd70abfe75b"
+    },
+    {
+      "id": "iron-stomach",
+      "data_id": "iron_stomach",
+      "name": "Iron Stomach",
+      "family": "perks",
+      "order": 10,
+      "mood": "Comic",
+      "action": "Wick sits with legs stuck out, happily slurping straight from a dented tin can that pours out thick wavy stink lines.",
+      "screen": "Delighted ^_^",
+      "prop": "Dented tin can",
+      "path": "art/perks/wick/production-v1/iron-stomach.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/iron-stomach.png",
+        "128": "art/perks/wick/production-v1/exports/128/iron-stomach.png",
+        "64": "art/perks/wick/production-v1/exports/64/iron-stomach.png",
+        "56": "art/perks/wick/production-v1/exports/56/iron-stomach.png",
+        "48": "art/perks/wick/production-v1/exports/48/iron-stomach.png",
+        "44": "art/perks/wick/production-v1/exports/44/iron-stomach.png",
+        "40": "art/perks/wick/production-v1/exports/40/iron-stomach.png"
+      },
+      "batch": "D",
+      "source_sha256": "ddfa9ff7db5f37612df5aa0de44bd80524bc6a72c982c7b4e9c82a1c0351adc4"
     }
   ]
 }

@@ -90,11 +90,12 @@
     "bedside-manner",
     "breaching-strike",
     "grapple",
-    "into-the-dark"
+    "into-the-dark",
+    "iron-stomach"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 11
+    "perks": 12
   },
   "revision_rounds": {
     "field-surgeon": 3,

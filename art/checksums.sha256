@@ -6,7 +6,7 @@
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 279a7bae7b7563fdd24a1eda577f1fcd7499b5ce12767c4d33aa0642b31b4e64  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-6989230039f1445128d76073d5475696bbeea8e2371c84f3d0e339886a68db80  art/catalog.json
+657e1f9c6b6b5ef54a0521da7ab0bb5b31dd1f47f8e7998289f0d78a92816cb5  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -119,6 +119,7 @@ bd073b3a09aa12c5ef4a99c2d90fe1b370118ebb0bd4e6a91027e35fdf96c2fd  art/perks/wick
 6b74892ec64df4547dc775cca95bd4f50f00bfeec1897eac9fc38dad31a61678  art/perks/wick/production-v1/exports/128/bulwark.png
 db134c558e70e38cfc9be806762eff8caa28df3bba7f78e0ff7e171ec8c29138  art/perks/wick/production-v1/exports/128/grapple.png
 3801922cc1bd612b95f0353b389d050a612aacbf0d95d9ad394641bbe8c5d228  art/perks/wick/production-v1/exports/128/into-the-dark.png
+98aa2a2e8407cbc7804f65ed23d84abe3595b9cb1fdf7176fad13863da53c95b  art/perks/wick/production-v1/exports/128/iron-stomach.png
 8eb8bb761718b176de811daecbe546e3a7ca9080aa8b25a0310c1131fa60fbaa  art/perks/wick/production-v1/exports/128/scar-tissue.png
 7f47606716e0cd05f9956c138af35bb918ca4b0031c902953a6b1db19a4b0c91  art/perks/wick/production-v1/exports/128/shrug-it-off.png
 b43db165b2910a9d4ab8718373808c37bc99790d7382fbd249bdc490784c0efd  art/perks/wick/production-v1/exports/128/used-to-the-pain.png
@@ -128,6 +129,7 @@ b43db165b2910a9d4ab8718373808c37bc99790d7382fbd249bdc490784c0efd  art/perks/wick
 c1d386aaf4833fa3c7620e55b3f78801cc10216ff982392a9fb0ac66089e1974  art/perks/wick/production-v1/exports/256/bulwark.png
 fe5d1a3651f01846f364a06794d4bc9ba1e5ac1824e9dd68c92a0e1d7e203924  art/perks/wick/production-v1/exports/256/grapple.png
 c18845ba85405e6e9d35012b1d1c32f5cfaabce6ef63582fe54cae1addf4bf4e  art/perks/wick/production-v1/exports/256/into-the-dark.png
+d9dfbc1dcce9ed27a825ab604e7c2f6eb8cc84f0c886a3e82820adff5b50a721  art/perks/wick/production-v1/exports/256/iron-stomach.png
 4ef9733639dc3420bfe08cfa58718a5eb3b2c8f86205ff4e2ab853f055017b54  art/perks/wick/production-v1/exports/256/scar-tissue.png
 3728fd3706c969521fd68b52750cfa0cfac63690922276e2d1a403d9512726b3  art/perks/wick/production-v1/exports/256/shrug-it-off.png
 fc8565c7988a001144607892765faef833b9bd0e5ed648b4fc090bf740dda4da  art/perks/wick/production-v1/exports/256/used-to-the-pain.png
@@ -137,6 +139,7 @@ b54db3006b6d723a2a88ad5cd691bc94406cf0be47fa206cc85e99397e196f46  art/perks/wick
 aa950f200f0102fb9484f7fccacf86f96dd59d9c1982eb01e18a22bde3a8eecb  art/perks/wick/production-v1/exports/40/bulwark.png
 e8c581a6364d5e9237b357a3d89644a9bc45f57445ca4b4bde510a8d0d1ac3ee  art/perks/wick/production-v1/exports/40/grapple.png
 19fcb0431fa6758444528cc4a761681cfac2ff085dbb393289261e93b6b2734b  art/perks/wick/production-v1/exports/40/into-the-dark.png
+2707629823171fe45e7427a8e4bc8b40868853c019d3d2bfe854e0b22c1c3916  art/perks/wick/production-v1/exports/40/iron-stomach.png
 3db8581d645bddc580c9ce9a775c34a9a00aba359405cbc1a16eebbf42b8c6bc  art/perks/wick/production-v1/exports/40/scar-tissue.png
 22994fccc01be76f9a07dce84e53e9498027aaa1bc71dd06649e7c33fc1d3b28  art/perks/wick/production-v1/exports/40/shrug-it-off.png
 b4936400dd7638381e14b7fc8b1fe2346b4f9ed4949fa3a72556e0b2055c9f1b  art/perks/wick/production-v1/exports/40/used-to-the-pain.png
@@ -146,6 +149,7 @@ cc92432a339f4f99f585e5a75f24bf1c43835e305127ab39414c554895dd7bfe  art/perks/wick
 146b43a22e883051b1b90151d2262142072c9f50f2c833bd377a8d5acca96fc9  art/perks/wick/production-v1/exports/44/bulwark.png
 d3383d4a719e3112b9f121f3e8d142a387d56d806bf24734859625e91afae5f3  art/perks/wick/production-v1/exports/44/grapple.png
 af50ef1e07f6084ef36355c20579d4cec8ea3546d067da52d86908f5c2a8136a  art/perks/wick/production-v1/exports/44/into-the-dark.png
+ceb0756ddc543b21914752ec4f1019831efde81162e9f8c74f80b2762c1dea28  art/perks/wick/production-v1/exports/44/iron-stomach.png
 6190041e1c4252c5e8071c1bd8e8149c868f8fee87e1733c09b4f28e0c4d8da9  art/perks/wick/production-v1/exports/44/scar-tissue.png
 788be115dd64cf23ae8f182a7d565872937823cecce0efe26d7ba7a55b27be78  art/perks/wick/production-v1/exports/44/shrug-it-off.png
 ea948c70ef8a9b48c5a45467b83ce84d5ee179ccc4f629ee95971baaf6449f06  art/perks/wick/production-v1/exports/44/used-to-the-pain.png
@@ -155,6 +159,7 @@ a0a2d046e1293c6ca6bfcac3ba4ed404ab3042405c5d441a293b687dcbd9c6d9  art/perks/wick
 4090ebb0a587c21a39a2b7f19e3960a52b765be56fb2cbd9e844bec1ad5c4c6e  art/perks/wick/production-v1/exports/48/bulwark.png
 855385213003c46eb896e6cbb808d46598ac9d22e037b4960d8763e83cc339f8  art/perks/wick/production-v1/exports/48/grapple.png
 c29b413ec52b1fd2c364f790ce6b146ee85c5096143d145debd75022a3369099  art/perks/wick/production-v1/exports/48/into-the-dark.png
+d4fc792f44e87f3c2c00060df7c47fd36b20765ec461e06ba48486a0916141ab  art/perks/wick/production-v1/exports/48/iron-stomach.png
 0311a7168470981500d041f753fc747827d7bb835ebab69a33341a54055e48a4  art/perks/wick/production-v1/exports/48/scar-tissue.png
 ae2e0d93cd009ea4a921c300ffe0211da903b07a8fa4b4ff877cafba665481e8  art/perks/wick/production-v1/exports/48/shrug-it-off.png
 ace074ccbcad51e9146266a6b7fa1be74a1fe0066e0215d114a399355b855dc6  art/perks/wick/production-v1/exports/48/used-to-the-pain.png
@@ -164,6 +169,7 @@ bd0e78b3c212c218ecdfa2d4c3e502565e4722f152d844ddc88bd5e08f19a4c2  art/perks/wick
 b8f51dbb5053025cc5473c041ddb360cf0c71dae8d0089092bcc6c43f184bd91  art/perks/wick/production-v1/exports/56/bulwark.png
 1b5d639314fceca023de47d55532f0086fd77cb2ed6313480e6ef8946929e8bf  art/perks/wick/production-v1/exports/56/grapple.png
 ff825166525502beec3079c87b64ee2734f023b50e8d9abbae5dc0b0ef38337f  art/perks/wick/production-v1/exports/56/into-the-dark.png
+734ad56770b61925ef2c1c9345481975ea35fde6ea3c6806da5cd41cef621c34  art/perks/wick/production-v1/exports/56/iron-stomach.png
 deb974d291fd14f733204db21ee1d919e218b8eda171f373ebd3e025bd371102  art/perks/wick/production-v1/exports/56/scar-tissue.png
 be52292f931e3dfb9d27e4a009fea7005d8c38c30be150412ff9e5850591169f  art/perks/wick/production-v1/exports/56/shrug-it-off.png
 02b6efcfc656f8c77a0bac735f40c9bb71cd51f05ca9d76e0ed6ad134f5db265  art/perks/wick/production-v1/exports/56/used-to-the-pain.png
@@ -173,20 +179,22 @@ a28202b02c998a9f89083a29bcdd3a3cfb9a9b724874a11831c4fc3443d9fe20  art/perks/wick
 cf3145a1462daceebaac4ffdbcedada2d206bffa11d41baa63b5e74a3e95f17e  art/perks/wick/production-v1/exports/64/bulwark.png
 2eb33a08452d7d3a35411df0f54ed1e64863914a7b7a6a81a72d2bbdaf8c060e  art/perks/wick/production-v1/exports/64/grapple.png
 9475da8311fa5eb9225981c2a6a03b15946e5902e0589cefece6f89b560ad248  art/perks/wick/production-v1/exports/64/into-the-dark.png
+f7ed86f3c651bd4063a5e5bac42f452e1e1f29f6ddf3da11bae361ed9ca6e0a4  art/perks/wick/production-v1/exports/64/iron-stomach.png
 6a855104d824616819e52467b8c8cf5c6e567e7271ab3c5059ab47b435ae591b  art/perks/wick/production-v1/exports/64/scar-tissue.png
 850784cf36a15f3cb1c4cdd0be0efa40c1d1f153c927ffc22bd8195596d819d0  art/perks/wick/production-v1/exports/64/shrug-it-off.png
 7e095c6d77da5c536f711d161e11e1f31f1caa94d98c28412d4617cd58df32be  art/perks/wick/production-v1/exports/64/used-to-the-pain.png
 fb994298398acc535b283428d95ac5c23f5623dbecdfd90cb844f9feb2571b04  art/perks/wick/production-v1/exports/64/wind-on-the-skin.png
 599e091b6e9cb044e28a38260fec3c3d86b5e7e82dfea1bfcfee6c609d48653c  art/perks/wick/production-v1/grapple.png
 88f55b2358e4f5043bf6454d005fd4aebc6f5ac5e760d313e36829395dbb639b  art/perks/wick/production-v1/into-the-dark.png
-d2b62daa1e6d9169cb95fdcdce0116b00e409e8ba5b207244c5711d305e41d96  art/perks/wick/production-v1/manifest.json
-470388b3839c996e94898cf02254f4555213bb7a69fb069c4189e11db04b94be  art/perks/wick/production-v1/previews/batch-d-128px.png
-8989f0a8b442b9a4ea502e9774007efc1e28d559ee73358c619f2cadb3b4852f  art/perks/wick/production-v1/previews/batch-d-40px.png
-31ba4f354b457b06dee7a856fb9fcc054e90f146af781e35fc3b1423cc23dd7c  art/perks/wick/production-v1/previews/batch-d-44px.png
-3d14c4bf149074a803fdaa4353669d373a357c4a815a4340060404ff992699ce  art/perks/wick/production-v1/previews/batch-d-48px.png
-295d6e640e3308996b602f85f4aae4a816f540adc318981a0190b819c192dbe1  art/perks/wick/production-v1/previews/batch-d-56px.png
-b2f070ba1106e72316f367aa775497d7fc8a8d91a91a47e4f95a1a1c1d35555e  art/perks/wick/production-v1/previews/batch-d-light-dark-64px.png
-f06246ba9fbc7ec2fdae927756012944611eee00a12845192a49ae44d15fbfb2  art/perks/wick/production-v1/previews/latest.png
+6825d55077dce6315b2b1a333634bced5cd4ac91d03a1a88bde713ceae445ab3  art/perks/wick/production-v1/iron-stomach.png
+4071dc348e3569a382dae911074b4f33a848e38ec6ada74e1ea0714a35b86014  art/perks/wick/production-v1/manifest.json
+c88aaf6c29e2cb43870289aa5a1a47a60a72d4c5cc3c4d83b9a49b4dbc21257a  art/perks/wick/production-v1/previews/batch-d-128px.png
+9554a56ee71653e85a98838bdaca5f7545cf5b4a22f2de6b2bc9ae1434dab5dd  art/perks/wick/production-v1/previews/batch-d-40px.png
+84f94c02782c9cfe3896c756915f1b44f06974d5e5d064cadba9d51c98dac1a5  art/perks/wick/production-v1/previews/batch-d-44px.png
+137071a0c1ed6106c96cd44fc28d879acba2a75694d4cdb5b3ee215b2b65b356  art/perks/wick/production-v1/previews/batch-d-48px.png
+8ecc729bee5bc603e0c2b27c69bb1da8fd9eec50f9254e3e942225442c143427  art/perks/wick/production-v1/previews/batch-d-56px.png
+8e8b3eec6dc5eeb23027e89e9333a76cf64bdd63351704d4bd74cf2555765483  art/perks/wick/production-v1/previews/batch-d-light-dark-64px.png
+6614bb509b0cb8ed6b1b18ab6d9eb3e579087bac661e6053d373f1c944806ebc  art/perks/wick/production-v1/previews/latest.png
 ad9f81cfac6f04d7ef4224bbedc266c45aac3721d9e5629c4a74adfe713a6dea  art/perks/wick/production-v1/scar-tissue.png
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/perks/wick/production-v1/shrug-it-off.png
 aeea9d63e98ee791a428ff6988ea92a3f737a99cdf2659d6e2abb288fd2b2706  art/perks/wick/production-v1/used-to-the-pain.png
@@ -272,7 +280,7 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-6c46d132845324302ed42b4fba2da7184c81973a318f66d3fefc49146e9a8cce  art/traits/wick/production-progress.json
+e07eb3a3b7915d5791affc26471bc23543abcec49a3560bfd46e9021602d7340  art/traits/wick/production-progress.json
 9e6746fe11e2c0d41184e0c6c63eb7d83cd3c937cfc8ad4485d3c1405f646c5c  art/traits/wick/production-v1/README.md
 a5989b18d518aef797b912484dca317c85036f2939f91d555d8f176a0783a4cb  art/traits/wick/production-v1/ace-pilot.png
 3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a  art/traits/wick/production-v1/augmented.png
