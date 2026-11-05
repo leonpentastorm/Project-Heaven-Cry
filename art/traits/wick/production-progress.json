@@ -81,11 +81,12 @@
     "pacifist",
     "moon-hunter",
     "beast-handler",
-    "ace-pilot"
+    "ace-pilot",
+    "bulwark"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 2
+    "perks": 3
   },
   "revision_rounds": {
     "field-surgeon": 3,

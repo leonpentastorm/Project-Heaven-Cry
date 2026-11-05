@@ -3275,6 +3275,30 @@
       },
       "revision": 2,
       "previous_path": "art/traits/wick/test-set-1/supreme-command.png"
+    },
+    "bulwark": {
+      "label": "Wick — Bulwark",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/bulwark.png",
+      "sha256": "cfd23b5e5064c3acbadc95e2adf1c1fdaa82054e704752ea36c1655075780902",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "bulwark",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bulwark.png",
+        "128": "art/perks/wick/production-v1/exports/128/bulwark.png",
+        "64": "art/perks/wick/production-v1/exports/64/bulwark.png",
+        "56": "art/perks/wick/production-v1/exports/56/bulwark.png",
+        "48": "art/perks/wick/production-v1/exports/48/bulwark.png",
+        "44": "art/perks/wick/production-v1/exports/44/bulwark.png",
+        "40": "art/perks/wick/production-v1/exports/40/bulwark.png"
+      }
     }
   },
   "illustrations": {

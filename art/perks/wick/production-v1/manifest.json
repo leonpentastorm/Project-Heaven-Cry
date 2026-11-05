@@ -1,0 +1,33 @@
+{
+  "collection": "wick-production-v1",
+  "version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "brief": "art/briefs/wick-production-icons.md",
+  "workflow": "Leon requested seven fixes first, then the full run with each new icon pushed and shown immediately.",
+  "icons": [
+    {
+      "id": "bulwark",
+      "data_id": "bulwark",
+      "name": "Bulwark",
+      "family": "perks",
+      "order": 1,
+      "mood": "Heroic, Proud",
+      "action": "Wick braces a tall riot shield in a low side-on lunge, bullets bouncing off its front, a tiny Wick silhouette crouched safe behind it.",
+      "screen": "Determined, sloping brows",
+      "prop": "Riot shield",
+      "path": "art/perks/wick/production-v1/bulwark.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bulwark.png",
+        "128": "art/perks/wick/production-v1/exports/128/bulwark.png",
+        "64": "art/perks/wick/production-v1/exports/64/bulwark.png",
+        "56": "art/perks/wick/production-v1/exports/56/bulwark.png",
+        "48": "art/perks/wick/production-v1/exports/48/bulwark.png",
+        "44": "art/perks/wick/production-v1/exports/44/bulwark.png",
+        "40": "art/perks/wick/production-v1/exports/40/bulwark.png"
+      },
+      "batch": "D",
+      "source_sha256": "6ae1df29529075be85e495cbf1370df17ee1b7fca027093de46d17d653b44ca4"
+    }
+  ]
+}
