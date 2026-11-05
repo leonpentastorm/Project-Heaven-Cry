@@ -18,10 +18,11 @@
   ],
   "new_icons_delivered": [
     "southern-fist",
-    "blade-recluse"
+    "blade-recluse",
+    "grenadiers-arm"
   ],
   "catalog_coverage": {
-    "traits": 11,
+    "traits": 12,
     "perks": 2
   }
 }

@@ -30,6 +30,29 @@
       "source_sha256": "66fb4b150d54b83367000f51f5702e929e50242eb413839c00218664caa553eb"
     },
     {
+      "id": "grenadiers-arm",
+      "data_id": "grenadiers_arm",
+      "name": "Grenadier's Arm",
+      "family": "traits",
+      "order": 5,
+      "mood": "Comic, Proud",
+      "action": "Wick leans far back on one boot, a barrel bigger than itself hoisted overhead mid-throw, a little strain squiggle springing off its throwing shoulder",
+      "screen": "Gritted, straining",
+      "prop": "Barrel",
+      "path": "art/traits/wick/production-v1/grenadiers-arm.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/grenadiers-arm.png",
+        "128": "art/traits/wick/production-v1/exports/128/grenadiers-arm.png",
+        "64": "art/traits/wick/production-v1/exports/64/grenadiers-arm.png",
+        "56": "art/traits/wick/production-v1/exports/56/grenadiers-arm.png",
+        "48": "art/traits/wick/production-v1/exports/48/grenadiers-arm.png",
+        "44": "art/traits/wick/production-v1/exports/44/grenadiers-arm.png",
+        "40": "art/traits/wick/production-v1/exports/40/grenadiers-arm.png"
+      },
+      "batch": "A",
+      "source_sha256": "fe55717324670c13edfa5646c8d0b1ca5be2270cfedd3797d4d7632b84d82812"
+    },
+    {
       "id": "blade-recluse",
       "data_id": "blade_recluse",
       "name": "Blade Recluse",

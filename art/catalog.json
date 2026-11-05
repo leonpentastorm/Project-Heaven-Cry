@@ -1662,6 +1662,30 @@
         "44": "art/traits/wick/production-v1/exports/44/blade-recluse.png",
         "40": "art/traits/wick/production-v1/exports/40/blade-recluse.png"
       }
+    },
+    "grenadiers-arm": {
+      "label": "Wick — Grenadier's Arm",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/grenadiers-arm.png",
+      "sha256": "d474a0d845acc0a138249d980ab4bf3a5fa77c19394b836cd44c28fc05f7bc7b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "grenadiers_arm",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/grenadiers-arm.png",
+        "128": "art/traits/wick/production-v1/exports/128/grenadiers-arm.png",
+        "64": "art/traits/wick/production-v1/exports/64/grenadiers-arm.png",
+        "56": "art/traits/wick/production-v1/exports/56/grenadiers-arm.png",
+        "48": "art/traits/wick/production-v1/exports/48/grenadiers-arm.png",
+        "44": "art/traits/wick/production-v1/exports/44/grenadiers-arm.png",
+        "40": "art/traits/wick/production-v1/exports/40/grenadiers-arm.png"
+      }
     }
   },
   "character_collections": {
