@@ -56,12 +56,13 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 ## The worlds and the war (canon)
 
-**Earth, the homeworld.** The first planet the simulation's builders made, where humanity began. Central City stands on Earth: bank cards, shock batons, Central Command Center, the CCEC. Humanity has since spread across many worlds in many galaxies; the great centres, such as Central City and the Thousand-Planet City, lie in different galaxies. **Suggested:** Earth was named before the Accords existed, which is why the homeworld can carry a real-Earth name when nothing else may.
+**Earth, the homeworld.** The first planet the simulation's builders made, where humanity began. Central City stands on Earth: bank cards, shock batons, Central Command Center, the CCEC. Humanity has since spread across many worlds in many galaxies; the great centres, such as Central City and the Thousand-Planet City, lie in different galaxies. *Thousand-Planet City* is a faction name; its army is the **Thousand World Legion**, which the EPCCG calls the Thousand-Planet City Army (the 093rd Regiment is one of its regiments). **Suggested:** Earth was named before the Accords existed, which is why the homeworld can carry a real-Earth name when nothing else may.
 
 **How campaigns start.** A Celestial shows up and causes mayhem: a god walks onto a battlefield, a moon gets rewritten, a legend from nowhere starts a war. Anti-Heaven Operations Command answers. That collision is the usual first scene of a campaign.
 
 **The Crawlers (NPC version 2).** A Celestial created a second patch of people, ordinary humans with supernatural abilities (espers), because she wanted a battle-academy story. Another Celestial hated it ("anime is cringe") and cursed the whole patch: to the original humans (NPC version 1), every NPC-2 person appears as a malformed creature, shaped by whatever the local humans fear most. The first NPC-1 settlement to meet them lived on a world with crawling, humanoid zombie-like things, so they saw crawlers, and the name *Crawler* stuck.
 
+- **The curse runs one way.** Crawlers see ordinary humans as ordinary humans. They know they're people, and they watch the people they see as people scream at them as monsters. That's the drama.
 - **True love lifts the curse.** An NPC-1 person who truly loves an NPC-2 person sees them as human again: human, with abilities. Mixed families exist because of it, and they are rare.
 - **Suggested consequences:** two humans looking at the same Crawler can see different monsters, because each sees their own fear. In co-op, each player can be given a different private description of the same Crawler. Humanity First's "Crawlers are vermin" is the curse talking, and Paul Remarque's father "cradling the body of a Crawler smaller than the rest" was a parent holding a child.
 
@@ -69,10 +70,12 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 **Timeline.**
 
+Years are counted on the **Central City founding calendar**. The NPCs' history runs back billions of years, and many powers in the world are far older than Central City; the 4000s are only Central City's count.
+
 | When | What |
 |---|---|
 | Real Earth, about year 65,000 | The simulation runs. To the Celestials it was a normal VR game, until they found they couldn't log out. |
-| About 3800 | Operation Daggerfall. |
+| About 3800 (Central City calendar) | Operation Daggerfall. |
 | 27 July 4084 | The M813 incident. |
 | 15 October 4090 | Snowden "Eye" Wright writes up M813 at Outpost-921. |
 
@@ -184,7 +187,7 @@ Most of what the group wrote in 2020 already fits. A few lines need a new readin
 - [ ] Which NPCs already know? The Institute of Forgotten Knowledge is the obvious place for a hidden demigod.
 - [ ] Is the truth ever revealed to the players, or does it stay the Narrator's secret until someone earns the Knowing?
 - [ ] Who wrote the Accords, and who enforces them?
-- [ ] Is the "Thousand World Legion" the Thousand-Planet City's army, or a separate power?
-- [ ] Do Crawlers see ordinary humans as monsters too, or as humans?
-- [ ] Bazaim: human power, Crawler remnant, or something else? (`Factions.md` suggests a human nation of lifted curses.)
-- [ ] The calendar: "billions of years of history" (above) vs Daggerfall in about 3800. Is the year count from a later epoch, or does simulation time run faster than real Earth's?
+- [x] The Thousand World Legion is the Thousand-Planet City's army; Thousand-Planet City is the faction name.
+- [x] Crawlers see ordinary humans as humans; the curse runs one way.
+- [x] Bazaim is a human nation of lifted curses (see `Factions.md`).
+- [x] The 4000s are the Central City founding calendar; history runs back billions of years.

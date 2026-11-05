@@ -1,6 +1,6 @@
 # Factions: draft web
 
-**Status: Suggested, all of it.** A proposal for how the EPCCG's factions relate, for Leon to keep, change or cut. Canon facts it builds on are in the [EPCCG](EPCCG-Player-Character-Creation-Guide.md) and the [World Bible](Narrators-World-Bible.md). It uses only names and details already in those texts, and adds relationships.
+**Status: Suggested, except where marked canon** (Bazaim and the Thousand-Planet City's naming, accepted 5 Nov 2026). A proposal for how the EPCCG's factions relate, for Leon to keep, change or cut. Canon facts it builds on are in the [EPCCG](EPCCG-Player-Character-Creation-Guide.md) and the [World Bible](Narrators-World-Bible.md). It uses only names and details already in those texts, and adds relationships.
 
 ## The five tensions
 
@@ -30,8 +30,9 @@ The last row is the World Bible's "each side is half right", made into politics.
 
 ### 2. The Thousand-Planet City: the frontier empire
 
+- **Canon:** *Thousand-Planet City* is the faction's name; its army is the **Thousand World Legion** (the EPCCG's "Thousand-Planet City Army").
 - A sprawling human polity in another galaxy. It answers to Central City on paper and to its own quotas in practice.
-- **Its army** includes the **093rd Regiment**, resource extraction that treats robots as disposable (MPAT, Snowden "Eye" Wright), and the **Outposts** (Outpost-1, Outpost-813, Outpost-921). Colonel Alexei Novikov commands at Outpost-1.
+- **The Thousand World Legion** includes the **093rd Regiment**, resource extraction that treats robots as disposable (MPAT, Snowden "Eye" Wright), and the **Outposts** (Outpost-1, Outpost-813, Outpost-921). Colonel Alexei Novikov commands at Outpost-1.
 - **Wants:** platinum, cores, quota met.
 - **Fears:** the robot question, and Central City auditing what happened at M813.
 
@@ -58,7 +59,7 @@ The last row is the World Bible's "each side is half right", made into politics.
 ### 6. Outside the walls
 
 - **Black Scavengers** survive in the ruined lowlands past the desert, on Earth. **Hook:** the lowlands were wrecked by Daggerfall's spillover, since the NPC-2 world was next door, and nobody rebuilt. Yukimura.
-- **Bazaim** is a human (NPC-1) power that made peace with Daggerfall's survivors through mixed families, the nation of lifted curses. Its people include espers, which is why the CCEC finds "a foreign Outburst" at its crime scenes. To Central City it's a spy state harbouring monsters. To Bazaim, Central City is the power that nuked a world of people.
+- **Bazaim** *(canon)* is a human (NPC-1) power that made peace with Daggerfall's survivors through mixed families, the nation of lifted curses. Its people include espers, which is why the CCEC finds "a foreign Outburst" at its crime scenes. To Central City it's a spy state harbouring monsters. To Bazaim, Central City is the power that nuked a world of people.
 - **Orks** are a Celestial's creation, built from real-Earth games (World Bible, Suggested). The Hellraisers' standing enemy.
 - **Crawlers (NPC-2 survivors)** are scattered after Daggerfall, cursed, hunted, sometimes loved.
 

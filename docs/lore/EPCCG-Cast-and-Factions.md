@@ -19,7 +19,7 @@ Each of the 27 skill entries opens with a field quote from someone who has far t
 | Science Team | Sigil researchers | Professor Avdol |
 | Kemizuchi Military Academy | Officer school with a rival school across town | Souji, Anastasia Vandenberg |
 | Arkvelton | Home of the Soul-magic witches | Nora the Witch |
-| Thousand-Planet City Army, 093rd Regiment | Resource-extraction army that treats robots as disposable | MPAT, Snowden "Eye" Wright |
+| Thousand-Planet City (army: the Thousand World Legion), 093rd Regiment | Resource-extraction army that treats robots as disposable | MPAT, Snowden "Eye" Wright |
 
 Enemies named: Orks, Crawlers, spies from Bazaim. Operation Daggerfall is celebrated as a turning point; its veterans remember shelling Crawler families.
 
