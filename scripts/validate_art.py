@@ -170,7 +170,7 @@ def validate_production_icons(catalog):
         progress = json.loads(progress_path.read_text())
         for family in ['traits', 'perks']:
             require(progress['catalog_coverage'][family] == len(catalog[family]), f'Stale {family} production progress')
-        require(len(progress['revisions_delivered']) <= 7 and len(progress['new_icons_delivered']) <= 166,
+        require(len(progress['revisions_delivered']) <= 7 and len(progress['new_icons_delivered']) <= 169,
                 'Production progress exceeds brief')
 
     reference_manifest = ROOT / 'art/traits/wick/reference-ui-v1/manifest.json'
@@ -260,7 +260,7 @@ def validate():
     if PIXEL_ASSET is not None:
         require(any(PIXEL_ASSET in catalog[f] for f in ['traits', 'perks']), f'Unknown selected icon: {PIXEL_ASSET}')
     families = [('skills', 27, 27), ('characters', 83, 83),
-                ('traits', 9, 74), ('perks', 2, 103), ('illustrations', 2, 2)]
+                ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 2)]
     if 'mascot' in catalog:
         families.append(('mascot', 1, 1))
     for family, minimum, maximum in families:
@@ -299,7 +299,7 @@ def validate():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--asset', help='Check pixels for this icon only; still check all metadata and checksums.')
-    parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 103-perk coverage.')
+    parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 106-perk coverage.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons

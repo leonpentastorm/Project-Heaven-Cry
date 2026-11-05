@@ -1,4 +1,4 @@
-# Wick production brief: all 74 trait icons and 103 perk icons
+# Wick production brief: all 74 trait icons and 106 perk icons
 
 **Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
 
@@ -6,10 +6,10 @@
 
 > **NEXT UP when image generation resumes (Leon, 5 November 2026), in this order:**
 > 1. **Review 4 fixes (4 icons):** Into the Dark, Holy Ordnance, Supreme Command, Sworn Sibling. What to change: [perks production README, Review 4](../perks/wick/production-v1/README.md#review-4--5-november-2026-55-perks-plus-the-review-3-trait-fixes).
-> 2. **Real Power**, then **Batch F** (20 Achieved and Ultimate perks): unchanged, from the [queue snapshot](../traits/wick/pending-at-usage-limit-2026-11-05.json).
+> 2. **Real Power**, then **Batch F** (20 Achieved and Ultimate perks), then **three new combo perks** added 5 November: Bite the Bullet, Sixth Sense, What Could Be (rows at the end of [Achieved](#achieved-19)). Note: Ultimate perks are now secret in the game (no screen lists them until one is awarded); draw them exactly as briefed.
 > 3. **Batch G, new: the 27 Mastered perks** (one per skill, granted at 10 points). Requirements in [Mastered (27)](#mastered-27) below. They're the game's top-tier perks: same flat white ink, plus the Mastered mark.
 >
-> The queue snapshot lists all 52 in this order; `production-progress.json` points at the first.
+> The queue snapshot lists all 55 in this order; `production-progress.json` points at the first.
 
 **Attach to every job:** `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` (the only style anchor), the three approved test icons (Chain Smoker, The Brightest Light, Forlorn Hope) as quality references, and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Item texts are in `data/traits.json` and `data/perks.json`: read what the item **does** before drawing it.
 
@@ -140,7 +140,7 @@ Status: *approved* = keep the existing icon (the Mind Without Fog master or a te
 | 73 | **Beast Handler** (`beast_handler`) | Wilds and machines | new | Tender | Wick rides belly-down on a huge shaggy back, the beast's head off-frame and only one ear showing, hugging the fur | Content closed eyes | The beast's back (partial) |
 | 74 | **Ace Pilot** (`ace_pilot`) | Wilds and machines | new | Heroic, Comic | Wick leans hard into a bank, gripping a big steering yoke with nothing around it, goggles up, capelet whipping, speed lines streaming | Wild grin | Steering yoke |
 
-## Requirements: perks (103)
+## Requirements: perks (106)
 
 Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points; the icon doesn't change at Tier II). Mastered perks come one per skill, at 10 points. Achieved perks combine skills plus a deed; Ultimate perks combine two Achieved perks and may be more dramatic, under the same rules.
 
@@ -203,7 +203,7 @@ Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points
 | **Outclassed** (`outclassed`) | Authority | new | Proud, Comic | Wick sits cross-legged on a toppled, empty enemy helmet as big as itself, buffing one mitten on its chest. | Smug half-lids | Empty enemy helmet |
 | **Real Power** (`real_power`) | Authority | new | Eerie, Comic | Wick crouches beneath a small crown dangling on puppet strings, ignoring it, one mitten pointing up the strings to where they vanish. | Knowing narrowed eyes | Crown on strings |
 
-### Achieved (16)
+### Achieved (19)
 
 | Perk (id) | Skill(s) | Status | Mood | Action | Screen | One prop |
 |---|---|---|---|---|---|---|
@@ -223,6 +223,9 @@ Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points
 | **Dead Signal** (`dead_signal`) | Proficiency, Ingenuity | new | Tense, Comic | Wick hangs one-handed from a security camera's bracket arm, pulling its cable plug with the other mitten; the camera's head droops. | Zipped mouth | Security camera |
 | **Twin Souls** (`twin_souls`) | Will Power, Lore Master | new | Comic, Eerie | Wick sits on the ground holding a tin-can telephone to its head; the taut string runs straight up out of frame. | "?" | Tin-can telephone |
 | **The Voice** (`the_voice`) | Authority, Composure | new | Proud, Eerie | Wick stands at parade rest, officer's baton under one arm, staring dead ahead; one heavy sound ring drops from its screen and flattens the dust. | Stern flat stare | Officer's baton |
+| **Bite the Bullet** (`bite_the_bullet`) | Guts + Pain Threshold | new (5 Nov) | Grim, Heroic | Wick, dented and smoking, pushes up off one knee with a big bullet clamped sideways across its screen like a bit, one fist planted on the ground. | Gritted pixel teeth | Bullet |
+| **Sixth Sense** (`sixth_sense`) | Sensory + Vigilant | new (5 Nov) | Tense, Eerie | Wick crouches low with its capelet pulled up like a hood, a humming tuning fork held above its head; a dotted trail of footprints creeps in from behind it. | Eyes wide, glancing sideways | Tuning fork |
+| **What Could Be** (`what_could_be`) | Visualization + Conscience | new (5 Nov) | Tender, Hopeful | Wick holds up a hand mirror toward the viewer; the mirror shows a small sun and a sprouting flower where the frame around Wick is bare. | Soft, hopeful eyes | Hand mirror |
 
 ### Ultimate (6)
 

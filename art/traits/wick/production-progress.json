@@ -1,11 +1,11 @@
 {
   "target": {
     "traits": 74,
-    "perks": 103
+    "perks": 106
   },
   "existing_approved_art": 4,
   "requested_revisions": 7,
-  "requested_new_icons": 166,
+  "requested_new_icons": 169,
   "workflow": "Seven fixes first; then show and push each completed icon immediately, per Leon on 5 November 2026.",
   "revisions_delivered": [
     "humanity-first",
@@ -155,9 +155,10 @@
     "reason": "image generation returned HTTP 429 usage_limit_reached on Real Power",
     "reset_utc": "2026-11-05T23:59:27Z",
     "next_icon": "into-the-dark (review-4 fix), then real-power",
-    "remaining_count": 48,
+    "remaining_count": 51,
     "queue_snapshot": "art/traits/wick/pending-at-usage-limit-2026-11-05.json",
     "fixes_queued": 4,
-    "added_2026_11_05": "Batch G: 27 Mastered perks (brief: art/briefs/wick-production-icons.md#mastered-27)"
+    "added_2026_11_05": "Batch G: 27 Mastered perks (brief: art/briefs/wick-production-icons.md#mastered-27)",
+    "added_combos_2026_11_05": "Bite the Bullet, Sixth Sense, What Could Be (after Batch F)"
   }
 }

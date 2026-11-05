@@ -809,11 +809,11 @@
         "Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3."
       ],
       "downsides": [
-        "Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Composure check first. On a fail you refuse, or do it at −3."
+        "Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Visualization check first: you have to picture it as a scene worth filming. On a fail you refuse, or do it at −3."
       ],
       "notes": [],
       "narrator_hook": "the plan only works if someone hides in the dumpster.",
-      "text": "Three days without food, or three days without a holo-drama? You'd live on water.\n+ Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3.\n− Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Composure check first. On a fail you refuse, or do it at −3.",
+      "text": "Three days without food, or three days without a holo-drama? You'd live on water.\n+ Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3.\n− Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Visualization check first: you have to picture it as a scene worth filming. On a fail you refuse, or do it at −3.",
       "effects": [
         {
           "op": "roll_bonus",
@@ -824,7 +824,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "visualization",
           "context": "unglamorous_action",
           "on_fail": "refuse_or_-3"
         }
@@ -1027,11 +1027,11 @@
       ],
       "downsides": [
         "Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.",
-        "The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Composure check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure."
+        "The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure."
       ],
       "notes": [],
       "narrator_hook": "the bar scene, the dry mission, the open bottle in the evidence room.",
-      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.\n− The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Composure check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure.",
+      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.\n− The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure.",
       "effects": [
         {
           "op": "stacking_state",
@@ -1135,7 +1135,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "will_power",
           "tn": "12+drinks_today",
           "context": "scene_end_while_drunk",
           "on_fail": "drinks+1"
@@ -1354,11 +1354,11 @@
         "Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify."
       ],
       "downsides": [
-        "The War Never Ended: resting in a settlement takes a Composure check, or you get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure."
+        "The War Never Ended: resting in a settlement takes a Vigilant check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure."
       ],
       "notes": [],
       "narrator_hook": "the ceasefire, the homecoming, the quiet town.",
-      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify.\n− The War Never Ended: resting in a settlement takes a Composure check, or you get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure.",
+      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify.\n− The War Never Ended: resting in a settlement takes a Vigilant check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure.",
       "effects": [
         {
           "op": "damage_mod",
@@ -1375,7 +1375,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "vigilant",
           "context": "rest_in_settlement",
           "on_fail": "no_rest_benefit"
         },
@@ -2006,11 +2006,11 @@
         "Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP."
       ],
       "downsides": [
-        "Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Composure check; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."
+        "Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."
       ],
       "notes": [],
       "narrator_hook": "rare guns as loot, as bait, and as evidence.",
-      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP.\n− Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Composure check; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go.",
+      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP.\n− Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go.",
       "effects": [
         {
           "op": "narrator",
@@ -2033,7 +2033,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "dexterity",
           "context": "sell_or_drop_gun",
           "on_fail": "keep_until_rest"
         },
@@ -2559,14 +2559,15 @@
       "cost": null,
       "flavour": "Jealous? Why would you be jealous? Completely ridiculous.",
       "upsides": [
-        "Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2."
+        "Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.",
+        "Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival."
       ],
       "downsides": [
-        "Petty: helping your rival (handing them AP, healing, giving cover) takes a Composure check first."
+        "Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first."
       ],
       "notes": [],
       "narrator_hook": "the day your rival needs saving.",
-      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.\n− Petty: helping your rival (handing them AP, healing, giving cover) takes a Composure check first.",
+      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.\n+ Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival.\n− Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first.",
       "effects": [
         {
           "op": "bond",
@@ -2578,8 +2579,22 @@
           "context": "next_roll_same_skill_after_rival_success"
         },
         {
+          "op": "xp_grant",
+          "value": 50,
+          "source": "bond",
+          "when": "rival reaches a new level",
+          "mutual": true
+        },
+        {
+          "op": "xp_mod",
+          "value_pct": 10,
+          "source": "all_except_essence",
+          "when": "rival is a higher level",
+          "mutual": true
+        },
+        {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "camaraderie",
           "context": "helping_rival",
           "on_fail": "cannot_help"
         }
@@ -2591,7 +2606,8 @@
           "bond_target": "squad_member",
           "consent": true
         }
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "humanity_first",
@@ -3009,11 +3025,11 @@
         "Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene."
       ],
       "downsides": [
-        "Nothing Straight: giving a plain, direct answer takes a Composure check."
+        "Nothing Straight: giving a plain, direct answer takes an Eloquence check."
       ],
       "notes": [],
       "narrator_hook": "the panicked squadmate who needs a simple yes.",
-      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes a Composure check.",
+      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes an Eloquence check.",
       "effects": [
         {
           "op": "opposed",
@@ -3042,7 +3058,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "eloquence",
           "context": "plain_direct_answer",
           "on_fail": "answers_in_metaphor"
         }
@@ -3152,11 +3168,11 @@
         "Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake."
       ],
       "downsides": [
-        "Price on Everything: giving away an item or accepting a gift takes a Composure check. −1 Camaraderie."
+        "Price on Everything: giving away an item or accepting a gift takes an Analysis check: you can't stop pricing it. −1 Camaraderie."
       ],
       "notes": [],
       "narrator_hook": "the squadmate who needs your spare medkit for free.",
-      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake.\n− Price on Everything: giving away an item or accepting a gift takes a Composure check. −1 Camaraderie.",
+      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake.\n− Price on Everything: giving away an item or accepting a gift takes an Analysis check: you can't stop pricing it. −1 Camaraderie.",
       "effects": [
         {
           "op": "price_mod",
@@ -3170,7 +3186,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "analysis",
           "context": "give_or_accept_item",
           "on_fail": "refuse"
         },
@@ -3537,11 +3553,11 @@
         "Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range."
       ],
       "downsides": [
-        "Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Composure check or hesitate and lose 2 AP."
+        "Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Faith check or hesitate and lose 2 AP."
       ],
       "notes": [],
       "narrator_hook": "the upper-realm being who calls you by name.",
-      "text": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.\n+ Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range.\n− Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Composure check or hesitate and lose 2 AP.",
+      "text": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.\n+ Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range.\n− Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Faith check or hesitate and lose 2 AP.",
       "effects": [
         {
           "op": "narrator",
@@ -3558,7 +3574,7 @@
         },
         {
           "op": "gate_check",
-          "skill": "composure",
+          "skill": "faith",
           "context": "fighting_upper_realm",
           "on_fail": "lose_2_ap"
         }

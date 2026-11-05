@@ -5,7 +5,7 @@
   "coverage": {
     "traits": 74,
     "perks": 55,
-    "perk_target": 103
+    "perk_target": 106
   },
   "remaining_icons": [
     {
@@ -358,6 +358,63 @@
       "prop": "Fused burst",
       "rules_text": "Fuse a Sigil and an Outburst into one cast: the Sigil sets the shape, the Outburst sets the school. Pay both costs.",
       "flavour": "The Science Team says it can't be done. The Institute says it shouldn't be. You do it anyway."
+    },
+    {
+      "id": "bite-the-bullet",
+      "data_id": "bite_the_bullet",
+      "name": "Bite the Bullet",
+      "family": "perks",
+      "batch": "F",
+      "brief_status": "new",
+      "tier": "achieved",
+      "skills": [
+        "Guts",
+        "Pain Threshold"
+      ],
+      "mood": "Grim, Heroic",
+      "action": "Wick, dented and smoking, pushes up off one knee with a big bullet clamped sideways across its screen like a bit, one fist planted on the ground.",
+      "screen": "Gritted pixel teeth",
+      "prop": "Bullet",
+      "rules_text": "Once per combat, when you would drop to 0 HP, take one more full turn first. You drop at the end of it unless you've been healed above 0 by then.",
+      "deed": "fight through an entire combat below a quarter of your max HP."
+    },
+    {
+      "id": "sixth-sense",
+      "data_id": "sixth_sense",
+      "name": "Sixth Sense",
+      "family": "perks",
+      "batch": "F",
+      "brief_status": "new",
+      "tier": "achieved",
+      "skills": [
+        "Sensory",
+        "Vigilant"
+      ],
+      "mood": "Tense, Eerie",
+      "action": "Wick crouches low with its capelet pulled up like a hood, a humming tuning fork held above its head; a dotted trail of footprints creeps in from behind it.",
+      "screen": "Eyes wide, glancing sideways",
+      "prop": "Tuning fork",
+      "rules_text": "Hidden enemies within 3 tiles of you are revealed to you and your whole squad.",
+      "deed": "catch someone tailing the squad before they strike."
+    },
+    {
+      "id": "what-could-be",
+      "data_id": "what_could_be",
+      "name": "What Could Be",
+      "family": "perks",
+      "batch": "F",
+      "brief_status": "new",
+      "tier": "achieved",
+      "skills": [
+        "Visualization",
+        "Conscience"
+      ],
+      "mood": "Tender, Hopeful",
+      "action": "Wick holds up a hand mirror toward the viewer; the mirror shows a small sun and a sprouting flower where the frame around Wick is bare.",
+      "screen": "Soft, hopeful eyes",
+      "prop": "Hand mirror",
+      "rules_text": "Once per session, before a major decision, the Narrator shows you a brief vision of the best outcome within reach, and one way to get there.",
+      "deed": "talk someone out of a terrible choice by showing them where it leads."
     },
     {
       "id": "last-wall",
@@ -849,7 +906,7 @@
   "resume_order": [
     "review-4 fixes (4)",
     "real-power",
-    "Batch F (20)",
+    "Batch F (20) + 3 new combo perks",
     "Batch G: Mastered perks (27)"
   ]
 }

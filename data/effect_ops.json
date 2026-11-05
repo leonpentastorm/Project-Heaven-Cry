@@ -43,7 +43,7 @@
       "id": "narrator",
       "tier": "core",
       "summary": "Not automatable: the Narrator (AI or human) decides using the item's text.",
-      "count": 148,
+      "count": 149,
       "params": [
         "note"
       ],
@@ -499,6 +499,45 @@
       }
     },
     {
+      "id": "state",
+      "tier": "core",
+      "summary": "A named toggled state with its own rules.",
+      "count": 14,
+      "params": [
+        "area",
+        "context",
+        "duration",
+        "ends_on",
+        "hp",
+        "rounds",
+        "save",
+        "state",
+        "tiles",
+        "uses",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:bulwark_line",
+        "classes:deploy_cover",
+        "classes:raise_cover",
+        "classes:sanctuary",
+        "classes:seal",
+        "classes:sentry_turret",
+        "classes:silent_kill",
+        "classes:suppression",
+        "classes:weak_point",
+        "perks:bite_the_bullet",
+        "perks:earthbreaker",
+        "perks:last_wall"
+      ],
+      "example": {
+        "op": "state",
+        "state": "full_cover",
+        "tiles": 2
+      }
+    },
+    {
       "id": "save_mod",
       "tier": "core",
       "summary": "Bonus or penalty to Body/Brain/Heart saves.",
@@ -525,44 +564,6 @@
         "family": "any",
         "value": 3,
         "context": "chemicals, gases and drugs you've identified"
-      }
-    },
-    {
-      "id": "state",
-      "tier": "core",
-      "summary": "A named toggled state with its own rules.",
-      "count": 13,
-      "params": [
-        "area",
-        "duration",
-        "ends_on",
-        "hp",
-        "rounds",
-        "save",
-        "state",
-        "tiles",
-        "uses",
-        "value",
-        "when"
-      ],
-      "used_by": [
-        "classes:bulwark_line",
-        "classes:deploy_cover",
-        "classes:raise_cover",
-        "classes:sanctuary",
-        "classes:seal",
-        "classes:sentry_turret",
-        "classes:silent_kill",
-        "classes:suppression",
-        "classes:weak_point",
-        "perks:earthbreaker",
-        "perks:last_wall",
-        "perks:open_hand"
-      ],
-      "example": {
-        "op": "state",
-        "state": "full_cover",
-        "tiles": 2
       }
     },
     {
@@ -621,7 +622,7 @@
       ],
       "example": {
         "op": "gate_check",
-        "skill": "composure",
+        "skill": "visualization",
         "context": "unglamorous_action",
         "on_fail": "refuse_or_-3"
       }
@@ -652,6 +653,37 @@
         "value": 0.25,
         "target": "ally",
         "context": "ally within 1 tile directly behind you, in line with the attacker"
+      }
+    },
+    {
+      "id": "reveal",
+      "tier": "core",
+      "summary": "Make hidden things visible.",
+      "count": 7,
+      "params": [
+        "context",
+        "count",
+        "ignores",
+        "radius",
+        "range",
+        "shared_with",
+        "target",
+        "what",
+        "when"
+      ],
+      "used_by": [
+        "perks:case_closed",
+        "perks:got_you_in_my_sight",
+        "perks:sixth_sense",
+        "perks:skin_map",
+        "perks:wind_on_the_skin"
+      ],
+      "example": {
+        "op": "reveal",
+        "what": "hidden_enemy",
+        "count": 1,
+        "range": "vision_range",
+        "when": "combat_start"
       }
     },
     {
@@ -803,35 +835,6 @@
       "example": {
         "op": "ignore_cover",
         "context": "breaching_strike"
-      }
-    },
-    {
-      "id": "reveal",
-      "tier": "core",
-      "summary": "Make hidden things visible.",
-      "count": 6,
-      "params": [
-        "context",
-        "count",
-        "ignores",
-        "radius",
-        "range",
-        "target",
-        "what",
-        "when"
-      ],
-      "used_by": [
-        "perks:case_closed",
-        "perks:got_you_in_my_sight",
-        "perks:skin_map",
-        "perks:wind_on_the_skin"
-      ],
-      "example": {
-        "op": "reveal",
-        "what": "hidden_enemy",
-        "count": 1,
-        "range": "vision_range",
-        "when": "combat_start"
       }
     },
     {
@@ -1425,6 +1428,27 @@
       }
     },
     {
+      "id": "xp_mod",
+      "tier": "core",
+      "summary": "Change XP gained.",
+      "count": 3,
+      "params": [
+        "mutual",
+        "source",
+        "value_pct",
+        "when"
+      ],
+      "used_by": [
+        "traits:born_performer",
+        "traits:rival"
+      ],
+      "example": {
+        "op": "xp_mod",
+        "source": "combat",
+        "value_pct": 20
+      }
+    },
+    {
       "id": "area_mult",
       "tier": "bespoke",
       "summary": "",
@@ -1746,21 +1770,29 @@
       }
     },
     {
-      "id": "xp_mod",
-      "tier": "core",
-      "summary": "Change XP gained.",
+      "id": "xp_grant",
+      "tier": "bespoke",
+      "summary": "",
       "count": 2,
       "params": [
+        "limit",
+        "mutual",
         "source",
-        "value_pct"
+        "target",
+        "value",
+        "when"
       ],
       "used_by": [
-        "traits:born_performer"
+        "items:essence_of_experience",
+        "traits:rival"
       ],
       "example": {
-        "op": "xp_mod",
-        "source": "combat",
-        "value_pct": 20
+        "op": "xp_grant",
+        "value": 100,
+        "source": "essence",
+        "target": "self_or_party_member_present",
+        "when": "cracked out of combat (10 minutes)",
+        "limit": "one absorbed per character per long rest"
       }
     },
     {
@@ -3009,30 +3041,6 @@
       "example": {
         "op": "weapon_mastery_rate",
         "value_pct": 25
-      }
-    },
-    {
-      "id": "xp_grant",
-      "tier": "bespoke",
-      "summary": "",
-      "count": 1,
-      "params": [
-        "limit",
-        "source",
-        "target",
-        "value",
-        "when"
-      ],
-      "used_by": [
-        "items:essence_of_experience"
-      ],
-      "example": {
-        "op": "xp_grant",
-        "value": 100,
-        "source": "essence",
-        "target": "self_or_party_member_present",
-        "when": "cracked out of combat (10 minutes)",
-        "limit": "one absorbed per character per long rest"
       }
     }
   ]
