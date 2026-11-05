@@ -891,7 +891,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: −1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +3 AP, once per turn. II: no first-turn penalty, and every enemy who sees the kill saves against Fear.",
+      "text": "I: −1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +2 AP, once per turn. II: no first-turn penalty, and every enemy who sees the kill saves against Fear.",
       "effects": [
         {
           "op": "stat_mod",
@@ -902,7 +902,7 @@
         {
           "op": "stat_mod",
           "stat": "ap",
-          "value": 3,
+          "value": 2,
           "when": "you KO or kill an enemy on your turn",
           "limit": "once_per_turn",
           "duration": "this_turn"
@@ -917,7 +917,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "−1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +3 AP, once per turn.",
+          "text": "−1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +2 AP, once per turn.",
           "effects": [
             {
               "op": "stat_mod",
@@ -928,7 +928,7 @@
             {
               "op": "stat_mod",
               "stat": "ap",
-              "value": 3,
+              "value": 2,
               "when": "you KO or kill an enemy on your turn",
               "limit": "once_per_turn",
               "duration": "this_turn"
@@ -948,7 +948,7 @@
             {
               "op": "stat_mod",
               "stat": "ap",
-              "value": 3,
+              "value": 2,
               "when": "you KO or kill an enemy on your turn",
               "limit": "once_per_turn",
               "duration": "this_turn"

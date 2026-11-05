@@ -116,5 +116,5 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 1. Tech plan with Leon (engine as pure, deterministic TypeScript with seeded RNG; authoritative room server; client with a grid renderer; provider-agnostic Narrator adapter using structured tool calls).
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
-4. Settle the 49 open items in spec section 14 through playtests.
+4. Settle the 50 open items in spec section 14 through playtests.
 5. Lock the UI on the canvas (prototype v2, branch `ui-prototype-v2`; Leon comments, Claude fixes), then implement the real client from it.

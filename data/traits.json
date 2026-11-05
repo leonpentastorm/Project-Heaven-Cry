@@ -2559,14 +2559,15 @@
       "cost": null,
       "flavour": "Jealous? Why would you be jealous? Completely ridiculous.",
       "upsides": [
-        "Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2."
+        "Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.",
+        "Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival."
       ],
       "downsides": [
         "Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first."
       ],
       "notes": [],
       "narrator_hook": "the day your rival needs saving.",
-      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.\n− Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first.",
+      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.\n+ Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival.\n− Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first.",
       "effects": [
         {
           "op": "bond",
@@ -2576,6 +2577,20 @@
           "op": "roll_bonus",
           "value": 2,
           "context": "next_roll_same_skill_after_rival_success"
+        },
+        {
+          "op": "xp_grant",
+          "value": 50,
+          "source": "bond",
+          "when": "rival reaches a new level",
+          "mutual": true
+        },
+        {
+          "op": "xp_mod",
+          "value_pct": 10,
+          "source": "all_except_essence",
+          "when": "rival is a higher level",
+          "mutual": true
         },
         {
           "op": "gate_check",
@@ -2591,7 +2606,8 @@
           "bond_target": "squad_member",
           "consent": true
         }
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "humanity_first",
