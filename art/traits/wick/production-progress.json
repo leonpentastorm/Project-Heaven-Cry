@@ -77,5 +77,8 @@
   "revision_rounds": {
     "field-surgeon": 3,
     "factory-made": 3
+  },
+  "production_revisions": {
+    "southern-fist": 2
   }
 }

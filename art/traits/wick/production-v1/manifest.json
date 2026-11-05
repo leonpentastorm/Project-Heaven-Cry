@@ -13,21 +13,24 @@
       "family": "traits",
       "order": 3,
       "mood": "Comic, Proud",
-      "action": "Wick drops into a deep low stance, throwing a punch with one wrapped mitten while the other pinches a rifle away at arm's length like something smelly",
+      "action": "REVIEW3 FIX: Wick drops into a deep low stance, thrusting an enormous wrapped PUNCHING MITTEN toward the viewer, its punching fist the biggest shape. Its other mitten holds a small rifle by the butt with just two fingertips, so the rifle DANGLES UPSIDE DOWN, muzzle pointing at the floor, well away from Wick's body. The rifle is being discarded with disgust, never aimed, fired or wielded. No smoke, flame or muzzle flash. Disdainful side-eye. Keep the dangling rifle subordinate to the huge fist.",
       "screen": "Disdainful side-eye",
       "prop": "Rifle held at arm's length",
-      "path": "art/traits/wick/production-v1/southern-fist.png",
+      "path": "art/traits/wick/production-v1/revisions/v2/southern-fist.png",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/southern-fist.png",
-        "128": "art/traits/wick/production-v1/exports/128/southern-fist.png",
-        "64": "art/traits/wick/production-v1/exports/64/southern-fist.png",
-        "56": "art/traits/wick/production-v1/exports/56/southern-fist.png",
-        "48": "art/traits/wick/production-v1/exports/48/southern-fist.png",
-        "44": "art/traits/wick/production-v1/exports/44/southern-fist.png",
-        "40": "art/traits/wick/production-v1/exports/40/southern-fist.png"
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/southern-fist.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/southern-fist.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/southern-fist.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/southern-fist.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/southern-fist.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/southern-fist.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/southern-fist.png"
       },
       "batch": "A",
-      "source_sha256": "66fb4b150d54b83367000f51f5702e929e50242eb413839c00218664caa553eb"
+      "source_sha256": "5d24633eac7df11acef011319937996097bd23e831c427c09adb99e7f2d869e6",
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/southern-fist.png",
+      "previous_revision_path": "art/traits/wick/production-v1/southern-fist.png"
     },
     {
       "id": "grenadiers-arm",
