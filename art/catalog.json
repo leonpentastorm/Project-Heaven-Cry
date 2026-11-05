@@ -4451,6 +4451,30 @@
         "44": "art/perks/wick/production-v1/exports/44/litany.png",
         "40": "art/perks/wick/production-v1/exports/40/litany.png"
       }
+    },
+    "holy-ordnance": {
+      "label": "Wick — Holy Ordnance",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/holy-ordnance.png",
+      "sha256": "80d9f11e4c79722767039affcd1aac9397747070545645dbef6bebcc240e7846",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "holy_ordnance",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/holy-ordnance.png",
+        "128": "art/perks/wick/production-v1/exports/128/holy-ordnance.png",
+        "64": "art/perks/wick/production-v1/exports/64/holy-ordnance.png",
+        "56": "art/perks/wick/production-v1/exports/56/holy-ordnance.png",
+        "48": "art/perks/wick/production-v1/exports/48/holy-ordnance.png",
+        "44": "art/perks/wick/production-v1/exports/44/holy-ordnance.png",
+        "40": "art/perks/wick/production-v1/exports/40/holy-ordnance.png"
+      }
     }
   },
   "illustrations": {

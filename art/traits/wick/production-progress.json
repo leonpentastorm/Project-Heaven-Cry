@@ -130,11 +130,12 @@
     "rite-in-the-field",
     "you-get-used-to-it",
     "flat-line",
-    "litany"
+    "litany",
+    "holy-ordnance"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 51
+    "perks": 52
   },
   "revision_rounds": {
     "field-surgeon": 3,

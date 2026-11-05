@@ -1132,6 +1132,29 @@
       },
       "batch": "E",
       "source_sha256": "2ec2607c1ec3dcb23005ffbf5ce7fc1e6041d02f9d596f962572a10edc7f3265"
+    },
+    {
+      "id": "holy-ordnance",
+      "data_id": "holy_ordnance",
+      "name": "Holy Ordnance",
+      "family": "perks",
+      "order": 50,
+      "mood": "Heroic, Comic",
+      "action": "Wick raises a rifle magazine overhead in both mittens like a relic, thick radiant rays bursting from it.",
+      "screen": "Sparkle star",
+      "prop": "Rifle magazine",
+      "path": "art/perks/wick/production-v1/holy-ordnance.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/holy-ordnance.png",
+        "128": "art/perks/wick/production-v1/exports/128/holy-ordnance.png",
+        "64": "art/perks/wick/production-v1/exports/64/holy-ordnance.png",
+        "56": "art/perks/wick/production-v1/exports/56/holy-ordnance.png",
+        "48": "art/perks/wick/production-v1/exports/48/holy-ordnance.png",
+        "44": "art/perks/wick/production-v1/exports/44/holy-ordnance.png",
+        "40": "art/perks/wick/production-v1/exports/40/holy-ordnance.png"
+      },
+      "batch": "E",
+      "source_sha256": "e3ca733e535c6ca7cb6b792442c7c121433a8392f940540f3dac692b262ff531"
     }
   ]
 }
