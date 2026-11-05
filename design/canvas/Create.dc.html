@@ -44,9 +44,12 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <sc-if value="{{isIdentity}}" hint-placeholder-val="{{true}}">
 <section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
 <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 20px">
+<img src="/_blob/018ff8ddcc0a1b78a640eb3cb59d2b04" alt="Seal of the Anti-Heaven Operation Commands, Department of Extra Celestial Defense" style="width: 96px; height: 96px; flex: none; opacity: 0.9">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Who are you?</h1>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 62ch">Everyone the Command processes fills in this form. Your look and your past go here. Skills come next.</p>
+</div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
 <label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">NAME
@@ -250,7 +253,7 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <sc-if value="{{isKit}}" hint-placeholder-val="{{false}}">
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>
-<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out.</p>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out. Everyone also gets one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
 <sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
 <button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
@@ -264,7 +267,8 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 
 <sc-if value="{{isLockin}}" hint-placeholder-val="{{false}}">
 <section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
-<div style="flex: 999 1 640px; min-width: 0; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<div style="position: relative; flex: 999 1 640px; min-width: 0; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<img src="/_blob/018ff8ddcc0a1b78a640eb3cb59d2b04" alt="Stamped by the Anti-Heaven Operation Commands" style="position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; transform: rotate(-12deg); opacity: 0.55">
 <img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000">
 <div style="flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 10px">
 <span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>

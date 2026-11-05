@@ -97,10 +97,22 @@ class Component extends DCLogic {
     const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '9 / 20 kg'],
       ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5'], ['Leadership', lead], ['Karma', '0 · Neutral']].map(([k, v]) => ({ k, v }));
     const rep = [['258th Medical Unit', 'Known', '+24'], ['Thousand World Legion', 'Unknown', '0'], ['The engineers', 'Hostile', '−22']].map(([k, band, v]) => ({ k, v: band + ' ' + v }));
-    // Slots follow the 2020 sheet (main hand, off hand, head, torso, hands, footwear, backpack); torso armour sets Armour Class.
-    const gear = [['MAIN HAND', 'Service pistol (.32 Decrkm)', '20 dmg · 8 tiles · 9/12'], ['OFF HAND', 'Empty', ''], ['HEAD', 'Empty', ''], ['TORSO', 'Medic plate', 'Armour Class II'],
-      ['HANDS', 'Surgical manipulators', 'Built in'], ['FOOTWEAR', 'Mag-lock feet', 'Built in'], ['BACKPACK', 'Stim injector', '3 stims · 1 kg'], ['BACKPACK', 'Field kit', 'Supplies 3 · 4 kg']]
-      .map(([slot, name, note]) => ({ slot, name, note, nameStyle: 'font-weight: 600; color: ' + (name === 'Empty' ? '#7F8BA1' : '#E7EBF3') }));
+    // Slots follow the 2020 sheet (spec: Equipment slots); outer torso sets Armour Class; the Veil is reserved.
+    const gear = [['MAIN HAND', 'Service pistol (.32 Decrkm)', '20 dmg · 8 tiles · 9/12'], ['OUTER TORSO', 'Medic plate', 'Armour Class II'],
+      ['HANDS', 'Surgical manipulators', 'Built in'], ['FOOTWEAR', 'Mag-lock feet', 'Built in'], ['BACKPACK', 'Stim injector', '3 stims · 1 kg'], ['BACKPACK', 'Field kit', 'Supplies 3 · 4 kg'],
+      ['BACKPACK', 'Essence of Experience', '×1 · 0 kg · sells 300']].map(([slot, name, note]) => ({ slot, name, note, nameStyle: 'font-weight: 600; color: #E7EBF3' }));
+    const emptySlots = 'Off hand · Head · Head accessory · Inner torso · Lower torso · Legs · Veil';
+    // Weapon mastery by kills per family (spec: Weapon mastery; weapon_mastery.json levels).
+    const lvlOf = (k) => { let l = D.wm.levels[0]; D.wm.levels.forEach((x) => { if (k >= x.kills) l = x; }); return l; };
+    const mastery = [['sidearms', 7], ['unarmed', 1]].map(([fid, kills]) => {
+      const fam = D.wm.families.find((f) => f.id === fid), lv = lvlOf(kills), nx = D.wm.levels[lv.level + 1];
+      const perks = D.wm.perks.filter((p) => p.family === fid && p.mastery_level <= lv.level).map((p) => p.name);
+      const lo = lv.kills, hi = nx ? nx.kills : lv.kills;
+      return { name: fam.name, level: 'L' + lv.level + ' ' + lv.name, kills: kills + (kills === 1 ? ' kill' : ' kills') + (nx ? ' · ' + nx.name + ' at ' + nx.kills : ''),
+        bonus: lv.attack_bonus ? '+' + lv.attack_bonus + ' to hit' : '+0 to hit', perk: perks.length ? 'Perk: ' + perks.join(', ') : 'Perk at ' + D.wm.levels[1].kills + ' kills',
+        fill: 'height: 100%; border-radius: 99px; background: #E7EBF3; width: ' + (nx ? Math.round((kills - lo) / (hi - lo) * 100) : 100) + '%' };
+    });
+    const eoe = { locked: true, why: 'Needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator. Nobody in the squad can crack it yet.' };
     const bio = [['Original name', 'M1.4 8R4-D83-RRY'], ['Unit', '258th Medical Unit'], ['Origin', 'The Factory · Thousand-Planet frontier'], ['Race', 'Robot'], ['Age', '7'], ['Height', '180 cm'], ['Blood type', 'Oil'],
       ['Gender', 'Plug'], ['Main hand', 'Right'], ['Trivia', 'Can\'t tell a joke. Cooks well. Never leaves a teammate behind.']].map(([k, v]) => ({ k, v }));
 
@@ -136,7 +148,7 @@ class Component extends DCLogic {
       waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
       throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
       ...epccgVals(this), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
-      status, rep, gear, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
+      status, rep, gear, emptySlots, mastery, eoe, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),
       reroll: () => { if (this.state.echo < 1) return; const ix = this.state.rollIx + 1; this.setState({ echo: this.state.echo - 1, rollIx: ix, throws: this.state.throws + 1, roll: { ...this.state.roll, die: DICE[ix % DICE.length] } }); },

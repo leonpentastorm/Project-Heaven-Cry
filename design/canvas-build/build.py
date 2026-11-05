@@ -79,6 +79,11 @@ def classes_full():
     return out
 
 
+def weapon_mastery():
+    d = load("weapon_mastery.json")
+    return {"levels": d["rules"]["levels"], "families": [{"id": f["id"], "name": f["name"]} for f in d["families"]],
+            "perks": [{"id": p["id"], "name": p["name"], "family": p["family"], "mastery_level": p["mastery_level"]} for p in d["items"]]}
+
 def archetypes():
     d = load("archetypes.json")
     return {"families": d["families"], "items": d["items"]}
@@ -166,7 +171,7 @@ def build():
     }
     tpl, js = with_epccg((BUILD / "create.template.html").read_text(),
                          (BUILD / "create.logic.js").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False)))
-    (OUT / "Create.dc.html").write_text(page("PHC · Character creation (EPCCG)", tpl.replace("__WICK__", BLOBS["wick-mind-without-fog"]), js,
+    (OUT / "Create.dc.html").write_text(page("PHC · Character creation (EPCCG)", tpl.replace("__WICK__", BLOBS["wick-mind-without-fog"]).replace("__SEAL__", BLOBS["emblem-ahoc-seal"]), js,
         '{"startStep":{"editor":"enum","options":["identity","archetype","skills","traits","kit","lockin"],"default":"identity"},"sampleArch":{"editor":null},"sampleName":{"editor":null},"$preview":{"width":1440,"height":1000}}'))
     for fname, title, step, arch, name, h in [
         ("CreateArchetype.dc.html", "PHC · Creation · archetype", "archetype", "", "", 1100),
@@ -178,7 +183,7 @@ def build():
         (OUT / fname).write_text(wrapper(title, step, arch, name, h))
     print("built Create + 5 step artboards")
     mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
-             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "wick": BLOBS["wick-mind-without-fog"]}
+             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery()}
     tpl, js = with_epccg((BUILD / "main.template.html").read_text(),
                          (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False)))
     (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))
