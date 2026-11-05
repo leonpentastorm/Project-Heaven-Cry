@@ -129,11 +129,12 @@
     "old-tongue",
     "rite-in-the-field",
     "you-get-used-to-it",
-    "flat-line"
+    "flat-line",
+    "litany"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 50
+    "perks": 51
   },
   "revision_rounds": {
     "field-surgeon": 3,

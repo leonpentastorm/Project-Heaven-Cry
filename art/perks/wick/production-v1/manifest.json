@@ -1109,6 +1109,29 @@
       },
       "batch": "E",
       "source_sha256": "2e95c1c2c44fb091175f75d9001551fda1d4dbc280180624c6609988a426bd18"
+    },
+    {
+      "id": "litany",
+      "data_id": "litany",
+      "name": "Litany",
+      "family": "perks",
+      "order": 49,
+      "mood": "Calm, Tender",
+      "action": "Wick kneels with head tilted up, prayer beads wound through both mittens, singing, thin radiant lines fanning above it.",
+      "screen": "Closed eyes, small open mouth",
+      "prop": "Prayer beads",
+      "path": "art/perks/wick/production-v1/litany.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/litany.png",
+        "128": "art/perks/wick/production-v1/exports/128/litany.png",
+        "64": "art/perks/wick/production-v1/exports/64/litany.png",
+        "56": "art/perks/wick/production-v1/exports/56/litany.png",
+        "48": "art/perks/wick/production-v1/exports/48/litany.png",
+        "44": "art/perks/wick/production-v1/exports/44/litany.png",
+        "40": "art/perks/wick/production-v1/exports/40/litany.png"
+      },
+      "batch": "E",
+      "source_sha256": "2ec2607c1ec3dcb23005ffbf5ce7fc1e6041d02f9d596f962572a10edc7f3265"
     }
   ]
 }

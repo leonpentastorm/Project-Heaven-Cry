@@ -4427,6 +4427,30 @@
         "44": "art/perks/wick/production-v1/exports/44/flat-line.png",
         "40": "art/perks/wick/production-v1/exports/40/flat-line.png"
       }
+    },
+    "litany": {
+      "label": "Wick — Litany",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/litany.png",
+      "sha256": "35723a7b8ce5f1d8e354e3e25cb62d88e9b8b2f6f115c6c4aec086bb58317ffd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "litany",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/litany.png",
+        "128": "art/perks/wick/production-v1/exports/128/litany.png",
+        "64": "art/perks/wick/production-v1/exports/64/litany.png",
+        "56": "art/perks/wick/production-v1/exports/56/litany.png",
+        "48": "art/perks/wick/production-v1/exports/48/litany.png",
+        "44": "art/perks/wick/production-v1/exports/44/litany.png",
+        "40": "art/perks/wick/production-v1/exports/40/litany.png"
+      }
     }
   },
   "illustrations": {
