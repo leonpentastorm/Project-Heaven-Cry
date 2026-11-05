@@ -5,7 +5,7 @@ ea4e38b3cfcc35751f408ba6a2e3cc7153b04b469f55fdd26feb0b8308fafa95  art/README.md
 07ebf47ed1fe81c406d7a86a95318912d296c5683d8ad862c56a8bebb5e0aa39  art/briefs/m813-mpat.md
 279a7bae7b7563fdd24a1eda577f1fcd7499b5ce12767c4d33aa0642b31b4e64  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-7583fc3e8d3f4b93f8fcd50a2e8e651e4743ec9f9c58eaf0513c8c0c712d851e  art/catalog.json
+a1154dd60b6ff28fb89881d3f3e9e239f513e0519af34ad277293661b8115b55  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -189,7 +189,7 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-160280549a89939fae5f29756272108d30b0a5fb96e0b5554759f24f91863fa5  art/traits/wick/production-progress.json
+edf3e8a0f52c05c94fc8e6a5b1f36aa10fb2e475bcba0bd491498709a6f8a69b  art/traits/wick/production-progress.json
 b99dca045e8b77e0cb1f9569441c76ef7f6ed62c3049810c3e961fe3ab30c9a4  art/traits/wick/production-v1/README.md
 38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3  art/traits/wick/production-v1/blade-recluse.png
 39716f2b9f97045dd60d83ea7adc682619073a29f822971e04864c3d55051230  art/traits/wick/production-v1/born-officer.png
@@ -229,6 +229,7 @@ b407540d64d93b0573fcd0bbf9a01f001c0014b6f3458bad42611e527c9f78a0  art/traits/wic
 36f770beb030415cfc999315ff804877ca5d6550276581b3ea8b5a89a73cac63  art/traits/wick/production-v1/exports/128/lowland-born.png
 08651ae53534da096159196f2608b711f4f0a9d20e791bf9f0cd4d9a71c45ecd  art/traits/wick/production-v1/exports/128/lunarshine.png
 9136941f00e0ea7410c77c9dc8bcf517e753be918d04594403fbaeaae02a020e  art/traits/wick/production-v1/exports/128/machine-faced.png
+f4ba7653bd7abfa4f3937af6f0d2e6c1904e49b5a9e37d391f62c822027992ab  art/traits/wick/production-v1/exports/128/market-blood.png
 f03e668bc54abdb64c786ec7cd6f1dd55c1b1055898fe921371f8e47340f5e95  art/traits/wick/production-v1/exports/128/oil-in-my-mind.png
 0dc8a69ec0bd3f4c036fbd7b604efff98e325a387a8743974d298b37110ba232  art/traits/wick/production-v1/exports/128/oil-in-my-soul.png
 a2afbf951a4993d957075af8ba62258a04fafe7bc16385688d2bc2a34e02e6c9  art/traits/wick/production-v1/exports/128/old-school.png
@@ -278,6 +279,7 @@ ae14440ecbf1679550eeba7e6bde12c4a4830ed6d7ea5770a2d7970f48837454  art/traits/wic
 cb38ea2f7ace3d765564e600e1ee7bf0358b3d28d9ab01b93f7624f6e81acd5a  art/traits/wick/production-v1/exports/256/lowland-born.png
 0d3f221020aca174d25e45c531b691b98b0080d024bd60ec35395e675f622680  art/traits/wick/production-v1/exports/256/lunarshine.png
 f4526e060315a7c1a448dc4e974ca10e7a70ac0aefd6c722a67341a65fa933b9  art/traits/wick/production-v1/exports/256/machine-faced.png
+eda13daa00d35c82e6815a5b0b3e6855edf0ea51e4156ba71c81a900d8e6359c  art/traits/wick/production-v1/exports/256/market-blood.png
 b3b648ec91c514e78b16709a4563f746dcfe51f82d20bf2cba3912364b04ee12  art/traits/wick/production-v1/exports/256/oil-in-my-mind.png
 114069cfce3f12c4d6c37dcf2ebf797b6f69d5e2a2056b094366a5df53c3fa75  art/traits/wick/production-v1/exports/256/oil-in-my-soul.png
 67e993de018e5e3c3a4898797b5da61a15fb8a505a6d68512a41666158c0028f  art/traits/wick/production-v1/exports/256/old-school.png
@@ -327,6 +329,7 @@ aff84eaf65325fa168918b016d592036a3d4506f2c5023c2525755223f66a6f3  art/traits/wic
 a507a84336814f403dfb74f3f61f378ba2ebf0765fa78a68e62a3f9fae9aefb6  art/traits/wick/production-v1/exports/40/lowland-born.png
 2da1ae1aee36c8ee54f313a0ed3c21e3d7907a174bce65332c1d8a6c5200c714  art/traits/wick/production-v1/exports/40/lunarshine.png
 f05e24e72a7aa0ded9a05bba5b1c542fc06faee3687dce08addd53a0d8d29fb5  art/traits/wick/production-v1/exports/40/machine-faced.png
+42c24f83c02cf8cf08c875448c223b6750f91c4161cc7c4fcd0cfcd5d5ff0391  art/traits/wick/production-v1/exports/40/market-blood.png
 75681097db11a5b985239feebd9930443a27599e088f13f637cc0c0d2aa5d779  art/traits/wick/production-v1/exports/40/oil-in-my-mind.png
 b4493080a170a6303916708d1b6f8668077b49452fc1b647b9f2e85d16a6e0a2  art/traits/wick/production-v1/exports/40/oil-in-my-soul.png
 14ad6133af3b032a5cce48d0e36a97b7488b4b9a0e7a60d697bccd537a89c878  art/traits/wick/production-v1/exports/40/old-school.png
@@ -376,6 +379,7 @@ f73fc6e964472501e67c6851e48720cb982905af121d946a7dcfbf6d88d191e2  art/traits/wic
 27b4871aed0a7bf16438a32871ca4825febc3b39c1610d41b23d4f9fe026822e  art/traits/wick/production-v1/exports/44/lowland-born.png
 caa48cf9f46f786b31ad9088521d4640a6e0ef14b6b7eff2f81f646106000be6  art/traits/wick/production-v1/exports/44/lunarshine.png
 985c0bf9e69babe55a0b2cc88bde46bf0ef7109082f1cd14d9fde8f27fb7e710  art/traits/wick/production-v1/exports/44/machine-faced.png
+708666858fd0162e0cdf8f3eac5aa8483b592c9f4aba81971813c10ba82f29a4  art/traits/wick/production-v1/exports/44/market-blood.png
 34863228caec25f2483fabcab72f158ad8b85dcc6764a5a5a0a8f76ced96677d  art/traits/wick/production-v1/exports/44/oil-in-my-mind.png
 837ff6d0d2ac999c7a63cc9e7763466ac8570f04a8879c5dae9fe8283ec97fa5  art/traits/wick/production-v1/exports/44/oil-in-my-soul.png
 88601715f65ea6e645215b290c1a150ad34c867f1f9610e12d8706971d3a5559  art/traits/wick/production-v1/exports/44/old-school.png
@@ -425,6 +429,7 @@ c2ed3db2a952ee6f098aa213fc3d41ed335ad8b29ba91183d1da34bd9f26cca5  art/traits/wic
 eb3cc0fb4e54866f895c42d7ddef5ad12933e70ff4cdd946b595b650f7fa5601  art/traits/wick/production-v1/exports/48/lowland-born.png
 1fa88582f415648c2c67a725570a8341922676507bb741809c430cbef37195bc  art/traits/wick/production-v1/exports/48/lunarshine.png
 585e21a2af4b87492999ddf3eab5c10c1076db4e199963c28941f4618faf802f  art/traits/wick/production-v1/exports/48/machine-faced.png
+3fefe799614678f6a09660042395b3f910cf8b92c8f6b70316e991882046b8c9  art/traits/wick/production-v1/exports/48/market-blood.png
 225dcd8b8fe2a9e77fa9ff526eebea9dd1fab772c67f9ada3d5a5e82cb721eac  art/traits/wick/production-v1/exports/48/oil-in-my-mind.png
 cb86b073832c4a819628e54a4d8ff8725890b455e5c1ee4017c1bbe55c5ac3de  art/traits/wick/production-v1/exports/48/oil-in-my-soul.png
 3544bc43987f8c2093da0877c34b7b3d91caf3cc3bbc189c9321189b6788daf4  art/traits/wick/production-v1/exports/48/old-school.png
@@ -474,6 +479,7 @@ ebf7ca78cb1d87111bd5136cd4bd5844a0423f8f1f2cf38be8cfc2a0560d5f8c  art/traits/wic
 b8139f74861d1f2cf69cfc22cecde4dc56317209a2f644ce179c7f417190c062  art/traits/wick/production-v1/exports/56/lowland-born.png
 ef6f9e0077fa3b47ba1bbd8a775a3d846770d1e9609ac592f6904f2fe0be06e8  art/traits/wick/production-v1/exports/56/lunarshine.png
 217c1477cd3328d81b3da788e9b7203193f135af1d30eb9ab9aabc1618dee092  art/traits/wick/production-v1/exports/56/machine-faced.png
+c12f7bf6df8e7777b4c3041873de7d89b46fcfe586f991bac88a1dae3b27421c  art/traits/wick/production-v1/exports/56/market-blood.png
 54c6912c2414c8b816ef8f80a819ce4cc256971a103e7fcedce96478e20c426b  art/traits/wick/production-v1/exports/56/oil-in-my-mind.png
 850d553dc521bf0bf7a37c637aceb8e11f7ea22e10c6347c9263e542c1b0b825  art/traits/wick/production-v1/exports/56/oil-in-my-soul.png
 a62842ad968f11b5f691e8ce9373007d9fb9535ea08821dff4f7bbc270ec3638  art/traits/wick/production-v1/exports/56/old-school.png
@@ -523,6 +529,7 @@ ea6e2b1ede41644c5cf143ace649aeeec432739e1e6ceca25dbbdb7f7ba6bf1c  art/traits/wic
 65366e0445fecfb9fce45f203b2164ab0fb6c2069b77f807a1176ed674297fa7  art/traits/wick/production-v1/exports/64/lowland-born.png
 5ef204418ec8ad6e747e33e40414b41fc257204b1023d19c3b759bb117bb3e16  art/traits/wick/production-v1/exports/64/lunarshine.png
 2111038107691687f1816a1e0b607a6627f4ccbaa72b6133b438cc7220b4a9c1  art/traits/wick/production-v1/exports/64/machine-faced.png
+b52f1aec9d68ae1e3ea328b76bb574191d2723e0d3f97fecdc646ad52d86681b  art/traits/wick/production-v1/exports/64/market-blood.png
 a72ea7ed56375ad26d6deeed2f7b7e7923171ad682047dd6e2095f4f87749306  art/traits/wick/production-v1/exports/64/oil-in-my-mind.png
 5963392f6a6fa7456de4a8f322d60f8e3dd4825f053d7d3daefa73831bd45806  art/traits/wick/production-v1/exports/64/oil-in-my-soul.png
 1cf35318fe518b67f59de1ee6b3e0fdc2794d2f03604448d40958eecb933d538  art/traits/wick/production-v1/exports/64/old-school.png
@@ -562,7 +569,8 @@ d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37  art/traits/wic
 444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe  art/traits/wick/production-v1/lowland-born.png
 5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098  art/traits/wick/production-v1/lunarshine.png
 f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4  art/traits/wick/production-v1/machine-faced.png
-d6664fff8b316e4650168e97e27b53e9d351671075a7440f068f54327a5e20bf  art/traits/wick/production-v1/manifest.json
+9ed070132e482bc4bb67e9f7b5032bcec735a714ab5ad4307af732755793e860  art/traits/wick/production-v1/manifest.json
+744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91  art/traits/wick/production-v1/market-blood.png
 9878f6fb218e1574259e0bb70e577b2d3c839874b6ad8e48af46253642000fc1  art/traits/wick/production-v1/oil-in-my-mind.png
 ea9590ff45b24ea8bf0e63c92a8c08d3e09db7e9a816f8a141fe80fbba463990  art/traits/wick/production-v1/oil-in-my-soul.png
 d4a55f350565e22d938f76d14d8ff703d02a64c70aac56f52e82116699e8bd7c  art/traits/wick/production-v1/old-school.png
@@ -580,13 +588,13 @@ e2e95b5ae83433330f8b858240e8453a3a50efe6bad995fd8773bfd8be7c421c  art/traits/wic
 36a22d0c3fabc8773612c6ffb207e593fc36c89e878ef66276fb9b2534cab6c1  art/traits/wick/production-v1/previews/batch-b-48px.png
 53f9e4559895df257c4c8707a71805a779a75643451f5b0d5ee14f6a2228e556  art/traits/wick/production-v1/previews/batch-b-56px.png
 c3f184818fcd407ff5e890a82359e6146dd969816eb5325c7774b4677e51b704  art/traits/wick/production-v1/previews/batch-b-light-dark-64px.png
-59fb63bf5691ca75017a07de810d05f76d4172de5a37dd7fdf171fe5761844d1  art/traits/wick/production-v1/previews/batch-c-128px.png
-a5aaa334a52ed4b0948a47ce4bde40a5f11d7d9fe4d8b0ec069a037d66594766  art/traits/wick/production-v1/previews/batch-c-40px.png
-c75ba03c643a7101098334cfad52e743e6a099a3649f6e21185cb9601f260579  art/traits/wick/production-v1/previews/batch-c-44px.png
-a55d868535294f170d9c15d98d4ee9a7d5c2876f986eb2071b81f14cb6fb3aef  art/traits/wick/production-v1/previews/batch-c-48px.png
-3a475aef190e4c0437cf62c6cda49ce358406514c235f271f786fea736e60b6f  art/traits/wick/production-v1/previews/batch-c-56px.png
-045c15d3b1d52820274e709bb00716efa28f0d0f386e2e0527e25e36ee36d6c1  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
-4c04d9934e611b6b21a69dab7266a911d6a430f74f28ea969af50fc021868508  art/traits/wick/production-v1/previews/latest.png
+d902fa76a809117498e9cc42aaec4e4e387c673cd11ac167c2d141caf9c928a0  art/traits/wick/production-v1/previews/batch-c-128px.png
+e45ed41d9f400508e5eb2c1e1a7ffb216f90599825ba2944beb43ee5d10f7538  art/traits/wick/production-v1/previews/batch-c-40px.png
+3fe2937d02ee3c8924c1c85fd9e0a6b51033bd51aea6dbd87626c28c33006fa3  art/traits/wick/production-v1/previews/batch-c-44px.png
+84bb71c9b6544bf2b9a2994e2ec2c604e7c57bfa56855bfa319a119d2b232786  art/traits/wick/production-v1/previews/batch-c-48px.png
+da4521b121aac1a48e133c620c9c0b644c35d8682a041b6f16205fc817211ec4  art/traits/wick/production-v1/previews/batch-c-56px.png
+9537635cc9a8aff9b2f5d9093706d17b48ba9831abc3e81076fd8f9a9f5e8a70  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
+a684348e20b07498b5904c9eeae345a4ba2d402ce0d20e127f61dd3956a18bfa  art/traits/wick/production-v1/previews/latest.png
 c34f970b48c5fcd36200fbc72edbf870e284fd65ff939db2c39e88da55e98276  art/traits/wick/production-v1/right-of-way.png
 37d663f24faaa0feca54898452d1defda9845c799ece8f5d225bea12006dafeb  art/traits/wick/production-v1/rival.png
 32fe56d4124bb1d59ea8c336fee3152572e9a40759f38a7e6de1412feff145d9  art/traits/wick/production-v1/rogue-element.png

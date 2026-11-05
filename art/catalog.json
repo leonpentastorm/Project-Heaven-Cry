@@ -2791,6 +2791,30 @@
         "44": "art/traits/wick/production-v1/exports/44/crowded-head.png",
         "40": "art/traits/wick/production-v1/exports/40/crowded-head.png"
       }
+    },
+    "market-blood": {
+      "label": "Wick — Market Blood",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/market-blood.png",
+      "sha256": "744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "market_blood",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/market-blood.png",
+        "128": "art/traits/wick/production-v1/exports/128/market-blood.png",
+        "64": "art/traits/wick/production-v1/exports/64/market-blood.png",
+        "56": "art/traits/wick/production-v1/exports/56/market-blood.png",
+        "48": "art/traits/wick/production-v1/exports/48/market-blood.png",
+        "44": "art/traits/wick/production-v1/exports/44/market-blood.png",
+        "40": "art/traits/wick/production-v1/exports/40/market-blood.png"
+      }
     }
   },
   "character_collections": {

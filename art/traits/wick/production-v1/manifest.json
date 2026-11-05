@@ -1132,6 +1132,29 @@
       },
       "batch": "C",
       "source_sha256": "c3ed1b02bd2e9d0a9cc6d353e2d6e71d05c31607d26982bcbeb13a284965daef"
+    },
+    {
+      "id": "market-blood",
+      "data_id": "market_blood",
+      "name": "Market Blood",
+      "family": "traits",
+      "order": 59,
+      "mood": "Comic",
+      "action": "Wick squats on its heels holding a hand balance scale up at eye level, squinting as one pan sinks",
+      "screen": "Appraising squint",
+      "prop": "Balance scale",
+      "path": "art/traits/wick/production-v1/market-blood.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/market-blood.png",
+        "128": "art/traits/wick/production-v1/exports/128/market-blood.png",
+        "64": "art/traits/wick/production-v1/exports/64/market-blood.png",
+        "56": "art/traits/wick/production-v1/exports/56/market-blood.png",
+        "48": "art/traits/wick/production-v1/exports/48/market-blood.png",
+        "44": "art/traits/wick/production-v1/exports/44/market-blood.png",
+        "40": "art/traits/wick/production-v1/exports/40/market-blood.png"
+      },
+      "batch": "C",
+      "source_sha256": "8b669aa55bcb91ea9efdf50f2e61a61b4308df2fc93ae8b77ddc442860b53b20"
     }
   ]
 }

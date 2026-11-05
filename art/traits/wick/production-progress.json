@@ -65,10 +65,11 @@
     "interrogator",
     "trench-poet",
     "grudge-bearer",
-    "crowded-head"
+    "crowded-head",
+    "market-blood"
   ],
   "catalog_coverage": {
-    "traits": 58,
+    "traits": 59,
     "perks": 2
   },
   "revision_rounds": {
