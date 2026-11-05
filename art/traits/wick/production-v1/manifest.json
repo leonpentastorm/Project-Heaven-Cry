@@ -1040,6 +1040,29 @@
       },
       "batch": "C",
       "source_sha256": "d4471aa22ecdca218ed041ecd6fafec0666fc3b91b67950ebc70126de1f525ff"
+    },
+    {
+      "id": "interrogator",
+      "data_id": "interrogator",
+      "name": "Interrogator",
+      "family": "traits",
+      "order": 55,
+      "mood": "Grim, Ugly",
+      "action": "Wick straddles a reversed chair, arms folded on its backrest, leaning in close toward the viewer and slowly cracking its mitten knuckles",
+      "screen": "Patient, flat",
+      "prop": "Reversed chair",
+      "path": "art/traits/wick/production-v1/interrogator.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/interrogator.png",
+        "128": "art/traits/wick/production-v1/exports/128/interrogator.png",
+        "64": "art/traits/wick/production-v1/exports/64/interrogator.png",
+        "56": "art/traits/wick/production-v1/exports/56/interrogator.png",
+        "48": "art/traits/wick/production-v1/exports/48/interrogator.png",
+        "44": "art/traits/wick/production-v1/exports/44/interrogator.png",
+        "40": "art/traits/wick/production-v1/exports/40/interrogator.png"
+      },
+      "batch": "C",
+      "source_sha256": "252a807e4041a0050a94057a4df60395b72150ad03c19893f1dce2d0c635cbe8"
     }
   ]
 }

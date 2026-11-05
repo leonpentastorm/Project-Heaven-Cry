@@ -61,10 +61,11 @@
     "field-medic",
     "squad-anchor",
     "born-officer",
-    "cold-case"
+    "cold-case",
+    "interrogator"
   ],
   "catalog_coverage": {
-    "traits": 54,
+    "traits": 55,
     "perks": 2
   },
   "revision_rounds": {

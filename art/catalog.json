@@ -2695,6 +2695,30 @@
         "44": "art/traits/wick/production-v1/exports/44/cold-case.png",
         "40": "art/traits/wick/production-v1/exports/40/cold-case.png"
       }
+    },
+    "interrogator": {
+      "label": "Wick — Interrogator",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/interrogator.png",
+      "sha256": "6f7b1c0c28d20143b608bcc46e9ccc27860c23fac204ddf3f20eea076abb7953",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "interrogator",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/interrogator.png",
+        "128": "art/traits/wick/production-v1/exports/128/interrogator.png",
+        "64": "art/traits/wick/production-v1/exports/64/interrogator.png",
+        "56": "art/traits/wick/production-v1/exports/56/interrogator.png",
+        "48": "art/traits/wick/production-v1/exports/48/interrogator.png",
+        "44": "art/traits/wick/production-v1/exports/44/interrogator.png",
+        "40": "art/traits/wick/production-v1/exports/40/interrogator.png"
+      }
     }
   },
   "character_collections": {
