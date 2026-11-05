@@ -2455,6 +2455,30 @@
         "44": "art/traits/wick/production-v1/exports/44/gambler.png",
         "40": "art/traits/wick/production-v1/exports/40/gambler.png"
       }
+    },
+    "insomniac": {
+      "label": "Wick — Insomniac",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/insomniac.png",
+      "sha256": "d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "insomniac",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/insomniac.png",
+        "128": "art/traits/wick/production-v1/exports/128/insomniac.png",
+        "64": "art/traits/wick/production-v1/exports/64/insomniac.png",
+        "56": "art/traits/wick/production-v1/exports/56/insomniac.png",
+        "48": "art/traits/wick/production-v1/exports/48/insomniac.png",
+        "44": "art/traits/wick/production-v1/exports/44/insomniac.png",
+        "40": "art/traits/wick/production-v1/exports/40/insomniac.png"
+      }
     }
   },
   "character_collections": {

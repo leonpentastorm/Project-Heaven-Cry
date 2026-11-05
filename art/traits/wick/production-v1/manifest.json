@@ -810,6 +810,29 @@
       },
       "batch": "B",
       "source_sha256": "a2fa61bea8bc44e9572379eb622b94a3122d754129df355c9c3bc79873771cc3"
+    },
+    {
+      "id": "insomniac",
+      "data_id": "insomniac",
+      "name": "Insomniac",
+      "family": "traits",
+      "order": 43,
+      "mood": "Comic, Tense",
+      "action": "Wick sits bolt upright in a bedroll, staring out into the dark, rigid and wide awake",
+      "screen": "Square eyes with heavy under-bars",
+      "prop": "Bedroll",
+      "path": "art/traits/wick/production-v1/insomniac.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/insomniac.png",
+        "128": "art/traits/wick/production-v1/exports/128/insomniac.png",
+        "64": "art/traits/wick/production-v1/exports/64/insomniac.png",
+        "56": "art/traits/wick/production-v1/exports/56/insomniac.png",
+        "48": "art/traits/wick/production-v1/exports/48/insomniac.png",
+        "44": "art/traits/wick/production-v1/exports/44/insomniac.png",
+        "40": "art/traits/wick/production-v1/exports/40/insomniac.png"
+      },
+      "batch": "B",
+      "source_sha256": "e46185205f9e48116ee8419afa5936dde9f27a1bc3b42a4f2981d4ed06b149a9"
     }
   ]
 }

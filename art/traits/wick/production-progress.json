@@ -51,10 +51,11 @@
     "sigil-savant",
     "hollow-heart",
     "heretic",
-    "gambler"
+    "gambler",
+    "insomniac"
   ],
   "catalog_coverage": {
-    "traits": 44,
+    "traits": 45,
     "perks": 2
   },
   "revision_rounds": {
