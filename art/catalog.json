@@ -2407,6 +2407,30 @@
         "44": "art/traits/wick/production-v1/exports/44/hollow-heart.png",
         "40": "art/traits/wick/production-v1/exports/40/hollow-heart.png"
       }
+    },
+    "heretic": {
+      "label": "Wick — Heretic",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/heretic.png",
+      "sha256": "3420efe7a427a430a504182709550b56bb9b62f91ae17bedc13f318b476af87e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "heretic",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heretic.png",
+        "128": "art/traits/wick/production-v1/exports/128/heretic.png",
+        "64": "art/traits/wick/production-v1/exports/64/heretic.png",
+        "56": "art/traits/wick/production-v1/exports/56/heretic.png",
+        "48": "art/traits/wick/production-v1/exports/48/heretic.png",
+        "44": "art/traits/wick/production-v1/exports/44/heretic.png",
+        "40": "art/traits/wick/production-v1/exports/40/heretic.png"
+      }
     }
   },
   "character_collections": {

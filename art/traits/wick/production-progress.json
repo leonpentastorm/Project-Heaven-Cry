@@ -49,10 +49,11 @@
     "spray-and-pray",
     "one-shot",
     "sigil-savant",
-    "hollow-heart"
+    "hollow-heart",
+    "heretic"
   ],
   "catalog_coverage": {
-    "traits": 42,
+    "traits": 43,
     "perks": 2
   },
   "revision_rounds": {

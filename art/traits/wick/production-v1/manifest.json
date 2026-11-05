@@ -764,6 +764,29 @@
       },
       "batch": "B",
       "source_sha256": "5af72f23f43f746dac3494d4659b5d33596ef0b0699c7cdcac408c15f68f4f32"
+    },
+    {
+      "id": "heretic",
+      "data_id": "heretic",
+      "name": "Heretic",
+      "family": "traits",
+      "order": 41,
+      "mood": "Comic",
+      "action": "Wick scampers off mid-stride, a stolen halo tucked under its arm like a hubcap, glancing guiltily back over its shoulder",
+      "screen": "Guilty grin",
+      "prop": "Halo",
+      "path": "art/traits/wick/production-v1/heretic.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heretic.png",
+        "128": "art/traits/wick/production-v1/exports/128/heretic.png",
+        "64": "art/traits/wick/production-v1/exports/64/heretic.png",
+        "56": "art/traits/wick/production-v1/exports/56/heretic.png",
+        "48": "art/traits/wick/production-v1/exports/48/heretic.png",
+        "44": "art/traits/wick/production-v1/exports/44/heretic.png",
+        "40": "art/traits/wick/production-v1/exports/40/heretic.png"
+      },
+      "batch": "B",
+      "source_sha256": "b078903206f6fbc538674d868e6ec004fb73babd7e31e510fc9c2e3f61490853"
     }
   ]
 }
