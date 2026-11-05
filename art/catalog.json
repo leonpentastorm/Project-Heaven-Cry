@@ -2999,6 +2999,30 @@
         "44": "art/traits/wick/production-v1/exports/44/true-believer.png",
         "40": "art/traits/wick/production-v1/exports/40/true-believer.png"
       }
+    },
+    "heavens-faithful": {
+      "label": "Wick — Heaven's Faithful",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/heavens-faithful.png",
+      "sha256": "e1ddff8af1cf463edf382ebe59ef6d681b2a1e7cb5047ad1a24bf85bc5dc0043",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "heavens_faithful",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heavens-faithful.png",
+        "128": "art/traits/wick/production-v1/exports/128/heavens-faithful.png",
+        "64": "art/traits/wick/production-v1/exports/64/heavens-faithful.png",
+        "56": "art/traits/wick/production-v1/exports/56/heavens-faithful.png",
+        "48": "art/traits/wick/production-v1/exports/48/heavens-faithful.png",
+        "44": "art/traits/wick/production-v1/exports/44/heavens-faithful.png",
+        "40": "art/traits/wick/production-v1/exports/40/heavens-faithful.png"
+      }
     }
   },
   "character_collections": {

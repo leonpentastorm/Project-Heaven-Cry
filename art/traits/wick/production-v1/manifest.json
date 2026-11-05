@@ -1332,6 +1332,29 @@
       },
       "batch": "C",
       "source_sha256": "c4c2e496bf75e46bb636c245ed0ab7efa8f4a6e94c9733a4db5a2876b3aa8525"
+    },
+    {
+      "id": "heavens-faithful",
+      "data_id": "heavens_faithful",
+      "name": "Heaven's Faithful",
+      "family": "traits",
+      "order": 67,
+      "mood": "Tense, Tender",
+      "action": "Wick huddles low, palms pressed together toward the sky, as a searchlight beam sweeps just over its head",
+      "screen": "Nervous upward glance",
+      "prop": "Searchlight beam",
+      "path": "art/traits/wick/production-v1/heavens-faithful.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/heavens-faithful.png",
+        "128": "art/traits/wick/production-v1/exports/128/heavens-faithful.png",
+        "64": "art/traits/wick/production-v1/exports/64/heavens-faithful.png",
+        "56": "art/traits/wick/production-v1/exports/56/heavens-faithful.png",
+        "48": "art/traits/wick/production-v1/exports/48/heavens-faithful.png",
+        "44": "art/traits/wick/production-v1/exports/44/heavens-faithful.png",
+        "40": "art/traits/wick/production-v1/exports/40/heavens-faithful.png"
+      },
+      "batch": "C",
+      "source_sha256": "485971feee0f2be88ef4354049b5b90ef6f69d2c059149f3ec4633191e678b6a"
     }
   ]
 }
