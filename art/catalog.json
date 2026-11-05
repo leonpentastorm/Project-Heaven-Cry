@@ -4163,6 +4163,30 @@
         "44": "art/perks/wick/production-v1/exports/44/shared-breath.png",
         "40": "art/perks/wick/production-v1/exports/40/shared-breath.png"
       }
+    },
+    "lay-down-arms": {
+      "label": "Wick — Lay Down Arms",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/lay-down-arms.png",
+      "sha256": "4041e4644d3bc2db32f3d8c19d6458aa10993c6574837c5e3dd9608916f820d5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "lay_down_arms",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/lay-down-arms.png",
+        "128": "art/perks/wick/production-v1/exports/128/lay-down-arms.png",
+        "64": "art/perks/wick/production-v1/exports/64/lay-down-arms.png",
+        "56": "art/perks/wick/production-v1/exports/56/lay-down-arms.png",
+        "48": "art/perks/wick/production-v1/exports/48/lay-down-arms.png",
+        "44": "art/perks/wick/production-v1/exports/44/lay-down-arms.png",
+        "40": "art/perks/wick/production-v1/exports/40/lay-down-arms.png"
+      }
     }
   },
   "illustrations": {

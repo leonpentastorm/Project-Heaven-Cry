@@ -118,11 +118,12 @@
     "pattern-lock",
     "talks-broke-down",
     "crowd-pleaser",
-    "shared-breath"
+    "shared-breath",
+    "lay-down-arms"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 39
+    "perks": 40
   },
   "revision_rounds": {
     "field-surgeon": 3,

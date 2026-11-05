@@ -856,6 +856,29 @@
       },
       "batch": "E",
       "source_sha256": "3dd8bc945eaf945f683f8841f78582b4ddb2a308ecd2ee372340e5b2c1a0b552"
+    },
+    {
+      "id": "lay-down-arms",
+      "data_id": "lay_down_arms",
+      "name": "Lay Down Arms",
+      "family": "perks",
+      "order": 38,
+      "mood": "Tender, Tense",
+      "action": "Wick steps close and gently presses a rifle barrel, poking in from frame edge, down toward the ground with one open mitten.",
+      "screen": "Soft smile",
+      "prop": "Rifle barrel (partial)",
+      "path": "art/perks/wick/production-v1/lay-down-arms.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/lay-down-arms.png",
+        "128": "art/perks/wick/production-v1/exports/128/lay-down-arms.png",
+        "64": "art/perks/wick/production-v1/exports/64/lay-down-arms.png",
+        "56": "art/perks/wick/production-v1/exports/56/lay-down-arms.png",
+        "48": "art/perks/wick/production-v1/exports/48/lay-down-arms.png",
+        "44": "art/perks/wick/production-v1/exports/44/lay-down-arms.png",
+        "40": "art/perks/wick/production-v1/exports/40/lay-down-arms.png"
+      },
+      "batch": "E",
+      "source_sha256": "36ba6333a483d53f1f5e196965e389c5770567990ba327999900761140969f5a"
     }
   ]
 }
