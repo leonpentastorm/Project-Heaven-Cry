@@ -3119,6 +3119,30 @@
         "44": "art/traits/wick/production-v1/exports/44/pacifist.png",
         "40": "art/traits/wick/production-v1/exports/40/pacifist.png"
       }
+    },
+    "moon-hunter": {
+      "label": "Wick — Moon Hunter",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/moon-hunter.png",
+      "sha256": "d3ae20d433e911f02170ed92767fd36f6f0f9bdb0264c754b6ecd2e3a2fcffb7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "moon_hunter",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/moon-hunter.png",
+        "128": "art/traits/wick/production-v1/exports/128/moon-hunter.png",
+        "64": "art/traits/wick/production-v1/exports/64/moon-hunter.png",
+        "56": "art/traits/wick/production-v1/exports/56/moon-hunter.png",
+        "48": "art/traits/wick/production-v1/exports/48/moon-hunter.png",
+        "44": "art/traits/wick/production-v1/exports/44/moon-hunter.png",
+        "40": "art/traits/wick/production-v1/exports/40/moon-hunter.png"
+      }
     }
   },
   "character_collections": {

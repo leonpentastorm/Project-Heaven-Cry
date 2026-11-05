@@ -78,10 +78,11 @@
     "occultist",
     "crawler-blooded",
     "old-timer",
-    "pacifist"
+    "pacifist",
+    "moon-hunter"
   ],
   "catalog_coverage": {
-    "traits": 71,
+    "traits": 72,
     "perks": 2
   },
   "revision_rounds": {

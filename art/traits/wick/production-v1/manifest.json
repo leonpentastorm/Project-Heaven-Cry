@@ -1447,6 +1447,29 @@
       },
       "batch": "C",
       "source_sha256": "285b3dec7f20f9cd76dc636fc002c322f7c7e664ceef89bd6249b6583d64dd47"
+    },
+    {
+      "id": "moon-hunter",
+      "data_id": "moon_hunter",
+      "name": "Moon Hunter",
+      "family": "traits",
+      "order": 72,
+      "mood": "Tense",
+      "action": "Wick drops to one knee, one mitten pressed into a huge clawed paw print, the other shading its screen as it stares into the distance",
+      "screen": "Focused narrow eyes",
+      "prop": "Paw print",
+      "path": "art/traits/wick/production-v1/moon-hunter.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/moon-hunter.png",
+        "128": "art/traits/wick/production-v1/exports/128/moon-hunter.png",
+        "64": "art/traits/wick/production-v1/exports/64/moon-hunter.png",
+        "56": "art/traits/wick/production-v1/exports/56/moon-hunter.png",
+        "48": "art/traits/wick/production-v1/exports/48/moon-hunter.png",
+        "44": "art/traits/wick/production-v1/exports/44/moon-hunter.png",
+        "40": "art/traits/wick/production-v1/exports/40/moon-hunter.png"
+      },
+      "batch": "C",
+      "source_sha256": "d18f8d1758db017be6c238156cd35f2a301149fccfab3eee25fd5b06087e68b6"
     }
   ]
 }
