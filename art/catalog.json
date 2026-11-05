@@ -2167,6 +2167,30 @@
         "44": "art/traits/wick/production-v1/exports/44/worldline-fracture.png",
         "40": "art/traits/wick/production-v1/exports/40/worldline-fracture.png"
       }
+    },
+    "lowland-born": {
+      "label": "Wick — Lowland Born",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/lowland-born.png",
+      "sha256": "444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "lowland_born",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/lowland-born.png",
+        "128": "art/traits/wick/production-v1/exports/128/lowland-born.png",
+        "64": "art/traits/wick/production-v1/exports/64/lowland-born.png",
+        "56": "art/traits/wick/production-v1/exports/56/lowland-born.png",
+        "48": "art/traits/wick/production-v1/exports/48/lowland-born.png",
+        "44": "art/traits/wick/production-v1/exports/44/lowland-born.png",
+        "40": "art/traits/wick/production-v1/exports/40/lowland-born.png"
+      }
     }
   },
   "character_collections": {

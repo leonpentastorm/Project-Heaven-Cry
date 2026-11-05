@@ -534,6 +534,29 @@
       },
       "batch": "B",
       "source_sha256": "9110df88c4e015953150feeb8768c3ff841cd45cc0450e2747884d50c206c091"
+    },
+    {
+      "id": "lowland-born",
+      "data_id": "lowland_born",
+      "name": "Lowland Born",
+      "family": "traits",
+      "order": 30,
+      "mood": "Tense",
+      "action": "Wick presses its back flat against a jagged ruined wall stub, peeking round the broken edge toward empty open ground",
+      "screen": "Shifty side-eyes",
+      "prop": "Ruined wall stub",
+      "path": "art/traits/wick/production-v1/lowland-born.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/lowland-born.png",
+        "128": "art/traits/wick/production-v1/exports/128/lowland-born.png",
+        "64": "art/traits/wick/production-v1/exports/64/lowland-born.png",
+        "56": "art/traits/wick/production-v1/exports/56/lowland-born.png",
+        "48": "art/traits/wick/production-v1/exports/48/lowland-born.png",
+        "44": "art/traits/wick/production-v1/exports/44/lowland-born.png",
+        "40": "art/traits/wick/production-v1/exports/40/lowland-born.png"
+      },
+      "batch": "B",
+      "source_sha256": "21f118a1ca3b462422e399a4599b1669d6f60f36f134af5886947f5106d893d2"
     }
   ]
 }
