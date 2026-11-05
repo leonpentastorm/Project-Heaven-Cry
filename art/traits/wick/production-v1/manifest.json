@@ -1109,6 +1109,29 @@
       },
       "batch": "C",
       "source_sha256": "02356453241f4698f364d2a77c45f903fa4b2cb5a794837a019c39fdc7f434b5"
+    },
+    {
+      "id": "crowded-head",
+      "data_id": "crowded_head",
+      "name": "Crowded Head",
+      "family": "traits",
+      "order": 58,
+      "mood": "Comic, Tense",
+      "action": "Wick squats with mittens clamped to its head as a burst of empty speech bubbles erupts from it, crowding each other",
+      "screen": "Spiral eyes",
+      "prop": "Burst of speech bubbles",
+      "path": "art/traits/wick/production-v1/crowded-head.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/crowded-head.png",
+        "128": "art/traits/wick/production-v1/exports/128/crowded-head.png",
+        "64": "art/traits/wick/production-v1/exports/64/crowded-head.png",
+        "56": "art/traits/wick/production-v1/exports/56/crowded-head.png",
+        "48": "art/traits/wick/production-v1/exports/48/crowded-head.png",
+        "44": "art/traits/wick/production-v1/exports/44/crowded-head.png",
+        "40": "art/traits/wick/production-v1/exports/40/crowded-head.png"
+      },
+      "batch": "C",
+      "source_sha256": "c3ed1b02bd2e9d0a9cc6d353e2d6e71d05c31607d26982bcbeb13a284965daef"
     }
   ]
 }

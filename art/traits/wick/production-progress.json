@@ -64,10 +64,11 @@
     "cold-case",
     "interrogator",
     "trench-poet",
-    "grudge-bearer"
+    "grudge-bearer",
+    "crowded-head"
   ],
   "catalog_coverage": {
-    "traits": 57,
+    "traits": 58,
     "perks": 2
   },
   "revision_rounds": {

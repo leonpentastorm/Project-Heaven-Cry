@@ -2767,6 +2767,30 @@
         "44": "art/traits/wick/production-v1/exports/44/grudge-bearer.png",
         "40": "art/traits/wick/production-v1/exports/40/grudge-bearer.png"
       }
+    },
+    "crowded-head": {
+      "label": "Wick — Crowded Head",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/crowded-head.png",
+      "sha256": "6aa4a81dc3fbc8768ab09d1b949b3bda15f697a25a11d905091c5c7087d357f5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "crowded_head",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/crowded-head.png",
+        "128": "art/traits/wick/production-v1/exports/128/crowded-head.png",
+        "64": "art/traits/wick/production-v1/exports/64/crowded-head.png",
+        "56": "art/traits/wick/production-v1/exports/56/crowded-head.png",
+        "48": "art/traits/wick/production-v1/exports/48/crowded-head.png",
+        "44": "art/traits/wick/production-v1/exports/44/crowded-head.png",
+        "40": "art/traits/wick/production-v1/exports/40/crowded-head.png"
+      }
     }
   },
   "character_collections": {
