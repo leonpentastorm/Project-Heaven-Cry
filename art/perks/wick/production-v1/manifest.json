@@ -741,6 +741,29 @@
       },
       "batch": "E",
       "source_sha256": "026a62833eace4df6deca7c97fb1a3a98081390de372472817f35481434d8212"
+    },
+    {
+      "id": "detectives-eye",
+      "data_id": "detectives_eye",
+      "name": "Detective's Eye",
+      "family": "perks",
+      "order": 33,
+      "mood": "Calm, Comic",
+      "action": "Wick lies prone, chin on the ground, peering through a magnifying glass bigger than its head at one out-of-place footprint.",
+      "screen": "One big eye",
+      "prop": "Magnifying glass",
+      "path": "art/perks/wick/production-v1/detectives-eye.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/detectives-eye.png",
+        "128": "art/perks/wick/production-v1/exports/128/detectives-eye.png",
+        "64": "art/perks/wick/production-v1/exports/64/detectives-eye.png",
+        "56": "art/perks/wick/production-v1/exports/56/detectives-eye.png",
+        "48": "art/perks/wick/production-v1/exports/48/detectives-eye.png",
+        "44": "art/perks/wick/production-v1/exports/44/detectives-eye.png",
+        "40": "art/perks/wick/production-v1/exports/40/detectives-eye.png"
+      },
+      "batch": "E",
+      "source_sha256": "7152de9433292e8efd7306404822d36a7e5a7130d015834a530d47ced7ecf0b8"
     }
   ]
 }

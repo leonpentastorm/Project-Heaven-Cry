@@ -113,11 +113,12 @@
     "overruled",
     "burden-of-proof",
     "mirage",
-    "blueprint"
+    "blueprint",
+    "detectives-eye"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 34
+    "perks": 35
   },
   "revision_rounds": {
     "field-surgeon": 3,

@@ -4043,6 +4043,30 @@
         "44": "art/perks/wick/production-v1/exports/44/blueprint.png",
         "40": "art/perks/wick/production-v1/exports/40/blueprint.png"
       }
+    },
+    "detectives-eye": {
+      "label": "Wick — Detective's Eye",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/detectives-eye.png",
+      "sha256": "736ed86831e7a2221202135c547e6f5dc17207bf3ab7dfe0a2d8bbd65e3c9a52",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "detectives_eye",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/detectives-eye.png",
+        "128": "art/perks/wick/production-v1/exports/128/detectives-eye.png",
+        "64": "art/perks/wick/production-v1/exports/64/detectives-eye.png",
+        "56": "art/perks/wick/production-v1/exports/56/detectives-eye.png",
+        "48": "art/perks/wick/production-v1/exports/48/detectives-eye.png",
+        "44": "art/perks/wick/production-v1/exports/44/detectives-eye.png",
+        "40": "art/perks/wick/production-v1/exports/40/detectives-eye.png"
+      }
     }
   },
   "illustrations": {
