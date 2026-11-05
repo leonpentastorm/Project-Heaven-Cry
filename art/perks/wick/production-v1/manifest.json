@@ -74,6 +74,29 @@
       },
       "batch": "D",
       "source_sha256": "73901b1f3b19a088deb1db3658f2f4f1590b9acabe09d048475d943aee222191"
+    },
+    {
+      "id": "scar-tissue",
+      "data_id": "scar_tissue",
+      "name": "Scar Tissue",
+      "family": "perks",
+      "order": 4,
+      "mood": "Grim, Calm",
+      "action": "Wick sits calmly and holds its riveted, patch-plated arm straight into a big tongue of fire, as if warming it.",
+      "screen": "Content small smile",
+      "prop": "Tongue of fire",
+      "path": "art/perks/wick/production-v1/scar-tissue.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/scar-tissue.png",
+        "128": "art/perks/wick/production-v1/exports/128/scar-tissue.png",
+        "64": "art/perks/wick/production-v1/exports/64/scar-tissue.png",
+        "56": "art/perks/wick/production-v1/exports/56/scar-tissue.png",
+        "48": "art/perks/wick/production-v1/exports/48/scar-tissue.png",
+        "44": "art/perks/wick/production-v1/exports/44/scar-tissue.png",
+        "40": "art/perks/wick/production-v1/exports/40/scar-tissue.png"
+      },
+      "batch": "D",
+      "source_sha256": "2474378eab7762e9592cd9b64ca91536e33d9992dc76f44cdc60a356f9327d98"
     }
   ]
 }

@@ -84,11 +84,12 @@
     "ace-pilot",
     "bulwark",
     "shrug-it-off",
-    "used-to-the-pain"
+    "used-to-the-pain",
+    "scar-tissue"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 5
+    "perks": 6
   },
   "revision_rounds": {
     "field-surgeon": 3,

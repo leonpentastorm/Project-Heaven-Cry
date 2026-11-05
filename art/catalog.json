@@ -3347,6 +3347,30 @@
         "44": "art/perks/wick/production-v1/exports/44/used-to-the-pain.png",
         "40": "art/perks/wick/production-v1/exports/40/used-to-the-pain.png"
       }
+    },
+    "scar-tissue": {
+      "label": "Wick — Scar Tissue",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/scar-tissue.png",
+      "sha256": "ad9f81cfac6f04d7ef4224bbedc266c45aac3721d9e5629c4a74adfe713a6dea",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "scar_tissue",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/scar-tissue.png",
+        "128": "art/perks/wick/production-v1/exports/128/scar-tissue.png",
+        "64": "art/perks/wick/production-v1/exports/64/scar-tissue.png",
+        "56": "art/perks/wick/production-v1/exports/56/scar-tissue.png",
+        "48": "art/perks/wick/production-v1/exports/48/scar-tissue.png",
+        "44": "art/perks/wick/production-v1/exports/44/scar-tissue.png",
+        "40": "art/perks/wick/production-v1/exports/40/scar-tissue.png"
+      }
     }
   },
   "illustrations": {
