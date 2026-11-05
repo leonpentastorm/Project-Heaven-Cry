@@ -41,14 +41,15 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 
 In-world framing: creation is filling in the EPCCG, Anti-Heaven Operations Command's intake form, whatever the character's affiliation.
 
-Steps: **Identity → Skills → Traits → Kit → Lock in.** (Rules 1.1: creation is 10 skill points, at most 5 in one skill; Attributes and Cores rise automatically. **The prototype's three-pool logic predates this and needs rebuilding.**)
+Steps: **Identity → Archetype → Skills → Traits → Kit → Lock in.** (Rules 1.1: creation is 10 skill points, at most 5 in one skill; Attributes and Cores rise automatically. **The prototype's three-pool logic predates this and needs rebuilding.**)
 
-1. **Identity:** name; **Sector** (the Earth Sector by default), then **origin** from that Sector's list (`docs/lore/Sector-Earth.md`), shown as cards with what you know and how people see you; race (once races exist); association, last dream, favourite song, history, and a portrait (upload or generate).
-2. **Skills:** one core at a time (three big tabs). Each attribute is a row: an attribute block with diamonds, a plain-words effect, then its **three skill cards** with portrait slots, descriptions, diamonds and a stepper. One budget only: **10 skill points**. Raising a skill raises its Attribute and Core for free; the stepper preview says so ("−1 skill · Endurance 3→4 · Body 3→4 · Mastery 1"). Class presets fill a class's signature skills. **Your archetype** (Soldier, Scholar, Believer, Operator, Crusader, Mystic, Drifter) shows live beside the tabs, chosen from the Cores the skills produced, with its portrait.
-3. **Traits:** pick up to two. Incompatible traits grey out.
-4. **Kit:** three starting kits.
-5. **Lock in:** a checklist, Lock in (only once all 10 points are spent) and Save as draft.
+1. **Identity:** name; **Sector** (the Earth Sector by default), then **origin** from that Sector's list (`docs/lore/Sector-Earth.md`), shown as cards with what you know and how people see you; race (once races exist); association, gender, blood type, main hand, last dream, favourite song, history, and the **portrait**. All of the character's look is chosen here.
+2. **Archetype** (the Cores screen, modelled on Disco Elysium's "pick an archetype or customise"): **37 archetypes in 8 family tabs** (Frontline, Guns and hunters, Shadows, Sigil casters, Minds, Soul and faith, Voices and leaders, Hybrids and wanderers) plus **Custom**. Each card shows the name, an RPG role tag (Tank, Sniper, Face…), a one-line blurb, the three Cores its preset produces as big `‹ N ›` rows with diamonds and descriptor words (Feeble → Legendary), and the classes it leans toward. Picking one pre-fills the 10 skill points. **Guidance only:** the archetype is not saved anywhere, gives nothing, changes nothing later, and doesn't touch the portrait. Data: `data/archetypes.json`.
+3. **Skills:** one core at a time (three big tabs). Each attribute is a row: an attribute block with diamonds, a plain-words effect, then its **three skill cards** with portrait slots, descriptions, diamonds and a stepper. One budget only: **10 skill points**, starting from the archetype's preset. Raising a skill raises its Attribute and Core for free; the stepper preview says so ("−1 skill · Endurance 3→4 · Body 3→4 · Mastery 1"). The side panel shows the classes you'd qualify for at level 3.
+4. **Traits:** pick up to two. Incompatible traits grey out.
+5. **Kit:** three starting kits.
+6. **Lock in:** a checklist, Lock in (only once all 10 points are spent) and Save as draft.
 
-The old **Cores** screen (modelled on Disco Elysium's "Adjust abilities": big rows, descriptor words Feeble → Legendary, `‹ N ›` steppers) moves to **level-up**, where Core and Attribute points are spent.
+The same big-row Cores layout is reused at **level-up**, where Core and Attribute points are spent.
 
 The Identity, Traits, Kit and Lock-in steps have a side panel with a live preview and the classes you'd qualify for at level 3.

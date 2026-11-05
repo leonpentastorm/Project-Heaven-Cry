@@ -1,0 +1,873 @@
+{
+  "$schema_version": "1.0",
+  "kind": "archetypes",
+  "note": "Guidance only (Leon, 5 Nov 2026). Archetypes are picked on the creation Cores screen as a preset that pre-fills the 10 skill points; the Skills step can change anything. Nothing about an archetype persists after that screen: no stats, no portrait, no label on the sheet, no change on level-up. Names are generic role words, never class names.",
+  "rules": {
+    "preset_points": 10,
+    "max_per_skill": 5,
+    "custom_option": true,
+    "leans": "base classes whose signature totals are among the preset's two highest (the level-3 closest-class rule); recomputed by tools/validate.py"
+  },
+  "families": [
+    {
+      "id": "frontline",
+      "name": "Frontline",
+      "blurb": "Hold the line, or break theirs."
+    },
+    {
+      "id": "gunners",
+      "name": "Guns and hunters",
+      "blurb": "Range, patience and a lot of brass."
+    },
+    {
+      "id": "shadows",
+      "name": "Shadows",
+      "blurb": "Unseen, unheard, already gone."
+    },
+    {
+      "id": "sigils",
+      "name": "Sigil casters",
+      "blurb": "Mind magic: command words drawn through an Evoker."
+    },
+    {
+      "id": "minds",
+      "name": "Minds",
+      "blurb": "Thinkers, fixers and finders."
+    },
+    {
+      "id": "soul",
+      "name": "Soul and faith",
+      "blurb": "Heart magic, prayer and the things that answer."
+    },
+    {
+      "id": "voices",
+      "name": "Voices and leaders",
+      "blurb": "Words as weapons, people as armies."
+    },
+    {
+      "id": "hybrids",
+      "name": "Hybrids and wanderers",
+      "blurb": "Two trades at once, or a little of everything."
+    }
+  ],
+  "items": [
+    {
+      "id": "bulwark",
+      "name": "Bulwark",
+      "family": "frontline",
+      "role": "Tank",
+      "blurb": "Stands in the doorway so nobody else has to. Has been shot more times than most people have been hugged.",
+      "preset": {
+        "durability": 4,
+        "pain_threshold": 3,
+        "guts": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "vanguard",
+        "duelist"
+      ]
+    },
+    {
+      "id": "bodyguard",
+      "name": "Bodyguard",
+      "family": "frontline",
+      "role": "Protector",
+      "blurb": "Sees the knife before the client does, and gets between them. Paid by the day, loyal past it.",
+      "preset": {
+        "durability": 3,
+        "reaction_speed": 3,
+        "vigilant": 2,
+        "guts": 2
+      },
+      "cores": {
+        "body": 3,
+        "mind": 2,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "vanguard",
+        "assassin"
+      ]
+    },
+    {
+      "id": "brawler",
+      "name": "Brawler",
+      "family": "frontline",
+      "role": "Melee striker",
+      "blurb": "Fixes problems with fists and leaves the paperwork to people with smaller hands.",
+      "preset": {
+        "raw_power": 4,
+        "athletics": 3,
+        "guts": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "duelist",
+        "vanguard"
+      ]
+    },
+    {
+      "id": "berserker",
+      "name": "Berserker",
+      "family": "frontline",
+      "role": "Frenzied fighter",
+      "blurb": "Doesn't feel the wound until the fight is over, and doesn't stop until somebody makes it over.",
+      "preset": {
+        "raw_power": 4,
+        "guts": 3,
+        "pain_threshold": 2,
+        "intimidation": 1
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "duelist",
+        "vanguard"
+      ]
+    },
+    {
+      "id": "fencer",
+      "name": "Fencer",
+      "family": "frontline",
+      "role": "Finesse duellist",
+      "blurb": "Blade or pistol, the same rule: be somewhere else when they swing.",
+      "preset": {
+        "athletics": 4,
+        "guts": 2,
+        "reaction_speed": 2,
+        "dexterity": 2
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "duelist",
+        "marksman"
+      ]
+    },
+    {
+      "id": "monk",
+      "name": "Monk",
+      "family": "frontline",
+      "role": "Unarmed adept",
+      "blurb": "Trained until the body and the breath became one weapon. Calm right up to the point of impact.",
+      "preset": {
+        "athletics": 3,
+        "raw_power": 3,
+        "composure": 2,
+        "pain_threshold": 2
+      },
+      "cores": {
+        "body": 3,
+        "mind": 1,
+        "soul": 2
+      },
+      "leans": [
+        "duelist",
+        "vanguard",
+        "warden"
+      ]
+    },
+    {
+      "id": "sharpshooter",
+      "name": "Sharpshooter",
+      "family": "gunners",
+      "role": "Sniper",
+      "blurb": "Identify. Squeeze. Breathe. Patient as stone, and the last thing a lot of people never saw.",
+      "preset": {
+        "dexterity": 4,
+        "vigilant": 3,
+        "reaction_speed": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 3,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "artillerist",
+        "assassin"
+      ]
+    },
+    {
+      "id": "heavy_gunner",
+      "name": "Heavy Gunner",
+      "family": "gunners",
+      "role": "Suppression",
+      "blurb": "Carries the gun nobody else can lift and believes volume of fire is a personality.",
+      "preset": {
+        "dexterity": 4,
+        "durability": 3,
+        "guts": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "vanguard",
+        "marksman"
+      ]
+    },
+    {
+      "id": "ranger",
+      "name": "Ranger",
+      "family": "gunners",
+      "role": "Scout and hunter",
+      "blurb": "Reads tracks, wind and silence. Knows where the enemy is before the map does.",
+      "preset": {
+        "vigilant": 4,
+        "sensory": 3,
+        "dexterity": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "artillerist"
+      ]
+    },
+    {
+      "id": "grenadier",
+      "name": "Grenadier",
+      "family": "gunners",
+      "role": "Explosives",
+      "blurb": "Every problem is a load-bearing wall, and every wall has a weak spot.",
+      "preset": {
+        "dexterity": 4,
+        "vigilant": 2,
+        "proficiency": 2,
+        "guts": 2
+      },
+      "cores": {
+        "body": 4,
+        "mind": 2,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "artillerist",
+        "combat_medic",
+        "duelist",
+        "scribe",
+        "vanguard"
+      ]
+    },
+    {
+      "id": "infiltrator",
+      "name": "Infiltrator",
+      "family": "shadows",
+      "role": "Stealth",
+      "blurb": "In and out before the guard finishes yawning. Nobody remembers seeing them, which is the point.",
+      "preset": {
+        "ingenuity": 4,
+        "reaction_speed": 3,
+        "vigilant": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "assassin",
+        "marksman"
+      ]
+    },
+    {
+      "id": "stalker",
+      "name": "Stalker",
+      "family": "shadows",
+      "role": "Ambusher",
+      "blurb": "Waits in the dark for the right moment, then becomes the reason people fear the dark.",
+      "preset": {
+        "ingenuity": 4,
+        "intimidation": 3,
+        "reaction_speed": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "assassin",
+        "haunt",
+        "marksman"
+      ]
+    },
+    {
+      "id": "thief",
+      "name": "Thief",
+      "family": "shadows",
+      "role": "Burglar and pickpocket",
+      "blurb": "Light fingers, quick hands, and a professional respect for good locks.",
+      "preset": {
+        "ingenuity": 4,
+        "reaction_speed": 3,
+        "proficiency": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "assassin",
+        "combat_medic",
+        "marksman",
+        "scribe"
+      ]
+    },
+    {
+      "id": "spy",
+      "name": "Spy",
+      "family": "shadows",
+      "role": "Infiltrating face",
+      "blurb": "Smiles, lies and never sweats. Has had four names this year and liked two of them.",
+      "preset": {
+        "charisma": 4,
+        "ingenuity": 3,
+        "composure": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 3
+      },
+      "leans": [
+        "hexwright",
+        "assassin",
+        "warden"
+      ]
+    },
+    {
+      "id": "sigilist",
+      "name": "Sigilist",
+      "family": "sigils",
+      "role": "Sigil blaster",
+      "blurb": "Draws FIRE · CONDENSE · PUSH faster than most people draw breath. Smells faintly of scorched Evoker.",
+      "preset": {
+        "brain_power": 4,
+        "visualization": 3,
+        "vigilant": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "artillerist",
+        "marksman",
+        "tempest"
+      ]
+    },
+    {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "family": "sigils",
+      "role": "Sigil defender",
+      "blurb": "Raises walls of command words around the squad, and lectures them about it afterwards.",
+      "preset": {
+        "rumination": 4,
+        "composure": 3,
+        "analysis": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 3
+      },
+      "leans": [
+        "warden",
+        "scribe"
+      ]
+    },
+    {
+      "id": "enchanter",
+      "name": "Enchanter",
+      "family": "sigils",
+      "role": "Sigil support",
+      "blurb": "Inscribes the squad's gear before the fight, so the fight is shorter than it should be.",
+      "preset": {
+        "rumination": 4,
+        "proficiency": 3,
+        "eloquence": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "scribe",
+        "warden"
+      ]
+    },
+    {
+      "id": "jinx",
+      "name": "Jinx",
+      "family": "sigils",
+      "role": "Sigil controller",
+      "blurb": "Finds the weakness, names it, and makes it worse. Enemies blind, slow and confused, in that order.",
+      "preset": {
+        "analysis": 4,
+        "charisma": 3,
+        "eloquence": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "hexwright",
+        "warden"
+      ]
+    },
+    {
+      "id": "detective",
+      "name": "Detective",
+      "family": "minds",
+      "role": "Investigator",
+      "blurb": "First: no casings. Second: the wall is dented from the far side. Third: you're lying.",
+      "preset": {
+        "analysis": 4,
+        "vigilant": 3,
+        "eloquence": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "hexwright",
+        "warden"
+      ]
+    },
+    {
+      "id": "engineer",
+      "name": "Engineer",
+      "family": "minds",
+      "role": "Gadgeteer and fixer",
+      "blurb": "Keeps the guns firing, the doors opening and the robots alive. Talks to machines more than people.",
+      "preset": {
+        "proficiency": 5,
+        "analysis": 3,
+        "ingenuity": 2
+      },
+      "cores": {
+        "body": 1,
+        "mind": 5,
+        "soul": 1
+      },
+      "leans": [
+        "combat_medic",
+        "scribe",
+        "hexwright",
+        "warden"
+      ]
+    },
+    {
+      "id": "scholar",
+      "name": "Scholar",
+      "family": "minds",
+      "role": "Knowledge",
+      "blurb": "Has read about it. Has read about everything. Will tell you, at length, in the middle of the firefight.",
+      "preset": {
+        "rumination": 4,
+        "analysis": 3,
+        "brain_power": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "warden",
+        "scribe"
+      ]
+    },
+    {
+      "id": "stormcaller",
+      "name": "Stormcaller",
+      "family": "soul",
+      "role": "Soul blaster",
+      "blurb": "Imagines the lightning so hard the world gives it to them. Heart pounding, hands smoking.",
+      "preset": {
+        "will_power": 4,
+        "empathy": 3,
+        "visualization": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 3,
+        "soul": 4
+      },
+      "leans": [
+        "tempest",
+        "artillerist"
+      ]
+    },
+    {
+      "id": "mender",
+      "name": "Mender",
+      "family": "soul",
+      "role": "Soul healer",
+      "blurb": "Feels your wound from across the room and closes it before you finish screaming.",
+      "preset": {
+        "camaraderie": 4,
+        "empathy": 3,
+        "implication": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "muse",
+        "combat_medic"
+      ]
+    },
+    {
+      "id": "confessor",
+      "name": "Confessor",
+      "family": "soul",
+      "role": "Faith healer",
+      "blurb": "Hears the squad's sins, prays over their wounds, and reports to nobody but the saints.",
+      "preset": {
+        "faith": 4,
+        "camaraderie": 3,
+        "conscience": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "aegis",
+        "combat_medic",
+        "muse"
+      ]
+    },
+    {
+      "id": "zealot",
+      "name": "Zealot",
+      "family": "soul",
+      "role": "Holy wrath",
+      "blurb": "Only the saints may judge. The zealot delivers. Usually with a shotgun.",
+      "preset": {
+        "faith": 4,
+        "intimidation": 3,
+        "conscience": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "aegis",
+        "assassin",
+        "haunt"
+      ]
+    },
+    {
+      "id": "witch",
+      "name": "Witch",
+      "family": "soul",
+      "role": "Occult caster",
+      "blurb": "Knows the old stories are true and the twin world is listening. Respected, feared, never invited twice.",
+      "preset": {
+        "lore_master": 4,
+        "will_power": 3,
+        "implication": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "haunt",
+        "aegis"
+      ]
+    },
+    {
+      "id": "harbinger",
+      "name": "Harbinger",
+      "family": "soul",
+      "role": "Fear and dread",
+      "blurb": "Speaks in omens. Enemies hear their own worst fear in every word, and run from it.",
+      "preset": {
+        "implication": 4,
+        "intimidation": 3,
+        "lore_master": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "haunt",
+        "muse"
+      ]
+    },
+    {
+      "id": "silver_tongue",
+      "name": "Silver Tongue",
+      "family": "voices",
+      "role": "Face and persuader",
+      "blurb": "Can talk anyone into anything, and has talked several people into regretting it.",
+      "preset": {
+        "charisma": 4,
+        "eloquence": 3,
+        "implication": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 4,
+        "soul": 3
+      },
+      "leans": [
+        "hexwright",
+        "haunt",
+        "muse",
+        "scribe"
+      ]
+    },
+    {
+      "id": "troubadour",
+      "name": "Troubadour",
+      "family": "voices",
+      "role": "Inspiring support",
+      "blurb": "Turns a squad into a chorus. Morale goes up, enemy morale goes elsewhere.",
+      "preset": {
+        "implication": 4,
+        "camaraderie": 3,
+        "authority": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "muse",
+        "haunt"
+      ]
+    },
+    {
+      "id": "captain",
+      "name": "Captain",
+      "family": "voices",
+      "role": "Leader",
+      "blurb": "Doesn't raise their voice. Doesn't need to. People simply do what they say.",
+      "preset": {
+        "authority": 4,
+        "camaraderie": 3,
+        "composure": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "muse",
+        "combat_medic",
+        "warden"
+      ]
+    },
+    {
+      "id": "enforcer",
+      "name": "Enforcer",
+      "family": "voices",
+      "role": "Intimidator",
+      "blurb": "Every conversation ends with the other side agreeing. How it gets there is up to them.",
+      "preset": {
+        "intimidation": 4,
+        "authority": 3,
+        "implication": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 1,
+        "soul": 3
+      },
+      "leans": [
+        "haunt",
+        "muse"
+      ]
+    },
+    {
+      "id": "spellblade",
+      "name": "Spellblade",
+      "family": "hybrids",
+      "role": "Sigil melee",
+      "blurb": "Draws Sigils with the sword tip. Three slashes, then a storm opens in the enemy's head.",
+      "preset": {
+        "brain_power": 4,
+        "athletics": 3,
+        "visualization": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 4,
+        "soul": 1
+      },
+      "leans": [
+        "artillerist",
+        "duelist",
+        "tempest"
+      ]
+    },
+    {
+      "id": "crusader",
+      "name": "Crusader",
+      "family": "hybrids",
+      "role": "Holy defender",
+      "blurb": "Strong arm, certain heart. Walks into the dark first and says a word for those who don't walk out.",
+      "preset": {
+        "faith": 4,
+        "durability": 3,
+        "guts": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 1,
+        "soul": 4
+      },
+      "leans": [
+        "vanguard",
+        "aegis"
+      ]
+    },
+    {
+      "id": "witch_hunter",
+      "name": "Witch Hunter",
+      "family": "hybrids",
+      "role": "Anti-magic gunner",
+      "blurb": "Knows what the shadow is, and what kind of round it needs.",
+      "preset": {
+        "dexterity": 4,
+        "lore_master": 3,
+        "vigilant": 3
+      },
+      "cores": {
+        "body": 4,
+        "mind": 3,
+        "soul": 3
+      },
+      "leans": [
+        "marksman",
+        "aegis",
+        "artillerist",
+        "haunt"
+      ]
+    },
+    {
+      "id": "field_medic",
+      "name": "Field Medic",
+      "family": "hybrids",
+      "role": "Combat healer",
+      "blurb": "Under fire, on their knees, hands in someone's chest, telling them a terrible joke. Never leaves anyone behind.",
+      "preset": {
+        "camaraderie": 4,
+        "sensory": 3,
+        "proficiency": 3
+      },
+      "cores": {
+        "body": 3,
+        "mind": 3,
+        "soul": 4
+      },
+      "leans": [
+        "combat_medic",
+        "muse"
+      ]
+    },
+    {
+      "id": "survivor",
+      "name": "Survivor",
+      "family": "hybrids",
+      "role": "Scavenger",
+      "blurb": "Lived where nothing lives. Throws first, ducks second, eats whatever's left.",
+      "preset": {
+        "reaction_speed": 3,
+        "vigilant": 3,
+        "ingenuity": 2,
+        "pain_threshold": 2
+      },
+      "cores": {
+        "body": 3,
+        "mind": 3,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "assassin"
+      ]
+    },
+    {
+      "id": "drifter",
+      "name": "Drifter",
+      "family": "hybrids",
+      "role": "Generalist",
+      "blurb": "A little of everything and no home in any of it. Never quite who the room expects.",
+      "preset": {
+        "athletics": 2,
+        "vigilant": 2,
+        "charisma": 2,
+        "empathy": 2,
+        "proficiency": 2
+      },
+      "cores": {
+        "body": 2,
+        "mind": 2,
+        "soul": 2
+      },
+      "leans": [
+        "artillerist",
+        "combat_medic",
+        "duelist",
+        "hexwright",
+        "marksman",
+        "scribe",
+        "tempest",
+        "aegis",
+        "assassin",
+        "haunt",
+        "muse",
+        "vanguard",
+        "warden"
+      ]
+    }
+  ]
+}

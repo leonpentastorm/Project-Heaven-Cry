@@ -1,6 +1,6 @@
 # Sectors
 
-**A Sector is one pocket of humanity** (canon, 5 Nov 2026): a span of worlds, often across several galaxies, whose people share local powers, local peoples, a history and the same Celestial messes. Humanity is several sextillion people on trillions of worlds, so there are more Sectors than anyone has counted. Nobody knows the whole; everyone knows their Sector.
+**A Sector is one pocket of humanity** (canon, 5 Nov 2026): a span of worlds, often across several galaxies, whose people share local powers, local peoples, a history and the same Celestial messes. Humanity is several sextillion people on trillions of worlds, so there are more Sectors than anyone has counted. Nobody knows the whole; everyone knows their Sector. **Whether other Sectors exist is not common knowledge (canon):** some people know, many don't, and some Sectors think they *are* humanity. Anti-Heaven Operations Command knows for certain, since it has chapters in all of them.
 
 Every campaign is set in a Sector. Two things are the same in all of them:
 

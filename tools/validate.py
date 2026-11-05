@@ -133,6 +133,42 @@ def words(o):
 for d in data.values():
     words(d)
 
+# archetypes: creation presets (guidance only)
+arch = data.get("archetypes")
+if isinstance(arch, dict):
+    rules = arch.get("rules", {})
+    fams = {f.get("id") for f in arch.get("families", [])}
+    skill_core = {x["id"]: x.get("core") for x in items("skills") if isinstance(x, dict)}
+    seen = collections.Counter(a.get("id") for a in arch.get("items", []))
+    for k, n in seen.items():
+        if n > 1:
+            errors.append(f"archetypes: duplicate id {k}")
+    base_names = {b.get("name", "").lower() for b in base + adv}
+    for a in arch.get("items", []):
+        aid, preset = a.get("id"), a.get("preset", {})
+        if a.get("family") not in fams:
+            errors.append(f"archetype {aid}: unknown family {a.get('family')}")
+        if a.get("name", "").lower() in base_names:
+            errors.append(f"archetype {aid}: name collides with a class name")
+        bad = [s for s in preset if s not in SKILLS]
+        if bad:
+            errors.append(f"archetype {aid}: unknown skills {bad}")
+        if sum(preset.values()) != rules.get("preset_points", 10):
+            errors.append(f"archetype {aid}: preset spends {sum(preset.values())} points")
+        if preset and max(preset.values()) > rules.get("max_per_skill", 5):
+            errors.append(f"archetype {aid}: a skill is above the creation cap")
+        cores = {"body": 1, "mind": 1, "soul": 1}
+        for s, v in preset.items():
+            if s in skill_core:
+                cores[skill_core[s]] = max(cores[skill_core[s]], v)
+        if a.get("cores") != cores:
+            errors.append(f"archetype {aid}: cores should be {cores}")
+        tot = {b["id"]: sum(preset.get(s, 0) for s in b.get("signature", [])) for b in base}
+        top = sorted(set(tot.values()), reverse=True)[:2]
+        leans = sorted(c for c, v in tot.items() if v in top)
+        if sorted(a.get("leans", [])) != leans:
+            errors.append(f"archetype {aid}: leans should be {leans}")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

@@ -74,7 +74,7 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 | Cores | 1 each | rise automatically to the highest attribute under them |
 | Traits | none | pick 0–2 |
 
-You only choose skills; the tree grows to fit them. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
+**Archetypes** (archetypes.json, 37 presets) help new players: picking one pre-fills the 10 points, and anything can then be changed. They are guidance only and have no effect after creation. You only choose skills; the tree grows to fit them. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
 
 **Levels and XP.** Levels run 1 to 20. XP is cumulative:
 
@@ -515,6 +515,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | skills.json | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, signature-of |
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
 | traits.json | 74 | Upsides, downsides, excludes, Narrator hooks |
+| archetypes.json | 37 | Creation presets (guidance only): role, blurb, 10-point skill preset, cores, class leans |
 | perks.json | 76 | 54 Acquired, 16 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons |
