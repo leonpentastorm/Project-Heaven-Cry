@@ -71,10 +71,11 @@
     "inner-ring-heir",
     "slicer",
     "demolitionist",
-    "drone-handler"
+    "drone-handler",
+    "augmented"
   ],
   "catalog_coverage": {
-    "traits": 64,
+    "traits": 65,
     "perks": 2
   },
   "revision_rounds": {

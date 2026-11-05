@@ -1286,6 +1286,29 @@
       },
       "batch": "C",
       "source_sha256": "2e7963a74f50e2e21453629f52eb1755e1ec15f2fc98524f304d523a5f4e43ff"
+    },
+    {
+      "id": "augmented",
+      "data_id": "augmented",
+      "name": "Augmented",
+      "family": "traits",
+      "order": 65,
+      "mood": "Comic",
+      "action": "Wick springs high into the air on oversized piston legs, one knee joint throwing sparks",
+      "screen": "Delighted, small warning mark",
+      "prop": "Piston legs",
+      "path": "art/traits/wick/production-v1/augmented.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/augmented.png",
+        "128": "art/traits/wick/production-v1/exports/128/augmented.png",
+        "64": "art/traits/wick/production-v1/exports/64/augmented.png",
+        "56": "art/traits/wick/production-v1/exports/56/augmented.png",
+        "48": "art/traits/wick/production-v1/exports/48/augmented.png",
+        "44": "art/traits/wick/production-v1/exports/44/augmented.png",
+        "40": "art/traits/wick/production-v1/exports/40/augmented.png"
+      },
+      "batch": "C",
+      "source_sha256": "72a7cef1559b9e8c47c5e8daa096712ab8f0858128037302a7df797fb1e35a8f"
     }
   ]
 }

@@ -2951,6 +2951,30 @@
         "44": "art/traits/wick/production-v1/exports/44/drone-handler.png",
         "40": "art/traits/wick/production-v1/exports/40/drone-handler.png"
       }
+    },
+    "augmented": {
+      "label": "Wick — Augmented",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/augmented.png",
+      "sha256": "3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "augmented",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/augmented.png",
+        "128": "art/traits/wick/production-v1/exports/128/augmented.png",
+        "64": "art/traits/wick/production-v1/exports/64/augmented.png",
+        "56": "art/traits/wick/production-v1/exports/56/augmented.png",
+        "48": "art/traits/wick/production-v1/exports/48/augmented.png",
+        "44": "art/traits/wick/production-v1/exports/44/augmented.png",
+        "40": "art/traits/wick/production-v1/exports/40/augmented.png"
+      }
     }
   },
   "character_collections": {
