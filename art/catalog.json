@@ -4331,6 +4331,30 @@
         "44": "art/perks/wick/production-v1/exports/44/resonance.png",
         "40": "art/perks/wick/production-v1/exports/40/resonance.png"
       }
+    },
+    "old-tongue": {
+      "label": "Wick — Old Tongue",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/old-tongue.png",
+      "sha256": "32fa00cd9e1aae4c922128f2e6aa7e020cb16a3b7f3248add612c34cfa882771",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "old_tongue",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/old-tongue.png",
+        "128": "art/perks/wick/production-v1/exports/128/old-tongue.png",
+        "64": "art/perks/wick/production-v1/exports/64/old-tongue.png",
+        "56": "art/perks/wick/production-v1/exports/56/old-tongue.png",
+        "48": "art/perks/wick/production-v1/exports/48/old-tongue.png",
+        "44": "art/perks/wick/production-v1/exports/44/old-tongue.png",
+        "40": "art/perks/wick/production-v1/exports/40/old-tongue.png"
+      }
     }
   },
   "illustrations": {

@@ -1017,6 +1017,29 @@
       },
       "batch": "E",
       "source_sha256": "09d0e28aaa3eca486d89f37afb4687cfc816f3a125bfa7d5e5f28b90a906cd4d"
+    },
+    {
+      "id": "old-tongue",
+      "data_id": "old_tongue",
+      "name": "Old Tongue",
+      "family": "perks",
+      "order": 45,
+      "mood": "Eerie, Calm",
+      "action": "Wick kneels nose-close to a tall cracked stone slab, tracing its carved spirals and dots (no letters) with one mitten.",
+      "screen": "Bright wide eyes",
+      "prop": "Carved stone slab",
+      "path": "art/perks/wick/production-v1/old-tongue.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/old-tongue.png",
+        "128": "art/perks/wick/production-v1/exports/128/old-tongue.png",
+        "64": "art/perks/wick/production-v1/exports/64/old-tongue.png",
+        "56": "art/perks/wick/production-v1/exports/56/old-tongue.png",
+        "48": "art/perks/wick/production-v1/exports/48/old-tongue.png",
+        "44": "art/perks/wick/production-v1/exports/44/old-tongue.png",
+        "40": "art/perks/wick/production-v1/exports/40/old-tongue.png"
+      },
+      "batch": "E",
+      "source_sha256": "821d5c490dac3168217d97f49a9ab0aaf0261a9519dc254514055b7f6e3c5937"
     }
   ]
 }

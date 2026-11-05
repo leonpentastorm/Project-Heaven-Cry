@@ -125,11 +125,12 @@
     "sweet-talker",
     "double-meaning",
     "heart-overload",
-    "resonance"
+    "resonance",
+    "old-tongue"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 46
+    "perks": 47
   },
   "revision_rounds": {
     "field-surgeon": 3,
