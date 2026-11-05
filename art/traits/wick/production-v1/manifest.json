@@ -350,6 +350,29 @@
       },
       "batch": "A",
       "source_sha256": "d586a104b6febe4671171351501f854e36a2c396e655da011f80c909b032b6d7"
+    },
+    {
+      "id": "born-performer",
+      "data_id": "born_performer",
+      "name": "Born Performer",
+      "family": "traits",
+      "order": 20,
+      "mood": "Eerie, Comic",
+      "action": "Wick takes a deep sweeping bow inside a spotlight cone, one arm flourished wide, its tilted screen completely empty",
+      "screen": "Blank, switched-off screen",
+      "prop": "Spotlight cone (outline)",
+      "path": "art/traits/wick/production-v1/born-performer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/born-performer.png",
+        "128": "art/traits/wick/production-v1/exports/128/born-performer.png",
+        "64": "art/traits/wick/production-v1/exports/64/born-performer.png",
+        "56": "art/traits/wick/production-v1/exports/56/born-performer.png",
+        "48": "art/traits/wick/production-v1/exports/48/born-performer.png",
+        "44": "art/traits/wick/production-v1/exports/44/born-performer.png",
+        "40": "art/traits/wick/production-v1/exports/40/born-performer.png"
+      },
+      "batch": "A",
+      "source_sha256": "3b2572fd35cb24261100e1ead1fe309b9dd921ecd261d3fe55ece172e9e58a61"
     }
   ]
 }

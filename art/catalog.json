@@ -1975,6 +1975,30 @@
         "44": "art/traits/wick/production-v1/exports/44/heavyworlder.png",
         "40": "art/traits/wick/production-v1/exports/40/heavyworlder.png"
       }
+    },
+    "born-performer": {
+      "label": "Wick — Born Performer",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/born-performer.png",
+      "sha256": "5bc1919ff08bc42473043ff21395d7b7d7d5901c2499ed824881eb2ac47fe8fb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "born_performer",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/born-performer.png",
+        "128": "art/traits/wick/production-v1/exports/128/born-performer.png",
+        "64": "art/traits/wick/production-v1/exports/64/born-performer.png",
+        "56": "art/traits/wick/production-v1/exports/56/born-performer.png",
+        "48": "art/traits/wick/production-v1/exports/48/born-performer.png",
+        "44": "art/traits/wick/production-v1/exports/44/born-performer.png",
+        "40": "art/traits/wick/production-v1/exports/40/born-performer.png"
+      }
     }
   },
   "character_collections": {
