@@ -442,6 +442,29 @@
       },
       "batch": "A",
       "source_sha256": "4d25543cf64f9f413da7ca79c90071d52ee58e4ce5b157a173691856f874c788"
+    },
+    {
+      "id": "the-soundscape-of-the-soul",
+      "data_id": "the_soundscape_of_the_soul",
+      "name": "The Soundscape of the Soul",
+      "family": "traits",
+      "order": 25,
+      "mood": "Tender",
+      "action": "Wick floats on its back as if on water, holding a Musek Blestor to its chest while soft ripple rings spread out beneath it",
+      "screen": "Blissful closed eyes",
+      "prop": "Musek Blestor: a portable box-shaped music player with two bold round speaker grilles and a carrying handle; no brand, lettering or numbers. Reuse this proposed construction for both music traits.",
+      "path": "art/traits/wick/production-v1/the-soundscape-of-the-soul.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/the-soundscape-of-the-soul.png",
+        "128": "art/traits/wick/production-v1/exports/128/the-soundscape-of-the-soul.png",
+        "64": "art/traits/wick/production-v1/exports/64/the-soundscape-of-the-soul.png",
+        "56": "art/traits/wick/production-v1/exports/56/the-soundscape-of-the-soul.png",
+        "48": "art/traits/wick/production-v1/exports/48/the-soundscape-of-the-soul.png",
+        "44": "art/traits/wick/production-v1/exports/44/the-soundscape-of-the-soul.png",
+        "40": "art/traits/wick/production-v1/exports/40/the-soundscape-of-the-soul.png"
+      },
+      "batch": "A",
+      "source_sha256": "397cf23bc185e837d68ddc1a5d59edcff2cf11edb5cfe53ce00b2bde46eb37fd"
     }
   ]
 }

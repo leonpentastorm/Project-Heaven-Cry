@@ -2071,6 +2071,30 @@
         "44": "art/traits/wick/production-v1/exports/44/rogue-element.png",
         "40": "art/traits/wick/production-v1/exports/40/rogue-element.png"
       }
+    },
+    "the-soundscape-of-the-soul": {
+      "label": "Wick — The Soundscape of the Soul",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/the-soundscape-of-the-soul.png",
+      "sha256": "cbf2249859ad80bc3b842a7f9a19f24b5e7bb21b9052a0ee02e52bcae3be3d3a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "the_soundscape_of_the_soul",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/the-soundscape-of-the-soul.png",
+        "128": "art/traits/wick/production-v1/exports/128/the-soundscape-of-the-soul.png",
+        "64": "art/traits/wick/production-v1/exports/64/the-soundscape-of-the-soul.png",
+        "56": "art/traits/wick/production-v1/exports/56/the-soundscape-of-the-soul.png",
+        "48": "art/traits/wick/production-v1/exports/48/the-soundscape-of-the-soul.png",
+        "44": "art/traits/wick/production-v1/exports/44/the-soundscape-of-the-soul.png",
+        "40": "art/traits/wick/production-v1/exports/40/the-soundscape-of-the-soul.png"
+      }
     }
   },
   "character_collections": {
