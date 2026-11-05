@@ -2519,8 +2519,8 @@
     "sworn-sibling": {
       "label": "Wick — Sworn Sibling",
       "collection": "wick-production-v1",
-      "path": "art/traits/wick/production-v1/revisions/v2/sworn-sibling.png",
-      "sha256": "42c29767987c39fb8573828aaa507fe1d70885a75c91d6c335d8299ce0264abb",
+      "path": "art/traits/wick/production-v1/revisions/v3/sworn-sibling.png",
+      "sha256": "ce3fe51e0cb9445ce7b1d239e5314c009a3fdc4a954d50f8f8cc2e653e1786d1",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -2531,17 +2531,18 @@
       "production_approved": false,
       "batch": "B",
       "exports": {
-        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/sworn-sibling.png",
-        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/sworn-sibling.png",
-        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/sworn-sibling.png",
-        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/sworn-sibling.png",
-        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/sworn-sibling.png",
-        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/sworn-sibling.png",
-        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/sworn-sibling.png"
+        "256": "art/traits/wick/production-v1/revisions/v3/exports/256/sworn-sibling.png",
+        "128": "art/traits/wick/production-v1/revisions/v3/exports/128/sworn-sibling.png",
+        "64": "art/traits/wick/production-v1/revisions/v3/exports/64/sworn-sibling.png",
+        "56": "art/traits/wick/production-v1/revisions/v3/exports/56/sworn-sibling.png",
+        "48": "art/traits/wick/production-v1/revisions/v3/exports/48/sworn-sibling.png",
+        "44": "art/traits/wick/production-v1/revisions/v3/exports/44/sworn-sibling.png",
+        "40": "art/traits/wick/production-v1/revisions/v3/exports/40/sworn-sibling.png"
       },
-      "revision": 2,
+      "revision": 3,
       "previous_path": "art/traits/wick/production-v1/sworn-sibling.png",
-      "previous_revision_path": "art/traits/wick/production-v1/sworn-sibling.png"
+      "previous_revision_path": "art/traits/wick/production-v1/revisions/v2/sworn-sibling.png",
+      "user_override": "Leon requested two full Wick figures sharing an oath, using the supplied two-person reference for composition, on 5 November 2026; this overrides the usual one-full-figure limit for this icon."
     },
     "rival": {
       "label": "Wick — Rival",

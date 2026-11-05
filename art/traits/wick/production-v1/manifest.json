@@ -876,24 +876,25 @@
       "family": "traits",
       "order": 46,
       "mood": "Tender, Tense",
-      "action": "REVIEW3 FIX: Wick lunges toward a BIG OPEN HUMAN PALM entering from the right edge, clearly drawn with a broad rounded palm, thumb and four fingers spread, no pointed sleeve or triangular spear shapes. Wick's wrist and the human wrist are linked by a THICK ROUND CORD with ONE BIG KNOT halfway between their wrists. Keep a clear gap between both hands so two wrists tied together and the middle knot are unmistakable at44px. Only a partial human hand and blunt rounded cuff, no second full figure. Desperate determined screen.",
+      "action": "Two full Wick siblings face inward in a shared-oath pose: the left stands braced and extends an open palm with an oath cup; the right leans toward the left with a raised cup near its face.",
       "screen": "Desperate, determined",
-      "prop": "Knotted cord",
-      "path": "art/traits/wick/production-v1/revisions/v2/sworn-sibling.png",
+      "prop": "a paired oath toast, no rope or weapon",
+      "path": "art/traits/wick/production-v1/revisions/v3/sworn-sibling.png",
       "exports": {
-        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/sworn-sibling.png",
-        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/sworn-sibling.png",
-        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/sworn-sibling.png",
-        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/sworn-sibling.png",
-        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/sworn-sibling.png",
-        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/sworn-sibling.png",
-        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/sworn-sibling.png"
+        "256": "art/traits/wick/production-v1/revisions/v3/exports/256/sworn-sibling.png",
+        "128": "art/traits/wick/production-v1/revisions/v3/exports/128/sworn-sibling.png",
+        "64": "art/traits/wick/production-v1/revisions/v3/exports/64/sworn-sibling.png",
+        "56": "art/traits/wick/production-v1/revisions/v3/exports/56/sworn-sibling.png",
+        "48": "art/traits/wick/production-v1/revisions/v3/exports/48/sworn-sibling.png",
+        "44": "art/traits/wick/production-v1/revisions/v3/exports/44/sworn-sibling.png",
+        "40": "art/traits/wick/production-v1/revisions/v3/exports/40/sworn-sibling.png"
       },
       "batch": "B",
-      "source_sha256": "aad5fa136e6dcf0ede25b24e347be46dbb5c4cb19b7c5d2cb300921bd92b04ac",
-      "revision": 2,
+      "source_sha256": "d2f871e2e2b5dcf6a0d19e28cd36a7ee3ffbb7678fa7ed08ea86491aab6a84c1",
+      "revision": 3,
       "previous_path": "art/traits/wick/production-v1/sworn-sibling.png",
-      "previous_revision_path": "art/traits/wick/production-v1/sworn-sibling.png"
+      "previous_revision_path": "art/traits/wick/production-v1/revisions/v2/sworn-sibling.png",
+      "user_override": "Leon requested two full Wick figures sharing an oath, using the supplied two-person reference for composition, on 5 November 2026; this overrides the usual one-full-figure limit for this icon."
     },
     {
       "id": "rival",
