@@ -856,6 +856,29 @@
       },
       "batch": "B",
       "source_sha256": "cd1f358e4b8600e4b4f1b3f300c5aef15e68d0d7c9d89d88267a52886a0cf5fe"
+    },
+    {
+      "id": "sworn-sibling",
+      "data_id": "sworn_sibling",
+      "name": "Sworn Sibling",
+      "family": "traits",
+      "order": 46,
+      "mood": "Tender, Tense",
+      "action": "Wick lunges flat out toward the frame edge, its wrist bound by a knotted cord to a human hand reaching in from off-frame",
+      "screen": "Desperate, determined",
+      "prop": "Knotted cord",
+      "path": "art/traits/wick/production-v1/sworn-sibling.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/sworn-sibling.png",
+        "128": "art/traits/wick/production-v1/exports/128/sworn-sibling.png",
+        "64": "art/traits/wick/production-v1/exports/64/sworn-sibling.png",
+        "56": "art/traits/wick/production-v1/exports/56/sworn-sibling.png",
+        "48": "art/traits/wick/production-v1/exports/48/sworn-sibling.png",
+        "44": "art/traits/wick/production-v1/exports/44/sworn-sibling.png",
+        "40": "art/traits/wick/production-v1/exports/40/sworn-sibling.png"
+      },
+      "batch": "B",
+      "source_sha256": "ecf37024a1422044aa85db5a74fe6c6b4c978376891384777d19e37a9152bfd4"
     }
   ]
 }

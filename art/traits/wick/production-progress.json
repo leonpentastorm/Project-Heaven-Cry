@@ -53,10 +53,11 @@
     "heretic",
     "gambler",
     "insomniac",
-    "live-to-fight-another-day"
+    "live-to-fight-another-day",
+    "sworn-sibling"
   ],
   "catalog_coverage": {
-    "traits": 46,
+    "traits": 47,
     "perks": 2
   },
   "revision_rounds": {

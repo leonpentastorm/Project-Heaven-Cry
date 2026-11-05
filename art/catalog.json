@@ -2503,6 +2503,30 @@
         "44": "art/traits/wick/production-v1/exports/44/live-to-fight-another-day.png",
         "40": "art/traits/wick/production-v1/exports/40/live-to-fight-another-day.png"
       }
+    },
+    "sworn-sibling": {
+      "label": "Wick — Sworn Sibling",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/sworn-sibling.png",
+      "sha256": "45bb7ba2747e9eddb1ed501ecc535139b013e915a0e36fe4b3809b1da082a480",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "sworn_sibling",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/sworn-sibling.png",
+        "128": "art/traits/wick/production-v1/exports/128/sworn-sibling.png",
+        "64": "art/traits/wick/production-v1/exports/64/sworn-sibling.png",
+        "56": "art/traits/wick/production-v1/exports/56/sworn-sibling.png",
+        "48": "art/traits/wick/production-v1/exports/48/sworn-sibling.png",
+        "44": "art/traits/wick/production-v1/exports/44/sworn-sibling.png",
+        "40": "art/traits/wick/production-v1/exports/40/sworn-sibling.png"
+      }
     }
   },
   "character_collections": {
