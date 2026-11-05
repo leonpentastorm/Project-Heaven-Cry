@@ -1155,6 +1155,29 @@
       },
       "batch": "C",
       "source_sha256": "8b669aa55bcb91ea9efdf50f2e61a61b4308df2fc93ae8b77ddc442860b53b20"
+    },
+    {
+      "id": "cover-story",
+      "data_id": "cover_story",
+      "name": "Cover Story",
+      "family": "traits",
+      "order": 60,
+      "mood": "Comic",
+      "action": "Wick peeks over a fan of four ID cards held like a poker hand, each with a different tiny face, one card smoking",
+      "screen": "Wink",
+      "prop": "Fan of ID cards",
+      "path": "art/traits/wick/production-v1/cover-story.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/cover-story.png",
+        "128": "art/traits/wick/production-v1/exports/128/cover-story.png",
+        "64": "art/traits/wick/production-v1/exports/64/cover-story.png",
+        "56": "art/traits/wick/production-v1/exports/56/cover-story.png",
+        "48": "art/traits/wick/production-v1/exports/48/cover-story.png",
+        "44": "art/traits/wick/production-v1/exports/44/cover-story.png",
+        "40": "art/traits/wick/production-v1/exports/40/cover-story.png"
+      },
+      "batch": "C",
+      "source_sha256": "d92f5a05043cbf78d95e2659fbed920276809a8c8cbc4378a9d28027cfd706da"
     }
   ]
 }

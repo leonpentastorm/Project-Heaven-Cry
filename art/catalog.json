@@ -2815,6 +2815,30 @@
         "44": "art/traits/wick/production-v1/exports/44/market-blood.png",
         "40": "art/traits/wick/production-v1/exports/40/market-blood.png"
       }
+    },
+    "cover-story": {
+      "label": "Wick — Cover Story",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/cover-story.png",
+      "sha256": "b917db45551a1968ee8e4aca8873d64d672f2391f59df618b83970d0d37a46c0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "cover_story",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/cover-story.png",
+        "128": "art/traits/wick/production-v1/exports/128/cover-story.png",
+        "64": "art/traits/wick/production-v1/exports/64/cover-story.png",
+        "56": "art/traits/wick/production-v1/exports/56/cover-story.png",
+        "48": "art/traits/wick/production-v1/exports/48/cover-story.png",
+        "44": "art/traits/wick/production-v1/exports/44/cover-story.png",
+        "40": "art/traits/wick/production-v1/exports/40/cover-story.png"
+      }
     }
   },
   "character_collections": {

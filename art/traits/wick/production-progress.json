@@ -66,10 +66,11 @@
     "trench-poet",
     "grudge-bearer",
     "crowded-head",
-    "market-blood"
+    "market-blood",
+    "cover-story"
   ],
   "catalog_coverage": {
-    "traits": 59,
+    "traits": 60,
     "perks": 2
   },
   "revision_rounds": {
