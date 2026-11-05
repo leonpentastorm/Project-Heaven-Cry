@@ -108,11 +108,12 @@
     "eyes-in-the-back",
     "hold-the-stroke",
     "parallel-thought",
-    "footnote"
+    "footnote",
+    "lab-coat"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 29
+    "perks": 30
   },
   "revision_rounds": {
     "field-surgeon": 3,

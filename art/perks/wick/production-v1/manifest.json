@@ -626,6 +626,29 @@
       },
       "batch": "E",
       "source_sha256": "48e411ca977f0cfe45c5dc802b9a9808daac13d7df2b5edb262c0071c716320e"
+    },
+    {
+      "id": "lab-coat",
+      "data_id": "lab_coat",
+      "name": "Lab Coat",
+      "family": "perks",
+      "order": 28,
+      "mood": "Calm, Comic",
+      "action": "Wick squats inside a curling cloud of gas, holding up a flask to compare it with the fumes, unbothered as the gas parts around it.",
+      "screen": "Pensive lowered lids",
+      "prop": "Flask",
+      "path": "art/perks/wick/production-v1/lab-coat.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/lab-coat.png",
+        "128": "art/perks/wick/production-v1/exports/128/lab-coat.png",
+        "64": "art/perks/wick/production-v1/exports/64/lab-coat.png",
+        "56": "art/perks/wick/production-v1/exports/56/lab-coat.png",
+        "48": "art/perks/wick/production-v1/exports/48/lab-coat.png",
+        "44": "art/perks/wick/production-v1/exports/44/lab-coat.png",
+        "40": "art/perks/wick/production-v1/exports/40/lab-coat.png"
+      },
+      "batch": "E",
+      "source_sha256": "1248d0368a9403bae396e1a578abe064d5c92a9552ec49a2103280b969344c98"
     }
   ]
 }

@@ -3923,6 +3923,30 @@
         "44": "art/perks/wick/production-v1/exports/44/footnote.png",
         "40": "art/perks/wick/production-v1/exports/40/footnote.png"
       }
+    },
+    "lab-coat": {
+      "label": "Wick — Lab Coat",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/lab-coat.png",
+      "sha256": "856da7ba1b88b2e81d4f725e6e34521db746b8dfae7d073aab6382bfc2604cad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "lab_coat",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/lab-coat.png",
+        "128": "art/perks/wick/production-v1/exports/128/lab-coat.png",
+        "64": "art/perks/wick/production-v1/exports/64/lab-coat.png",
+        "56": "art/perks/wick/production-v1/exports/56/lab-coat.png",
+        "48": "art/perks/wick/production-v1/exports/48/lab-coat.png",
+        "44": "art/perks/wick/production-v1/exports/44/lab-coat.png",
+        "40": "art/perks/wick/production-v1/exports/40/lab-coat.png"
+      }
     }
   },
   "illustrations": {
