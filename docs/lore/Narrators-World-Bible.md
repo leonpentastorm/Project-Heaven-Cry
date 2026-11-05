@@ -66,6 +66,13 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 - **True love lifts the curse.** An NPC-1 person who truly loves an NPC-2 person sees them as human again: human, with abilities. Mixed families exist because of it, and they are rare.
 - **Suggested consequences:** two humans looking at the same Crawler can see different monsters, because each sees their own fear. In co-op, each player can be given a different private description of the same Crawler. Humanity First's "Crawlers are vermin" is the curse talking, and Paul Remarque's father "cradling the body of a Crawler smaller than the rest" was a parent holding a child.
 
+**Anti-Heaven Operations Command and the Progenitors (canon).** About 5,000 years before Central City was founded, a Celestial ran an isekai-style anime plot for a while, and a world's humans were made with enormous powers to fit it. About a thousand of them learned the truth and founded an organisation to kill the Celestials: the start of Anti-Heaven Operations Command. The Celestials hunted them like dogs. All thousand are dead, and the Celestials never made that world's kind of human again, so they are effectively extinct. In-world, and in the organisation's own lore, they are **the Progenitors**.
+
+- **What's left:** semi-powered descendants of the Progenitors. They hold the high posts, and they fight politics more than enemies.
+- **Decay:** the organisation began by trying to overthrow Heaven. Now it tries to limit the damage every time a Celestial appears.
+- **Desperation:** the descendants will do anything for power, because they know what happens if they're taken out: the next time a Celestial shows up, humanity gets wiped out.
+- The EPCCG, the cheerful manual with Wick on it, is this organisation's training manual.
+
 **Operation Daggerfall (around year 3800).** A huge number of NPC-2 people were spawned on a world next to Earth. War followed. The original humans won, and the NPC-2 main world was nuked from orbit. Humanity celebrates it as a turning point; veterans like Paul Remarque remember what they shelled. (Suggested, as before: every one of those deaths released bots. Who benefited?)
 
 **Timeline.**
@@ -75,6 +82,7 @@ Years are counted on the **Central City founding calendar**. The NPCs' history r
 | When | What |
 |---|---|
 | Real Earth, about year 65,000 | The simulation runs. To the Celestials it was a normal VR game, until they found they couldn't log out. |
+| About 5,000 years before Central City's founding | The Progenitors found what becomes Anti-Heaven Operations Command; the Celestials hunt all thousand of them down. |
 | About 3800 (Central City calendar) | Operation Daggerfall. |
 | 27 July 4084 | The M813 incident. |
 | 15 October 4090 | Snowden "Eye" Wright writes up M813 at Outpost-921. |

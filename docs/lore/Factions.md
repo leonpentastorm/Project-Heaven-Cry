@@ -21,7 +21,7 @@ The last row is the World Bible's "each side is half right", made into politics.
 ### 1. Central City (Earth): the old centre
 
 - **Central Command Center** commands humanity's war with Heaven. Kaizer Meyer Reinch Wolf is its face: stillness as policy.
-- **Department of Extra-Celestial Defense → Anti-Heaven Operations Command** answers Celestial mayhem, and **issues the EPCCG**. Wick is its mascot.
+- **Anti-Heaven Operations Command** *(origin canon)* is older than Central City by about 5,000 years: founded by **the Progenitors**, a thousand isekai-powered humans who learned the truth and were hunted to extinction. Now it lives inside Central City's state as the Department of Extra-Celestial Defense, run by the Progenitors' semi-powered descendants, who fight politics more than enemies and will do anything for power, because without them a Celestial's next visit wipes humanity out. Its mission has decayed from overthrowing Heaven to damage control. It **issues the EPCCG**; Wick is its mascot.
 - **Hellraiser Divisions (101st, 237th)** are AHOC's frontline. They fight Orks on frontier worlds and go wherever a Celestial has torn something open. Dominik Edelgard, Brengan Springfield and Hank Ladan.
 - **CCEC (Central City Espionage Commission)** hunts spies from Bazaim. D12.9.6.
 - **Science Team** is state-funded Sigil research, scientists not philosophers. Professor Avdol.
