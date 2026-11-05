@@ -64,7 +64,10 @@
         "256": "art/traits/wick/test-set-1/exports/256/chain-smoker.png",
         "128": "art/traits/wick/test-set-1/exports/128/chain-smoker.png",
         "64": "art/traits/wick/test-set-1/exports/64/chain-smoker.png",
-        "40": "art/traits/wick/test-set-1/exports/40/chain-smoker.png"
+        "40": "art/traits/wick/test-set-1/exports/40/chain-smoker.png",
+        "56": "art/traits/wick/reference-ui-v1/exports/56/chain-smoker.png",
+        "48": "art/traits/wick/reference-ui-v1/exports/48/chain-smoker.png",
+        "44": "art/traits/wick/reference-ui-v1/exports/44/chain-smoker.png"
       }
     },
     {
@@ -94,7 +97,10 @@
         "256": "art/traits/wick/test-set-1/exports/256/the-brightest-light.png",
         "128": "art/traits/wick/test-set-1/exports/128/the-brightest-light.png",
         "64": "art/traits/wick/test-set-1/exports/64/the-brightest-light.png",
-        "40": "art/traits/wick/test-set-1/exports/40/the-brightest-light.png"
+        "40": "art/traits/wick/test-set-1/exports/40/the-brightest-light.png",
+        "56": "art/traits/wick/reference-ui-v1/exports/56/the-brightest-light.png",
+        "48": "art/traits/wick/reference-ui-v1/exports/48/the-brightest-light.png",
+        "44": "art/traits/wick/reference-ui-v1/exports/44/the-brightest-light.png"
       }
     },
     {
@@ -124,7 +130,10 @@
         "256": "art/traits/wick/test-set-1/exports/256/forlorn-hope.png",
         "128": "art/traits/wick/test-set-1/exports/128/forlorn-hope.png",
         "64": "art/traits/wick/test-set-1/exports/64/forlorn-hope.png",
-        "40": "art/traits/wick/test-set-1/exports/40/forlorn-hope.png"
+        "40": "art/traits/wick/test-set-1/exports/40/forlorn-hope.png",
+        "56": "art/traits/wick/reference-ui-v1/exports/56/forlorn-hope.png",
+        "48": "art/traits/wick/reference-ui-v1/exports/48/forlorn-hope.png",
+        "44": "art/traits/wick/reference-ui-v1/exports/44/forlorn-hope.png"
       }
     },
     {

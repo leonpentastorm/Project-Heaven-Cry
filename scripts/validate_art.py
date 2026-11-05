@@ -84,7 +84,7 @@ def validate_brief_assets(catalog):
                 and (asset['width'], asset['height']) == (1024, 1024),
                 f'Bad Wick master: {icon["id"]}')
         local(icon['path'])  # First versions remain available for comparison.
-        sizes = {'40', '44', '48', '56', '64', '128', '256'} if revised else {'40', '64', '128', '256'}
+        sizes = {'40', '44', '48', '56', '64', '128', '256'}
         require((revised or icon['exports'] == asset['exports']) and set(asset['exports']) == sizes,
                 f'Missing Wick review sizes: {icon["id"]}')
         if PIXEL_ASSET is None or PIXEL_ASSET == icon['id']:
@@ -173,6 +173,27 @@ def validate_production_icons(catalog):
         require(len(progress['revisions_delivered']) <= 7 and len(progress['new_icons_delivered']) <= 139,
                 'Production progress exceeds brief')
 
+    reference_manifest = ROOT / 'art/traits/wick/reference-ui-v1/manifest.json'
+    if reference_manifest.exists():
+        references = json.loads(reference_manifest.read_text())
+        require({i['id'] for i in references['icons']} ==
+                {'mind-without-fog', 'chain-smoker', 'the-brightest-light', 'forlorn-hope'},
+                'Reference UI exports must cover the four retained designs')
+        for item in references['icons']:
+            asset = catalog['traits'][item['id']]
+            require(item['path'] == asset['path'] and item['master_sha256'] == asset['sha256'],
+                    f'Reference master changed: {item["id"]}')
+            require(item['exports'] == asset['exports'] and
+                    set(item['exports']) == {'40','44','48','56','64','128','256'},
+                    f'Reference UI sizes missing: {item["id"]}')
+            for size, path in item['exports'].items():
+                data = local(path).read_bytes()
+                require(data[:8] == b'\x89PNG\r\n\x1a\n' and
+                        struct.unpack('>IIBB', data[16:26]) == (int(size), int(size), 8, 6),
+                        f'Bad reference UI export: {path}')
+                if PIXEL_ASSET is None or PIXEL_ASSET == item['id']:
+                    validate_white_rgba(data, path)
+
 def require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -238,8 +259,11 @@ def validate():
     paths = set()
     if PIXEL_ASSET is not None:
         require(any(PIXEL_ASSET in catalog[f] for f in ['traits', 'perks']), f'Unknown selected icon: {PIXEL_ASSET}')
-    for family, minimum, maximum in [('skills', 27, 27), ('characters', 83, 83),
-                                     ('traits', 9, 74), ('perks', 2, 76), ('illustrations', 2, 2)]:
+    families = [('skills', 27, 27), ('characters', 83, 83),
+                ('traits', 9, 74), ('perks', 2, 76), ('illustrations', 2, 2)]
+    if 'mascot' in catalog:
+        families.append(('mascot', 1, 1))
+    for family, minimum, maximum in families:
         require(minimum <= len(catalog[family]) <= maximum, f'Unexpected {family} count')
         for asset_id, asset in catalog[family].items():
             path = asset['path']
@@ -253,7 +277,7 @@ def validate():
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')
             width, height, depth, color_type = struct.unpack('>IIBB', data[16:26])
             require((width, height) == (asset['width'], asset['height']), f'Wrong dimensions: {path}')
-            require(depth == 8 and color_type == (6 if family in ['traits', 'perks'] else 2), f'Wrong PNG colour/alpha type: {path}')
+            require(depth == 8 and color_type == (6 if family in ['traits', 'perks', 'mascot'] else 2), f'Wrong PNG colour/alpha type: {path}')
             if family == 'skills':
                 attribute = palette['attributes'][asset['attribute']]
                 require(asset['color'] == attribute['color'] == palette['skills'][asset_id]['color'], f'Colour mismatch: {asset_id}')
@@ -267,7 +291,8 @@ def validate():
         expected, path = line.split('  ', 1)
         require(hashlib.sha256(local(path).read_bytes()).hexdigest() == expected, f'File integrity mismatch: {path}')
     require(paths <= {line.split('  ', 1)[1] for line in checksums}, 'Primary assets missing from checksums')
-    print(f'OK: 27 skills, 83 characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, 2 illustrations; '
+    print(f'OK: 27 skills, 83 characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, 2 illustrations, '
+          f'{len(catalog.get("mascot", {}))} mascot; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
 

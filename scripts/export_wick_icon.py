@@ -153,6 +153,10 @@ def export(args):
         'icons': []}
     entry = {k: job[k] for k in ('id', 'data_id', 'name', 'family', 'order', 'mood', 'action', 'screen', 'prop')}
     entry.update(path=relative(path), exports=exports, batch=asset['batch'], source_sha256=sha(args.source))
+    if job.get('user_override'):
+        asset['user_override'] = entry['user_override'] = job['user_override']
+        catalog[family][job['id']] = asset
+        dump(ROOT / 'art/catalog.json', catalog)
     if args.revision:
         entry['previous_path'] = asset['previous_path']
         entry['revision'] = args.round
@@ -185,6 +189,7 @@ def export(args):
     elif args.production_revision:
         progress.setdefault('production_revisions', {})[job['id']] = args.production_revision
     progress['catalog_coverage'] = {family: len(catalog[family]) for family in ('traits', 'perks')}
+    progress.pop('generation_pause', None)
     dump(PROGRESS, progress)
     update_checksums()
     print(json.dumps({'id': job['id'], 'family': family, 'path': relative(path), 'preview': str(preview),

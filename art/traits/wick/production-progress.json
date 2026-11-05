@@ -150,5 +150,12 @@
     "daggerfall-veteran": 2,
     "glass-runner": 2,
     "upper-touched": 2
+  },
+  "generation_pause": {
+    "reason": "image generation returned HTTP 429 usage_limit_reached on Real Power",
+    "reset_utc": "2026-11-05T23:59:27Z",
+    "next_icon": "real-power",
+    "remaining_count": 21,
+    "queue_snapshot": "art/traits/wick/pending-at-usage-limit-2026-11-05.json"
   }
 }

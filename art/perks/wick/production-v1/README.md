@@ -1,5 +1,7 @@
 # Wick perk production — version 1
 
-New perk icons are delivered incrementally from [the production brief](../../../briefs/wick-production-icons.md), using the same pure-white Wick ink as traits. Revised Field Surgeon and Supreme Command remain in [round 2](../../../traits/wick/test-set-1/revisions/README.md).
+New perk icons are delivered incrementally from [the production brief](../../../briefs/wick-production-icons.md), using the same pure-white Wick ink as traits. Supreme Command is in [round 2](../../../traits/wick/test-set-1/revisions/README.md); the catalog selects the later [round-3 Field Surgeon](../../../traits/wick/test-set-1/revisions/round-3/field-surgeon.png).
 
 Every new icon has a 1024 × 1024 transparent master, 256/128/64/56/48/44/40 px exports, a catalog entry and source hash in `manifest.json`. Each batch gets actual-size review sheets and a light/dark comparison. See [production progress](../../../traits/wick/production-progress.json) for delivered IDs and counts. Each image is shown in chat and pushed separately. New art remains `review-candidate`, `production_approved: false` pending review.
+
+The [5 November library checkpoint](../../../traits/wick/library-review-v1/README.md) covers 55 of 76 perks. Image generation reached its usage limit on Real Power; that icon and the 20 Batch F perks are retained in the remaining-brief snapshot linked there.
