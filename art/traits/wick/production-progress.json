@@ -50,10 +50,11 @@
     "one-shot",
     "sigil-savant",
     "hollow-heart",
-    "heretic"
+    "heretic",
+    "gambler"
   ],
   "catalog_coverage": {
-    "traits": 43,
+    "traits": 44,
     "perks": 2
   },
   "revision_rounds": {

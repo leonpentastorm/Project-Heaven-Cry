@@ -787,6 +787,29 @@
       },
       "batch": "B",
       "source_sha256": "b078903206f6fbc538674d868e6ec004fb73babd7e31e510fc9c2e3f61490853"
+    },
+    {
+      "id": "gambler",
+      "data_id": "gambler",
+      "name": "Gambler",
+      "family": "traits",
+      "order": 42,
+      "mood": "Comic, Tense",
+      "action": "Wick squats low, blowing on a big unnumbered d20 cupped in both mittens before the throw",
+      "screen": "Spinning star eyes",
+      "prop": "d20 (faceted, no numbers)",
+      "path": "art/traits/wick/production-v1/gambler.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/gambler.png",
+        "128": "art/traits/wick/production-v1/exports/128/gambler.png",
+        "64": "art/traits/wick/production-v1/exports/64/gambler.png",
+        "56": "art/traits/wick/production-v1/exports/56/gambler.png",
+        "48": "art/traits/wick/production-v1/exports/48/gambler.png",
+        "44": "art/traits/wick/production-v1/exports/44/gambler.png",
+        "40": "art/traits/wick/production-v1/exports/40/gambler.png"
+      },
+      "batch": "B",
+      "source_sha256": "a2fa61bea8bc44e9572379eb622b94a3122d754129df355c9c3bc79873771cc3"
     }
   ]
 }

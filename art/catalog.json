@@ -2431,6 +2431,30 @@
         "44": "art/traits/wick/production-v1/exports/44/heretic.png",
         "40": "art/traits/wick/production-v1/exports/40/heretic.png"
       }
+    },
+    "gambler": {
+      "label": "Wick — Gambler",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/gambler.png",
+      "sha256": "cf1c52324b5ea8bcc7414570fa50e7687fa0729e9c25a54feb32ba2199b50a51",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "gambler",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/gambler.png",
+        "128": "art/traits/wick/production-v1/exports/128/gambler.png",
+        "64": "art/traits/wick/production-v1/exports/64/gambler.png",
+        "56": "art/traits/wick/production-v1/exports/56/gambler.png",
+        "48": "art/traits/wick/production-v1/exports/48/gambler.png",
+        "44": "art/traits/wick/production-v1/exports/44/gambler.png",
+        "40": "art/traits/wick/production-v1/exports/40/gambler.png"
+      }
     }
   },
   "character_collections": {
