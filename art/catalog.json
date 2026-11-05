@@ -1759,6 +1759,30 @@
         "44": "art/traits/wick/production-v1/exports/44/bottle-butts-for-eyes.png",
         "40": "art/traits/wick/production-v1/exports/40/bottle-butts-for-eyes.png"
       }
+    },
+    "the-mask": {
+      "label": "Wick — The Mask",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/the-mask.png",
+      "sha256": "3672b5338cc56d84827ba510dbce5cd5bf2539c05315a7c890177fb71dab0bee",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "the_mask",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/the-mask.png",
+        "128": "art/traits/wick/production-v1/exports/128/the-mask.png",
+        "64": "art/traits/wick/production-v1/exports/64/the-mask.png",
+        "56": "art/traits/wick/production-v1/exports/56/the-mask.png",
+        "48": "art/traits/wick/production-v1/exports/48/the-mask.png",
+        "44": "art/traits/wick/production-v1/exports/44/the-mask.png",
+        "40": "art/traits/wick/production-v1/exports/40/the-mask.png"
+      }
     }
   },
   "character_collections": {

@@ -22,10 +22,11 @@
     "grenadiers-arm",
     "glass-runner",
     "pain-eater",
-    "bottle-butts-for-eyes"
+    "bottle-butts-for-eyes",
+    "the-mask"
   ],
   "catalog_coverage": {
-    "traits": 15,
+    "traits": 16,
     "perks": 2
   },
   "revision_rounds": {

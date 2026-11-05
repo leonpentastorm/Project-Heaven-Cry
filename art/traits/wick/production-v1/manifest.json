@@ -143,6 +143,29 @@
       },
       "batch": "A",
       "source_sha256": "735ab142d328f92eccb28e9d9c7a347cd30541a380076dd97ed3463d0c111183"
+    },
+    {
+      "id": "the-mask",
+      "data_id": "the_mask",
+      "name": "The Mask",
+      "family": "traits",
+      "order": 10,
+      "mood": "Comic, Eerie",
+      "action": "Wick stands chest-out and chin high, lifting a large smiling mask halfway off its screen to reveal a small nervous face beneath",
+      "screen": "Tiny sweat-drop face",
+      "prop": "Smiling mask",
+      "path": "art/traits/wick/production-v1/the-mask.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/the-mask.png",
+        "128": "art/traits/wick/production-v1/exports/128/the-mask.png",
+        "64": "art/traits/wick/production-v1/exports/64/the-mask.png",
+        "56": "art/traits/wick/production-v1/exports/56/the-mask.png",
+        "48": "art/traits/wick/production-v1/exports/48/the-mask.png",
+        "44": "art/traits/wick/production-v1/exports/44/the-mask.png",
+        "40": "art/traits/wick/production-v1/exports/40/the-mask.png"
+      },
+      "batch": "A",
+      "source_sha256": "4a7aa38c7d8e873eec1737d904ceffd971d3beaf25f539e8ae25dcda88049a87"
     }
   ]
 }
