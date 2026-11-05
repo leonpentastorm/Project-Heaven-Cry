@@ -4235,6 +4235,30 @@
         "44": "art/perks/wick/production-v1/exports/44/rally-cry.png",
         "40": "art/perks/wick/production-v1/exports/40/rally-cry.png"
       }
+    },
+    "sweet-talker": {
+      "label": "Wick — Sweet Talker",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/sweet-talker.png",
+      "sha256": "e856b0b08661d456e8d961a276f4158c81d2d348e94e9445360d9ebf4ff546fc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "sweet_talker",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sweet-talker.png",
+        "128": "art/perks/wick/production-v1/exports/128/sweet-talker.png",
+        "64": "art/perks/wick/production-v1/exports/64/sweet-talker.png",
+        "56": "art/perks/wick/production-v1/exports/56/sweet-talker.png",
+        "48": "art/perks/wick/production-v1/exports/48/sweet-talker.png",
+        "44": "art/perks/wick/production-v1/exports/44/sweet-talker.png",
+        "40": "art/perks/wick/production-v1/exports/40/sweet-talker.png"
+      }
     }
   },
   "illustrations": {

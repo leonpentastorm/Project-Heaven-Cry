@@ -925,6 +925,29 @@
       },
       "batch": "E",
       "source_sha256": "d47c86cc92d87f4b8bdebeeb3bb10a1974ff762d1fcb44129c820e525ff52350"
+    },
+    {
+      "id": "sweet-talker",
+      "data_id": "sweet_talker",
+      "name": "Sweet Talker",
+      "family": "perks",
+      "order": 41,
+      "mood": "Comic, Tender",
+      "action": "Wick lounges on one elbow on thin air, offering a long-stemmed rose; a thorn has pricked its mitten, a tiny pain star at the spot.",
+      "screen": "Heart eyes",
+      "prop": "Rose",
+      "path": "art/perks/wick/production-v1/sweet-talker.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sweet-talker.png",
+        "128": "art/perks/wick/production-v1/exports/128/sweet-talker.png",
+        "64": "art/perks/wick/production-v1/exports/64/sweet-talker.png",
+        "56": "art/perks/wick/production-v1/exports/56/sweet-talker.png",
+        "48": "art/perks/wick/production-v1/exports/48/sweet-talker.png",
+        "44": "art/perks/wick/production-v1/exports/44/sweet-talker.png",
+        "40": "art/perks/wick/production-v1/exports/40/sweet-talker.png"
+      },
+      "batch": "E",
+      "source_sha256": "dad10e19b4ab5f48322bdfc45b18b751e79c8aec7d0d8b0b3f8553b9fcfafce8"
     }
   ]
 }

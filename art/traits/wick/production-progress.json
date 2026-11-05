@@ -121,11 +121,12 @@
     "shared-breath",
     "lay-down-arms",
     "soulmate",
-    "rally-cry"
+    "rally-cry",
+    "sweet-talker"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 42
+    "perks": 43
   },
   "revision_rounds": {
     "field-surgeon": 3,
