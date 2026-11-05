@@ -101,11 +101,12 @@
     "rounding-up",
     "catch",
     "sleight-of-hand",
-    "shadow-step"
+    "shadow-step",
+    "jury-rig"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 22
+    "perks": 23
   },
   "revision_rounds": {
     "field-surgeon": 3,

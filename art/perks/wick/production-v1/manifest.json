@@ -465,6 +465,29 @@
       },
       "batch": "E",
       "source_sha256": "36b795c2126dd11b74440145a86ac831d58e0afb6c12738c2ff8db05f65448e0"
+    },
+    {
+      "id": "jury-rig",
+      "data_id": "jury_rig",
+      "name": "Jury-Rig",
+      "family": "perks",
+      "order": 21,
+      "mood": "Comic, Tense",
+      "action": "Wick kneels, bracing a cracked rifle wrapped in thick tape on its knee as it coughs out one last sputtering shot.",
+      "screen": "Wince, sweat drop",
+      "prop": "Taped rifle",
+      "path": "art/perks/wick/production-v1/jury-rig.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/jury-rig.png",
+        "128": "art/perks/wick/production-v1/exports/128/jury-rig.png",
+        "64": "art/perks/wick/production-v1/exports/64/jury-rig.png",
+        "56": "art/perks/wick/production-v1/exports/56/jury-rig.png",
+        "48": "art/perks/wick/production-v1/exports/48/jury-rig.png",
+        "44": "art/perks/wick/production-v1/exports/44/jury-rig.png",
+        "40": "art/perks/wick/production-v1/exports/40/jury-rig.png"
+      },
+      "batch": "E",
+      "source_sha256": "d8c34be32d744766452540ee2e00a807ddb5d8446c8d533fde13e8f15f874d53"
     }
   ]
 }

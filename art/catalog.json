@@ -3755,6 +3755,30 @@
         "44": "art/perks/wick/production-v1/exports/44/shadow-step.png",
         "40": "art/perks/wick/production-v1/exports/40/shadow-step.png"
       }
+    },
+    "jury-rig": {
+      "label": "Wick — Jury-Rig",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/jury-rig.png",
+      "sha256": "4406d87940e5cafcc2326a7bc29640e08687fa5fd9f58e6b3abeee346ef81b4f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "jury_rig",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/jury-rig.png",
+        "128": "art/perks/wick/production-v1/exports/128/jury-rig.png",
+        "64": "art/perks/wick/production-v1/exports/64/jury-rig.png",
+        "56": "art/perks/wick/production-v1/exports/56/jury-rig.png",
+        "48": "art/perks/wick/production-v1/exports/48/jury-rig.png",
+        "44": "art/perks/wick/production-v1/exports/44/jury-rig.png",
+        "40": "art/perks/wick/production-v1/exports/40/jury-rig.png"
+      }
     }
   },
   "illustrations": {
