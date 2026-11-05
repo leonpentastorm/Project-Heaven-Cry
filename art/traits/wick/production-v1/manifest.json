@@ -867,21 +867,24 @@
       "family": "traits",
       "order": 46,
       "mood": "Tender, Tense",
-      "action": "Wick lunges flat out toward the frame edge, its wrist bound by a knotted cord to a human hand reaching in from off-frame",
+      "action": "REVIEW3 FIX: Wick lunges toward a BIG OPEN HUMAN PALM entering from the right edge, clearly drawn with a broad rounded palm, thumb and four fingers spread, no pointed sleeve or triangular spear shapes. Wick's wrist and the human wrist are linked by a THICK ROUND CORD with ONE BIG KNOT halfway between their wrists. Keep a clear gap between both hands so two wrists tied together and the middle knot are unmistakable at44px. Only a partial human hand and blunt rounded cuff, no second full figure. Desperate determined screen.",
       "screen": "Desperate, determined",
       "prop": "Knotted cord",
-      "path": "art/traits/wick/production-v1/sworn-sibling.png",
+      "path": "art/traits/wick/production-v1/revisions/v2/sworn-sibling.png",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/sworn-sibling.png",
-        "128": "art/traits/wick/production-v1/exports/128/sworn-sibling.png",
-        "64": "art/traits/wick/production-v1/exports/64/sworn-sibling.png",
-        "56": "art/traits/wick/production-v1/exports/56/sworn-sibling.png",
-        "48": "art/traits/wick/production-v1/exports/48/sworn-sibling.png",
-        "44": "art/traits/wick/production-v1/exports/44/sworn-sibling.png",
-        "40": "art/traits/wick/production-v1/exports/40/sworn-sibling.png"
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/sworn-sibling.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/sworn-sibling.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/sworn-sibling.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/sworn-sibling.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/sworn-sibling.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/sworn-sibling.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/sworn-sibling.png"
       },
       "batch": "B",
-      "source_sha256": "ecf37024a1422044aa85db5a74fe6c6b4c978376891384777d19e37a9152bfd4"
+      "source_sha256": "aad5fa136e6dcf0ede25b24e347be46dbb5c4cb19b7c5d2cb300921bd92b04ac",
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/sworn-sibling.png",
+      "previous_revision_path": "art/traits/wick/production-v1/sworn-sibling.png"
     },
     {
       "id": "rival",
