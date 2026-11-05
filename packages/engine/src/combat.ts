@@ -1,6 +1,6 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
-import { type Character, ARMOUR, critMult, defense, healingMult, initiativeBonus, maxHp, mod, movement, physicalMult } from './character';
+import { type Character, type Injury, ARMOUR, ONE_HANDED, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
 
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
@@ -26,6 +26,8 @@ export interface Unit {
   pos: string; hp: number; maxHp: number; def: number; armour: number; attack: number; weapon: string; movement: number; init: number; agility: number;
   ap: number; bank: number; ammo: number; heat: number; jammed: boolean; shotsThisTurn: number;
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
+  /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
+  injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
 }
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string }
 
@@ -40,6 +42,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: ARMOUR[c.armourClass]?.value || 0, attack: mod(c.skills[w.skill] || 0), weapon: w.id,
     movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
+    injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
   };
 }
 
@@ -50,8 +53,12 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     pos, hp: t.hp, maxHp: t.hp, def: t.defense, armour: t.armour, attack: t.attack_bonus, weapon: w.id, movement: t.movement,
     init: d20(rng) + t.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 0, hand: 'right', // stat blocks have no Endurance yet: they resist as Endurance 1
   };
 }
+
+/** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
+export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0);
 
 export const alive = (u: Unit) => !u.dead && !u.downed;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === cb.order[cb.turn]);
@@ -127,7 +134,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | '
   const cover = melee ? 0 : coverBonus(cb, att.pos, tgt.pos);
   const rangePenalty = -2 * bands;
   const heat = melee ? 0 : -Math.floor(att.heat / 2);
-  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + (tgt.downed ? 2 : 0);
+  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0);
   const need = tgt.def + cover - toHit;
   const pct = Math.max(5, Math.min(95, (21 - need) * 5));
   return { ok: true, ap, toHit, need: tgt.def + cover, pct, cover, rangePenalty };
@@ -146,7 +153,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
     att.heat += 1; att.shotsThisTurn++;
     if (fumble || (w.heat_limit && att.heat >= w.heat_limit)) att.jammed = true;
   } else if (fumble) att.stunnedNext = 1;
-  let damage = 0, killed = false;
+  let damage = 0, killed = false, injury = '';
   if (hit) {
     const base = weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0);
     let dmg = base * (who ? physicalMult(who) : 1);
@@ -158,12 +165,27 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
       if (tgt.hp === 0) { if (tgt.side === 'foe') { tgt.dead = true; } else { tgt.downed = true; } killed = true; }
     }
     if (killed) att.kills += tgt.tier === 'boss' ? 3 : 1;
+    if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt);
   }
   const verb = melee ? 'strikes' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
   const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + ' = ' + total + ' vs ' + pv.need +
-    (fumble ? (melee ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') : ' · miss');
+    (fumble ? (melee ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss');
   cb.log.push(line);
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
+}
+
+/** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix. */
+export function rollInjury(rng: Rng, t: Unit): string {
+  const resist = t.injResist || 0;
+  if (resist > 0) { const r = die(rng, 100); if (r <= resist) return ' · injury resisted (d100 ' + r + ' ≤ ' + resist + '%)'; }
+  const d = die(rng, 6), inj = t.injuries || (t.injuries = []);
+  if (d === 1) { t.dazedNext = 1; return ' · INJURY (d6 ' + d + '): head, Dazed'; }
+  if (d <= 3) { t.bleed = 3; return ' · INJURY (d6 ' + d + '): torso, Bleeding'; }
+  const side: 'left' | 'right' = die(rng, 2) === 1 ? 'left' : 'right';
+  if (d === 4) { inj.push({ loc: 'arm', side }); return ' · INJURY (d6 ' + d + '): ' + side + ' arm, −2 to attacks with it'; }
+  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
+  inj.push({ loc: 'leg', side });
+  return ' · INJURY (d6 ' + d + '): ' + side + ' leg, half Movement';
 }
 
 // ---------- turns ----------
@@ -182,8 +204,14 @@ export function startCombat(name: string, mapId: string, pcs: { c: Character }[]
 export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
   if (!u) return;
-  u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0)));
-  u.stunnedNext = 0; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)));
+  if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
+  u.stunnedNext = 0; u.dazedNext = 0; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  if (u.bleed && !u.dead && !u.downed) {
+    u.bleed--; u.hp = Math.max(0, u.hp - 5);
+    cb.log.push(u.name + ' bleeds: 5 damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
+    if (u.hp === 0) { if (u.side === 'foe') u.dead = true; else u.downed = true; u.bleed = 0; u.ap = 0; return; }
+  }
   if (u.downed && !u.dead) {
     const r = d20(rng);
     if (r >= 10) u.saves.ok++; else u.saves.fail++;
@@ -250,6 +278,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   const cost = t.downed ? (isMedic ? 1 : 2) : 1;
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
   u.ap -= cost; who.stims--;
+  if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
   if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); }
   else { const heal = Math.floor(30 * healingMult(who)); t.hp = Math.min(t.maxHp, t.hp + heal); cb.log.push(u.name + ' stims ' + t.name + ': +' + heal + ' HP.'); }
   return null;

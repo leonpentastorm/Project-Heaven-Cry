@@ -16,7 +16,15 @@ export interface Character extends Sheet {
   unspent: { skill: number; attr: number; core: number };
   deeds: string[]; weapon: string; armourClass: number; stims: number; essence: number;
   weaponKills: Record<string, number>; dead: boolean;
+  /** Lasting arm and leg injuries (spec: Injuries); cleared when the story treats them. */
+  injuries?: Injury[];
+  /** What's in the backpack besides stims and the Essence (spec: Equipment slots). Old saves fall back to the kit's list. */
+  pack?: PackItem[];
 }
+export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
+export interface Injury { loc: InjuryLoc; side?: 'left' | 'right' }
+export interface PackItem { id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string }
+
 
 /** Skill modifier (spec: Core resolution): −2 at 0 points, otherwise points − 1. */
 export const mod = (p: number) => (p <= 0 ? -2 : p - 1);
@@ -63,17 +71,34 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
+    injuries: [], pack: kit.pack.map((x) => ({ ...x })),
   };
   c.hp = maxHp(c);
   return c;
 }
 
-export const KITS: Record<string, { weapon: string; armourClass: number; stims: number }> = {
-  medic: { weapon: 'service_pistol', armourClass: 2, stims: 3 },
-  soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, stims: 0 },
-  sigil: { weapon: 'service_pistol', armourClass: 1, stims: 0 },
-  soul: { weapon: 'drifter_revolver', armourClass: 1, stims: 0 },
+/** The four starting kits from the creation screen: what's held, worn and packed. */
+export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; pack: PackItem[] }> = {
+  medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
+    pack: [{ id: 'field_kit', name: 'Field kit', qty: 1, kind: 'tool', note: 'Bandages, splints, a suture set' }] },
+  soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, armourName: 'Flak vest', stims: 0,
+    pack: [{ id: 'rifle_magazine', name: 'Rifle magazine', qty: 3, kind: 'ammo', note: 'Spares for the service rifle' }, { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' },
+      { id: 'ration_pack', name: 'Ration pack', qty: 1, kind: 'food' }] },
+  sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0,
+    pack: [{ id: 'evoker', name: 'Evoker', qty: 1, kind: 'focus', note: 'Holds one core; Sigil magic' }, { id: 'standard_core', name: 'Standard mana core', qty: 4, kind: 'ammo' },
+      { id: 'chalk_and_wax', name: 'Chalk and wax', qty: 1, kind: 'tool' }] },
+  soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0,
+    pack: [{ id: 'emanator', name: 'Emanator', qty: 1, kind: 'focus', note: 'The heart link; Soul magic' }, { id: 'prayer_beads', name: 'Prayer beads and incense', qty: 1, kind: 'tool' }] },
 };
+export const packOf = (c: Character): PackItem[] => c.pack ?? (KITS[c.kit] || KITS.medic).pack;
+
+// ---------- injuries (spec: Injuries) ----------
+/** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */
+export const injuryResistPct = (c: Character) => 10 * (A(c, 'endurance') - 1);
+/** One-handed weapons; everything else needs both arms, so any arm injury hurts it (spec: Injuries). */
+export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed'];
+export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
+export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: 5 damage a turn for 3 rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
 
 // ---------- derived stats (spec: Derived stats) ----------
 const P = (c: Character, id: string) => c.skills[id] || 0;
@@ -82,7 +107,7 @@ export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dod
 export const hpPerLevel = (c: Character) => 5 + 2 * P(c, 'durability');
 export const maxHp = (c: Character) => 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c);
 export const initiativeBonus = (c: Character) => (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed'));
-export const movement = (c: Character) => Math.max(0.5, 1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0));
+export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1));
 export const defense = (c: Character) => 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0));
 export const physicalMult = (c: Character) => 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power');
 export const critMult = (c: Character) => 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics');

@@ -90,3 +90,45 @@ export function epccgVals(self) {
 
 /** Small shared bits for game chrome: player colour badge styles. */
 export const badge = (color, size = 34) => 'display: grid; place-items: center; width: ' + size + 'px; height: ' + size + 'px; border-radius: 50%; flex: none; font-size: 12px; font-weight: 700; background: ' + color + '; color: #0A0D13';
+
+// ---------- the body figure (Status: injuries; Gear: what's worn where) ----------
+// A plain front-facing figure in a 120 × 240 box. The character's right side is on the viewer's left.
+const BODY = {
+  head: 'M44,22 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0 z',
+  eyes: 'M45,17 h30 v7 h-30 z',
+  torso: 'M38,44 h44 l6,8 v50 h-56 v-50 z',
+  pelvis: 'M36,104 h48 v22 h-48 z',
+  rArm: 'M20,50 h12 l-1,60 h-13 z', lArm: 'M88,50 h12 l2,60 h-13 z',
+  rHand: 'M17,113 h15 v14 h-15 z', lHand: 'M88,113 h15 v14 h-15 z',
+  rLeg: 'M37,128 h21 v84 h-19 z', lLeg: 'M62,128 h21 l-2,84 h-19 z',
+  rFoot: 'M32,214 h26 v11 h-26 z', lFoot: 'M62,214 h26 v11 h-26 z',
+};
+/** Which parts of the figure each equipment slot covers (spec: Equipment slots). */
+export const SLOT_PARTS = { main: [], off: [], head: ['head'], headAcc: ['eyes'], outer: ['torso'], inner: ['torso'], lower: ['pelvis'], legs: ['rLeg', 'lLeg'], hands: ['rHand', 'lHand'], feet: ['rFoot', 'lFoot'], veil: [], pack: [] };
+const INJ_PARTS = { head: ['head'], torso: ['torso'], arm: { left: ['lArm', 'lHand'], right: ['rArm', 'rHand'] }, leg: { left: ['lLeg', 'lFoot'], right: ['rLeg', 'rFoot'] } };
+export function bodyFigure({ worn = [], injuries = [], hot = [], mainSide = 'right', weapon = false, veil = false }) {
+  const hurt = new Set(); injuries.forEach((i) => { const p = INJ_PARTS[i.loc]; (Array.isArray(p) ? p : p[i.side || 'right']).forEach((x) => hurt.add(x)); });
+  const on = new Set(worn), hi = new Set(hot);
+  const parts = Object.entries(BODY).filter(([k]) => k !== 'eyes' || on.has('eyes') || hi.has('eyes')).map(([k, d]) => ({ key: k, d,
+    fill: hurt.has(k) ? 'rgba(246, 81, 87, 0.28)' : hi.has(k) ? '#2E3A50' : on.has(k) ? '#1C2536' : '#0D1119',
+    stroke: hurt.has(k) ? '#F65157' : hi.has(k) ? '#FFFFFF' : on.has(k) ? '#E7EBF3' : '#3B475D', sw: hurt.has(k) || hi.has(k) ? '2.5' : '1.5' }));
+  const hx = mainSide === 'left' ? 95 : 24;
+  return { parts, weapon, weaponD: 'M' + hx + ',128 v34', veil, veilD: 'M60,0 C96,0 116,40 116,120 C116,200 96,238 60,238 C24,238 4,200 4,120 C4,40 24,0 60,0 z' };
+}
+
+// ---------- map tokens (minimap and area map) with a hover card ----------
+export function tokenVals(u, opt) {
+  const hpPct = Math.max(0, Math.min(100, Math.round(u.hp / Math.max(1, u.maxHp) * 100)));
+  const word = u.dead ? 'DEAD' : u.downed ? 'DOWNED' : hpPct >= 100 ? 'UNHURT' : hpPct > 50 ? 'WOUNDED' : 'BADLY HURT';
+  return {
+    ally: !!opt.ally, foe: !opt.ally, img: u.img || '', hasImg: !!u.img, noImg: !u.img, short: u.short, name: u.name,
+    sub: opt.ally ? opt.player : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase(), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
+    hp: u.hp + ' / ' + u.maxHp + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
+    stateStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
+    ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : '', hasAp: !!(opt.inFight && opt.ally),
+    inj: (u.injuries || []).map((i) => ((i.side ? i.side + ' ' : '') + i.loc).toUpperCase()).concat(u.bleed ? ['BLEEDING'] : []).join(' · '), hasInj: !!((u.injuries || []).length || u.bleed),
+    tokStyle: 'display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; box-sizing: border-box; font-size: 9px; font-weight: 700; '
+      + (opt.ally ? 'border: 2px solid ' + opt.color + '; background: #000' : 'border: 2px solid #F65157; background: #2A0F14; color: #F65157') + (u.downed || u.dead ? '; opacity: 0.45' : ''),
+    popStyle: 'position: absolute; z-index: 30; ' + (opt.up ? 'bottom' : 'top') + ': calc(100% + 6px); ' + (opt.right ? 'right: 0' : 'left: 0') + '; width: 200px; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (opt.ally ? opt.color : '#F65157') + '; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); color: #E7EBF3; text-align: left; pointer-events: none',
+  };
+}

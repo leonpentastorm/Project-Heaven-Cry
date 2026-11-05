@@ -685,7 +685,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "A lasting wound to one location (head, torso, arm, leg). Arm: −2 to attacks with that hand. Leg: half movement. Head: −2 to Mind checks. Torso: −10 max HP. Lasts until treated at rest or by a medic.",
+      "text": "A wound from a critical hit (spec: Injuries). Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with it. Leg: half Movement. Arm and leg injuries last until treated (a long rest with a Medic, surgery).",
       "params": {
         "location": [
           "head",

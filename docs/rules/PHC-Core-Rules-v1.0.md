@@ -310,7 +310,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **The Veil** is a special equipment type with its own slot. Its rules aren't written yet: the engine records what's worn there and applies nothing, and the Narrator reads the item's text.
 
-**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated.
+**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated. Details (item 53): Injury resistance is a d100 at or under 10% × (Endurance − 1); arms and legs are left or right on a d2; an arm injury hurts attacks with a two-handed weapon (anything but pistols, revolvers, light melee, thrown and unarmed) whichever arm it is, and a one-handed weapon only if it's the main-hand arm; leg injuries halve Movement once, however many; head and torso injuries end with the fight, arm and leg injuries go back to the character. The Narrator decides when the story treats them (a long rest with a Medic, surgery, a field hospital). Enemy stat blocks have no Endurance yet, so enemies resist as Endurance 1 (0%).
 
 **Shields** are temporary HP, used up before real HP, and gone at the end of combat unless a rule says otherwise. Healing can't raise HP above its maximum.
 
@@ -667,3 +667,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 50. **Rival's Neck and Neck** (Leon: rivals help each other grow): 50 XP (tagged `bond`) when your rival reaches a new level, and +10% XP from every source but Essence while your rival is a higher level; both ways. Check that two rivals don't pull ahead of the rest of the squad.
 51. **Combo perks at Mastery 2** (Leon: combos are for high levels in 2–3 skills): 5 points in every listed skill, up from 3, now that each Mastery level also gives a perk step. A two-skill combo costs 10 points, a three-skill one 15. Plus three new combos so every skill is in one: Bite the Bullet (Guts + Pain Threshold), Sixth Sense (Sensory + Vigilant), What Could Be (Visualization + Conscience).
 52. **Enemy stat tiers** (Minion, Soldier, Elite, Boss): HP 30/60/100/200, Defense 10/12/13/14, attack +1/+3/+5/+6, armour 0/5/10/10. Written for the first playable build; tune from playtest fights.
+53. **Injury details** (provisional): the d2 side, the two-handed list, one halving for legs, and enemies at 0% resistance were set for the first playable build. Tune from playtests.

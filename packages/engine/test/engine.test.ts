@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -61,6 +61,31 @@ describe('combat', () => {
     const u = cb.units[0]; u.pos = '1,8';
     expect(paths(cb, u.pos, u.id).dist['1,9']).toBe(2);
     expect(MAPS.rear_pad.cover.length).toBe(4);
+  });
+  it('injuries: the d6 table, arm penalties by hand, half Movement once, bleeding', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const seen = new Set<string>();
+    for (let seed = 1; seed < 400 && seen.size < 4; seed++) {
+      const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 7 });
+      const u = cb.units.find((x) => x.side === 'foe')!, mv = u.movement;
+      const line = rollInjury({ state: seed }, u);
+      if (/head/.test(line)) { expect(u.dazedNext).toBe(1); seen.add('head'); }
+      if (/torso/.test(line)) { expect(u.bleed).toBe(3); seen.add('torso'); }
+      if (/arm/.test(line)) { expect(u.injuries![0].loc).toBe('arm'); seen.add('arm'); }
+      if (/leg/.test(line)) { expect(u.movement).toBe(mv / 2); rollInjury({ state: seed }, u); expect(u.movement).toBe(mv / 2); seen.add('leg'); }
+    }
+    expect(seen.size).toBe(4);
+    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const u = cb.units[0];
+    u.injuries = [{ loc: 'arm', side: 'left' }];
+    expect(armPenalty(u, WEAPON.service_pistol)).toBe(0); // pistol in the right hand
+    expect(armPenalty(u, WEAPON.hellraiser_service_rifle)).toBe(-2); // two hands
+    u.injuries = [{ loc: 'arm', side: 'right' }];
+    expect(armPenalty(u, WEAPON.service_pistol)).toBe(-2);
+    u.bleed = 3; const hp = u.hp; cb.order = [u.id]; cb.turn = 0; beginTurn(cb, { state: 1 });
+    expect(u.hp).toBe(hp - 5); expect(u.bleed).toBe(2);
+    expect(movement({ ...c, injuries: [{ loc: 'leg', side: 'left' }] })).toBe(movement(c) / 2);
+    expect(packOf(c).map((x) => x.id)).toContain('field_kit');
   });
 });
 

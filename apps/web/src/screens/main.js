@@ -2,8 +2,8 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR } from '@engine';
+import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText } from '@engine';
 import { STARTS } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, toast } from '../game/store';
 
@@ -12,12 +12,17 @@ const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall
 const SKINS = [['ivory', 'Ivory', '#EFE6D2', '#8C7B5A', '#1A1A1A'], ['obsidian', 'Obsidian', '#15171C', '#6B7280', '#E7EBF3'], ['brass', 'Brass', '#C9A25A', '#6B4F1F', '#1A1208'],
   ['glass', 'Sigil glass', '#173640', '#8BDEEE', '#E7EBF3'], ['bone', 'Bone', '#D9CBB0', '#7A6A4F', '#3A2E20'], ['blood', 'Oil-red', '#7A1121', '#F65157', '#FFFFFF']];
 const ARMOUR_NAMES = ['No armour', 'Light (Class I)', 'Medium (Class II)', 'Heavy (Class III)', 'Assault (Class IV)', 'Juggernaut (Class V)'];
+const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V'];
+const SLOTS = [['main', 'MAIN HAND'], ['off', 'OFF HAND'], ['head', 'HEAD'], ['headAcc', 'HEAD ACC.'], ['outer', 'OUTER TORSO'], ['inner', 'INNER TORSO'], ['lower', 'LOWER TORSO'],
+  ['legs', 'LEGS'], ['hands', 'HANDS'], ['feet', 'FOOTWEAR'], ['veil', 'VEIL'], ['pack', 'BACKPACK']];
+const KIND = { weapon: 'WEAPON', ammo: 'AMMO', med: 'MED', tool: 'TOOL', focus: 'FOCUS', food: 'FOOD', loot: 'LOOT' };
 const REGIONS = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
   ['ENGINEERS’ SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]];
 const TRAIT = {}; D.traits.forEach((t) => { TRAIT[t.id] = t; });
 const PERK_ICON = {};
 D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; }); PERK_ICON[s.ep.mastered.id] = s.ep.mastered.icon; s.ep.combos.forEach((c) => { PERK_ICON[c.id] = c.icon; }); });
 D.ults.forEach((u) => { PERK_ICON[u.id] = u.icon; });
+const side0 = (c) => (c ? mainHandSide(c) : 'right');
 const pref = (k, d) => { try { return localStorage.getItem('phc.' + k) || d; } catch { return d; } };
 const savePref = (k, v) => { try { localStorage.setItem('phc.' + k, v); } catch { /* */ } };
 
@@ -61,6 +66,9 @@ export class MainLogic extends DCLogic {
       ['Healing given', '×' + (Math.round(healingMult(c) * 100) / 100)], ['Carry', (20 + 5 * (A('strength') - 1)) + ' kg'], ['Body save', fmt(mod(P('guts')))], ['Brain save', fmt(mod(P('charisma')))],
       ['Heart save', fmt(mod(P('composure')))], ['Cores', 'B' + c.cores.body + ' · M' + c.cores.mind + ' · S' + c.cores.soul], ['Leadership', lead], ['Karma', '0 · Neutral']].map(([k, v]) => ({ k, v })) : [];
     const rep = [{ k: 'Factions', v: 'No standing yet' }];
+    const inj = c ? c.injuries || [] : [];
+    const statusFig = bodyFigure({ injuries: inj, mainSide: side0(c) });
+    const injuries = inj.map((i, n) => ({ key: n, where: ((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), what: injuryText[i.loc] }));
     const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon') })) : [];
     const perks = c ? c.perks.map((x) => { const p = PERK[x.id], sk = p.skills[0], ink = sk ? ATTR[SK[sk].attr].ink : '#FFFFFF', icon = PERK_ICON[x.id] || IMG['wick-mind-without-fog'];
       const text = p.tiers ? (x.tier === 'II' ? p.tiers.II.text : p.tiers.I.text) : p.text;
@@ -69,9 +77,25 @@ export class MainLogic extends DCLogic {
         chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink }; }) : [];
     const top = c ? Object.entries(c.skills).filter(([, p]) => p > 0 && p < 10).sort((a, b) => b[1] - a[1])[0] : null;
     const mp = top ? masteredVals(this, SK[top[0]].ep.mastered, ATTR[SK[top[0]].attr].ink, SK[top[0]].name, top[1]) : {};
-    const gear = c ? [['MAIN HAND', w.name, (typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + ' · ' + (typeof w.range_tiles === 'number' ? w.range_tiles + ' tiles' : '') + (w.magazine ? ' · mag ' + w.magazine : '')],
-      ['OUTER TORSO', ARMOUR_NAMES[c.armourClass] || 'Armour', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)], ['BACKPACK', 'Stim injector', c.stims + ' stims'], ['BACKPACK', 'Essence of Experience', '×' + c.essence + ' · sells 300']]
-      .map(([slot, name, note]) => ({ slot, name, note, nameStyle: 'font-weight: 600; color: #E7EBF3' })) : [];
+    // Gear: the body figure, the slot list beside it, and the backpack rig.
+    const kitDef = c ? KITS[c.kit] || KITS.medic : null, side = c ? mainHandSide(c) : 'right';
+    const worn = c ? { main: [w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name, (typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · mag ' + w.magazine : '')],
+      outer: c.armourClass ? [kitDef.armourName + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null } : {};
+    const pack = c ? [...(c.stims ? [{ id: 'stim', name: 'Stim injector', qty: c.stims, kind: 'med', note: 'Heals 30 × Healing given; stabilises the Downed' }] : []), ...packOf(c),
+      ...(c.essence ? [{ id: 'eoe', name: 'Essence of Experience', qty: c.essence, kind: 'loot', note: 'Sells for 300' }] : [])] : [];
+    worn.pack = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
+    const hotParts = S.hotSlot ? (S.hotSlot === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[S.hotSlot] || []) : [];
+    const wornParts = Object.keys(worn).filter((k) => worn[k]).flatMap((k) => (k === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[k] || []));
+    const gearFig = bodyFigure({ worn: wornParts, hot: hotParts, mainSide: side, weapon: !!c, injuries: [] });
+    const slots = SLOTS.map(([id, label]) => { const x = worn[id];
+      return { key: id, label, name: x ? x[0] : '—', note: x ? x[1] : '', hover: () => this.setState({ hotSlot: id }), leave: () => this.setState({ hotSlot: null }),
+        style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; padding: 4px 6px; border-radius: 6px; font-size: 12px; ' + (S.hotSlot === id ? 'background: #1C2536' : '') ,
+        nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') }; });
+    const kgOf = (it) => (it.weapon && WEAPON[it.weapon] ? WEAPON[it.weapon].weight_kg * it.qty : null);
+    const rig = pack.map((it) => { const kg = kgOf(it);
+      return { key: it.id, tag: KIND[it.kind] || 'ITEM', name: it.name, qty: '×' + it.qty, kg: kg != null ? kg + ' kg' : '—', note: it.note || '' }; });
+    const carried = c ? (w.weight_kg || 0) + pack.reduce((t, it) => t + (kgOf(it) || 0), 0) : 0;
+    const gear = [];
     const lvlOf = (k) => { let l = D.wm.levels[0]; D.wm.levels.forEach((x) => { if (k >= x.kills) l = x; }); return l; };
     const mastery = c ? Object.entries(c.weaponKills).filter(([, k]) => k > 0).map(([fid, kills]) => {
       const fam = D.wm.families.find((f) => f.id === fid) || { name: fid }, lv = lvlOf(kills), nx = D.wm.levels[lv.level + 1];
@@ -163,11 +187,18 @@ export class MainLogic extends DCLogic {
 
     // ---------- the zone ----------
     const cb = g.combat, map = cb ? cb.map : MAPS.rear_pad;
-    const tok = {}; if (cb) cb.units.filter((u) => !u.dead).forEach((u) => { tok[u.pos] = u.side === 'pc' ? playerOf(charOf(u.charId)?.owner).color : '#F65157'; });
-    const solid = new Set(map.solid), cover = new Set(map.cover), diff = new Set(map.difficult);
-    const mini = []; for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y, t = tok[k];
-      mini.push({ style: 'aspect-ratio: 1; border-radius: ' + (t ? '50%' : '1px') + '; background: ' + (t || (solid.has(k) ? '#1C2536' : cover.has(k) ? '#4A3A20' : diff.has(k) ? '#232D3F' : '#0D1119')) }); }
+    // Who stands where: the fight's units, or (no fight yet) the living party at the map's start tiles.
     const inFight = g.phase === 'combat';
+    const units = cb ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
+      : Object.values(g.characters).filter((x) => !x.dead).map((x, i) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
+        pos: map.pcStart[i % map.pcStart.length], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }));
+    const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
+    const solid = new Set(map.solid), cover = new Set(map.cover), diff = new Set(map.difficult);
+    const cellBg = (k) => (solid.has(k) ? '#1C2536' : cover.has(k) ? '#4A3A20' : diff.has(k) ? '#232D3F' : '#0D1119');
+    const mini = []; for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k];
+      const p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null;
+      mini.push({ key: k, has: !!u, t: u ? tokenVals(u, { ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
+        style: 'position: relative; aspect-ratio: 1; border-radius: 1px; background: ' + (u ? '#0D1119' : cellBg(k)) }); }
     const regions = st0.id === 'm813' ? REGIONS.map(([name, note, l, t2, ww, h]) => ({ name, note, style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + ww + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' })) : [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
@@ -180,8 +211,8 @@ export class MainLogic extends DCLogic {
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       zoomPc: zoomer(this, pc.img, pc.name, 'portrait'), canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
-      status, rep, traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, emptySlots: 'Off hand · Head · Head accessory · Inner torso · Lower torso · Legs · Hands · Footwear · Veil',
-      load: c ? 'Carry limit ' + (20 + 5 * (A('strength') - 1)) + ' kg.' : '', eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
+      status, rep, statusFig, injuries, noInjuries: !inj.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, noRig: !rig.length, backpackImg: '',
+      load: c ? 'Weighed items ' + (Math.round(carried * 10) / 10) + ' kg · limit ' + (20 + 5 * (A('strength') - 1)) + ' kg' : '', eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
       hero, stream, pushes,
       hasChecks: actions.length > 0, actions,
       dice: !!ck, roll, closeDice: () => { if (ck && ck.roll && !ck.done) act({ type: 'check/accept', checkId: ck.id }); this.setState({ dice: null }); },
@@ -206,8 +237,12 @@ export class MainLogic extends DCLogic {
       skipRest: () => waitingOn.forEach((p) => act({ type: 'story/skip', playerId: p.id })), cantSkip: !isHost || g.story.await !== 'players' || !waitingOn.length,
       pickRoll: S.pickRoll, togglePick: () => this.setState({ pickRoll: !S.pickRoll }),
       zoneLabel: 'CURRENT ZONE · ' + (cb ? map.name.toUpperCase() : (st0.id === 'm813' ? 'REAR PAD' : 'THE STORY')), zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
-      zoneStyle: 'display: block; width: 100%; padding: 6px; border-radius: 10px; background: #05070B; font-family: inherit; text-align: left; cursor: ' + (cb ? 'pointer' : 'default') + '; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
-      zoneNote: inFight ? 'COMBAT ZONE · CLICK TO ENTER' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · CLICK TO VIEW' : 'NO FIGHT YET',
+      zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
+      miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
+      areaGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 240px) * ' + (map.w / map.h).toFixed(3) + '))',
+      areaTitle: 'AREA MAP · ' + (st0.id === 'm813' ? 'PLANET M813 · ' : '') + map.name.toUpperCase(), inFight,
+      areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : cb ? 'Where everyone stood when the last fight ended.' : 'Where the squad stands. When a fight starts, everyone here moves to the grid.',
+      zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',
       zoneNoteStyle: 'display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (inFight ? '#F65157' : '#A3AEC2'),
       mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => this.setState({ area: false }), order,
     };

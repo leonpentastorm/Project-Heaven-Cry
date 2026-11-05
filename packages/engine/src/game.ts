@@ -61,6 +61,8 @@ export type NarratorTurn = {
   deeds?: { charId: string; perkId: string; deed: string }[];
   combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string }[] } | null;
   endScene?: { summary: string } | null;
+  /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
+  treat?: { charId: string; loc: 'arm' | 'leg' | 'all' }[];
 };
 export type Action =
   | { type: 'player/join'; id: string; name: string } | { type: 'player/online'; id: string; online: boolean } | { type: 'player/kick'; id: string }
@@ -317,6 +319,12 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
     awardAutomatic(g, c);
   }
+  for (const x of t.treat || []) {
+    const c = g.characters[x.charId]; if (!c || !c.injuries?.length) continue;
+    const before = c.injuries.length;
+    c.injuries = x.loc === 'all' ? [] : c.injuries.filter((i) => i.loc !== x.loc);
+    if (c.injuries.length < before) push(g, { kind: 'system', text: c.name + '’s ' + (x.loc === 'all' ? 'injuries are' : x.loc + ' injury is') + ' treated.' });
+  }
   if (t.endScene?.summary) g.story.journal.push(t.endScene.summary);
   if (t.combat && t.combat.enemies?.length) {
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c }));
@@ -378,6 +386,7 @@ function finishCombat(g: GameState) {
   for (const u of cb.units) if (u.charId) {
     const c = g.characters[u.charId];
     c.hp = u.dead ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
+    c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
     const fam = WEAPON[u.weapon]?.mastery_family; if (fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
   }
   const won = cb.over === 'win';
