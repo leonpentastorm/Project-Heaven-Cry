@@ -5269,14 +5269,15 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Every army has a song for running at guns. You know all of them.",
-      "text": "After charging an enemy from 7 m or more, gain a shield of 100 × your Armour Class (at least 100) for one turn. Melee hits made during the charge deal 1.5× base melee damage.",
+      "text": "After charging an enemy from 7 m or more, gain a shield of 15 × your Armour Class (at least 15) for one turn. Melee hits made during the charge deal 1.5× base melee damage.",
       "effects": [
         {
           "op": "shield",
-          "value": "max(100, 100*armor_class)",
+          "value": "max(15, 15*armor_class)",
           "target": "self",
           "when": "after a charge of 5+ tiles (7 m at 1.5 m per tile)",
-          "duration": "one_turn"
+          "duration": "one_turn",
+          "provisional": true
         },
         {
           "op": "damage_mult",

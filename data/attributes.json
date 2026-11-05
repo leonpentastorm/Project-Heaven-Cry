@@ -63,8 +63,8 @@
       "derived": [
         {
           "stat": "max_hp",
-          "formula": "100 + 50 × (Endurance − 1) + (level − 1) × HP per level",
-          "per_point_above_1": 50
+          "formula": "100 + 15 × (Endurance − 1) + (level − 1) × HP per level",
+          "per_point_above_1": 15
         },
         {
           "stat": "injury_resist_pct",

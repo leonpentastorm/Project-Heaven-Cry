@@ -1,6 +1,8 @@
 # PHC Core Rules v1.0 (Game Spec)
 
 > Exported from the living Claude Doc https://claude.ai/artifact/Mm2PsQVYuBKoFybSUTFii5 on 2026-11-05. The Doc is the source of truth; re-export after edits.
+>
+> **Revision 1.1 (2026-11-05), not yet in the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18. Copy these sections into the Doc. Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
 
 2026-11-03 · Leon PT
 
@@ -11,7 +13,7 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 **Two referees, one rulebook.** The web game has two kinds of referee, and the spec says which one owns each rule:
 
 - **The engine** owns anything with a number: rolls, AP, damage, Heat, the ambient mana meter, conditions, XP. It never improvises.
-- **The Narrator** (an AI Dungeon Master or a human one) owns judgement: setting difficulty targets, describing the world, playing NPCs and Celestial patrons, deciding when an Overreach trigger fires, granting Achieved perks. Where a rule says "the Narrator decides," the engine asks and waits.
+- **The Narrator** (an AI Dungeon Master or a human one) owns judgement: setting difficulty targets, describing the world, playing NPCs and Celestial patrons, writing voice hooks and voicing the skills that pass them, deciding when an Overreach trigger fires, granting Achieved perks. Where a rule says "the Narrator decides," the engine asks and waits.
 
 **Conventions**
 
@@ -32,21 +34,30 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 | Hard | 16 |
 | Heroic | 20 |
 
-**Skill modifier (the 0–10 track).** 0 points: −2. Then +1 for every 2 points: 1 point +0, 2–3 points +1, 4–5 +2, 6–7 +3, 8–9 +4, 10 +5. In formula terms: −2 at 0, otherwise floor(points ÷ 2).
+**Skill modifier (the 0–10 track).** 0 points: −2 (untrained). One point removes the penalty (+0), and every point after that adds +1: 2 points +1, 3 +2, 5 +4, 7 +6, 10 +9. In formula terms: −2 at 0, otherwise points − 1. Written **mod(skill)** below.
 
 **Natural 20** always succeeds and is a critical success: the Narrator adds a benefit. **Natural 1** always fails and is a critical failure: the Narrator adds a complication.
 
-**Combined checks.** When a task calls on two skills ("Endurance and Ingenuity" in the 2020 example), roll once and add both modifiers. The Narrator raises the TN by 4 to compensate.
+**Combined checks.** When a task calls on two skills ("Endurance and Ingenuity" in the 2020 example), roll once with the lower of the two modifiers, +2. The TN doesn't change.
 
 **Opposed checks.** Both sides roll their skill; higher total wins; the defender wins ties.
 
 **Help.** One ally with at least 1 point in the skill can help: +2 to the roll, and the helper shares any critical failure.
 
-**Overreach.** At Mastery 2 or higher, each skill has an Overreach trigger (listed in the skill data). When it happens, the Narrator calls a plain d20, no modifiers, against: 15 at Mastery 2 (5–6 points), 17 at Mastery 3 (7–8), 19 at Mastery 4 (9). At Mastered (10) it fails automatically unless you spend an Echo. On a failure, the skill's consequence happens.
+**Voices.** Every skill with 1 point or more is a voice in your head, with its own personality (the voice cards in skills.json). Voices are private: only their player sees them.
 
-**Echo.** A player may fail an Overreach on purpose and play it out; they gain 1 Echo (maximum 3). Spend 1 Echo to reroll any d20 you rolled.
+1. **Hooks.** When the Narrator describes a beat in story mode, it attaches hidden *voice hooks*: things a skill could notice or want, each with a skill, a TN from the ladder above, and a truth flag (true, partial or misleading) that players never see.
+2. **Passive check.** The engine compares each character's **passive score, 10 + mod(skill)**, with every hook for that skill. No roll.
+3. **Lines.** For each player, the passed hooks with the biggest margins, at most **2 per beat**, become private lines in the skill's voice, written by the Narrator. Voices can be wrong: a misleading hook sounds just as sure as a true one.
+4. **Ask a skill.** Out of combat, once per scene per skill, a player may ask a skill what it thinks: d20 + mod(skill) against the lowest-TN unrevealed hook for that skill. On a success the skill speaks it; otherwise it has nothing to say.
 
-**Inner Voice.** At the start of each scene, the engine rolls a hidden check for each character's highest skill at 3+ points: d20 + that skill's modifier against 12. On a success, the Narrator gives that player one private line in the skill's voice.
+**Overreach.** At Mastery 2 or higher, each skill has an Overreach trigger (listed in the skill data). When the trigger happens, the skill pushes: the Narrator voices its push, and the player chooses.
+
+- **Indulge:** play it out. The skill's consequence happens, and you gain **1 Echo**.
+- **Resist:** spend **1 Echo** (Mastery 2–4) or **2 Echo** (Mastered), and nothing happens.
+- Without enough Echo, you indulge. Each skill's Overreach fires at most once per scene. There is no roll.
+
+**Echo.** You start each session with 1 Echo and can hold at most 3. Spend 1 Echo to reroll any d20 you rolled; at most 1 Echo per roll.
 
 ## Characters
 
@@ -56,14 +67,24 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 
 **Creation budget**
 
-| Pool | Starts at | Points to spend |
+| Pool | Starts at | At creation |
 |---|---|---|
-| Cores | 1 each | 6 |
-| Attributes | 1 each | 10 |
-| Skills | 0 each | 10 |
+| Skills | 0 each | spend **10 points**; no skill above **5** |
+| Attributes | 1 each | rise automatically to the highest skill under them |
+| Cores | 1 each | rise automatically to the highest attribute under them |
 | Traits | none | pick 0–2 |
 
-**Levels and XP.** Levels run 1 to 20. Reaching the next level costs 100 × your current level in XP (level 1 → 2 costs 100; 9 → 10 costs 900).
+You only choose skills; the tree grows to fit them. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
+
+**Levels and XP.** Levels run 1 to 20. XP is cumulative:
+
+| Level | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Total XP | 0 | 100 | 250 | 700 | 1,300 | 2,050 | 2,800 | 3,550 | 4,300 | 5,050 |
+| **Level** | **11** | **12** | **13** | **14** | **15** | **16** | **17** | **18** | **19** | **20** |
+| Total XP | 5,950 | 6,850 | 7,750 | 8,650 | 9,550 | 10,450 | 11,650 | 12,850 | 14,050 | 15,250 |
+
+**Pacing target.** The first session (one story scene and one fight, about 250 XP) ends at level 3, so every player has a class after session 1. After that the Narrator aims for about 300 XP per character per session: about 2 sessions a level through level 5, 2.5 through level 10, 3 through level 16 and 4 after that. That is level 5 by session 5, level 10 by session 17 and level 20 by about session 51, the same overall pace as the D&D 5e DMG's session guideline.
 
 | On reaching a level | You gain |
 |---|---|
@@ -85,27 +106,27 @@ Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at
 
 ## Derived stats
 
-In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the starting value. A Skill is its points (0–10). Results round down. Percentage caps stop any reduction above 60%.
+In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the starting value. A Skill is its points (0–10); mod(skill) is its modifier (−2 at 0, otherwise points − 1). Results round down. Percentage caps stop any reduction above 60%.
 
 **Body and survival**
 
 | Stat | Formula |
 |---|---|
-| Max HP | 100 + 50 × (Endurance − 1) + (level − 1) × HP per level |
-| HP per level | 10 + 5 × Durability |
+| Max HP | 100 + 15 × (Endurance − 1) + (level − 1) × HP per level |
+| HP per level | 5 + 2 × Durability |
 | AP per turn | 6 |
 | Initiative bonus | (Agility − 1) + Reaction Speed modifier |
 | Tiles per Move | 3 + 0.5 × (Agility − 1) |
 | Carry weight | 20 kg + 5 kg × (Strength − 1) |
-| Defense | 10 + Dodge, where Dodge = 0.5 × Athletics |
-| Counter bonus | 0.5 × Raw Power |
+| Defense | 10 + Dodge, where Dodge = mod(Athletics), minimum 0 |
+| Counter bonus | mod(Raw Power), minimum 0 |
 | Injury resistance | 10% × (Endurance − 1) chance to ignore an injury |
 | Critical damage taken | −10% × (Perception − 1) − 5% × Durability |
 | Elemental damage taken | −10% × Pain Threshold |
 | Ambush damage taken | −10% × Reaction Speed |
 | Healing and shields received | +10% × Sensory |
-| Saves (Body / Brain / Heart) | 0.5 × Guts / Charisma / Composure |
-| Debuff strength (Body / Brain / Heart) | 0.5 × Intimidation / Eloquence / Implication |
+| Saves (Body / Brain / Heart) | mod(Guts) / mod(Charisma) / mod(Composure) |
+| Debuff strength (Body / Brain / Heart) | mod(Intimidation) / mod(Eloquence) / mod(Implication), minimum 0 |
 
 **Senses and reach** (in tiles)
 
@@ -155,7 +176,7 @@ Classes aren't picked; skills earn them. Each base class has three **signature s
 
 **Getting your class (level 3).** For each base class, add up your points in its three signature skills. You may take any class whose total is among your two highest totals (ties included). Nobody is left without a class; a character who spread points thin just starts at a lower total.
 
-**Class rank** follows that total: rank I when you gain the class, rank II at a signature total of 15, rank III at 21. Each rank unlocks the class's next signature move.
+**Class rank** follows that total: rank I when you gain the class, rank II at a signature total of 13, rank III at 18. Each rank unlocks the class's next signature move. On the pacing target, a focused character reaches rank II around level 5 and rank III around level 11; a spread-out one later.
 
 **Advanced classes** mix two base classes. To learn one you need a signature total of 15 in one parent class and 9 in the other, plus a tutor from the faction that teaches it (the Narrator places the tutor in the story). You don't need to hold either parent class yourself.
 
@@ -254,7 +275,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Damage.** On a hit: the weapon's damage × the matching multiplier (Physical, Elemental, Sigil, Soul) × any other multipliers, then subtract armour. Minimum 1.
 
-**Critical hits.** A natural 20, or an attack total of Defense + 10 or more, is a critical: damage × the attacker's Critical multiplier, reduced by the target's Critical damage taken. A critical also forces an injury roll.
+**Critical hits.** A natural 20 is a critical; an Aimed shot or an attack from Hidden crits on 19–20. A critical does damage × the attacker's Critical multiplier, reduced by the target's Critical damage taken. A critical also forces an injury roll.
 
 **Natural 1 on an attack.** Guns jam; melee and spell users fumble and lose 1 AP from their next turn.
 
@@ -478,7 +499,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 
 1. Set every TN, and say what's at stake before the roll.
 2. Play NPCs and Celestial patrons; patrons keep their costumes and react to Devotion.
-3. Call Overreach triggers, voice Inner Voice lines, grant Achieved perks, and award XP by source.
+3. Attach voice hooks to every story beat (skill, TN, truth flag) and write the lines for the hooks the engine says were passed, in each skill's voice from its voice card. Voice Overreach pushes when a trigger happens, grant Achieved perks, and award XP by source, aiming for the pacing target.
 4. **Keep the Veil.** Never reveal that the world is a simulation unless a character earns the Knowing. Things a Celestial imported from Earth appear to NPCs as myth, never as a reference.
 5. **Hold the tone line:** the comedy belongs to the Celestials; the tragedy belongs to the NPCs.
 6. Leave numbers to the engine. The Narrator asks for a roll and narrates the result; it never invents a modifier.
@@ -491,7 +512,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 |---|---|---|
 | rules.json | object | Every constant in sections 2–12, plus the lists of what the engine owns and what the Narrator owns |
 | attributes.json | 9 + 3 cores | Attribute → α/β/γ skills, derived-stat formulas, core economies |
-| skills.json | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, signature-of |
+| skills.json | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, signature-of |
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
 | traits.json | 74 | Upsides, downsides, excludes, Narrator hooks |
 | perks.json | 76 | 54 Acquired, 16 Achieved, 6 Ultimate |
@@ -516,8 +537,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2. **Prices.** No prices for weapons, small cores or heavy cores; only the standard core has one (150).
 3. **Diagonal movement.** No cost is given. *Suggested: every second diagonal costs 2 tiles.*
 4. **Initiative ties** after Agility. *Suggested: compare Reaction Speed, then the players choose.*
-5. **Inner Voice ties.** No rule for which skill speaks when two tie for highest. *Suggested: the Narrator picks the one that fits the scene.*
-6. **Echo rerolls.** Can more than one Echo be spent on the same roll?
+5. ~~Inner Voice ties.~~ *Obsolete in 1.1: Voices replace Inner Voice; ties between hooks go to the bigger margin, then the Narrator's choice.*
+6. ~~Echo rerolls.~~ *Settled in 1.1: at most 1 Echo per roll.*
 7. **Durability gains.** Does extra HP per level apply retroactively when Durability rises? *Suggested: yes.*
 8. **Mana over time.** Does the ambient meter rise on its own (the World Bible's Tide), and on what interval do new bots spawn?
 9. **Armour slots.** Head, hands and feet pieces aren't defined.
@@ -535,7 +556,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 18. **Free shots and the reaction limit.** Dance of Iron and Catch give free shots. Do they use the one reaction per round? *Suggested: yes, unless the text says "free reaction".*
 19. **No dodge action.** Riposte now triggers when a melee attack against you misses.
 20. **Last Charge.** 7 m is not a whole number of tiles; *data uses 5 tiles*. Its shield of 100 × Armour Class is off the HP scale.
-21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation. Confirm both.
+21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation. Confirm both. *(1.1: with automatic Cores at creation, the 2 points raise any Core above what the skills need, which lifts its caps for later.)*
 22. **Undefined actions** that perks rely on: Field Repair, Shove, Break, wards and rituals, Improvise Tool, Analyze on NPCs.
 23. **Perk type labels.** Origami Hands, Hold the Stroke and Pattern Lock carry type labels that don't match their effects. Soulmate scales by Mastery inside Tier I.
 24. **Bone Talk** calls Shaken a body debuff; Shaken is in the heart family.
@@ -554,4 +575,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 31. Can a character gain a second base class later?
 32. Do enhanced rounds stay, as rare bought ammo?
 33. The Quartermaster and The Laughing Mask are invented patrons: keep, rename or replace them.
-34. **Class balance.** Monte Carlo over 100k level-3 builds: 0% classless, an average of 3.5 class options per character, and each class reachable by 26–28% of builds.
+34. **Class balance.** Monte Carlo over 100k level-3 builds: 0% classless, an average of 3.5 class options per character, and each class reachable by 26–28% of builds. *(1.1 changes creation to 10 skill points; rerun the Monte Carlo.)*
+
+**Added in revision 1.1 (provisional, settle in playtest)**
+
+35. **Creation cap of 5** points in any one skill.
+36. **Voice line cap** of 2 per player per beat, and the passive score 10 + mod(skill).
+37. **Overreach resist costs** (1 Echo at Mastery 2–4, 2 when Mastered) and **1 Echo at the start of each session**.
+38. **XP table and the 300 XP per session target.** Check that session 1 really ends at level 3.
+39. **Class rank thresholds 13 / 18.** Advanced classes stay at 15 + 9.
+40. **HP rescale** (+15 per Endurance, 5 + 2 × Durability per level). Mid and high levels need a pass; Last Charge's shield (item 20) should drop to 15 × Armour Class.
+41. **Crits** on a natural 20, or 19–20 for Aimed shots and attacks from Hidden.

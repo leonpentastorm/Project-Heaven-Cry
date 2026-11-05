@@ -8,9 +8,9 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 
 | File | Items | What it holds |
 |---|---|---|
-| `rules.json` | (object) | Every constant: d20 and the TN ladder, Overreach, Echo, AP economy, the 1.5 m grid, initiative, the action table, derived-stat formulas, damage and armour, rest, mana-meter bands, Flux, Strain, blessing tiers, levelling, multiplayer (4 per room), and the lists of what the engine owns and what the Narrator owns |
+| `rules.json` | (object) | Every constant: d20 and the TN ladder, skill Voices, Overreach (indulge/resist), Echo, the XP table, AP economy, the 1.5 m grid, initiative, the action table, derived-stat formulas, damage and armour, rest, mana-meter bands, Flux, Strain, blessing tiers, levelling, multiplayer (4 per room), and the lists of what the engine owns and what the Narrator owns |
 | `attributes.json` | 9 + 3 cores | Attributes with their α/β/γ skills and derived-stat formulas; cores with their economies |
-| `skills.json` | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, which classes count the skill as a signature |
+| `skills.json` | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, which classes count the skill as a signature |
 | `classes.json` | 13 base, 15 advanced | Signatures, economy, role, resource, rank I–III moves; advanced parents, tutor and moves; `assignment` holds the level-3 closest-class rule as data |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
 | `perks.json` | 76 | 54 Acquired (2 per skill, Tier I at 3 points and II at 7), 16 Achieved (combo plus a deed), 6 Ultimate |

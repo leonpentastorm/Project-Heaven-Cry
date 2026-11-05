@@ -53,7 +53,6 @@
     "ignore_cover",
     "ignore_gear_mods",
     "immunity",
-    "inner_voice_count",
     "karma_cost_mult",
     "karma_gain_mult",
     "karma_lock",
@@ -66,7 +65,6 @@
     "nonlethal_option",
     "on_kill",
     "opposed",
-    "overreach_tn_mod",
     "price_mod",
     "recoil_mult",
     "repairable",
@@ -94,7 +92,9 @@
     "vehicle_mod",
     "weapon_mastery_rate",
     "withdrawal",
-    "xp_mod"
+    "xp_mod",
+    "voice_line_cap",
+    "overreach_resist_cost"
   ],
   "items": [
     {
@@ -109,7 +109,7 @@
       "cost": null,
       "flavour": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.",
       "upsides": [
-        "Still Water: gain 2 Core points at creation. Heart Debuffs never affect you."
+        "Still Water: gain 2 Core points at creation, to raise any Core above what your skills need. Heart Debuffs never affect you."
       ],
       "downsides": [
         "Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change."
@@ -118,7 +118,7 @@
         "Mechanical note: 'Karma can never change' locks Karma at its starting value."
       ],
       "narrator_hook": "every faction wants to convert the one recruit who can't be converted.",
-      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 2 Core points at creation. Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
+      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 2 Core points at creation, to raise any Core above what your skills need. Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
       "effects": [
         {
           "op": "creation_points",
@@ -3105,26 +3105,32 @@
       "cost": null,
       "flavour": "Every skill in your head has an opinion, and none of them wait their turn.",
       "upsides": [
-        "Chorus: Inner Voice checks happen for your three highest skills, not just one."
+        "Chorus: up to 4 voice lines per beat instead of 2, and you can Ask a skill twice per scene instead of once."
       ],
       "downsides": [
-        "Cacophony: all your Overreach targets are 2 higher, and the voices can lie: once per session, the Narrator can give you a false whisper."
+        "Cacophony: resisting an Overreach costs 1 more Echo, and once per session the Narrator may turn one of your voice lines misleading, even when the hook was true."
       ],
       "notes": [],
       "narrator_hook": "the moment when the voices disagree.",
-      "text": "Every skill in your head has an opinion, and none of them wait their turn.\n+ Chorus: Inner Voice checks happen for your three highest skills, not just one.\n− Cacophony: all your Overreach targets are 2 higher, and the voices can lie: once per session, the Narrator can give you a false whisper.",
+      "text": "Every skill in your head has an opinion, and none of them wait their turn.\n+ Chorus: up to 4 voice lines per beat instead of 2, and you can Ask a skill twice per scene instead of once.\n− Cacophony: resisting an Overreach costs 1 more Echo, and once per session the Narrator may turn one of your voice lines misleading, even when the hook was true.",
       "effects": [
         {
-          "op": "inner_voice_count",
-          "value": 3
-        },
-        {
-          "op": "overreach_tn_mod",
+          "op": "voice_line_cap",
           "value": 2
         },
         {
+          "op": "extra_use",
+          "action": "ask_a_skill",
+          "value": 1,
+          "uses": "per_scene"
+        },
+        {
+          "op": "overreach_resist_cost",
+          "value": 1
+        },
+        {
           "op": "narrator",
-          "note": "once per session, one Inner Voice whisper may be false"
+          "note": "once per session, one of this character's voice lines may be misleading even when its hook was true"
         }
       ],
       "adjudication": "hybrid",

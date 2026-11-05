@@ -9,8 +9,8 @@
     "tie_rule": "player chooses among all eligible classes; nobody is classless",
     "rank_thresholds": {
       "I": "on gaining the class",
-      "II": 15,
-      "III": 21
+      "II": 13,
+      "III": 18
     },
     "rank_rule": "each rank unlocks the next signature move; rank uses the current signature total",
     "advanced": {
@@ -19,7 +19,8 @@
       "needs_tutor": true,
       "needs_parent_class": false
     },
-    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)"
+    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)",
+    "rank_thresholds_provisional": true
   },
   "base": [
     {
@@ -83,7 +84,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "special_ammo",
@@ -104,7 +105,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "killzone",
@@ -186,7 +187,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "riposte",
@@ -213,7 +214,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "finisher",
@@ -302,7 +303,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "draw_fire",
@@ -329,7 +330,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "reactive_plate",
@@ -416,7 +417,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "stim_throw",
@@ -443,7 +444,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "field_surgery",
@@ -528,7 +529,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "toxin",
@@ -560,7 +561,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "execution",
@@ -635,7 +636,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "overcharge",
@@ -662,7 +663,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "payload",
@@ -743,7 +744,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "ward",
@@ -770,7 +771,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "seal",
@@ -844,7 +845,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "inscribe_gear",
@@ -872,7 +873,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "stored_spell",
@@ -951,7 +952,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "blind_and_slow",
@@ -987,7 +988,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "rewrite",
@@ -1063,7 +1064,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "storm_front",
@@ -1089,7 +1090,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "heart_surge",
@@ -1167,7 +1168,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "drink_it_in",
@@ -1188,7 +1189,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "sanctuary",
@@ -1273,7 +1274,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "mend",
@@ -1294,7 +1295,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "gift",
@@ -1373,7 +1374,7 @@
           ]
         },
         "II": {
-          "threshold": 15,
+          "threshold": 13,
           "moves": [
             {
               "id": "mind_fog",
@@ -1393,7 +1394,7 @@
           ]
         },
         "III": {
-          "threshold": 21,
+          "threshold": 18,
           "moves": [
             {
               "id": "puppet",

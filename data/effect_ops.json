@@ -9,9 +9,11 @@
       "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
       "count": 179,
       "params": [
+        "basis",
         "context",
         "duration",
         "limit",
+        "min",
         "stat",
         "target",
         "value",
@@ -631,6 +633,7 @@
       "params": [
         "basis",
         "duration",
+        "provisional",
         "scale",
         "target",
         "value",
@@ -752,6 +755,27 @@
         "family": "body",
         "count": 1,
         "target": "self"
+      }
+    },
+    {
+      "id": "extra_use",
+      "tier": "core",
+      "summary": "One more use of a limited ability.",
+      "count": 4,
+      "params": [
+        "action",
+        "context",
+        "uses",
+        "value"
+      ],
+      "used_by": [
+        "perks:jury_rig",
+        "traits:crowded_head"
+      ],
+      "example": {
+        "op": "extra_use",
+        "context": "broken weapon or device",
+        "value": 1
       }
     },
     {
@@ -1016,24 +1040,6 @@
         "family": "heart",
         "count": 1,
         "duration_mult": 0.5
-      }
-    },
-    {
-      "id": "extra_use",
-      "tier": "core",
-      "summary": "One more use of a limited ability.",
-      "count": 3,
-      "params": [
-        "context",
-        "value"
-      ],
-      "used_by": [
-        "perks:jury_rig"
-      ],
-      "example": {
-        "op": "extra_use",
-        "context": "broken weapon or device",
-        "value": 1
       }
     },
     {
@@ -2216,22 +2222,6 @@
       }
     },
     {
-      "id": "inner_voice_count",
-      "tier": "bespoke",
-      "summary": "",
-      "count": 1,
-      "params": [
-        "value"
-      ],
-      "used_by": [
-        "traits:crowded_head"
-      ],
-      "example": {
-        "op": "inner_voice_count",
-        "value": 3
-      }
-    },
-    {
       "id": "jump",
       "tier": "bespoke",
       "summary": "",
@@ -2491,7 +2481,7 @@
       }
     },
     {
-      "id": "overreach_tn_mod",
+      "id": "overreach_resist_cost",
       "tier": "bespoke",
       "summary": "",
       "count": 1,
@@ -2502,8 +2492,8 @@
         "traits:crowded_head"
       ],
       "example": {
-        "op": "overreach_tn_mod",
-        "value": 2
+        "op": "overreach_resist_cost",
+        "value": 1
       }
     },
     {
@@ -2909,6 +2899,22 @@
         "op": "vehicle_mod",
         "move": 1,
         "dodge": "use_driver"
+      }
+    },
+    {
+      "id": "voice_line_cap",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:crowded_head"
+      ],
+      "example": {
+        "op": "voice_line_cap",
+        "value": 2
       }
     },
     {

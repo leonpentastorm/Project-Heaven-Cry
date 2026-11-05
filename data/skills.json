@@ -6,14 +6,14 @@
     "0": -2,
     "1": 0,
     "2": 1,
-    "3": 1,
-    "4": 2,
-    "5": 2,
-    "6": 3,
-    "7": 3,
-    "8": 4,
-    "9": 4,
-    "10": 5
+    "3": 2,
+    "4": 3,
+    "5": 4,
+    "6": 5,
+    "7": 6,
+    "8": 7,
+    "9": 8,
+    "10": 9
   },
   "mastery_at": {
     "1": 3,
@@ -21,12 +21,6 @@
     "3": 7,
     "4": 9,
     "mastered": 10
-  },
-  "overreach_tn": {
-    "2": 15,
-    "3": 17,
-    "4": 19,
-    "mastered": "auto_fail_unless_echo"
   },
   "unlock_categories": {
     "alpha": [
@@ -51,12 +45,12 @@
       "slot": "alpha",
       "summary": "The tank.",
       "per_point": {
-        "text": "+5 HP per level-up; −5% critical damage taken.",
+        "text": "+2 HP per level-up; −5% critical damage taken.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp_per_level",
-            "value": 5
+            "value": 2
           },
           {
             "op": "stat_mod",
@@ -107,7 +101,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -120,14 +114,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -142,7 +136,7 @@
         "from_points": 5,
         "trigger": "a social roll against someone weaker or nervous",
         "consequence": "They freeze up around the walking statue: −3 on that roll.",
-        "text": "Trigger: a social roll against someone weaker or nervous. Fail: They freeze up around the walking statue: −3 on that roll.",
+        "text": "Trigger: a social roll against someone weaker or nervous. Indulge: They freeze up around the walking statue: −3 on that roll.",
         "effects": [
           {
             "op": "tn_mod",
@@ -150,7 +144,9 @@
             "value": 3
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "vanguard"
@@ -221,7 +217,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -234,14 +230,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -256,14 +252,16 @@
         "from_points": 5,
         "trigger": "you take Bleeding, Burning or a toxin",
         "consequence": "You don't notice it. The engine hides that condition from you until it deals damage.",
-        "text": "Trigger: you take Bleeding, Burning or a toxin. Fail: You don't notice it. The engine hides that condition from you until it deals damage.",
+        "text": "Trigger: you take Bleeding, Burning or a toxin. Indulge: You don't notice it. The engine hides that condition from you until it deals damage.",
         "effects": [
           {
             "op": "narrator",
             "note": "engine hides the condition from this player's UI until its first tick"
           }
         ],
-        "adjudication": "engine"
+        "adjudication": "engine",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "vanguard"
@@ -338,7 +336,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -351,14 +349,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -373,7 +371,7 @@
         "from_points": 5,
         "trigger": "a blast of noise, light or stench (flashbang, crowd, gas)",
         "consequence": "Overwhelmed: lose 2 AP next turn.",
-        "text": "Trigger: a blast of noise, light or stench (flashbang, crowd, gas). Fail: Overwhelmed: lose 2 AP next turn.",
+        "text": "Trigger: a blast of noise, light or stench (flashbang, crowd, gas). Indulge: Overwhelmed: lose 2 AP next turn.",
         "effects": [
           {
             "op": "stat_mod",
@@ -381,7 +379,9 @@
             "value": -2
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "combat_medic"
@@ -404,7 +404,7 @@
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
       "per_point": {
-        "text": "+5% physical damage; +0.5 Counter bonus. Attack skill for heavy melee, unarmed and bows' damage.",
+        "text": "+5% physical damage; Counter bonus = your Raw Power modifier (minimum 0). Attack skill for heavy melee, unarmed and bows' damage.",
         "effects": [
           {
             "op": "stat_mod",
@@ -414,7 +414,8 @@
           {
             "op": "stat_mod",
             "stat": "counter",
-            "value": 0.5
+            "basis": "skill_mod",
+            "min": 0
           }
         ]
       },
@@ -467,7 +468,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -480,14 +481,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -502,14 +503,16 @@
         "from_points": 5,
         "trigger": "handling something fragile, or restraining someone you don't want to hurt",
         "consequence": "You break it, or them.",
-        "text": "Trigger: handling something fragile, or restraining someone you don't want to hurt. Fail: You break it, or them.",
+        "text": "Trigger: handling something fragile, or restraining someone you don't want to hurt. Indulge: You break it, or them.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator describes what breaks or who is hurt"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "duelist"
@@ -532,12 +535,12 @@
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
       "per_point": {
-        "text": "+0.5 Body save.",
+        "text": "Body save = your Guts modifier.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "save_body",
-            "value": 0.5
+            "basis": "skill_mod"
           }
         ]
       },
@@ -579,7 +582,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -592,14 +595,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -614,14 +617,16 @@
         "from_points": 5,
         "trigger": "something clearly marked as dangerous",
         "consequence": "You walk in, open it or touch it anyway.",
-        "text": "Trigger: something clearly marked as dangerous. Fail: You walk in, open it or touch it anyway.",
+        "text": "Trigger: something clearly marked as dangerous. Indulge: You walk in, open it or touch it anyway.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator plays out what the character walks into"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "duelist",
@@ -645,12 +650,13 @@
       "slot": "gamma",
       "summary": "You run the conversation through fear.",
       "per_point": {
-        "text": "+0.5 Body debuff strength.",
+        "text": "Body debuff strength = your Intimidation modifier (minimum 0).",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "debuff_body",
-            "value": 0.5
+            "basis": "skill_mod",
+            "min": 0
           }
         ]
       },
@@ -700,7 +706,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -713,14 +719,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -735,14 +741,16 @@
         "from_points": 5,
         "trigger": "talking with someone innocent or friendly",
         "consequence": "They're now afraid of you; friendly dialogue options with them close.",
-        "text": "Trigger: talking with someone innocent or friendly. Fail: They're now afraid of you; friendly dialogue options with them close.",
+        "text": "Trigger: talking with someone innocent or friendly. Indulge: They're now afraid of you; friendly dialogue options with them close.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator shifts the NPC's disposition to Wary and closes friendly options"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "assassin",
@@ -766,12 +774,13 @@
       "slot": "alpha",
       "summary": "Armour just slows you down.",
       "per_point": {
-        "text": "+0.5 Dodge (Defense); +5% to the Critical multiplier. Attack skill for light melee.",
+        "text": "Dodge (Defense) = your Athletics modifier (minimum 0); +5% to the Critical multiplier. Attack skill for light melee.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "dodge",
-            "value": 0.5
+            "basis": "skill_mod",
+            "min": 0
           },
           {
             "op": "stat_mod",
@@ -820,7 +829,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -833,14 +842,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -855,7 +864,7 @@
         "from_points": 5,
         "trigger": "grappled, restrained, Pinned, or stuck in a tight space",
         "consequence": "A bird without wings: lose half your AP each turn until you're free.",
-        "text": "Trigger: grappled, restrained, Pinned, or stuck in a tight space. Fail: A bird without wings: lose half your AP each turn until you're free.",
+        "text": "Trigger: grappled, restrained, Pinned, or stuck in a tight space. Indulge: A bird without wings: lose half your AP each turn until you're free.",
         "effects": [
           {
             "op": "stat_mod",
@@ -863,7 +872,9 @@
             "value": -50
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "duelist"
@@ -941,7 +952,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -954,14 +965,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -976,14 +987,16 @@
         "from_points": 5,
         "trigger": "a tense standoff, or a parley with weapons in the room",
         "consequence": "Your hand goes to your gun. The other side sees it, and the talk may turn into a fight.",
-        "text": "Trigger: a tense standoff, or a parley with weapons in the room. Fail: Your hand goes to your gun. The other side sees it, and the talk may turn into a fight.",
+        "text": "Trigger: a tense standoff, or a parley with weapons in the room. Indulge: Your hand goes to your gun. The other side sees it, and the talk may turn into a fight.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator decides whether the other side draws"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "marksman"
@@ -1055,7 +1068,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1068,14 +1081,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1090,14 +1103,16 @@
         "from_points": 5,
         "trigger": "a sudden movement near you",
         "consequence": "You react before you think: flinch, swing, or bolt.",
-        "text": "Trigger: a sudden movement near you. Fail: You react before you think: flinch, swing, or bolt.",
+        "text": "Trigger: a sudden movement near you. Indulge: You react before you think: flinch, swing, or bolt.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator picks the reaction: flinch, swing or bolt"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "marksman",
@@ -1183,7 +1198,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1196,14 +1211,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1218,7 +1233,7 @@
         "from_points": 5,
         "trigger": "dealing with guards, police or officials",
         "consequence": "You look shifty: −3 on social rolls with them, and they may search you.",
-        "text": "Trigger: dealing with guards, police or officials. Fail: You look shifty: −3 on social rolls with them, and they may search you.",
+        "text": "Trigger: dealing with guards, police or officials. Indulge: You look shifty: −3 on social rolls with them, and they may search you.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -1230,7 +1245,9 @@
             "note": "Narrator decides whether they search you"
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "assassin"
@@ -1301,7 +1318,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1314,14 +1331,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1336,14 +1353,16 @@
         "from_points": 5,
         "trigger": "an important conversation with an interesting mechanism nearby",
         "consequence": "You're busy taking it apart; the Narrator withholds one detail from the scene.",
-        "text": "Trigger: an important conversation with an interesting mechanism nearby. Fail: You're busy taking it apart; the Narrator withholds one detail from the scene.",
+        "text": "Trigger: an important conversation with an interesting mechanism nearby. Indulge: You're busy taking it apart; the Narrator withholds one detail from the scene.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator withholds one scene detail from this player"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "combat_medic",
@@ -1413,7 +1432,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1426,14 +1445,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1448,14 +1467,16 @@
         "from_points": 5,
         "trigger": "an ambiguous noise or shadow",
         "consequence": "You treat it as an attack: shoot, raise the alarm, or spend your AP on it.",
-        "text": "Trigger: an ambiguous noise or shadow. Fail: You treat it as an attack: shoot, raise the alarm, or spend your AP on it.",
+        "text": "Trigger: an ambiguous noise or shadow. Indulge: You treat it as an attack: shoot, raise the alarm, or spend your AP on it.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator decides what the character does with the false alarm"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "marksman",
@@ -1541,7 +1562,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1554,14 +1575,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1576,7 +1597,7 @@
         "from_points": 5,
         "trigger": "examining something under time pressure",
         "consequence": "Lost in theory: lose 2 AP.",
-        "text": "Trigger: examining something under time pressure. Fail: Lost in theory: lose 2 AP.",
+        "text": "Trigger: examining something under time pressure. Indulge: Lost in theory: lose 2 AP.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1584,7 +1605,9 @@
             "value": -2
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "artillerist"
@@ -1658,7 +1681,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1671,14 +1694,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1693,7 +1716,7 @@
         "from_points": 5,
         "trigger": "a supernatural explanation (souls, Soul spells, Blessings)",
         "consequence": "You refuse to believe it: −2 on rolls involving it, and allied Blessings don't affect you this scene.",
-        "text": "Trigger: a supernatural explanation (souls, Soul spells, Blessings). Fail: You refuse to believe it: −2 on rolls involving it, and allied Blessings don't affect you this scene.",
+        "text": "Trigger: a supernatural explanation (souls, Soul spells, Blessings). Indulge: You refuse to believe it: −2 on rolls involving it, and allied Blessings don't affect you this scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -1706,7 +1729,9 @@
             "value": 1
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "warden",
@@ -1729,12 +1754,13 @@
       "slot": "gamma",
       "summary": "Logic as a weapon.",
       "per_point": {
-        "text": "+0.5 Brain debuff strength.",
+        "text": "Brain debuff strength = your Eloquence modifier (minimum 0).",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "debuff_brain",
-            "value": 0.5
+            "basis": "skill_mod",
+            "min": 0
           }
         ]
       },
@@ -1780,7 +1806,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1793,14 +1819,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1815,14 +1841,16 @@
         "from_points": 5,
         "trigger": "someone contradicts you",
         "consequence": "You can't concede or leave until you've won the argument.",
-        "text": "Trigger: someone contradicts you. Fail: You can't concede or leave until you've won the argument.",
+        "text": "Trigger: someone contradicts you. Indulge: You can't concede or leave until you've won the argument.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator holds the character in the argument"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "scribe",
@@ -1897,7 +1925,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1910,14 +1938,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1932,14 +1960,16 @@
         "from_points": 5,
         "trigger": "striking art, a landscape, or a vivid story",
         "consequence": "Absorbed: lose your next turn, or miss what happens in the scene.",
-        "text": "Trigger: striking art, a landscape, or a vivid story. Fail: Absorbed: lose your next turn, or miss what happens in the scene.",
+        "text": "Trigger: striking art, a landscape, or a vivid story. Indulge: Absorbed: lose your next turn, or miss what happens in the scene.",
         "effects": [
           {
             "op": "narrator",
             "note": "in combat: lose next turn; out of combat: Narrator withholds what happens"
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "artillerist",
@@ -2010,7 +2040,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2023,14 +2053,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2045,14 +2075,16 @@
         "from_points": 5,
         "trigger": "a scene with several clues",
         "consequence": "You fixate on the first one; the Narrator gives you no other clue until you pass.",
-        "text": "Trigger: a scene with several clues. Fail: You fixate on the first one; the Narrator gives you no other clue until you pass.",
+        "text": "Trigger: a scene with several clues. Indulge: You fixate on the first one; the Narrator gives you no other clue until you pass.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator withholds further clues from this player"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "warden",
@@ -2076,12 +2108,12 @@
       "slot": "gamma",
       "summary": "Warmth, persuasion, and lying with a smile.",
       "per_point": {
-        "text": "+0.5 Brain save.",
+        "text": "Brain save = your Charisma modifier.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "save_brain",
-            "value": 0.5
+            "basis": "skill_mod"
           }
         ]
       },
@@ -2127,7 +2159,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2140,14 +2172,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2162,7 +2194,7 @@
         "from_points": 5,
         "trigger": "a proud or hostile NPC",
         "consequence": "They read you as a bootlicker: −3 with them for the scene.",
-        "text": "Trigger: a proud or hostile NPC. Fail: They read you as a bootlicker: −3 with them for the scene.",
+        "text": "Trigger: a proud or hostile NPC. Indulge: They read you as a bootlicker: −3 with them for the scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -2170,7 +2202,9 @@
             "value": -3
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "hexwright"
@@ -2247,7 +2281,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2260,14 +2294,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2282,7 +2316,7 @@
         "from_points": 5,
         "trigger": "someone suffering in front of you, enemy or not",
         "consequence": "You must help them, or take −2 on every roll for the rest of the scene.",
-        "text": "Trigger: someone suffering in front of you, enemy or not. Fail: You must help them, or take −2 on every roll for the rest of the scene.",
+        "text": "Trigger: someone suffering in front of you, enemy or not. Indulge: You must help them, or take −2 on every roll for the rest of the scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -2290,7 +2324,9 @@
             "value": -2
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "tempest"
@@ -2366,7 +2402,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2379,14 +2415,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2401,14 +2437,16 @@
         "from_points": 5,
         "trigger": "an outsider threatens the squad, or orders put the mission against your people",
         "consequence": "You side with the squad, whatever the orders say.",
-        "text": "Trigger: an outsider threatens the squad, or orders put the mission against your people. Fail: You side with the squad, whatever the orders say.",
+        "text": "Trigger: an outsider threatens the squad, or orders put the mission against your people. Indulge: You side with the squad, whatever the orders say.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator plays out the character siding with the squad"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "combat_medic",
@@ -2432,12 +2470,13 @@
       "slot": "gamma",
       "summary": "Metaphor, subtext, poetry and flirting.",
       "per_point": {
-        "text": "+0.5 Heart debuff strength.",
+        "text": "Heart debuff strength = your Implication modifier (minimum 0).",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "debuff_heart",
-            "value": 0.5
+            "basis": "skill_mod",
+            "min": 0
           }
         ]
       },
@@ -2479,7 +2518,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2492,14 +2531,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2514,14 +2553,16 @@
         "from_points": 5,
         "trigger": "a plain, direct statement",
         "consequence": "You hear a hidden meaning that isn't there; the Narrator gives you a false reading.",
-        "text": "Trigger: a plain, direct statement. Fail: You hear a hidden meaning that isn't there; the Narrator gives you a false reading.",
+        "text": "Trigger: a plain, direct statement. Indulge: You hear a hidden meaning that isn't there; the Narrator gives you a false reading.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator gives a false reading"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "muse",
@@ -2611,7 +2652,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2624,14 +2665,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2646,7 +2687,7 @@
         "from_points": 5,
         "trigger": "contact with the upper realm (a holy site, a Blessing, a strong Soul spell)",
         "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
-        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Fail: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
+        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
         "effects": [
           {
             "op": "narrator",
@@ -2663,7 +2704,9 @@
             "value": -2
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "tempest"
@@ -2738,7 +2781,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2751,14 +2794,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2773,7 +2816,7 @@
         "from_points": 5,
         "trigger": "a purely scientific explanation",
         "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
-        "text": "Trigger: a purely scientific explanation. Fail: You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
+        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -2781,7 +2824,9 @@
             "value": -2
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "aegis",
@@ -2805,12 +2850,12 @@
       "slot": "gamma",
       "summary": "A face that never moves.",
       "per_point": {
-        "text": "+0.5 Heart save.",
+        "text": "Heart save = your Composure modifier.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "save_heart",
-            "value": 0.5
+            "basis": "skill_mod"
           }
         ]
       },
@@ -2858,7 +2903,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2871,14 +2916,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2893,7 +2938,7 @@
         "from_points": 5,
         "trigger": "a warm, intimate or emotional moment",
         "consequence": "You stay blank; the other person reads you as cold: −3 to rapport.",
-        "text": "Trigger: a warm, intimate or emotional moment. Fail: You stay blank; the other person reads you as cold: −3 to rapport.",
+        "text": "Trigger: a warm, intimate or emotional moment. Indulge: You stay blank; the other person reads you as cold: −3 to rapport.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -2901,7 +2946,9 @@
             "value": -3
           }
         ],
-        "adjudication": "hybrid"
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "warden"
@@ -2986,7 +3033,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2999,14 +3046,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3021,14 +3068,16 @@
         "from_points": 5,
         "trigger": "blasphemy or mockery of your faith",
         "consequence": "You must answer it, by preaching or by punishing.",
-        "text": "Trigger: blasphemy or mockery of your faith. Fail: You must answer it, by preaching or by punishing.",
+        "text": "Trigger: blasphemy or mockery of your faith. Indulge: You must answer it, by preaching or by punishing.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator plays out the answer"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "aegis"
@@ -3101,7 +3150,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3114,14 +3163,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3136,14 +3185,16 @@
         "from_points": 5,
         "trigger": "an order that breaks your code",
         "consequence": "You refuse to carry it out.",
-        "text": "Trigger: an order that breaks your code. Fail: You refuse to carry it out.",
+        "text": "Trigger: an order that breaks your code. Indulge: You refuse to carry it out.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator plays out the refusal"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "aegis"
@@ -3212,7 +3263,7 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I. Overreach TN rises to 17.",
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3225,14 +3276,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Overreach TN rises to 19.",
+          "text": "Mastery 4.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Overreach fails automatically unless you spend an Echo.",
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3247,14 +3298,16 @@
         "from_points": 5,
         "trigger": "a public place",
         "consequence": "Someone mistakes you for someone important; you draw attention, questions and press.",
-        "text": "Trigger: a public place. Fail: Someone mistakes you for someone important; you draw attention, questions and press.",
+        "text": "Trigger: a public place. Indulge: Someone mistakes you for someone important; you draw attention, questions and press.",
         "effects": [
           {
             "op": "narrator",
             "note": "Narrator brings the attention"
           }
         ],
-        "adjudication": "narrator"
+        "adjudication": "narrator",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
       },
       "signature_of": [
         "muse"
@@ -3269,5 +3322,11 @@
       ],
       "number": 27
     }
-  ]
+  ],
+  "overreach_resist_echo": {
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "mastered": 2
+  }
 }

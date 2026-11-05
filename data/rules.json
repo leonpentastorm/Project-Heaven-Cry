@@ -39,8 +39,8 @@
       "narrator_adds": "complication"
     },
     "combined_check": {
-      "add_both_mods": true,
-      "tn_increase": 4
+      "mod": "lower of the two skill mods + 2",
+      "tn_increase": 0
     },
     "opposed_check": {
       "higher_total_wins": true,
@@ -56,19 +56,19 @@
       "min": 0,
       "max": 10,
       "mod_at_0": -2,
-      "mod_formula": "points==0 ? -2 : floor(points/2)",
+      "mod_formula": "points==0 ? -2 : points-1",
       "table": {
         "0": -2,
         "1": 0,
         "2": 1,
-        "3": 1,
-        "4": 2,
-        "5": 2,
-        "6": 3,
-        "7": 3,
-        "8": 4,
-        "9": 4,
-        "10": 5
+        "3": 2,
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "7": 6,
+        "8": 7,
+        "9": 8,
+        "10": 9
       }
     },
     "mastery": {
@@ -82,30 +82,62 @@
     },
     "overreach": {
       "from_mastery": 2,
-      "roll": "plain d20, no modifiers",
       "called_by": "narrator",
-      "tn_by_mastery": {
-        "2": 15,
-        "3": 17,
-        "4": 19
+      "roll": null,
+      "choice": {
+        "indulge": {
+          "effect": "skill's Overreach consequence (skills.json)",
+          "echo_gain": 1
+        },
+        "resist": {
+          "echo_cost_by_mastery": {
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "mastered": 2
+          },
+          "effect": "nothing happens"
+        },
+        "forced_indulge_when": "echo < resist cost"
       },
-      "mastered": "auto_fail unless 1 Echo spent",
-      "on_fail": "skill's Overreach consequence (skills.json)"
+      "limit": "once per scene per skill",
+      "provisional": true
     },
     "echo": {
       "max": 3,
-      "gain": "fail an Overreach on purpose and play it out: +1",
+      "session_start": 1,
+      "gain": "indulge an Overreach: +1",
       "spend": "1 Echo rerolls any d20 you rolled",
-      "rerolls_per_roll": null
+      "rerolls_per_roll": 1,
+      "provisional": true
     },
-    "inner_voice": {
-      "when": "start of each scene",
-      "hidden": true,
-      "skill_rule": "character's highest skill with >= 3 points",
-      "roll": "d20 + skill_mod",
-      "tn": 12,
-      "on_success": "narrator gives one private line in that skill's voice",
-      "tie_break": null
+    "voices": {
+      "speakers": "every skill with >= 1 point",
+      "mode": "story beats (out of combat); Overreach pushes in any mode",
+      "hooks": {
+        "written_by": "narrator",
+        "fields": [
+          "skill",
+          "tn",
+          "insight",
+          "truth: true|partial|misleading"
+        ],
+        "players_see_truth": false
+      },
+      "passive_score": "10 + mod(skill)",
+      "passive_resolved_by": "engine",
+      "lines_per_player_per_beat": 2,
+      "line_order": "largest margin first; ties: narrator choice",
+      "lines_written_by": "narrator, in the voice card of skills.json",
+      "private": true,
+      "ask_a_skill": {
+        "when": "out of combat",
+        "limit": "once per scene per skill",
+        "roll": "d20 + mod(skill)",
+        "vs": "lowest-TN unrevealed hook for that skill",
+        "on_fail": "the skill has nothing to say"
+      },
+      "provisional": true
     }
   },
   "character": {
@@ -141,27 +173,31 @@
       "absolute_max": 10
     },
     "creation": {
-      "cores": {
-        "start_each": 1,
-        "points": 6
+      "skills": {
+        "start_each": 0,
+        "points": 10,
+        "max_per_skill": 5
       },
       "attributes": {
         "start_each": 1,
-        "points": 10
+        "auto": "rise to the highest skill under them"
       },
-      "skills": {
-        "start_each": 0,
-        "points": 10
+      "cores": {
+        "start_each": 1,
+        "auto": "rise to the highest attribute under them"
       },
+      "after_creation": "caps apply normally; attribute and core points come from levelling",
       "traits": {
         "min": 0,
         "max": 2
-      }
+      },
+      "provisional": [
+        "skills.max_per_skill"
+      ]
     },
     "levels": {
       "min": 1,
       "max": 20,
-      "xp_to_next": "100 * current_level",
       "gains": {
         "every_level": {
           "skill_points": 1,
@@ -181,7 +217,36 @@
         "skill_books_and_quests": "extra skill points (narrator/quest data)",
         "legendary_deed": "+1 core point, narrator's call"
       },
-      "hp_per_level_retroactive": null
+      "hp_per_level_retroactive": null,
+      "xp_total": {
+        "1": 0,
+        "2": 100,
+        "3": 250,
+        "4": 700,
+        "5": 1300,
+        "6": 2050,
+        "7": 2800,
+        "8": 3550,
+        "9": 4300,
+        "10": 5050,
+        "11": 5950,
+        "12": 6850,
+        "13": 7750,
+        "14": 8650,
+        "15": 9550,
+        "16": 10450,
+        "17": 11650,
+        "18": 12850,
+        "19": 14050,
+        "20": 15250
+      },
+      "pacing_target": {
+        "session_1_xp": 250,
+        "xp_per_session_after": 300,
+        "level_3_by": "end of session 1",
+        "level_20_by": "about session 51 (D&D 5e DMG session pace)",
+        "provisional": true
+      }
     },
     "xp_sources": {
       "combat": {
@@ -207,31 +272,31 @@
     }
   },
   "derived": {
-    "note": "Attr counts from 1, Skill = points 0-10; floor results",
+    "note": "Attr counts from 1, Skill = points 0-10; floor results; mod(skill) = -2 at 0 points, else points-1",
     "body": {
-      "max_hp": "100 + 50*(endurance-1) + (level-1)*hp_per_level",
-      "hp_per_level": "10 + 5*durability",
+      "max_hp": "100 + 15*(endurance-1) + (level-1)*hp_per_level",
+      "hp_per_level": "5 + 2*durability",
       "ap_per_turn": 6,
       "initiative_bonus": "(agility-1) + mod(reaction_speed)",
       "tiles_per_move": "3 + 0.5*(agility-1)",
       "carry_kg": "20 + 5*(strength-1)",
       "defense": "10 + dodge",
-      "dodge": "0.5*athletics",
-      "counter_bonus": "0.5*raw_power",
+      "dodge": "max(0, mod(athletics))",
+      "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
       "crit_damage_taken_pct": "-10*(perception-1) - 5*durability",
       "elemental_damage_taken_pct": "-10*pain_threshold",
       "ambush_damage_taken_pct": "-10*reaction_speed",
       "healing_received_pct": "10*sensory",
       "saves": {
-        "body": "0.5*guts",
-        "brain": "0.5*charisma",
-        "heart": "0.5*composure"
+        "body": "mod(guts)",
+        "brain": "mod(charisma)",
+        "heart": "mod(composure)"
       },
       "debuff_strength": {
-        "body": "0.5*intimidation",
-        "brain": "0.5*eloquence",
-        "heart": "0.5*implication"
+        "body": "max(0, mod(intimidation))",
+        "brain": "max(0, mod(eloquence))",
+        "heart": "max(0, mod(implication))"
       }
     },
     "senses_tiles": {
@@ -303,8 +368,8 @@
     "classless_possible": false,
     "rank_thresholds": {
       "I": "on gaining",
-      "II": 15,
-      "III": 21
+      "II": 13,
+      "III": 18
     },
     "advanced": {
       "parent_a_total": 15,
@@ -313,7 +378,8 @@
       "tutor_placed_by": "narrator",
       "must_hold_parent": false
     },
-    "data": "classes.json"
+    "data": "classes.json",
+    "rank_thresholds_provisional": true
   },
   "combat": {
     "grid": {
@@ -539,10 +605,11 @@
       "critical": {
         "triggers": [
           "natural 20",
-          "attack total >= defense + 10"
+          "natural 19-20 on an Aimed shot or an attack from Hidden"
         ],
         "damage": "x critical multiplier, reduced by target crit_damage_taken",
-        "forces_injury_roll": true
+        "forces_injury_roll": true,
+        "provisional": true
       },
       "nat1_attack": {
         "gun": "jam (2 AP to clear)",
@@ -1096,8 +1163,9 @@
       "XP totals and level-ups",
       "class qualification and rank",
       "trait and perk numeric effects",
-      "Inner Voice hidden roll",
-      "death saves"
+      "voice passive checks and Ask-a-skill rolls",
+      "death saves",
+      "Echo totals and Overreach resist costs"
     ],
     "narrator_owns": [
       "setting every TN and stating the stakes",
@@ -1105,7 +1173,7 @@
       "describing the world",
       "playing NPCs and Celestial patrons",
       "calling Overreach triggers",
-      "voicing Inner Voice lines",
+      "writing voice hooks and voicing passed hooks",
       "nat20 benefit and nat1 complication",
       "granting Achieved perks and recording deeds",
       "awarding XP by source",
