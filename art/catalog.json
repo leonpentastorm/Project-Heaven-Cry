@@ -4499,6 +4499,30 @@
         "44": "art/perks/wick/production-v1/exports/44/red-line.png",
         "40": "art/perks/wick/production-v1/exports/40/red-line.png"
       }
+    },
+    "clean-hands": {
+      "label": "Wick — Clean Hands",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/clean-hands.png",
+      "sha256": "6c50eb5cd85dc41ca01d375c83a35e8e88007a51d72f99ded2c657fe67943acb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "clean_hands",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/clean-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/clean-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/clean-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/clean-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/clean-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/clean-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/clean-hands.png"
+      }
     }
   },
   "illustrations": {

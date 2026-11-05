@@ -132,11 +132,12 @@
     "flat-line",
     "litany",
     "holy-ordnance",
-    "red-line"
+    "red-line",
+    "clean-hands"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 53
+    "perks": 54
   },
   "revision_rounds": {
     "field-surgeon": 3,

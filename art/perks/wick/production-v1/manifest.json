@@ -1178,6 +1178,29 @@
       },
       "batch": "E",
       "source_sha256": "b92fa45c782fd3547652f85cf9a889cbbbeeb06f78319480d1eb5e68f34130f8"
+    },
+    {
+      "id": "clean-hands",
+      "data_id": "clean_hands",
+      "name": "Clean Hands",
+      "family": "perks",
+      "order": 52,
+      "mood": "Tender, Proud",
+      "action": "Wick sits back on its heels, both empty mittens raised palms-out, a knife it just dropped stuck point-down in the ground before it.",
+      "screen": "Calm small smile",
+      "prop": "Dropped knife",
+      "path": "art/perks/wick/production-v1/clean-hands.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/clean-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/clean-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/clean-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/clean-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/clean-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/clean-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/clean-hands.png"
+      },
+      "batch": "E",
+      "source_sha256": "6da19531049e7d358e1f9402f38b1caa7b06afc82a5a0a917a321e6ea7b4c773"
     }
   ]
 }
