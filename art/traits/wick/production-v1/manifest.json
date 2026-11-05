@@ -971,6 +971,29 @@
       },
       "batch": "C",
       "source_sha256": "5176a1d25cc13abad0ebf5bc2b88de090b241f27cdfb6593ace43a6bdfd6d537"
+    },
+    {
+      "id": "squad-anchor",
+      "data_id": "squad_anchor",
+      "name": "Squad Anchor",
+      "family": "traits",
+      "order": 52,
+      "mood": "Proud",
+      "action": "Wick braces in a wide squat, driving the fluke of a heavy anchor into the ground and holding its shaft upright like a standard",
+      "screen": "Set jaw, determined",
+      "prop": "Anchor",
+      "path": "art/traits/wick/production-v1/squad-anchor.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/squad-anchor.png",
+        "128": "art/traits/wick/production-v1/exports/128/squad-anchor.png",
+        "64": "art/traits/wick/production-v1/exports/64/squad-anchor.png",
+        "56": "art/traits/wick/production-v1/exports/56/squad-anchor.png",
+        "48": "art/traits/wick/production-v1/exports/48/squad-anchor.png",
+        "44": "art/traits/wick/production-v1/exports/44/squad-anchor.png",
+        "40": "art/traits/wick/production-v1/exports/40/squad-anchor.png"
+      },
+      "batch": "C",
+      "source_sha256": "c80cb7dcc60e02dd0d1083aa6e51ea4f4e7144e6867934d856894eb6d994e787"
     }
   ]
 }

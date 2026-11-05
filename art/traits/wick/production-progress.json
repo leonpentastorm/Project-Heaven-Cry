@@ -58,10 +58,11 @@
     "rival",
     "wanted",
     "company-man",
-    "field-medic"
+    "field-medic",
+    "squad-anchor"
   ],
   "catalog_coverage": {
-    "traits": 51,
+    "traits": 52,
     "perks": 2
   },
   "revision_rounds": {

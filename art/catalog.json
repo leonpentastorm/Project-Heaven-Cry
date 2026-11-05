@@ -2623,6 +2623,30 @@
         "44": "art/traits/wick/production-v1/exports/44/field-medic.png",
         "40": "art/traits/wick/production-v1/exports/40/field-medic.png"
       }
+    },
+    "squad-anchor": {
+      "label": "Wick — Squad Anchor",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/squad-anchor.png",
+      "sha256": "d5c4d9f644b91a5661da63bd4ebdb2afd34cf594d159ab62112dd46d963a7fee",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "squad_anchor",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/squad-anchor.png",
+        "128": "art/traits/wick/production-v1/exports/128/squad-anchor.png",
+        "64": "art/traits/wick/production-v1/exports/64/squad-anchor.png",
+        "56": "art/traits/wick/production-v1/exports/56/squad-anchor.png",
+        "48": "art/traits/wick/production-v1/exports/48/squad-anchor.png",
+        "44": "art/traits/wick/production-v1/exports/44/squad-anchor.png",
+        "40": "art/traits/wick/production-v1/exports/40/squad-anchor.png"
+      }
     }
   },
   "character_collections": {
