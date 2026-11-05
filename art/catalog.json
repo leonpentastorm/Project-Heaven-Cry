@@ -1903,6 +1903,30 @@
         "44": "art/traits/wick/production-v1/exports/44/oil-in-my-mind.png",
         "40": "art/traits/wick/production-v1/exports/40/oil-in-my-mind.png"
       }
+    },
+    "oil-in-my-soul": {
+      "label": "Wick — Oil in My Soul",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/oil-in-my-soul.png",
+      "sha256": "ea9590ff45b24ea8bf0e63c92a8c08d3e09db7e9a816f8a141fe80fbba463990",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "oil_in_my_soul",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/oil-in-my-soul.png",
+        "128": "art/traits/wick/production-v1/exports/128/oil-in-my-soul.png",
+        "64": "art/traits/wick/production-v1/exports/64/oil-in-my-soul.png",
+        "56": "art/traits/wick/production-v1/exports/56/oil-in-my-soul.png",
+        "48": "art/traits/wick/production-v1/exports/48/oil-in-my-soul.png",
+        "44": "art/traits/wick/production-v1/exports/44/oil-in-my-soul.png",
+        "40": "art/traits/wick/production-v1/exports/40/oil-in-my-soul.png"
+      }
     }
   },
   "character_collections": {

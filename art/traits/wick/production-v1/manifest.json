@@ -281,6 +281,29 @@
       },
       "batch": "A",
       "source_sha256": "4fcc10301993585774321ad83a1e1118f4e24f9a7e923c102526c3e0becc8b85"
+    },
+    {
+      "id": "oil-in-my-soul",
+      "data_id": "oil_in_my_soul",
+      "name": "Oil in My Soul",
+      "family": "traits",
+      "order": 17,
+      "mood": "Tender",
+      "action": "Wick kneels hugging a big picture frame to its chest, overcome; its capelet corner curls like paper",
+      "screen": "Streaming tears, soft smile",
+      "prop": "Picture frame",
+      "path": "art/traits/wick/production-v1/oil-in-my-soul.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/oil-in-my-soul.png",
+        "128": "art/traits/wick/production-v1/exports/128/oil-in-my-soul.png",
+        "64": "art/traits/wick/production-v1/exports/64/oil-in-my-soul.png",
+        "56": "art/traits/wick/production-v1/exports/56/oil-in-my-soul.png",
+        "48": "art/traits/wick/production-v1/exports/48/oil-in-my-soul.png",
+        "44": "art/traits/wick/production-v1/exports/44/oil-in-my-soul.png",
+        "40": "art/traits/wick/production-v1/exports/40/oil-in-my-soul.png"
+      },
+      "batch": "A",
+      "source_sha256": "60e061a4f2cbd87eea808709423b87480f05f14619c66b852aed68cd21e08803"
     }
   ]
 }
