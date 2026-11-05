@@ -46,7 +46,7 @@ class Component extends DCLogic {
     const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
-      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: props.sampleName ? { agility: 3, virtue: 3 } : {}, cSet: {}, applied: arch,
+      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
     };
   }
@@ -86,9 +86,10 @@ class Component extends DCLogic {
     const archCards = S.fam === 'custom'
       ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', cores: coreChips({ body: 1, mind: 1, soul: 1 }), leans: 'whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
       : D.arch.items.filter((a) => a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
-    const budgetOf = (preset) => { const d = derive(preset || {}); return 'Uses ' + d.coreSpent + ' of ' + CORE_PTS + ' Core and ' + Math.min(d.attrSpent, ATTR_PTS) + ' of ' + ATTR_PTS + ' Attribute points' +
-      (d.coreLeft + d.traded > 0 || d.attrLeft > 0 ? '; you place the rest' : ''); };
-    archCards.forEach((c) => { c.budget = c.name === 'Custom' ? 'All ' + CORE_PTS + ' Core and 10 Attribute points are yours to place' : budgetOf((D.arch.items.find((a) => a.name === c.name) || {}).preset); });
+    // Every archetype spends all three budgets (decision 49); the card lists what it raises.
+    const raisedOf = (arch) => D.attrs.filter((x) => arch.attributes[x.id] > 1).map((x) => x.name + ' ' + arch.attributes[x.id]).join(' · ');
+    const budgetOf = (arch) => 'Every point placed. Attributes: ' + raisedOf(arch);
+    archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.budget = arch ? budgetOf(arch) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place'; });
     archCards.forEach((c) => { c.style = 'display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; padding: 16px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
     const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
@@ -98,9 +99,9 @@ class Component extends DCLogic {
         nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
       leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
-      budget: A ? budgetOf(A.preset) : 'All ' + CORE_PTS + ' Core and 10 Attribute points are yours to place',
+      budget: A ? budgetOf(A) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place',
     };
-    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, aSet: {}, cSet: {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
+    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, aSet: A ? { ...A.attributes } : {}, cSet: A ? { ...A.cores } : {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
     const useLabel = A ? 'Use ' + A.name + ' ›' : 'Start from scratch ›';
 
     // skills: all 27 at once, three Core columns, each attribute linked to its skills
