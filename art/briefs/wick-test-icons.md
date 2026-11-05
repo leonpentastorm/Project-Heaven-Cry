@@ -1,5 +1,7 @@
 # Wick: ten test icons before the style is locked for production
 
+**Review 1, 5 November 2026:** three approved, six to revise, one redo. Verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md). The next step, revisions and then all 150 icons, is in [wick-production-icons.md](wick-production-icons.md). The placard lettering and the tiny commanded figures this brief asked for are now ruled out (no text; one full figure).
+
 **Delivery, 5 November 2026:** all ten review candidates, 1024 px masters, 256/128/64/40 px exports and side-by-side sheets are in [`../traits/wick/test-set-1/`](../traits/wick/test-set-1/). They are catalogued as candidates, not approved production anchors. Review notes and remaining checks are in that collection's README. The production lock is still pending review.
 
 The Mind Without Fog master is approved. Before 150 trait and perk icons are made from one example, make these ten. Together they test every mood the set has to carry: grim, comic, ugly and tender, two perks, a robot trait, and a crowded idea. Lock the production rules only after all ten pass review.

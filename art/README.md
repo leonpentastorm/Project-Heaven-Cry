@@ -6,7 +6,7 @@
 - `traits/wick/mind-without-fog/` contains the exact approved Wick trait icon and trait description.
 - `traits/wick/test-set-1/` contains ten review candidates (eight traits and two perks), transparent masters, UI exports and review sheets. Production approval is pending.
 - `illustrations/m813/v1/` contains the opening landing pad and the separately stored ending-only repair bay. Respect catalog spoiler metadata.
-- `briefs/` retains the M813 and Wick art direction and links to all fourteen delivered candidates.
+- `briefs/` retains the M813 and Wick art direction and links to all fourteen delivered candidates. **Next job:** `briefs/wick-production-icons.md` (fix seven test icons, then all 74 trait and 76 perk icons in six reviewed batches).
 - `style-guide/v1.3/` contains the one current guide (`PHC-Style-Guide.md`), the palette (pigments, UI inks, UI state colours) and the reference images. `v1.2/` is kept unchanged and holds the illustrated PDF; its numbered-folder references describe the old downloadable pack.
 
 Each collection's `previews/` is for review. Use individual PNG files in gameplay. Collection manifests retain the art briefs; the central catalog provides consistent implementation keys. Do not pick an asset by whichever filename contains "final", by a directory glob, or by a historical set number.

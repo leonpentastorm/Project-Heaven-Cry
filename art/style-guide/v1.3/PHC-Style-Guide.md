@@ -373,8 +373,18 @@ The bowl, meditating pose and deflected arrows belong to Mind Without Fog, not e
 ## Scope and fidelity
 This lock applies to perk and trait icons; it does not change the two approved portrait collections or the pilot's painted style. Preserve the selected source unchanged. Review future exports on the intended UI background so the face, cape folds and heart read correctly without replacing their design.
 
-## Ten-icon test delivery — review pending
-The ten candidates in `art/traits/wick/test-set-1/` now cover the requested grim, comic, ugly, tender, robot and perk briefs. Review sheets show the actual 40 and 128 px exports; 64 px comparisons cover light and dark surfaces. Keep a capelet wedge separated from the torso, thick equal cross arms and clear prop/action silhouettes. Small repair tools, charms and secondary figures need special attention at 40 px. These are observations from the candidate set, not a newly approved production lock. Keep the approved Mind Without Fog anchor unchanged and do not begin the full production run until the ten pass human review.
+## Ten-icon test: review 1 and the production rules
+
+Review 1 (5 November 2026) approved Chain Smoker, The Brightest Light and Forlorn Hope, asked for six revisions and one redo (Raised by Orks). Verdicts: `art/traits/wick/test-set-1/README.md`. Production follows `art/briefs/wick-production-icons.md`. These rules now bind every trait and perk icon:
+
+1. **No lettering, numbers or readable text** inside an icon. Symbols only (a crossed-out shape, an arrow, a tally).
+2. **One full figure: Wick.** Anyone else appears only as a partial (a hand, a leg, a shadow) or as tiny Wick silhouettes. Never skull-and-crossbones as a stand-in for people.
+3. **One dominant prop, big:** roughly a third of the frame, held close so Wick and prop read as one silhouette.
+4. **Ink weight** between The Old Blood (lightest acceptable) and The Brightest Light (heaviest acceptable).
+5. **Check at the UI's real sizes:** 44, 48 and 56 px on `#10151F`, plus 40 px. The UI zooms icons ×1.35 on hover; the resting size is the one that must read.
+6. Keep the earlier anchors: capelet wedge separated from the torso, thick equal cross arms, varied silhouettes and centres of mass.
+
+Keep the approved Mind Without Fog anchor unchanged. Candidates stay `production_approved: false` until Leon passes them.
 
 M813 portrait candidates are in `art/character-portraits/m813/`; world images are in `art/illustrations/m813/v1/`. The repair-bay image is ending-only and excluded from the opening-safe preview. Painted construction choices remain proposals under the brief.
 
