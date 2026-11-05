@@ -111,11 +111,12 @@
     "footnote",
     "lab-coat",
     "overruled",
-    "burden-of-proof"
+    "burden-of-proof",
+    "mirage"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 32
+    "perks": 33
   },
   "revision_rounds": {
     "field-surgeon": 3,

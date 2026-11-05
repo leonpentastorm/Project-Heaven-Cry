@@ -3995,6 +3995,30 @@
         "44": "art/perks/wick/production-v1/exports/44/burden-of-proof.png",
         "40": "art/perks/wick/production-v1/exports/40/burden-of-proof.png"
       }
+    },
+    "mirage": {
+      "label": "Wick — Mirage",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/mirage.png",
+      "sha256": "6605ced5415055069a6a38ab981de041a7060382fc92998745a999a81af46d09",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "mirage",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/mirage.png",
+        "128": "art/perks/wick/production-v1/exports/128/mirage.png",
+        "64": "art/perks/wick/production-v1/exports/64/mirage.png",
+        "56": "art/perks/wick/production-v1/exports/56/mirage.png",
+        "48": "art/perks/wick/production-v1/exports/48/mirage.png",
+        "44": "art/perks/wick/production-v1/exports/44/mirage.png",
+        "40": "art/perks/wick/production-v1/exports/40/mirage.png"
+      }
     }
   },
   "illustrations": {

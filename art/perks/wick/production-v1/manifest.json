@@ -695,6 +695,29 @@
       },
       "batch": "E",
       "source_sha256": "c858b74abc5afa828bfa031449160213aa919c94d54edab2e4d52047a8a678ba"
+    },
+    {
+      "id": "mirage",
+      "data_id": "mirage",
+      "name": "Mirage",
+      "family": "perks",
+      "order": 31,
+      "mood": "Comic, Eerie",
+      "action": "Wick leans halfway out through a dashed-outline wall that it projects from one raised mitten, giving the trick away.",
+      "screen": "Wink",
+      "prop": "Projected dashed wall",
+      "path": "art/perks/wick/production-v1/mirage.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/mirage.png",
+        "128": "art/perks/wick/production-v1/exports/128/mirage.png",
+        "64": "art/perks/wick/production-v1/exports/64/mirage.png",
+        "56": "art/perks/wick/production-v1/exports/56/mirage.png",
+        "48": "art/perks/wick/production-v1/exports/48/mirage.png",
+        "44": "art/perks/wick/production-v1/exports/44/mirage.png",
+        "40": "art/perks/wick/production-v1/exports/40/mirage.png"
+      },
+      "batch": "E",
+      "source_sha256": "8fdbe8f4848b35c121f709b1ebbc08aee433a5e3302d2a4f0f885114d0dbdc6d"
     }
   ]
 }
