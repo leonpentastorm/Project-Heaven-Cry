@@ -994,6 +994,29 @@
       },
       "batch": "E",
       "source_sha256": "d44a4bd5aba1cc3d04fb8fb3032b5af71b921dca8d3607c551ae1a1aa8c60063"
+    },
+    {
+      "id": "resonance",
+      "data_id": "resonance",
+      "name": "Resonance",
+      "family": "perks",
+      "order": 44,
+      "mood": "Calm",
+      "action": "Wick crouches holding up a large tuning fork that hums in concentric rings, catching a soul ribbon drifting in from off frame.",
+      "screen": "Eyes closed, small smile",
+      "prop": "Tuning fork",
+      "path": "art/perks/wick/production-v1/resonance.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/resonance.png",
+        "128": "art/perks/wick/production-v1/exports/128/resonance.png",
+        "64": "art/perks/wick/production-v1/exports/64/resonance.png",
+        "56": "art/perks/wick/production-v1/exports/56/resonance.png",
+        "48": "art/perks/wick/production-v1/exports/48/resonance.png",
+        "44": "art/perks/wick/production-v1/exports/44/resonance.png",
+        "40": "art/perks/wick/production-v1/exports/40/resonance.png"
+      },
+      "batch": "E",
+      "source_sha256": "09d0e28aaa3eca486d89f37afb4687cfc816f3a125bfa7d5e5f28b90a906cd4d"
     }
   ]
 }

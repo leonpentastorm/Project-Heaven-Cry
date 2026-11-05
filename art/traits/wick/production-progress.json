@@ -124,11 +124,12 @@
     "rally-cry",
     "sweet-talker",
     "double-meaning",
-    "heart-overload"
+    "heart-overload",
+    "resonance"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 45
+    "perks": 46
   },
   "revision_rounds": {
     "field-surgeon": 3,

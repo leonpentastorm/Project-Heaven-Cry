@@ -4307,6 +4307,30 @@
         "44": "art/perks/wick/production-v1/exports/44/heart-overload.png",
         "40": "art/perks/wick/production-v1/exports/40/heart-overload.png"
       }
+    },
+    "resonance": {
+      "label": "Wick — Resonance",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/resonance.png",
+      "sha256": "026ddf3b51a513d00756ab16249f5b19c9873516a71efe0efee108ae4161f251",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "resonance",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/resonance.png",
+        "128": "art/perks/wick/production-v1/exports/128/resonance.png",
+        "64": "art/perks/wick/production-v1/exports/64/resonance.png",
+        "56": "art/perks/wick/production-v1/exports/56/resonance.png",
+        "48": "art/perks/wick/production-v1/exports/48/resonance.png",
+        "44": "art/perks/wick/production-v1/exports/44/resonance.png",
+        "40": "art/perks/wick/production-v1/exports/40/resonance.png"
+      }
     }
   },
   "illustrations": {
