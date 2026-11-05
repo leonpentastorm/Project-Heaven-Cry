@@ -1,6 +1,8 @@
 # M813 one-shot: art briefs
 
-The M813 one-shot is the first playable product, and none of its art exists yet. These four images come before any further character portraits. Facts are from the EPCCG's MPAT sample sheet (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) and `docs/lore/MPAT-and-M813.md`. Anything not stated there is marked *proposal*.
+**Delivery, 5 November 2026:** all four images now have version-1 review candidates. Portraits: [`../character-portraits/m813/`](../character-portraits/m813/). World scenes, including the separated ending: [`../illustrations/m813/v1/`](../illustrations/m813/v1/). The original brief below remains the art direction; generated details do not establish canon.
+
+The M813 one-shot is the first playable product. These four images come before any further character portraits. Facts are from the EPCCG's MPAT sample sheet (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) and `docs/lore/MPAT-and-M813.md`. Anything not stated there is marked *proposal*.
 
 All four use the **Heavenprint base prompt** in section 12 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Attach the approved Original 27 and New Faces sheets, plus `art/character-portraits/first-patch-revival/previews/all-27.jpg` as the EPCCG-cast reference. For automaton construction, compare the New Faces automata (Mallow-3, Inspectant Latch-7).
 

@@ -144,6 +144,31 @@ Named original characters, each painted to embody one skill. Pool for random NPC
 
 ## Trait and perk icons — Wick
 
+The approved master is followed by ten review candidates. Trait and perk icons use the same white ink; the two perks resolve through `catalog.perks`.
+
 | Catalog ID | Label | Ink | PNG |
 | --- | --- | --- | --- |
 | `mind-without-fog` | Wick — Mind Without Fog | `#FFFFFF` | [Image](../art/traits/wick/mind-without-fog/mind-without-fog.png) |
+| `humanity-first` | Wick — Humanity First | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/humanity-first.png) |
+| `the-old-blood` | Wick — The Old Blood | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/the-old-blood.png) |
+| `factory-made` | Wick — Factory Made | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/factory-made.png) |
+| `chain-smoker` | Wick — Chain Smoker | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/chain-smoker.png) |
+| `raised-by-orks` | Wick — Raised by Orks | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/raised-by-orks.png) |
+| `the-brightest-light` | Wick — The Brightest Light | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/the-brightest-light.png) |
+| `rabbits-foot` | Wick — Rabbit's Foot | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/rabbits-foot.png) |
+| `forlorn-hope` | Wick — Forlorn Hope | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/forlorn-hope.png) |
+| `field-surgeon` (perks) | Wick — Field Surgeon | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/field-surgeon.png) |
+| `supreme-command` (perks) | Wick — Supreme Command | `#FFFFFF` | [Image](../art/traits/wick/test-set-1/supreme-command.png) |
+
+UI exports and 40/128 px review sheets: [Wick test set 1](../art/traits/wick/test-set-1/README.md).
+
+## M813 one-shot — version 1 review candidates
+
+| Catalog family | Catalog ID | PNG / delivery |
+|---|---|---|
+| characters | `mpat` | [MPAT](../art/character-portraits/m813/mpat.png) |
+| characters | `mpat-comrade` | [Unnamed comrade](../art/character-portraits/m813/mpat-comrade.png) |
+| illustrations | `outpost813` | [Opening landing pad](../art/illustrations/m813/v1/outpost813.png) |
+| illustrations | `outpost1-repair-bay` | **Ending-only**; see [spoiler routing](../art/illustrations/m813/v1/README.md) |
+
+Portraits are 800 × 1000 RGB; world scenes are 1600 × 900 RGB. The [opening-safe overview](../art/illustrations/m813/v1/previews/opening-safe.png) excludes the ending.

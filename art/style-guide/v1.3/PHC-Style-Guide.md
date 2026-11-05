@@ -373,6 +373,11 @@ The bowl, meditating pose and deflected arrows belong to Mind Without Fog, not e
 ## Scope and fidelity
 This lock applies to perk and trait icons; it does not change the two approved portrait collections or the pilot's painted style. Preserve the selected source unchanged. Review future exports on the intended UI background so the face, cape folds and heart read correctly without replacing their design.
 
+## Ten-icon test delivery — review pending
+The ten candidates in `art/traits/wick/test-set-1/` now cover the requested grim, comic, ugly, tender, robot and perk briefs. Review sheets show the actual 40 and 128 px exports; 64 px comparisons cover light and dark surfaces. Keep a capelet wedge separated from the torso, thick equal cross arms and clear prop/action silhouettes. Small repair tools, charms and secondary figures need special attention at 40 px. These are observations from the candidate set, not a newly approved production lock. Keep the approved Mind Without Fog anchor unchanged and do not begin the full production run until the ten pass human review.
+
+M813 portrait candidates are in `art/character-portraits/m813/`; world images are in `art/illustrations/m813/v1/`. The repair-bay image is ending-only and excluded from the opening-safe preview. Painted construction choices remain proposals under the brief.
+
 ![14 / Approved perk and trait icon lock](references/approved-wick-trait-mind-without-fog.png)
 
 # 15 / Abstract skills: gesture before detail

@@ -1,5 +1,7 @@
 # Wick: ten test icons before the style is locked for production
 
+**Delivery, 5 November 2026:** all ten review candidates, 1024 px masters, 256/128/64/40 px exports and side-by-side sheets are in [`../traits/wick/test-set-1/`](../traits/wick/test-set-1/). They are catalogued as candidates, not approved production anchors. Review notes and remaining checks are in that collection's README. The production lock is still pending review.
+
 The Mind Without Fog master is approved. Before 150 trait and perk icons are made from one example, make these ten. Together they test every mood the set has to carry: grim, comic, ugly and tender, two perks, a robot trait, and a crowded idea. Lock the production rules only after all ten pass review.
 
 **For every icon:** attach `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Pure white `#FFFFFF` flat ink on transparency, 1024 × 1024 master, no caption. Traits and perks are both white.

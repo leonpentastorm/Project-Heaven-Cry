@@ -1,6 +1,6 @@
 # Character portraits
 
-81 Heavenprint paintings in three sets of 27, all 800 × 1000 PNG. Every one is a **person in the world**. None of them is a skill icon.
+83 Heavenprint paintings: three original sets of 27 and two new M813 review candidates, all 800 × 1000 PNG. Every one is a **person in the world**. None of them is a skill icon.
 
 ## Why they exist, and why they aren't skill icons
 
@@ -13,6 +13,7 @@ All three sets were first painted to be the skill icons on the skill page: one c
 | **First-Patch Revival** | [`first-patch-revival/`](first-patch-revival/) | The EPCCG cast: the 27 people quoted in the EPCCG skill entries (Sanchez, Knight Jiren, Professor Avdol, Sister October…) | Named characters. Index and factions: [`docs/lore/EPCCG-Cast-and-Factions.md`](../../docs/lore/EPCCG-Cast-and-Factions.md) |
 | **Original Heavenprint** | [`original-heavenprint/`](original-heavenprint/) | Unnamed original characters, each prompted to fit the essence of one skill | Pool for random NPCs. Also an approved style anchor |
 | **New Faces** | [`heavenprint-new-faces/`](heavenprint-new-faces/) | Named original characters (Orren Vask, Mallow-3…), each prompted to fit the essence of one skill | Pool for random NPCs; names are proposals, not canon. Also an approved style anchor |
+| **M813, version 1** | [`m813/`](m813/) | MPAT and its unnamed comrade | One-shot cast, `pool: m813-cast`; review candidates. |
 
 In [`art/catalog.json`](../catalog.json), filter `characters` by `pool`: `epccg-cast` or `world-npc`. A character's `historical_skill_id` is a casting hint ("someone who has far too much Composure"), useful for picking an NPC who fits a scene.
 
