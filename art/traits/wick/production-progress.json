@@ -128,11 +128,12 @@
     "resonance",
     "old-tongue",
     "rite-in-the-field",
-    "you-get-used-to-it"
+    "you-get-used-to-it",
+    "flat-line"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 49
+    "perks": 50
   },
   "revision_rounds": {
     "field-surgeon": 3,

@@ -1086,6 +1086,29 @@
       },
       "batch": "E",
       "source_sha256": "71695ec47b12e309fc6aad0fc2278589592631dba5f7fdf62106078c05b70b80"
+    },
+    {
+      "id": "flat-line",
+      "data_id": "flat_line",
+      "name": "Flat Line",
+      "family": "perks",
+      "order": 48,
+      "mood": "Eerie, Comic",
+      "action": "Wick sits bolt upright on a stool, teacup raised halfway, staring dead at the viewer without moving.",
+      "screen": "A single flat line",
+      "prop": "Teacup",
+      "path": "art/perks/wick/production-v1/flat-line.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/flat-line.png",
+        "128": "art/perks/wick/production-v1/exports/128/flat-line.png",
+        "64": "art/perks/wick/production-v1/exports/64/flat-line.png",
+        "56": "art/perks/wick/production-v1/exports/56/flat-line.png",
+        "48": "art/perks/wick/production-v1/exports/48/flat-line.png",
+        "44": "art/perks/wick/production-v1/exports/44/flat-line.png",
+        "40": "art/perks/wick/production-v1/exports/40/flat-line.png"
+      },
+      "batch": "E",
+      "source_sha256": "2e95c1c2c44fb091175f75d9001551fda1d4dbc280180624c6609988a426bd18"
     }
   ]
 }
