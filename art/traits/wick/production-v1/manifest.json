@@ -1217,6 +1217,29 @@
       },
       "batch": "C",
       "source_sha256": "32a2301a4e167600bc1ae555eb4619da449e53dcda16a4b7711512f1d7aa0b11"
+    },
+    {
+      "id": "slicer",
+      "data_id": "slicer",
+      "name": "Slicer",
+      "family": "traits",
+      "order": 62,
+      "mood": "Comic, Tense",
+      "action": "Wick hangs upside down by its boots, plugging a cable from its head hinge into a security camera whose lens now shows Wick's face",
+      "screen": "Smug grin",
+      "prop": "Security camera on a cable",
+      "path": "art/traits/wick/production-v1/slicer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/slicer.png",
+        "128": "art/traits/wick/production-v1/exports/128/slicer.png",
+        "64": "art/traits/wick/production-v1/exports/64/slicer.png",
+        "56": "art/traits/wick/production-v1/exports/56/slicer.png",
+        "48": "art/traits/wick/production-v1/exports/48/slicer.png",
+        "44": "art/traits/wick/production-v1/exports/44/slicer.png",
+        "40": "art/traits/wick/production-v1/exports/40/slicer.png"
+      },
+      "batch": "C",
+      "source_sha256": "22687bf8feec90bfdd94ffd1ec9d1a36eaae6dc1025c8fc986ad66be1a281e44"
     }
   ]
 }

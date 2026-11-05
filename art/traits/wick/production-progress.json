@@ -68,10 +68,11 @@
     "crowded-head",
     "market-blood",
     "cover-story",
-    "inner-ring-heir"
+    "inner-ring-heir",
+    "slicer"
   ],
   "catalog_coverage": {
-    "traits": 61,
+    "traits": 62,
     "perks": 2
   },
   "revision_rounds": {

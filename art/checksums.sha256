@@ -6,7 +6,7 @@
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 279a7bae7b7563fdd24a1eda577f1fcd7499b5ce12767c4d33aa0642b31b4e64  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-c93bf73b0c846668ffb60b94d22afeb15883ecff5980288744897b58d0b23df2  art/catalog.json
+61b9c3f89e0bf86f3ec6a1b4d082dea31eea63284830fd34378ca2c2441d3063  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 018b2b6e1b6859c3d1e2348ea45db9ca4f1aba66b76ed291cae773a79f04be92  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -192,7 +192,7 @@ a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9  art/style-guid
 04557cc27993d5691ca2f0ec45ba34ccc78b7674ae00fb0987a6dc270da1ee45  art/traits/wick/mind-without-fog/README.md
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
-968ab9b657e8aef3f6bbc552d2335602980bbfb5a28d2806e2e18855423e7dd1  art/traits/wick/production-progress.json
+505115616711d9aa12a5eeb0db2d1d098ffa38ed99ead1a880c9c919cbe0426e  art/traits/wick/production-progress.json
 9e6746fe11e2c0d41184e0c6c63eb7d83cd3c937cfc8ad4485d3c1405f646c5c  art/traits/wick/production-v1/README.md
 38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3  art/traits/wick/production-v1/blade-recluse.png
 39716f2b9f97045dd60d83ea7adc682619073a29f822971e04864c3d55051230  art/traits/wick/production-v1/born-officer.png
@@ -245,6 +245,7 @@ b2628bf49f4334d1e9fa5af88e0ae267c38f87b1b49fa8a7c497b7ee9ddf7260  art/traits/wic
 079bce98c66100638214f51e1780734749039052f19a71e5e4c03a97423f596d  art/traits/wick/production-v1/exports/128/rival.png
 d849799906294178ade48a2ebca8a9bb67337bc56f01704c08f571ae607b8927  art/traits/wick/production-v1/exports/128/rogue-element.png
 c26b8b3df3deb92558eda95dbd739bd6840446c635ec6d6dee8f30beaf897a32  art/traits/wick/production-v1/exports/128/sigil-savant.png
+0d4f9e7d38d99771c93ab2480e36336c846f9cadc55becb4e22e7bea5c6deba6  art/traits/wick/production-v1/exports/128/slicer.png
 ed384de2152557aad1e117bb7e46fe0bb71a843018f35b43e7223796fe3d466a  art/traits/wick/production-v1/exports/128/southern-fist.png
 dd64321bad55f87930a4d9b7cd3254adc8dc0ddfb910263d53d2cdeb4a6829ce  art/traits/wick/production-v1/exports/128/spray-and-pray.png
 842bc7b77201f15e9ae854fcb8b3a1fa2a6e7be0ad9e5f5f922a6b94f8cc658d  art/traits/wick/production-v1/exports/128/squad-anchor.png
@@ -297,6 +298,7 @@ bfb3fc8b1e7f041c2b24544ba621fe092d55754d12850689476ce5af1776be55  art/traits/wic
 a8f531cd9941b6e5266ebdd28b1f1cbcedf444ba980e25129f20083e5a07608e  art/traits/wick/production-v1/exports/256/rival.png
 1b8e04729be21c742927ce31cbfa09f93ecb1d7fb1d3b527d01843aba75d0cf9  art/traits/wick/production-v1/exports/256/rogue-element.png
 bafe93db53ae413f8eb152d2276ecdb8b18a576e7f9d446bba6ffbce32fb117f  art/traits/wick/production-v1/exports/256/sigil-savant.png
+e94c09acf70f8e5928526d673042bceec5210e297396fc66136631bd9c2841d7  art/traits/wick/production-v1/exports/256/slicer.png
 6de65186cec6125aad11079f1ef3ee64664a5f4c98e8e34eec4730e74561eb52  art/traits/wick/production-v1/exports/256/southern-fist.png
 dfdf244e5467f8dc065b5af5ee16d23ddbd3d8a1ff7039270fa942868e0e6753  art/traits/wick/production-v1/exports/256/spray-and-pray.png
 2df7e94b9378cbc5c3439c8afc7c59cce3dea76587e70a492d5cbcb3f3a49a37  art/traits/wick/production-v1/exports/256/squad-anchor.png
@@ -349,6 +351,7 @@ c441d3a38b222ff6a1bda052c1bc3884715752bf740024663e7c82d8568eb73b  art/traits/wic
 b802e4ef24e5e2e6c4176d0f4dec59dcf98e82187fac9ae3bbcd3e89e7eb2a20  art/traits/wick/production-v1/exports/40/rival.png
 29c825a8394ca492bd9a5f17f503d6bc846f0fe1e83995f110fddee39f09ac63  art/traits/wick/production-v1/exports/40/rogue-element.png
 9626dff444c0e2c5da1d933781071323a73c7c24305c260f1e850459632993f2  art/traits/wick/production-v1/exports/40/sigil-savant.png
+383c5602a75bd80cbc9234f69fe07907fc66800b4e44690d1b465d979c4eba32  art/traits/wick/production-v1/exports/40/slicer.png
 91f20f58d912cc5f8ba19da599a639a1b28df53fc93358df0eaaa7da66df70df  art/traits/wick/production-v1/exports/40/southern-fist.png
 3045e386bf5477ad27453c6f554a080e68b4cfa55377e03cf34ca301093f38c6  art/traits/wick/production-v1/exports/40/spray-and-pray.png
 a03ca7dc4495a95d2ac5f290619a5b5e72b3491e729e2df06d6975bfbf99e729  art/traits/wick/production-v1/exports/40/squad-anchor.png
@@ -401,6 +404,7 @@ a535165170e4b88ce411e45903b67350d8077ccafb2c39ddd89ad520effff6c5  art/traits/wic
 26ec8520869cb96c8402a7d9f26141d2282c01e14733962d5b420a3b91b2b458  art/traits/wick/production-v1/exports/44/rival.png
 daac24dae5c1327d8847e34f2a8493aa192d3c371670ac7fd195c48b83560f65  art/traits/wick/production-v1/exports/44/rogue-element.png
 62116911268af767206e2bd2636985d014533355f25258b3407b5e1c89a0089b  art/traits/wick/production-v1/exports/44/sigil-savant.png
+b80154932921122d98c9baba1e2f93160f6d9e1cbb42aab83dfba6b6dcb0a41b  art/traits/wick/production-v1/exports/44/slicer.png
 f1119d7171213d43c2857a763263043f23d62c8cf011324b5abf9a34efcd5b03  art/traits/wick/production-v1/exports/44/southern-fist.png
 f93f50af9f038fb36e8fcca6a4d80850d23eb749cdaf9bb0a017e27190007688  art/traits/wick/production-v1/exports/44/spray-and-pray.png
 204abb42da7d9097e7d5e302127c19b8b6e315c46972a89fc41b9cc84beb2bf4  art/traits/wick/production-v1/exports/44/squad-anchor.png
@@ -453,6 +457,7 @@ d6aa676b025d63fc6ff7eb35707fed6b8f6ab5b3e8d7e0ebc91fad7effa98f69  art/traits/wic
 579462562c1f5ce807ae2087eb1fe73f26ce82368bc92fbde3fb3af06ebc9892  art/traits/wick/production-v1/exports/48/rival.png
 b51db2d555154d34d7fd0afffb5928028d279c330e0fa2588abf37f033cb36aa  art/traits/wick/production-v1/exports/48/rogue-element.png
 5444ff051b5981746d39365516d50237b67117409c81f147285f43dd24d1e42d  art/traits/wick/production-v1/exports/48/sigil-savant.png
+6f0ab90fb3aa5f6c00cfaacb63db93da8600091c7a0db06d2cdfbbc826dd8ebc  art/traits/wick/production-v1/exports/48/slicer.png
 e25ed0346429350527bd967444a7679718363b383f67a3616e572936aeed16fc  art/traits/wick/production-v1/exports/48/southern-fist.png
 fbac3510227621b18aae28485fdb3fbc4082220271df6842530698c045e04238  art/traits/wick/production-v1/exports/48/spray-and-pray.png
 64dce1cdfddc343dd95562226f5ce321ab5d8f1705b17db64937f252840d911d  art/traits/wick/production-v1/exports/48/squad-anchor.png
@@ -505,6 +510,7 @@ be76d1dc07aaf3e5dc49038fc00c0668925b49d5a3faa2d9f206f5018ffca834  art/traits/wic
 082efb3321b7c59c4d351f6421433852edf1f1a2f8a83781f0195eb48ac796f3  art/traits/wick/production-v1/exports/56/rival.png
 aead806e5a555d0831eea8368f4323c7d0a40b680feda3277773bcca56b7c974  art/traits/wick/production-v1/exports/56/rogue-element.png
 070cb80dd084fddaa59e33e989ba619c59d7c541fd8fab6626baedaf2c0218fd  art/traits/wick/production-v1/exports/56/sigil-savant.png
+b5b4eb3adf7d3c27e34a787c892e8dec2e54543c85e990ca35aa5d12b6f0435d  art/traits/wick/production-v1/exports/56/slicer.png
 345bc94c4e8dde199239aabe48b59424ac994a3663ba033ab692855000ac2964  art/traits/wick/production-v1/exports/56/southern-fist.png
 ba9602453b3c4e38ecd90a79a469098d4b36dc65344a75d3585f0cf02a4d5cf9  art/traits/wick/production-v1/exports/56/spray-and-pray.png
 9ceee9dec19814e565771462f65b977bee3b3a1e6dc9f4e34e7fa7d8612102bf  art/traits/wick/production-v1/exports/56/squad-anchor.png
@@ -557,6 +563,7 @@ d40a3a8f67fa51ee10b1172b37b11885648f66989d9836e56d7c077aca05ed7d  art/traits/wic
 6e61b1bb3dfa5fbeb4a1d7233b5864fc0b498dd2e63868ee1c2209e3ee00d5f7  art/traits/wick/production-v1/exports/64/rival.png
 9b9e22d28e9a7603f41022cfe9816837c20c5308269030b9eec81dec1f8818c3  art/traits/wick/production-v1/exports/64/rogue-element.png
 68112b87836f8cfa674323c2e16751f44c4e29de5524e5aa563c06dc5b620616  art/traits/wick/production-v1/exports/64/sigil-savant.png
+8e78517fb495ce3dd3b30da776fd848435a85546c6acd7fde6b8a5174080482c  art/traits/wick/production-v1/exports/64/slicer.png
 cb2fe9dba404f5c8f9dfd6ac0fcfebf727b6800e55b0d19ce51db24f6ee52045  art/traits/wick/production-v1/exports/64/southern-fist.png
 94318ed8c57acb0b6759089536d5f79647917fb75b20d9460190e5f2d9a570a7  art/traits/wick/production-v1/exports/64/spray-and-pray.png
 a6bcace3019739eaf3fa7d3b5c8c9411734891169676f097600ee572f322c89d  art/traits/wick/production-v1/exports/64/squad-anchor.png
@@ -588,7 +595,7 @@ d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37  art/traits/wic
 444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe  art/traits/wick/production-v1/lowland-born.png
 5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098  art/traits/wick/production-v1/lunarshine.png
 f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4  art/traits/wick/production-v1/machine-faced.png
-5300125ddc3f62aa82edd1305eecf9107b97ab0d9c1aa34e042a5db80f4282ca  art/traits/wick/production-v1/manifest.json
+e2edfc48953a7cfc1a585c631c3d18d33791d33fec88f078f3a5ade44085b833  art/traits/wick/production-v1/manifest.json
 744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91  art/traits/wick/production-v1/market-blood.png
 9878f6fb218e1574259e0bb70e577b2d3c839874b6ad8e48af46253642000fc1  art/traits/wick/production-v1/oil-in-my-mind.png
 ea9590ff45b24ea8bf0e63c92a8c08d3e09db7e9a816f8a141fe80fbba463990  art/traits/wick/production-v1/oil-in-my-soul.png
@@ -607,13 +614,13 @@ a1d132d5890d9177f4da7b542e9264a6fd5cad7c21f8050f63a0288ecc26afbc  art/traits/wic
 f411d6d31b2b0eefe2f144f55a18b8a00479fc6af71bd4a5285c98ecbcc31be1  art/traits/wick/production-v1/previews/batch-b-48px.png
 e1310f34ede43fde815586999c744fc210e91d1e9cd2d228dd353a065d9c69bc  art/traits/wick/production-v1/previews/batch-b-56px.png
 8a062fdba26bdca9f09317b34a103968fa781757b32fcf39849254c7f7a58047  art/traits/wick/production-v1/previews/batch-b-light-dark-64px.png
-1833baa74e0bab76dc02183f03797af69ca1f59b2256d451ecf5ecb1e2d68482  art/traits/wick/production-v1/previews/batch-c-128px.png
-7f0be1b9781d0d95d2184d8831023f161e98262861265a81c6321f00ee35dde6  art/traits/wick/production-v1/previews/batch-c-40px.png
-5e1d78d554bdfc2883af41ad9a89ee34da059896a376b14d0ab7073b815167fc  art/traits/wick/production-v1/previews/batch-c-44px.png
-4c5e5f2a5461f9c07678b470fd2fc3283d5f48c62abe3217b460349b038a4bd1  art/traits/wick/production-v1/previews/batch-c-48px.png
-24884d0330cb472d9c1ba0d9ce89c66313746454815229f7275a146be830ec5b  art/traits/wick/production-v1/previews/batch-c-56px.png
-1be53c16a32b5a5a94fa4e5bb93f2943723cf03571e40cafc741a1026483a6ab  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
-608aad6a7efbe9c31480e7c0206d1ce666727b3b280b8717f9e62c6ecab2faf4  art/traits/wick/production-v1/previews/latest.png
+b256d96f55b3ed29de58d1e6c3fe77ed6ec9aa7b2c2b397b1393c25693af12af  art/traits/wick/production-v1/previews/batch-c-128px.png
+c575d0d8c1c08c270b0b1a9f640515e5087e265e07203c2c1c5d088b3cc466d8  art/traits/wick/production-v1/previews/batch-c-40px.png
+4d2a18c9d02a80cf09a4285177473c12f7099a00a560b144c92fd30ecaeec9ac  art/traits/wick/production-v1/previews/batch-c-44px.png
+0e8959fcd2c69f4b1dd42ba1952c1c2a127ed5d9676d18b14fa93d5c29f3b96d  art/traits/wick/production-v1/previews/batch-c-48px.png
+e7db826580b91e761c132dfaae12a988f723d0316e21f00a414ecf330047f3fb  art/traits/wick/production-v1/previews/batch-c-56px.png
+cd7f207d3497fceddb55bd8635050893de87cc6a63969a0c539f3f48dbd614c3  art/traits/wick/production-v1/previews/batch-c-light-dark-64px.png
+2708dd1264fc270e4e21094f7630c78f3a2033673f5a5bcc6b87cd8f3e06fec4  art/traits/wick/production-v1/previews/latest.png
 902bc507c6d0acecfb529b14ac173dc1d8b1a3964aee6e6a2a45190c83dec031  art/traits/wick/production-v1/revisions/v2/README.md
 cc4601921e1e5e379cc051209918cbb398b26476db18cf14f26ea86b44477844  art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png
 ceeae9e2b6259ca2a0a06bb6a739ee94681c7bbd82a04400e5ffa27988f2334f  art/traits/wick/production-v1/revisions/v2/exports/128/daggerfall-veteran.png
@@ -667,6 +674,7 @@ c34f970b48c5fcd36200fbc72edbf870e284fd65ff939db2c39e88da55e98276  art/traits/wic
 37d663f24faaa0feca54898452d1defda9845c799ece8f5d225bea12006dafeb  art/traits/wick/production-v1/rival.png
 32fe56d4124bb1d59ea8c336fee3152572e9a40759f38a7e6de1412feff145d9  art/traits/wick/production-v1/rogue-element.png
 6cc8e12c4b77d769f19f832792e7b80a2dceccaf88a42a1cb43b101ca582b94f  art/traits/wick/production-v1/sigil-savant.png
+08c394258eca5656880e5023b4e2d39e6db58c88128dbfbd662eaae35181911d  art/traits/wick/production-v1/slicer.png
 28312b2019d7c28ddacbd9c4257148aeeaa7de3ca88bf21164b10d01f8af7c07  art/traits/wick/production-v1/southern-fist.png
 547de5c3a99b89fdaaa53a3c8a737d64883c3fecbf7f55c0c75453556fd37b30  art/traits/wick/production-v1/spray-and-pray.png
 d5c4d9f644b91a5661da63bd4ebdb2afd34cf594d159ab62112dd46d963a7fee  art/traits/wick/production-v1/squad-anchor.png
