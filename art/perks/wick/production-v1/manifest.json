@@ -442,6 +442,29 @@
       },
       "batch": "E",
       "source_sha256": "1ca38f96172b0d3c6373ea7efa4e04e5bfce4bc31c551d0ea8c61783d9813c8b"
+    },
+    {
+      "id": "shadow-step",
+      "data_id": "shadow_step",
+      "name": "Shadow Step",
+      "family": "perks",
+      "order": 20,
+      "mood": "Tense",
+      "action": "Wick crouches with its back pressed flat to a chunk of broken wall, peeking round the edge, one boot lifted for the next dash.",
+      "screen": "Narrowed eyes",
+      "prop": "Broken wall chunk",
+      "path": "art/perks/wick/production-v1/shadow-step.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shadow-step.png",
+        "128": "art/perks/wick/production-v1/exports/128/shadow-step.png",
+        "64": "art/perks/wick/production-v1/exports/64/shadow-step.png",
+        "56": "art/perks/wick/production-v1/exports/56/shadow-step.png",
+        "48": "art/perks/wick/production-v1/exports/48/shadow-step.png",
+        "44": "art/perks/wick/production-v1/exports/44/shadow-step.png",
+        "40": "art/perks/wick/production-v1/exports/40/shadow-step.png"
+      },
+      "batch": "E",
+      "source_sha256": "36b795c2126dd11b74440145a86ac831d58e0afb6c12738c2ff8db05f65448e0"
     }
   ]
 }

@@ -100,11 +100,12 @@
     "running-reload",
     "rounding-up",
     "catch",
-    "sleight-of-hand"
+    "sleight-of-hand",
+    "shadow-step"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 21
+    "perks": 22
   },
   "revision_rounds": {
     "field-surgeon": 3,

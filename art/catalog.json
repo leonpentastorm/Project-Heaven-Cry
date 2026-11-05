@@ -3731,6 +3731,30 @@
         "44": "art/perks/wick/production-v1/exports/44/sleight-of-hand.png",
         "40": "art/perks/wick/production-v1/exports/40/sleight-of-hand.png"
       }
+    },
+    "shadow-step": {
+      "label": "Wick — Shadow Step",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/shadow-step.png",
+      "sha256": "07db9826e5e267b6f64d4e596c0cc0fbaecfef02cebce413621fbfb5c46decda",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "shadow_step",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shadow-step.png",
+        "128": "art/perks/wick/production-v1/exports/128/shadow-step.png",
+        "64": "art/perks/wick/production-v1/exports/64/shadow-step.png",
+        "56": "art/perks/wick/production-v1/exports/56/shadow-step.png",
+        "48": "art/perks/wick/production-v1/exports/48/shadow-step.png",
+        "44": "art/perks/wick/production-v1/exports/44/shadow-step.png",
+        "40": "art/perks/wick/production-v1/exports/40/shadow-step.png"
+      }
     }
   },
   "illustrations": {
