@@ -107,11 +107,12 @@
     "got-you-in-my-sight",
     "eyes-in-the-back",
     "hold-the-stroke",
-    "parallel-thought"
+    "parallel-thought",
+    "footnote"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 28
+    "perks": 29
   },
   "revision_rounds": {
     "field-surgeon": 3,

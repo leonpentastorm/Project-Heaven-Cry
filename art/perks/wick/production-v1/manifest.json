@@ -603,6 +603,29 @@
       },
       "batch": "E",
       "source_sha256": "4e58f0d37464854c23101d5ea70ba13bf80dbafe6834fd2a9fbabd384cf9230d"
+    },
+    {
+      "id": "footnote",
+      "data_id": "footnote",
+      "name": "Footnote",
+      "family": "perks",
+      "order": 27,
+      "mood": "Comic, Proud",
+      "action": "Wick pops up from behind a giant open book with blank ruled pages, one mitten raised, finger pointing skyward to make a point.",
+      "screen": "Lightbulb",
+      "prop": "Giant open book",
+      "path": "art/perks/wick/production-v1/footnote.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/footnote.png",
+        "128": "art/perks/wick/production-v1/exports/128/footnote.png",
+        "64": "art/perks/wick/production-v1/exports/64/footnote.png",
+        "56": "art/perks/wick/production-v1/exports/56/footnote.png",
+        "48": "art/perks/wick/production-v1/exports/48/footnote.png",
+        "44": "art/perks/wick/production-v1/exports/44/footnote.png",
+        "40": "art/perks/wick/production-v1/exports/40/footnote.png"
+      },
+      "batch": "E",
+      "source_sha256": "48e411ca977f0cfe45c5dc802b9a9808daac13d7df2b5edb262c0071c716320e"
     }
   ]
 }
