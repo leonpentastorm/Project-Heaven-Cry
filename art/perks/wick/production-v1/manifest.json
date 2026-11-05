@@ -1063,6 +1063,29 @@
       },
       "batch": "E",
       "source_sha256": "46eed940b4a0bb85633f5c99361a168006404ba9d0fcb77b2c95d6677ed3e3de"
+    },
+    {
+      "id": "you-get-used-to-it",
+      "data_id": "you_get_used_to_it",
+      "name": "You Get Used to It",
+      "family": "perks",
+      "order": 47,
+      "mood": "Calm, Comic",
+      "action": "Wick holds a big umbrella over a tiny Wick silhouette while a rain of scribbly squiggles pours down, looking utterly bored.",
+      "screen": "Bored half-lids",
+      "prop": "Umbrella",
+      "path": "art/perks/wick/production-v1/you-get-used-to-it.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/you-get-used-to-it.png",
+        "128": "art/perks/wick/production-v1/exports/128/you-get-used-to-it.png",
+        "64": "art/perks/wick/production-v1/exports/64/you-get-used-to-it.png",
+        "56": "art/perks/wick/production-v1/exports/56/you-get-used-to-it.png",
+        "48": "art/perks/wick/production-v1/exports/48/you-get-used-to-it.png",
+        "44": "art/perks/wick/production-v1/exports/44/you-get-used-to-it.png",
+        "40": "art/perks/wick/production-v1/exports/40/you-get-used-to-it.png"
+      },
+      "batch": "E",
+      "source_sha256": "71695ec47b12e309fc6aad0fc2278589592631dba5f7fdf62106078c05b70b80"
     }
   ]
 }

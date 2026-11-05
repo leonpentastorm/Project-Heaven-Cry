@@ -4379,6 +4379,30 @@
         "44": "art/perks/wick/production-v1/exports/44/rite-in-the-field.png",
         "40": "art/perks/wick/production-v1/exports/40/rite-in-the-field.png"
       }
+    },
+    "you-get-used-to-it": {
+      "label": "Wick — You Get Used to It",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/you-get-used-to-it.png",
+      "sha256": "666fc84ce0f2a29241323dfb1cfb3e1c406289ac0eb6916e3322cf729be8b64e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "you_get_used_to_it",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/you-get-used-to-it.png",
+        "128": "art/perks/wick/production-v1/exports/128/you-get-used-to-it.png",
+        "64": "art/perks/wick/production-v1/exports/64/you-get-used-to-it.png",
+        "56": "art/perks/wick/production-v1/exports/56/you-get-used-to-it.png",
+        "48": "art/perks/wick/production-v1/exports/48/you-get-used-to-it.png",
+        "44": "art/perks/wick/production-v1/exports/44/you-get-used-to-it.png",
+        "40": "art/perks/wick/production-v1/exports/40/you-get-used-to-it.png"
+      }
     }
   },
   "illustrations": {

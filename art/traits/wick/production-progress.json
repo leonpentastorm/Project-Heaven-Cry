@@ -127,11 +127,12 @@
     "heart-overload",
     "resonance",
     "old-tongue",
-    "rite-in-the-field"
+    "rite-in-the-field",
+    "you-get-used-to-it"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 48
+    "perks": 49
   },
   "revision_rounds": {
     "field-surgeon": 3,
