@@ -2,7 +2,7 @@
 
 ## 1. Resolve a stable ID
 
-Load [../art/catalog.json](../art/catalog.json). Its paths are relative to the repository root, not this document or the JSON file. The catalog has three separate maps: `skills`, `characters`, and `traits`.
+Load [../art/catalog.json](../art/catalog.json). Its paths are relative to the repository root, not this document or the JSON file. The catalog has five separate maps: `skills`, `characters`, `traits`, `perks`, and `illustrations`.
 
 ```js
 // Example for a web build that copies the repository's art/ folder to public/art/.
@@ -27,6 +27,8 @@ The catalog maps asset IDs to files; it does not implement gameplay rules, skill
 | Skill portrait | 800 × 1000 PNG | RGB, opaque black background | Preserve 4:5 ratio; contain rather than stretch/crop |
 | Character portrait | 800 × 1000 PNG | RGB, painted local colours | Preserve 4:5 ratio and decisive face/hand framing |
 | Wick trait master | 1254 × 1254 PNG | RGBA, white ink with transparency | Square, preserve alpha, preview on dark UI |
+| Wick test trait/perk | 1024 × 1024 master; 256/128/64/40 px exports | RGBA, exact white ink and alpha cutouts | Review candidates; use a dark chip on light screens |
+| M813 world illustration | 1600 × 900 PNG | RGB, painted local colours | Preserve 16:9; enforce spoiler routing |
 
 Treat these as colour artwork in the engine's sRGB/color-texture mode, not normal maps or linear data. Begin with ordinary filtered scaling and inspect the result at the actual UI size. Compression and mipmap choices depend on the target engine and device; avoid settings that erase brush gaps or Wick's pixel-face separations.
 
@@ -51,6 +53,10 @@ Wick trait and perk icons are both pure white; they never take a skill colour. S
 - Run `python3 scripts/validate_art.py` from the root after copying or reorganising the assets.
 
 ## Updating the collection
+
+The [Wick tests](../art/traits/wick/test-set-1/README.md) bind to rules data through `data_id` (underscores), while catalog IDs use hyphens. Two perk icons live in the shared test folder but resolve through `catalog.perks`, not `catalog.traits`. All ten have `production_approved: false`; no icon production lock was inferred from generation.
+
+Use `catalog.characters.mpat` and `catalog.characters['mpat-comrade']` for the M813 cast. Use `catalog.illustrations.outpost813` for the opening. `catalog.illustrations['outpost1-repair-bay']` has `spoiler: true`, `visibility: "ending-only"` and a `spoilers/` path. Resolve it only after the ending; exclude it from opening galleries and preload lists. These flags are not security for publicly served files. See the [world collection](../art/illustrations/m813/v1/README.md).
 
 Add revised art under a new versioned directory, update catalog paths and hashes, then update the palette and style guide if needed. Keep existing IDs stable. The local collection manifest describes artwork; the central catalog is the implementation map. Do not silently replace approved masters with a newly named "final" image.
 
