@@ -10,18 +10,28 @@ const CLASSNAME = {}; D.classes.forEach((c) => { CLASSNAME[c.id] = c.name; });
 const title = (id) => id.charAt(0).toUpperCase() + id.slice(1);
 const mod = (p) => (p === 0 ? -2 : p - 1);
 const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
-const BUDGET = 10, CAP = 5;
+// Creation budgets (spec: Creation budget; rules.character.creation): 10 Skill, 10 Attribute, 6 Core points,
+// caps of 5, and an unspent Core point trades for 2 Attribute points.
+const BUDGET = 10, CAP = 5, ATTR_PTS = 10, BASE_CORE_PTS = 6, TRADE = 2, STAT_CAP = 5;
+let CORE_PTS = BASE_CORE_PTS; // Mind Without Fog: +2 Core points at creation (set each render from the picked traits)
 
-function derive(skills) {
+function derive(skills, aSet, cSet) {
+  aSet = aSet || {}; cSet = cSet || {};
   const attr = {}, core = { body: 1, mind: 1, soul: 1 };
-  D.attrs.forEach((a) => { attr[a.id] = 1; });
+  D.attrs.forEach((a) => { attr[a.id] = Math.max(1, aSet[a.id] || 1); });
   D.skills.forEach((s) => { const p = skills[s.id] || 0; if (p > attr[s.attr]) attr[s.attr] = p; });
+  CORES.forEach((c) => { core[c] = Math.max(1, cSet[c] || 1); });
   D.attrs.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
   const spent = Object.values(skills).reduce((x, y) => x + y, 0);
+  const attrSpent = D.attrs.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = CORES.reduce((t, c) => t + core[c] - 1, 0);
+  // Unspent Core points are traded for Attribute points only as far as the Attributes need them.
+  const attrOver = Math.max(0, attrSpent - ATTR_PTS), traded = Math.ceil(attrOver / TRADE);
+  const coreLeft = CORE_PTS - coreSpent - traded, attrLeft = ATTR_PTS + traded * TRADE - attrSpent;
+  const ok = coreLeft >= 0 && Object.values(attr).every((v) => v <= STAT_CAP) && Object.values(core).every((v) => v <= STAT_CAP) && spent <= BUDGET;
   const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, total: c.sig.reduce((t, s) => t + (skills[s] || 0), 0) }));
   const top = [...new Set(totals.map((t) => t.total))].sort((a, b) => b - a).slice(0, 2);
   const leans = spent ? totals.filter((t) => top.includes(t.total)).sort((a, b) => b.total - a.total) : [];
-  return { attr, core, spent, leans };
+  return { attr, core, spent, leans, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
 
 const btn = (on, color) => 'min-height: 40px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; ' +
@@ -36,7 +46,7 @@ class Component extends DCLogic {
     const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
-      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, applied: arch,
+      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: props.sampleName ? { agility: 3, virtue: 3 } : {}, cSet: {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
     };
   }
@@ -44,7 +54,8 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state;
     const set = (patch) => () => this.setState(patch);
-    const der = derive(S.skills);
+    CORE_PTS = BASE_CORE_PTS + (S.traits.includes('mind_without_fog') ? 2 : 0);
+    const der = derive(S.skills, S.aSet, S.cSet);
     const left = BUDGET - der.spent;
     const stepIdx = STEPS.findIndex((s) => s[0] === S.step);
 
@@ -75,6 +86,9 @@ class Component extends DCLogic {
     const archCards = S.fam === 'custom'
       ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', cores: coreChips({ body: 1, mind: 1, soul: 1 }), leans: 'whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
       : D.arch.items.filter((a) => a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
+    const budgetOf = (preset) => { const d = derive(preset || {}); return 'Uses ' + d.coreSpent + ' of ' + CORE_PTS + ' Core and ' + Math.min(d.attrSpent, ATTR_PTS) + ' of ' + ATTR_PTS + ' Attribute points' +
+      (d.coreLeft + d.traded > 0 || d.attrLeft > 0 ? '; you place the rest' : ''); };
+    archCards.forEach((c) => { c.budget = c.name === 'Custom' ? 'All ' + CORE_PTS + ' Core and 10 Attribute points are yours to place' : budgetOf((D.arch.items.find((a) => a.name === c.name) || {}).preset); });
     archCards.forEach((c) => { c.style = 'display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; padding: 16px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
     const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
@@ -84,22 +98,51 @@ class Component extends DCLogic {
         nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
       leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
+      budget: A ? budgetOf(A.preset) : 'All ' + CORE_PTS + ' Core and 10 Attribute points are yours to place',
     };
-    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
+    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, aSet: {}, cSet: {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
     const useLabel = A ? 'Use ' + A.name + ' ›' : 'Start from scratch ›';
 
     // skills: all 27 at once, three Core columns, each attribute linked to its skills
     const setSkill = (id, v) => () => {
-      const cur = this.state.skills[id] || 0; const spent = derive(this.state.skills).spent;
-      if (v < 0 || v > CAP || (v > cur && spent + (v - cur) > BUDGET)) return;
+      const cur = this.state.skills[id] || 0;
+      if (v < 0 || v > CAP) return;
       const next = { ...this.state.skills }; if (v === 0) delete next[id]; else next[id] = v;
+      if (v > cur && !derive(next, this.state.aSet, this.state.cSet).ok) return;
       this.setState({ skills: next, hover: id });
     };
+    // What one more point in a skill costs, as the stepper preview says it (spec: "Order doesn't matter").
+    const costOf = (id) => {
+      const k = SK[id], p = S.skills[id] || 0;
+      if (p >= CAP) return { ok: false, text: k.name + ' is at the creation cap of ' + CAP };
+      if (der.spent >= BUDGET) return { ok: false, text: 'No Skill points left' };
+      const nx = derive({ ...S.skills, [id]: p + 1 }, S.aSet, S.cSet), at = ATTR[k.attr], parts = ['−1 Skill'];
+      if (nx.attr[k.attr] > der.attr[k.attr]) parts.push('−1 Attribute (' + at.name + ' ' + der.attr[k.attr] + '→' + nx.attr[k.attr] + ')');
+      if (nx.core[k.core] > der.core[k.core]) parts.push('−1 Core (' + title(k.core) + ' ' + der.core[k.core] + '→' + nx.core[k.core] + ')');
+      if (!nx.ok) return { ok: false, text: 'Not enough ' + (nx.coreLeft < 0 ? 'Core' : 'Attribute') + ' points left for ' + k.name + ' ' + (p + 1) };
+      return { ok: true, text: parts.join(' · ') };
+    };
+    // Raise or lower a Core or Attribute by hand. Lowering stops at what the skills under it need.
+    const statStep = (kind, id, dir) => () => {
+      const St = this.state, d0 = derive(St.skills, St.aSet, St.cSet), cur = kind === 'core' ? d0.core[id] : d0.attr[id];
+      const key = kind === 'core' ? 'cSet' : 'aSet', next = { ...St[key], [id]: cur + dir };
+      const d1 = kind === 'core' ? derive(St.skills, St.aSet, next) : derive(St.skills, next, St.cSet);
+      const now = kind === 'core' ? d1.core[id] : d1.attr[id];
+      if (dir > 0 && (!d1.ok || now === cur)) return;
+      if (dir < 0 && now === cur) return;
+      this.setState({ [key]: next });
+    };
+    const floorOf = (kind, id) => (kind === 'core' ? derive(S.skills, S.aSet, {}).core[id] : derive(S.skills, {}, {}).attr[id]);
+    const canUp = (kind, id) => { const v = kind === 'core' ? der.core[id] : der.attr[id]; if (v >= STAT_CAP) return false;
+      const d1 = kind === 'core' ? derive(S.skills, S.aSet, { ...S.cSet, [id]: v + 1 }) : derive(S.skills, { ...S.aSet, [id]: v + 1 }, S.cSet); return d1.ok; };
+    const stepStyle = (color) => 'width: 26px; height: 26px; border-radius: 6px; border: 1px solid ' + color + '; background: transparent; color: ' + color + '; font-family: inherit; font-size: 15px; line-height: 1; padding: 0; cursor: pointer';
     const coreCols = CORES.map((c) => ({
       name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]],
+      up: statStep('core', c, 1), down: statStep('core', c, -1), noUp: !canUp('core', c), noDown: der.core[c] <= floorOf('core', c), stepStyle: stepStyle(D.core[c]),
       headStyle: 'display: flex; align-items: baseline; gap: 10px; padding: 8px 14px; border-radius: 10px; background: #10151F; border: 1px solid ' + D.core[c] + '; color: ' + D.core[c],
       attrs: D.attrs.filter((a) => a.core === c).map((a) => ({
         name: a.name.toUpperCase(), val: der.attr[a.id], fx: a.fx,
+        up: statStep('attr', a.id, 1), down: statStep('attr', a.id, -1), noUp: !canUp('attr', a.id), noDown: der.attr[a.id] <= floorOf('attr', a.id), stepStyle: stepStyle(a.ink),
         spineStyle: 'display: flex; flex-direction: column; margin-left: 12px; padding: 4px 0 4px 14px; border-left: 2px solid ' + a.ink,
         nodeStyle: 'width: 14px; height: 14px; transform: rotate(45deg); background: ' + a.ink + '; flex: none',
         nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + a.ink + '; white-space: nowrap',
@@ -109,7 +152,7 @@ class Component extends DCLogic {
           return { ...s, pts: p, modShort: fmt(m) + (p >= 5 ? ' M2' : p >= 3 ? ' M1' : ''),
             modStyle: 'font-size: 11px; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
             nameStyle: 'font-size: 12px; font-weight: 700; line-height: 1.2; min-height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
-            inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: p >= CAP || left <= 0, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
+            inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: !costOf(s.id).ok, incTitle: costOf(s.id).text, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
             help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'position: absolute; top: 10px; right: 10px'),
             style: 'position: relative; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
         }),
@@ -147,7 +190,9 @@ class Component extends DCLogic {
     // lock in
     const trainedSkills = D.skills.filter((s) => S.skills[s.id]).map((s) => ({ label: s.name + ' ' + S.skills[s.id], style: 'font-size: 14px; font-weight: 600; color: ' + ATTR[s.attr].ink }));
     const traitNames = picked.length ? picked.map((id) => (D.traits.find((t) => t.id === id) || {}).name).join(' · ') : 'None';
-    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 skill points spent', left === 0], ['Starting kit', !!S.kit]].map(([label, ok]) => ({
+    const budgets = [[left, 'SKILL'], [der.attrLeft, 'ATTRIBUTE'], [der.coreLeft, 'CORE']].map(([n, k]) => ({ text: n + ' ' + k + ' LEFT', style: chip(n === 0 ? '#6FEA77' : '#FFFFFF') }));
+    const statsPlaced = der.attrLeft === 0 && der.coreLeft === 0;
+    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 Skill points spent', left === 0], ['All Attribute and Core points placed', statsPlaced], ['Starting kit', !!S.kit]].map(([label, ok]) => ({
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
 
@@ -181,11 +226,11 @@ class Component extends DCLogic {
       return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
 
     return { ...epccgVals(this),
-      steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' / 10 SKILL POINTS LEFT', budgetChipStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'),
+      steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
-      budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
+      budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
       kitCards,
       summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),

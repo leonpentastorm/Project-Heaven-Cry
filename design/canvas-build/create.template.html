@@ -117,6 +117,7 @@
 <sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
 </span>
 <span style="font-size: 12px; color: #A3AEC2">Leans: {{a.leans}}</span>
+<span style="font-size: 12px; color: #A3AEC2">{{a.budget}}</span>
 </button>
 </sc-for>
 </div>
@@ -139,6 +140,7 @@
 </sc-for>
 </div>
 <span style="font-size: 13px; color: #A3AEC2">Leans toward: <span style="color: #E7EBF3">{{pv.leans}}</span></span>
+<span style="font-size: 13px; color: #A3AEC2">{{pv.budget}}</span>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <button type="button" onClick="{{useArch}}" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{useLabel}}</button>
 </div>
@@ -150,8 +152,8 @@
 <section style="display: flex; flex-direction: column; gap: 12px; padding: 16px 32px">
 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 10px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Skills</h1>
-<span style="{{budgetStyle}}">{{budgetText}}</span>
-<span style="font-size: 12px; color: #A3AEC2">Max 5 in one skill · Attributes and Cores rise to fit, for free</span>
+<sc-for list="{{budgets}}" as="b" hint-placeholder-count="3"><span style="{{b.style}}">{{b.text}}</span></sc-for>
+<span style="font-size: 12px; color: #A3AEC2; max-width: 360px">Max 5 in anything. A skill spends the Attribute and Core points it needs; an unspent Core point becomes 2 Attribute points.</span>
 <span style="margin-left: auto; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">CLASS AT LEVEL 3</span>
 <sc-for list="{{leanList}}" as="l" hint-placeholder-count="2"><span style="{{l.chip}}">{{l.name}} {{l.total}}</span></sc-for>
 <button type="button" onClick="{{resetSkills}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Reset</button>
@@ -159,12 +161,13 @@
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px">
 <sc-for list="{{coreCols}}" as="c" hint-placeholder-count="3">
 <div style="display: flex; flex-direction: column; gap: 8px">
-<div style="{{c.headStyle}}"><span style="font-size: 20px; font-weight: 700; letter-spacing: 0.1em">{{c.name}}</span><span style="font-size: 12px; letter-spacing: 0.12em; opacity: 0.85">{{c.word}}</span><span style="margin-left: auto; font-size: 26px; font-weight: 700">{{c.val}}</span></div>
+<div style="{{c.headStyle}}"><span style="font-size: 20px; font-weight: 700; letter-spacing: 0.1em">{{c.name}}</span><span style="font-size: 12px; letter-spacing: 0.12em; opacity: 0.85">{{c.word}}</span><span style="margin-left: auto; display: flex; align-items: center; gap: 8px"><button type="button" aria-label="Lower {{c.name}}" onClick="{{c.down}}" disabled="{{c.noDown}}" style="{{c.stepStyle}}">‹</button><span style="font-size: 26px; font-weight: 700; min-width: 18px; text-align: center">{{c.val}}</span><button type="button" aria-label="Raise {{c.name}}" onClick="{{c.up}}" disabled="{{c.noUp}}" style="{{c.stepStyle}}">›</button></span></div>
 <sc-for list="{{c.attrs}}" as="a" hint-placeholder-count="3">
 <div style="{{a.spineStyle}}">
 <div style="display: flex; align-items: center; gap: 8px; margin-left: -9px">
 <span style="{{a.nodeStyle}}"></span>
-<span style="{{a.nameStyle}}">{{a.name}} {{a.val}}</span>
+<span style="{{a.nameStyle}}">{{a.name}}</span>
+<button type="button" aria-label="Lower {{a.name}}" onClick="{{a.down}}" disabled="{{a.noDown}}" style="{{a.stepStyle}}">‹</button><span style="{{a.nameStyle}}">{{a.val}}</span><button type="button" aria-label="Raise {{a.name}}" onClick="{{a.up}}" disabled="{{a.noUp}}" style="{{a.stepStyle}}">›</button>
 <span style="font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{a.fx}}</span>
 </div>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-top: 6px; position: relative">
@@ -177,7 +180,7 @@
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px">
 <button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" disabled="{{k.noDec}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">‹</button>
 <span style="display: flex; flex-direction: column; align-items: center; line-height: 1"><span style="font-size: 20px; font-weight: 700">{{k.pts}}</span><span style="{{k.modStyle}}">{{k.modShort}}</span></span>
-<button type="button" aria-label="Raise {{k.name}}" onClick="{{k.inc}}" disabled="{{k.noInc}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">›</button>
+<button type="button" aria-label="Raise {{k.name}}" title="{{k.incTitle}}" onClick="{{k.inc}}" disabled="{{k.noInc}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">›</button>
 </div>
 </div>
 </sc-for>
