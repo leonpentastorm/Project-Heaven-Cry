@@ -1,11 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import PD from './game/protodata.json';
+import ASSETS from './game/assets.json';
 
 // The prototypes' shared CSS (keyframes, icon hover zoom, reduced motion), from design/canvas-build/build.py HELMET.
 const style = document.createElement('style');
 style.textContent = 'body{margin:0;background:#0A0D13;color:#E7EBF3;font-family:\'Chakra Petch\',sans-serif}*{box-sizing:border-box}button:disabled{cursor:not-allowed!important;opacity:.55}' + (PD as any).helmetCss;
 document.head.appendChild(style);
 
-createRoot(document.getElementById('root')!).render(<App />);
+// Every image the game uses: thumbnails first, then the large (zoom) sizes. Failed loads count as done.
+const all = Object.entries(ASSETS as Record<string, string>);
+const URLS = [...all.filter(([k]) => !k.endsWith('-lg')), ...all.filter(([k]) => k.endsWith('-lg'))].map(([, u]) => u);
+const MARK = (ASSETS as Record<string, string>)['wick-welcome'];
+
+function preload(onTick: (n: number) => void): Promise<void> {
+  let next = 0, done = 0;
+  const one = (): Promise<void> => {
+    if (next >= URLS.length) return Promise.resolve();
+    const url = URLS[next++], img = new Image();
+    img.src = url;
+    return (img.decode ? img.decode() : new Promise<void>((ok, bad) => { img.onload = () => ok(); img.onerror = bad; }))
+      .catch(() => {}).then(() => { onTick(++done); return one(); });
+  };
+  return Promise.all(Array.from({ length: 8 }, one)).then(() => {});
+}
+
+function Loader() {
+  const [n, setN] = useState(0), [ready, setReady] = useState(false);
+  useEffect(() => { preload(setN).then(() => setTimeout(() => setReady(true), 250)); }, []);
+  if (ready) return <App />;
+  const pct = URLS.length ? Math.round((n / URLS.length) * 100) : 100;
+  return (
+    <div role="progressbar" aria-label="Loading the game's art" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}
+      style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: 'min(420px, 100%)' }}>
+        {MARK && <img src={MARK} alt="" style={{ width: 120, height: 120, objectFit: 'contain' }} />}
+        <div style={{ fontFamily: 'Spectral, serif', fontSize: 28, fontWeight: 600, letterSpacing: '0.04em', textAlign: 'center' }}>Project Heaven Cry</div>
+        <div style={{ width: '100%', height: 8, borderRadius: 999, background: '#1C2536', border: '1px solid #232D3F', overflow: 'hidden' }}>
+          <div style={{ width: pct + '%', height: '100%', background: '#FFFFFF', transition: 'width 120ms linear' }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#A3AEC2' }}>
+          <span>LOADING ART · {n} / {URLS.length}</span><span>{pct}%</span>
+        </div>
+        <button onClick={() => setReady(true)} style={{ minHeight: 42, padding: '0 16px', borderRadius: 10, border: '1px solid #232D3F', background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontWeight: 600, cursor: 'pointer' }}>
+          Skip, load as I go
+        </button>
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(<Loader />);

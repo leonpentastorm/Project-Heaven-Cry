@@ -297,9 +297,18 @@ def build():
 
 def build_web():
     """Screen data for the web game: what each prototype board's logic reads as D, with the app's image URLs."""
+    # Avatar picker: the featured set, then every New Faces and Original Heavenprint painting (catalog order).
+    C = json.loads((ROOT / "art/catalog.json").read_text())
+    featured = {p["id"] for p in PORTRAITS}
+    portraits = [dict(p, group="Featured") for p in PORTRAITS]
+    for coll, group in (("new-faces", "New Faces"), ("original-heavenprint", "Original Heavenprint")):
+        for cid, a in C["characters"].items():
+            if a.get("collection") == coll and cid not in featured:
+                label = a["label"] if coll == "new-faces" else "Heavenprint · " + a["label"]
+                portraits.append({"id": cid, "label": label, "img": BLOBS["char-" + cid], "group": group})
     out = {
         "skills": skills(), "attrs": attrs(), "classes": classes(), "classesFull": classes_full(), "arch": archetypes(), "origins": origins(),
-        "traits": traits(), "portraits": PORTRAITS, "kits": KITS, "core": CORE, "coreText": CORE_TEXT, "wm": weapon_mastery(),
+        "traits": traits(), "portraits": portraits, "kits": KITS, "core": CORE, "coreText": CORE_TEXT, "wm": weapon_mastery(),
         "ults": ultimates(), "big": BIG, "img": {k: BLOBS[k] for k in ("wick-mind-without-fog", "wick-welcome", "emblem-ahoc-seal", "world-outpost813",
                  "world-pilot", "wick-narrator-placeholder", "char-mpat", "char-drava-keel", "char-inspectant-latch-7", "wick-trait-factory-made")},
         "helmetCss": HELMET.split("<style>")[1].split("</style>")[0],

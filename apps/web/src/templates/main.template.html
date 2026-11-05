@@ -114,7 +114,7 @@
 <main aria-label="Story" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div style="flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
 <figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
-<img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}">
+<button type="button" onClick="{{hero.zoom}}" aria-label="Enlarge the art for {{hero.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}"></button>
 <figcaption style="position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px; background: rgba(10, 13, 19, 0.82); display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 12px; letter-spacing: 0.24em; color: #A3AEC2">{{hero.kicker}}</span>
 <span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{hero.title}}</span>

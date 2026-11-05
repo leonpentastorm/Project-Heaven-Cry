@@ -92,7 +92,8 @@ export class MainLogic extends DCLogic {
 
     // ---------- the story stream ----------
     const st0 = STARTS.find((x) => x.id === g.settings.start) || STARTS[0];
-    const hero = { img: st0.id === 'm813' ? IMG['world-outpost813'] : IMG['world-pilot'], title: g.story.scene.title || st0.title, kicker: st0.kicker, imgStyle: 'width: 100%; height: 260px; object-fit: cover; object-position: ' + st0.focus + '; display: block' };
+    const heroImg = st0.id === 'm813' ? IMG['world-outpost813'] : IMG['world-pilot'];
+    const hero = { zoom: zoomer(this, heroImg, st0.title + ' · ' + st0.artNote, 'world'), img: heroImg, title: g.story.scene.title || st0.title, kicker: st0.kicker, imgStyle: 'width: 100%; height: 260px; object-fit: cover; object-position: ' + st0.focus + '; display: block' };
     const charOf = (id) => g.characters[id];
     const stream = g.story.entries.slice(-150).map((e) => {
       const base = { key: e.id, text: e.text, head: e.head || '', isScene: false, isNarration: false, isPlayer: false, isVoice: false, isCheck: false, isNote: false, paras: [] };

@@ -91,6 +91,8 @@ export class CreateLogic extends DCLogic {
     const o = S.origin === null ? null : D.origins[S.origin];
     const origin = o ? { ...o, knows: o['You know'], seen: o['People see you as'], traitsFit: o['Traits that fit'] } : {};
     const portrait = D.portraits[S.portrait];
+    const portraitGroups = [...new Set(D.portraits.map((p) => p.group))].map((name) => { const thumbs = D.portraits.map((p, i) => ({ p, i })).filter((x) => x.p.group === name).map(({ p, i }) => ({ key: p.id, label: p.label, img: p.img, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
+      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') })); return { name: name.toUpperCase(), count: thumbs.length, thumbs }; });
     const portraitThumbs = D.portraits.map((p, i) => ({ ...p, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
       style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
 
@@ -244,7 +246,7 @@ export class CreateLogic extends DCLogic {
     return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, portrait.label, 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
-      name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
+      name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs, portraitGroups,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),

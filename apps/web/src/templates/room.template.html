@@ -45,7 +45,7 @@
 </div>
 <div style="display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #10151F; border: 1px solid #232D3F">
 <div style="position: relative">
-<img src="{{start.img}}" alt="{{start.title}}" style="{{start.imgStyle}}">
+<button type="button" onClick="{{start.zoom}}" aria-label="Enlarge the art for {{start.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{start.img}}" alt="{{start.title}}" style="{{start.imgStyle}}"></button>
 <span style="position: absolute; right: 12px; top: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(10, 13, 19, 0.8); font-size: 11px; color: #A3AEC2">{{start.artNote}}</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px; padding: 18px 20px">
