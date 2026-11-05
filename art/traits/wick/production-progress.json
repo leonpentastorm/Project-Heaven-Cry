@@ -109,11 +109,12 @@
     "hold-the-stroke",
     "parallel-thought",
     "footnote",
-    "lab-coat"
+    "lab-coat",
+    "overruled"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 30
+    "perks": 31
   },
   "revision_rounds": {
     "field-surgeon": 3,

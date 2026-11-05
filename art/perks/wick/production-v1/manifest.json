@@ -649,6 +649,29 @@
       },
       "batch": "E",
       "source_sha256": "1248d0368a9403bae396e1a578abe064d5c92a9552ec49a2103280b969344c98"
+    },
+    {
+      "id": "overruled",
+      "data_id": "overruled",
+      "name": "Overruled!",
+      "family": "perks",
+      "order": 29,
+      "mood": "Comic, Proud",
+      "action": "Wick leaps off both boots, swinging a gavel bigger than its head down onto a sounding block, a motion arc behind it.",
+      "screen": "Triumphant grin",
+      "prop": "Gavel",
+      "path": "art/perks/wick/production-v1/overruled.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/overruled.png",
+        "128": "art/perks/wick/production-v1/exports/128/overruled.png",
+        "64": "art/perks/wick/production-v1/exports/64/overruled.png",
+        "56": "art/perks/wick/production-v1/exports/56/overruled.png",
+        "48": "art/perks/wick/production-v1/exports/48/overruled.png",
+        "44": "art/perks/wick/production-v1/exports/44/overruled.png",
+        "40": "art/perks/wick/production-v1/exports/40/overruled.png"
+      },
+      "batch": "E",
+      "source_sha256": "a179cdfe8ab1665d00600a17e8dd30e48dd046765b6cb6e7e0d8f84780b19041"
     }
   ]
 }
