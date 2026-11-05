@@ -1086,6 +1086,29 @@
       },
       "batch": "C",
       "source_sha256": "33c789846085afd9abb25da865dbb490a387a69abb4ff044a1445b6d92c4c9b4"
+    },
+    {
+      "id": "grudge-bearer",
+      "data_id": "grudge_bearer",
+      "name": "Grudge Bearer",
+      "family": "traits",
+      "order": 57,
+      "mood": "Ugly, Comic",
+      "action": "Wick hunches over, glaring sideways, scratching one more tally mark onto a scroll so long it pools around its boots",
+      "screen": "Narrowed glare",
+      "prop": "Tally scroll",
+      "path": "art/traits/wick/production-v1/grudge-bearer.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/grudge-bearer.png",
+        "128": "art/traits/wick/production-v1/exports/128/grudge-bearer.png",
+        "64": "art/traits/wick/production-v1/exports/64/grudge-bearer.png",
+        "56": "art/traits/wick/production-v1/exports/56/grudge-bearer.png",
+        "48": "art/traits/wick/production-v1/exports/48/grudge-bearer.png",
+        "44": "art/traits/wick/production-v1/exports/44/grudge-bearer.png",
+        "40": "art/traits/wick/production-v1/exports/40/grudge-bearer.png"
+      },
+      "batch": "C",
+      "source_sha256": "02356453241f4698f364d2a77c45f903fa4b2cb5a794837a019c39fdc7f434b5"
     }
   ]
 }

@@ -63,10 +63,11 @@
     "born-officer",
     "cold-case",
     "interrogator",
-    "trench-poet"
+    "trench-poet",
+    "grudge-bearer"
   ],
   "catalog_coverage": {
-    "traits": 56,
+    "traits": 57,
     "perks": 2
   },
   "revision_rounds": {

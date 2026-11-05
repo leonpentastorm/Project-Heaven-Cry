@@ -2743,6 +2743,30 @@
         "44": "art/traits/wick/production-v1/exports/44/trench-poet.png",
         "40": "art/traits/wick/production-v1/exports/40/trench-poet.png"
       }
+    },
+    "grudge-bearer": {
+      "label": "Wick — Grudge Bearer",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/grudge-bearer.png",
+      "sha256": "12414614c56bffc88d1bce715264efc7f0353fca22a9a8e147b348074a5651da",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "grudge_bearer",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/grudge-bearer.png",
+        "128": "art/traits/wick/production-v1/exports/128/grudge-bearer.png",
+        "64": "art/traits/wick/production-v1/exports/64/grudge-bearer.png",
+        "56": "art/traits/wick/production-v1/exports/56/grudge-bearer.png",
+        "48": "art/traits/wick/production-v1/exports/48/grudge-bearer.png",
+        "44": "art/traits/wick/production-v1/exports/44/grudge-bearer.png",
+        "40": "art/traits/wick/production-v1/exports/40/grudge-bearer.png"
+      }
     }
   },
   "character_collections": {
