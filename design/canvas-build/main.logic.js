@@ -1,4 +1,5 @@
 const D = __DATA__;
+/*EPCCG*/
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
 // MPAT: the EPCCG's own 10-point build (Athletics 3, Dexterity 2, Camaraderie 3, Authority 2), levelled to 5.
@@ -55,7 +56,7 @@ class Component extends DCLogic {
     };
     const sheetSkills = D.skills.filter((s) => s.core === S.core).map((s) => {
       const p = PTS[s.id] || 0, m = mod(p), ink = ATTR[s.attr].ink, done = !!S.asked[s.id];
-      return { img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), ask: ask(s.id), noAsk: done || p === 0, askLabel: done ? 'Asked' : 'Ask',
+      return { img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), ask: ask(s.id), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink), noAsk: done || p === 0, askLabel: done ? 'Asked' : 'Ask',
         nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (p ? ink : '#A3AEC2'), modStyle: 'font-size: 13px; text-align: right; color: ' + (p ? '#E7EBF3' : '#7F8BA1'),
         askStyle: 'min-height: 32px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' + (done || p === 0 ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + ink + '; background: transparent; color: ' + ink) };
     });
@@ -128,7 +129,7 @@ class Component extends DCLogic {
       custom: S.custom, toggleCustom: () => this.setState({ custom: !this.state.custom }), customPressed: S.custom ? 'true' : 'false', customLabel: S.custom ? 'Done' : 'Customise',
       waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
       throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
-      echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
+      ...epccgVals(this), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       status, gear, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),

@@ -1,4 +1,5 @@
 const D = __DATA__;
+/*EPCCG*/
 const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['kit', 'Kit'], ['lockin', 'Lock in']];
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const CORES = ['body', 'mind', 'soul'];
@@ -109,7 +110,8 @@ class Component extends DCLogic {
             modStyle: 'font-size: 11px; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
             nameStyle: 'font-size: 12px; font-weight: 700; line-height: 1.2; min-height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
             inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: p >= CAP || left <= 0, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
-            style: 'display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
+            help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'position: absolute; top: 10px; right: 10px'),
+            style: 'position: relative; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
         }),
       })),
     }));
@@ -149,7 +151,7 @@ class Component extends DCLogic {
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
 
-    return {
+    return { ...epccgVals(this),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' / 10 SKILL POINTS LEFT', budgetChipStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'),
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,

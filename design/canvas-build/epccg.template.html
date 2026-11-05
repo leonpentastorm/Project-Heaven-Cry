@@ -1,0 +1,34 @@
+<sc-if value="{{epOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="{{ep.title}}" style="position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 7, 11, 0.86)">
+<article style="{{ep.boxStyle}}">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{ep.kicker}}</span>
+<h2 style="{{ep.nameStyle}}">{{ep.name}}</h2>
+<span style="font-size: 13px; color: #A3AEC2">{{ep.line}}</span>
+</div>
+<button type="button" onClick="{{closeEpccg}}" aria-label="Close the EPCCG entry" style="margin-left: auto; flex: none; min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close ✕</button>
+</div>
+<div style="display: flex; gap: 24px; flex-wrap: wrap">
+<figure style="margin: 0; flex: 0 0 240px; display: flex; flex-direction: column; gap: 8px">
+<img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 240px; height: 300px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F">
+<figcaption style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 700">{{ep.pictured}}</span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{ep.caption}}</span>
+</figcaption>
+</figure>
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<blockquote style="{{ep.quoteStyle}}">
+<sc-for list="{{ep.quote}}" as="q" hint-placeholder-count="2"><p style="{{q.style}}">{{q.text}}</p></sc-for>
+<footer style="font-size: 13px; color: #A3AEC2">{{ep.speaker}}</footer>
+</blockquote>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.6; color: #E7EBF3">{{ep.intro}}</p>
+<dl style="margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 8px 14px; font-size: 14px; line-height: 1.45">
+<sc-for list="{{ep.rows}}" as="r" hint-placeholder-count="4"><dt style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; padding-top: 3px">{{r.k}}</dt><dd style="margin: 0; color: #DCE2EC">{{r.v}}</dd></sc-for>
+</dl>
+<span style="font-size: 12px; line-height: 1.45; color: #7F8BA1">{{ep.note}}</span>
+</div>
+</div>
+</article>
+</div>
+</sc-if>

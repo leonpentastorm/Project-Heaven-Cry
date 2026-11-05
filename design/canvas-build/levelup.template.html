@@ -29,9 +29,12 @@
 </div>
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SPEND 1 SKILL POINT · A SKILL CAN'T PASS ITS ATTRIBUTE</span>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px">
 <sc-for list="{{skillRows}}" as="s" hint-placeholder-count="9">
+<div style="display: flex; gap: 6px; align-items: center">
 <button type="button" onClick="{{s.pick}}" disabled="{{s.blocked}}" title="{{s.why}}" style="{{s.style}}"><img src="{{s.img}}" alt="" style="width: 32px; height: 40px; object-fit: cover; border-radius: 4px; background: #000"><span style="display: flex; flex-direction: column; align-items: flex-start; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.note}}</span></span><span style="margin-left: auto; font-size: 18px; font-weight: 700">{{s.pts}}</span></button>
+<button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{s.helpStyle}}">?</button>
+</div>
 </sc-for>
 </div>
 </div>
@@ -50,4 +53,5 @@
 <button type="button" disabled="{{notDone}}" style="{{doneStyle}}">{{doneLabel}}</button>
 </aside>
 </div>
+<!--EPCCG-->
 </div>

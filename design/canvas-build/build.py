@@ -36,13 +36,27 @@ CORE_TEXT = {
     "soul": ["The heart: emotional awareness and social perception.", "Insight · Determination · Virtue", "Spends mana on Soul spells and prayer"],
 }
 
+def epccg(x):
+    """The skill's EPCCG write-up for the "?" pop-up, with its First-Patch Revival portrait."""
+    e = x["epccg"]
+    return {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
+            "quote": e["quote"], "intro": e["intro"], "effect": e["effect"], "high": e["high_levels"],
+            "good": e["good_for"], "bad": e["bad_for"]}
+
+EP_TPL = (BUILD / "epccg.template.html").read_text()
+EP_JS = (BUILD / "epccg.logic.js").read_text()
+
+def with_epccg(tpl, js):
+    """Inline the shared EPCCG pop-up where a template or logic file asks for it."""
+    return tpl.replace("<!--EPCCG-->", EP_TPL), js.replace("/*EPCCG*/", EP_JS)
+
 def skills():
     out = []
     for x in load("skills.json")["items"]:
         out.append({
             "id": x["id"], "name": x["name"], "attr": x["attribute"], "core": x["core"], "slot": x["slot"],
             "summary": x["summary"], "quiet": x["voice"]["sample_lines"]["quiet"], "notices": x["voice"]["sample_lines"]["notices"],
-            "img": BLOBS["skill-" + x["id"].replace("_", "-")],
+            "img": BLOBS["skill-" + x["id"].replace("_", "-")], "ep": epccg(x),
         })
     return out
 
@@ -150,8 +164,8 @@ def build():
         "traits": traits(), "portraits": PORTRAITS, "kits": KITS, "core": CORE, "coreText": CORE_TEXT,
         "wick": BLOBS["wick-mind-without-fog"],
     }
-    tpl = (BUILD / "create.template.html").read_text()
-    js = (BUILD / "create.logic.js").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False))
+    tpl, js = with_epccg((BUILD / "create.template.html").read_text(),
+                         (BUILD / "create.logic.js").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False)))
     (OUT / "Create.dc.html").write_text(page("PHC · Character creation (EPCCG)", tpl.replace("__WICK__", BLOBS["wick-mind-without-fog"]), js,
         '{"startStep":{"editor":"enum","options":["identity","archetype","skills","traits","kit","lockin"],"default":"identity"},"sampleArch":{"editor":null},"sampleName":{"editor":null},"$preview":{"width":1440,"height":1000}}'))
     for fname, title, step, arch, name, h in [
@@ -165,8 +179,8 @@ def build():
     print("built Create + 5 step artboards")
     mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
              "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "wick": BLOBS["wick-mind-without-fog"]}
-    tpl = (BUILD / "main.template.html").read_text()
-    js = (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False))
+    tpl, js = with_epccg((BUILD / "main.template.html").read_text(),
+                         (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False)))
     (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))
     print("built Main")
     common = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
@@ -174,8 +188,8 @@ def build():
     for name, fname, title, h in [("combat", "Combat.dc.html", "PHC · Combat · M813 rear pad", 1160),
                                   ("room", "Room.dc.html", "PHC · Room · squad and Narrator", 1500),
                                   ("levelup", "LevelUp.dc.html", "PHC · Level up · level 3 and class", 1200)]:
-        tpl = (BUILD / (name + ".template.html")).read_text()
-        js = (BUILD / (name + ".logic.js")).read_text().replace("__DATA__", json.dumps(common, ensure_ascii=False))
+        tpl, js = with_epccg((BUILD / (name + ".template.html")).read_text(),
+                             (BUILD / (name + ".logic.js")).read_text().replace("__DATA__", json.dumps(common, ensure_ascii=False)))
         (OUT / fname).write_text(page(title, tpl, js, '{"$preview":{"width":1440,"height":%d}}' % h))
     print("built Combat, Room, LevelUp")
 

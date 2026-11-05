@@ -47,9 +47,10 @@
 </div>
 <span style="font-size: 12px; color: #A3AEC2">Ask a skill what it thinks: once per scene each.</span>
 <sc-for list="{{sheetSkills}}" as="s" hint-placeholder-count="9">
-<div style="display: grid; grid-template-columns: 36px minmax(0, 1fr) 52px 54px; gap: 8px; align-items: center">
+<div style="display: grid; grid-template-columns: 36px minmax(0, 1fr) 28px 52px 54px; gap: 8px; align-items: center">
 <img src="{{s.img}}" alt="" style="width: 36px; height: 45px; object-fit: cover; border-radius: 4px; background: #000">
 <span style="display: flex; flex-direction: column; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.attr}}</span></span>
+<button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{s.helpStyle}}">?</button>
 <span style="{{s.modStyle}}">{{s.pts}} · {{s.mod}}</span>
 <button type="button" onClick="{{s.ask}}" disabled="{{s.noAsk}}" aria-label="Ask {{s.name}}" style="{{s.askStyle}}">{{s.askLabel}}</button>
 </div>
@@ -256,4 +257,5 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 </div>
 </sc-if>
+<!--EPCCG-->
 </div>

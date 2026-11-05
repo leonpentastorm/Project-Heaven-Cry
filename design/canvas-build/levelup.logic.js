@@ -1,4 +1,5 @@
 const D = __DATA__;
+/*EPCCG*/
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
@@ -28,8 +29,8 @@ class Component extends DCLogic {
       const ink = ATTR[s.attr].ink;
       return { img: s.img, name: s.name, pts: p, blocked, why: base >= cap ? 'Needs ' + ATTR[s.attr].name + ' ' + (cap + 1) + ': an attribute point at level 4' : '',
         note: mine ? '+1 this level · tap to undo' : base >= cap ? 'Capped by ' + ATTR[s.attr].name + ' ' + cap : ATTR[s.attr].name + ' ' + cap,
-        pick: () => this.setState({ spent: mine ? null : s.id }), nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (blocked && !mine ? '#7F8BA1' : ink),
-        style: 'display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (mine ? 'background: #1C2536; border: 1px solid ' + ink : 'background: #0A0D13; border: 1px solid #232D3F') + (blocked && !mine ? '; opacity: 0.6' : '') };
+        pick: () => this.setState({ spent: mine ? null : s.id }), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink), nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (blocked && !mine ? '#7F8BA1' : ink),
+        style: 'flex: 1; min-width: 0; display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (mine ? 'background: #1C2536; border: 1px solid ' + ink : 'background: #0A0D13; border: 1px solid #232D3F') + (blocked && !mine ? '; opacity: 0.6' : '') };
     });
     const cores = { body: 1, mind: 1, soul: 1 };
     D.attrs.forEach((a) => { if (ATTRV[a.id] > cores[a.core]) cores[a.core] = ATTRV[a.id]; });
@@ -37,7 +38,7 @@ class Component extends DCLogic {
       nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 40px; font-weight: 700; color: ' + D.core[c] }));
     const done = !!S.spent && !!cls;
     const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
-    return { pc: D.pc, classCards, skillRows, coreRows, pointChip: S.spent ? '✓ SKILL POINT SPENT' : '◆ 1 SKILL POINT', pointChipStyle: chip(!!S.spent),
+    return { ...epccgVals(this), pc: D.pc, classCards, skillRows, coreRows, pointChip: S.spent ? '✓ SKILL POINT SPENT' : '◆ 1 SKILL POINT', pointChipStyle: chip(!!S.spent),
       classChip: cls ? '✓ ' + D.classes.find((c) => c.id === cls).name.toUpperCase() : '◆ CHOOSE A CLASS', classChipStyle: chip(!!cls), notDone: !done,
       doneLabel: done ? 'Confirm level 3' : 'Spend the point and choose a class',
       doneStyle: 'min-height: 50px; border-radius: 12px; border: 0; font-family: inherit; font-size: 15px; font-weight: 700; ' + (done ? 'background: #6FEA77; color: #0A0D13; cursor: pointer' : 'background: #1C2536; color: #A3AEC2') };

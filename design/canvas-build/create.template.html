@@ -169,6 +169,7 @@
 <sc-for list="{{a.cards}}" as="k" hint-placeholder-count="3">
 <div onMouseEnter="{{k.hover}}" style="{{k.style}}">
 <img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; max-height: 118px; object-fit: cover; border-radius: 6px; background: #000">
+<button type="button" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
 <span style="{{k.nameStyle}}">{{k.name}}</span>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px">
 <button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" disabled="{{k.noDec}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">‹</button>
@@ -278,4 +279,5 @@
 <button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">‹ Back</button>
 <button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Next ›</button>
 </footer>
+<!--EPCCG-->
 </div>
