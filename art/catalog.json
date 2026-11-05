@@ -3419,6 +3419,30 @@
         "44": "art/perks/wick/production-v1/exports/44/bedside-manner.png",
         "40": "art/perks/wick/production-v1/exports/40/bedside-manner.png"
       }
+    },
+    "breaching-strike": {
+      "label": "Wick — Breaching Strike",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/breaching-strike.png",
+      "sha256": "dc64b9b975d5ad5e7d8d2e5cea0e5f36a9366ca72b672969356dce6e7be149b5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "breaching_strike",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/breaching-strike.png",
+        "128": "art/perks/wick/production-v1/exports/128/breaching-strike.png",
+        "64": "art/perks/wick/production-v1/exports/64/breaching-strike.png",
+        "56": "art/perks/wick/production-v1/exports/56/breaching-strike.png",
+        "48": "art/perks/wick/production-v1/exports/48/breaching-strike.png",
+        "44": "art/perks/wick/production-v1/exports/44/breaching-strike.png",
+        "40": "art/perks/wick/production-v1/exports/40/breaching-strike.png"
+      }
     }
   },
   "illustrations": {

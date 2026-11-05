@@ -143,6 +143,29 @@
       },
       "batch": "D",
       "source_sha256": "bd1565aa0c1cbe87d4315c472bac51f89f6be082c6303d3a71a6a5d89e0faae1"
+    },
+    {
+      "id": "breaching-strike",
+      "data_id": "breaching_strike",
+      "name": "Breaching Strike",
+      "family": "perks",
+      "order": 7,
+      "mood": "Heroic",
+      "action": "Wick swings a sledgehammer bigger than itself through a sandbag barricade in a full twisting follow-through, sandbags flying back.",
+      "screen": "Fierce",
+      "prop": "Sledgehammer",
+      "path": "art/perks/wick/production-v1/breaching-strike.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/breaching-strike.png",
+        "128": "art/perks/wick/production-v1/exports/128/breaching-strike.png",
+        "64": "art/perks/wick/production-v1/exports/64/breaching-strike.png",
+        "56": "art/perks/wick/production-v1/exports/56/breaching-strike.png",
+        "48": "art/perks/wick/production-v1/exports/48/breaching-strike.png",
+        "44": "art/perks/wick/production-v1/exports/44/breaching-strike.png",
+        "40": "art/perks/wick/production-v1/exports/40/breaching-strike.png"
+      },
+      "batch": "D",
+      "source_sha256": "f4eb857930679a9fe78da2d121adf0d1b9c64a9ae4159c174d1e67d7e9d0f47c"
     }
   ]
 }

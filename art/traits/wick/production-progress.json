@@ -87,11 +87,12 @@
     "used-to-the-pain",
     "scar-tissue",
     "wind-on-the-skin",
-    "bedside-manner"
+    "bedside-manner",
+    "breaching-strike"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 8
+    "perks": 9
   },
   "revision_rounds": {
     "field-surgeon": 3,
