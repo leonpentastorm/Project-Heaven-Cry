@@ -19,10 +19,11 @@
   "new_icons_delivered": [
     "southern-fist",
     "blade-recluse",
-    "grenadiers-arm"
+    "grenadiers-arm",
+    "glass-runner"
   ],
   "catalog_coverage": {
-    "traits": 12,
+    "traits": 13,
     "perks": 2
   }
 }

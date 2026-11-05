@@ -53,6 +53,29 @@
       "source_sha256": "fe55717324670c13edfa5646c8d0b1ca5be2270cfedd3797d4d7632b84d82812"
     },
     {
+      "id": "glass-runner",
+      "data_id": "glass_runner",
+      "name": "Glass Runner",
+      "family": "traits",
+      "order": 6,
+      "mood": "Tense, Comic",
+      "action": "Wick bursts off a starting block in a flat-out low sprint, speed lines behind, hairline fracture lines spidering up one shin like cracked glass",
+      "screen": "Determined, sweat drop",
+      "prop": "Starting block",
+      "path": "art/traits/wick/production-v1/glass-runner.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/glass-runner.png",
+        "128": "art/traits/wick/production-v1/exports/128/glass-runner.png",
+        "64": "art/traits/wick/production-v1/exports/64/glass-runner.png",
+        "56": "art/traits/wick/production-v1/exports/56/glass-runner.png",
+        "48": "art/traits/wick/production-v1/exports/48/glass-runner.png",
+        "44": "art/traits/wick/production-v1/exports/44/glass-runner.png",
+        "40": "art/traits/wick/production-v1/exports/40/glass-runner.png"
+      },
+      "batch": "A",
+      "source_sha256": "ee7d5f2a3f5fb2e95353b093ad882b0ea983cc5f5d8b31f68bc8686dc99082e6"
+    },
+    {
       "id": "blade-recluse",
       "data_id": "blade_recluse",
       "name": "Blade Recluse",
