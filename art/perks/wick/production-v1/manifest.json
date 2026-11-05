@@ -580,6 +580,29 @@
       },
       "batch": "E",
       "source_sha256": "e8bd3aed06a6f0ea8d980fb59ad481960e485aedcee288c87b40647c329446a2"
+    },
+    {
+      "id": "parallel-thought",
+      "data_id": "parallel_thought",
+      "name": "Parallel Thought",
+      "family": "perks",
+      "order": 26,
+      "mood": "Calm, Proud",
+      "action": "Wick sits with one knee up, drawing a new geometric sigil with its Evoker while a finished sigil still spins on its free mitten.",
+      "screen": "Two interlocking gears",
+      "prop": "Evoker",
+      "path": "art/perks/wick/production-v1/parallel-thought.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/parallel-thought.png",
+        "128": "art/perks/wick/production-v1/exports/128/parallel-thought.png",
+        "64": "art/perks/wick/production-v1/exports/64/parallel-thought.png",
+        "56": "art/perks/wick/production-v1/exports/56/parallel-thought.png",
+        "48": "art/perks/wick/production-v1/exports/48/parallel-thought.png",
+        "44": "art/perks/wick/production-v1/exports/44/parallel-thought.png",
+        "40": "art/perks/wick/production-v1/exports/40/parallel-thought.png"
+      },
+      "batch": "E",
+      "source_sha256": "4e58f0d37464854c23101d5ea70ba13bf80dbafe6834fd2a9fbabd384cf9230d"
     }
   ]
 }

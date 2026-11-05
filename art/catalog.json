@@ -3875,6 +3875,30 @@
         "44": "art/perks/wick/production-v1/exports/44/hold-the-stroke.png",
         "40": "art/perks/wick/production-v1/exports/40/hold-the-stroke.png"
       }
+    },
+    "parallel-thought": {
+      "label": "Wick — Parallel Thought",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/parallel-thought.png",
+      "sha256": "360447b90e393a4d96b3194598372152ffc967ba3cf4bd48d05237f085f6bcbf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "parallel_thought",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/parallel-thought.png",
+        "128": "art/perks/wick/production-v1/exports/128/parallel-thought.png",
+        "64": "art/perks/wick/production-v1/exports/64/parallel-thought.png",
+        "56": "art/perks/wick/production-v1/exports/56/parallel-thought.png",
+        "48": "art/perks/wick/production-v1/exports/48/parallel-thought.png",
+        "44": "art/perks/wick/production-v1/exports/44/parallel-thought.png",
+        "40": "art/perks/wick/production-v1/exports/40/parallel-thought.png"
+      }
     }
   },
   "illustrations": {
