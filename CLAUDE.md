@@ -8,7 +8,7 @@ This file is the hand-off from the design sessions in claude.ai. Read it first, 
 
 1. **`docs/rules/PHC-Core-Rules-v1.0.md`** — the rules spec, every number. Exported from the living Claude Doc (links below). If the spec and the data disagree, **the spec wins and the data is the bug**.
 2. **`data/*.json`** — machine-readable rules the engine loads. Conventions in `data/CONVENTIONS.md`. Run `python3 tools/validate.py data` after any change; it must print `0 errors`.
-3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI. For the world's people, factions and voice, the **EPCCG** (`source/2020/english/EPCCG-Player-Character-Creation-Guide-EN.txt`, indexed in `docs/lore/EPCCG-Cast-and-Factions.md`) is the original source; the World Bible layers the simulation truth on top of it.
+3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI. **Lore is layered:** the **EPCCG** (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) is the base for the world's people, factions and voice; the **World Bible** layers the hidden simulation truth on top; MPAT/M813 and Wick build on both. Index: `docs/lore/README.md`.
 4. **`design/canvas/`** — UI prototypes (Design Component `.dc.html` files from the claude.ai design canvas). Reference for layout and interaction, not production code.
 
 Living versions (edit there, then re-export here):
@@ -32,7 +32,9 @@ The 2020 originals (`Official_EPCCG.docx`, `PHC_Official_Character_Sheet.xlsx`, 
 ```
 CLAUDE.md                 this brief
 docs/rules/               PHC-Core-Rules-v1.0.md (the spec)
-docs/lore/                Narrators-World-Bible.md, MPAT-and-M813.md, EPCCG-Cast-and-Factions.md, Wick.md
+docs/lore/                README.md (reading order), EPCCG-Player-Character-Creation-Guide.md (base),
+                          Narrators-World-Bible.md (truth layer), EPCCG-Cast-and-Factions.md,
+                          MPAT-and-M813.md, Wick.md
 docs/design/              Class-Roster-Rev2.md, Recovered-Design-Notes-2020.md,
                           decisions.md (why things are the way they are), ui-screens.md,
                           colour-system.md
@@ -42,7 +44,7 @@ design/canvas/            UI prototypes (.dc.html) + canvas.json layout
 art/                      art library: catalog.json, skills/, character-portraits/, traits/ (Wick),
                           style-guide/v1.3/PHC-Style-Guide.md, briefs/
 scripts/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
-source/2020/              original material; english/ holds the EPCCG guide and 2020 trait book in English
+source/2020/              original material; english/ holds the 2020 trait book in English (superseded)
 ```
 
 ## The game in one screen
