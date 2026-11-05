@@ -2252,8 +2252,8 @@
     "upper-touched": {
       "label": "Wick — Upper-Touched",
       "collection": "wick-production-v1",
-      "path": "art/traits/wick/production-v1/upper-touched.png",
-      "sha256": "148ef6cd692904a5a00032daadc3132a7c2b1eb4115ba4cb77d10dd484a342a2",
+      "path": "art/traits/wick/production-v1/revisions/v2/upper-touched.png",
+      "sha256": "af4c610beb81ca39f976ad953fd48e762ac3a165dbfc0b97566b6a11a52a697a",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -2264,14 +2264,17 @@
       "production_approved": false,
       "batch": "B",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/upper-touched.png",
-        "128": "art/traits/wick/production-v1/exports/128/upper-touched.png",
-        "64": "art/traits/wick/production-v1/exports/64/upper-touched.png",
-        "56": "art/traits/wick/production-v1/exports/56/upper-touched.png",
-        "48": "art/traits/wick/production-v1/exports/48/upper-touched.png",
-        "44": "art/traits/wick/production-v1/exports/44/upper-touched.png",
-        "40": "art/traits/wick/production-v1/exports/40/upper-touched.png"
-      }
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/upper-touched.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/upper-touched.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/upper-touched.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/upper-touched.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/upper-touched.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/upper-touched.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/upper-touched.png"
+      },
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/upper-touched.png",
+      "previous_revision_path": "art/traits/wick/production-v1/upper-touched.png"
     },
     "gun-nut": {
       "label": "Wick — Gun Nut",

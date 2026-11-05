@@ -620,21 +620,24 @@
       "family": "traits",
       "order": 33,
       "mood": "Eerie, Tender",
-      "action": "Wick lies on its back waving up at a dotted-outline copy of its own head peering down over the top edge of the frame",
+      "action": "REVIEW3 SMALL FIX: Preserve Wick lying on its back and waving up at a ghostly copy of its own head peering down from above. Replace the many tiny dots of the twin head outline with FEWER, MUCH BIGGER DASHES: about EIGHT thick long separated outline segments describing the chamfered rectangular Wick head. Each dash should remain visible at44px. Keep the twin's two simple pixel eyes and small mouth, no twin body. Main Wick remains a single full figure with visible capelet and chest lantern.",
       "screen": "Small wave-back smile",
       "prop": "Dotted twin head",
-      "path": "art/traits/wick/production-v1/upper-touched.png",
+      "path": "art/traits/wick/production-v1/revisions/v2/upper-touched.png",
       "exports": {
-        "256": "art/traits/wick/production-v1/exports/256/upper-touched.png",
-        "128": "art/traits/wick/production-v1/exports/128/upper-touched.png",
-        "64": "art/traits/wick/production-v1/exports/64/upper-touched.png",
-        "56": "art/traits/wick/production-v1/exports/56/upper-touched.png",
-        "48": "art/traits/wick/production-v1/exports/48/upper-touched.png",
-        "44": "art/traits/wick/production-v1/exports/44/upper-touched.png",
-        "40": "art/traits/wick/production-v1/exports/40/upper-touched.png"
+        "256": "art/traits/wick/production-v1/revisions/v2/exports/256/upper-touched.png",
+        "128": "art/traits/wick/production-v1/revisions/v2/exports/128/upper-touched.png",
+        "64": "art/traits/wick/production-v1/revisions/v2/exports/64/upper-touched.png",
+        "56": "art/traits/wick/production-v1/revisions/v2/exports/56/upper-touched.png",
+        "48": "art/traits/wick/production-v1/revisions/v2/exports/48/upper-touched.png",
+        "44": "art/traits/wick/production-v1/revisions/v2/exports/44/upper-touched.png",
+        "40": "art/traits/wick/production-v1/revisions/v2/exports/40/upper-touched.png"
       },
       "batch": "B",
-      "source_sha256": "46ad61edd4060cda2151ef9a9e4e36ac5349065c8a1e5e974864efa2ac0d1b8a"
+      "source_sha256": "7b7c92b721c60d30acb7b4c901a9ac9e0def7dab045dacce1bd18ef74cebcd56",
+      "revision": 2,
+      "previous_path": "art/traits/wick/production-v1/upper-touched.png",
+      "previous_revision_path": "art/traits/wick/production-v1/upper-touched.png"
     },
     {
       "id": "gun-nut",
