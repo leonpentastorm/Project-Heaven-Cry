@@ -1017,6 +1017,29 @@
       },
       "batch": "C",
       "source_sha256": "021e204d1cfef83b7a1a924d937c52cc744a3b91159f46e941e2442a5fe265ae"
+    },
+    {
+      "id": "cold-case",
+      "data_id": "cold_case",
+      "name": "Cold Case",
+      "family": "traits",
+      "order": 54,
+      "mood": "Tense, Comic",
+      "action": "Wick crouches nose to the ground, peering through a big magnifying glass that blows one of its screen eyes up huge",
+      "screen": "One magnified eye",
+      "prop": "Magnifying glass",
+      "path": "art/traits/wick/production-v1/cold-case.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/cold-case.png",
+        "128": "art/traits/wick/production-v1/exports/128/cold-case.png",
+        "64": "art/traits/wick/production-v1/exports/64/cold-case.png",
+        "56": "art/traits/wick/production-v1/exports/56/cold-case.png",
+        "48": "art/traits/wick/production-v1/exports/48/cold-case.png",
+        "44": "art/traits/wick/production-v1/exports/44/cold-case.png",
+        "40": "art/traits/wick/production-v1/exports/40/cold-case.png"
+      },
+      "batch": "C",
+      "source_sha256": "d4471aa22ecdca218ed041ecd6fafec0666fc3b91b67950ebc70126de1f525ff"
     }
   ]
 }

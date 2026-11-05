@@ -60,10 +60,11 @@
     "company-man",
     "field-medic",
     "squad-anchor",
-    "born-officer"
+    "born-officer",
+    "cold-case"
   ],
   "catalog_coverage": {
-    "traits": 53,
+    "traits": 54,
     "perks": 2
   },
   "revision_rounds": {

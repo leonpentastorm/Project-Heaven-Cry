@@ -2671,6 +2671,30 @@
         "44": "art/traits/wick/production-v1/exports/44/born-officer.png",
         "40": "art/traits/wick/production-v1/exports/40/born-officer.png"
       }
+    },
+    "cold-case": {
+      "label": "Wick — Cold Case",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/cold-case.png",
+      "sha256": "f67434ca669f237eb6e956addec0c1db7ddc6bad24a9de74d04d13c26a481b59",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "cold_case",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/cold-case.png",
+        "128": "art/traits/wick/production-v1/exports/128/cold-case.png",
+        "64": "art/traits/wick/production-v1/exports/64/cold-case.png",
+        "56": "art/traits/wick/production-v1/exports/56/cold-case.png",
+        "48": "art/traits/wick/production-v1/exports/48/cold-case.png",
+        "44": "art/traits/wick/production-v1/exports/44/cold-case.png",
+        "40": "art/traits/wick/production-v1/exports/40/cold-case.png"
+      }
     }
   },
   "character_collections": {
