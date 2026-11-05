@@ -37,10 +37,11 @@
     "symbol-of-order",
     "rogue-element",
     "the-soundscape-of-the-soul",
-    "headbanger"
+    "headbanger",
+    "underground-sound"
   ],
   "catalog_coverage": {
-    "traits": 30,
+    "traits": 31,
     "perks": 2
   },
   "revision_rounds": {

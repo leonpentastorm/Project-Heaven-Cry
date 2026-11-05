@@ -488,6 +488,29 @@
       },
       "batch": "B",
       "source_sha256": "88adf002f0498fb636688016c45dc4d86e78de530ae45f240f5b27bcf8a69fb7"
+    },
+    {
+      "id": "underground-sound",
+      "data_id": "underground_sound",
+      "name": "Underground Sound",
+      "family": "traits",
+      "order": 27,
+      "mood": "Comic",
+      "action": "Seen from three-quarters behind (capelet showing), Wick strolls with a smug head tilt and two pairs of headphones stacked on its head",
+      "screen": "Smug half-lids (in profile)",
+      "prop": "Stacked headphones",
+      "path": "art/traits/wick/production-v1/underground-sound.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/underground-sound.png",
+        "128": "art/traits/wick/production-v1/exports/128/underground-sound.png",
+        "64": "art/traits/wick/production-v1/exports/64/underground-sound.png",
+        "56": "art/traits/wick/production-v1/exports/56/underground-sound.png",
+        "48": "art/traits/wick/production-v1/exports/48/underground-sound.png",
+        "44": "art/traits/wick/production-v1/exports/44/underground-sound.png",
+        "40": "art/traits/wick/production-v1/exports/40/underground-sound.png"
+      },
+      "batch": "B",
+      "source_sha256": "b365acc1162f92e80f916ee8db9ed2447ceeb048394e039dc1ebb2fc5233b013"
     }
   ]
 }

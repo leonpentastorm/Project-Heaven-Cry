@@ -2119,6 +2119,30 @@
         "44": "art/traits/wick/production-v1/exports/44/headbanger.png",
         "40": "art/traits/wick/production-v1/exports/40/headbanger.png"
       }
+    },
+    "underground-sound": {
+      "label": "Wick — Underground Sound",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/underground-sound.png",
+      "sha256": "8dfa99de802b32bf675d5976387753167941271b6592ab4ec57f6d5e3500f351",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "underground_sound",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/underground-sound.png",
+        "128": "art/traits/wick/production-v1/exports/128/underground-sound.png",
+        "64": "art/traits/wick/production-v1/exports/64/underground-sound.png",
+        "56": "art/traits/wick/production-v1/exports/56/underground-sound.png",
+        "48": "art/traits/wick/production-v1/exports/48/underground-sound.png",
+        "44": "art/traits/wick/production-v1/exports/44/underground-sound.png",
+        "40": "art/traits/wick/production-v1/exports/40/underground-sound.png"
+      }
     }
   },
   "character_collections": {
