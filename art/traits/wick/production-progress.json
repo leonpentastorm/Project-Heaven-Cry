@@ -115,11 +115,12 @@
     "mirage",
     "blueprint",
     "detectives-eye",
-    "pattern-lock"
+    "pattern-lock",
+    "talks-broke-down"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 36
+    "perks": 37
   },
   "revision_rounds": {
     "field-surgeon": 3,

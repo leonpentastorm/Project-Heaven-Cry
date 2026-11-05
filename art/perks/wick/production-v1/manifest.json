@@ -787,6 +787,29 @@
       },
       "batch": "E",
       "source_sha256": "f2aedf8f5f6c440f969d28c437c5efe6430dba8f9f87025360b0a2eaff3a75b2"
+    },
+    {
+      "id": "talks-broke-down",
+      "data_id": "talks_broke_down",
+      "name": "Talks Broke Down",
+      "family": "perks",
+      "order": 35,
+      "mood": "Comic",
+      "action": "From a low squat, Wick heaves a negotiating table up and over, cups and blank papers flying, already grinning.",
+      "screen": "Wild grin",
+      "prop": "Negotiating table",
+      "path": "art/perks/wick/production-v1/talks-broke-down.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/talks-broke-down.png",
+        "128": "art/perks/wick/production-v1/exports/128/talks-broke-down.png",
+        "64": "art/perks/wick/production-v1/exports/64/talks-broke-down.png",
+        "56": "art/perks/wick/production-v1/exports/56/talks-broke-down.png",
+        "48": "art/perks/wick/production-v1/exports/48/talks-broke-down.png",
+        "44": "art/perks/wick/production-v1/exports/44/talks-broke-down.png",
+        "40": "art/perks/wick/production-v1/exports/40/talks-broke-down.png"
+      },
+      "batch": "E",
+      "source_sha256": "eb59ac543f874ff69a15cf97a116cc5319a9915ce61266bfb9fa9ab7b95cc758"
     }
   ]
 }

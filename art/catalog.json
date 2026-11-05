@@ -4091,6 +4091,30 @@
         "44": "art/perks/wick/production-v1/exports/44/pattern-lock.png",
         "40": "art/perks/wick/production-v1/exports/40/pattern-lock.png"
       }
+    },
+    "talks-broke-down": {
+      "label": "Wick — Talks Broke Down",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/talks-broke-down.png",
+      "sha256": "9ff7caf955c5f8ce29df363a66c106cb34927ffabd88a9d213b1ffaf00057bb7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "talks_broke_down",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/talks-broke-down.png",
+        "128": "art/perks/wick/production-v1/exports/128/talks-broke-down.png",
+        "64": "art/perks/wick/production-v1/exports/64/talks-broke-down.png",
+        "56": "art/perks/wick/production-v1/exports/56/talks-broke-down.png",
+        "48": "art/perks/wick/production-v1/exports/48/talks-broke-down.png",
+        "44": "art/perks/wick/production-v1/exports/44/talks-broke-down.png",
+        "40": "art/perks/wick/production-v1/exports/40/talks-broke-down.png"
+      }
     }
   },
   "illustrations": {
