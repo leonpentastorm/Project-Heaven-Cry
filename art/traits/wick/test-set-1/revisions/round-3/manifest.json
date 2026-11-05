@@ -31,6 +31,32 @@
       "previous_path": "art/traits/wick/test-set-1/field-surgeon.png",
       "revision": 3,
       "previous_revision_path": "art/traits/wick/test-set-1/revisions/field-surgeon.png"
+    },
+    {
+      "id": "factory-made",
+      "data_id": "factory_made",
+      "name": "Factory Made",
+      "family": "traits",
+      "order": 29,
+      "mood": "Tender, Grim",
+      "action": "Wick sits on a plain unmarked crate, screwing its own arm back onto its shoulder with an oversized screwdriver",
+      "screen": "Small determined face",
+      "prop": "Screwdriver (oversized)",
+      "path": "art/traits/wick/test-set-1/revisions/round-3/factory-made.png",
+      "exports": {
+        "256": "art/traits/wick/test-set-1/revisions/round-3/exports/256/factory-made.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-3/exports/128/factory-made.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-3/exports/64/factory-made.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-3/exports/56/factory-made.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-3/exports/48/factory-made.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-3/exports/44/factory-made.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-3/exports/40/factory-made.png"
+      },
+      "batch": "revisions",
+      "source_sha256": "a669ca9b01627685b2b8aa8cd01fe2048c31b893f1809a7e27a80bf939d83c3f",
+      "previous_path": "art/traits/wick/test-set-1/factory-made.png",
+      "revision": 3,
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/factory-made.png"
     }
   ]
 }

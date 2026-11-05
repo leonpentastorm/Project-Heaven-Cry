@@ -1480,8 +1480,8 @@
     "factory-made": {
       "label": "Wick — Factory Made",
       "collection": "wick-test-set-1-revisions",
-      "path": "art/traits/wick/test-set-1/revisions/factory-made.png",
-      "sha256": "297a666b89b98f8ca42cdd6dd498c53cc6b10fd8e4d999225c944e3564a9973d",
+      "path": "art/traits/wick/test-set-1/revisions/round-3/factory-made.png",
+      "sha256": "34f3656eafdef41d6ee2c668d6bbbed853f23f5bec98f3c665721ad1e8fc4c15",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1492,16 +1492,17 @@
       "production_approved": false,
       "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/revisions/exports/256/factory-made.png",
-        "128": "art/traits/wick/test-set-1/revisions/exports/128/factory-made.png",
-        "64": "art/traits/wick/test-set-1/revisions/exports/64/factory-made.png",
-        "56": "art/traits/wick/test-set-1/revisions/exports/56/factory-made.png",
-        "48": "art/traits/wick/test-set-1/revisions/exports/48/factory-made.png",
-        "44": "art/traits/wick/test-set-1/revisions/exports/44/factory-made.png",
-        "40": "art/traits/wick/test-set-1/revisions/exports/40/factory-made.png"
+        "256": "art/traits/wick/test-set-1/revisions/round-3/exports/256/factory-made.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-3/exports/128/factory-made.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-3/exports/64/factory-made.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-3/exports/56/factory-made.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-3/exports/48/factory-made.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-3/exports/44/factory-made.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-3/exports/40/factory-made.png"
       },
-      "revision": 2,
-      "previous_path": "art/traits/wick/test-set-1/factory-made.png"
+      "revision": 3,
+      "previous_path": "art/traits/wick/test-set-1/factory-made.png",
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/factory-made.png"
     },
     "chain-smoker": {
       "label": "Wick — Chain Smoker",

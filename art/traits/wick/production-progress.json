@@ -27,6 +27,7 @@
     "perks": 2
   },
   "revision_rounds": {
-    "field-surgeon": 3
+    "field-surgeon": 3,
+    "factory-made": 3
   }
 }
