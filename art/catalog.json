@@ -2359,6 +2359,30 @@
         "44": "art/traits/wick/production-v1/exports/44/one-shot.png",
         "40": "art/traits/wick/production-v1/exports/40/one-shot.png"
       }
+    },
+    "sigil-savant": {
+      "label": "Wick — Sigil Savant",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/sigil-savant.png",
+      "sha256": "6cc8e12c4b77d769f19f832792e7b80a2dceccaf88a42a1cb43b101ca582b94f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "sigil_savant",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/sigil-savant.png",
+        "128": "art/traits/wick/production-v1/exports/128/sigil-savant.png",
+        "64": "art/traits/wick/production-v1/exports/64/sigil-savant.png",
+        "56": "art/traits/wick/production-v1/exports/56/sigil-savant.png",
+        "48": "art/traits/wick/production-v1/exports/48/sigil-savant.png",
+        "44": "art/traits/wick/production-v1/exports/44/sigil-savant.png",
+        "40": "art/traits/wick/production-v1/exports/40/sigil-savant.png"
+      }
     }
   },
   "character_collections": {

@@ -47,10 +47,11 @@
     "gun-nut",
     "old-school",
     "spray-and-pray",
-    "one-shot"
+    "one-shot",
+    "sigil-savant"
   ],
   "catalog_coverage": {
-    "traits": 40,
+    "traits": 41,
     "perks": 2
   },
   "revision_rounds": {

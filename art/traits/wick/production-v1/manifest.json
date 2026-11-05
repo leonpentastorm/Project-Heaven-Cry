@@ -718,6 +718,29 @@
       },
       "batch": "B",
       "source_sha256": "297b5b0d1bc1bca0298b0c616203a264bcd6094fcc97ace42ac37e0ecce2b812"
+    },
+    {
+      "id": "sigil-savant",
+      "data_id": "sigil_savant",
+      "name": "Sigil Savant",
+      "family": "traits",
+      "order": 39,
+      "mood": "Comic, Tender",
+      "action": "Wick sits slumped asleep, head lolling, while one raised mitten traces a big geometric Sigil (no lettering) in the air from memory",
+      "screen": "Closed sleepy arcs",
+      "prop": "The Sigil",
+      "path": "art/traits/wick/production-v1/sigil-savant.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/sigil-savant.png",
+        "128": "art/traits/wick/production-v1/exports/128/sigil-savant.png",
+        "64": "art/traits/wick/production-v1/exports/64/sigil-savant.png",
+        "56": "art/traits/wick/production-v1/exports/56/sigil-savant.png",
+        "48": "art/traits/wick/production-v1/exports/48/sigil-savant.png",
+        "44": "art/traits/wick/production-v1/exports/44/sigil-savant.png",
+        "40": "art/traits/wick/production-v1/exports/40/sigil-savant.png"
+      },
+      "batch": "B",
+      "source_sha256": "d21dfc573b0d8fcbae5de604be50481500a751a41800ffc950c9b2218a880bee"
     }
   ]
 }
