@@ -86,11 +86,12 @@
     "shrug-it-off",
     "used-to-the-pain",
     "scar-tissue",
-    "wind-on-the-skin"
+    "wind-on-the-skin",
+    "bedside-manner"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 7
+    "perks": 8
   },
   "revision_rounds": {
     "field-surgeon": 3,

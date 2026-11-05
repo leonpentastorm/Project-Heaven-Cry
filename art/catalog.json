@@ -3395,6 +3395,30 @@
         "44": "art/perks/wick/production-v1/exports/44/wind-on-the-skin.png",
         "40": "art/perks/wick/production-v1/exports/40/wind-on-the-skin.png"
       }
+    },
+    "bedside-manner": {
+      "label": "Wick — Bedside Manner",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/bedside-manner.png",
+      "sha256": "88698e6aa1c10ffebf8bc0c8020088a44f00a4887e723094d43d1afce831cc9a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "bedside_manner",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bedside-manner.png",
+        "128": "art/perks/wick/production-v1/exports/128/bedside-manner.png",
+        "64": "art/perks/wick/production-v1/exports/64/bedside-manner.png",
+        "56": "art/perks/wick/production-v1/exports/56/bedside-manner.png",
+        "48": "art/perks/wick/production-v1/exports/48/bedside-manner.png",
+        "44": "art/perks/wick/production-v1/exports/44/bedside-manner.png",
+        "40": "art/perks/wick/production-v1/exports/40/bedside-manner.png"
+      }
     }
   },
   "illustrations": {

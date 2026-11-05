@@ -120,6 +120,29 @@
       },
       "batch": "D",
       "source_sha256": "972174587790fa72d8cc79d90b35bbc1ebe2d492ce6b370a094140520bd15300"
+    },
+    {
+      "id": "bedside-manner",
+      "data_id": "bedside_manner",
+      "name": "Bedside Manner",
+      "family": "perks",
+      "order": 6,
+      "mood": "Calm, Tense",
+      "action": "Wick leans in and clasps a hand entering frame in both mittens, a warm firm handshake, head tilted to listen.",
+      "screen": "Jagged pulse line",
+      "prop": "The clasped hand",
+      "path": "art/perks/wick/production-v1/bedside-manner.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bedside-manner.png",
+        "128": "art/perks/wick/production-v1/exports/128/bedside-manner.png",
+        "64": "art/perks/wick/production-v1/exports/64/bedside-manner.png",
+        "56": "art/perks/wick/production-v1/exports/56/bedside-manner.png",
+        "48": "art/perks/wick/production-v1/exports/48/bedside-manner.png",
+        "44": "art/perks/wick/production-v1/exports/44/bedside-manner.png",
+        "40": "art/perks/wick/production-v1/exports/40/bedside-manner.png"
+      },
+      "batch": "D",
+      "source_sha256": "bd1565aa0c1cbe87d4315c472bac51f89f6be082c6303d3a71a6a5d89e0faae1"
     }
   ]
 }
