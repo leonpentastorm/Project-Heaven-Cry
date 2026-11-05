@@ -178,7 +178,7 @@ def build():
     }
     tpl, js = with_epccg((BUILD / "create.template.html").read_text(),
                          (BUILD / "create.logic.js").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False)))
-    (OUT / "Create.dc.html").write_text(page("PHC · Character creation (EPCCG)", tpl.replace("__WICK__", BLOBS["wick-mind-without-fog"]).replace("__SEAL__", BLOBS["emblem-ahoc-seal"]), js,
+    (OUT / "Create.dc.html").write_text(page("PHC · Character creation (EPCCG)", tpl.replace("__WICKMARK__", BLOBS["wick-welcome"]).replace("__WICK__", BLOBS["wick-mind-without-fog"]).replace("__SEAL__", BLOBS["emblem-ahoc-seal"]), js,
         '{"startStep":{"editor":"enum","options":["identity","archetype","skills","traits","kit","lockin"],"default":"identity"},"sampleArch":{"editor":null},"sampleName":{"editor":null},"$preview":{"width":1440,"height":1000}}'))
     for fname, title, step, arch, name, h in [
         ("CreateArchetype.dc.html", "PHC · Creation · archetype", "archetype", "", "", 1100),
