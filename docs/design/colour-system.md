@@ -53,6 +53,19 @@ States always pair the colour with a word or a glyph, so colour-blind players lo
 
 Retired tokens: `#6FD8A0` (success; too close to Perception), `#F0907F` / `#E8604F` (failure, HP), `#FFD27A` (Echo/critical; too close to Agility).
 
+## 3b. Players (ownership only)
+
+In co-op one player can play more than one character, so characters are marked with their **player's colour**: a badge with the player's initials, a ring on tokens and portraits, a stripe on character cards. Player colours mean "whose", never a game state, and they always appear with initials or a name, never alone.
+
+| Seat | Colour |
+|---|---|
+| Player 1 (host) | `#7FD4FF` |
+| Player 2 | `#FF9EC7` |
+| Player 3 | `#B8E986` |
+| Player 4 | `#FFB86B` |
+
+They sit near some attribute hues (Insight, Strength), which is why they never appear without initials.
+
 ## 4. Neutrals
 
 | Role | Colour |

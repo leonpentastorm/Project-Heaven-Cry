@@ -5,35 +5,53 @@
 <button type="button" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Copy invite link</button>
 </header>
 <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 28px; padding: 28px 32px">
-<section aria-label="Seats" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<section aria-label="Players and squad" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">The squad</h1>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px">
-<sc-for list="{{seats}}" as="s" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PLAYERS · UP TO 4 · EACH CAN PLAY MORE THAN ONE CHARACTER</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{players}}" as="p" hint-placeholder-count="4">
+<div style="{{p.style}}"><span style="{{p.badgeStyle}}">{{p.initials}}</span><span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{p.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{p.note}}</span></span></div>
+</sc-for>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
+<sc-for list="{{squad}}" as="s" hint-placeholder-count="4">
 <div style="{{s.style}}">
-<sc-if value="{{s.filled}}" hint-placeholder-val="{{true}}">
-<div style="display: flex; gap: 14px">
-<img src="{{s.img}}" alt="" style="width: 96px; height: 120px; object-fit: cover; border-radius: 8px; background: #000">
-<div style="display: flex; flex-direction: column; gap: 4px">
-<span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">SEAT {{s.n}} · {{s.player}}</span>
-<span style="font-family: 'Spectral', serif; font-size: 22px; font-weight: 600">{{s.name}}</span>
-<span style="font-size: 13px; color: #C9D3E3">{{s.line}}</span>
+<div style="display: flex; gap: 12px">
+<sc-if value="{{s.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{s.img}}" alt="" style="width: 84px; height: 105px; object-fit: cover; border-radius: 8px; background: #000"></sc-if>
+<sc-if value="{{s.noImg}}" hint-placeholder-val="{{false}}"><span style="display: grid; place-items: center; width: 84px; height: 105px; border-radius: 8px; border: 1px dashed #3B475D; color: #A3AEC2; font-size: 12px">NO PORTRAIT</span></sc-if>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="{{s.ownerStyle}}">{{s.owner}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 21px; font-weight: 600">{{s.name}}</span>
+<span style="font-size: 12px; color: #C9D3E3; line-height: 1.4">{{s.line}}</span>
 <span style="{{s.stateStyle}}">{{s.state}}</span>
 </div>
 </div>
-</sc-if>
-<sc-if value="{{s.empty}}" hint-placeholder-val="{{false}}">
-<span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">SEAT {{s.n}} · OPEN</span>
-<a href="Create.dc.html" style="display: grid; place-items: center; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; color: #E7EBF3; text-decoration: none; font-weight: 600">Create a character</a>
-<button type="button" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Bring a saved character</button>
-</sc-if>
 </div>
 </sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; border: 1px dashed #3B475D; justify-content: center">
+<a href="Create.dc.html" style="display: grid; place-items: center; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; color: #E7EBF3; text-decoration: none; font-weight: 600">Create a character</a>
+<button type="button" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Bring a saved character</button>
 </div>
-<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CAMPAIGN</span>
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
-<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">SECTOR<select style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"><option>The Earth Sector</option></select></label>
-<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">START<select style="min-height: 42px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-size: 15px; letter-spacing: 0"><option>M813 one-shot: The Last Ship Out</option><option>A god-plot on a mining world</option><option>The town where the curse is lifted</option><option>A summoning in Central City</option><option>Narrator's own</option></select></label>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHERE IT STARTS · THE EARTH SECTOR</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{starts}}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.short}}</button></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #10151F; border: 1px solid #232D3F">
+<div style="position: relative">
+<img src="{{start.img}}" alt="{{start.title}}" style="{{start.imgStyle}}">
+<span style="position: absolute; right: 12px; top: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(10, 13, 19, 0.8); font-size: 11px; color: #A3AEC2">{{start.artNote}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 18px 20px">
+<span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">{{start.kicker}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">{{start.title}}</span>
+<sc-for list="{{start.lore}}" as="l" hint-placeholder-count="2"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.65; color: #DCE2EC">{{l.text}}</p></sc-for>
+<span style="font-size: 13px; color: #A3AEC2">{{start.meta}}</span>
+</div>
 </div>
 </div>
 </section>

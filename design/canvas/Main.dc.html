@@ -165,26 +165,33 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <button type="button" onClick="{{a.roll}}" style="{{a.style}}"><span style="font-weight: 600">{{a.title}}</span><span style="{{a.tagStyle}}">{{a.tag}}</span></button>
 </sc-for>
 </div>
-<div style="display: flex; gap: 8px">
-<input aria-label="What do you do?" placeholder="Say or do something…" style="flex: 1; min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 15px">
-<button type="button" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Send</button>
+<sc-for list="{{sent}}" as="m" hint-placeholder-count="0"><p style="margin: 0; padding: 8px 12px; border-radius: 8px; background: #10151F; font-family: 'Spectral', serif; font-size: 15px; color: #C9D3E3"><span style="color: #7FD4FF; font-weight: 600">MPAT (you)</span> {{m.text}}</p></sc-for>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<textarea aria-label="What do you do?" rows="2" value="{{draft}}" onChange="{{onDraft}}" placeholder="Say or do something…" style="flex: 1 1 360px; min-height: 52px; padding: 10px 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 16px; resize: vertical"></textarea>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<button type="button" onClick="{{polish}}" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{polishLabel}}</button>
+<button type="button" onClick="{{send}}" style="min-height: 40px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Send</button>
 </div>
+</div>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #C9D3E3; cursor: pointer">
+<input type="checkbox" checked="{{pickRoll}}" onChange="{{togglePick}}" style="width: 20px; height: 20px; accent-color: #E7EBF3">
+Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(it chooses the skills; the engine rolls)</span>
+</label>
 </div>
 </main>
 
 <aside aria-label="Map and speaking order" style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
-<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">AREA · M813 REAR PAD</span>
-<div style="position: relative; height: 230px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; overflow: hidden">
-<div style="position: absolute; left: 14px; top: 14px; width: 150px; height: 120px; border: 1px dashed #3B475D; border-radius: 8px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #A3AEC2">LANDING PAD</div>
-<div style="position: absolute; right: 14px; top: 24px; width: 120px; height: 70px; border: 1px solid #F2A54A; border-radius: 8px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #F2A54A">SHIP · RAMP · HATCH</div>
-<div style="position: absolute; right: 30px; bottom: 20px; width: 90px; height: 44px; border: 1px solid #3B475D; border-radius: 6px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #A3AEC2">PLATINUM</div>
-<div style="position: absolute; left: 14px; bottom: 16px; width: 170px; height: 56px; border: 1px solid #F65157; border-radius: 6px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #F65157">23 DAMAGED ROBOTS</div>
-<span style="position: absolute; left: 70px; top: 60px; width: 14px; height: 14px; border-radius: 50%; background: #E7EBF3" aria-hidden="true"></span>
-<span style="position: absolute; left: 98px; top: 72px; width: 14px; height: 14px; border-radius: 50%; background: #4FC8DF" aria-hidden="true"></span>
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CURRENT ZONE · REAR PAD</span>
+<button type="button" onClick="{{openArea}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Area map</button></div>
+<a href="Combat.dc.html" aria-label="Open the combat zone" style="display: block; text-decoration: none; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid #F65157">
+<div style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 1px">
+<sc-for list="{{mini}}" as="m" hint-placeholder-count="176"><span style="{{m.style}}"></span></sc-for>
 </div>
+<span style="display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #F65157">COMBAT ZONE · CLICK TO ENTER</span>
+</a>
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
 <sc-for list="{{order}}" as="o" hint-placeholder-count="3">
-<div style="display: flex; gap: 10px; align-items: center"><img src="{{o.img}}" alt="" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000"><span style="flex: 1; font-size: 14px">{{o.name}}</span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
+<div style="display: flex; gap: 10px; align-items: center"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
 </sc-for>
 <div style="display: flex; gap: 8px">
 <button type="button" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button>
@@ -193,6 +200,21 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">Everyone speaks once; then the Narrator answers all of it together.</span>
 </aside>
 </div>
+
+<sc-if value="{{area}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="Area map" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(900px, 100%); box-sizing: border-box">
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">AREA MAP · PLANET M813 · OUTPOST-813</span><button type="button" onClick="{{closeArea}}" style="margin-left: auto; min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close</button></div>
+<div style="position: relative; height: 480px; border-radius: 12px; background: #0B0F16; border: 1px solid #232D3F; overflow: hidden">
+<sc-for list="{{regions}}" as="r" hint-placeholder-count="6"><div style="{{r.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">{{r.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{r.note}}</span></div></sc-for>
+<a href="Combat.dc.html" style="position: absolute; left: 47%; top: 52%; width: 22%; height: 26%; box-sizing: border-box; border: 2px solid #F65157; border-radius: 10px; background: rgba(246, 81, 87, 0.08); padding: 8px; text-decoration: none; color: #F65157; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">⚠ COMBAT ZONE · REAR PAD</span><span style="font-size: 11px; color: #E7EBF3">Round 2 · click to enter</span></a>
+<span style="position: absolute; left: 54%; top: 63%; width: 12px; height: 12px; border-radius: 50%; background: #7FD4FF; border: 2px solid #0A0D13" aria-hidden="true"></span>
+<span style="position: absolute; left: 57%; top: 66%; width: 12px; height: 12px; border-radius: 50%; background: #FF9EC7; border: 2px solid #0A0D13" aria-hidden="true"></span>
+</div>
+<span style="font-size: 12px; color: #A3AEC2">The campaign runs on this map. When a fight starts, the Narrator opens a combat zone here; everyone in it moves to the grid.</span>
+</div>
+</div>
+</sc-if>
 
 <sc-if value="{{dice}}" hint-placeholder-val="{{false}}">
 <div role="dialog" aria-modal="true" aria-label="Dice table" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
@@ -267,6 +289,16 @@ const PTS = { athletics: 3, dexterity: 2, camaraderie: 5, authority: 2, sensory:
 const mod = (p) => (p === 0 ? -2 : p - 1);
 const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 const DICE = [14, 7, 19, 3, 20, 11, 1, 16, 9, 12];
+// Combined check (rules 1.1 + item 42): lowest modifier among the 1-3 skills, +2 for each other skill with >= 1 point.
+const combo = (ids) => { const mods = ids.map((i) => mod(PTS[i] || 0)), low = Math.min(...mods), lowIx = mods.indexOf(low);
+  const bonus = ids.filter((i, k) => k !== lowIx && (PTS[i] || 0) > 0).length * 2; return { low, bonus, total: low + bonus, lowId: ids[lowIx] }; };
+const PLAYER = { leon: ['LEON', '#7FD4FF'], guest: ['GUEST', '#FF9EC7'] };
+const W = 16, H = 11;
+const HULL = new Set(); for (let x = 13; x < 16; x++) for (let y = 0; y < 6; y++) HULL.add(x + ',' + y);
+const CRATES = new Set(['11,2', '11,3', '11,4', '10,6']);
+const WRECK = new Set(['1,9', '2,9', '3,9', '4,9', '6,9', '7,9', '1,10', '3,10', '5,10', '8,10']);
+const TOKENS = { '3,6': '#7FD4FF', '2,8': '#FF9EC7', '5,8': '#A3AEC2', '12,3': '#F65157', '12,6': '#F65157', '12,1': '#F65157' };
+const POLISHED = 'MPAT hauls 4-Ten across its shoulders and starts up the ramp, servos whining, looking Keel in the eye the whole way. “Then shoot me first, Chief. I can carry two.”';
 const ASK_ROLLS = { athletics: 15, dexterity: 6, camaraderie: 13, authority: 4, sensory: 17, proficiency: 12, durability: 8, pain_threshold: 10 };
 const ASK_TN = 12;
 const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall oak', '#5B3A22', '#3D2716'], ['velvet', 'Lumeri velvet', '#4A1830', '#2E0F1E'],
@@ -283,7 +315,7 @@ const voiceCard = (id, head, line) => {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0, phase: 'ready', throws: 0, table: 'felt', skin: 'ivory', custom: false };
+    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0, phase: 'ready', throws: 0, table: 'felt', skin: 'ivory', custom: false, draft: 'i grab 4-ten and walk up the ramp. tell keel to shoot me first', polished: false, pickRoll: true, sent: [], area: false };
   }
 
   renderVals() {
@@ -321,18 +353,26 @@ class Component extends DCLogic {
     const pushResult = S.push === 'indulged' ? 'You indulged: MPAT sides with the squad, whatever the orders say. +1 Echo.' : 'You resisted: MPAT holds the line and waits for orders. −1 Echo.';
 
     const actions = [
-      ['Order the robots up the ramp', 'authority', 'Standard', 12], ['Rig a lift for the damaged units', 'proficiency', 'Standard', 12],
-      ['Get between Keel and the hatch', 'athletics', 'Hard', 16], ['Argue the cargo math', 'eloquence', 'Standard', 12],
-    ].map(([title, id, label, tn]) => {
-      const p = PTS[id] || 0, m = mod(p), ink = ATTR[SK[id].attr].ink;
-      return { title, tag: SK[id].name.toUpperCase() + ' · ' + label.toUpperCase() + ' ' + tn + ' · ' + fmt(m) + (p ? '' : ' UNTRAINED'),
-        roll: () => this.rollFor(id, label, tn), tagStyle: 'font-size: 11px; letter-spacing: 0.08em; color: ' + ink,
+      ['Order the robots up the ramp', ['authority', 'camaraderie'], 'Standard', 12], ['Rig a lift for the damaged units', ['proficiency', 'athletics'], 'Standard', 12],
+      ['Get between Keel and the hatch', ['athletics'], 'Hard', 16], ['Talk her through the cargo maths', ['eloquence', 'authority', 'camaraderie'], 'Hard', 16],
+    ].map(([title, ids, label, tn]) => {
+      const c = combo(ids), ink = ATTR[SK[ids[0]].attr].ink;
+      return { title, tag: ids.map((i) => SK[i].name.toUpperCase()).join(' + ') + ' · ' + label.toUpperCase() + ' ' + tn + ' · ' + fmt(c.total),
+        roll: () => this.rollFor(ids, label, tn), tagStyle: 'font-size: 11px; letter-spacing: 0.08em; color: ' + ink,
         style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 52px; padding: 8px 12px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 14px; text-align: left; cursor: pointer' };
     });
 
-    const order = [{ img: D.pc, name: 'MPAT (you)', state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
-      { img: D.p2, name: 'Ninety-Two', state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
-      { img: D.wick, name: 'Narrator', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+    const who = (key) => ({ player: PLAYER[key][0], playerStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + PLAYER[key][1],
+      imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid ' + PLAYER[key][1] });
+    const order = [{ img: D.pc, name: 'MPAT (you)', ...who('leon'), state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
+      { img: D.p2, name: 'Ninety-Two', ...who('guest'), state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
+      { img: D.wick, name: 'Narrator', player: 'AI', playerStyle: 'font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+    const mini = [];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = x + ',' + y, tok = TOKENS[k];
+      mini.push({ style: 'aspect-ratio: 1; border-radius: ' + (tok ? '50%' : '1px') + '; background: ' + (tok || (HULL.has(k) ? '#1C2536' : CRATES.has(k) ? '#4A3A20' : WRECK.has(k) ? '#232D3F' : '#0D1119')) }); }
+    const regions = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
+      ['ENGINEERS\u2019 SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]].map(([name, note, l, t2, w, h]) => ({ name, note,
+      style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + w + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' }));
 
     const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '20 kg'],
       ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5']].map(([k, v]) => ({ k, v }));
@@ -342,10 +382,10 @@ class Component extends DCLogic {
 
     let roll = {};
     if (S.roll) {
-      const r = S.roll, total = r.die + r.mod, ink = ATTR[SK[r.id].attr].ink;
+      const r = S.roll, total = r.die + r.mod, ink = ATTR[SK[r.ids[0]].attr].ink, c = combo(r.ids);
       const [verdict, color] = r.die === 20 ? ['★ CRITICAL SUCCESS', '#6FEA77'] : r.die === 1 ? ['⚠ COMPLICATION', '#F65157'] : total >= r.tn ? ['✓ SUCCESS', '#6FEA77'] : ['✕ FAILURE', '#A3AEC2'];
-      roll = { head: SK[r.id].name.toUpperCase() + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
-        pre: 'd20 ' + fmt(r.mod) + ' (' + SK[r.id].name + ' ' + (PTS[r.id] || 0) + ') vs TN ' + r.tn,
+      roll = { head: (r.picked ? 'NARRATOR PICKS · ' : '') + r.ids.map((i) => SK[i].name.toUpperCase()).join(' + ') + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
+        pre: r.ids.length > 1 ? 'Lowest ' + fmt(c.low) + ' (' + SK[c.lowId].name + ') + ' + c.bonus + ' for trained partners = ' + fmt(c.total) + ' vs TN ' + r.tn : 'd20 ' + fmt(c.total) + ' (' + SK[r.ids[0]].name + ' ' + (PTS[r.ids[0]] || 0) + ') vs TN ' + r.tn,
         die: r.die, math: 'd20 ' + r.die + ' ' + fmt(r.mod) + ' = ' + total + '  vs  TN ' + r.tn, verdict, verdictStyle: 'font-size: 28px; font-weight: 700; letter-spacing: 0.14em; color: ' + color };
     }
 
@@ -356,7 +396,16 @@ class Component extends DCLogic {
     const skins = SKINS.map(([id, name, face, edge]) => ({ name, pick: () => this.setState({ skin: id }), pressed: S.skin === id ? 'true' : 'false', style: opt(S.skin === id),
       swatch: 'width: 24px; height: 24px; transform: rotate(45deg); background: ' + face + '; border: 2px solid ' + edge }));
     const rolled = S.phase === 'rolled';
+    const send = () => {
+      const text = (this.state.draft || '').trim(); if (!text) return;
+      this.setState({ sent: [...this.state.sent, { text }], draft: '', polished: false });
+      if (this.state.pickRoll) this.rollFor(['athletics', 'camaraderie'], 'Hard', 16, true);
+    };
     return {
+      draft: S.draft, onDraft: (e) => this.setState({ draft: e.target.value, polished: false }), polishLabel: S.polished ? 'Undo polish' : 'Polish with AI',
+      polish: () => this.setState(this.state.polished ? { draft: this.state.rawDraft, polished: false } : { rawDraft: this.state.draft, draft: POLISHED, polished: true }),
+      send, sent: S.sent, pickRoll: S.pickRoll, togglePick: () => this.setState({ pickRoll: !this.state.pickRoll }),
+      mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => this.setState({ area: false }),
       tables, skins, skin: { face: K[2], edge: K[3], ink: K[4] }, tableName: T[1].toUpperCase(),
       tableStyle: 'position: relative; height: 300px; border-radius: 16px; overflow: hidden; background: ' + T[2] + '; border: 10px solid ' + T[3] + '; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55)',
       custom: S.custom, toggleCustom: () => this.setState({ custom: !this.state.custom }), customPressed: S.custom ? 'true' : 'false', customLabel: S.custom ? 'Done' : 'Customise',
@@ -371,9 +420,9 @@ class Component extends DCLogic {
     };
   }
 
-  rollFor(id, label, tn) {
+  rollFor(ids, label, tn, picked) {
     const ix = this.state.rollIx + 1;
-    this.setState({ dice: true, phase: 'ready', custom: false, rollIx: ix, roll: { id, label, tn, mod: mod(PTS[id] || 0), die: DICE[ix % DICE.length] } });
+    this.setState({ dice: true, phase: 'ready', custom: false, rollIx: ix, roll: { ids, label, tn, picked: !!picked, mod: combo(ids).total, die: DICE[ix % DICE.length] } });
   }
 }
 

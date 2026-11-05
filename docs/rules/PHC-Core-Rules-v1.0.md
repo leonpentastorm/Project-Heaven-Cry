@@ -38,7 +38,7 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 
 **Natural 20** always succeeds and is a critical success: the Narrator adds a benefit. **Natural 1** always fails and is a critical failure: the Narrator adds a complication.
 
-**Combined checks.** When a task calls on two skills ("Endurance and Ingenuity" in the 2020 example), roll once with the lower of the two modifiers, +2. The TN doesn't change.
+**Combined checks.** Most tasks call on one skill, but the Narrator can call for two or three ("Endurance and Ingenuity" in the 2020 example). Roll once with the lowest of their modifiers, +2 for each other skill in the check that has at least 1 point. The TN doesn't change.
 
 **Opposed checks.** Both sides roll their skill; higher total wins; the defender wins ties.
 
@@ -587,3 +587,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 39. **Class rank thresholds 13 / 18.** Advanced classes stay at 15 + 9.
 40. **HP rescale** (+15 per Endurance, 5 + 2 × Durability per level). Mid and high levels need a pass; Last Charge's shield (item 20) should drop to 15 × Armour Class.
 41. **Crits** on a natural 20, or 19–20 for Aimed shots and attacks from Hidden.
+42. **Combined checks of two or three skills:** lowest modifier, +2 per other trained skill in the check.

@@ -6,6 +6,16 @@ const PTS = { athletics: 3, dexterity: 2, camaraderie: 5, authority: 2, sensory:
 const mod = (p) => (p === 0 ? -2 : p - 1);
 const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 const DICE = [14, 7, 19, 3, 20, 11, 1, 16, 9, 12];
+// Combined check (rules 1.1 + item 42): lowest modifier among the 1-3 skills, +2 for each other skill with >= 1 point.
+const combo = (ids) => { const mods = ids.map((i) => mod(PTS[i] || 0)), low = Math.min(...mods), lowIx = mods.indexOf(low);
+  const bonus = ids.filter((i, k) => k !== lowIx && (PTS[i] || 0) > 0).length * 2; return { low, bonus, total: low + bonus, lowId: ids[lowIx] }; };
+const PLAYER = { leon: ['LEON', '#7FD4FF'], guest: ['GUEST', '#FF9EC7'] };
+const W = 16, H = 11;
+const HULL = new Set(); for (let x = 13; x < 16; x++) for (let y = 0; y < 6; y++) HULL.add(x + ',' + y);
+const CRATES = new Set(['11,2', '11,3', '11,4', '10,6']);
+const WRECK = new Set(['1,9', '2,9', '3,9', '4,9', '6,9', '7,9', '1,10', '3,10', '5,10', '8,10']);
+const TOKENS = { '3,6': '#7FD4FF', '2,8': '#FF9EC7', '5,8': '#A3AEC2', '12,3': '#F65157', '12,6': '#F65157', '12,1': '#F65157' };
+const POLISHED = 'MPAT hauls 4-Ten across its shoulders and starts up the ramp, servos whining, looking Keel in the eye the whole way. “Then shoot me first, Chief. I can carry two.”';
 const ASK_ROLLS = { athletics: 15, dexterity: 6, camaraderie: 13, authority: 4, sensory: 17, proficiency: 12, durability: 8, pain_threshold: 10 };
 const ASK_TN = 12;
 const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall oak', '#5B3A22', '#3D2716'], ['velvet', 'Lumeri velvet', '#4A1830', '#2E0F1E'],
@@ -22,7 +32,7 @@ const voiceCard = (id, head, line) => {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0, phase: 'ready', throws: 0, table: 'felt', skin: 'ivory', custom: false };
+    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0, phase: 'ready', throws: 0, table: 'felt', skin: 'ivory', custom: false, draft: 'i grab 4-ten and walk up the ramp. tell keel to shoot me first', polished: false, pickRoll: true, sent: [], area: false };
   }
 
   renderVals() {
@@ -60,18 +70,26 @@ class Component extends DCLogic {
     const pushResult = S.push === 'indulged' ? 'You indulged: MPAT sides with the squad, whatever the orders say. +1 Echo.' : 'You resisted: MPAT holds the line and waits for orders. −1 Echo.';
 
     const actions = [
-      ['Order the robots up the ramp', 'authority', 'Standard', 12], ['Rig a lift for the damaged units', 'proficiency', 'Standard', 12],
-      ['Get between Keel and the hatch', 'athletics', 'Hard', 16], ['Argue the cargo math', 'eloquence', 'Standard', 12],
-    ].map(([title, id, label, tn]) => {
-      const p = PTS[id] || 0, m = mod(p), ink = ATTR[SK[id].attr].ink;
-      return { title, tag: SK[id].name.toUpperCase() + ' · ' + label.toUpperCase() + ' ' + tn + ' · ' + fmt(m) + (p ? '' : ' UNTRAINED'),
-        roll: () => this.rollFor(id, label, tn), tagStyle: 'font-size: 11px; letter-spacing: 0.08em; color: ' + ink,
+      ['Order the robots up the ramp', ['authority', 'camaraderie'], 'Standard', 12], ['Rig a lift for the damaged units', ['proficiency', 'athletics'], 'Standard', 12],
+      ['Get between Keel and the hatch', ['athletics'], 'Hard', 16], ['Talk her through the cargo maths', ['eloquence', 'authority', 'camaraderie'], 'Hard', 16],
+    ].map(([title, ids, label, tn]) => {
+      const c = combo(ids), ink = ATTR[SK[ids[0]].attr].ink;
+      return { title, tag: ids.map((i) => SK[i].name.toUpperCase()).join(' + ') + ' · ' + label.toUpperCase() + ' ' + tn + ' · ' + fmt(c.total),
+        roll: () => this.rollFor(ids, label, tn), tagStyle: 'font-size: 11px; letter-spacing: 0.08em; color: ' + ink,
         style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 52px; padding: 8px 12px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 14px; text-align: left; cursor: pointer' };
     });
 
-    const order = [{ img: D.pc, name: 'MPAT (you)', state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
-      { img: D.p2, name: 'Ninety-Two', state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
-      { img: D.wick, name: 'Narrator', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+    const who = (key) => ({ player: PLAYER[key][0], playerStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + PLAYER[key][1],
+      imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid ' + PLAYER[key][1] });
+    const order = [{ img: D.pc, name: 'MPAT (you)', ...who('leon'), state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
+      { img: D.p2, name: 'Ninety-Two', ...who('guest'), state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
+      { img: D.wick, name: 'Narrator', player: 'AI', playerStyle: 'font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+    const mini = [];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = x + ',' + y, tok = TOKENS[k];
+      mini.push({ style: 'aspect-ratio: 1; border-radius: ' + (tok ? '50%' : '1px') + '; background: ' + (tok || (HULL.has(k) ? '#1C2536' : CRATES.has(k) ? '#4A3A20' : WRECK.has(k) ? '#232D3F' : '#0D1119')) }); }
+    const regions = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
+      ['ENGINEERS\u2019 SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]].map(([name, note, l, t2, w, h]) => ({ name, note,
+      style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + w + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' }));
 
     const status = [['Defense', '12'], ['Initiative', '+0'], ['Move', '4 tiles'], ['Vision', '12 tiles'], ['Healing given', '×1.9'], ['Carry', '20 kg'],
       ['Body save', '−2'], ['Brain save', '−2'], ['Heart save', '−2'], ['Cores', 'B3 · M1 · S5']].map(([k, v]) => ({ k, v }));
@@ -81,10 +99,10 @@ class Component extends DCLogic {
 
     let roll = {};
     if (S.roll) {
-      const r = S.roll, total = r.die + r.mod, ink = ATTR[SK[r.id].attr].ink;
+      const r = S.roll, total = r.die + r.mod, ink = ATTR[SK[r.ids[0]].attr].ink, c = combo(r.ids);
       const [verdict, color] = r.die === 20 ? ['★ CRITICAL SUCCESS', '#6FEA77'] : r.die === 1 ? ['⚠ COMPLICATION', '#F65157'] : total >= r.tn ? ['✓ SUCCESS', '#6FEA77'] : ['✕ FAILURE', '#A3AEC2'];
-      roll = { head: SK[r.id].name.toUpperCase() + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
-        pre: 'd20 ' + fmt(r.mod) + ' (' + SK[r.id].name + ' ' + (PTS[r.id] || 0) + ') vs TN ' + r.tn,
+      roll = { head: (r.picked ? 'NARRATOR PICKS · ' : '') + r.ids.map((i) => SK[i].name.toUpperCase()).join(' + ') + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
+        pre: r.ids.length > 1 ? 'Lowest ' + fmt(c.low) + ' (' + SK[c.lowId].name + ') + ' + c.bonus + ' for trained partners = ' + fmt(c.total) + ' vs TN ' + r.tn : 'd20 ' + fmt(c.total) + ' (' + SK[r.ids[0]].name + ' ' + (PTS[r.ids[0]] || 0) + ') vs TN ' + r.tn,
         die: r.die, math: 'd20 ' + r.die + ' ' + fmt(r.mod) + ' = ' + total + '  vs  TN ' + r.tn, verdict, verdictStyle: 'font-size: 28px; font-weight: 700; letter-spacing: 0.14em; color: ' + color };
     }
 
@@ -95,7 +113,16 @@ class Component extends DCLogic {
     const skins = SKINS.map(([id, name, face, edge]) => ({ name, pick: () => this.setState({ skin: id }), pressed: S.skin === id ? 'true' : 'false', style: opt(S.skin === id),
       swatch: 'width: 24px; height: 24px; transform: rotate(45deg); background: ' + face + '; border: 2px solid ' + edge }));
     const rolled = S.phase === 'rolled';
+    const send = () => {
+      const text = (this.state.draft || '').trim(); if (!text) return;
+      this.setState({ sent: [...this.state.sent, { text }], draft: '', polished: false });
+      if (this.state.pickRoll) this.rollFor(['athletics', 'camaraderie'], 'Hard', 16, true);
+    };
     return {
+      draft: S.draft, onDraft: (e) => this.setState({ draft: e.target.value, polished: false }), polishLabel: S.polished ? 'Undo polish' : 'Polish with AI',
+      polish: () => this.setState(this.state.polished ? { draft: this.state.rawDraft, polished: false } : { rawDraft: this.state.draft, draft: POLISHED, polished: true }),
+      send, sent: S.sent, pickRoll: S.pickRoll, togglePick: () => this.setState({ pickRoll: !this.state.pickRoll }),
+      mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => this.setState({ area: false }),
       tables, skins, skin: { face: K[2], edge: K[3], ink: K[4] }, tableName: T[1].toUpperCase(),
       tableStyle: 'position: relative; height: 300px; border-radius: 16px; overflow: hidden; background: ' + T[2] + '; border: 10px solid ' + T[3] + '; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55)',
       custom: S.custom, toggleCustom: () => this.setState({ custom: !this.state.custom }), customPressed: S.custom ? 'true' : 'false', customLabel: S.custom ? 'Done' : 'Customise',
@@ -110,8 +137,8 @@ class Component extends DCLogic {
     };
   }
 
-  rollFor(id, label, tn) {
+  rollFor(ids, label, tn, picked) {
     const ix = this.state.rollIx + 1;
-    this.setState({ dice: true, phase: 'ready', custom: false, rollIx: ix, roll: { id, label, tn, mod: mod(PTS[id] || 0), die: DICE[ix % DICE.length] } });
+    this.setState({ dice: true, phase: 'ready', custom: false, rollIx: ix, roll: { ids, label, tn, picked: !!picked, mod: combo(ids).total, die: DICE[ix % DICE.length] } });
   }
 }

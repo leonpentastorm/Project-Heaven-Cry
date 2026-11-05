@@ -170,9 +170,9 @@ def build():
     (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))
     print("built Main")
     common = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
-              "p3": BLOBS["char-drava-keel"], "npc": BLOBS["char-drava-keel"], "wick": BLOBS["wick-mind-without-fog"], "classes": classes_full()}
+              "p3": BLOBS["char-drava-keel"], "npc": BLOBS["char-drava-keel"], "wick": BLOBS["wick-mind-without-fog"], "pilot": BLOBS["world-pilot"], "classes": classes_full()}
     for name, fname, title, h in [("combat", "Combat.dc.html", "PHC · Combat · M813 rear pad", 1160),
-                                  ("room", "Room.dc.html", "PHC · Room · squad and Narrator", 900),
+                                  ("room", "Room.dc.html", "PHC · Room · squad and Narrator", 1500),
                                   ("levelup", "LevelUp.dc.html", "PHC · Level up · level 3 and class", 1200)]:
         tpl = (BUILD / (name + ".template.html")).read_text()
         js = (BUILD / (name + ".logic.js")).read_text().replace("__DATA__", json.dumps(common, ensure_ascii=False))

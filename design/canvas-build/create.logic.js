@@ -36,7 +36,7 @@ class Component extends DCLogic {
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
       fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, applied: arch,
-      ctab: 'body', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
+      hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
     };
   }
 
@@ -84,33 +84,42 @@ class Component extends DCLogic {
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
       leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
     };
-    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, applied: A ? A.id : null, step: 'skills', ctab: A ? CORES.reduce((b, c) => (A.cores[c] > A.cores[b] ? c : b), 'body') : 'body' });
+    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
     const useLabel = A ? 'Use ' + A.name + ' ›' : 'Start from scratch ›';
 
-    // skills
-    const coreTabs = CORES.map((c) => ({ name: c.toUpperCase(), note: WORDS[der.core[c]] + ' · ' + der.core[c], pick: set({ ctab: c }), selected: S.ctab === c ? 'true' : 'false',
-      style: 'display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 60px; padding: 6px 18px; border-radius: 12px; font-family: inherit; cursor: pointer; color: ' + D.core[c] + '; ' +
-        (S.ctab === c ? 'background: #1C2536; border: 2px solid ' + D.core[c] : 'background: transparent; border: 2px solid #232D3F') }));
+    // skills: all 27 at once, three Core columns, each attribute linked to its skills
     const setSkill = (id, v) => () => {
       const cur = this.state.skills[id] || 0; const spent = derive(this.state.skills).spent;
       if (v < 0 || v > CAP || (v > cur && spent + (v - cur) > BUDGET)) return;
       const next = { ...this.state.skills }; if (v === 0) delete next[id]; else next[id] = v;
-      this.setState({ skills: next });
+      this.setState({ skills: next, hover: id });
     };
-    const rows = D.attrs.filter((a) => a.core === S.ctab).map((a) => ({
-      name: a.name.toUpperCase(), val: der.attr[a.id], fx: a.fx, nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + a.ink,
-      cards: D.skills.filter((s) => s.attr === a.id).map((s) => {
-        const p = S.skills[s.id] || 0, m = mod(p);
-        return { ...s, pts: p, slot: s.slot === 'alpha' ? 'α' : s.slot === 'beta' ? 'β' : 'γ',
-          mod: fmt(m) + (p === 0 ? ' untrained' : p >= 5 ? ' · Mastery 2' : p >= 3 ? ' · Mastery 1' : ''),
-          modStyle: 'font-size: 12px; color: ' + (m < 0 ? '#A3AEC2' : a.ink),
-          nameStyle: 'font-size: 16px; font-weight: 700; color: ' + a.ink, dia: dia(5, p, a.ink, 9),
-          inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: p >= CAP || left <= 0, noDec: p <= 0,
-          style: 'display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid ' + (p > 0 ? a.ink : '#232D3F') };
-      }),
+    const coreCols = CORES.map((c) => ({
+      name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]],
+      headStyle: 'display: flex; align-items: baseline; gap: 10px; padding: 8px 14px; border-radius: 10px; background: #10151F; border: 1px solid ' + D.core[c] + '; color: ' + D.core[c],
+      attrs: D.attrs.filter((a) => a.core === c).map((a) => ({
+        name: a.name.toUpperCase(), val: der.attr[a.id], fx: a.fx,
+        spineStyle: 'display: flex; flex-direction: column; margin-left: 12px; padding: 4px 0 4px 14px; border-left: 2px solid ' + a.ink,
+        nodeStyle: 'width: 14px; height: 14px; transform: rotate(45deg); background: ' + a.ink + '; flex: none',
+        nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + a.ink + '; white-space: nowrap',
+        barStyle: 'position: absolute; left: -14px; right: 0; top: 0; height: 2px; background: ' + a.ink + '; opacity: 0.6',
+        cards: D.skills.filter((s) => s.attr === a.id).map((s) => {
+          const p = S.skills[s.id] || 0, m = mod(p);
+          return { ...s, pts: p, modShort: fmt(m) + (p >= 5 ? ' M2' : p >= 3 ? ' M1' : ''),
+            modStyle: 'font-size: 11px; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
+            nameStyle: 'font-size: 12px; font-weight: 700; line-height: 1.2; min-height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
+            inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: p >= CAP || left <= 0, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
+            style: 'display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
+        }),
+      })),
     }));
+    const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
+    const detail = { img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(mod(hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
+      nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
+      style: 'display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
-    const leanList = der.leans.length ? der.leans.map((l) => ({ name: l.name, total: l.total, style: 'font-weight: 700; color: ' + D.core[l.core] })) : [{ name: 'Place some points first', total: 0, style: 'color: #A3AEC2' }];
+    const leanList = der.leans.length ? der.leans.map((l) => ({ name: l.name, total: l.total, chip: 'padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid ' + D.core[l.core] + '; color: ' + D.core[l.core] }))
+      : [{ name: 'Place some points', total: '', chip: 'font-size: 12px; color: #A3AEC2' }];
     const archNote = S.applied ? 'Started from the ' + ARCH[S.applied].name + ' archetype. Change anything; the archetype is not saved.' : 'Built from scratch.';
 
     // traits
@@ -145,7 +154,7 @@ class Component extends DCLogic {
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
-      budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, applied: null }), coreTabs, rows, sideCores, leanList, archNote,
+      budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
       kitCards,
       summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),

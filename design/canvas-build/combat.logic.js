@@ -30,7 +30,7 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state;
     const cost = COST[S.action] || 0;
-    const party = { [S.pos]: { img: D.pc, label: 'MPAT (you)' }, '2,8': { img: D.p2, label: 'Ninety-Two' }, '5,8': { badge: '4-10', label: '4-Ten, Downed' } };
+    const party = { [S.pos]: { img: D.pc, label: 'MPAT (you, Leon)', ring: '#7FD4FF' }, '2,8': { img: D.p2, label: 'Ninety-Two (Mai)', ring: '#FF9EC7' }, '5,8': { badge: '4-10', label: '4-Ten, Downed (Leon)', ring: '#7FD4FF' } };
     const foes = {}; Object.entries(HOSTILES).forEach(([id, h]) => { foes[h.pos] = { id, ...h }; });
     const tiles = [];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -43,16 +43,17 @@ class Component extends DCLogic {
       tiles.push({
         label: p ? p.label : f ? f.name + ' (hostile)' : HULL.has(k) ? 'Ship hull' : CRATES.has(k) ? 'Platinum crates, half cover' : WRECK.has(k) ? 'Wrecked robots, difficult terrain' : 'Tile ' + k,
         click: () => this.tileClick(k), hasImg: !!((p && p.img) || (f && f.img)), img: (p && p.img) || (f && f.img) || '',
-        imgStyle: 'width: 38px; height: 38px; object-fit: cover; ' + (p ? 'border-radius: 50%; border: 2px solid #E7EBF3' : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157')),
+        imgStyle: 'width: 38px; height: 38px; object-fit: cover; ' + (p ? 'border-radius: 50%; border: 3px solid ' + p.ring : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157')),
         hasBadge: !!((p && p.badge) || (f && !f.img)), badge: (p && p.badge) || (f && f.short) || '',
-        badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; font-size: 11px; font-weight: 700; ' + (p ? 'border-radius: 50%; border: 2px dashed #A3AEC2; color: #A3AEC2' : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157'),
+        badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; font-size: 11px; font-weight: 700; ' + (p ? 'border-radius: 50%; border: 2px dashed ' + p.ring + '; color: ' + p.ring : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157'),
         hasText: WRECK.has(k) && !p, text: 'WRECK',
         style: 'display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + bg + '; border: ' + border,
       });
     }
+    const RING = { MPAT: '#7FD4FF', 'Ninety-Two': '#FF9EC7' };
     const initiative = [['Keel', 17, 'foe', D.npc], ['MPAT', 14, 'pc', D.pc], ['E1', 11, 'foe'], ['Ninety-Two', 9, 'pc', D.p2], ['E2', 6, 'foe']].map(([name, init, side, img]) => ({
       name, init, hasImg: !!img, noImg: !img, img: img || '', short: name.slice(0, 2).toUpperCase(),
-      imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (side === 'pc' ? 'border-radius: 50%; border: 2px solid #E7EBF3' : 'border-radius: 4px; border: 2px solid #F65157'),
+      imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + RING[name] : 'border-radius: 4px; border: 2px solid #F65157'),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: 4px; border: 2px solid #F65157; color: #F65157; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (name === 'MPAT' ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F'),
     }));

@@ -1,1 +1,140 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-03T12:50:00Z"},"title":"PHC Play Screen","launch":{"view":"canvas"},"pages":[],"boards":{"Main.dc.html":{"x":0,"y":0,"w":1440,"h":1240,"title":"Story mode \u00b7 M813, the last ship out","expand":"fill","is_interactive":true},"Combat.dc.html":{"x":1520,"y":0,"w":1440,"h":1160,"title":"Combat \u00b7 M813 rear pad, tactical grid","expand":"fill","is_interactive":true},"Room.dc.html":{"x":3040,"y":0,"w":1440,"h":900,"title":"Room \u00b7 squad, Narrator, campaign","expand":"fill","is_interactive":true},"Create.dc.html":{"x":0,"y":1500,"w":1440,"h":1000,"title":"Creation 1 \u00b7 Identity (full flow, start here)","expand":"fill","is_interactive":true},"CreateArchetype.dc.html":{"x":1520,"y":1500,"w":1440,"h":1100,"title":"Creation 2 \u00b7 Archetype (Cores screen)","expand":"fill","is_interactive":true},"CreateSkills.dc.html":{"x":3040,"y":1500,"w":1440,"h":1500,"title":"Creation 3 \u00b7 Skills (sample: Field Medic preset)","expand":"fill","is_interactive":true},"CreateTraits.dc.html":{"x":4560,"y":1500,"w":1440,"h":1400,"title":"Creation 4 \u00b7 Traits","expand":"fill","is_interactive":true},"CreateKit.dc.html":{"x":6080,"y":1500,"w":1440,"h":900,"title":"Creation 5 \u00b7 Kit","expand":"fill","is_interactive":true},"CreateLockIn.dc.html":{"x":7600,"y":1500,"w":1440,"h":1000,"title":"Creation 6 \u00b7 Lock in","expand":"fill","is_interactive":true},"LevelUp.dc.html":{"x":4560,"y":0,"w":1440,"h":1200,"title":"Level up \u00b7 level 3, skill point and class","expand":"fill","is_interactive":true}},"order":["Main.dc.html","Combat.dc.html","Room.dc.html","LevelUp.dc.html","Create.dc.html","CreateArchetype.dc.html","CreateSkills.dc.html","CreateTraits.dc.html","CreateKit.dc.html","CreateLockIn.dc.html"],"notes":{"title":{"x":0,"y":-300,"text":"Project Heaven Cry \u2014 play screens","kind":"title1","maxW":5920},"createTitle":{"x":0,"y":1200,"text":"Character creation \u2014 the EPCCG form","kind":"title1","maxW":9040}},"designSystems":[]}
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 1240,
+      "is_interactive": true,
+      "title": "Story mode · M813, the last ship out",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Combat.dc.html": {
+      "expand": "fill",
+      "h": 1160,
+      "is_interactive": true,
+      "title": "Combat · M813 rear pad, tactical grid",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Room.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "is_interactive": true,
+      "title": "Room · players, squad, campaign start",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "LevelUp.dc.html": {
+      "expand": "fill",
+      "h": 1200,
+      "is_interactive": true,
+      "title": "Level up · level 3, skill point and class",
+      "w": 1440,
+      "x": 4560,
+      "y": 0
+    },
+    "Create.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Creation 1 · Identity (full flow, start here)",
+      "w": 1440,
+      "x": 0,
+      "y": 1920
+    },
+    "CreateArchetype.dc.html": {
+      "expand": "fill",
+      "h": 1100,
+      "is_interactive": true,
+      "title": "Creation 2 · Archetype (Cores screen)",
+      "w": 1440,
+      "x": 1520,
+      "y": 1920
+    },
+    "CreateSkills.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Creation 3 · Skills, all 27 at once (sample: Field Medic preset)",
+      "w": 1440,
+      "x": 3040,
+      "y": 1920
+    },
+    "CreateTraits.dc.html": {
+      "expand": "fill",
+      "h": 1400,
+      "is_interactive": true,
+      "title": "Creation 4 · Traits",
+      "w": 1440,
+      "x": 4560,
+      "y": 1920
+    },
+    "CreateKit.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Creation 5 · Kit",
+      "w": 1440,
+      "x": 6080,
+      "y": 1920
+    },
+    "CreateLockIn.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Creation 6 · Lock in",
+      "w": 1440,
+      "x": 7600,
+      "y": 1920
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-03T12:50:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "title",
+    "createTitle"
+  ],
+  "notes": {
+    "title": {
+      "kind": "title1",
+      "maxW": 5920,
+      "text": "Project Heaven Cry — play screens",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "createTitle": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "Character creation — the EPCCG form",
+      "w": 240,
+      "x": 0,
+      "y": 1620
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Combat.dc.html",
+    "Room.dc.html",
+    "LevelUp.dc.html",
+    "Create.dc.html",
+    "CreateArchetype.dc.html",
+    "CreateSkills.dc.html",
+    "CreateTraits.dc.html",
+    "CreateKit.dc.html",
+    "CreateLockIn.dc.html"
+  ],
+  "pages": [],
+  "title": "PHC Play Screen"
+}

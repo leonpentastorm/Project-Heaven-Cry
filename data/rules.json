@@ -39,8 +39,10 @@
       "narrator_adds": "complication"
     },
     "combined_check": {
-      "mod": "lower of the two skill mods + 2",
-      "tn_increase": 0
+      "skills": "1 to 3, called by the narrator",
+      "mod": "lowest skill mod in the check + 2 for each other skill in the check with >= 1 point",
+      "tn_increase": 0,
+      "provisional": true
     },
     "opposed_check": {
       "higher_total_wins": true,

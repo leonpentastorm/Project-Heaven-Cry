@@ -109,12 +109,12 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Change the spec first, then the data, then run the validator.
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
 - Keep text in-universe: no real-Earth names in game text (the Unspoken Name). Recognisable homages through Celestials are fine.
-- Rules revision 1.1 (accepted 5 Nov 2026) is in both the repo spec and the living Doc. Its provisional numbers are spec items 35–41.
+- Rules revision 1.1 (accepted 5 Nov 2026) is in both the repo spec and the living Doc. Its provisional numbers are spec items 35–42.
 
 ## Next steps
 
 1. Tech plan with Leon (engine as pure, deterministic TypeScript with seeded RNG; authoritative room server; client with a grid renderer; provider-agnostic Narrator adapter using structured tool calls).
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
-4. Settle the 41 open items in spec section 14 through playtests.
+4. Settle the 42 open items in spec section 14 through playtests.
 5. Lock the UI on the canvas (prototype v2, branch `ui-prototype-v2`; Leon comments, Claude fixes), then implement the real client from it.
