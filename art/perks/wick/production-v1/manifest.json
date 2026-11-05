@@ -235,6 +235,29 @@
       },
       "batch": "D",
       "source_sha256": "ddfa9ff7db5f37612df5aa0de44bd80524bc6a72c982c7b4e9c82a1c0351adc4"
+    },
+    {
+      "id": "grim-reaper",
+      "data_id": "grim_reaper",
+      "name": "Grim Reaper",
+      "family": "perks",
+      "order": 11,
+      "mood": "Grim, Comic",
+      "action": "Wick, cape pulled up into a hood, leans casually on a scythe taller than itself as three AP pips spark up off the blade; a shadow flees at the frame edge.",
+      "screen": "Narrowed eyes",
+      "prop": "Scythe",
+      "path": "art/perks/wick/production-v1/grim-reaper.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/grim-reaper.png",
+        "128": "art/perks/wick/production-v1/exports/128/grim-reaper.png",
+        "64": "art/perks/wick/production-v1/exports/64/grim-reaper.png",
+        "56": "art/perks/wick/production-v1/exports/56/grim-reaper.png",
+        "48": "art/perks/wick/production-v1/exports/48/grim-reaper.png",
+        "44": "art/perks/wick/production-v1/exports/44/grim-reaper.png",
+        "40": "art/perks/wick/production-v1/exports/40/grim-reaper.png"
+      },
+      "batch": "D",
+      "source_sha256": "8d531f80fb72779d5c7158b58e2603cf2ad367f54582962744c4748f0d64e859"
     }
   ]
 }

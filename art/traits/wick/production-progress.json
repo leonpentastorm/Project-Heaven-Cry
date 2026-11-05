@@ -91,11 +91,12 @@
     "breaching-strike",
     "grapple",
     "into-the-dark",
-    "iron-stomach"
+    "iron-stomach",
+    "grim-reaper"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 12
+    "perks": 13
   },
   "revision_rounds": {
     "field-surgeon": 3,
