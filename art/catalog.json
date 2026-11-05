@@ -2839,6 +2839,30 @@
         "44": "art/traits/wick/production-v1/exports/44/cover-story.png",
         "40": "art/traits/wick/production-v1/exports/40/cover-story.png"
       }
+    },
+    "inner-ring-heir": {
+      "label": "Wick — Inner Ring Heir",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/inner-ring-heir.png",
+      "sha256": "f3c77737f26c905146197cee544e7dafb57e2f97ffbdd4227d55418a899745ca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "inner_ring_heir",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/inner-ring-heir.png",
+        "128": "art/traits/wick/production-v1/exports/128/inner-ring-heir.png",
+        "64": "art/traits/wick/production-v1/exports/64/inner-ring-heir.png",
+        "56": "art/traits/wick/production-v1/exports/56/inner-ring-heir.png",
+        "48": "art/traits/wick/production-v1/exports/48/inner-ring-heir.png",
+        "44": "art/traits/wick/production-v1/exports/44/inner-ring-heir.png",
+        "40": "art/traits/wick/production-v1/exports/40/inner-ring-heir.png"
+      }
     }
   },
   "character_collections": {

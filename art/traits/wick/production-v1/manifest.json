@@ -1178,6 +1178,29 @@
       },
       "batch": "C",
       "source_sha256": "d92f5a05043cbf78d95e2659fbed920276809a8c8cbc4378a9d28027cfd706da"
+    },
+    {
+      "id": "inner-ring-heir",
+      "data_id": "inner_ring_heir",
+      "name": "Inner Ring Heir",
+      "family": "traits",
+      "order": 61,
+      "mood": "Comic, Tense",
+      "action": "Wick struts nose-up mid-step, holding aloft its family crest shield, whose design is plainly a bullseye",
+      "screen": "Smug",
+      "prop": "Bullseye crest shield",
+      "path": "art/traits/wick/production-v1/inner-ring-heir.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/inner-ring-heir.png",
+        "128": "art/traits/wick/production-v1/exports/128/inner-ring-heir.png",
+        "64": "art/traits/wick/production-v1/exports/64/inner-ring-heir.png",
+        "56": "art/traits/wick/production-v1/exports/56/inner-ring-heir.png",
+        "48": "art/traits/wick/production-v1/exports/48/inner-ring-heir.png",
+        "44": "art/traits/wick/production-v1/exports/44/inner-ring-heir.png",
+        "40": "art/traits/wick/production-v1/exports/40/inner-ring-heir.png"
+      },
+      "batch": "C",
+      "source_sha256": "32a2301a4e167600bc1ae555eb4619da449e53dcda16a4b7711512f1d7aa0b11"
     }
   ]
 }
