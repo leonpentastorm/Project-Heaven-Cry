@@ -2311,6 +2311,30 @@
         "44": "art/traits/wick/production-v1/exports/44/old-school.png",
         "40": "art/traits/wick/production-v1/exports/40/old-school.png"
       }
+    },
+    "spray-and-pray": {
+      "label": "Wick — Spray and Pray",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/spray-and-pray.png",
+      "sha256": "547de5c3a99b89fdaaa53a3c8a737d64883c3fecbf7f55c0c75453556fd37b30",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "spray_and_pray",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/spray-and-pray.png",
+        "128": "art/traits/wick/production-v1/exports/128/spray-and-pray.png",
+        "64": "art/traits/wick/production-v1/exports/64/spray-and-pray.png",
+        "56": "art/traits/wick/production-v1/exports/56/spray-and-pray.png",
+        "48": "art/traits/wick/production-v1/exports/48/spray-and-pray.png",
+        "44": "art/traits/wick/production-v1/exports/44/spray-and-pray.png",
+        "40": "art/traits/wick/production-v1/exports/40/spray-and-pray.png"
+      }
     }
   },
   "character_collections": {

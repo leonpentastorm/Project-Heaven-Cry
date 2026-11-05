@@ -672,6 +672,29 @@
       },
       "batch": "B",
       "source_sha256": "fa7dabcbb42df18e7a15ec252dde8f216c0165a2b7b3410a2e214937ee846e47"
+    },
+    {
+      "id": "spray-and-pray",
+      "data_id": "spray_and_pray",
+      "name": "Spray and Pray",
+      "family": "traits",
+      "order": 37,
+      "mood": "Comic",
+      "action": "Wick staggers backward on its heels, hip-firing a huge automatic rifle, a waterfall of spent casings pouring past its boots",
+      "screen": "Eyes shut, open yell",
+      "prop": "Automatic rifle",
+      "path": "art/traits/wick/production-v1/spray-and-pray.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/spray-and-pray.png",
+        "128": "art/traits/wick/production-v1/exports/128/spray-and-pray.png",
+        "64": "art/traits/wick/production-v1/exports/64/spray-and-pray.png",
+        "56": "art/traits/wick/production-v1/exports/56/spray-and-pray.png",
+        "48": "art/traits/wick/production-v1/exports/48/spray-and-pray.png",
+        "44": "art/traits/wick/production-v1/exports/44/spray-and-pray.png",
+        "40": "art/traits/wick/production-v1/exports/40/spray-and-pray.png"
+      },
+      "batch": "B",
+      "source_sha256": "1bd766027d8292d066cb0168f2b8305a0ba1d1d20751166829e607dfcb4b247d"
     }
   ]
 }

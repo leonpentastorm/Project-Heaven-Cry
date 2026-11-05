@@ -45,10 +45,11 @@
     "daggerfall-veteran",
     "upper-touched",
     "gun-nut",
-    "old-school"
+    "old-school",
+    "spray-and-pray"
   ],
   "catalog_coverage": {
-    "traits": 38,
+    "traits": 39,
     "perks": 2
   },
   "revision_rounds": {
