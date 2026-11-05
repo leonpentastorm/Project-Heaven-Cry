@@ -42,10 +42,11 @@
     "worldline-fracture",
     "lowland-born",
     "central-city-kid",
-    "daggerfall-veteran"
+    "daggerfall-veteran",
+    "upper-touched"
   ],
   "catalog_coverage": {
-    "traits": 35,
+    "traits": 36,
     "perks": 2
   },
   "revision_rounds": {

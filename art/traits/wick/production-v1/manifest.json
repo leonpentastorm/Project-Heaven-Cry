@@ -603,6 +603,29 @@
       },
       "batch": "B",
       "source_sha256": "008355366ee22e397773dbb0c90bf703dd0f20d4875710ff930074b16635541f"
+    },
+    {
+      "id": "upper-touched",
+      "data_id": "upper_touched",
+      "name": "Upper-Touched",
+      "family": "traits",
+      "order": 33,
+      "mood": "Eerie, Tender",
+      "action": "Wick lies on its back waving up at a dotted-outline copy of its own head peering down over the top edge of the frame",
+      "screen": "Small wave-back smile",
+      "prop": "Dotted twin head",
+      "path": "art/traits/wick/production-v1/upper-touched.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/upper-touched.png",
+        "128": "art/traits/wick/production-v1/exports/128/upper-touched.png",
+        "64": "art/traits/wick/production-v1/exports/64/upper-touched.png",
+        "56": "art/traits/wick/production-v1/exports/56/upper-touched.png",
+        "48": "art/traits/wick/production-v1/exports/48/upper-touched.png",
+        "44": "art/traits/wick/production-v1/exports/44/upper-touched.png",
+        "40": "art/traits/wick/production-v1/exports/40/upper-touched.png"
+      },
+      "batch": "B",
+      "source_sha256": "46ad61edd4060cda2151ef9a9e4e36ac5349065c8a1e5e974864efa2ac0d1b8a"
     }
   ]
 }

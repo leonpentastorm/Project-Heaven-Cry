@@ -2239,6 +2239,30 @@
         "44": "art/traits/wick/production-v1/exports/44/daggerfall-veteran.png",
         "40": "art/traits/wick/production-v1/exports/40/daggerfall-veteran.png"
       }
+    },
+    "upper-touched": {
+      "label": "Wick — Upper-Touched",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/upper-touched.png",
+      "sha256": "148ef6cd692904a5a00032daadc3132a7c2b1eb4115ba4cb77d10dd484a342a2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "upper_touched",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/upper-touched.png",
+        "128": "art/traits/wick/production-v1/exports/128/upper-touched.png",
+        "64": "art/traits/wick/production-v1/exports/64/upper-touched.png",
+        "56": "art/traits/wick/production-v1/exports/56/upper-touched.png",
+        "48": "art/traits/wick/production-v1/exports/48/upper-touched.png",
+        "44": "art/traits/wick/production-v1/exports/44/upper-touched.png",
+        "40": "art/traits/wick/production-v1/exports/40/upper-touched.png"
+      }
     }
   },
   "character_collections": {
