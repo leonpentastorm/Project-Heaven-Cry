@@ -1879,6 +1879,30 @@
         "44": "art/traits/wick/production-v1/exports/44/holo-drama-addict.png",
         "40": "art/traits/wick/production-v1/exports/40/holo-drama-addict.png"
       }
+    },
+    "oil-in-my-mind": {
+      "label": "Wick — Oil in My Mind",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/oil-in-my-mind.png",
+      "sha256": "9878f6fb218e1574259e0bb70e577b2d3c839874b6ad8e48af46253642000fc1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "oil_in_my_mind",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/oil-in-my-mind.png",
+        "128": "art/traits/wick/production-v1/exports/128/oil-in-my-mind.png",
+        "64": "art/traits/wick/production-v1/exports/64/oil-in-my-mind.png",
+        "56": "art/traits/wick/production-v1/exports/56/oil-in-my-mind.png",
+        "48": "art/traits/wick/production-v1/exports/48/oil-in-my-mind.png",
+        "44": "art/traits/wick/production-v1/exports/44/oil-in-my-mind.png",
+        "40": "art/traits/wick/production-v1/exports/40/oil-in-my-mind.png"
+      }
     }
   },
   "character_collections": {

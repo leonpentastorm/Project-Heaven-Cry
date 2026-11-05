@@ -258,6 +258,29 @@
       },
       "batch": "A",
       "source_sha256": "8f93c13cd4f68b69451c068229c69a22939f6c0fb4fcf1387e6f296d41af2731"
+    },
+    {
+      "id": "oil-in-my-mind",
+      "data_id": "oil_in_my_mind",
+      "name": "Oil in My Mind",
+      "family": "traits",
+      "order": 16,
+      "mood": "Comic",
+      "action": "Wick on tiptoe, nose almost touching a big empty picture frame, studies a single brushstroke with a mitten at its chin; its capelet corner curls like paper",
+      "screen": "Narrowed, analysing",
+      "prop": "Picture frame with one brushstroke",
+      "path": "art/traits/wick/production-v1/oil-in-my-mind.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/oil-in-my-mind.png",
+        "128": "art/traits/wick/production-v1/exports/128/oil-in-my-mind.png",
+        "64": "art/traits/wick/production-v1/exports/64/oil-in-my-mind.png",
+        "56": "art/traits/wick/production-v1/exports/56/oil-in-my-mind.png",
+        "48": "art/traits/wick/production-v1/exports/48/oil-in-my-mind.png",
+        "44": "art/traits/wick/production-v1/exports/44/oil-in-my-mind.png",
+        "40": "art/traits/wick/production-v1/exports/40/oil-in-my-mind.png"
+      },
+      "batch": "A",
+      "source_sha256": "4fcc10301993585774321ad83a1e1118f4e24f9a7e923c102526c3e0becc8b85"
     }
   ]
 }
