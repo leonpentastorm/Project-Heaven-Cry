@@ -3659,6 +3659,30 @@
         "44": "art/perks/wick/production-v1/exports/44/running-reload.png",
         "40": "art/perks/wick/production-v1/exports/40/running-reload.png"
       }
+    },
+    "rounding-up": {
+      "label": "Wick — Rounding Up",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/rounding-up.png",
+      "sha256": "2a203f3bc83ffdeb15c2441a1e4a8aed048927efcf83a3a21e0fb82338211346",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "rounding_up",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/rounding-up.png",
+        "128": "art/perks/wick/production-v1/exports/128/rounding-up.png",
+        "64": "art/perks/wick/production-v1/exports/64/rounding-up.png",
+        "56": "art/perks/wick/production-v1/exports/56/rounding-up.png",
+        "48": "art/perks/wick/production-v1/exports/48/rounding-up.png",
+        "44": "art/perks/wick/production-v1/exports/44/rounding-up.png",
+        "40": "art/perks/wick/production-v1/exports/40/rounding-up.png"
+      }
     }
   },
   "illustrations": {

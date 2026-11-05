@@ -97,11 +97,12 @@
     "wall-run",
     "roll-with-it",
     "origami-hands",
-    "running-reload"
+    "running-reload",
+    "rounding-up"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 18
+    "perks": 19
   },
   "revision_rounds": {
     "field-surgeon": 3,

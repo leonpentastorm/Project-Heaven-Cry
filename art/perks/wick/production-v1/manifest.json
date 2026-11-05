@@ -373,6 +373,29 @@
       },
       "batch": "D",
       "source_sha256": "512df677da2d5d285281d58b68276db37703957221ab6c010d5e70561d7fa27b"
+    },
+    {
+      "id": "rounding-up",
+      "data_id": "rounding_up",
+      "name": "Rounding Up",
+      "family": "perks",
+      "order": 17,
+      "mood": "Comic",
+      "action": "Wick leans on a battery cell as tall as itself, cheekily pushing its half-full charge mark up to the top with one mitten.",
+      "screen": "Sly grin",
+      "prop": "Battery cell",
+      "path": "art/perks/wick/production-v1/rounding-up.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/rounding-up.png",
+        "128": "art/perks/wick/production-v1/exports/128/rounding-up.png",
+        "64": "art/perks/wick/production-v1/exports/64/rounding-up.png",
+        "56": "art/perks/wick/production-v1/exports/56/rounding-up.png",
+        "48": "art/perks/wick/production-v1/exports/48/rounding-up.png",
+        "44": "art/perks/wick/production-v1/exports/44/rounding-up.png",
+        "40": "art/perks/wick/production-v1/exports/40/rounding-up.png"
+      },
+      "batch": "D",
+      "source_sha256": "be5382ccd8ae567b0f88af0a12a574171c3b57b468794705130fb3c4dd717db8"
     }
   ]
 }
