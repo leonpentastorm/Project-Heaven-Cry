@@ -1,0 +1,255 @@
+{
+  "version": "1.3",
+  "skill_palette_version": "3",
+  "scope": "Current abstract skill portraits; historical character sheets are unchanged.",
+  "note": "Pigment direction anchors, not indexed output guarantees. All shadows remain in the attribute hue. v1.3 adds ui_ink per attribute (contrast-safe UI colour, same hue), core colours, state colours and neutrals. Pigments are unchanged.",
+  "skill_base": {
+    "black": "#000000",
+    "cream": "#F2E5C8"
+  },
+  "attributes": {
+    "endurance": {
+      "core": "body",
+      "name": "Endurance",
+      "color": "#CC2435",
+      "lighting": "bold saturated crimson-red pigment and shading",
+      "range": {
+        "color": "#CC2435",
+        "name": "bold saturated crimson-red",
+        "shadow": "#7A1121",
+        "highlight": "#E63B4A"
+      },
+      "ui_ink": "#F65157"
+    },
+    "strength": {
+      "core": "body",
+      "name": "Strength",
+      "color": "#F68A38",
+      "lighting": "hot orange pigment and shading",
+      "range": {
+        "color": "#F68A38",
+        "name": "hot orange",
+        "shadow": "#A34715",
+        "highlight": "#FFA04D"
+      },
+      "ui_ink": "#F68A38"
+    },
+    "agility": {
+      "core": "body",
+      "name": "Agility",
+      "color": "#E3BF51",
+      "lighting": "golden yellow pigment and shading",
+      "range": {
+        "color": "#E3BF51",
+        "name": "golden yellow",
+        "shadow": "#9D7B21",
+        "highlight": "#F1D16A"
+      },
+      "ui_ink": "#E3BF51"
+    },
+    "perception": {
+      "core": "mind",
+      "name": "Perception",
+      "color": "#40BAA0",
+      "lighting": "green-leaning sea teal practical lighting",
+      "ui_ink": "#40BAA0"
+    },
+    "intelligence": {
+      "core": "mind",
+      "name": "Intelligence",
+      "color": "#8BDEEE",
+      "lighting": "icy cyan practical lighting",
+      "ui_ink": "#8BDEEE"
+    },
+    "expression": {
+      "core": "mind",
+      "name": "Expression",
+      "color": "#075369",
+      "lighting": "deep petrol-blue shading, restricted dark-to-middle values",
+      "range": {
+        "color": "#075369",
+        "name": "deep petrol-blue",
+        "highlight": "#14758B",
+        "shadow": "#033443"
+      },
+      "ui_ink": "#5394AC"
+    },
+    "insight": {
+      "core": "soul",
+      "name": "Insight",
+      "color": "#EB95B7",
+      "lighting": "rose pink practical lighting",
+      "ui_ink": "#EB95B7"
+    },
+    "determination": {
+      "core": "soul",
+      "name": "Determination",
+      "color": "#9875D7",
+      "lighting": "electric violet practical lighting",
+      "ui_ink": "#9D7ADC"
+    },
+    "virtue": {
+      "core": "soul",
+      "name": "Virtue",
+      "color": "#86234E",
+      "lighting": "dark mulberry shading, restricted dark-to-middle values",
+      "range": {
+        "color": "#86234E",
+        "name": "dark mulberry",
+        "highlight": "#AC3565",
+        "shadow": "#4C1230"
+      },
+      "ui_ink": "#D36A90"
+    }
+  },
+  "skills": {
+    "durability": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "pain-threshold": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "sensory": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "raw-power": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "guts": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "intimidation": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "athletics": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "dexterity": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "reaction-speed": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "ingenuity": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "proficiency": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "vigilant": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "brain-power": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "rumination": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "eloquence": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "visualization": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "analysis": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "charisma": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "empathy": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "camaraderie": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "implication": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "will-power": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "lore-master": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "composure": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "faith": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    },
+    "conscience": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    },
+    "authority": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    }
+  },
+  "wick": {
+    "trait_ink": "#FFFFFF",
+    "perk_ink": "#FFFFFF",
+    "note": "Traits and perks are both pure white flat ink. No attribute or requirement colour in icons."
+  },
+  "ui": {
+    "doc": "docs/design/colour-system.md",
+    "ink_rule": "Attribute ui_ink = pigment hue (OKLCH hue unchanged), lightness raised only until 4.5:1 contrast on surfaces.raised.",
+    "cores": {
+      "body": "#F2A54A",
+      "mind": "#4FC8DF",
+      "soul": "#AE9BFF"
+    },
+    "states": {
+      "success": "#6FEA77",
+      "critical_success": "#6FEA77",
+      "failure": "#A3AEC2",
+      "complication": "#F65157",
+      "hp": "#F65157",
+      "damage": "#F65157",
+      "hostile": "#F65157",
+      "mp": "#5C9EFF",
+      "echo": "#FFFFFF",
+      "pending": "#FFFFFF"
+    },
+    "surfaces": {
+      "ground": "#0A0D13",
+      "panel": "#10151F",
+      "raised": "#1C2536",
+      "line": "#232D3F",
+      "text": "#E7EBF3",
+      "muted": "#A3AEC2"
+    },
+    "retired": {
+      "#6FD8A0": "old success; too close to Perception",
+      "#F0907F": "old failure",
+      "#E8604F": "old HP",
+      "#FFD27A": "old Echo/critical; too close to Agility"
+    }
+  }
+}

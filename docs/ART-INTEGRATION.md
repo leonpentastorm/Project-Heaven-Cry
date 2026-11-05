@@ -30,24 +30,24 @@ The catalog maps asset IDs to files; it does not implement gameplay rules, skill
 
 Treat these as colour artwork in the engine's sRGB/color-texture mode, not normal maps or linear data. Begin with ordinary filtered scaling and inspect the result at the actual UI size. Compression and mipmap choices depend on the target engine and device; avoid settings that erase brush gaps or Wick's pixel-face separations.
 
-The skill hue is already painted into the PNG. Do not apply a full-image tint: it would colour the cream body and destroy the palette. Use `skills[id].color` for the accompanying label/border or attribute UI. The black background is intentional, not an alpha matte to remove. Character paintings keep their own material colours. Render Wick with alpha blending; the approved master is white, without glow or a drop shadow.
+The skill hue is already painted into the PNG. Do not apply a full-image tint: it would colour the cream body and destroy the palette. Use `skills[id].ui_ink` for the accompanying label, border or attribute UI. `skills[id].color` is the painted pigment; Expression and Virtue pigments are too dark for text on PHC's dark UI (about 2.2:1). The black background is intentional, not an alpha matte to remove. Character paintings keep their own material colours. Render Wick with alpha blending; the approved master is white, without glow or a drop shadow.
 
 These are source assets, not pre-packed atlases. If an engine needs an atlas, smaller exports or different compression, derive them in that project's build pipeline and retain these masters. Labels and UI frames are separate UI elements; they are not baked into the individual portraits.
 
 ## 3. Match the current palette
 
-Read [palette.json](../art/style-guide/v1.2/palette.json). Endurance is #CC2435 crimson, Strength #F68A38 orange, Agility #E3BF51 gold. Expression is #075369 deep petrol-blue and Virtue #86234E dark mulberry. All other current attributes are specified there too.
+Read [palette.json](../art/style-guide/v1.3/palette.json). Endurance is #CC2435 crimson, Strength #F68A38 orange, Agility #E3BF51 gold. Expression is #075369 deep petrol-blue and Virtue #86234E dark mulberry. All other current attributes are specified there too. Each attribute also has a `ui_ink` (same hue, at least 4.5:1 on the raised UI surface); the `ui` block holds core, state and neutral colours. Rules: [colour-system.md](design/colour-system.md).
 
 For future skill art: pure black background + neutral cream #F2E5C8 body + the attribute hue for every other mark and shadow. Darker/lighter shades of that hue are allowed. The hex values are art-direction anchors, not a claim that painted PNGs are indexed to three literal pixel values.
 
-Wick traits use white. Requirement-based perk icons use a single colour mixed from their required skills, following the style guide. This handoff does not prescribe an unapproved numeric colour-mixing algorithm; the current deliverable is the white trait example.
+Wick trait and perk icons are both pure white; they never take a skill colour. Show a perk's requirements as labelled skill chips beside the icon, each chip in its attribute's `ui_ink`.
 
 ## 4. Check before wiring into a screen
 
 - Confirm all 27 skills resolve to `art/skills/`, not the historical character filenames.
 - Readability: inspect the supplied [80-pixel thumbnail sheet](../art/skills/poc4-palette-v3/previews/thumbnail-test-80px.png), then inspect the actual UI scale. Keep skill labels accessible; colour alone should not identify a skill.
 - Preserve aspect ratio, full gesture, alpha and intended black background. Avoid cropping hands or adding a uniform tint.
-- Confirm the current palette matches the relevant UI labels and groupings.
+- Confirm UI labels and borders use `ui_ink`, not the pigment `color`.
 - Run `python3 scripts/validate_art.py` from the root after copying or reorganising the assets.
 
 ## Updating the collection

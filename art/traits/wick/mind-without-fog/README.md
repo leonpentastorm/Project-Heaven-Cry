@@ -10,4 +10,4 @@
 - **− Unmoving:** gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.
 - **Narrator:** every faction wants to convert the one recruit who can't be converted.
 
-Traits use pure white flat ink. Requirement-based perk icons use a single mixed requirement colour. Keep cut-out detail and characterful asymmetry; no glow, gradients or rendered shadows. The bowl and arrows express this trait and are not universal Wick accessories.
+Traits and perks both use pure white flat ink. Keep cut-out detail and characterful asymmetry; no glow, gradients or rendered shadows. The bowl and arrows express this trait and are not universal Wick accessories.

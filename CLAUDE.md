@@ -8,7 +8,7 @@ This file is the hand-off from the design sessions in claude.ai. Read it first, 
 
 1. **`docs/rules/PHC-Core-Rules-v1.0.md`** — the rules spec, every number. Exported from the living Claude Doc (links below). If the spec and the data disagree, **the spec wins and the data is the bug**.
 2. **`data/*.json`** — machine-readable rules the engine loads. Conventions in `data/CONVENTIONS.md`. Run `python3 tools/validate.py data` after any change; it must print `0 errors`.
-3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI.
+3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI. For the world's people, factions and voice, the **EPCCG** (`source/2020/english/EPCCG-Player-Character-Creation-Guide-EN.txt`, indexed in `docs/lore/EPCCG-Cast-and-Factions.md`) is the original source; the World Bible layers the simulation truth on top of it.
 4. **`design/canvas/`** — UI prototypes (Design Component `.dc.html` files from the claude.ai design canvas). Reference for layout and interaction, not production code.
 
 Living versions (edit there, then re-export here):
@@ -32,13 +32,16 @@ The 2020 originals (`Official_EPCCG.docx`, `PHC_Official_Character_Sheet.xlsx`, 
 ```
 CLAUDE.md                 this brief
 docs/rules/               PHC-Core-Rules-v1.0.md (the spec)
-docs/lore/                Narrators-World-Bible.md, MPAT-and-M813.md
+docs/lore/                Narrators-World-Bible.md, MPAT-and-M813.md, EPCCG-Cast-and-Factions.md, Wick.md
 docs/design/              Class-Roster-Rev2.md, Recovered-Design-Notes-2020.md,
-                          decisions.md (why things are the way they are), ui-screens.md
+                          decisions.md (why things are the way they are), ui-screens.md,
+                          colour-system.md
 data/                     the JSON data pack + CONVENTIONS.md + README.md
 tools/                    validate.py (cross-reference checker), fix_pack.py (normaliser)
 design/canvas/            UI prototypes (.dc.html) + canvas.json layout
-source/2020/              original material that could be exported
+art/                      art library: catalog.json, skills, characters, Wick icons, style-guide/v1.3, briefs/
+scripts/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
+source/2020/              original material; english/ holds the EPCCG guide and 2020 trait book in English
 ```
 
 ## The game in one screen
@@ -77,9 +80,13 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 ## UI direction (see `docs/design/ui-screens.md` and the canvas)
 
 - Inspired by AI-DM web RPGs (character panel | narrative stream | dice) and by **Disco Elysium's** skill screens: inner-voice cards in the story, a portrait card wall for skills, big `‹ 3 ›` steppers. Original art and text only; no DE assets.
-- Colour = meaning everywhere: **Body amber `#F2A54A`, Mind cyan `#4FC8DF`, Soul violet `#AE9BFF`**. Ground `#0A0D13`, panels `#10151F`, lines `#232D3F`, text `#E7EBF3`, muted `#A3AEC2`. Success `#6FD8A0`, failure/HP `#F0907F`/`#E8604F`, Echo/critical `#FFD27A`.
+- Colour = meaning everywhere. Full rules in `docs/design/colour-system.md`; values in `art/style-guide/v1.3/palette.json`.
+  - **Skills take their attribute's colour (9 hues).** Art uses the pigment; UI uses the contrast-safe ink: Endurance `#F65157`, Strength `#F68A38`, Agility `#E3BF51`, Perception `#40BAA0`, Intelligence `#8BDEEE`, Expression `#5394AC`, Insight `#EB95B7`, Determination `#9D7ADC`, Virtue `#D36A90`.
+  - **Cores** keep family colours for core-level UI: Body amber `#F2A54A`, Mind cyan `#4FC8DF`, Soul violet `#AE9BFF`.
+  - **States:** success `#6FEA77`, failure muted `#A3AEC2`, HP/damage/complication `#F65157` (HP comes from Endurance), MP `#5C9EFF`, Echo and still-to-do white `#FFFFFF`. Always pair with a word or glyph.
+  - Neutrals: ground `#0A0D13`, panels `#10151F`, raised `#1C2536`, lines `#232D3F`, text `#E7EBF3`, muted `#A3AEC2`.
 - Type: **Spectral** for narrative prose and titles, **Chakra Petch** for UI and numbers.
-- Skill art: 27 portraits at 4:5 (800 × 1000), tinted per core. The art library README describes Heavenprint portrait collections and Wick perk/trait icons as the approved direction.
+- Art has three modes (style guide `art/style-guide/v1.3/START-HERE.md`): **skill portraits** are 27 faceless gesture figures at 4:5 (800 × 1000), black + cream + the attribute pigment; **character portraits** are Heavenprint paintings (First-Patch Revival = the EPCCG field-quote speakers); **trait and perk icons** are Wick, pure white flat ink. Asset IDs resolve through `art/catalog.json`.
 - Dice are transparent: the screen always shows TN and the sum, so players can see the AI isn't fudging.
 
 ## Working agreements with Leon

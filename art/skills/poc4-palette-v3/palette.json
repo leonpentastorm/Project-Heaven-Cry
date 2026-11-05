@@ -205,6 +205,7 @@
   },
   "wick": {
     "trait_ink": "#FFFFFF",
-    "perk_ink": "One mixed colour from required skills; flat ink, no gradient."
+    "perk_ink": "#FFFFFF",
+    "note": "Superseded by style guide v1.3: traits and perks are both white."
   }
 }

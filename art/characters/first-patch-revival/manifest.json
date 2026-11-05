@@ -25,7 +25,7 @@
       "attribute": "endurance",
       "character": "Knight Jiren",
       "epccg_subject": 2,
-      "epccg_skill": "Pain Thresshold",
+      "epccg_skill": "Pain Threshold",
       "file": "body/endurance/pain-threshold.png"
     },
     {
@@ -133,7 +133,7 @@
       "skill": "Vigilant",
       "core": "mind",
       "attribute": "perception",
-      "character": "Vemilion Jasmine",
+      "character": "Vermilion Jasmine",
       "epccg_subject": 12,
       "epccg_skill": "Vigilant",
       "file": "mind/perception/vigilant.png"
@@ -254,7 +254,7 @@
       "skill": "Lore Master",
       "core": "soul",
       "attribute": "determination",
-      "character": "Andrade LoveLace — Mother",
+      "character": "Andrade Lovelace — Mother",
       "epccg_subject": 23,
       "epccg_skill": "Lore Master",
       "file": "soul/determination/lore-master.png"
@@ -303,5 +303,6 @@
       "epccg_skill": "Authority",
       "file": "soul/virtue/authority.png"
     }
-  ]
+  ],
+  "note": "The EPCCG cast: each portrait is the person quoted (or described) in that skill's EPCCG entry. Source text: docs/lore/EPCCG-Player-Character-Creation-Guide.md."
 }

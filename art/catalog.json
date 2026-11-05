@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "style_guide_version": "1.2",
+  "style_guide_version": "1.3",
   "skill_palette_version": "3",
   "path_base": "repository root",
-  "style_guide": "art/style-guide/v1.2/START-HERE.md",
-  "palette": "art/style-guide/v1.2/palette.json",
+  "style_guide": "art/style-guide/v1.3/START-HERE.md",
+  "palette": "art/style-guide/v1.3/palette.json",
   "skills": {
     "durability": {
       "label": "Durability",
@@ -15,7 +15,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F65157"
     },
     "pain-threshold": {
       "label": "Pain Threshold",
@@ -26,7 +27,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F65157"
     },
     "sensory": {
       "label": "Sensory",
@@ -37,7 +39,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F65157"
     },
     "raw-power": {
       "label": "Raw Power",
@@ -48,7 +51,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F68A38"
     },
     "guts": {
       "label": "Guts",
@@ -59,7 +63,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F68A38"
     },
     "intimidation": {
       "label": "Intimidation",
@@ -70,7 +75,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#F68A38"
     },
     "athletics": {
       "label": "Athletics",
@@ -81,7 +87,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#E3BF51"
     },
     "dexterity": {
       "label": "Dexterity",
@@ -92,7 +99,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#E3BF51"
     },
     "reaction-speed": {
       "label": "Reaction Speed",
@@ -103,7 +111,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#E3BF51"
     },
     "ingenuity": {
       "label": "Ingenuity",
@@ -114,7 +123,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#40BAA0"
     },
     "proficiency": {
       "label": "Proficiency",
@@ -125,7 +135,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#40BAA0"
     },
     "vigilant": {
       "label": "Vigilant",
@@ -136,7 +147,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#40BAA0"
     },
     "brain-power": {
       "label": "Brain Power",
@@ -147,7 +159,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#8BDEEE"
     },
     "rumination": {
       "label": "Rumination",
@@ -158,7 +171,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#8BDEEE"
     },
     "eloquence": {
       "label": "Eloquence",
@@ -169,7 +183,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#8BDEEE"
     },
     "visualization": {
       "label": "Visualization",
@@ -180,7 +195,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#5394AC"
     },
     "analysis": {
       "label": "Analysis",
@@ -191,7 +207,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#5394AC"
     },
     "charisma": {
       "label": "Charisma",
@@ -202,7 +219,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#5394AC"
     },
     "empathy": {
       "label": "Empathy",
@@ -213,7 +231,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#EB95B7"
     },
     "camaraderie": {
       "label": "Camaraderie",
@@ -224,7 +243,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#EB95B7"
     },
     "implication": {
       "label": "Implication",
@@ -235,7 +255,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#EB95B7"
     },
     "will-power": {
       "label": "Will Power",
@@ -246,7 +267,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#9D7ADC"
     },
     "lore-master": {
       "label": "Lore Master",
@@ -257,7 +279,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#9D7ADC"
     },
     "composure": {
       "label": "Composure",
@@ -268,7 +291,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#9D7ADC"
     },
     "faith": {
       "label": "Faith",
@@ -279,7 +303,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#D36A90"
     },
     "conscience": {
       "label": "Conscience",
@@ -290,7 +315,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#D36A90"
     },
     "authority": {
       "label": "Authority",
@@ -301,7 +327,8 @@
       "width": 800,
       "height": 1000,
       "background": "opaque black",
-      "usage": "player skill portrait"
+      "usage": "player skill portrait",
+      "ui_ink": "#D36A90"
     }
   },
   "characters": {
@@ -908,7 +935,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "durability",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 1,
+      "epccg_skill": "Durability",
+      "faction": "of the Burning Bridge"
     },
     "first-patch-revival--pain-threshold": {
       "label": "Knight Jiren",
@@ -919,10 +949,14 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "pain-threshold",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 2,
+      "epccg_skill": "Pain Threshold",
+      "epccg_quoted_by": "Sazmin",
+      "faction": "Adamantile Brigade"
     },
     "first-patch-revival--sensory": {
-      "label": "Mrs. Marry",
+      "label": "Grandma Marry",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/body/endurance/sensory.png",
       "sha256": "54dc78124c6bac14c740417c7610c0ab42c39f6e499029d314cdaeba742f6a64",
@@ -930,10 +964,14 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "sensory",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 3,
+      "epccg_skill": "Sensory",
+      "epccg_quoted_by": "Sister March",
+      "faction": "Lumeri Church"
     },
     "first-patch-revival--raw-power": {
-      "label": "Knight Andre \u2014 Giant Fist",
+      "label": "Knight Andre Giant Fist",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/body/strength/raw-power.png",
       "sha256": "083ba8fdf9758b97e493c2cf8744c20cc4d2e5b939f7aff9847a4ed89d59654c",
@@ -941,7 +979,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "raw-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 4,
+      "epccg_skill": "Raw Power",
+      "faction": "Adamantile Brigade"
     },
     "first-patch-revival--guts": {
       "label": "Ragoul the Keeper",
@@ -952,10 +993,12 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "guts",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 5,
+      "epccg_skill": "Guts"
     },
     "first-patch-revival--intimidation": {
-      "label": "Tommy Avencio \u2014 Papa",
+      "label": "Tommy Avencio",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/body/strength/intimidation.png",
       "sha256": "8e8e1f340269cbb28bcf3c721a631a5ff28c3f650d26994910a60672c31a7fb7",
@@ -963,10 +1006,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "intimidation",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 6,
+      "epccg_skill": "Intimidation",
+      "faction": "Smetanita Conjunction"
     },
     "first-patch-revival--athletics": {
-      "label": "Dominik Edelgard \u2014 Banner Lord",
+      "label": "Dominik Edelgard",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/body/agility/athletics.png",
       "sha256": "86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d",
@@ -974,10 +1020,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "athletics",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 7,
+      "epccg_skill": "Athletics",
+      "faction": "237th Hellraiser Division"
     },
     "first-patch-revival--dexterity": {
-      "label": "Ambrosius Costeau \u2014 Old Drifter",
+      "label": "Ambrosius Costeau",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/body/agility/dexterity.png",
       "sha256": "06fcd4a9a944b5d5b558786d9e626c8bc840b8449fc7010b227b816291fe92d8",
@@ -985,7 +1034,9 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "dexterity",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 8,
+      "epccg_skill": "Dexterity"
     },
     "first-patch-revival--reaction-speed": {
       "label": "Yukimura",
@@ -996,7 +1047,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "reaction-speed",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 9,
+      "epccg_skill": "Reaction Speed",
+      "faction": "Black Scavengers"
     },
     "first-patch-revival--ingenuity": {
       "label": "Lin Shin Long",
@@ -1007,7 +1061,9 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "ingenuity",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 10,
+      "epccg_skill": "Ingenuity"
     },
     "first-patch-revival--proficiency": {
       "label": "Demitri Kortev",
@@ -1018,10 +1074,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "proficiency",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 11,
+      "epccg_skill": "Proficiency",
+      "faction": "Kortev Utility Shack"
     },
     "first-patch-revival--vigilant": {
-      "label": "Vemilion Jasmine",
+      "label": "Vermilion Jasmine",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/mind/perception/vigilant.png",
       "sha256": "4faa077e027547a24f87ac19209e9a3af49b7789bb342851d7c68458b5f5eec3",
@@ -1029,7 +1088,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "vigilant",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 12,
+      "epccg_skill": "Vigilant",
+      "faction": "Rigaz Trade Company"
     },
     "first-patch-revival--brain-power": {
       "label": "Professor Avdol",
@@ -1040,10 +1102,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "brain-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 13,
+      "epccg_skill": "Brain Power",
+      "faction": "Science Team"
     },
     "first-patch-revival--rumination": {
-      "label": "Thalat\u00fbl the Librarian",
+      "label": "Thalatûl the Librarian",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/mind/intelligence/rumination.png",
       "sha256": "3e167bd8b6c5ec97a434dacd498c07c63206a2b6883e467ca43136f1d804243b",
@@ -1051,7 +1116,9 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "rumination",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 14,
+      "epccg_skill": "Rumination"
     },
     "first-patch-revival--eloquence": {
       "label": "Xander Badman",
@@ -1062,7 +1129,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "eloquence",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 15,
+      "epccg_skill": "Eloquence",
+      "faction": "Monsieur Saul's Law Firm"
     },
     "first-patch-revival--visualization": {
       "label": "Master Sakamoto",
@@ -1073,7 +1143,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "visualization",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 16,
+      "epccg_skill": "Visualization",
+      "epccg_quoted_by": "Rémy Étienne"
     },
     "first-patch-revival--analysis": {
       "label": "D12.9.6",
@@ -1084,7 +1157,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "analysis",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 17,
+      "epccg_skill": "Analysis",
+      "faction": "CCEC (Central City Espionage Commission)"
     },
     "first-patch-revival--charisma": {
       "label": "Damian Nox",
@@ -1095,7 +1171,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "charisma",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 18,
+      "epccg_skill": "Charisma",
+      "faction": "Sibugar Entertainment"
     },
     "first-patch-revival--empathy": {
       "label": "Paul Remarque",
@@ -1106,7 +1185,9 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "empathy",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 19,
+      "epccg_skill": "Empathy"
     },
     "first-patch-revival--camaraderie": {
       "label": "Souji",
@@ -1117,7 +1198,11 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "camaraderie",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 20,
+      "epccg_skill": "Camaraderie",
+      "epccg_quoted_by": "Anastasia Vandenberg",
+      "faction": "Kemizuchi Military Academy"
     },
     "first-patch-revival--implication": {
       "label": "Aleksandr Donovik Artem",
@@ -1128,10 +1213,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "implication",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 21,
+      "epccg_skill": "Implication",
+      "faction": "Rigaz Trade Company ADCorp"
     },
     "first-patch-revival--will-power": {
-      "label": "Nora \u2014 Witch of Arkvelton",
+      "label": "Nora the Witch",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/soul/determination/will-power.png",
       "sha256": "a1beba36de842e526e38e4031497c2dc24391ec9d568b05fe0037a8f01b48a70",
@@ -1139,10 +1227,13 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "will-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 22,
+      "epccg_skill": "Will Power",
+      "faction": "Arkvelton"
     },
     "first-patch-revival--lore-master": {
-      "label": "Andrade LoveLace \u2014 Mother",
+      "label": "Andrade Lovelace",
       "collection": "first-patch-revival",
       "path": "art/characters/first-patch-revival/soul/determination/lore-master.png",
       "sha256": "cfd738e1b60bef6ede4b786a21d9de87377e7f49999affb605401a83fb8e11eb",
@@ -1150,7 +1241,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "lore-master",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 23,
+      "epccg_skill": "Lore Master",
+      "faction": "Institute of Forgotten Knowledge"
     },
     "first-patch-revival--composure": {
       "label": "Kaizer Meyer Reinch Wolf",
@@ -1161,7 +1255,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "composure",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 24,
+      "epccg_skill": "Composure",
+      "faction": "Central Command Center"
     },
     "first-patch-revival--faith": {
       "label": "Sister October",
@@ -1172,7 +1269,10 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "faith",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 25,
+      "epccg_skill": "Faith",
+      "faction": "Lumeri Church"
     },
     "first-patch-revival--conscience": {
       "label": "The Azure Blood Holder",
@@ -1183,7 +1283,9 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "conscience",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 26,
+      "epccg_skill": "Conscience"
     },
     "first-patch-revival--authority": {
       "label": "Hank Ladan",
@@ -1194,12 +1296,16 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "authority",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "epccg_entry": 27,
+      "epccg_skill": "Authority",
+      "epccg_quoted_by": "Brengan Springfield",
+      "faction": "101st Hellraiser Division"
     }
   },
   "traits": {
     "mind-without-fog": {
-      "label": "Wick \u2014 Mind Without Fog",
+      "label": "Wick — Mind Without Fog",
       "path": "art/traits/wick/mind-without-fog/mind-without-fog.png",
       "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444",
       "width": 1254,
@@ -1211,17 +1317,17 @@
   },
   "character_collections": {
     "new-faces": {
-      "label": "Version 3 \u2014 New Faces",
+      "label": "Version 3 — New Faces",
       "path": "art/characters/heavenprint-new-faces",
       "count": 27
     },
     "original-heavenprint": {
-      "label": "Version 1 \u2014 Original Heavenprint",
+      "label": "Version 1 — Original Heavenprint",
       "path": "art/characters/original-heavenprint",
       "count": 27
     },
     "first-patch-revival": {
-      "label": "Version 2 \u2014 First-Patch Revival (latest revision)",
+      "label": "Version 2 — First-Patch Revival: the EPCCG cast",
       "path": "art/characters/first-patch-revival",
       "count": 27
     }

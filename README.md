@@ -8,7 +8,7 @@ A revived 2020 tabletop RPG (a Disco Elysium-style skill web with tactical squad
 
 ## Art library
 
-Current art assets and implementation handoff: **27 abstract player-skill portraits, 81 character portraits across three versions, the approved Wick trait icon, and Heavenprint/Wick style guide v1.2**. Skill colours use **palette v3**.
+Current art assets and implementation handoff: **27 abstract player-skill portraits, 81 character portraits across three versions, the approved Wick trait icon, and Heavenprint/Wick style guide v1.3**. Skill colours use **palette v3**; the UI uses each colour's contrast-safe ink ([colour system](docs/design/colour-system.md)).
 
 ### Start implementing
 
@@ -22,8 +22,8 @@ Current art assets and implementation handoff: **27 abstract player-skill portra
 | --- | --- | --- |
 | Abstract skills — POC 4 / palette v3 | Player's internal skills and aspects; faceless brush figures | [27 skill PNGs](art/skills/poc4-palette-v3/) |
 | Heavenprint New Faces | Characters and NPCs; painted people and automata | [27 character PNGs](art/characters/heavenprint-new-faces/) |
-| Wick — Mind Without Fog | Approved trait example; white single-ink mascot | [Transparent PNG and trait text](art/traits/wick/mind-without-fog/) |
-| Style guide v1.2 | Future artwork, all nine current skill colours and icon rules | [Start here](art/style-guide/v1.2/START-HERE.md) · [PDF](art/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
+| Wick — Mind Without Fog | Approved trait example; white single-ink mascot for every trait and perk icon | [Transparent PNG and trait text](art/traits/wick/mind-without-fog/) |
+| Style guide v1.3 | Future artwork, all nine current skill colours, UI inks and icon rules | [Start here](art/style-guide/v1.3/START-HERE.md) · [v1.2 illustrated PDF](art/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
 
 The character files retain their historical skill filenames for traceability. Use the catalog's **characters** map, keyed by character name, when selecting them. Use its **skills** map for player-skill UI. These two collections are intentionally different.
 
@@ -31,7 +31,7 @@ The character files retain their historical skill filenames for traceability. Us
 
 ![All 27 current abstract skills](art/skills/poc4-palette-v3/previews/all-27.jpg)
 
-Endurance is crimson; Strength is orange; Agility is gold. Expression is deep petrol-blue and Virtue is dark mulberry. Every skill uses black background, cream body marks and its attribute colour for all remaining pigment and shadows. See the [palette chart](art/skills/poc4-palette-v3/previews/attribute-palette.png) and [machine-readable palette](art/style-guide/v1.2/palette.json).
+Endurance is crimson; Strength is orange; Agility is gold. Expression is deep petrol-blue and Virtue is dark mulberry. Every skill uses black background, cream body marks and its attribute colour for all remaining pigment and shadows. See the [palette chart](art/skills/poc4-palette-v3/previews/attribute-palette.png) and [machine-readable palette](art/style-guide/v1.3/palette.json).
 
 ### Character portraits
 
@@ -50,7 +50,7 @@ The guide preserves visual decisions; invented character names and imagery do no
 | Version | Collection | Count |
 | --- | --- | --- |
 | 1 | [Original Heavenprint](art/characters/original-heavenprint/) | 27 |
-| 2 | [First-Patch Revival — latest revision](art/characters/first-patch-revival/) | 27 |
+| 2 | [First-Patch Revival — the EPCCG cast](art/characters/first-patch-revival/): the people quoted in the EPCCG skill entries | 27 |
 | 3 | [New Faces](art/characters/heavenprint-new-faces/) | 27 |
 
 All 81 originals are preserved. Use `characters[*].collection` to filter the catalog. Earlier collections have namespaced IDs to prevent collisions with New Faces.

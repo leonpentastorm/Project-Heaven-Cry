@@ -169,7 +169,7 @@ body{margin:0;background:#0A0D13}
                 <div role="group" aria-label="{{k.name}}" style="{{k.style}}">
                   <span style="position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: 7px; background: #0B0F16; overflow: hidden">
                     <svg viewBox="0 0 24 24" width="58%" fill="none" stroke="{{k.color}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.glyph}}"/></svg>
-                    <sc-if value="{{k.sig}}" hint-placeholder-val="{{false}}"><span title="Signature skill of your leading class" style="position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; transform: rotate(45deg); background: #FFD27A"></span></sc-if>
+                    <sc-if value="{{k.sig}}" hint-placeholder-val="{{false}}"><span title="Signature skill of your leading class" style="position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; transform: rotate(45deg); background: #FFFFFF"></span></sc-if>
                   </span>
                   <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
@@ -199,8 +199,8 @@ body{margin:0;background:#0A0D13}
             <sc-for list="{{traits}}" as="t" hint-placeholder-count="8">
               <button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" disabled="{{t.blocked}}" style="{{t.style}}">
                 <span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 700; font-size: 15px; color: #E7EBF3">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{t.cat}}</span></span>
-                <span style="font-size: 13px; color: #6FD8A0; line-height: 1.45">{{t.up}}</span>
-                <span style="font-size: 13px; color: #F0907F; line-height: 1.45">{{t.down}}</span>
+                <span style="font-size: 13px; color: #6FEA77; line-height: 1.45">{{t.up}}</span>
+                <span style="font-size: 13px; color: #F65157; line-height: 1.45">{{t.down}}</span>
               </button>
             </sc-for>
           </div>
@@ -288,6 +288,7 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state;
     const CORE = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF' };
+    const ATTR = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', intelligence: '#8BDEEE', expression: '#5394AC', insight: '#EB95B7', determination: '#9D7ADC', virtue: '#D36A90' };
     const TREE = {
       body: [['endurance', ['durability', 'pain_threshold', 'sensory']], ['strength', ['raw_power', 'guts', 'intimidation']], ['agility', ['athletics', 'dexterity', 'reaction_speed']]],
       mind: [['perception', ['ingenuity', 'proficiency', 'vigilant']], ['intelligence', ['brain_power', 'rumination', 'eloquence']], ['expression', ['visualization', 'analysis', 'charisma']]],
@@ -362,7 +363,7 @@ class Component extends DCLogic {
     const pv = hov ? costOf(S, hov.sid, hov.v) : null;
     const pvOk = pv ? fits(S, pv) : true;
     const dia = (n, filled, col, size, gold) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
-      (i < filled ? 'background: ' + col : (gold && i < gold ? 'background: #FFD27A' : 'border: 1px solid ' + col + '99')) }));
+      (i < filled ? 'background: ' + col : (gold && i < gold ? 'background: #FFFFFF' : 'border: 1px solid ' + col + '99')) }));
     const LINE = { body: '#4A3A20', mind: '#1E4552', soul: '#352E5E' };
 
     // archetype follows the cores
@@ -381,7 +382,7 @@ class Component extends DCLogic {
     if (v1 === v3) akey = 'even'; else if (v1 - v2 >= 2 || v2 === v3) akey = k1; else akey = [k1, k2].sort((p, q) => ORDER.indexOf(p) - ORDER.indexOf(q)).join('+');
     const A = ARCHS[akey];
     const arch = { name: A[0], desc: A[1], leans: 'LEANS: ' + A[2].toUpperCase(), glyph: A[3], color: akey === 'even' ? '#E7EBF3' : CORE[k1],
-      note: coreLeft > 0 ? coreLeft + ' core points still to place.' : 'All core points placed.', noteStyle: 'font-size: 13px; font-weight: 600; color: ' + (coreLeft > 0 ? '#FFD27A' : '#6FD8A0') };
+      note: coreLeft > 0 ? coreLeft + ' core points still to place.' : 'All core points placed.', noteStyle: 'font-size: 13px; font-weight: 600; color: ' + (coreLeft > 0 ? '#FFFFFF' : '#6FEA77') };
 
     // cores screen
     const WORD = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
@@ -406,20 +407,20 @@ class Component extends DCLogic {
         style: 'min-height: 64px; padding: 8px 16px; border-radius: 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer; ' +
           (on ? 'background: #1A2232; border: 2px solid ' + CORE[cid] : 'background: transparent; border: 2px solid #1C2536') }; });
     const cv = S.core[ctab], col = CORE[ctab];
-    const rows = TREE[ctab].map(([aid, skills]) => { const av = S.attr[aid];
+    const rows = TREE[ctab].map(([aid, skills]) => { const av = S.attr[aid], col = ATTR[aid];
       return { name: aid.toUpperCase(), val: av, color: col, line: LINE[ctab], derived: DERIVED[aid](av), dia: dia(cv, av, col, 8),
         inc: () => set('attr', aid, av + 1), noInc: attrLeft <= 0 || av >= cv,
         dec: () => set('attr', aid, av - 1), noDec: av <= 1 || skills.some((x) => sk(x) > av - 1),
         cards: skills.map((sid) => { const s0 = sk(sid), m = mod(s0), isH = hov && hov.sid === sid;
           const up1 = costOf(S, sid, s0 + 1), canUp = s0 < 10 && fits(S, up1);
           const nextTxt = s0 >= 10 ? 'Mastered' : 'Next: 1 skill' + (up1.attr ? ' + ' + title(aid) + ' ' + up1.aNew : '') + (up1.core ? ' + ' + title(ctab) + ' ' + up1.cNew : '');
-          let hint = nextTxt, hintCol = canUp ? '#A3AEC2' : '#F0907F';
+          let hint = nextTxt, hintCol = canUp ? '#A3AEC2' : '#F65157';
           if (isH && pv) {
-            if (hov.v > s0) { hint = pvOk ? ('−1 skill' + (pv.attr ? ' · ' + title(aid) + ' ' + av + '→' + pv.aNew : '') + (pv.core ? ' · ' + title(ctab) + ' ' + S.core[ctab] + '→' + pv.cNew : '') + ([3, 5, 7, 9].includes(hov.v) ? ' · Mastery ' + ([3, 5, 7, 9].indexOf(hov.v) + 1) : '')) : 'Not enough points'; hintCol = pvOk ? '#FFD27A' : '#F0907F'; }
+            if (hov.v > s0) { hint = pvOk ? ('−1 skill' + (pv.attr ? ' · ' + title(aid) + ' ' + av + '→' + pv.aNew : '') + (pv.core ? ' · ' + title(ctab) + ' ' + S.core[ctab] + '→' + pv.cNew : '') + ([3, 5, 7, 9].includes(hov.v) ? ' · Mastery ' + ([3, 5, 7, 9].indexOf(hov.v) + 1) : '')) : 'Not enough points'; hintCol = pvOk ? '#FFFFFF' : '#F65157'; }
             else { hint = '+1 skill point back'; hintCol = '#A3AEC2'; }
           }
           return { name: title(sid), upper: title(sid).toUpperCase(), summary: SUM[sid], val: s0, color: col, glyph: GLYPH[sid], sig: SIG_SET.has(sid),
-            modTxt: fmt(m) + (s0 === 0 ? ' untrained' : ''), modColor: m < 0 ? '#F0907F' : m === 0 ? '#A3AEC2' : col,
+            modTxt: fmt(m) + (s0 === 0 ? ' untrained' : ''), modColor: m < 0 ? '#F65157' : m === 0 ? '#A3AEC2' : col,
             dia: dia(Math.max(av, isH && pv ? pv.aNew : 0), s0, col, 8, isH && pv && hov.v > s0 ? hov.v : 0),
             inc: () => { const ns = applySkill(this.state, sid, sk(sid) + 1); if (ns) this.setState({ ...ns, locked: false, hov: { sid, v: sk(sid) + 2 } }); },
             dec: () => { const ns = applySkill(this.state, sid, sk(sid) - 1); if (ns) this.setState({ ...ns, locked: false, hov: null }); },
@@ -431,12 +432,12 @@ class Component extends DCLogic {
 
     const pools = [['CORE', 6, coreLeft, pv ? pv.core : 0], ['ATTRIBUTE', 10, attrLeft, pv ? pv.attr : 0], ['SKILL', 10, skillLeft, pv ? pv.skill : 0]].map(([label, n, left, add]) => {
       const spent = n - left;
-      return { label, text: left + ' left', style: 'font-weight: 700; font-size: 13px; color: ' + (left === 0 ? '#6FD8A0' : '#FFD27A'),
+      return { label, text: left + ' left', style: 'font-weight: 700; font-size: 13px; color: ' + (left === 0 ? '#6FEA77' : '#FFFFFF'),
         pips: Array.from({ length: n }, (_, i) => {
           let st = 'border: 1px solid #2E3A50';
           if (i < spent) st = 'background: #4FC8DF; border: 1px solid #4FC8DF';
-          if (add > 0 && i >= spent && i < spent + add) st = 'background: ' + (pvOk ? '#FFD27A' : '#F0907F') + '; border: 1px solid transparent';
-          if (add < 0 && i < spent && i >= spent + add) st = 'background: #3A1E1E; border: 1px solid #F0907F';
+          if (add > 0 && i >= spent && i < spent + add) st = 'background: ' + (pvOk ? '#FFFFFF' : '#F65157') + '; border: 1px solid transparent';
+          if (add < 0 && i < spent && i >= spent + add) st = 'background: #3A1E1E; border: 1px solid #F65157';
           return { style: 'flex: 1; height: 10px; border-radius: 2px; box-sizing: border-box; ' + st };
         }) };
     });
@@ -481,7 +482,7 @@ class Component extends DCLogic {
       style: 'min-height: 150px; padding: 14px; border-radius: 12px; text-align: left; display: flex; flex-direction: column; gap: 8px; font-family: inherit; cursor: pointer; ' +
         (S.kit === i ? 'border: 1px solid #F2A54A; background: #2A2113' : 'border: 1px solid #2E3A50; background: transparent') }));
 
-    const done = (b) => b ? 'color: #6FD8A0; font-weight: 700' : 'color: #FFD27A; font-weight: 700';
+    const done = (b) => b ? 'color: #6FEA77; font-weight: 700' : 'color: #FFFFFF; font-weight: 700';
     const checks = [['Name', !!S.name], ['All points spent', coreLeft === 0 && attrLeft === 0 && skillLeft === 0], ['Traits (0–2)', true], ['Starting kit', S.kit !== null]]
       .map(([label, ok]) => ({ label, state: ok ? 'Done' : 'Not yet', style: done(ok) }));
     const ready = checks.every((c) => c.state === 'Done');
@@ -496,7 +497,7 @@ class Component extends DCLogic {
     return {
       steps, isIdentity: S.step === 0, isCores: S.step === 1, isSkills: S.step === 2, isTraits: S.step === 3, isGear: S.step === 4, isLock: S.step === 5,
       showAside: [0, 3, 4, 5].includes(S.step), arch, coreRows, randomCores, revertCores, ctabs, rows, coreBody: S.core.body,
-      corePoolText: coreLeft + ' CORE POINTS LEFT', corePoolStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: ' + (coreLeft === 0 ? '#6FD8A0' : '#FFD27A'),
+      corePoolText: coreLeft + ' CORE POINTS LEFT', corePoolStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: ' + (coreLeft === 0 ? '#6FEA77' : '#FFFFFF'),
       back: () => this.setState({ step: Math.max(0, this.state.step - 1) }), next: () => this.setState({ step: Math.min(5, this.state.step + 1) }),
       atStart: S.step === 0, atEnd: S.step === 5,
       name: S.name || 'Unnamed', onName: (e) => this.setState({ name: e.target.value, locked: false }),

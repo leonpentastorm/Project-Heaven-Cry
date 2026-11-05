@@ -2,7 +2,7 @@
 
 Prototypes live in `design/canvas/` as Design Component files (`.dc.html`), the format of the claude.ai design canvas: <https://claude.ai/artifact/9kVVNppZERUaCxBCMWbZgM>. Each file is one screen: markup inside `<x-dc>`, logic in a `class Component extends DCLogic` script, with `{{holes}}`, `<sc-for>` and `<sc-if>` for templating. Treat them as interaction specs to rebuild in the real client, not as code to ship. The logic in `Create.dc.html` (point buying, auto-raise and cost preview) is a working reference for the creation rules.
 
-Shared visual language: near-black ground; core colours Body amber, Mind cyan, Soul violet; Spectral for prose, Chakra Petch for UI. Exact tokens are in `CLAUDE.md`.
+Shared visual language: near-black ground; skills in their attribute's colour (9 hues), cores in Body amber, Mind cyan, Soul violet; Spectral for prose, Chakra Petch for UI. Every colour rule and token is in [`colour-system.md`](colour-system.md). Trait and perk icons are white Wick ink.
 
 ## Story mode — `Main.dc.html`
 
