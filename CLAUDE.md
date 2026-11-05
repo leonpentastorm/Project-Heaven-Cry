@@ -34,6 +34,7 @@ CLAUDE.md                 this brief
 docs/rules/               PHC-Core-Rules-v1.0.md (the spec)
 docs/lore/                README.md (reading order), EPCCG-Player-Character-Creation-Guide.md (base),
                           Narrators-World-Bible.md (truth layer), EPCCG-Cast-and-Factions.md,
+                          Factions.md (draft faction web),
                           MPAT-and-M813.md, Wick.md
 docs/design/              Class-Roster-Rev2.md, Recovered-Design-Notes-2020.md,
                           decisions.md (why things are the way they are), ui-screens.md,
@@ -62,12 +63,15 @@ source/2020/              original material; english/ holds the 2020 trait book 
 
 ## Lore essentials (canon decided with Leon)
 
-- The world is a **simulation**. NPCs are its people. **Nanobots are mana.** Players are a layer above even Earth.
-- **Celestials** are trapped Earth humans acting as gods, bound by treaties (the Celestial Accords). Creation ladder: players → Earth → Celestials → NPCs → robots (a robot is an NPC made by NPCs).
+- The world is a **simulation**. NPCs are its people. **Nanobots are mana.** Players are a layer above even real Earth. (In docs, *real Earth* is the layer above; *Earth* alone is the in-world homeworld where Central City stands.)
+- **Celestials** are trapped Earth humans acting as gods, bound by treaties (the Celestial Accords). Creation ladder: players → real Earth → Celestials → NPCs → robots (a robot is an NPC made by NPCs).
 - **The Knowing:** an NPC who learns the truth is killed or made a demigod.
 - **Evoker = Sigil magic. Emanator = Soul magic.** Locked; never swap them.
 - Kills spawn bots; Sigil users vent Flux, Soul users crystallise cores.
-- In-universe language only. The 2020 drafts leaned on pop-culture references; those were deliberately removed. Some traits are deliberately ugly (the racism trait is kept in clean in-world language, plus a xenophobe trait, Humanity First). That's intentional design, not something to sand off.
+- **The Unspoken Name.** Celestials can LARP anything from real Earth, and players can import any character as a Celestial's LARP, but no real-Earth name is ever spoken in the world: references are plain to the players, never to the characters. Official shipped content uses archetypes, not recognisable recreations.
+- **Crawlers** are NPC version 2: humans with esper abilities, cursed by a Celestial to look to ordinary humans like whatever they fear most; true love lifts the curse. **Operation Daggerfall** (~3800) ended with their main world nuked from orbit. People live ~400 years.
+- **Tone:** NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them. The tragedy belongs to the NPCs.
+- In-universe language only. Some traits are deliberately ugly (the racism trait is kept in clean in-world language, plus a xenophobe trait, Humanity First). That's intentional design, not something to sand off.
 
 ## Two referees: engine vs Narrator
 
@@ -100,7 +104,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - He wants **direct pushback**, **numbered feedback** and **full drafts**, not hedged options.
 - Change the spec first, then the data, then run the validator.
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
-- Keep text in-universe; no pop-culture references in game text.
+- Keep text in-universe: no real-Earth names in game text (the Unspoken Name). Recognisable homages through Celestials are fine.
 - Rules revision 1.1 (accepted 5 Nov 2026) is in the repo spec but **not yet in the living Doc**; copy it across. Its provisional numbers are spec items 35–41.
 
 ## Next steps

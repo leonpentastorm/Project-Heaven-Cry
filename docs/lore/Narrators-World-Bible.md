@@ -1,6 +1,10 @@
 # Project Heaven Cry: Narrator's World Bible
 
 > Exported from the living Claude Doc https://claude.ai/artifact/Ctq7fiFpGoiw9uCP7Cuzak on 2026-11-05. The Doc is the source of truth; re-export after edits.
+>
+> **Added 2026-11-05, not yet in the living Doc:** the Unspoken Name, the tone line, the worlds and Earth, how campaigns start, the Crawlers, Operation Daggerfall, the timeline. Copy them across. The faction web is a separate draft: `Factions.md`.
+>
+> **Naming in this document:** *real Earth* is the world of the players and the Celestials' bodies, the layer above. *Earth* with no qualifier, from this revision on, is the in-world homeworld where Central City stands. Older lines below that say "Earth" for the layer above mean real Earth.
 
 2026-11-03 · Leon PT
 
@@ -25,7 +29,13 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 **The Celestial Accords.** The Celestials aren't lawless. They live under rules and treaties agreed among themselves, and breaking them causes drama between Celestials. Within the Accords, a Celestial can play any role they like, and that's the loose rule for silly play: a player who wants a legendary infiltrator in the story gets one, because some Celestial gamer loves playing that role.
 
-**Suggested:** NPCs never see the reference, only the legend. A ghost in a bandana who walks through walls is a local myth, not a meme. The silliness lives in the Celestial; the world stays coherent.
+**The Unspoken Name (Accord clause, canon).** A Celestial may play anything from real Earth: a hero from a game they loved, a god, a band, a whole genre. What the Accords forbid is saying a real-Earth name aloud inside the world. So they rename it. A Celestial who wants to live out a famous game's teenage-detective-with-a-summoned-spirit fantasy can, but in the world the spirit is called a "Ghost", and it is "a robot-looking ghost with a huge spear that throws lightning", never its real name. The rule for every scene:
+
+- **Plain to the players, never to the characters.** The people at the table can recognise the reference instantly. Nobody in the world can name it, because nobody in the world has ever heard the name.
+- **Players can import anything.** A player who wants their favourite sneaking-soldier legend in the story gets them, framed as a Celestial who wants to LARP that role. The import keeps its look and tricks; it loses its real name.
+- **NPCs see the legend, not the reference.** A ghost in a bandana who walks through walls is a local myth, not a meme. The silliness lives in the Celestial; the world stays coherent.
+- **The Narrator (AI or human) never says or writes a real-Earth proper noun in the world:** not in narration, NPC dialogue or item names. If a player says the real name at the table, NPCs answer to the in-world one.
+- **Official content stays generic.** Shipped data, art and published campaigns use archetypes ("a sneaking-soldier legend"), not recognisable recreations of specific characters. What a group imports at its own table is its own business.
 
 **Suggested Accord clauses**
 
@@ -40,7 +50,33 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 **Robots** are NPCs made by NPCs: creations of a creation. A Humanity First supremacist who learned the truth would find out they're only one rung higher on the same ladder.
 
+**The tone line (canon).** NPCs are funny the way people are: proud, petty, deadpan, absurd, and the EPCCG's field quotes are the model. Celestials are funny the way people are when nothing can hurt them: careless, and that carelessness is where their comedy turns cruel. The tragedy belongs to the NPCs. A scene can be both at once, and the best ones are.
+
 **Suggested: the ladder.** Every layer of this world was made by the layer above it, and then abandoned by it. Earth made the Celestials and cut them off. The Celestials made the NPCs and treat them as scenery. The NPCs made robots, and on M813 they told them to shut themselves down. MPAT's demand for equality is the whole setting in miniature. That's the double meaning of the title: everyone is crying up at a heaven that doesn't answer.
+
+## The worlds and the war (canon)
+
+**Earth, the homeworld.** The first planet the simulation's builders made, where humanity began. Central City stands on Earth: bank cards, shock batons, Central Command Center, the CCEC. Humanity has since spread across many worlds in many galaxies; the great centres, such as Central City and the Thousand-Planet City, lie in different galaxies. **Suggested:** Earth was named before the Accords existed, which is why the homeworld can carry a real-Earth name when nothing else may.
+
+**How campaigns start.** A Celestial shows up and causes mayhem: a god walks onto a battlefield, a moon gets rewritten, a legend from nowhere starts a war. Anti-Heaven Operations Command answers. That collision is the usual first scene of a campaign.
+
+**The Crawlers (NPC version 2).** A Celestial created a second patch of people, ordinary humans with supernatural abilities (espers), because she wanted a battle-academy story. Another Celestial hated it ("anime is cringe") and cursed the whole patch: to the original humans (NPC version 1), every NPC-2 person appears as a malformed creature, shaped by whatever the local humans fear most. The first NPC-1 settlement to meet them lived on a world with crawling, humanoid zombie-like things, so they saw crawlers, and the name *Crawler* stuck.
+
+- **True love lifts the curse.** An NPC-1 person who truly loves an NPC-2 person sees them as human again: human, with abilities. Mixed families exist because of it, and they are rare.
+- **Suggested consequences:** two humans looking at the same Crawler can see different monsters, because each sees their own fear. In co-op, each player can be given a different private description of the same Crawler. Humanity First's "Crawlers are vermin" is the curse talking, and Paul Remarque's father "cradling the body of a Crawler smaller than the rest" was a parent holding a child.
+
+**Operation Daggerfall (around year 3800).** A huge number of NPC-2 people were spawned on a world next to Earth. War followed. The original humans won, and the NPC-2 main world was nuked from orbit. Humanity celebrates it as a turning point; veterans like Paul Remarque remember what they shelled. (Suggested, as before: every one of those deaths released bots. Who benefited?)
+
+**Timeline.**
+
+| When | What |
+|---|---|
+| Real Earth, about year 65,000 | The simulation runs. To the Celestials it was a normal VR game, until they found they couldn't log out. |
+| About 3800 | Operation Daggerfall. |
+| 27 July 4084 | The M813 incident. |
+| 15 October 4090 | Snowden "Eye" Wright writes up M813 at Outpost-921. |
+
+People in this world live to about 400, since even their baseline technology is ahead of real Earth's, so Daggerfall veterans are still alive in the 4080s.
 
 ## The three schools of magic
 
@@ -148,3 +184,7 @@ Most of what the group wrote in 2020 already fits. A few lines need a new readin
 - [ ] Which NPCs already know? The Institute of Forgotten Knowledge is the obvious place for a hidden demigod.
 - [ ] Is the truth ever revealed to the players, or does it stay the Narrator's secret until someone earns the Knowing?
 - [ ] Who wrote the Accords, and who enforces them?
+- [ ] Is the "Thousand World Legion" the Thousand-Planet City's army, or a separate power?
+- [ ] Do Crawlers see ordinary humans as monsters too, or as humans?
+- [ ] Bazaim: human power, Crawler remnant, or something else? (`Factions.md` suggests a human nation of lifted curses.)
+- [ ] The calendar: "billions of years of history" (above) vs Daggerfall in about 3800. Is the year count from a later epoch, or does simulation time run faster than real Earth's?

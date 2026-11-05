@@ -42,3 +42,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Overreach is indulge or resist**, no roll: the old 70–90% failure TNs made rolling pointless.
     - **HP:** +15 per Endurance (was +50), 5 + 2 × Durability per level, so tanks last twice as long, not four times, and conditions matter.
     - **XP and classes:** level 3 (the class) at the end of session 1; a 5e-like curve to level 20 at about session 51; class ranks at 13 / 18.
+31. **The Unspoken Name** (lore, 5 Nov 2026). Celestials may LARP anything from real Earth, and players can import any character as a Celestial's LARP, but the Accords forbid saying a real-Earth name in the world. References are plain to the players, never to the characters. Official content stays archetypal. Replaces "no pop culture at all".
+32. **Tone line revised.** NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them. The tragedy belongs to the NPCs. (The EPCCG's NPCs are the funniest people in the book, so the old line was wrong.)
+33. **New canon:** Earth is the in-world homeworld (Central City); campaigns usually start with Celestial mayhem; Crawlers are cursed NPC-2 espers; Operation Daggerfall (~3800) nuked their world; people live ~400 years; real Earth is around year 65,000. → World Bible.
+

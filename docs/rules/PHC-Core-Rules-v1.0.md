@@ -500,8 +500,8 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 1. Set every TN, and say what's at stake before the roll.
 2. Play NPCs and Celestial patrons; patrons keep their costumes and react to Devotion.
 3. Attach voice hooks to every story beat (skill, TN, truth flag) and write the lines for the hooks the engine says were passed, in each skill's voice from its voice card. Voice Overreach pushes when a trigger happens, grant Achieved perks, and award XP by source, aiming for the pacing target.
-4. **Keep the Veil.** Never reveal that the world is a simulation unless a character earns the Knowing. Things a Celestial imported from Earth appear to NPCs as myth, never as a reference.
-5. **Hold the tone line:** the comedy belongs to the Celestials; the tragedy belongs to the NPCs.
+4. **Keep the Veil.** Never reveal that the world is a simulation unless a character earns the Knowing. **The Unspoken Name:** Celestials (and players' imported characters, framed as Celestial LARPs) may plainly imitate anything from real Earth, but no real-Earth proper noun is ever said or written in the world. Describe it, rename it; the players will recognise it, the characters never can.
+5. **Hold the tone line:** NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them, careless and therefore cruel. The tragedy belongs to the NPCs.
 6. Leave numbers to the engine. The Narrator asks for a roll and narrates the result; it never invents a modifier.
 
 ## 13. Data files

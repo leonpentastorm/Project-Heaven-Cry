@@ -67,4 +67,4 @@ Priority order for new portraits:
 
 ## Content notes for game text
 
-The 2020 quotes carry pop-culture references (for example "Solid Snake cosplayer", "Alex Jones", YouTubers). The revival rule is in-universe text only, so game text quoting the EPCCG should replace them. The 2020 Trait Edition is superseded by Trait Edition Revision 2 (`data/traits.json`), which already did this for traits.
+The 2020 quotes name real-world things (for example "Solid Snake cosplayer", "Alex Jones", YouTubers). Under the Unspoken Name (World Bible), no one in the world can say a real-Earth name, so game text quoting the EPCCG keeps the joke and swaps the name for an in-world one ("a cosplayer of the sneaking-soldier legend"). The 2020 Trait Edition is superseded by Trait Edition Revision 2 (`data/traits.json`), which already did this for traits.

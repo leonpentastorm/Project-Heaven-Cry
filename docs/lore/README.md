@@ -8,13 +8,14 @@ PHC's lore comes in layers. Each layer keeps everything below it and adds to it.
 | 2. Truth | [Narrator's World Bible](Narrators-World-Bible.md) | What is really going on: the simulation, the bots (mana), the Celestials and their Accords, the Knowing, the mana loop, and how to reread the EPCCG under the truth | **Narrator only.** |
 | 3. Stories and figures | [MPAT and M813](MPAT-and-M813.md), [Wick](Wick.md) | The first one-shot's history; the EPCCG's mascot | Players meet these in play. |
 | Index | [EPCCG cast and factions](EPCCG-Cast-and-Factions.md) | Who's who in the EPCCG, their factions, and their portraits | Writers and artists. |
+| Draft | [Factions](Factions.md) | **Suggested** web of how the factions relate: five tensions, six blocs, who stands where | Writers; Narrator once accepted. |
 
 ## Rules of thumb
 
 1. **Start from the EPCCG.** A new faction, place or NPC should sound like it could be quoted in the EPCCG.
 2. **Read through the World Bible.** Where the EPCCG says Outburst, MagiCore or "the twin soul in the upper realm," the World Bible says what that really is. Keep the EPCCG's words in-world; keep the truth behind the Veil.
 3. **Rules live elsewhere.** Numbers in the EPCCG are 2020 rules. The spec (`docs/rules/PHC-Core-Rules-v1.0.md`) wins.
-4. **In-world text only.** The EPCCG quotes carry some real-world references from 2020 ("Solid Snake cosplayer", "Alex Jones"). Game text replaces them.
+4. **The Unspoken Name.** No real-Earth name is ever said in the world. Celestials, and players' imports framed as Celestial LARPs, can plainly imitate real-Earth fiction; the players recognise it, the characters never can. The EPCCG's 2020 quotes name real things ("Solid Snake cosplayer", "Alex Jones"); game text keeps the joke and drops the name.
 5. **Suggested isn't canon.** Anything marked Suggested in the World Bible or elsewhere is a proposal until Leon accepts it.
 
 ## Settled
