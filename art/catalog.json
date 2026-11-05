@@ -1999,6 +1999,30 @@
         "44": "art/traits/wick/production-v1/exports/44/born-performer.png",
         "40": "art/traits/wick/production-v1/exports/40/born-performer.png"
       }
+    },
+    "ghost-soldier": {
+      "label": "Wick — Ghost Soldier",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/ghost-soldier.png",
+      "sha256": "64c3a237563f8d9cd32b2f281c162eec5840db54e60a5e1fda0d3a38eb79ad13",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "ghost_soldier",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/ghost-soldier.png",
+        "128": "art/traits/wick/production-v1/exports/128/ghost-soldier.png",
+        "64": "art/traits/wick/production-v1/exports/64/ghost-soldier.png",
+        "56": "art/traits/wick/production-v1/exports/56/ghost-soldier.png",
+        "48": "art/traits/wick/production-v1/exports/48/ghost-soldier.png",
+        "44": "art/traits/wick/production-v1/exports/44/ghost-soldier.png",
+        "40": "art/traits/wick/production-v1/exports/40/ghost-soldier.png"
+      }
     }
   },
   "character_collections": {

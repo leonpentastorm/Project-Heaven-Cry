@@ -373,6 +373,29 @@
       },
       "batch": "A",
       "source_sha256": "3b2572fd35cb24261100e1ead1fe309b9dd921ecd261d3fe55ece172e9e58a61"
+    },
+    {
+      "id": "ghost-soldier",
+      "data_id": "ghost_soldier",
+      "name": "Ghost Soldier",
+      "family": "traits",
+      "order": 22,
+      "mood": "Tense, Grim",
+      "action": "Wick creeps on tiptoe in a low sneaking crouch, raising one finger of an oversized segmented prosthetic arm to its screen for silence",
+      "screen": "Thousand-yard stare",
+      "prop": "Prosthetic arm",
+      "path": "art/traits/wick/production-v1/ghost-soldier.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/ghost-soldier.png",
+        "128": "art/traits/wick/production-v1/exports/128/ghost-soldier.png",
+        "64": "art/traits/wick/production-v1/exports/64/ghost-soldier.png",
+        "56": "art/traits/wick/production-v1/exports/56/ghost-soldier.png",
+        "48": "art/traits/wick/production-v1/exports/48/ghost-soldier.png",
+        "44": "art/traits/wick/production-v1/exports/44/ghost-soldier.png",
+        "40": "art/traits/wick/production-v1/exports/40/ghost-soldier.png"
+      },
+      "batch": "A",
+      "source_sha256": "a88762a361e8cb1ce33cb6392ad87c3f8a7be20f81371b40e0612fb0d8e78f1f"
     }
   ]
 }
