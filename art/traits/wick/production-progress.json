@@ -44,10 +44,11 @@
     "central-city-kid",
     "daggerfall-veteran",
     "upper-touched",
-    "gun-nut"
+    "gun-nut",
+    "old-school"
   ],
   "catalog_coverage": {
-    "traits": 37,
+    "traits": 38,
     "perks": 2
   },
   "revision_rounds": {

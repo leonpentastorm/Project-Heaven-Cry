@@ -649,6 +649,29 @@
       },
       "batch": "B",
       "source_sha256": "eaeb6eca949197b8d3e11caeb59f5cd155af967ba1766a1a5452b02e8a8a06b6"
+    },
+    {
+      "id": "old-school",
+      "data_id": "old_school",
+      "name": "Old School",
+      "family": "traits",
+      "order": 36,
+      "mood": "Proud, Comic",
+      "action": "Wick in a wide side-on gunslinger crouch fans the hammer of a big revolver with its free mitten",
+      "screen": "Cool squint",
+      "prop": "Revolver",
+      "path": "art/traits/wick/production-v1/old-school.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/old-school.png",
+        "128": "art/traits/wick/production-v1/exports/128/old-school.png",
+        "64": "art/traits/wick/production-v1/exports/64/old-school.png",
+        "56": "art/traits/wick/production-v1/exports/56/old-school.png",
+        "48": "art/traits/wick/production-v1/exports/48/old-school.png",
+        "44": "art/traits/wick/production-v1/exports/44/old-school.png",
+        "40": "art/traits/wick/production-v1/exports/40/old-school.png"
+      },
+      "batch": "B",
+      "source_sha256": "fa7dabcbb42df18e7a15ec252dde8f216c0165a2b7b3410a2e214937ee846e47"
     }
   ]
 }
