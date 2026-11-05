@@ -1,0 +1,210 @@
+{
+  "version": "1.2",
+  "skill_palette_version": "3",
+  "scope": "Current abstract skill portraits; historical character sheets are unchanged.",
+  "note": "Pigment direction anchors, not indexed output guarantees. All shadows remain in the attribute hue.",
+  "skill_base": {
+    "black": "#000000",
+    "cream": "#F2E5C8"
+  },
+  "attributes": {
+    "endurance": {
+      "core": "body",
+      "name": "Endurance",
+      "color": "#CC2435",
+      "lighting": "bold saturated crimson-red pigment and shading",
+      "range": {
+        "color": "#CC2435",
+        "name": "bold saturated crimson-red",
+        "shadow": "#7A1121",
+        "highlight": "#E63B4A"
+      }
+    },
+    "strength": {
+      "core": "body",
+      "name": "Strength",
+      "color": "#F68A38",
+      "lighting": "hot orange pigment and shading",
+      "range": {
+        "color": "#F68A38",
+        "name": "hot orange",
+        "shadow": "#A34715",
+        "highlight": "#FFA04D"
+      }
+    },
+    "agility": {
+      "core": "body",
+      "name": "Agility",
+      "color": "#E3BF51",
+      "lighting": "golden yellow pigment and shading",
+      "range": {
+        "color": "#E3BF51",
+        "name": "golden yellow",
+        "shadow": "#9D7B21",
+        "highlight": "#F1D16A"
+      }
+    },
+    "perception": {
+      "core": "mind",
+      "name": "Perception",
+      "color": "#40BAA0",
+      "lighting": "green-leaning sea teal practical lighting"
+    },
+    "intelligence": {
+      "core": "mind",
+      "name": "Intelligence",
+      "color": "#8BDEEE",
+      "lighting": "icy cyan practical lighting"
+    },
+    "expression": {
+      "core": "mind",
+      "name": "Expression",
+      "color": "#075369",
+      "lighting": "deep petrol-blue shading, restricted dark-to-middle values",
+      "range": {
+        "color": "#075369",
+        "name": "deep petrol-blue",
+        "highlight": "#14758B",
+        "shadow": "#033443"
+      }
+    },
+    "insight": {
+      "core": "soul",
+      "name": "Insight",
+      "color": "#EB95B7",
+      "lighting": "rose pink practical lighting"
+    },
+    "determination": {
+      "core": "soul",
+      "name": "Determination",
+      "color": "#9875D7",
+      "lighting": "electric violet practical lighting"
+    },
+    "virtue": {
+      "core": "soul",
+      "name": "Virtue",
+      "color": "#86234E",
+      "lighting": "dark mulberry shading, restricted dark-to-middle values",
+      "range": {
+        "color": "#86234E",
+        "name": "dark mulberry",
+        "highlight": "#AC3565",
+        "shadow": "#4C1230"
+      }
+    }
+  },
+  "skills": {
+    "durability": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "pain-threshold": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "sensory": {
+      "attribute": "endurance",
+      "color": "#CC2435"
+    },
+    "raw-power": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "guts": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "intimidation": {
+      "attribute": "strength",
+      "color": "#F68A38"
+    },
+    "athletics": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "dexterity": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "reaction-speed": {
+      "attribute": "agility",
+      "color": "#E3BF51"
+    },
+    "ingenuity": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "proficiency": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "vigilant": {
+      "attribute": "perception",
+      "color": "#40BAA0"
+    },
+    "brain-power": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "rumination": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "eloquence": {
+      "attribute": "intelligence",
+      "color": "#8BDEEE"
+    },
+    "visualization": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "analysis": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "charisma": {
+      "attribute": "expression",
+      "color": "#075369"
+    },
+    "empathy": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "camaraderie": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "implication": {
+      "attribute": "insight",
+      "color": "#EB95B7"
+    },
+    "will-power": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "lore-master": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "composure": {
+      "attribute": "determination",
+      "color": "#9875D7"
+    },
+    "faith": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    },
+    "conscience": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    },
+    "authority": {
+      "attribute": "virtue",
+      "color": "#86234E"
+    }
+  },
+  "wick": {
+    "trait_ink": "#FFFFFF",
+    "perk_ink": "One mixed colour from required skills; flat ink, no gradient."
+  }
+}

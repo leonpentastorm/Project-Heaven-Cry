@@ -1,0 +1,281 @@
+{
+  "collection": "PHC Heavenprint New Faces",
+  "dimensions": [
+    800,
+    1000
+  ],
+  "format": "PNG",
+  "portraits": [
+    {
+      "order": 1,
+      "id": "durability",
+      "skill": "Durability",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Orren Vask",
+      "file": "body/endurance/durability.png",
+      "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+    },
+    {
+      "order": 2,
+      "id": "pain-threshold",
+      "skill": "Pain Threshold",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Ivara Drenn",
+      "file": "body/endurance/pain-threshold.png",
+      "sha256": "58cd275d5f2731e4029a4e54ffa3bac683f4e35876755ea7178f681a55d7e97a"
+    },
+    {
+      "order": 3,
+      "id": "sensory",
+      "skill": "Sensory",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Nemi Sol",
+      "file": "body/endurance/sensory.png",
+      "sha256": "d3915c5e2786426072b83a6bd38deb317166ba29333e492a39a00a29d5402f14"
+    },
+    {
+      "order": 4,
+      "id": "raw-power",
+      "skill": "Raw Power",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Basko Rell",
+      "file": "body/strength/raw-power.png",
+      "sha256": "bf7163d59654d652f7ca65383c33726055b41e43d3664c5baaf5e7056bf57c2c"
+    },
+    {
+      "order": 5,
+      "id": "guts",
+      "skill": "Guts",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Tessa Rook",
+      "file": "body/strength/guts.png",
+      "sha256": "66ebff1859c89fe265f1b91f2b3bddbf5c9cd9f2c28d6ee441cdc1656b197708"
+    },
+    {
+      "order": 6,
+      "id": "intimidation",
+      "skill": "Intimidation",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Veyra Salt",
+      "file": "body/strength/intimidation.png",
+      "sha256": "a94e00bac891839d0cf5a5d779fcceb1b2a94bd8361be38d6d5d0fde19701e50"
+    },
+    {
+      "order": 7,
+      "id": "athletics",
+      "skill": "Athletics",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Ketta Flint",
+      "file": "body/agility/athletics.png",
+      "sha256": "e086fc89e2c357b94731c1e2f21b8329dbf050f26e489bbe4efcce8fbe741c19"
+    },
+    {
+      "order": 8,
+      "id": "dexterity",
+      "skill": "Dexterity",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Sera Venn",
+      "file": "body/agility/dexterity.png",
+      "sha256": "63fb698bc17705db128d8a88b61f75104660a100d59643779720602e7cd516d8"
+    },
+    {
+      "order": 9,
+      "id": "reaction-speed",
+      "skill": "Reaction Speed",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Milo Quill",
+      "file": "body/agility/reaction-speed.png",
+      "sha256": "3e886ac974d0bc9aecd33b78ffe2bf40b1abb73ad5e9e3d2159b88ae901810f6"
+    },
+    {
+      "order": 10,
+      "id": "ingenuity",
+      "skill": "Ingenuity",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Pell Morrow",
+      "file": "mind/perception/ingenuity.png",
+      "sha256": "bbb68319979468e9f33e6fadfaecfe35ff23660cdc9719378a1da665d0b41917"
+    },
+    {
+      "order": 11,
+      "id": "proficiency",
+      "skill": "Proficiency",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Drava Keel",
+      "file": "mind/perception/proficiency.png",
+      "sha256": "9217cc77715c9957d32fc370f959c8f2ceb2481187901c740e46675f46eb8d5e"
+    },
+    {
+      "order": 12,
+      "id": "vigilant",
+      "skill": "Vigilant",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Asher Fen",
+      "file": "mind/perception/vigilant.png",
+      "sha256": "20f30917d7c2bc43d3a0382027962fa0004b22e55af3d845018b9b1da1c84b52"
+    },
+    {
+      "order": 13,
+      "id": "brain-power",
+      "skill": "Brain Power",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Ilyen Taal",
+      "file": "mind/intelligence/brain-power.png",
+      "sha256": "385e6c60c934e4cfec9bfedaab1f26eb3d10cbbd1de72af669c6da78d5599c0c"
+    },
+    {
+      "order": 14,
+      "id": "rumination",
+      "skill": "Rumination",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Marden Silt",
+      "file": "mind/intelligence/rumination.png",
+      "sha256": "98edb50ac98b8c95b2e6166a84f76f62f7b0ffa8d8504a822d61ee19b702474c"
+    },
+    {
+      "order": 15,
+      "id": "eloquence",
+      "skill": "Eloquence",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Yara Voss",
+      "file": "mind/intelligence/eloquence.png",
+      "sha256": "1bff155d04c2d868f337e98fcecda6e9b71a94349ece94553d48796de4efc76c"
+    },
+    {
+      "order": 16,
+      "id": "visualization",
+      "skill": "Visualization",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "Osa Reed",
+      "file": "mind/expression/visualization.png",
+      "sha256": "7ab4089b12443f0fad0daff079fac093d81c07859149e9a039b918093f061ebd"
+    },
+    {
+      "order": 17,
+      "id": "analysis",
+      "skill": "Analysis",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "Inspectant Latch-7",
+      "file": "mind/expression/analysis.png",
+      "sha256": "8952ac8541c4fca77c000ac721215983ba35179f597f74570ab1794969c2c10d"
+    },
+    {
+      "order": 18,
+      "id": "charisma",
+      "skill": "Charisma",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "Juniper Vale",
+      "file": "mind/expression/charisma.png",
+      "sha256": "54327b9b323ccb1109319278b4a398f85f32a6860b9cd8f6ac556dd7add5b02f"
+    },
+    {
+      "order": 19,
+      "id": "empathy",
+      "skill": "Empathy",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Mallow-3",
+      "file": "soul/insight/empathy.png",
+      "sha256": "ea79ff6402b1ac01f425949662d4e6f21db821465c5b77a8f1deeba3471c82e4"
+    },
+    {
+      "order": 20,
+      "id": "camaraderie",
+      "skill": "Camaraderie",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Dema Brin",
+      "file": "soul/insight/camaraderie.png",
+      "sha256": "9ee0ce154014012b80553326ed324284fe87c88ed0ac11600f2bb918f7317a9e"
+    },
+    {
+      "order": 21,
+      "id": "implication",
+      "skill": "Implication",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Selka Noon",
+      "file": "soul/insight/implication.png",
+      "sha256": "0b1ee49c26bc32cebce40c6db8b8fa80a2e0ad22f204038bd7dfccdd2bf5e211"
+    },
+    {
+      "order": 22,
+      "id": "will-power",
+      "skill": "Will Power",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Ruen Ash",
+      "file": "soul/determination/will-power.png",
+      "sha256": "a5651b2a8eca2fc9d953cb83086a8e3ebbcb247f8c6cb0646e24deb9ba74c1ae"
+    },
+    {
+      "order": 23,
+      "id": "lore-master",
+      "skill": "Lore Master",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Anka Moss",
+      "file": "soul/determination/lore-master.png",
+      "sha256": "47fad7ba7efe464b67958c59c85bf88756adde95f6e175b7ef7944e372c48c51"
+    },
+    {
+      "order": 24,
+      "id": "composure",
+      "skill": "Composure",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Tal Ren",
+      "file": "soul/determination/composure.png",
+      "sha256": "0323d5860eb0e5958b28993d8828fd145ffd33f1358a2aa30861eb18b8bbd7d1"
+    },
+    {
+      "order": 25,
+      "id": "faith",
+      "skill": "Faith",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "Brother Halden",
+      "file": "soul/virtue/faith.png",
+      "sha256": "e03f186193771dd82aafb48e9868c069858cdb6352c6618abfdf3d73defee6a6"
+    },
+    {
+      "order": 26,
+      "id": "conscience",
+      "skill": "Conscience",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "Eris Ward",
+      "file": "soul/virtue/conscience.png",
+      "sha256": "ac121111f0253d558ee73a451f2c1c8316745faf0d40a3d0fa7ceb122ceb2a85"
+    },
+    {
+      "order": 27,
+      "id": "authority",
+      "skill": "Authority",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "Captain Nara Dusk",
+      "file": "soul/virtue/authority.png",
+      "sha256": "7fd7b84d2642490232e6f5fea7c2dc5b7f252b3987d68f2d0e2d6eff663a29e4"
+    }
+  ],
+  "usage": "Character portraits; former human-style skill paintings. Historical skill IDs and attribute folders are retained for traceability. These are not the abstract player-skill assets."
+}

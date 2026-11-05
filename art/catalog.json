@@ -1,0 +1,591 @@
+{
+  "schema_version": 1,
+  "style_guide_version": "1.2",
+  "skill_palette_version": "3",
+  "path_base": "repository root",
+  "style_guide": "art/style-guide/v1.2/START-HERE.md",
+  "palette": "art/style-guide/v1.2/palette.json",
+  "skills": {
+    "durability": {
+      "label": "Durability",
+      "path": "art/skills/poc4-palette-v3/body/endurance/durability.png",
+      "sha256": "279b8a61c14b9fea13ef0af6f0364fe0afa38b7d1b09b71107ac437743d587f4",
+      "attribute": "endurance",
+      "color": "#CC2435",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "pain-threshold": {
+      "label": "Pain Threshold",
+      "path": "art/skills/poc4-palette-v3/body/endurance/pain-threshold.png",
+      "sha256": "7edff21572d2c9425f8c1eb4c110ee4a7cbbd60ca08c816a6f14083c1d6368f1",
+      "attribute": "endurance",
+      "color": "#CC2435",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "sensory": {
+      "label": "Sensory",
+      "path": "art/skills/poc4-palette-v3/body/endurance/sensory.png",
+      "sha256": "d60d329be623e9ffd479395cc4f7f1652c52c25e6fff67aead4008e987d484c2",
+      "attribute": "endurance",
+      "color": "#CC2435",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "raw-power": {
+      "label": "Raw Power",
+      "path": "art/skills/poc4-palette-v3/body/strength/raw-power.png",
+      "sha256": "7f69fb04fc5fc85a83d7225fee0e3cfde818f59cc31e0bbdf92e90ee2345ba32",
+      "attribute": "strength",
+      "color": "#F68A38",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "guts": {
+      "label": "Guts",
+      "path": "art/skills/poc4-palette-v3/body/strength/guts.png",
+      "sha256": "bbb0910f995f736b9cab37caa8e2f0c237adc4d1b7494f1950e190563c2fde4b",
+      "attribute": "strength",
+      "color": "#F68A38",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "intimidation": {
+      "label": "Intimidation",
+      "path": "art/skills/poc4-palette-v3/body/strength/intimidation.png",
+      "sha256": "a4b6bca4bbe4f6022f0a4c66c0ca1a9419090bde6453504c004de6f9397e0130",
+      "attribute": "strength",
+      "color": "#F68A38",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "athletics": {
+      "label": "Athletics",
+      "path": "art/skills/poc4-palette-v3/body/agility/athletics.png",
+      "sha256": "05759023fa5d190f9ef8f4ca5d131db90595c47918da2bb80ccfb5899a6d3a89",
+      "attribute": "agility",
+      "color": "#E3BF51",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "dexterity": {
+      "label": "Dexterity",
+      "path": "art/skills/poc4-palette-v3/body/agility/dexterity.png",
+      "sha256": "13688a69040cd0e83a956ba668b80a90433dd63b1711a931ce8fb5181d1a54a1",
+      "attribute": "agility",
+      "color": "#E3BF51",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "reaction-speed": {
+      "label": "Reaction Speed",
+      "path": "art/skills/poc4-palette-v3/body/agility/reaction-speed.png",
+      "sha256": "0ae7b5aa7507404cbd6530761857ead73782f8965f1961c4a02a9f0815ddfab5",
+      "attribute": "agility",
+      "color": "#E3BF51",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "ingenuity": {
+      "label": "Ingenuity",
+      "path": "art/skills/poc4-palette-v3/mind/perception/ingenuity.png",
+      "sha256": "b4b2847f084ce19144c0104a779d4bec0805ec7eb8191061a0455894c931d41a",
+      "attribute": "perception",
+      "color": "#40BAA0",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "proficiency": {
+      "label": "Proficiency",
+      "path": "art/skills/poc4-palette-v3/mind/perception/proficiency.png",
+      "sha256": "e4b1dc016432ddf34015176597e7515163355bc758b6cfc6b6288caf449fb2b5",
+      "attribute": "perception",
+      "color": "#40BAA0",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "vigilant": {
+      "label": "Vigilant",
+      "path": "art/skills/poc4-palette-v3/mind/perception/vigilant.png",
+      "sha256": "3d9d0dd097181349cbb59f0bea4323d2064ace366c1a574475232b4810309e72",
+      "attribute": "perception",
+      "color": "#40BAA0",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "brain-power": {
+      "label": "Brain Power",
+      "path": "art/skills/poc4-palette-v3/mind/intelligence/brain-power.png",
+      "sha256": "4744168ec54509d9e7a157d9b64c8444ec3c8c17d91f883d3a4a67b6394011b7",
+      "attribute": "intelligence",
+      "color": "#8BDEEE",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "rumination": {
+      "label": "Rumination",
+      "path": "art/skills/poc4-palette-v3/mind/intelligence/rumination.png",
+      "sha256": "295912c515a5bd56f3db7f6f16a40fffc970c95b86424371c79f94b55d9674a5",
+      "attribute": "intelligence",
+      "color": "#8BDEEE",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "eloquence": {
+      "label": "Eloquence",
+      "path": "art/skills/poc4-palette-v3/mind/intelligence/eloquence.png",
+      "sha256": "b2354a0ad09eae63ce72f745a28decc807f664933cdf5effa17e54920c4eb8e1",
+      "attribute": "intelligence",
+      "color": "#8BDEEE",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "visualization": {
+      "label": "Visualization",
+      "path": "art/skills/poc4-palette-v3/mind/expression/visualization.png",
+      "sha256": "c3c6257a2625c397a8d8bab15f17424bd151cac07c56518a81a2ad906c02386c",
+      "attribute": "expression",
+      "color": "#075369",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "analysis": {
+      "label": "Analysis",
+      "path": "art/skills/poc4-palette-v3/mind/expression/analysis.png",
+      "sha256": "9db52954e50c713c4cc8f26f37ac1ca0ad4bc0347c1a2db3e63cde6caa140e42",
+      "attribute": "expression",
+      "color": "#075369",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "charisma": {
+      "label": "Charisma",
+      "path": "art/skills/poc4-palette-v3/mind/expression/charisma.png",
+      "sha256": "614e3223586fecb810fdfd2782e5ae2c9b9d3caef695763e95bb22806218478b",
+      "attribute": "expression",
+      "color": "#075369",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "empathy": {
+      "label": "Empathy",
+      "path": "art/skills/poc4-palette-v3/soul/insight/empathy.png",
+      "sha256": "44e485483d1af403cb546db498e5cc7a786de3cf1c1231559c87cf4fcb13ae7e",
+      "attribute": "insight",
+      "color": "#EB95B7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "camaraderie": {
+      "label": "Camaraderie",
+      "path": "art/skills/poc4-palette-v3/soul/insight/camaraderie.png",
+      "sha256": "cebb1ca79f8d0e4d0e8065003de78efaeadfe23e2f8df3dcf86b420f8c0f7703",
+      "attribute": "insight",
+      "color": "#EB95B7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "implication": {
+      "label": "Implication",
+      "path": "art/skills/poc4-palette-v3/soul/insight/implication.png",
+      "sha256": "e8d66aa48566f8ce655dd08f931dc2df72c8d1ba53d29054e92bfdc39127709c",
+      "attribute": "insight",
+      "color": "#EB95B7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "will-power": {
+      "label": "Will Power",
+      "path": "art/skills/poc4-palette-v3/soul/determination/will-power.png",
+      "sha256": "c31e65eb3225dba0398b11900b423ce83cedfa7537f4e82d2c1a1140bb10db2f",
+      "attribute": "determination",
+      "color": "#9875D7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "lore-master": {
+      "label": "Lore Master",
+      "path": "art/skills/poc4-palette-v3/soul/determination/lore-master.png",
+      "sha256": "6cd62055302d18f35d1429b9d03b97b560fd2d94b32e5c9e3f3181144ef39ee1",
+      "attribute": "determination",
+      "color": "#9875D7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "composure": {
+      "label": "Composure",
+      "path": "art/skills/poc4-palette-v3/soul/determination/composure.png",
+      "sha256": "cecffc9eac6b2588fb8b89005d1d6b9c9c70873e6519826e6e64241616c8f446",
+      "attribute": "determination",
+      "color": "#9875D7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "faith": {
+      "label": "Faith",
+      "path": "art/skills/poc4-palette-v3/soul/virtue/faith.png",
+      "sha256": "2f4649acf0426da9472a3a3c87100fd0650f847fe15d8146b4b24f6ae5b53e27",
+      "attribute": "virtue",
+      "color": "#86234E",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "conscience": {
+      "label": "Conscience",
+      "path": "art/skills/poc4-palette-v3/soul/virtue/conscience.png",
+      "sha256": "ffa7293de8374ca0cf9c9b0d4e95ed4c182074de86b7033152b2778d3afeca19",
+      "attribute": "virtue",
+      "color": "#86234E",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    },
+    "authority": {
+      "label": "Authority",
+      "path": "art/skills/poc4-palette-v3/soul/virtue/authority.png",
+      "sha256": "7d122b3f3d9e77758359d132cad6c73d791cf14fa55ed00915fa52d903ec0199",
+      "attribute": "virtue",
+      "color": "#86234E",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque black",
+      "usage": "player skill portrait"
+    }
+  },
+  "characters": {
+    "orren-vask": {
+      "label": "Orren Vask",
+      "path": "art/characters/heavenprint-new-faces/body/endurance/durability.png",
+      "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "durability",
+      "usage": "character portrait"
+    },
+    "ivara-drenn": {
+      "label": "Ivara Drenn",
+      "path": "art/characters/heavenprint-new-faces/body/endurance/pain-threshold.png",
+      "sha256": "58cd275d5f2731e4029a4e54ffa3bac683f4e35876755ea7178f681a55d7e97a",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "pain-threshold",
+      "usage": "character portrait"
+    },
+    "nemi-sol": {
+      "label": "Nemi Sol",
+      "path": "art/characters/heavenprint-new-faces/body/endurance/sensory.png",
+      "sha256": "d3915c5e2786426072b83a6bd38deb317166ba29333e492a39a00a29d5402f14",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "sensory",
+      "usage": "character portrait"
+    },
+    "basko-rell": {
+      "label": "Basko Rell",
+      "path": "art/characters/heavenprint-new-faces/body/strength/raw-power.png",
+      "sha256": "bf7163d59654d652f7ca65383c33726055b41e43d3664c5baaf5e7056bf57c2c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "raw-power",
+      "usage": "character portrait"
+    },
+    "tessa-rook": {
+      "label": "Tessa Rook",
+      "path": "art/characters/heavenprint-new-faces/body/strength/guts.png",
+      "sha256": "66ebff1859c89fe265f1b91f2b3bddbf5c9cd9f2c28d6ee441cdc1656b197708",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "guts",
+      "usage": "character portrait"
+    },
+    "veyra-salt": {
+      "label": "Veyra Salt",
+      "path": "art/characters/heavenprint-new-faces/body/strength/intimidation.png",
+      "sha256": "a94e00bac891839d0cf5a5d779fcceb1b2a94bd8361be38d6d5d0fde19701e50",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "intimidation",
+      "usage": "character portrait"
+    },
+    "ketta-flint": {
+      "label": "Ketta Flint",
+      "path": "art/characters/heavenprint-new-faces/body/agility/athletics.png",
+      "sha256": "e086fc89e2c357b94731c1e2f21b8329dbf050f26e489bbe4efcce8fbe741c19",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "athletics",
+      "usage": "character portrait"
+    },
+    "sera-venn": {
+      "label": "Sera Venn",
+      "path": "art/characters/heavenprint-new-faces/body/agility/dexterity.png",
+      "sha256": "63fb698bc17705db128d8a88b61f75104660a100d59643779720602e7cd516d8",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "dexterity",
+      "usage": "character portrait"
+    },
+    "milo-quill": {
+      "label": "Milo Quill",
+      "path": "art/characters/heavenprint-new-faces/body/agility/reaction-speed.png",
+      "sha256": "3e886ac974d0bc9aecd33b78ffe2bf40b1abb73ad5e9e3d2159b88ae901810f6",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "reaction-speed",
+      "usage": "character portrait"
+    },
+    "pell-morrow": {
+      "label": "Pell Morrow",
+      "path": "art/characters/heavenprint-new-faces/mind/perception/ingenuity.png",
+      "sha256": "bbb68319979468e9f33e6fadfaecfe35ff23660cdc9719378a1da665d0b41917",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "ingenuity",
+      "usage": "character portrait"
+    },
+    "drava-keel": {
+      "label": "Drava Keel",
+      "path": "art/characters/heavenprint-new-faces/mind/perception/proficiency.png",
+      "sha256": "9217cc77715c9957d32fc370f959c8f2ceb2481187901c740e46675f46eb8d5e",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "proficiency",
+      "usage": "character portrait"
+    },
+    "asher-fen": {
+      "label": "Asher Fen",
+      "path": "art/characters/heavenprint-new-faces/mind/perception/vigilant.png",
+      "sha256": "20f30917d7c2bc43d3a0382027962fa0004b22e55af3d845018b9b1da1c84b52",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "vigilant",
+      "usage": "character portrait"
+    },
+    "ilyen-taal": {
+      "label": "Ilyen Taal",
+      "path": "art/characters/heavenprint-new-faces/mind/intelligence/brain-power.png",
+      "sha256": "385e6c60c934e4cfec9bfedaab1f26eb3d10cbbd1de72af669c6da78d5599c0c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "brain-power",
+      "usage": "character portrait"
+    },
+    "marden-silt": {
+      "label": "Marden Silt",
+      "path": "art/characters/heavenprint-new-faces/mind/intelligence/rumination.png",
+      "sha256": "98edb50ac98b8c95b2e6166a84f76f62f7b0ffa8d8504a822d61ee19b702474c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "rumination",
+      "usage": "character portrait"
+    },
+    "yara-voss": {
+      "label": "Yara Voss",
+      "path": "art/characters/heavenprint-new-faces/mind/intelligence/eloquence.png",
+      "sha256": "1bff155d04c2d868f337e98fcecda6e9b71a94349ece94553d48796de4efc76c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "eloquence",
+      "usage": "character portrait"
+    },
+    "osa-reed": {
+      "label": "Osa Reed",
+      "path": "art/characters/heavenprint-new-faces/mind/expression/visualization.png",
+      "sha256": "7ab4089b12443f0fad0daff079fac093d81c07859149e9a039b918093f061ebd",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "visualization",
+      "usage": "character portrait"
+    },
+    "inspectant-latch-7": {
+      "label": "Inspectant Latch-7",
+      "path": "art/characters/heavenprint-new-faces/mind/expression/analysis.png",
+      "sha256": "8952ac8541c4fca77c000ac721215983ba35179f597f74570ab1794969c2c10d",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "analysis",
+      "usage": "character portrait"
+    },
+    "juniper-vale": {
+      "label": "Juniper Vale",
+      "path": "art/characters/heavenprint-new-faces/mind/expression/charisma.png",
+      "sha256": "54327b9b323ccb1109319278b4a398f85f32a6860b9cd8f6ac556dd7add5b02f",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "charisma",
+      "usage": "character portrait"
+    },
+    "mallow-3": {
+      "label": "Mallow-3",
+      "path": "art/characters/heavenprint-new-faces/soul/insight/empathy.png",
+      "sha256": "ea79ff6402b1ac01f425949662d4e6f21db821465c5b77a8f1deeba3471c82e4",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "empathy",
+      "usage": "character portrait"
+    },
+    "dema-brin": {
+      "label": "Dema Brin",
+      "path": "art/characters/heavenprint-new-faces/soul/insight/camaraderie.png",
+      "sha256": "9ee0ce154014012b80553326ed324284fe87c88ed0ac11600f2bb918f7317a9e",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "camaraderie",
+      "usage": "character portrait"
+    },
+    "selka-noon": {
+      "label": "Selka Noon",
+      "path": "art/characters/heavenprint-new-faces/soul/insight/implication.png",
+      "sha256": "0b1ee49c26bc32cebce40c6db8b8fa80a2e0ad22f204038bd7dfccdd2bf5e211",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "implication",
+      "usage": "character portrait"
+    },
+    "ruen-ash": {
+      "label": "Ruen Ash",
+      "path": "art/characters/heavenprint-new-faces/soul/determination/will-power.png",
+      "sha256": "a5651b2a8eca2fc9d953cb83086a8e3ebbcb247f8c6cb0646e24deb9ba74c1ae",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "will-power",
+      "usage": "character portrait"
+    },
+    "anka-moss": {
+      "label": "Anka Moss",
+      "path": "art/characters/heavenprint-new-faces/soul/determination/lore-master.png",
+      "sha256": "47fad7ba7efe464b67958c59c85bf88756adde95f6e175b7ef7944e372c48c51",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "lore-master",
+      "usage": "character portrait"
+    },
+    "tal-ren": {
+      "label": "Tal Ren",
+      "path": "art/characters/heavenprint-new-faces/soul/determination/composure.png",
+      "sha256": "0323d5860eb0e5958b28993d8828fd145ffd33f1358a2aa30861eb18b8bbd7d1",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "composure",
+      "usage": "character portrait"
+    },
+    "brother-halden": {
+      "label": "Brother Halden",
+      "path": "art/characters/heavenprint-new-faces/soul/virtue/faith.png",
+      "sha256": "e03f186193771dd82aafb48e9868c069858cdb6352c6618abfdf3d73defee6a6",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "faith",
+      "usage": "character portrait"
+    },
+    "eris-ward": {
+      "label": "Eris Ward",
+      "path": "art/characters/heavenprint-new-faces/soul/virtue/conscience.png",
+      "sha256": "ac121111f0253d558ee73a451f2c1c8316745faf0d40a3d0fa7ceb122ceb2a85",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "conscience",
+      "usage": "character portrait"
+    },
+    "captain-nara-dusk": {
+      "label": "Captain Nara Dusk",
+      "path": "art/characters/heavenprint-new-faces/soul/virtue/authority.png",
+      "sha256": "7fd7b84d2642490232e6f5fea7c2dc5b7f252b3987d68f2d0e2d6eff663a29e4",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "authority",
+      "usage": "character portrait"
+    }
+  },
+  "traits": {
+    "mind-without-fog": {
+      "label": "Wick \u2014 Mind Without Fog",
+      "path": "art/traits/wick/mind-without-fog/mind-without-fog.png",
+      "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444",
+      "width": 1254,
+      "height": 1254,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon"
+    }
+  }
+}
