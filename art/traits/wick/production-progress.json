@@ -57,10 +57,11 @@
     "sworn-sibling",
     "rival",
     "wanted",
-    "company-man"
+    "company-man",
+    "field-medic"
   ],
   "catalog_coverage": {
-    "traits": 50,
+    "traits": 51,
     "perks": 2
   },
   "revision_rounds": {

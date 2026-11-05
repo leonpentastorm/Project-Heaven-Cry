@@ -948,6 +948,29 @@
       },
       "batch": "B",
       "source_sha256": "006fecfbd15a1464e6e088fa969ff95162f462d89861b35e9ea93bf681085a87"
+    },
+    {
+      "id": "field-medic",
+      "data_id": "field_medic",
+      "name": "Field Medic",
+      "family": "traits",
+      "order": 51,
+      "mood": "Heroic, Tender",
+      "action": "Wick skids in on its knees, sliding sideways, a big stim injector raised high in one mitten ready to use",
+      "screen": "Focused, determined",
+      "prop": "Stim injector",
+      "path": "art/traits/wick/production-v1/field-medic.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/field-medic.png",
+        "128": "art/traits/wick/production-v1/exports/128/field-medic.png",
+        "64": "art/traits/wick/production-v1/exports/64/field-medic.png",
+        "56": "art/traits/wick/production-v1/exports/56/field-medic.png",
+        "48": "art/traits/wick/production-v1/exports/48/field-medic.png",
+        "44": "art/traits/wick/production-v1/exports/44/field-medic.png",
+        "40": "art/traits/wick/production-v1/exports/40/field-medic.png"
+      },
+      "batch": "C",
+      "source_sha256": "5176a1d25cc13abad0ebf5bc2b88de090b241f27cdfb6593ace43a6bdfd6d537"
     }
   ]
 }

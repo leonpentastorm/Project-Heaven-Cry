@@ -2599,6 +2599,30 @@
         "44": "art/traits/wick/production-v1/exports/44/company-man.png",
         "40": "art/traits/wick/production-v1/exports/40/company-man.png"
       }
+    },
+    "field-medic": {
+      "label": "Wick — Field Medic",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/field-medic.png",
+      "sha256": "9c0ebd9606ac83f572eea88a2cc440382cede7dddf5ba528406c71a77539f62f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "field_medic",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/field-medic.png",
+        "128": "art/traits/wick/production-v1/exports/128/field-medic.png",
+        "64": "art/traits/wick/production-v1/exports/64/field-medic.png",
+        "56": "art/traits/wick/production-v1/exports/56/field-medic.png",
+        "48": "art/traits/wick/production-v1/exports/48/field-medic.png",
+        "44": "art/traits/wick/production-v1/exports/44/field-medic.png",
+        "40": "art/traits/wick/production-v1/exports/40/field-medic.png"
+      }
     }
   },
   "character_collections": {
