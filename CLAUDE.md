@@ -38,7 +38,7 @@ docs/lore/                README.md (reading order), EPCCG-Player-Character-Crea
                           Factions.md (Earth Sector faction draft),
                           MPAT-and-M813.md, Wick.md
 docs/design/              Class-Roster-Rev2.md, Recovered-Design-Notes-2020.md,
-                          decisions.md (why things are the way they are), ui-screens.md,
+                          decisions.md (why things are the way they are), ui-screens.md, tech-plan.md,
                           colour-system.md
 data/                     the JSON data pack + CONVENTIONS.md + README.md
 tools/                    validate.py (cross-reference checker), fix_pack.py (normaliser), archetype_fill.py (archetype budgets)
@@ -88,7 +88,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Co-op up to **4 players per room**; solo works too.
 - **Speaking order:** in story mode each player speaks once per round, then the Narrator answers everyone together. Players can request a turn; the host can skip an away player.
 - **Characters are locked in before a session starts** (or saved as drafts and brought into any room).
-- Stack: open. Claude Code proposes the tech plan with Leon. Context-only hand-off by request; no app skeleton yet.
+- Stack: proposed in `docs/design/tech-plan.md` (TypeScript monorepo, React + Vite, Cloudflare Durable Objects for rooms), pending Leon's approval. No app skeleton yet.
 
 ## UI direction (see `docs/design/ui-screens.md` and the canvas)
 
@@ -113,7 +113,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 
 ## Next steps
 
-1. Tech plan with Leon (engine as pure, deterministic TypeScript with seeded RNG; authoritative room server; client with a grid renderer; provider-agnostic Narrator adapter using structured tool calls).
+1. **Tech plan:** proposed in `docs/design/tech-plan.md` (one deterministic TypeScript engine used by the browser and the room server; everything is an action; the event log is the save; the Narrator is a client of the engine with one tool per Narrator-owned job; BYOK in the host's browser; milestones M0–M7 to the M813 starter slice and then co-op). Waiting on Leon's decisions in its section 10.
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
 4. Settle the 51 open items in spec section 14 through playtests.
