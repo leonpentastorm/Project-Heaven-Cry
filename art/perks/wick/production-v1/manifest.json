@@ -281,6 +281,29 @@
       },
       "batch": "D",
       "source_sha256": "66b77796ff5b056a77fda3287ff682cfa0af5737d3e38af9d20876b9aa66efa8"
+    },
+    {
+      "id": "wall-run",
+      "data_id": "wall_run",
+      "name": "Wall Run",
+      "family": "perks",
+      "order": 13,
+      "mood": "Heroic, Comic",
+      "action": "Wick runs sideways along a vertical wall, body parallel to the ground, cape streaming, above a gap that drops away below.",
+      "screen": "Delighted",
+      "prop": "The wall",
+      "path": "art/perks/wick/production-v1/wall-run.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/wall-run.png",
+        "128": "art/perks/wick/production-v1/exports/128/wall-run.png",
+        "64": "art/perks/wick/production-v1/exports/64/wall-run.png",
+        "56": "art/perks/wick/production-v1/exports/56/wall-run.png",
+        "48": "art/perks/wick/production-v1/exports/48/wall-run.png",
+        "44": "art/perks/wick/production-v1/exports/44/wall-run.png",
+        "40": "art/perks/wick/production-v1/exports/40/wall-run.png"
+      },
+      "batch": "D",
+      "source_sha256": "c63220ff40a77c0ecfb7ee7b581ad1020d8434071fc6db51f564a013c815d7a3"
     }
   ]
 }

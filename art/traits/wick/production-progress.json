@@ -93,11 +93,12 @@
     "into-the-dark",
     "iron-stomach",
     "grim-reaper",
-    "bone-talk"
+    "bone-talk",
+    "wall-run"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 14
+    "perks": 15
   },
   "revision_rounds": {
     "field-surgeon": 3,

@@ -3563,6 +3563,30 @@
         "44": "art/perks/wick/production-v1/exports/44/bone-talk.png",
         "40": "art/perks/wick/production-v1/exports/40/bone-talk.png"
       }
+    },
+    "wall-run": {
+      "label": "Wick — Wall Run",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/wall-run.png",
+      "sha256": "0ec9d2022d26a4d0e8b94f57ca50777117503738e82e8cc9896f3de9f49ba6fa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "wall_run",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/wall-run.png",
+        "128": "art/perks/wick/production-v1/exports/128/wall-run.png",
+        "64": "art/perks/wick/production-v1/exports/64/wall-run.png",
+        "56": "art/perks/wick/production-v1/exports/56/wall-run.png",
+        "48": "art/perks/wick/production-v1/exports/48/wall-run.png",
+        "44": "art/perks/wick/production-v1/exports/44/wall-run.png",
+        "40": "art/perks/wick/production-v1/exports/40/wall-run.png"
+      }
     }
   },
   "illustrations": {
