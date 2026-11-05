@@ -4115,6 +4115,30 @@
         "44": "art/perks/wick/production-v1/exports/44/talks-broke-down.png",
         "40": "art/perks/wick/production-v1/exports/40/talks-broke-down.png"
       }
+    },
+    "crowd-pleaser": {
+      "label": "Wick — Crowd Pleaser",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/crowd-pleaser.png",
+      "sha256": "8d10c11cca353fcff23934b335ceed2ec13a8e429352766b0d1a0f9011e3cc6c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "crowd_pleaser",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/crowd-pleaser.png",
+        "128": "art/perks/wick/production-v1/exports/128/crowd-pleaser.png",
+        "64": "art/perks/wick/production-v1/exports/64/crowd-pleaser.png",
+        "56": "art/perks/wick/production-v1/exports/56/crowd-pleaser.png",
+        "48": "art/perks/wick/production-v1/exports/48/crowd-pleaser.png",
+        "44": "art/perks/wick/production-v1/exports/44/crowd-pleaser.png",
+        "40": "art/perks/wick/production-v1/exports/40/crowd-pleaser.png"
+      }
     }
   },
   "illustrations": {

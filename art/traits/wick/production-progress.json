@@ -116,11 +116,12 @@
     "blueprint",
     "detectives-eye",
     "pattern-lock",
-    "talks-broke-down"
+    "talks-broke-down",
+    "crowd-pleaser"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 37
+    "perks": 38
   },
   "revision_rounds": {
     "field-surgeon": 3,

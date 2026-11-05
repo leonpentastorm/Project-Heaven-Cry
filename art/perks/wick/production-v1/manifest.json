@@ -810,6 +810,29 @@
       },
       "batch": "E",
       "source_sha256": "eb59ac543f874ff69a15cf97a116cc5319a9915ce61266bfb9fa9ab7b95cc758"
+    },
+    {
+      "id": "crowd-pleaser",
+      "data_id": "crowd_pleaser",
+      "name": "Crowd Pleaser",
+      "family": "perks",
+      "order": 36,
+      "mood": "Comic, Proud",
+      "action": "Wick crowd-surfs on its back, arms flung wide, borne along on a wave of tiny raised hands that fills the lower third.",
+      "screen": "Delighted open mouth",
+      "prop": "Wave of raised hands",
+      "path": "art/perks/wick/production-v1/crowd-pleaser.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/crowd-pleaser.png",
+        "128": "art/perks/wick/production-v1/exports/128/crowd-pleaser.png",
+        "64": "art/perks/wick/production-v1/exports/64/crowd-pleaser.png",
+        "56": "art/perks/wick/production-v1/exports/56/crowd-pleaser.png",
+        "48": "art/perks/wick/production-v1/exports/48/crowd-pleaser.png",
+        "44": "art/perks/wick/production-v1/exports/44/crowd-pleaser.png",
+        "40": "art/perks/wick/production-v1/exports/40/crowd-pleaser.png"
+      },
+      "batch": "E",
+      "source_sha256": "a1175d9471c1b5cdf0793236fe67b60a9df76ba0b9dc46e62737e74d1e3226e8"
     }
   ]
 }
