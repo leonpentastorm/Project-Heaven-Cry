@@ -97,6 +97,29 @@
       },
       "batch": "D",
       "source_sha256": "2474378eab7762e9592cd9b64ca91536e33d9992dc76f44cdc60a356f9327d98"
+    },
+    {
+      "id": "wind-on-the-skin",
+      "data_id": "wind_on_the_skin",
+      "name": "Wind on the Skin",
+      "family": "perks",
+      "order": 5,
+      "mood": "Eerie, Tense",
+      "action": "Wick kneels, eyes closed, one mitten raised into a long wind streak that curls past it and ends at a pair of eyes in the dark.",
+      "screen": "Closed-eye arcs",
+      "prop": "Wind streak",
+      "path": "art/perks/wick/production-v1/wind-on-the-skin.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/wind-on-the-skin.png",
+        "128": "art/perks/wick/production-v1/exports/128/wind-on-the-skin.png",
+        "64": "art/perks/wick/production-v1/exports/64/wind-on-the-skin.png",
+        "56": "art/perks/wick/production-v1/exports/56/wind-on-the-skin.png",
+        "48": "art/perks/wick/production-v1/exports/48/wind-on-the-skin.png",
+        "44": "art/perks/wick/production-v1/exports/44/wind-on-the-skin.png",
+        "40": "art/perks/wick/production-v1/exports/40/wind-on-the-skin.png"
+      },
+      "batch": "D",
+      "source_sha256": "972174587790fa72d8cc79d90b35bbc1ebe2d492ce6b370a094140520bd15300"
     }
   ]
 }

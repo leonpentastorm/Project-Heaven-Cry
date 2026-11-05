@@ -85,11 +85,12 @@
     "bulwark",
     "shrug-it-off",
     "used-to-the-pain",
-    "scar-tissue"
+    "scar-tissue",
+    "wind-on-the-skin"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 6
+    "perks": 7
   },
   "revision_rounds": {
     "field-surgeon": 3,

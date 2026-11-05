@@ -3371,6 +3371,30 @@
         "44": "art/perks/wick/production-v1/exports/44/scar-tissue.png",
         "40": "art/perks/wick/production-v1/exports/40/scar-tissue.png"
       }
+    },
+    "wind-on-the-skin": {
+      "label": "Wick — Wind on the Skin",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/wind-on-the-skin.png",
+      "sha256": "3b6d0e969f93f22ba42f83a0b3b34a444c394c15a9cc29d00c17995c92cee31a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "wind_on_the_skin",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/wind-on-the-skin.png",
+        "128": "art/perks/wick/production-v1/exports/128/wind-on-the-skin.png",
+        "64": "art/perks/wick/production-v1/exports/64/wind-on-the-skin.png",
+        "56": "art/perks/wick/production-v1/exports/56/wind-on-the-skin.png",
+        "48": "art/perks/wick/production-v1/exports/48/wind-on-the-skin.png",
+        "44": "art/perks/wick/production-v1/exports/44/wind-on-the-skin.png",
+        "40": "art/perks/wick/production-v1/exports/40/wind-on-the-skin.png"
+      }
     }
   },
   "illustrations": {
