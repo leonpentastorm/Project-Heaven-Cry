@@ -1,8 +1,15 @@
-# Wick production brief: all 74 trait icons and 76 perk icons
+# Wick production brief: all 74 trait icons and 103 perk icons
 
 **Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
 
 **Leon's current delivery instruction, 5 November 2026:** fix the seven first and push them, then continue the full run, showing each newly drawn image in chat and pushing it immediately. This replaces the stop-between-batches timing below. It does not mark new images production-approved. The run needs 139 new icons plus seven revisions; the four existing approved designs are retained to complete 150 distinct items.
+
+> **NEXT UP when image generation resumes (Leon, 5 November 2026), in this order:**
+> 1. **Review 4 fixes (4 icons):** Into the Dark, Holy Ordnance, Supreme Command, Sworn Sibling. What to change: [perks production README, Review 4](../perks/wick/production-v1/README.md#review-4--5-november-2026-55-perks-plus-the-review-3-trait-fixes).
+> 2. **Real Power**, then **Batch F** (20 Achieved and Ultimate perks): unchanged, from the [queue snapshot](../traits/wick/pending-at-usage-limit-2026-11-05.json).
+> 3. **Batch G, new: the 27 Mastered perks** (one per skill, granted at 10 points). Requirements in [Mastered (27)](#mastered-27) below. They're the game's top-tier perks: same flat white ink, plus the Mastered mark.
+>
+> The queue snapshot lists all 52 in this order; `production-progress.json` points at the first.
 
 **Attach to every job:** `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` (the only style anchor), the three approved test icons (Chain Smoker, The Brightest Light, Forlorn Hope) as quality references, and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Item texts are in `data/traits.json` and `data/perks.json`: read what the item **does** before drawing it.
 
@@ -20,6 +27,7 @@
 | D | Acquired perks, Body skills (Endurance, Strength, Agility) | 18 |
 | E | Acquired perks, Mind and Soul skills | 36 |
 | F | Achieved and Ultimate perks, minus the two in step 1 | 20 |
+| G | **Mastered perks (new, 5 Nov 2026):** one per skill, 27 | 27 |
 
 ## The rules (binding; style guide section 14)
 
@@ -132,9 +140,9 @@ Status: *approved* = keep the existing icon (the Mind Without Fog master or a te
 | 73 | **Beast Handler** (`beast_handler`) | Wilds and machines | new | Tender | Wick rides belly-down on a huge shaggy back, the beast's head off-frame and only one ear showing, hugging the fur | Content closed eyes | The beast's back (partial) |
 | 74 | **Ace Pilot** (`ace_pilot`) | Wilds and machines | new | Heroic, Comic | Wick leans hard into a bank, gripping a big steering yoke with nothing around it, goggles up, capelet whipping, speed lines streaming | Wild grin | Steering yoke |
 
-## Requirements: perks (76)
+## Requirements: perks (103)
 
-Acquired perks come two per skill (Tier I at 3 points; the icon doesn't change at Tier II). Achieved perks combine skills plus a deed; Ultimate perks combine two Achieved perks and may be more dramatic, under the same rules.
+Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points; the icon doesn't change at Tier II). Mastered perks come one per skill, at 10 points. Achieved perks combine skills plus a deed; Ultimate perks combine two Achieved perks and may be more dramatic, under the same rules.
 
 ### Acquired (54)
 
@@ -226,3 +234,44 @@ Acquired perks come two per skill (Tier I at 3 points; the icon doesn't change a
 | **Every Lie Is a Door** (`every_lie_is_a_door`) | Just the Repairman + Cold Read (Ingenuity, Eloquence, Empathy, Analysis) | new | Comic, Proud | Wick strides unhurried through a towering door that swings wide open for it, tipping a cap toward the viewer. | Wink | Towering open door |
 | **Twin Discipline** (`twin_discipline`) | Twin Souls + Spoon-Feed (Will Power, Lore Master, Brain Power, Rumination, Eloquence) | new | Heroic, Eerie | Wick leaps and claps both mittens overhead: hard geometric sigil lines trail one arm, flowing soul ribbons the other, fusing into one burst. | Fierce delight | Fused burst |
 | **Supreme Command** (`supreme_command`) | The Voice + Make Way (Authority, Composure, Intimidation, Charisma) | revise | Heroic | Wick stands on an unmarked ammo crate, one mitten pointing forward, as three tiny Wick silhouettes sprint the way it points. | Shouting | Ammo crate |
+
+### Mastered (27)
+
+**New, 5 November 2026 (Batch G).** Each skill's capstone: granted automatically at 10 points, the most a skill can have. In the game they sit on a gilded card inside a round medallion, in the skill's attribute colour. The icon itself stays **pure white flat ink** like every other perk (rule 8). What makes them read as Mastered:
+
+1. **The Mastered mark:** one small four-pointed star (✦ shape), the same size (about a tenth of the frame) and in the same place (upper left, clear of Wick's head) on all 27. Nothing else in the icon uses that shape. It's the only extra element allowed besides the one prop.
+2. **A capstone moment:** the pose is the peak of the skill, a little more ceremonial than an Acquired perk (a planted stance, a big gesture, a held beat), but the comedy and Wick's personality stay.
+3. **Fits the medallion:** keep Wick, the prop and the mark inside a centred circle of 90% of the frame; the UI shows these icons in a ring at 72–92 px.
+4. **Its own silhouette:** never reuse the silhouette of either Acquired perk of the same skill.
+
+Rules text is in `data/perks.json` (tier `mastered`; the file on this branch is current) and in the [queue snapshot](../traits/wick/pending-at-usage-limit-2026-11-05.json). Deliver to `art/perks/wick/production-v1/` with the usual exports and catalog entries (family `perks`, `status: "review-candidate"`).
+
+| Perk (id) | Skill | Status | Mood | Action | Screen | One prop |
+|---|---|---|---|---|---|---|
+| **Last Wall** (`last_wall`) | Durability | new | Heroic, Grim | Wick plants itself in the gap of a broken brick wall, arms locked wide across the hole, feet braced; a flattened bullet drops off its chest plate. | Eyes shut, calm | Broken wall |
+| **Walking Wounded** (`walking_wounded`) | Pain Threshold | new | Comic, Proud | Wick strides forward mid-step, one leg wrapped in a long trailing bandage, flinging a crutch away over its shoulder. | Gritted-teeth grin | Tossed crutch |
+| **Skin Map** (`skin_map`) | Sensory | new | Eerie, Calm | Wick kneels low with one mitten pressed flat to the floor; big ripple rings spread out from the palm across the ground to the frame edges. | Eyes closed | Ripple rings in the floor |
+| **Earthbreaker** (`earthbreaker`) | Raw Power | new | Heroic | Wick at the top of an overhead swing, both mittens on a huge sledgehammer, about to bring it down; a deep starburst crack already splits the ground below. | Roaring | Sledgehammer |
+| **Nothing Left to Fear** (`nothing_left_to_fear`) | Guts | new | Comic, Eerie | Wick sits cross-legged on top of a giant sleeping monster's horned head (only the head top shows, filling the bottom of the frame), calmly sipping from a teacup. | Content, half-lidded | Teacup |
+| **The Name They Whisper** (`the_name_they_whisper`) | Intimidation | new | Grim, Eerie | Wick stands in a bright open doorway, back-lit, its long shadow stretching all the way toward the viewer; two tiny Wick silhouettes duck behind cover in the foreground. | Two thin glowing slits | Long shadow |
+| **Never There** (`never_there`) | Athletics | new | Comic, Proud | Wick mid-backflip, upside down, with two fading dashed outlines of itself trailing behind; a bullet streaks through the empty outline. | Smug wink | Dashed afterimages |
+| **Trick Shot** (`trick_shot`) | Dexterity | new | Proud, Comic | Wick fires a revolver backwards over its own shoulder without looking; a dotted line bounces off a tin can and curves out of frame. | Bored, eyes closed | Revolver |
+| **Before the Blink** (`before_the_blink`) | Reaction Speed | new | Tense | Wick explodes out of a sprinter's crouch, already one stride gone, beside a big pocket stopwatch whose hand still points straight up. | Wide, focused | Stopwatch |
+| **Vanishing Act** (`vanishing_act`) | Ingenuity | new | Comic, Eerie | Wick whips its capelet out into a huge magician's sweep; the lower half of its body is already gone, shown only as a dotted outline. | Wink | Swept cape-cloth |
+| **Overhaul** (`overhaul`) | Proficiency | new | Proud | Wick sits on the ground cradling a rebuilt rifle across its lap like a prize, one extra rail gleaming, a wrench tucked behind its head like a pencil. | Delighted | Rebuilt rifle |
+| **Nothing Gets Past** (`nothing_gets_past`) | Vigilant | new | Tense, Heroic | Wick kneels with a rifle shouldered inside a wide fan of light sweeping out like a lighthouse beam; three small dash marks sit in the beam where shots landed. | Narrowed eyes | Sweeping light cone |
+| **Clean Draw** (`clean_draw`) | Brain Power | new | Calm, Eerie | Wick stands on one foot, one finger tracing a single perfect geometric sigil in the air in one unbroken line; no sparks, no smoke anywhere. | Serene | One-line sigil |
+| **Established Fact** (`established_fact`) | Rumination | new | Comic, Proud | Wick brings a huge rubber stamp down with both mittens onto a blank sheet, leaving one big checkmark. | Satisfied | Rubber stamp |
+| **Closing Argument** (`closing_argument`) | Eloquence | new | Comic | Wick walks away from the viewer, back turned, cape swinging, having just let go of a microphone that's falling behind it. | Seen from behind: none | Dropped microphone |
+| **Solid Image** (`solid_image`) | Visualization | new | Comic, Eerie | Wick leans its whole weight back against a wall drawn in dashed lines, arms folded, and the dashed wall holds it up. | Smug | Dashed wall |
+| **Case Closed** (`case_closed`) | Analysis | new | Proud | Wick perches on the edge of a desk, slapping a thick case folder shut, its string tie flying. | Satisfied grin | Case folder |
+| **Everyone's Friend** (`everyones_friend`) | Charisma | new | Comic, Tender | Wick beams as a stranger's hand (entering from the frame edge) drops a ring of keys into its open mitten. | Hearts | Ring of keys |
+| **Open Hand** (`open_hand`) | Empathy | new | Tender | Wick kneels and holds out a small flower toward an armoured gauntlet (partial, entering from the side) that is lowering its blade. | Soft smile | Flower |
+| **Many Hands** (`many_hands`) | Camaraderie | new | Heroic, Tender | Seen from above: Wick in a team huddle, its mitten at the bottom of a pile of hands stacked from every side of the frame (all partials). | Determined smile | Pile of hands |
+| **Their Own Idea** (`their_own_idea`) | Implication | new | Comic, Eerie | Wick whispers behind one mitten toward a big ear (partial, from the frame edge), above which a lightbulb has just switched on. | Sly | Lightbulb |
+| **The Twin Pays** (`the_twin_pays`) | Will Power | new | Eerie, Comic | Wick holds a soul flame high in one mitten while a coin drops from the top edge of the frame into its other open mitten. | Pleased | Falling coin |
+| **True Name** (`true_name`) | Lore Master | new | Grim, Eerie | Wick holds up an unrolled scroll showing one sigil (a symbol, never letters) toward a huge horned shadow at the frame edge, which shrinks back. | Stern | Unrolled scroll |
+| **Still Water** (`still_water`) | Composure | new | Calm | Wick sits perfectly still on one stepping stone in flat water, a tea bowl balanced on its head, no ripple anywhere. | Flat line, eyes closed | Tea bowl on its head |
+| **Judgement Day** (`judgement_day`) | Faith | new | Grim, Heroic | Wick raises a tall crozier staff overhead and a single shaft of light spears down from above onto the ground in front of it. | Stern glare | Crozier staff |
+| **Foreseen** (`foreseen`) | Conscience | new | Tense, Calm | Wick stands at a signpost at a fork; one arrow is crossed out, and Wick glances back over its shoulder toward it before taking the other road. | Thoughtful | Two-arrow signpost (no text) |
+| **On My Mark** (`on_my_mark`) | Authority | new | Heroic | Wick leans forward pointing hard with one mitten, a whistle at its screen, cape snapping; motion lines run the way it points. | Shouting | Whistle |
