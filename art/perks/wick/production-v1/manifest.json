@@ -948,6 +948,29 @@
       },
       "batch": "E",
       "source_sha256": "dad10e19b4ab5f48322bdfc45b18b751e79c8aec7d0d8b0b3f8553b9fcfafce8"
+    },
+    {
+      "id": "double-meaning",
+      "data_id": "double_meaning",
+      "name": "Double Meaning",
+      "family": "perks",
+      "order": 42,
+      "mood": "Comic",
+      "action": "Wick sits sideways on a low ledge, winking at the viewer, as its single blank speech balloon forks into two tails pointing opposite ways.",
+      "screen": "Wink",
+      "prop": "Forked speech balloon",
+      "path": "art/perks/wick/production-v1/double-meaning.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/double-meaning.png",
+        "128": "art/perks/wick/production-v1/exports/128/double-meaning.png",
+        "64": "art/perks/wick/production-v1/exports/64/double-meaning.png",
+        "56": "art/perks/wick/production-v1/exports/56/double-meaning.png",
+        "48": "art/perks/wick/production-v1/exports/48/double-meaning.png",
+        "44": "art/perks/wick/production-v1/exports/44/double-meaning.png",
+        "40": "art/perks/wick/production-v1/exports/40/double-meaning.png"
+      },
+      "batch": "E",
+      "source_sha256": "e00a3ea03bbb03b635654a1962c9dc8992cd58c53496ee220b17d0475f322c40"
     }
   ]
 }

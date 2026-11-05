@@ -122,11 +122,12 @@
     "lay-down-arms",
     "soulmate",
     "rally-cry",
-    "sweet-talker"
+    "sweet-talker",
+    "double-meaning"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 43
+    "perks": 44
   },
   "revision_rounds": {
     "field-surgeon": 3,

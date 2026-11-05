@@ -4259,6 +4259,30 @@
         "44": "art/perks/wick/production-v1/exports/44/sweet-talker.png",
         "40": "art/perks/wick/production-v1/exports/40/sweet-talker.png"
       }
+    },
+    "double-meaning": {
+      "label": "Wick — Double Meaning",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/double-meaning.png",
+      "sha256": "1bd7e0fdc30f4314fcc62ccce84daf07ee6c60bee32d29f93c8081a36ac959e0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "double_meaning",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/double-meaning.png",
+        "128": "art/perks/wick/production-v1/exports/128/double-meaning.png",
+        "64": "art/perks/wick/production-v1/exports/64/double-meaning.png",
+        "56": "art/perks/wick/production-v1/exports/56/double-meaning.png",
+        "48": "art/perks/wick/production-v1/exports/48/double-meaning.png",
+        "44": "art/perks/wick/production-v1/exports/44/double-meaning.png",
+        "40": "art/perks/wick/production-v1/exports/40/double-meaning.png"
+      }
     }
   },
   "illustrations": {
