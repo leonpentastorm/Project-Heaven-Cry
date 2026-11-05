@@ -4355,6 +4355,30 @@
         "44": "art/perks/wick/production-v1/exports/44/old-tongue.png",
         "40": "art/perks/wick/production-v1/exports/40/old-tongue.png"
       }
+    },
+    "rite-in-the-field": {
+      "label": "Wick — Rite in the Field",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/rite-in-the-field.png",
+      "sha256": "b0cc974c9e15790c1d1cfae0a5fed26c845eff2e84a03a7b890e970def12c597",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "rite_in_the_field",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/rite-in-the-field.png",
+        "128": "art/perks/wick/production-v1/exports/128/rite-in-the-field.png",
+        "64": "art/perks/wick/production-v1/exports/64/rite-in-the-field.png",
+        "56": "art/perks/wick/production-v1/exports/56/rite-in-the-field.png",
+        "48": "art/perks/wick/production-v1/exports/48/rite-in-the-field.png",
+        "44": "art/perks/wick/production-v1/exports/44/rite-in-the-field.png",
+        "40": "art/perks/wick/production-v1/exports/40/rite-in-the-field.png"
+      }
     }
   },
   "illustrations": {

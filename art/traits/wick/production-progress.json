@@ -126,11 +126,12 @@
     "double-meaning",
     "heart-overload",
     "resonance",
-    "old-tongue"
+    "old-tongue",
+    "rite-in-the-field"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 47
+    "perks": 48
   },
   "revision_rounds": {
     "field-surgeon": 3,

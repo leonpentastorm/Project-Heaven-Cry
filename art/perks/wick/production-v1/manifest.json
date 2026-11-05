@@ -1040,6 +1040,29 @@
       },
       "batch": "E",
       "source_sha256": "821d5c490dac3168217d97f49a9ab0aaf0261a9519dc254514055b7f6e3c5937"
+    },
+    {
+      "id": "rite-in-the-field",
+      "data_id": "rite_in_the_field",
+      "name": "Rite in the Field",
+      "family": "perks",
+      "order": 46,
+      "mood": "Tense, Comic",
+      "action": "Wick lies flat in a shallow trench, hammering a carved ward stake into the dirt with its fist as streaks fly overhead.",
+      "screen": "Hurried, sweat drop",
+      "prop": "Ward stake",
+      "path": "art/perks/wick/production-v1/rite-in-the-field.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/rite-in-the-field.png",
+        "128": "art/perks/wick/production-v1/exports/128/rite-in-the-field.png",
+        "64": "art/perks/wick/production-v1/exports/64/rite-in-the-field.png",
+        "56": "art/perks/wick/production-v1/exports/56/rite-in-the-field.png",
+        "48": "art/perks/wick/production-v1/exports/48/rite-in-the-field.png",
+        "44": "art/perks/wick/production-v1/exports/44/rite-in-the-field.png",
+        "40": "art/perks/wick/production-v1/exports/40/rite-in-the-field.png"
+      },
+      "batch": "E",
+      "source_sha256": "46eed940b4a0bb85633f5c99361a168006404ba9d0fcb77b2c95d6677ed3e3de"
     }
   ]
 }
