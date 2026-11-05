@@ -1,0 +1,62 @@
+{
+  "collection": "wick-test-set-1-revisions",
+  "version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "brief": "art/briefs/wick-production-icons.md",
+  "workflow": "Leon requested seven fixes first, then the full run with each new icon pushed and shown immediately.",
+  "icons": [
+    {
+      "id": "field-surgeon",
+      "data_id": "field_surgeon",
+      "name": "Field Surgeon",
+      "family": "perks",
+      "order": 60,
+      "mood": "Tender, Comic",
+      "action": "Wick kneels and tightens a big wrench on the knee of a bandaged leg entering frame from the side; nothing else of the patient shows.",
+      "screen": "Concentrating, tongue out",
+      "prop": "Wrench",
+      "path": "art/traits/wick/test-set-1/revisions/round-3/field-surgeon.png",
+      "exports": {
+        "256": "art/traits/wick/test-set-1/revisions/round-3/exports/256/field-surgeon.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-3/exports/128/field-surgeon.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-3/exports/64/field-surgeon.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-3/exports/56/field-surgeon.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-3/exports/48/field-surgeon.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-3/exports/44/field-surgeon.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-3/exports/40/field-surgeon.png"
+      },
+      "batch": "revisions",
+      "source_sha256": "0283708decadc6570e3b3a57fb03289101ee6cdde46cd01077ad3870f61c7b7b",
+      "previous_path": "art/traits/wick/test-set-1/field-surgeon.png",
+      "revision": 3,
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/field-surgeon.png"
+    },
+    {
+      "id": "factory-made",
+      "data_id": "factory_made",
+      "name": "Factory Made",
+      "family": "traits",
+      "order": 29,
+      "mood": "Tender, Grim",
+      "action": "Wick sits on a plain unmarked crate, screwing its own arm back onto its shoulder with an oversized screwdriver",
+      "screen": "Small determined face",
+      "prop": "Screwdriver (oversized)",
+      "path": "art/traits/wick/test-set-1/revisions/round-3/factory-made.png",
+      "exports": {
+        "256": "art/traits/wick/test-set-1/revisions/round-3/exports/256/factory-made.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-3/exports/128/factory-made.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-3/exports/64/factory-made.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-3/exports/56/factory-made.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-3/exports/48/factory-made.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-3/exports/44/factory-made.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-3/exports/40/factory-made.png"
+      },
+      "batch": "revisions",
+      "source_sha256": "a669ca9b01627685b2b8aa8cd01fe2048c31b893f1809a7e27a80bf939d83c3f",
+      "previous_path": "art/traits/wick/test-set-1/factory-made.png",
+      "revision": 3,
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/factory-made.png"
+    }
+  ]
+}

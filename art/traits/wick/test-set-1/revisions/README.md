@@ -35,3 +35,5 @@ Reviewed by Claude for Leon on the 128 px and actual 44 px sheets. Leon can over
 | Field Surgeon | Revise | The bandaged leg stands upright beside Wick and reads as a sword (a knife at 44 px). Lay the leg horizontally across the bottom of the frame with the boot clearly drawn, Wick kneeling over it with the wrench. |
 
 Keep `production_approved: false` until Leon signs off. New icons can continue in parallel, as agreed.
+
+Follow-up files for the two remaining corrections arrive in [`round-3/`](round-3/README.md). The round-2 files above are retained for comparison; catalog entries select each latest delivered version.

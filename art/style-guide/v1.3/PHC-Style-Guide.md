@@ -295,6 +295,12 @@ Default standalone master: 1024 × 1024 transparent PNG, no baked checkerboard, 
 
 Check at the actual target size on both light and dark UI backgrounds. Face pixels and lantern must not disappear; shadows must not turn the entire body into one blob. A 64 px version may need a distinct simplified drawing, not just a smaller copy.
 
+## Wick's modes
+
+- **Flat white ink:** trait and perk icons only (sections 11–14), plus the welcome mark Leon chose as the app icon (`art/mascot/wick-welcome.png`).
+- **Fully 3D, rendered:** the Narrator's avatar, wherever the Narrator appears (AI or human). Brief: `art/briefs/wick-narrator-3d.md`. Same construction and anchors (section 09), with the painted materials: ivory ceramic, oxide-red capelet, brass, warm screen and lantern.
+- **Painted:** promotional and larger mascot art, below.
+
 ## Larger mascot art
 Promotional paintings can use the full Heavenprint brushwork and environments. Retain the chibi construction and pixel screen. Do not make Wick photoreal to match a realistic scene, or convert the entire scene into flat pixel art because Wick has a screen.
 

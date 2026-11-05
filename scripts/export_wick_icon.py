@@ -107,7 +107,8 @@ def export(args):
     job = next(j for j in queue if j['id'] == args.id)
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())
     family = job['family']
-    folder = ROOT / ('art/traits/wick/test-set-1/revisions' if args.revision
+    revision_folder = 'art/traits/wick/test-set-1/revisions' + (f'/round-{args.round}' if args.round > 2 else '')
+    folder = ROOT / (revision_folder if args.revision
                      else f'art/{family}/wick/production-v1')
     path = folder / f'{job["id"]}.png'
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -129,8 +130,11 @@ def export(args):
              'data_id': job['data_id'], 'status': 'review-candidate', 'production_approved': False,
              'batch': 'revisions' if args.revision else job['batch'], 'exports': exports}
     if args.revision:
-        asset['revision'] = 2
+        asset['revision'] = args.round
         asset['previous_path'] = previous.get('previous_path', previous['path'])
+        if args.round > 2:
+            asset['previous_revision_path'] = (previous.get('previous_revision_path')
+                if previous['path'] == relative(path) else previous['path'])
     catalog[family][job['id']] = asset
     dump(ROOT / 'art/catalog.json', catalog)
     manifest_path = folder / 'manifest.json'
@@ -143,11 +147,14 @@ def export(args):
     entry.update(path=relative(path), exports=exports, batch=asset['batch'], source_sha256=sha(args.source))
     if args.revision:
         entry['previous_path'] = asset['previous_path']
+        entry['revision'] = args.round
+        if 'previous_revision_path' in asset:
+            entry['previous_revision_path'] = asset['previous_revision_path']
     manifest['icons'] = [i for i in manifest['icons'] if i['id'] != job['id']] + [entry]
     manifest['icons'].sort(key=lambda x: (x['family'], x['order']))
     dump(manifest_path, manifest)
     batch_items = [i for i in manifest['icons'] if i['batch'] == asset['batch']]
-    review_sheets(folder, batch_items, 'Revisions round 2' if args.revision else f'Batch {job["batch"]}')
+    review_sheets(folder, batch_items, f'Revisions round {args.round}' if args.revision else f'Batch {job["batch"]}')
     preview = folder / 'previews/latest.png'
     bg = Image.new('RGBA', im.size, '#10151F')
     bg.alpha_composite(im)
@@ -160,6 +167,8 @@ def export(args):
     key = 'revisions_delivered' if args.revision else 'new_icons_delivered'
     if job['id'] not in progress[key]:
         progress[key].append(job['id'])
+    if args.revision:
+        progress.setdefault('revision_rounds', {})[job['id']] = args.round
     progress['catalog_coverage'] = {family: len(catalog[family]) for family in ('traits', 'perks')}
     dump(PROGRESS, progress)
     update_checksums()
@@ -173,4 +182,5 @@ if __name__ == '__main__':
     parser.add_argument('--id', required=True)
     parser.add_argument('--queue', type=Path, required=True)
     parser.add_argument('--revision', action='store_true')
+    parser.add_argument('--round', type=int, default=2, help='Revision round; later rounds preserve earlier files.')
     export(parser.parse_args())
