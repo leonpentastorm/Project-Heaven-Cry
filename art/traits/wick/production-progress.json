@@ -120,11 +120,12 @@
     "crowd-pleaser",
     "shared-breath",
     "lay-down-arms",
-    "soulmate"
+    "soulmate",
+    "rally-cry"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 41
+    "perks": 42
   },
   "revision_rounds": {
     "field-surgeon": 3,

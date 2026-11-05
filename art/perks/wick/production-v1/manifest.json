@@ -902,6 +902,29 @@
       },
       "batch": "E",
       "source_sha256": "3d5f66f4c2893a549d2cced3dd735488b996e5205a970b727f1f182c08add531"
+    },
+    {
+      "id": "rally-cry",
+      "data_id": "rally_cry",
+      "name": "Rally Cry",
+      "family": "perks",
+      "order": 40,
+      "mood": "Heroic, Grim",
+      "action": "In a deep lunge, Wick drives a torn, blank banner pole into the ground with both mittens, mouth wide in a shout.",
+      "screen": "Shouting",
+      "prop": "Torn banner",
+      "path": "art/perks/wick/production-v1/rally-cry.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/rally-cry.png",
+        "128": "art/perks/wick/production-v1/exports/128/rally-cry.png",
+        "64": "art/perks/wick/production-v1/exports/64/rally-cry.png",
+        "56": "art/perks/wick/production-v1/exports/56/rally-cry.png",
+        "48": "art/perks/wick/production-v1/exports/48/rally-cry.png",
+        "44": "art/perks/wick/production-v1/exports/44/rally-cry.png",
+        "40": "art/perks/wick/production-v1/exports/40/rally-cry.png"
+      },
+      "batch": "E",
+      "source_sha256": "d47c86cc92d87f4b8bdebeeb3bb10a1974ff762d1fcb44129c820e525ff52350"
     }
   ]
 }
