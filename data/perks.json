@@ -1,0 +1,5436 @@
+{
+  "$schema_version": "1.0",
+  "kind": "perks",
+  "source": "EPCCG: Perk Edition, Revision 2 (+ PHC Core Rules v1.0 for AP rules)",
+  "rules": {
+    "acquired": "Mastery 1 (3 pts): one of the skill's two perks at Tier I. Mastery 3 (7 pts): upgrade it to Tier II or take the other at Tier I. Mastered (10 pts): both at Tier II. Tier II replaces Tier I effects.",
+    "achieved": "Mastery 1 in every listed skill plus the deed. Narrator grants; engine checks skills and records the deed.",
+    "ultimate": "Granted automatically when both named Achieved perks are held.",
+    "ap_ceiling": {
+      "turn_max": 9,
+      "turn_min": 2,
+      "perk_gain_max_per_turn": 3
+    }
+  },
+  "items": [
+    {
+      "id": "bulwark",
+      "name": "Bulwark",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "durability"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "durability",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: allies directly behind you, in line with the attacker, take 25% less damage from ranged attacks. II: 50% less, covering two tiles behind you.",
+      "effects": [
+        {
+          "op": "damage_reduction",
+          "type": "ranged",
+          "value": 0.25,
+          "target": "ally",
+          "context": "ally within 1 tile directly behind you, in line with the attacker"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "durability",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "allies directly behind you, in line with the attacker, take 25% less damage from ranged attacks.",
+          "effects": [
+            {
+              "op": "damage_reduction",
+              "type": "ranged",
+              "value": 0.25,
+              "target": "ally",
+              "context": "ally within 1 tile directly behind you, in line with the attacker"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "durability",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "50% less, covering two tiles behind you.",
+          "effects": [
+            {
+              "op": "damage_reduction",
+              "type": "ranged",
+              "value": 0.5,
+              "target": "ally",
+              "context": "ally within 2 tiles directly behind you, in line with the attacker"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "positioning"
+      ]
+    },
+    {
+      "id": "shrug_it_off",
+      "name": "Shrug It Off",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "durability"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "durability",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, remove one Body Debuff from yourself. II: 1 AP, and gain a shield worth 10% of your max HP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "shrug_it_off",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "cleanse",
+          "family": "body",
+          "count": 1,
+          "target": "self"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "durability",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, remove one Body Debuff from yourself.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "shrug_it_off",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "cleanse",
+              "family": "body",
+              "count": 1,
+              "target": "self"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "durability",
+              "min": 7
+            }
+          ],
+          "ap_cost": 1,
+          "text": "1 AP, and gain a shield worth 10% of your max HP.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "shrug_it_off",
+              "ap": 1,
+              "uses": "at_will"
+            },
+            {
+              "op": "cleanse",
+              "family": "body",
+              "count": 1,
+              "target": "self"
+            },
+            {
+              "op": "shield",
+              "value": 0.1,
+              "basis": "hp_max",
+              "target": "self"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "cleanse",
+        "self"
+      ]
+    },
+    {
+      "id": "used_to_the_pain",
+      "name": "Used to the Pain",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: the first time you're hit each combat, if it took less than 20% of your max HP, +2 AP next turn; if more, −1 AP. II: the threshold becomes 30%, the gain +3 AP, and the penalty is gone.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "first_hit_taken_in_combat and damage < 0.20*hp_max",
+          "duration": "next_turn"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1,
+          "when": "first_hit_taken_in_combat and damage >= 0.20*hp_max",
+          "duration": "next_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "the first time you're hit each combat, if it took less than 20% of your max HP, +2 AP next turn; if more, −1 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "first_hit_taken_in_combat and damage < 0.20*hp_max",
+              "duration": "next_turn"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -1,
+              "when": "first_hit_taken_in_combat and damage >= 0.20*hp_max",
+              "duration": "next_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "the threshold becomes 30%, the gain +3 AP, and the penalty is gone.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "first_hit_taken_in_combat and damage < 0.30*hp_max",
+              "duration": "next_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap"
+      ]
+    },
+    {
+      "id": "scar_tissue",
+      "name": "Scar Tissue",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: each wound you take in a combat adds 5% Elemental Damage reduction for the rest of it, up to 25%. II: up to 40%, and the same stacks apply to limb damage.",
+      "effects": [
+        {
+          "op": "damage_reduction",
+          "type": "elemental",
+          "value": 0.05,
+          "per": "wound_taken_this_combat",
+          "max": 0.25,
+          "duration": "combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "each wound you take in a combat adds 5% Elemental Damage reduction for the rest of it, up to 25%.",
+          "effects": [
+            {
+              "op": "damage_reduction",
+              "type": "elemental",
+              "value": 0.05,
+              "per": "wound_taken_this_combat",
+              "max": 0.25,
+              "duration": "combat"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "up to 40%, and the same stacks apply to limb damage.",
+          "effects": [
+            {
+              "op": "damage_reduction",
+              "type": "elemental",
+              "value": 0.05,
+              "per": "wound_taken_this_combat",
+              "max": 0.4,
+              "duration": "combat"
+            },
+            {
+              "op": "damage_reduction",
+              "type": "limb",
+              "value": 0.05,
+              "per": "wound_taken_this_combat",
+              "max": 0.4,
+              "duration": "combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "stacking"
+      ]
+    },
+    {
+      "id": "wind_on_the_skin",
+      "name": "Wind on the Skin",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when combat starts, learn where one hidden enemy within your Vision Range is. II: every hidden enemy within your Vision Range.",
+      "effects": [
+        {
+          "op": "reveal",
+          "what": "hidden_enemy",
+          "count": 1,
+          "range": "vision_range",
+          "when": "combat_start"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when combat starts, learn where one hidden enemy within your Vision Range is.",
+          "effects": [
+            {
+              "op": "reveal",
+              "what": "hidden_enemy",
+              "count": 1,
+              "range": "vision_range",
+              "when": "combat_start"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "every hidden enemy within your Vision Range.",
+          "effects": [
+            {
+              "op": "reveal",
+              "what": "hidden_enemy",
+              "count": "all",
+              "range": "vision_range",
+              "when": "combat_start"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "detection"
+      ]
+    },
+    {
+      "id": "bedside_manner",
+      "name": "Bedside Manner",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: touch someone during a conversation (a handshake, a hand on the shoulder) and learn whether their next statement is a lie. II: also learn whether they're afraid, and of whom.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "After the player touches an NPC in conversation, tell them truthfully whether the NPC's next statement is a lie."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "touch someone during a conversation (a handshake, a hand on the shoulder) and learn whether their next statement is a lie.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "After the player touches an NPC in conversation, tell them truthfully whether the NPC's next statement is a lie."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "also learn whether they're afraid, and of whom.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, and also tell them whether the NPC is afraid, and of whom."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social",
+        "truth"
+      ]
+    },
+    {
+      "id": "breaching_strike",
+      "name": "Breaching Strike",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "raw_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "raw_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 3,
+      "uses": "at_will",
+      "text": "I: 3 AP, a melee hit that ignores cover and knocks the target back 1 tile. II: 2 tiles; a target slammed into a wall takes +50% damage.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "breaching_strike",
+          "ap": 3,
+          "uses": "at_will"
+        },
+        {
+          "op": "ignore_cover",
+          "context": "breaching_strike"
+        },
+        {
+          "op": "knockback",
+          "tiles": 1,
+          "target": "target"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "raw_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": 3,
+          "text": "3 AP, a melee hit that ignores cover and knocks the target back 1 tile.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "breaching_strike",
+              "ap": 3,
+              "uses": "at_will"
+            },
+            {
+              "op": "ignore_cover",
+              "context": "breaching_strike"
+            },
+            {
+              "op": "knockback",
+              "tiles": 1,
+              "target": "target"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "raw_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": 3,
+          "text": "2 tiles; a target slammed into a wall takes +50% damage.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "breaching_strike",
+              "ap": 3,
+              "uses": "at_will"
+            },
+            {
+              "op": "ignore_cover",
+              "context": "breaching_strike"
+            },
+            {
+              "op": "knockback",
+              "tiles": 2,
+              "target": "target"
+            },
+            {
+              "op": "damage_mult",
+              "value": 1.5,
+              "context": "breaching_strike target collides with a wall"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "melee",
+        "forced_movement"
+      ]
+    },
+    {
+      "id": "grapple",
+      "name": "Grapple",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "raw_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "raw_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, grab an adjacent enemy. It can't move, and attacks anyone but you at −2. II: attacks aimed at you have a 50% chance to hit your captive instead.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "grapple",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "condition",
+          "condition": "grappled",
+          "target": "target",
+          "when": "grapple"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "raw_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, grab an adjacent enemy. It can't move, and attacks anyone but you at −2.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "grapple",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "grappled",
+              "target": "target",
+              "when": "grapple"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "raw_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": 2,
+          "text": "attacks aimed at you have a 50% chance to hit your captive instead.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "grapple",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "grappled",
+              "target": "target",
+              "when": "grapple"
+            },
+            {
+              "op": "redirect_attack",
+              "chance": 0.5,
+              "to": "grappled_captive",
+              "context": "attacks aimed at you while grappling"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "melee",
+        "control"
+      ]
+    },
+    {
+      "id": "into_the_dark",
+      "name": "Into the Dark",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "guts"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "guts",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: your first move into an unexplored room or area costs 0 AP. II: +1 AP on your first turn inside a place that causes Fear.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "move",
+          "value": "zero",
+          "when": "first move into an unexplored room or area"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "your first move into an unexplored room or area costs 0 AP.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "move",
+              "value": "zero",
+              "when": "first move into an unexplored room or area"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+1 AP on your first turn inside a place that causes Fear.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "move",
+              "value": "zero",
+              "when": "first move into an unexplored room or area"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 1,
+              "when": "first turn inside a Fear-causing place"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "exploration",
+        "ap"
+      ]
+    },
+    {
+      "id": "iron_stomach",
+      "name": "Iron Stomach",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "guts"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "guts",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Nausea and Fear last at most 1 round on you. II: you're immune to both.",
+      "effects": [
+        {
+          "op": "duration_cap",
+          "conditions": [
+            "nausea",
+            "fear"
+          ],
+          "rounds": 1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Nausea and Fear last at most 1 round on you.",
+          "effects": [
+            {
+              "op": "duration_cap",
+              "conditions": [
+                "nausea",
+                "fear"
+              ],
+              "rounds": 1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "you're immune to both.",
+          "effects": [
+            {
+              "op": "immunity",
+              "conditions": [
+                "nausea",
+                "fear"
+              ]
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "resistance"
+      ]
+    },
+    {
+      "id": "grim_reaper",
+      "name": "Grim Reaper",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "intimidation"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: −1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +3 AP, once per turn. II: no first-turn penalty, and every enemy who sees the kill saves against Fear.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1,
+          "when": "first turn of combat"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 3,
+          "when": "you KO or kill an enemy on your turn",
+          "limit": "once_per_turn",
+          "duration": "this_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "−1 AP on your first turn of each combat. Each time you KO or kill an enemy on your turn, +3 AP, once per turn.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -1,
+              "when": "first turn of combat"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you KO or kill an enemy on your turn",
+              "limit": "once_per_turn",
+              "duration": "this_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "no first-turn penalty, and every enemy who sees the kill saves against Fear.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you KO or kill an enemy on your turn",
+              "limit": "once_per_turn",
+              "duration": "this_turn"
+            },
+            {
+              "op": "condition",
+              "condition": "fear",
+              "target": "enemies_with_line_of_sight",
+              "when": "kill",
+              "save": "heart"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "fear"
+      ]
+    },
+    {
+      "id": "bone_talk",
+      "name": "Bone Talk",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "intimidation"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: threaten someone with one specific, physical detail and they must answer one question or take a Body Debuff (Shaken). II: works on a group; the leader answers for all of them.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "If the threat names one specific physical detail, the NPC answers one question truthfully or takes Shaken."
+        },
+        {
+          "op": "condition",
+          "condition": "shaken",
+          "target": "target",
+          "when": "target refuses to answer"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "threaten someone with one specific, physical detail and they must answer one question or take a Body Debuff (Shaken).",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "If the threat names one specific physical detail, the NPC answers one question truthfully or takes Shaken."
+            },
+            {
+              "op": "condition",
+              "condition": "shaken",
+              "target": "target",
+              "when": "target refuses to answer"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "works on a group; the leader answers for all of them.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, against a group; the leader answers for all of them."
+            },
+            {
+              "op": "condition",
+              "condition": "shaken",
+              "target": "group",
+              "when": "leader refuses to answer"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "interrogation"
+      ]
+    },
+    {
+      "id": "wall_run",
+      "name": "Wall Run",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "athletics",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: as part of a move, run along a wall or across a gap of up to 2 tiles. II: up to 4 tiles, and you can attack mid-run.",
+      "effects": [
+        {
+          "op": "movement_mode",
+          "mode": "wall_run",
+          "max_tiles": 2
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "as part of a move, run along a wall or across a gap of up to 2 tiles.",
+          "effects": [
+            {
+              "op": "movement_mode",
+              "mode": "wall_run",
+              "max_tiles": 2
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "up to 4 tiles, and you can attack mid-run.",
+          "effects": [
+            {
+              "op": "movement_mode",
+              "mode": "wall_run",
+              "max_tiles": 4,
+              "attack_mid_move": true
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "mobility"
+      ]
+    },
+    {
+      "id": "roll_with_it",
+      "name": "Roll With It",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "athletics",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: after a successful dodge, move 1 tile for free. II: 2 tiles, and your next attack that turn gets +10% Critical Damage.",
+      "effects": [
+        {
+          "op": "free_move",
+          "tiles": 1,
+          "when": "successful dodge"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "after a successful dodge, move 1 tile for free.",
+          "effects": [
+            {
+              "op": "free_move",
+              "tiles": 1,
+              "when": "successful dodge"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "2 tiles, and your next attack that turn gets +10% Critical Damage.",
+          "effects": [
+            {
+              "op": "free_move",
+              "tiles": 2,
+              "when": "successful dodge"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "crit_damage",
+              "value": 0.1,
+              "when": "next attack this turn after a successful dodge"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "mobility",
+        "dodge"
+      ]
+    },
+    {
+      "id": "origami_hands",
+      "name": "Origami Hands",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "dexterity"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, build an improvised tool or trap from scraps: a tripwire, a lockpick, a sling. II: 1 AP, and your traps deal +50% damage.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "improvise_tool",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "narrator",
+          "note": "Decide whether scraps are available and what the improvised item can do."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "dexterity",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, build an improvised tool or trap from scraps: a tripwire, a lockpick, a sling.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "improvise_tool",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "narrator",
+              "note": "Decide whether scraps are available and what the improvised item can do."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "dexterity",
+              "min": 7
+            }
+          ],
+          "ap_cost": 1,
+          "text": "1 AP, and your traps deal +50% damage.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "improvise_tool",
+              "ap": 1,
+              "uses": "at_will"
+            },
+            {
+              "op": "damage_mult",
+              "value": 1.5,
+              "context": "your traps"
+            },
+            {
+              "op": "narrator",
+              "note": "Decide whether scraps are available and what the improvised item can do."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": "recovered_name",
+      "tags": [
+        "crafting",
+        "traps"
+      ]
+    },
+    {
+      "id": "running_reload",
+      "name": "Running Reload",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "dexterity"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: reload as part of a move, once per turn. II: clear a jam as part of a move too.",
+      "effects": [
+        {
+          "op": "merge_action",
+          "action": "reload",
+          "into": "move",
+          "limit": "once_per_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "dexterity",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "reload as part of a move, once per turn.",
+          "effects": [
+            {
+              "op": "merge_action",
+              "action": "reload",
+              "into": "move",
+              "limit": "once_per_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "dexterity",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "clear a jam as part of a move too.",
+          "effects": [
+            {
+              "op": "merge_action",
+              "action": "reload",
+              "into": "move",
+              "limit": "once_per_turn"
+            },
+            {
+              "op": "merge_action",
+              "action": "clear_jam",
+              "into": "move",
+              "limit": "once_per_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "guns",
+        "ap"
+      ]
+    },
+    {
+      "id": "rounding_up",
+      "name": "Rounding Up",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: fractional AP rounds up, not down. II: once per combat, carry 1 unspent AP into your next turn.",
+      "effects": [
+        {
+          "op": "rounding",
+          "stat": "ap",
+          "mode": "up"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "fractional AP rounds up, not down.",
+          "effects": [
+            {
+              "op": "rounding",
+              "stat": "ap",
+              "mode": "up"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "once per combat, carry 1 unspent AP into your next turn.",
+          "effects": [
+            {
+              "op": "rounding",
+              "stat": "ap",
+              "mode": "up"
+            },
+            {
+              "op": "ap_carry",
+              "value": 1,
+              "uses": "per_combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap"
+      ]
+    },
+    {
+      "id": "catch",
+      "name": "Catch",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: once per round, catch a grenade or thrown weapon aimed at you or an adjacent ally, and throw it back for 1 AP. II: the throw back costs 0 AP.",
+      "effects": [
+        {
+          "op": "reaction",
+          "action": "catch_throwable",
+          "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+          "limit": "once_per_round"
+        },
+        {
+          "op": "grant_action",
+          "action": "throw_back",
+          "ap": 1,
+          "uses": "at_will"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "once per round, catch a grenade or thrown weapon aimed at you or an adjacent ally, and throw it back for 1 AP.",
+          "effects": [
+            {
+              "op": "reaction",
+              "action": "catch_throwable",
+              "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+              "limit": "once_per_round"
+            },
+            {
+              "op": "grant_action",
+              "action": "throw_back",
+              "ap": 1,
+              "uses": "at_will"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "the throw back costs 0 AP.",
+          "effects": [
+            {
+              "op": "reaction",
+              "action": "catch_throwable",
+              "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+              "limit": "once_per_round"
+            },
+            {
+              "op": "grant_action",
+              "action": "throw_back",
+              "ap": 0,
+              "uses": "at_will"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "reaction",
+        "grenades"
+      ]
+    },
+    {
+      "id": "sleight_of_hand",
+      "name": "Sleight of Hand",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "ingenuity"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, plant an item (a grenade, a tracker, evidence) on an adjacent target without being seen. II: 1 AP, and you can do it mid-conversation.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "plant_item",
+          "ap": 2,
+          "uses": "at_will"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "ingenuity",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, plant an item (a grenade, a tracker, evidence) on an adjacent target without being seen.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "plant_item",
+              "ap": 2,
+              "uses": "at_will"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "ingenuity",
+              "min": 7
+            }
+          ],
+          "ap_cost": 1,
+          "text": "1 AP, and you can do it mid-conversation.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "plant_item",
+              "ap": 1,
+              "uses": "at_will"
+            },
+            {
+              "op": "narrator",
+              "note": "Allow planting an item during a conversation scene."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "stealth",
+        "utility"
+      ]
+    },
+    {
+      "id": "shadow_step",
+      "name": "Shadow Step",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "ingenuity"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: moving from cover to cover while in stealth costs half the normal Movement. II: after an attack from stealth, roll Ingenuity to stay hidden.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "move",
+          "value": 0.5,
+          "when": "in stealth, moving cover to cover"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "ingenuity",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "moving from cover to cover while in stealth costs half the normal Movement.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "move",
+              "value": 0.5,
+              "when": "in stealth, moving cover to cover"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "ingenuity",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "after an attack from stealth, roll Ingenuity to stay hidden.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "move",
+              "value": 0.5,
+              "when": "in stealth, moving cover to cover"
+            },
+            {
+              "op": "grant_check",
+              "skill": "ingenuity",
+              "when": "after attacking from stealth",
+              "result": "stay hidden"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "stealth",
+        "mobility"
+      ]
+    },
+    {
+      "id": "jury_rig",
+      "name": "Jury-Rig",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "proficiency"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: a broken weapon or device works one more time before it fails for good. II: Field Repair works at double strength on vehicles and drones.",
+      "effects": [
+        {
+          "op": "extra_use",
+          "context": "broken weapon or device",
+          "value": 1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "a broken weapon or device works one more time before it fails for good.",
+          "effects": [
+            {
+              "op": "extra_use",
+              "context": "broken weapon or device",
+              "value": 1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "Field Repair works at double strength on vehicles and drones.",
+          "effects": [
+            {
+              "op": "extra_use",
+              "context": "broken weapon or device",
+              "value": 1
+            },
+            {
+              "op": "power_mult",
+              "action": "field_repair",
+              "value": 2,
+              "context": "vehicles and drones"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "tech",
+        "repair"
+      ]
+    },
+    {
+      "id": "hot_swap",
+      "name": "Hot-Swap",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "proficiency"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: swapping a weapon or a mod costs 0 AP, once per turn. II: twice per turn.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "swap_weapon_or_mod",
+          "value": "zero",
+          "limit": "once_per_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "swapping a weapon or a mod costs 0 AP, once per turn.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "swap_weapon_or_mod",
+              "value": "zero",
+              "limit": "once_per_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "twice per turn.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "swap_weapon_or_mod",
+              "value": "zero",
+              "limit": "twice_per_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "weapons"
+      ]
+    },
+    {
+      "id": "got_you_in_my_sight",
+      "name": "Got You in My Sight",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "vigilant"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "vigilant",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when you see an enemy enter stealth or leave your sight, +2 AP this round; when a sneak attack hits you, −2 AP. II: no penalty, and the squad always knows that enemy's last position.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "you see an enemy enter stealth or leave your sight",
+          "duration": "this_round"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2,
+          "when": "a sneak attack hits you"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when you see an enemy enter stealth or leave your sight, +2 AP this round; when a sneak attack hits you, −2 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "you see an enemy enter stealth or leave your sight",
+              "duration": "this_round"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -2,
+              "when": "a sneak attack hits you"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "no penalty, and the squad always knows that enemy's last position.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "you see an enemy enter stealth or leave your sight",
+              "duration": "this_round"
+            },
+            {
+              "op": "reveal",
+              "what": "last_known_position",
+              "target": "squad",
+              "context": "that enemy"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "detection"
+      ]
+    },
+    {
+      "id": "eyes_in_the_back",
+      "name": "Eyes in the Back",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "vigilant"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "vigilant",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: you can't be flanked. II: allies next to you can't be flanked either.",
+      "effects": [
+        {
+          "op": "immunity",
+          "conditions": [
+            "flanked"
+          ],
+          "target": "self"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "you can't be flanked.",
+          "effects": [
+            {
+              "op": "immunity",
+              "conditions": [
+                "flanked"
+              ],
+              "target": "self"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "allies next to you can't be flanked either.",
+          "effects": [
+            {
+              "op": "immunity",
+              "conditions": [
+                "flanked"
+              ],
+              "target": "self_and_adjacent_allies"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ]
+    },
+    {
+      "id": "hold_the_stroke",
+      "name": "Hold the Stroke",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "brain_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "brain_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: hold 1 extra stroke in your Sigil pool. II: 2 extra.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "sigil_strokes_max",
+          "value": 1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "hold 1 extra stroke in your Sigil pool.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "sigil_strokes_max",
+              "value": 1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "2 extra.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "sigil_strokes_max",
+              "value": 2
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil"
+      ]
+    },
+    {
+      "id": "parallel_thought",
+      "name": "Parallel Thought",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "brain_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "brain_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: while one of your Sigils is still active, your next Sigil costs 1 AP less. II: 2 AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "cast_sigil",
+          "value": -1,
+          "when": "another of your Sigils is still active",
+          "limit": "next_cast"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "while one of your Sigils is still active, your next Sigil costs 1 AP less.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "cast_sigil",
+              "value": -1,
+              "when": "another of your Sigils is still active",
+              "limit": "next_cast"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "2 AP less.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "cast_sigil",
+              "value": -2,
+              "when": "another of your Sigils is still active",
+              "limit": "next_cast"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil",
+        "ap"
+      ]
+    },
+    {
+      "id": "footnote",
+      "name": "Footnote",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_scene",
+      "text": "I: once per scene, cite a fact; allies who act on it get +1 on that roll. II: +2.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once per scene the player cites a fact; judge which ally rolls act on it."
+        },
+        {
+          "op": "skill_mod_tag",
+          "tag": "any",
+          "value": 1,
+          "target": "ally",
+          "when": "roll acts on the cited fact",
+          "uses": "per_scene"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "once per scene, cite a fact; allies who act on it get +1 on that roll.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Once per scene the player cites a fact; judge which ally rolls act on it."
+            },
+            {
+              "op": "skill_mod_tag",
+              "tag": "any",
+              "value": 1,
+              "target": "ally",
+              "when": "roll acts on the cited fact",
+              "uses": "per_scene"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Once per scene the player cites a fact; judge which ally rolls act on it."
+            },
+            {
+              "op": "skill_mod_tag",
+              "tag": "any",
+              "value": 2,
+              "target": "ally",
+              "when": "roll acts on the cited fact",
+              "uses": "per_scene"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "support",
+        "knowledge"
+      ]
+    },
+    {
+      "id": "lab_coat",
+      "name": "Lab Coat",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +3 on saves against chemicals, gases and drugs you've identified. II: 2 AP, neutralise one of them for the allies around you.",
+      "effects": [
+        {
+          "op": "save_mod",
+          "family": "any",
+          "value": 3,
+          "context": "chemicals, gases and drugs you've identified"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+3 on saves against chemicals, gases and drugs you've identified.",
+          "effects": [
+            {
+              "op": "save_mod",
+              "family": "any",
+              "value": 3,
+              "context": "chemicals, gases and drugs you've identified"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "2 AP, neutralise one of them for the allies around you.",
+          "effects": [
+            {
+              "op": "save_mod",
+              "family": "any",
+              "value": 3,
+              "context": "chemicals, gases and drugs you've identified"
+            },
+            {
+              "op": "grant_action",
+              "action": "neutralise_agent",
+              "ap": 2,
+              "uses": "at_will"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "resistance",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "overruled",
+      "name": "Overruled!",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +2 AP for as long as a Left Brain Debuff you inflicted lasts on an enemy; −2 AP while you carry one yourself. II: works with Right Brain Debuffs too, and your own penalty is halved.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "a Left Brain Debuff you inflicted is active on an enemy"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2,
+          "when": "you carry a Left Brain Debuff"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2 AP for as long as a Left Brain Debuff you inflicted lasts on an enemy; −2 AP while you carry one yourself.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "a Left Brain Debuff you inflicted is active on an enemy"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -2,
+              "when": "you carry a Left Brain Debuff"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "works with Right Brain Debuffs too, and your own penalty is halved.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "a Left or Right Brain Debuff you inflicted is active on an enemy"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -1,
+              "when": "you carry a Left or Right Brain Debuff"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "debuff"
+      ]
+    },
+    {
+      "id": "burden_of_proof",
+      "name": "Burden of Proof",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when an NPC accuses you or the squad, demand evidence. If they can't produce it, they lose the argument outright. II: everyone watching shifts one step toward your side.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when an NPC accuses you or the squad, demand evidence. If they can't produce it, they lose the argument outright.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "everyone watching shifts one step toward your side.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I; on a win, every onlooker shifts one attitude step toward the squad."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social"
+      ]
+    },
+    {
+      "id": "mirage",
+      "name": "Mirage",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "visualization"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Analysis check treat it as real for a round. II: two projections, lasting 2 rounds.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "mirage",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "spawn_illusion",
+          "count": 1,
+          "rounds": 1,
+          "disbelieve": "analysis"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Analysis check treat it as real for a round.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "mirage",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "spawn_illusion",
+              "count": 1,
+              "rounds": 1,
+              "disbelieve": "analysis"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 7
+            }
+          ],
+          "ap_cost": 2,
+          "text": "two projections, lasting 2 rounds.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "mirage",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "spawn_illusion",
+              "count": 2,
+              "rounds": 2,
+              "disbelieve": "analysis"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "illusion",
+        "control"
+      ]
+    },
+    {
+      "id": "blueprint",
+      "name": "Blueprint",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "visualization"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: sketch the ground before an assault; allies who saw the sketch get +1 Movement in the first round. II: and +1 AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "move",
+          "value": 1,
+          "target": "ally",
+          "when": "first round, ally saw the sketch"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "sketch the ground before an assault; allies who saw the sketch get +1 Movement in the first round.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "move",
+              "value": 1,
+              "target": "ally",
+              "when": "first round, ally saw the sketch"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "and +1 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "move",
+              "value": 1,
+              "target": "ally",
+              "when": "first round, ally saw the sketch"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 1,
+              "target": "ally",
+              "when": "first round, ally saw the sketch"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "support",
+        "planning"
+      ]
+    },
+    {
+      "id": "detectives_eye",
+      "name": "Detective's Eye",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: in any scene, the Narrator tells you one detail that's out of place. II: two details, and whether they're connected.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "In every scene, tell the player one detail that's out of place."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "in any scene, the Narrator tells you one detail that's out of place.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "In every scene, tell the player one detail that's out of place."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "two details, and whether they're connected.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "In every scene, tell the player two out-of-place details and whether they're connected."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": "recovered_name",
+      "tags": [
+        "investigation"
+      ]
+    },
+    {
+      "id": "pattern_lock",
+      "name": "Pattern Lock",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +2 Dodge against any attack you've already seen this combat. II: +4, and allies get +2.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "dodge",
+          "value": 2,
+          "when": "attack type already seen this combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2 Dodge against any attack you've already seen this combat.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "dodge",
+              "value": 2,
+              "when": "attack type already seen this combat"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+4, and allies get +2.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "dodge",
+              "value": 4,
+              "when": "attack type already seen this combat"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "dodge",
+              "value": 2,
+              "target": "ally",
+              "when": "attack type already seen this combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ]
+    },
+    {
+      "id": "talks_broke_down",
+      "name": "Talks Broke Down",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: in a fight that started because your squad won a dialogue check, +2 AP for the whole fight; in one started by a failed check, −2 AP. II: no penalty, and one enemy hesitates (−1 AP) in round 1.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "combat began after the squad won a dialogue check",
+          "duration": "combat"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2,
+          "when": "combat began after a failed dialogue check",
+          "duration": "combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "in a fight that started because your squad won a dialogue check, +2 AP for the whole fight; in one started by a failed check, −2 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "combat began after the squad won a dialogue check",
+              "duration": "combat"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -2,
+              "when": "combat began after a failed dialogue check",
+              "duration": "combat"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "no penalty, and one enemy hesitates (−1 AP) in round 1.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "combat began after the squad won a dialogue check",
+              "duration": "combat"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -1,
+              "target": "one_enemy",
+              "when": "round 1"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "social"
+      ]
+    },
+    {
+      "id": "crowd_pleaser",
+      "name": "Crowd Pleaser",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: talking to a crowd, make one roll for the whole crowd, at +2. II: you can turn the crowd against one named person.",
+      "effects": [
+        {
+          "op": "skill_mod",
+          "skill": "charisma",
+          "value": 2,
+          "when": "single roll addressing a crowd"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "talking to a crowd, make one roll for the whole crowd, at +2.",
+          "effects": [
+            {
+              "op": "skill_mod",
+              "skill": "charisma",
+              "value": 2,
+              "when": "single roll addressing a crowd"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "you can turn the crowd against one named person.",
+          "effects": [
+            {
+              "op": "skill_mod",
+              "skill": "charisma",
+              "value": 2,
+              "when": "single roll addressing a crowd"
+            },
+            {
+              "op": "narrator",
+              "note": "On success, the player may turn the crowd against one named person."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "crowd"
+      ]
+    },
+    {
+      "id": "shared_breath",
+      "name": "Shared Breath",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "empathy"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, link with an ally. The next Heart Debuff on either of you is split between you, each at half its duration. II: the link lasts the whole combat.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "shared_breath",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "debuff_split",
+          "family": "heart",
+          "count": 1,
+          "duration_mult": 0.5
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, link with an ally. The next Heart Debuff on either of you is split between you, each at half its duration.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "shared_breath",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "debuff_split",
+              "family": "heart",
+              "count": 1,
+              "duration_mult": 0.5
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 7
+            }
+          ],
+          "ap_cost": 2,
+          "text": "the link lasts the whole combat.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "shared_breath",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "debuff_split",
+              "family": "heart",
+              "count": "all",
+              "duration_mult": 0.5,
+              "duration": "combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support",
+        "heart"
+      ]
+    },
+    {
+      "id": "lay_down_arms",
+      "name": "Lay Down Arms",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "empathy"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, a humanoid enemy who can hear you saves against Heart or lowers its weapon for a round. II: up to three enemies at once.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lay_down_arms",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "condition",
+          "condition": "disarmed",
+          "target": "target",
+          "save": "heart",
+          "rounds": 1,
+          "filter": "humanoid, can hear you"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, a humanoid enemy who can hear you saves against Heart or lowers its weapon for a round.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "lay_down_arms",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "disarmed",
+              "target": "target",
+              "save": "heart",
+              "rounds": 1,
+              "filter": "humanoid, can hear you"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 7
+            }
+          ],
+          "ap_cost": 2,
+          "text": "up to three enemies at once.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "lay_down_arms",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "condition",
+              "condition": "disarmed",
+              "target": "up_to_3",
+              "save": "heart",
+              "rounds": 1,
+              "filter": "humanoid, can hear you"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "control",
+        "heart"
+      ]
+    },
+    {
+      "id": "soulmate",
+      "name": "Soulmate",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "camaraderie"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "camaraderie",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Bond with one teammate and absorb part of the damage they take: 5% at Mastery 1, 10% at Mastery 2, 15% at Mastery 3, 20% at Mastery 4. If they hold Soulmate too, you can tank for each other. II: bond with two teammates.",
+      "effects": [
+        {
+          "op": "damage_share",
+          "bonds": 1,
+          "value_by_mastery": {
+            "1": 0.05,
+            "2": 0.1,
+            "3": 0.15,
+            "4": 0.2
+          },
+          "mutual_if_both_hold": "soulmate"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Bond with one teammate and absorb part of the damage they take: 5% at Mastery 1, 10% at Mastery 2, 15% at Mastery 3, 20% at Mastery 4. If they hold Soulmate too, you can tank for each other.",
+          "effects": [
+            {
+              "op": "damage_share",
+              "bonds": 1,
+              "value_by_mastery": {
+                "1": 0.05,
+                "2": 0.1,
+                "3": 0.15,
+                "4": 0.2
+              },
+              "mutual_if_both_hold": "soulmate"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "bond with two teammates.",
+          "effects": [
+            {
+              "op": "damage_share",
+              "bonds": 2,
+              "value_by_mastery": {
+                "1": 0.05,
+                "2": 0.1,
+                "3": 0.15,
+                "4": 0.2
+              },
+              "mutual_if_both_hold": "soulmate"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "tank",
+        "bond"
+      ]
+    },
+    {
+      "id": "rally_cry",
+      "name": "Rally Cry",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "camaraderie"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "camaraderie",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when an ally drops to 0 HP, every other ally gets +1 AP on their next turn. II: +2 AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 1,
+          "target": "other_allies",
+          "when": "an ally drops to 0 HP",
+          "duration": "next_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when an ally drops to 0 HP, every other ally gets +1 AP on their next turn.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 1,
+              "target": "other_allies",
+              "when": "an ally drops to 0 HP",
+              "duration": "next_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "target": "other_allies",
+              "when": "an ally drops to 0 HP",
+              "duration": "next_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "support"
+      ]
+    },
+    {
+      "id": "sweet_talker",
+      "name": "Sweet Talker",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "implication"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: once you've charmed or flattered someone this scene (a Charisma or Implication success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings. II: +3 AP, and the sting is gone.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "you buff or debuff someone you charmed this scene"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2,
+          "when": "someone you charmed this scene debuffs you"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "once you've charmed or flattered someone this scene (a Charisma or Implication success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "you buff or debuff someone you charmed this scene"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -2,
+              "when": "someone you charmed this scene debuffs you"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+3 AP, and the sting is gone.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you buff or debuff someone you charmed this scene"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered_reworked",
+      "tags": [
+        "ap",
+        "social"
+      ]
+    },
+    {
+      "id": "double_meaning",
+      "name": "Double Meaning",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "implication"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: say one sentence that means one thing to the enemy and another to your squad. The squad gets +2 on the action it hinted at. II: the enemy acts on the false meaning.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Judge whether the sentence carries a hidden instruction; the hinted action gets +2 for the squad."
+        },
+        {
+          "op": "skill_mod_tag",
+          "tag": "any",
+          "value": 2,
+          "target": "squad",
+          "when": "the hinted action"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "say one sentence that means one thing to the enemy and another to your squad. The squad gets +2 on the action it hinted at.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Judge whether the sentence carries a hidden instruction; the hinted action gets +2 for the squad."
+            },
+            {
+              "op": "skill_mod_tag",
+              "tag": "any",
+              "value": 2,
+              "target": "squad",
+              "when": "the hinted action"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "the enemy acts on the false meaning.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, and the enemy acts on the false meaning."
+            },
+            {
+              "op": "skill_mod_tag",
+              "tag": "any",
+              "value": 2,
+              "target": "squad",
+              "when": "the hinted action"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "coordination"
+      ]
+    },
+    {
+      "id": "heart_overload",
+      "name": "Heart Overload",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "will_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "will_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: pay for an Outburst with HP instead of mana, at 2 HP per point of mana. II: 1 HP per point.",
+      "effects": [
+        {
+          "op": "alt_cost",
+          "action": "soul_cast",
+          "pay": "hp",
+          "rate": 2
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "will_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "pay for an Outburst with HP instead of mana, at 2 HP per point of mana.",
+          "effects": [
+            {
+              "op": "alt_cost",
+              "action": "soul_cast",
+              "pay": "hp",
+              "rate": 2
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "will_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "1 HP per point.",
+          "effects": [
+            {
+              "op": "alt_cost",
+              "action": "soul_cast",
+              "pay": "hp",
+              "rate": 1
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "sacrifice"
+      ]
+    },
+    {
+      "id": "resonance",
+      "name": "Resonance",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "will_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "will_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when an ally casts an Outburst within 3 tiles of you, your next Outburst costs 20% less mana. II: 40% less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "soul_cast",
+          "resource": "mp",
+          "value": -0.2,
+          "when": "an ally casts a Soul spell within 3 tiles",
+          "limit": "next_cast"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "will_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when an ally casts an Outburst within 3 tiles of you, your next Outburst costs 20% less mana.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "soul_cast",
+              "resource": "mp",
+              "value": -0.2,
+              "when": "an ally casts a Soul spell within 3 tiles",
+              "limit": "next_cast"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "will_power",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "40% less.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "soul_cast",
+              "resource": "mp",
+              "value": -0.4,
+              "when": "an ally casts a Soul spell within 3 tiles",
+              "limit": "next_cast"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "synergy"
+      ]
+    },
+    {
+      "id": "old_tongue",
+      "name": "Old Tongue",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: read any ancient or upper-realm script. II: speak it; any upper-realm being will parley with you once.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "The player can read any ancient or upper-realm script."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "read any ancient or upper-realm script.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "The player can read any ancient or upper-realm script."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "speak it; any upper-realm being will parley with you once.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "The player can read and speak upper-realm scripts; any upper-realm being will parley with them once."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "lore",
+        "language"
+      ]
+    },
+    {
+      "id": "rite_in_the_field",
+      "name": "Rite in the Field",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: wards and rituals cost 1 AP less in combat. II: 2 AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "ward_or_ritual",
+          "value": -1,
+          "when": "in combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "wards and rituals cost 1 AP less in combat.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "ward_or_ritual",
+              "value": -1,
+              "when": "in combat"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "2 AP less.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "action": "ward_or_ritual",
+              "value": -2,
+              "when": "in combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "ritual"
+      ]
+    },
+    {
+      "id": "you_get_used_to_it",
+      "name": "You Get Used to It",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: −1 AP when an ally takes a Brain Debuff; +3 AP when you heal or shield an ally against one. II: no penalty.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1,
+          "when": "an ally takes a Brain Debuff"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 3,
+          "when": "you heal or shield an ally against a Brain Debuff"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "−1 AP when an ally takes a Brain Debuff; +3 AP when you heal or shield an ally against one.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -1,
+              "when": "an ally takes a Brain Debuff"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you heal or shield an ally against a Brain Debuff"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "no penalty.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you heal or shield an ally against a Brain Debuff"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "support"
+      ]
+    },
+    {
+      "id": "flat_line",
+      "name": "Flat Line",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: when combat starts, pick one enemy. Your calm unnerves it: −1 to its attacks while it can see you. II: −2.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": -1,
+          "target": "one_chosen_enemy",
+          "when": "combat_start; while it can see you",
+          "duration": "combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "when combat starts, pick one enemy. Your calm unnerves it: −1 to its attacks while it can see you.",
+          "effects": [
+            {
+              "op": "attack_mod",
+              "value": -1,
+              "target": "one_chosen_enemy",
+              "when": "combat_start; while it can see you",
+              "duration": "combat"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "−2.",
+          "effects": [
+            {
+              "op": "attack_mod",
+              "value": -2,
+              "target": "one_chosen_enemy",
+              "when": "combat_start; while it can see you",
+              "duration": "combat"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "debuff"
+      ]
+    },
+    {
+      "id": "litany",
+      "name": "Litany",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "faith"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "faith",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "text": "I: 2 AP, a spoken prayer: allies within 3 tiles get +1 on saves until your next turn. II: +2.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "litany",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "save_mod",
+          "family": "all",
+          "value": 1,
+          "target": "allies_within_3",
+          "duration": "until_your_next_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "faith",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "2 AP, a spoken prayer: allies within 3 tiles get +1 on saves until your next turn.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "litany",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "save_mod",
+              "family": "all",
+              "value": 1,
+              "target": "allies_within_3",
+              "duration": "until_your_next_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "faith",
+              "min": 7
+            }
+          ],
+          "ap_cost": 2,
+          "text": "+2.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "litany",
+              "ap": 2,
+              "uses": "at_will"
+            },
+            {
+              "op": "save_mod",
+              "family": "all",
+              "value": 2,
+              "target": "allies_within_3",
+              "duration": "until_your_next_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support",
+        "faith"
+      ]
+    },
+    {
+      "id": "holy_ordnance",
+      "name": "Holy Ordnance",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "faith"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "faith",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 3,
+      "uses": "at_will",
+      "text": "I: 3 AP, bless an ally's magazine: it deals +20% damage to upper-realm and cursed beings. II: +40%, and two magazines at once.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "holy_ordnance",
+          "ap": 3,
+          "uses": "at_will"
+        },
+        {
+          "op": "damage_mult",
+          "value": 1.2,
+          "target": "ally_magazine",
+          "context": "vs upper-realm and cursed beings",
+          "count": 1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "faith",
+              "min": 3
+            }
+          ],
+          "ap_cost": 3,
+          "text": "3 AP, bless an ally's magazine: it deals +20% damage to upper-realm and cursed beings.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "holy_ordnance",
+              "ap": 3,
+              "uses": "at_will"
+            },
+            {
+              "op": "damage_mult",
+              "value": 1.2,
+              "target": "ally_magazine",
+              "context": "vs upper-realm and cursed beings",
+              "count": 1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "faith",
+              "min": 7
+            }
+          ],
+          "ap_cost": 3,
+          "text": "+40%, and two magazines at once.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "holy_ordnance",
+              "ap": 3,
+              "uses": "at_will"
+            },
+            {
+              "op": "damage_mult",
+              "value": 1.4,
+              "target": "ally_magazine",
+              "context": "vs upper-realm and cursed beings",
+              "count": 2
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support",
+        "faith",
+        "guns"
+      ]
+    },
+    {
+      "id": "red_line",
+      "name": "Red Line",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: name one line you won't cross. While you hold it, +1 on every Heart save. II: +2, and allies within 3 tiles get +1.",
+      "effects": [
+        {
+          "op": "save_mod",
+          "family": "heart",
+          "value": 1,
+          "when": "while your named line holds"
+        },
+        {
+          "op": "narrator",
+          "note": "Track the player's named line; if they cross it, the bonus ends."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "name one line you won't cross. While you hold it, +1 on every Heart save.",
+          "effects": [
+            {
+              "op": "save_mod",
+              "family": "heart",
+              "value": 1,
+              "when": "while your named line holds"
+            },
+            {
+              "op": "narrator",
+              "note": "Track the player's named line; if they cross it, the bonus ends."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2, and allies within 3 tiles get +1.",
+          "effects": [
+            {
+              "op": "save_mod",
+              "family": "heart",
+              "value": 2,
+              "when": "while your named line holds"
+            },
+            {
+              "op": "save_mod",
+              "family": "heart",
+              "value": 1,
+              "target": "allies_within_3",
+              "when": "while your named line holds"
+            },
+            {
+              "op": "narrator",
+              "note": "Track the player's named line; if they cross it, the bonus ends."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "resistance",
+        "morality"
+      ]
+    },
+    {
+      "id": "clean_hands",
+      "name": "Clean Hands",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +2 AP on your next turn after you spare an enemy or protect an innocent. II: +3 AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "when": "you spare an enemy or protect an innocent",
+          "duration": "next_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+2 AP on your next turn after you spare an enemy or protect an innocent.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 2,
+              "when": "you spare an enemy or protect an innocent",
+              "duration": "next_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "+3 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "you spare an enemy or protect an innocent",
+              "duration": "next_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "morality"
+      ]
+    },
+    {
+      "id": "outclassed",
+      "name": "Outclassed",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +3 AP if your squad gets the first kill and you helped damage that target; −2 AP if your squad takes the first casualty. II: no penalty, and whoever made the kill also gets +1 AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 3,
+          "when": "squad gets the first kill and you damaged that target",
+          "duration": "next_turn"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2,
+          "when": "squad takes the first casualty",
+          "duration": "next_turn"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+3 AP if your squad gets the first kill and you helped damage that target; −2 AP if your squad takes the first casualty.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "squad gets the first kill and you damaged that target",
+              "duration": "next_turn"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": -2,
+              "when": "squad takes the first casualty",
+              "duration": "next_turn"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "no penalty, and whoever made the kill also gets +1 AP.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 3,
+              "when": "squad gets the first kill and you damaged that target",
+              "duration": "next_turn"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 1,
+              "target": "killer",
+              "when": "squad gets the first kill",
+              "duration": "next_turn"
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "ap",
+        "command"
+      ]
+    },
+    {
+      "id": "real_power",
+      "name": "Real Power",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: in any organisation, you can tell who actually holds the power, whatever the titles say. II: and that person agrees to see you.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Tell the player who actually holds power in any organisation they're dealing with."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "in any organisation, you can tell who actually holds the power, whatever the titles say.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Tell the player who actually holds power in any organisation they're dealing with."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 7
+            }
+          ],
+          "ap_cost": null,
+          "text": "and that person agrees to see you.",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, and that person agrees to meet the player."
+            }
+          ],
+          "replaces_tier_I": true
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social",
+        "politics"
+      ]
+    },
+    {
+      "id": "charge",
+      "name": "Charge!",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "intimidation",
+        "athletics"
+      ],
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        },
+        {
+          "skill": "athletics",
+          "min": 3
+        },
+        {
+          "deed": "open a fight by charging the enemy line, and win it."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "open a fight by charging the enemy line, and win it.",
+      "text": "Once per turn, a charge of 3 or more tiles straight at an enemy costs no movement AP.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "move",
+          "value": "zero",
+          "when": "straight-line charge of 3+ tiles at an enemy",
+          "limit": "once_per_turn"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "mobility",
+        "melee"
+      ]
+    },
+    {
+      "id": "make_way",
+      "name": "Make Way",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "intimidation",
+        "charisma"
+      ],
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        },
+        {
+          "skill": "charisma",
+          "min": 3
+        },
+        {
+          "deed": "walk through a hostile crowd with no weapon drawn."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "walk through a hostile crowd with no weapon drawn.",
+      "text": "Moving past enemies never triggers their reactions, and crowds part for you.",
+      "effects": [
+        {
+          "op": "immunity",
+          "conditions": [
+            "opportunity_attack"
+          ],
+          "target": "self"
+        },
+        {
+          "op": "narrator",
+          "note": "Crowds part for this character."
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": "recovered",
+      "tags": [
+        "mobility",
+        "presence"
+      ]
+    },
+    {
+      "id": "just_the_repairman",
+      "name": "Just the Repairman",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "ingenuity",
+        "eloquence"
+      ],
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        },
+        {
+          "skill": "eloquence",
+          "min": 3
+        },
+        {
+          "deed": "talk your way past a guard who caught you somewhere you shouldn't be."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "talk your way past a guard who caught you somewhere you shouldn't be.",
+      "text": "When you're spotted sneaking inside an enemy's sight, 50% chance they take you for maintenance staff, as long as you're carrying a toolbox.",
+      "effects": [
+        {
+          "op": "chance",
+          "value": 0.5,
+          "when": "spotted while sneaking, carrying a toolbox",
+          "result": "observer treats you as maintenance staff"
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": "recovered",
+      "tags": [
+        "stealth",
+        "disguise"
+      ]
+    },
+    {
+      "id": "spoon_feed",
+      "name": "Spoon-Feed",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "brain_power",
+        "rumination",
+        "eloquence"
+      ],
+      "requires": [
+        {
+          "skill": "brain_power",
+          "min": 3
+        },
+        {
+          "skill": "rumination",
+          "min": 3
+        },
+        {
+          "skill": "eloquence",
+          "min": 3
+        },
+        {
+          "deed": "teach someone a Sigil."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "deed": "teach someone a Sigil.",
+      "text": "2 AP, explain an enemy's weakness so simply that every ally who hears it gets +2 on attacks against that enemy this round.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "spoon_feed",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "attack_mod",
+          "value": 2,
+          "target": "allies_who_hear",
+          "context": "vs the named enemy",
+          "duration": "this_round"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "support",
+        "sigil"
+      ]
+    },
+    {
+      "id": "cultured",
+      "name": "Cultured",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "lore_master",
+        "camaraderie"
+      ],
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        },
+        {
+          "skill": "camaraderie",
+          "min": 3
+        },
+        {
+          "deed": "win someone over with a story, a song or a painting."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "win someone over with a story, a song or a painting.",
+      "text": "+1 on Ingenuity and Charisma whenever the talk turns to art, history or holo-dramas: you blend in with anyone who loves them.",
+      "effects": [
+        {
+          "op": "skill_mod",
+          "skill": "ingenuity",
+          "value": 1,
+          "when": "talk turns to art, history or holo-dramas"
+        },
+        {
+          "op": "skill_mod",
+          "skill": "charisma",
+          "value": 1,
+          "when": "talk turns to art, history or holo-dramas"
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": "recovered",
+      "tags": [
+        "social"
+      ]
+    },
+    {
+      "id": "field_surgeon",
+      "name": "Field Surgeon",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "proficiency",
+        "camaraderie"
+      ],
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        },
+        {
+          "skill": "camaraderie",
+          "min": 3
+        },
+        {
+          "deed": "bring a squadmate back from below 10% HP."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "bring a squadmate back from below 10% HP.",
+      "text": "Field Repair heals living allies as well as machines, and your heals on robotic allies work at full power.",
+      "effects": [
+        {
+          "op": "extend_action",
+          "action": "field_repair",
+          "targets": [
+            "living",
+            "robotic"
+          ]
+        },
+        {
+          "op": "power_mult",
+          "action": "heal",
+          "value": 1,
+          "context": "robotic allies (removes any robot healing penalty)"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "healing",
+        "tech"
+      ]
+    },
+    {
+      "id": "dance_of_iron",
+      "name": "Dance of Iron",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "dexterity",
+        "athletics"
+      ],
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 3
+        },
+        {
+          "skill": "athletics",
+          "min": 3
+        },
+        {
+          "deed": "dodge three attacks in one round."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "dodge three attacks in one round.",
+      "text": "After each successful dodge, fire one shot at the attacker for 0 AP.",
+      "effects": [
+        {
+          "op": "free_attack",
+          "when": "successful dodge",
+          "target": "attacker",
+          "ap": 0,
+          "attack": "single_shot"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "guns",
+        "dodge"
+      ]
+    },
+    {
+      "id": "cold_read",
+      "name": "Cold Read",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "empathy",
+        "analysis"
+      ],
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 3
+        },
+        {
+          "skill": "analysis",
+          "min": 3
+        },
+        {
+          "deed": "close a case with a confession."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "close a case with a confession.",
+      "text": "One Analyze action on an NPC reveals what they want most.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "When the player Analyzes an NPC, also tell them what that NPC wants most."
+        }
+      ],
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "investigation",
+        "social"
+      ]
+    },
+    {
+      "id": "fire_sermon",
+      "name": "Fire Sermon",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "faith",
+        "eloquence"
+      ],
+      "requires": [
+        {
+          "skill": "faith",
+          "min": 3
+        },
+        {
+          "skill": "eloquence",
+          "min": 3
+        },
+        {
+          "deed": "convert an enemy mid-fight."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "at_will",
+      "deed": "convert an enemy mid-fight.",
+      "text": "While you preach (2 AP), your Blessings also leave enemies in range Shaken.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "preach",
+          "ap": 2,
+          "uses": "at_will"
+        },
+        {
+          "op": "condition",
+          "condition": "shaken",
+          "target": "enemies_in_blessing_range",
+          "when": "you grant a Blessing while preaching",
+          "save": "heart"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "faith",
+        "debuff"
+      ]
+    },
+    {
+      "id": "silent_partner",
+      "name": "Silent Partner",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "ingenuity",
+        "camaraderie"
+      ],
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        },
+        {
+          "skill": "camaraderie",
+          "min": 3
+        },
+        {
+          "deed": "get the whole squad through a guarded area unseen."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "get the whole squad through a guarded area unseen.",
+      "text": "An ally next to you shares your stealth.",
+      "effects": [
+        {
+          "op": "share_state",
+          "state": "stealth",
+          "target": "one_adjacent_ally"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "stealth",
+        "support"
+      ]
+    },
+    {
+      "id": "verse_of_war",
+      "name": "Verse of War",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "implication",
+        "will_power"
+      ],
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        },
+        {
+          "skill": "will_power",
+          "min": 3
+        },
+        {
+          "deed": "cast an Outburst that ends a fight, and say something worth remembering while you do it."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "cast an Outburst that ends a fight, and say something worth remembering while you do it.",
+      "text": "Outbursts cast while you speak in verse get +1 tile of range and +10% damage.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "soul_spell_range",
+          "value": 1,
+          "when": "player speaks in verse while casting"
+        },
+        {
+          "op": "damage_mult",
+          "value": 1.1,
+          "context": "Soul spells cast while speaking in verse"
+        },
+        {
+          "op": "narrator",
+          "note": "Judge whether the player is speaking in verse."
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "soul_magic"
+      ]
+    },
+    {
+      "id": "between_heartbeats",
+      "name": "Between Heartbeats",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "reaction_speed",
+        "composure"
+      ],
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        },
+        {
+          "skill": "composure",
+          "min": 3
+        },
+        {
+          "deed": "come through an ambush without being hit."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "deed": "come through an ambush without being hit.",
+      "text": "Once per combat, when an enemy starts an action in your sight, take a 2 AP action first.",
+      "effects": [
+        {
+          "op": "interrupt",
+          "ap": 2,
+          "trigger": "an enemy in your sight starts an action",
+          "uses": "per_combat"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "reaction",
+        "initiative"
+      ]
+    },
+    {
+      "id": "siege_engine",
+      "name": "Siege Engine",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "raw_power",
+        "durability"
+      ],
+      "requires": [
+        {
+          "skill": "raw_power",
+          "min": 3
+        },
+        {
+          "skill": "durability",
+          "min": 3
+        },
+        {
+          "deed": "break through a wall to win a fight."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "break through a wall to win a fight.",
+      "text": "Shove and Break cost 1 AP less, and nothing can knock you back.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "action": "shove",
+          "value": -1
+        },
+        {
+          "op": "cost_mod",
+          "action": "break",
+          "value": -1
+        },
+        {
+          "op": "immunity",
+          "conditions": [
+            "knockback"
+          ],
+          "target": "self"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "melee",
+        "terrain"
+      ]
+    },
+    {
+      "id": "dead_signal",
+      "name": "Dead Signal",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "proficiency",
+        "ingenuity"
+      ],
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        },
+        {
+          "skill": "ingenuity",
+          "min": 3
+        },
+        {
+          "deed": "shut down a security system without anyone noticing."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 1,
+      "uses": "at_will",
+      "deed": "shut down a security system without anyone noticing.",
+      "text": "While in stealth, disable one electronic device within 3 tiles for 1 AP, silently.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "disable_device",
+          "ap": 1,
+          "uses": "at_will",
+          "range": 3,
+          "requires_state": "stealth",
+          "silent": true
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "tech",
+        "stealth"
+      ]
+    },
+    {
+      "id": "twin_souls",
+      "name": "Twin Souls",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "will_power",
+        "lore_master"
+      ],
+      "requires": [
+        {
+          "skill": "will_power",
+          "min": 3
+        },
+        {
+          "skill": "lore_master",
+          "min": 3
+        },
+        {
+          "deed": "survive a Mana Short."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "deed": "survive a Mana Short.",
+      "text": "Once per session, ask your twin soul in the upper realm one question. Your mid-level Outbursts can draw on a third school.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once per session, answer one question as the player's twin soul in the upper realm."
+        },
+        {
+          "op": "stat_mod",
+          "stat": "soul_max_schools",
+          "value": 1,
+          "context": "mid-level Soul spells"
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "lore"
+      ]
+    },
+    {
+      "id": "the_voice",
+      "name": "The Voice",
+      "tier": "achieved",
+      "perk_type": null,
+      "skills": [
+        "authority",
+        "composure"
+      ],
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        },
+        {
+          "skill": "composure",
+          "min": 3
+        },
+        {
+          "deed": "stare down an enemy officer until they back off."
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_session",
+      "deed": "stare down an enemy officer until they back off.",
+      "text": "Once per session, give an order in combat; enemy rank-and-file who fail a Heart save obey it for one action.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "the_voice",
+          "ap": null,
+          "uses": "per_session"
+        },
+        {
+          "op": "condition",
+          "condition": "commanded",
+          "target": "enemy_rank_and_file",
+          "save": "heart",
+          "duration": "one_action"
+        }
+      ],
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "command",
+        "control"
+      ]
+    },
+    {
+      "id": "war_footing",
+      "name": "War Footing",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "charge"
+        },
+        {
+          "perk": "make_way"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "flavour": "The Hellraisers call it marching on the enemy's nerves.",
+      "text": "Your threats never backfire: a failed Intimidation check costs you nothing. Any enemy that ends its move in the 3×3 around you loses 2 AP immediately.",
+      "effects": [
+        {
+          "op": "negate_failure",
+          "skill": "intimidation"
+        },
+        {
+          "op": "aura",
+          "radius": 1,
+          "target": "enemies",
+          "when": "enemy ends its move in the aura",
+          "effect": {
+            "op": "stat_mod",
+            "stat": "ap",
+            "value": -2
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "presence",
+        "control"
+      ]
+    },
+    {
+      "id": "last_charge",
+      "name": "Last Charge",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "charge"
+        },
+        {
+          "perk": "cultured"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "flavour": "Every army has a song for running at guns. You know all of them.",
+      "text": "After charging an enemy from 7 m or more, gain a shield of 100 × your Armour Class (at least 100) for one turn. Melee hits made during the charge deal 1.5× base melee damage.",
+      "effects": [
+        {
+          "op": "shield",
+          "value": "max(100, 100*armor_class)",
+          "target": "self",
+          "when": "after a charge of 5+ tiles (7 m at 1.5 m per tile)",
+          "duration": "one_turn"
+        },
+        {
+          "op": "damage_mult",
+          "value": 1.5,
+          "context": "melee hits made during the charge"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "melee",
+        "shield"
+      ]
+    },
+    {
+      "id": "angel_of_the_trenches",
+      "name": "Angel of the Trenches",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "field_surgeon"
+        },
+        {
+          "perk": "between_heartbeats"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "flavour": "The 258th Medical Unit's highest honour has no medal. The soldiers just say your name.",
+      "text": "Once per combat, when an ally within your Movement would drop to 0 HP, move to them and stabilise them out of turn, for 0 AP.",
+      "effects": [
+        {
+          "op": "interrupt",
+          "ap": 0,
+          "trigger": "an ally within your Movement would drop to 0 HP",
+          "uses": "per_combat",
+          "action": "move_and_stabilise"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "healing",
+        "reaction"
+      ]
+    },
+    {
+      "id": "every_lie_is_a_door",
+      "name": "Every Lie Is a Door",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "just_the_repairman"
+        },
+        {
+          "perk": "cold_read"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_session",
+      "flavour": "You don't break in. You get invited.",
+      "text": "Once per session, walk into any guarded place by naming a reason to be there. You're believed until someone draws a weapon.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once per session, the player names a reason to be in a guarded place; guards believe it until someone draws a weapon."
+        }
+      ],
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "infiltration",
+        "social"
+      ]
+    },
+    {
+      "id": "twin_discipline",
+      "name": "Twin Discipline",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "twin_souls"
+        },
+        {
+          "perk": "spoon_feed"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "flavour": "The Science Team says it can't be done. The Institute says it shouldn't be. You do it anyway.",
+      "text": "Fuse a Sigil and an Outburst into one cast: the Sigil sets the shape, the Outburst sets the school. Pay both costs.",
+      "effects": [
+        {
+          "op": "fused_cast",
+          "sigil": "shape",
+          "soul": "school",
+          "cost": "both"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil",
+        "soul_magic"
+      ]
+    },
+    {
+      "id": "supreme_command",
+      "name": "Supreme Command",
+      "tier": "ultimate",
+      "perk_type": null,
+      "skills": [],
+      "requires": [
+        {
+          "perk": "the_voice"
+        },
+        {
+          "perk": "make_way"
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "flavour": "Five stars, and nobody looks you in the eye.",
+      "text": "Once per combat, give one order to the whole squad. Every ally takes a free 2 AP action immediately.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "supreme_command",
+          "ap": null,
+          "uses": "per_combat"
+        },
+        {
+          "op": "free_action",
+          "ap": 2,
+          "target": "all_allies",
+          "when": "supreme_command"
+        }
+      ],
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "command",
+        "ap"
+      ]
+    }
+  ]
+}

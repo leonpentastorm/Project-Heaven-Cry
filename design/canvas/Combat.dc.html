@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PHC · Combat mode</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0D13}
+a{color:#4FC8DF}a:hover{color:#8FE0EE}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 14px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 14px 24px; border-bottom: 1px solid #232D3F; background: #0D1119">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#4FC8DF" stroke-width="1.6" aria-hidden="true"><path d="M14 2 25 8.5v11L14 26 3 19.5v-11L14 2Z"/><path d="M14 8v12M8.5 11 14 14l5.5-3"/></svg>
+    <div style="display: flex; flex-direction: column; gap: 1px">
+      <span style="font-weight: 700; letter-spacing: 0.18em; font-size: 13px">PROJECT HEAVEN CRY</span>
+      <span style="color: #A3AEC2; font-size: 12px; letter-spacing: 0.06em">M813 · The Quiet Ward</span>
+    </div>
+  </div>
+  <nav aria-label="Mode" style="display: flex; gap: 4px; padding: 4px; border: 1px solid #232D3F; border-radius: 10px">
+    <a href="Main.dc.html" style="padding: 8px 16px; border-radius: 7px; color: #A3AEC2; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 12px">STORY</a>
+    <a href="Combat.dc.html" aria-current="page" style="padding: 8px 16px; border-radius: 7px; background: #3A1E1E; color: #F0907F; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 12px">COMBAT</a>
+  </nav>
+  <div style="flex: 1 1 40px"></div>
+  <span style="font-size: 12px; color: #A3AEC2; letter-spacing: 0.08em">ROUND 2 · AMBIENT <span style="color: #4FC8DF; font-weight: 700">RICH 26</span></span>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 24px; border-bottom: 1px solid #232D3F; overflow-x: auto">
+  <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2; margin-right: 6px">INITIATIVE</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #F2A54A; background: #2A2113"><span style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid #F2A54A; display: grid; place-items: center; font-size: 10px; font-weight: 700">MP</span><span style="font-weight: 700">MPAT-813</span><span style="font-size: 11px; color: #F2A54A; font-weight: 700">NOW</span></span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 6px; border: 2px solid #F0907F; display: grid; place-items: center; font-size: 10px; font-weight: 700">S1</span>Scalpel bot</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid #AE9BFF; display: grid; place-items: center; font-size: 10px; font-weight: 700">BH</span>Brother Hal</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 6px; border: 2px solid #F0907F; display: grid; place-items: center; font-size: 10px; font-weight: 700">O1</span>Orderly drone</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid #4FC8DF; display: grid; place-items: center; font-size: 10px; font-weight: 700">OV</span>Oda Vey</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid #F2A54A; display: grid; place-items: center; font-size: 10px; font-weight: 700">KE</span>Kestrel · Overwatch</span>
+  <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #232D3F"><span style="width: 26px; height: 26px; border-radius: 6px; border: 2px solid #F0907F; display: grid; place-items: center; font-size: 10px; font-weight: 700">S2</span>Scalpel bot</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; padding: 20px; max-width: 1600px; margin: 0 auto; box-sizing: border-box">
+
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+    <section aria-label="Tactical grid" style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline">
+        <h1 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 26px">Infirmary, Ward B</h1>
+        <span style="font-size: 12px; color: #A3AEC2">1 tile = 1.5 m · MPAT moves 3 tiles per Move</span>
+      </div>
+      <div style="overflow-x: auto">
+        <div style="position: relative; width: 704px; height: 484px; margin: 0 auto">
+          <div style="display: grid; grid-template-columns: repeat(16, 44px); grid-template-rows: repeat(11, 44px)">
+            <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
+              <div style="{{t.style}}">
+                <sc-if value="{{t.tok}}" hint-placeholder-val="{{false}}">
+                  <span title="{{t.title}}" style="{{t.tokStyle}}">{{t.label}}</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <svg width="704" height="484" viewBox="0 0 704 484" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none">
+            <path d="M374 198 L594 286" stroke="#F2A54A" stroke-width="2" stroke-dasharray="6 6"/>
+            <path d="M330 198 L374 198" stroke="#4FC8DF" stroke-width="3"/>
+            <circle cx="594" cy="286" r="19" fill="none" stroke="#F0907F" stroke-width="2" stroke-dasharray="3 4"/>
+          </svg>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: #A3AEC2">
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #16303A; border: 1px solid #2F6B7A"></span>Move range</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #2A3446; border: 1px dashed #6D7B93"></span>Half cover</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #3B475D"></span>Full cover / wall</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 2px; background: #F2A54A"></span>Kestrel’s Overwatch line</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border-radius: 4px; border: 2px solid #F0907F"></span>Hostile</span>
+      </div>
+    </section>
+
+    <section aria-label="Combat log" style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px 22px; display: flex; flex-direction: column; gap: 10px; font-family: 'Spectral', serif; font-size: 17px; line-height: 1.6">
+      <p style="margin: 0">The scalpel bot comes over the bed rail like it was always part of the furniture. Kestrel turns half a step too late. <span style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; color: #F0907F; font-weight: 600">26 dmg · Bleeding</span></p>
+      <p style="margin: 0">Oda writes in the air: <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 0.12em; color: #4FC8DF">FIRE · CONDENSE · PUSH</span>. The sigil catches the orderly drone across its sensor bar. <span style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; color: #6FD8A0; font-weight: 600">30 dmg · Flux +1</span></p>
+      <p style="margin: 0; color: #A3AEC2; font-style: italic">Kestrel sets her rifle on the door frame and waits for the next thing to move.</p>
+    </section>
+  </main>
+
+  <aside aria-label="Your turn" style="flex: 1 1 320px; max-width: 380px; display: flex; flex-direction: column; gap: 14px">
+    <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 24px">MPAT’s turn</h2>
+        <span style="font-size: 12px; color: #A3AEC2">HP 184/250</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 0.1em; color: #A3AEC2"><span>ACTION POINTS</span><span><span style="color: #E7EBF3; font-weight: 700">{{apLeft}}</span> of 6 after {{selName}}</span></div>
+        <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+          <sc-for list="{{pips}}" as="p" hint-placeholder-count="6">
+            <span style="{{p.style}}"></span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ACTIONS · {{actionCount}}</span>
+        <span style="font-size: 12px; color: #7F8BA1">Hover for detail · scroll for more</span>
+      </div>
+      <div role="listbox" aria-label="Actions" style="max-height: 292px; overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 10px; scrollbar-color: #2E3A50 transparent">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 11px; letter-spacing: 0.16em; color: #7F8BA1">{{g.name}}</span>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+              <sc-for list="{{g.items}}" as="a" hint-placeholder-count="4">
+                <button type="button" role="option" aria-selected="{{a.selected}}" disabled="{{a.locked}}" onClick="{{a.pick}}" onMouseEnter="{{a.hover}}" onMouseLeave="{{unhover}}" onFocus="{{a.hover}}" onBlur="{{unhover}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div aria-live="polite" style="{{detail.boxStyle}}">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+          <span style="font-size: 12px; letter-spacing: 0.14em; font-weight: 700; color: {{detail.color}}">{{detail.heading}}</span>
+          <span style="font-size: 12px; font-weight: 700; color: {{detail.color}}">{{detail.cost}}</span>
+        </div>
+        <span style="font-family: 'Spectral', serif; font-size: 16px; line-height: 1.5">{{detail.text}}</span>
+        <span style="font-size: 12px; color: #A3AEC2">{{detail.foot}}</span>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button type="button" style="flex: 2; min-height: 48px; border-radius: 10px; border: 0; background: #F2A54A; color: #1A1206; font-family: inherit; font-weight: 700; letter-spacing: 0.1em; cursor: pointer">CONFIRM</button>
+        <button type="button" style="flex: 1; min-height: 48px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.1em; cursor: pointer">END TURN</button>
+      </div>
+    </section>
+
+    <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2; font-weight: 600">TARGET · ORDERLY DRONE</h2>
+      <div style="display: flex; justify-content: space-between"><span>HP</span><span style="font-weight: 700">40 / 70</span></div>
+      <div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 57%; height: 100%; background: #F0907F"></div></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <span style="font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid #2E3A50">Half cover</span>
+        <span style="font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid #2E3A50">Marked</span>
+        <span style="font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid #2E3A50">Weak: Shock</span>
+      </div>
+    </section>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const W = 16, H = 11;
+    const key = (c, r) => c + ',' + r;
+    const full = new Set(), half = new Set();
+    for (let c = 0; c < W; c++) { full.add(key(c, 0)); full.add(key(c, H - 1)); }
+    for (let r = 0; r < H; r++) { full.add(key(0, r)); if (r !== 5) full.add(key(W - 1, r)); }
+    [[12, 2], [12, 3], [12, 4]].forEach(([c, r]) => full.add(key(c, r)));
+    [[3, 2], [4, 2], [3, 4], [4, 4], [3, 6], [4, 6], [9, 7], [10, 7], [13, 7]].forEach(([c, r]) => half.add(key(c, r)));
+    const tok = {
+      '7,4': { label: 'MP', title: 'MPAT-813 (you)', ring: '#F2A54A', round: true, active: true },
+      '8,4': { label: 'KE', title: 'Kestrel · Bleeding · Overwatch', ring: '#F2A54A', round: true },
+      '5,7': { label: 'OV', title: 'Oda Vey', ring: '#4FC8DF', round: true },
+      '6,3': { label: 'BH', title: 'Brother Hal', ring: '#AE9BFF', round: true },
+      '13,6': { label: 'O1', title: 'Orderly drone · Marked', ring: '#F0907F' },
+      '11,8': { label: 'S1', title: 'Scalpel bot', ring: '#F0907F' },
+      '13,2': { label: 'S2', title: 'Scalpel bot', ring: '#F0907F' }
+    };
+    const origin = [7, 4];
+    const tiles = [];
+    for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) {
+      const k = key(c, r), t = tok[k];
+      const isFull = full.has(k), isHalf = half.has(k);
+      const reach = !isFull && !isHalf && !t && Math.abs(c - origin[0]) + Math.abs(r - origin[1]) <= 3;
+      let bg = '#121926', border = '1px solid #1A2232';
+      if (isFull) { bg = '#3B475D'; border = '1px solid #3B475D'; }
+      else if (isHalf) { bg = '#2A3446'; border = '1px dashed #6D7B93'; }
+      else if (reach) { bg = '#16303A'; border = '1px solid #2F6B7A'; }
+      if (t && t.active) { bg = '#2A2113'; border = '1px solid #F2A54A'; }
+      tiles.push({
+        style: 'width: 44px; height: 44px; box-sizing: border-box; display: grid; place-items: center; background: ' + bg + '; border: ' + border,
+        tok: !!t, label: t ? t.label : '', title: t ? t.title : '',
+        tokStyle: t ? 'width: 32px; height: 32px; box-sizing: border-box; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #E7EBF3; background: #0A0D13; border: 2px solid ' + t.ring + '; border-radius: ' + (t.round ? '50%' : '7px') : ''
+      });
+    }
+    const S = this.state || {};
+    const A = [
+      ['CLASS · COMBAT MEDIC', [
+        ['triage', 'Triage', 2, 'Heal an adjacent ally 20 × your Healing given (×1.25 in rich air) and end their Bleeding. Costs no Supplies. Also stabilises a Downed ally.', 'Rank I move · adjacent ally · no roll', 'TRIAGE → KESTREL', 'Kestrel heals 25 HP and stops Bleeding.'],
+        ['stabilise', 'Stabilise', 1, 'Bring a Downed ally back from the edge. Uses 1 stim; Combat Medics pay 1 AP instead of 2.', 'Needs a stim · adjacent'],
+        ['stim_throw', 'Stim Throw', null, 'Spend 1 Supply: an ally within 4 tiles heals 30 × your Healing given and stops Bleeding.', 'Unlocks at Rank II (signature total 15)', null, null, 'Rank II']]],
+      ['MOVEMENT', [
+        ['move', 'Move', 1, 'Move up to 3 tiles (Agility 2). Difficult terrain costs double.', 'Provokes opportunity attacks when leaving reach'],
+        ['sprint', 'Sprint', 2, 'Move up to 9 tiles in one go.', 'Not allowed in Armour Class V'],
+        ['disengage', 'Disengage', 1, 'Step 1 tile without provoking opportunity attacks.', 'Escape from melee'],
+        ['prone', 'Prone / Stand', 1, 'Drop prone or stand back up. Prone is harder to hit at range, easier up close.', 'Toggle']]],
+      ['ATTACK', [
+        ['shoot', 'Shoot', 2, 'One shot with the service pistol: 20 damage, range 8 tiles, +1 Heat.', 'd20 + Dexterity vs Defense'],
+        ['aimed', 'Aimed shot', 3, 'A careful shot: +2 to hit.', 'd20 + Dexterity + 2 vs Defense'],
+        ['burst', 'Burst', 3, 'Three rounds at one target; −1 to hit for each round after the first.', 'Needs a burst-capable weapon'],
+        ['melee', 'Melee', 2, 'Light melee or unarmed strike. Heavy melee weapons cost 3 AP.', 'Adjacent target'],
+        ['throw', 'Throw', 2, 'Throw a grenade, stim or knife.', 'Range set by Raw Power'],
+        ['overwatch', 'Overwatch', 'Shot AP', 'Hold the AP of one shot and fire at the first enemy that moves into your line.', 'Uses your reaction this round']]],
+      ['UTILITY', [
+        ['analyze', 'Analyze', 2, 'Reveal a target’s HP, armour, resistances and weak points.', 'Within analyze range'],
+        ['reload', 'Reload', 2, 'Reload a magazine, or swap an Evoker core.', 'Pistol: 9 / 12 rounds left'],
+        ['clear_jam', 'Clear jam', 2, 'Clear a jammed weapon so it can fire again.', 'Only when jammed'],
+        ['interact', 'Interact', 1, 'Use an item, draw or swap a weapon, open a door.', 'One object'],
+        ['parley', 'Parley', 2, 'Persuade, threaten or bargain mid-fight with a skill check.', 'The Narrator sets the TN'],
+        ['extinguish', 'Extinguish', 1, 'Put out Burning on yourself or an adjacent ally.', 'Ends Burning'],
+        ['speak', 'Speak', 0, 'Say one sentence. Anything longer costs a Parley.', 'Free']]]
+    ];
+    const sel = S.sel || 'triage', hov = S.hov || null;
+    let selItem = null, hovItem = null, count = 0;
+    const groups = A.map(([name, items]) => ({ name, items: items.map((x) => {
+      const [id, label, cost, text, foot, heading, result, lockLabel] = x;
+      count++;
+      const locked = !!lockLabel, on = id === sel;
+      const it = { id, label, cost, text, foot, heading, result, locked };
+      if (on) selItem = it; if (id === hov) hovItem = it;
+      return { name: label, text, locked, selected: on ? 'true' : 'false',
+        cost: locked ? lockLabel : (typeof cost === 'number' ? cost + ' AP' : cost),
+        pick: () => this.setState({ sel: id }), hover: () => this.setState({ hov: id }),
+        costStyle: 'font-size: 12px; font-weight: 700; color: ' + (on ? '#F2A54A' : locked ? '#7F8BA1' : '#A3AEC2'),
+        style: 'min-height: 48px; padding: 8px 12px; border-radius: 10px; font-family: inherit; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 6px; text-align: left; ' +
+          (locked ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1; cursor: not-allowed' :
+            on ? 'border: 1px solid #F2A54A; background: #2A2113; color: #E7EBF3; cursor: pointer' :
+            id === hov ? 'border: 1px solid #4FC8DF; background: #12303A; color: #E7EBF3; cursor: pointer' :
+            'border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; cursor: pointer') };
+    }) }));
+    const show = hovItem || selItem;
+    const isSel = show === selItem;
+    const spend = typeof selItem.cost === 'number' ? selItem.cost : 0;
+    const left = 6 - spend;
+    const pips = [0, 1, 2, 3, 4, 5].map((i) => ({ style: 'height: 14px; border-radius: 4px; box-sizing: border-box; ' +
+      (i < left ? 'background: #4FC8DF' : 'border: 1px dashed #4FC8DF') }));
+    const color = isSel ? '#F2A54A' : '#4FC8DF';
+    const detail = {
+      heading: isSel && show.heading ? show.heading : show.label.toUpperCase(),
+      cost: show.locked ? 'LOCKED' : (typeof show.cost === 'number' ? show.cost + ' AP' : show.cost),
+      text: isSel && show.result ? show.text + ' ' + show.result : show.text,
+      foot: show.foot, color,
+      boxStyle: 'border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 112px; box-sizing: border-box; ' +
+        (isSel ? 'border: 1px solid #4A3A20; background: #1A160F' : 'border: 1px solid #2B4A55; background: #0F1E25')
+    };
+    return { tiles, groups, pips, detail, apLeft: left, selName: selItem.label, actionCount: count,
+      unhover: () => this.setState({ hov: null }) };
+  }
+}
+</script>
+</body>
+</html>

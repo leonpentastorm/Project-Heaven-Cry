@@ -1,0 +1,2931 @@
+{
+  "$schema_version": "1.0",
+  "kind": "effect_ops",
+  "how_to_use": "Engine implements every 'core' op generically. 'bespoke' ops are used by one or two items: implement them as a named hook on that item, or until then hand the item's text to the Narrator. Any op the engine doesn't recognise must fall back to the Narrator, never be silently ignored.",
+  "items": [
+    {
+      "id": "stat_mod",
+      "tier": "core",
+      "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
+      "count": 179,
+      "params": [
+        "context",
+        "duration",
+        "limit",
+        "stat",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:banner_thread",
+        "classes:beloved_spells",
+        "classes:brace",
+        "classes:emplace",
+        "classes:hearts_own",
+        "classes:inscribe_gear",
+        "classes:lunge",
+        "classes:overcharge",
+        "classes:quicken",
+        "classes:reactive_plate",
+        "classes:unbroken",
+        "classes:weak_point"
+      ],
+      "example": {
+        "op": "stat_mod",
+        "stat": "move_in_attack",
+        "value": 2
+      }
+    },
+    {
+      "id": "narrator",
+      "tier": "core",
+      "summary": "Not automatable: the Narrator (AI or human) decides using the item's text.",
+      "count": 141,
+      "params": [
+        "note"
+      ],
+      "used_by": [
+        "classes:extraction",
+        "classes:fusion",
+        "classes:puppet",
+        "classes:rewrite",
+        "classes:strike_call",
+        "conditions:augment_offline",
+        "conditions:braced",
+        "conditions:commanded",
+        "conditions:injured",
+        "conditions:puppeted",
+        "conditions:witnessed",
+        "patrons:absolution"
+      ],
+      "example": {
+        "op": "narrator",
+        "note": "Pick the opposite of exotic buffs."
+      }
+    },
+    {
+      "id": "grant_action",
+      "tier": "core",
+      "summary": "Give a new action with an AP cost and a use limit.",
+      "count": 91,
+      "params": [
+        "action",
+        "ap",
+        "range",
+        "requires_state",
+        "silent",
+        "uses"
+      ],
+      "used_by": [
+        "classes:blessed_shells",
+        "classes:brace",
+        "classes:fusion",
+        "classes:gift",
+        "classes:half_sigil",
+        "classes:house_edge",
+        "classes:inscribed_rounds",
+        "classes:killzone",
+        "classes:riposte",
+        "classes:six_for_six",
+        "classes:spell_magazine",
+        "classes:stored_spell"
+      ],
+      "example": {
+        "op": "grant_action",
+        "action": "overwatch_double",
+        "ap": 0,
+        "uses": "at_will"
+      }
+    },
+    {
+      "id": "skill_mod",
+      "tier": "core",
+      "summary": "Flat bonus to rolls with one skill (or a choice of skills).",
+      "count": 89,
+      "params": [
+        "context",
+        "skill",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "perks:crowd_pleaser",
+        "perks:cultured",
+        "skills:will_power",
+        "traits:ace_pilot",
+        "traits:blade_recluse",
+        "traits:born_performer",
+        "traits:bottle_butts_for_eyes",
+        "traits:central_city_kid",
+        "traits:chain_smoker",
+        "traits:daggerfall_veteran",
+        "traits:demolitionist",
+        "traits:ghost_soldier"
+      ],
+      "example": {
+        "op": "skill_mod",
+        "skill": "charisma",
+        "value": 2,
+        "when": "single roll addressing a crowd"
+      }
+    },
+    {
+      "id": "perk_choice",
+      "tier": "core",
+      "summary": "Rank-unlock hook: pick a perk tier.",
+      "count": 81,
+      "params": [
+        "choice",
+        "skill"
+      ],
+      "used_by": [
+        "skills:analysis",
+        "skills:athletics",
+        "skills:authority",
+        "skills:brain_power",
+        "skills:camaraderie",
+        "skills:charisma",
+        "skills:composure",
+        "skills:conscience",
+        "skills:dexterity",
+        "skills:durability",
+        "skills:eloquence",
+        "skills:empathy"
+      ],
+      "example": {
+        "op": "perk_choice",
+        "skill": "durability",
+        "choice": "tier_1"
+      }
+    },
+    {
+      "id": "condition",
+      "tier": "core",
+      "summary": "Apply a condition (or family:x / a choice list).",
+      "count": 43,
+      "params": [
+        "choose",
+        "condition",
+        "duration",
+        "filter",
+        "location",
+        "rounds",
+        "save",
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "classes:brace",
+        "classes:called_shot",
+        "classes:case_file",
+        "classes:draw_fire",
+        "classes:dread",
+        "classes:emplace",
+        "classes:field_surgery",
+        "classes:lingering_dread",
+        "classes:mark",
+        "classes:nightmare_mark",
+        "classes:puppet",
+        "classes:suppression"
+      ],
+      "example": {
+        "op": "condition",
+        "condition": "braced",
+        "target": "self",
+        "when": "on_use"
+      }
+    },
+    {
+      "id": "resource",
+      "tier": "core",
+      "summary": "Gain or spend a resource (echo, ammo, mana, core, mp, flux, strain, faith, class resources).",
+      "count": 34,
+      "params": [
+        "resource",
+        "set",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:brace",
+        "classes:charged_by_death",
+        "classes:closed_loop",
+        "classes:draw_fire",
+        "classes:dread",
+        "classes:drink_it_in",
+        "classes:extraction",
+        "classes:field_surgery",
+        "classes:gauntlet_infusion",
+        "classes:heart_surge",
+        "classes:inspire",
+        "classes:judgement"
+      ],
+      "example": {
+        "op": "resource",
+        "resource": "ammo",
+        "value": 1,
+        "when": "rest:each_special_type"
+      }
+    },
+    {
+      "id": "skill_mod_tag",
+      "tier": "core",
+      "summary": "Flat bonus to every skill with a tag (alpha/beta/gamma, core:x, attr:x).",
+      "count": 28,
+      "params": [
+        "context",
+        "duration",
+        "tag",
+        "target",
+        "uses",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:inspire",
+        "classes:under_the_eye",
+        "conditions:left_brain_debuff",
+        "conditions:right_brain_debuff",
+        "perks:double_meaning",
+        "perks:footnote",
+        "skills:charisma",
+        "skills:composure",
+        "skills:empathy",
+        "skills:ingenuity",
+        "skills:lore_master",
+        "skills:rumination"
+      ],
+      "example": {
+        "op": "skill_mod_tag",
+        "tag": "any",
+        "value": 2,
+        "target": "ally",
+        "duration": "next_roll"
+      }
+    },
+    {
+      "id": "cost_mod",
+      "tier": "core",
+      "summary": "Change what a spell, blessing or item costs in its resource.",
+      "count": 21,
+      "params": [
+        "action",
+        "limit",
+        "resource",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "perks:charge",
+        "perks:hot_swap",
+        "perks:into_the_dark",
+        "perks:parallel_thought",
+        "perks:resonance",
+        "perks:rite_in_the_field",
+        "perks:shadow_step",
+        "perks:siege_engine"
+      ],
+      "example": {
+        "op": "cost_mod",
+        "action": "move",
+        "value": "zero",
+        "when": "first move into an unexplored room or area"
+      }
+    },
+    {
+      "id": "forbid",
+      "tier": "core",
+      "summary": "An action can't be taken.",
+      "count": 16,
+      "params": [
+        "action",
+        "context"
+      ],
+      "used_by": [
+        "conditions:disarmed",
+        "conditions:grappled",
+        "conditions:taunted",
+        "traits:field_medic",
+        "traits:forlorn_hope",
+        "traits:hollow_heart",
+        "traits:humanity_first",
+        "traits:machine_faced",
+        "traits:old_school",
+        "traits:one_shot",
+        "traits:raised_by_orks"
+      ],
+      "example": {
+        "op": "forbid",
+        "action": "move_away"
+      }
+    },
+    {
+      "id": "tn_mod",
+      "tier": "core",
+      "summary": "Shift the target number of a kind of check.",
+      "count": 16,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "classes:bind",
+        "classes:called_shot",
+        "classes:killzone",
+        "classes:mind_fog",
+        "classes:ricochet_glyph",
+        "conditions:blinded",
+        "conditions:fear",
+        "conditions:marked",
+        "conditions:pinned",
+        "conditions:prone",
+        "conditions:shaken",
+        "conditions:witnessed"
+      ],
+      "example": {
+        "op": "tn_mod",
+        "context": "overwatch_shot",
+        "value": 2
+      }
+    },
+    {
+      "id": "action_cost",
+      "tier": "core",
+      "summary": "Change (value) or fix (set) the AP cost of an action.",
+      "count": 15,
+      "params": [
+        "action",
+        "context",
+        "set",
+        "uses",
+        "value"
+      ],
+      "used_by": [
+        "classes:case_file",
+        "classes:fire_discipline",
+        "classes:sword_form",
+        "classes:triage",
+        "traits:cold_case",
+        "traits:demolitionist",
+        "traits:drill_echo",
+        "traits:field_medic",
+        "traits:glass_runner",
+        "traits:grenadiers_arm",
+        "traits:gun_nut",
+        "traits:live_to_fight_another_day"
+      ],
+      "example": {
+        "op": "action_cost",
+        "action": "burst",
+        "value": -1,
+        "uses": "per_turn"
+      }
+    },
+    {
+      "id": "damage_mult",
+      "tier": "core",
+      "summary": "Multiply damage dealt.",
+      "count": 15,
+      "params": [
+        "context",
+        "count",
+        "duration",
+        "max",
+        "per",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:finisher",
+        "classes:heart_surge",
+        "classes:inscribe_gear",
+        "classes:judgement",
+        "classes:love_made_manifest",
+        "classes:one_shot",
+        "classes:sanctuary",
+        "classes:stitch",
+        "perks:breaching_strike",
+        "perks:holy_ordnance",
+        "perks:last_charge",
+        "perks:origami_hands"
+      ],
+      "example": {
+        "op": "damage_mult",
+        "value": 0.2,
+        "per": "momentum_spent",
+        "max": 1.0
+      }
+    },
+    {
+      "id": "immunity",
+      "tier": "core",
+      "summary": "Can't gain a condition or damage type.",
+      "count": 15,
+      "params": [
+        "conditions",
+        "target",
+        "to"
+      ],
+      "used_by": [
+        "perks:eyes_in_the_back",
+        "perks:iron_stomach",
+        "perks:make_way",
+        "perks:siege_engine",
+        "traits:augmented",
+        "traits:daggerfall_veteran",
+        "traits:factory_made",
+        "traits:heavyworlder",
+        "traits:insomniac",
+        "traits:mind_without_fog",
+        "traits:right_of_way"
+      ],
+      "example": {
+        "op": "immunity",
+        "conditions": [
+          "nausea",
+          "fear"
+        ]
+      }
+    },
+    {
+      "id": "damage_mod",
+      "tier": "core",
+      "summary": "Add flat damage.",
+      "count": 13,
+      "params": [
+        "context",
+        "source",
+        "target",
+        "type",
+        "value",
+        "value_pct"
+      ],
+      "used_by": [
+        "classes:discharge",
+        "classes:edge_sigil",
+        "classes:gauntlet_infusion",
+        "traits:augmented",
+        "traits:demolitionist",
+        "traits:ghost_soldier",
+        "traits:hollow_heart",
+        "traits:humanity_first",
+        "traits:moon_hunter",
+        "traits:pain_eater",
+        "traits:raised_by_orks",
+        "traits:southern_fist"
+      ],
+      "example": {
+        "op": "damage_mod",
+        "source": "word_element",
+        "type": "elemental"
+      }
+    },
+    {
+      "id": "save_mod",
+      "tier": "core",
+      "summary": "Bonus or penalty to Body/Brain/Heart saves.",
+      "count": 13,
+      "params": [
+        "context",
+        "duration",
+        "family",
+        "save",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "perks:lab_coat",
+        "perks:litany",
+        "perks:red_line",
+        "traits:humanity_first",
+        "traits:live_to_fight_another_day",
+        "traits:squad_anchor"
+      ],
+      "example": {
+        "op": "save_mod",
+        "family": "any",
+        "value": 3,
+        "context": "chemicals, gases and drugs you've identified"
+      }
+    },
+    {
+      "id": "gate_check",
+      "tier": "core",
+      "summary": "Something can only be attempted after passing a check.",
+      "count": 11,
+      "params": [
+        "context",
+        "on_fail",
+        "skill",
+        "tn"
+      ],
+      "used_by": [
+        "traits:augmented",
+        "traits:born_officer",
+        "traits:daggerfall_veteran",
+        "traits:ghost_soldier",
+        "traits:gun_nut",
+        "traits:heavens_faithful",
+        "traits:holo_drama_addict",
+        "traits:lunarshine",
+        "traits:market_blood",
+        "traits:rival",
+        "traits:trench_poet"
+      ],
+      "example": {
+        "op": "gate_check",
+        "skill": "composure",
+        "context": "unglamorous_action",
+        "on_fail": "refuse_or_-3"
+      }
+    },
+    {
+      "id": "state",
+      "tier": "core",
+      "summary": "A named toggled state with its own rules.",
+      "count": 9,
+      "params": [
+        "area",
+        "hp",
+        "rounds",
+        "state",
+        "tiles"
+      ],
+      "used_by": [
+        "classes:bulwark_line",
+        "classes:deploy_cover",
+        "classes:raise_cover",
+        "classes:sanctuary",
+        "classes:seal",
+        "classes:sentry_turret",
+        "classes:silent_kill",
+        "classes:suppression",
+        "classes:weak_point"
+      ],
+      "example": {
+        "op": "state",
+        "state": "full_cover",
+        "tiles": 2
+      }
+    },
+    {
+      "id": "attack_mod",
+      "tier": "core",
+      "summary": "Bonus or penalty to attack rolls.",
+      "count": 8,
+      "params": [
+        "context",
+        "duration",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:fire_discipline",
+        "conditions:emplaced",
+        "conditions:grappled",
+        "perks:flat_line",
+        "perks:spoon_feed",
+        "traits:spray_and_pray"
+      ],
+      "example": {
+        "op": "attack_mod",
+        "context": "aimed_shot_with_bow",
+        "value": 1
+      }
+    },
+    {
+      "id": "damage_reduction",
+      "tier": "core",
+      "summary": "Reduce damage taken by a flat amount.",
+      "count": 7,
+      "params": [
+        "context",
+        "duration",
+        "max",
+        "per",
+        "target",
+        "type",
+        "value"
+      ],
+      "used_by": [
+        "perks:bulwark",
+        "perks:scar_tissue"
+      ],
+      "example": {
+        "op": "damage_reduction",
+        "type": "ranged",
+        "value": 0.25,
+        "target": "ally",
+        "context": "ally within 1 tile directly behind you, in line with the attacker"
+      }
+    },
+    {
+      "id": "shield",
+      "tier": "core",
+      "summary": "Temporary HP that absorbs damage first.",
+      "count": 7,
+      "params": [
+        "basis",
+        "duration",
+        "scale",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:adamantile_plate",
+        "classes:bulwark_of_will",
+        "classes:rally_banner",
+        "classes:ward",
+        "classes:will_shield",
+        "perks:last_charge",
+        "perks:shrug_it_off"
+      ],
+      "example": {
+        "op": "shield",
+        "value": "10*charge",
+        "target": "ally_within_6",
+        "scale": "healing_given"
+      }
+    },
+    {
+      "id": "start_item",
+      "tier": "core",
+      "summary": "Start play with an item.",
+      "count": 7,
+      "params": [
+        "item"
+      ],
+      "used_by": [
+        "traits:bottle_butts_for_eyes",
+        "traits:central_city_kid",
+        "traits:ghost_soldier",
+        "traits:occultist",
+        "traits:the_mask",
+        "traits:wanted"
+      ],
+      "example": {
+        "op": "start_item",
+        "item": "prescription_glasses"
+      }
+    },
+    {
+      "id": "damage_taken_mod",
+      "tier": "core",
+      "summary": "Change damage taken (signed).",
+      "count": 6,
+      "params": [
+        "context",
+        "value_pct"
+      ],
+      "used_by": [
+        "traits:crawler_blooded",
+        "traits:factory_made",
+        "traits:glass_runner",
+        "traits:one_shot",
+        "traits:pain_eater",
+        "traits:rabbits_foot"
+      ],
+      "example": {
+        "op": "damage_taken_mod",
+        "value_pct": 50,
+        "context": "limb"
+      }
+    },
+    {
+      "id": "aura",
+      "tier": "core",
+      "summary": "An effect on everyone within N tiles.",
+      "count": 5,
+      "params": [
+        "effect",
+        "effects",
+        "radius",
+        "range_if_stationary",
+        "range_tiles",
+        "target",
+        "trigger",
+        "when"
+      ],
+      "used_by": [
+        "perks:war_footing",
+        "traits:born_officer",
+        "traits:live_to_fight_another_day",
+        "traits:squad_anchor",
+        "traits:trench_poet"
+      ],
+      "example": {
+        "op": "aura",
+        "radius": 1,
+        "target": "enemies",
+        "when": "enemy ends its move in the aura",
+        "effect": {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -2
+        }
+      }
+    },
+    {
+      "id": "cleanse",
+      "tier": "core",
+      "summary": "Remove a condition or family.",
+      "count": 4,
+      "params": [
+        "ap",
+        "condition",
+        "count",
+        "family",
+        "target",
+        "uses"
+      ],
+      "used_by": [
+        "perks:shrug_it_off",
+        "traits:daggerfall_veteran"
+      ],
+      "example": {
+        "op": "cleanse",
+        "family": "body",
+        "count": 1,
+        "target": "self"
+      }
+    },
+    {
+      "id": "heal",
+      "tier": "core",
+      "summary": "Restore HP.",
+      "count": 4,
+      "params": [
+        "scale",
+        "target",
+        "value"
+      ],
+      "used_by": [
+        "classes:mend",
+        "classes:stim_throw",
+        "classes:sweep",
+        "classes:triage"
+      ],
+      "example": {
+        "op": "heal",
+        "value": 20,
+        "target": "ally_adjacent",
+        "scale": "healing_given"
+      }
+    },
+    {
+      "id": "ignore_cover",
+      "tier": "core",
+      "summary": "Attacks ignore a level of cover.",
+      "count": 4,
+      "params": [
+        "context"
+      ],
+      "used_by": [
+        "perks:breaching_strike",
+        "traits:one_shot"
+      ],
+      "example": {
+        "op": "ignore_cover",
+        "context": "breaching_strike"
+      }
+    },
+    {
+      "id": "merge_action",
+      "tier": "core",
+      "summary": "Two actions resolve as one for a combined AP cost.",
+      "count": 4,
+      "params": [
+        "action",
+        "into",
+        "limit"
+      ],
+      "used_by": [
+        "perks:running_reload"
+      ],
+      "example": {
+        "op": "merge_action",
+        "action": "reload",
+        "into": "move",
+        "limit": "once_per_turn"
+      }
+    },
+    {
+      "id": "price_mod",
+      "tier": "core",
+      "summary": "Change buy/sell prices.",
+      "count": 4,
+      "params": [
+        "buy_pct",
+        "context",
+        "sell_pct"
+      ],
+      "used_by": [
+        "traits:company_man",
+        "traits:gun_nut",
+        "traits:market_blood",
+        "traits:the_old_blood"
+      ],
+      "example": {
+        "op": "price_mod",
+        "buy_pct": 20,
+        "sell_pct": -20,
+        "context": "trader_other_race"
+      }
+    },
+    {
+      "id": "reveal",
+      "tier": "core",
+      "summary": "Make hidden things visible.",
+      "count": 4,
+      "params": [
+        "context",
+        "count",
+        "range",
+        "target",
+        "what",
+        "when"
+      ],
+      "used_by": [
+        "perks:got_you_in_my_sight",
+        "perks:wind_on_the_skin"
+      ],
+      "example": {
+        "op": "reveal",
+        "what": "hidden_enemy",
+        "count": 1,
+        "range": "vision_range",
+        "when": "combat_start"
+      }
+    },
+    {
+      "id": "roll_bonus",
+      "tier": "core",
+      "summary": "One-off bonus to a specific roll.",
+      "count": 4,
+      "params": [
+        "context",
+        "requires_narrator_approval",
+        "uses",
+        "value"
+      ],
+      "used_by": [
+        "traits:central_city_kid",
+        "traits:holo_drama_addict",
+        "traits:pacifist",
+        "traits:rival"
+      ],
+      "example": {
+        "op": "roll_bonus",
+        "value": 3,
+        "uses": "per_scene",
+        "requires_narrator_approval": true,
+        "context": "described_as_holo_drama"
+      }
+    },
+    {
+      "id": "roll_mod_all",
+      "tier": "core",
+      "summary": "Bonus or penalty to every d20 roll.",
+      "count": 4,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:cold_case",
+        "traits:grudge_bearer",
+        "traits:sworn_sibling",
+        "traits:the_brightest_light"
+      ],
+      "example": {
+        "op": "roll_mod_all",
+        "value": -2,
+        "context": "after_combat_until_rest"
+      }
+    },
+    {
+      "id": "unlock_word",
+      "tier": "core",
+      "summary": "Learn a Sigil word.",
+      "count": 4,
+      "params": [
+        "standalone",
+        "word"
+      ],
+      "used_by": [
+        "classes:blind_and_slow",
+        "classes:raise_cover"
+      ],
+      "example": {
+        "op": "unlock_word",
+        "word": "wall",
+        "standalone": true
+      }
+    },
+    {
+      "id": "word_cost",
+      "tier": "core",
+      "summary": "Change a Sigil word's charge cost.",
+      "count": 4,
+      "params": [
+        "value",
+        "words"
+      ],
+      "used_by": [
+        "classes:barrage",
+        "classes:bind",
+        "classes:blind_and_slow",
+        "classes:overcharge"
+      ],
+      "example": {
+        "op": "word_cost",
+        "words": [
+          "fire",
+          "shock",
+          "freeze"
+        ],
+        "value": -1
+      }
+    },
+    {
+      "id": "alt_cost",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "action",
+        "pay",
+        "rate"
+      ],
+      "used_by": [
+        "perks:heart_overload"
+      ],
+      "example": {
+        "op": "alt_cost",
+        "action": "soul_cast",
+        "pay": "hp",
+        "rate": 2
+      }
+    },
+    {
+      "id": "damage_share",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "bonds",
+        "mutual_if_both_hold",
+        "value_by_mastery"
+      ],
+      "used_by": [
+        "perks:soulmate"
+      ],
+      "example": {
+        "op": "damage_share",
+        "bonds": 1,
+        "value_by_mastery": {
+          "1": 0.05,
+          "2": 0.1,
+          "3": 0.15,
+          "4": 0.2
+        },
+        "mutual_if_both_hold": "soulmate"
+      }
+    },
+    {
+      "id": "debuff_split",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "count",
+        "duration",
+        "duration_mult",
+        "family"
+      ],
+      "used_by": [
+        "perks:shared_breath"
+      ],
+      "example": {
+        "op": "debuff_split",
+        "family": "heart",
+        "count": 1,
+        "duration_mult": 0.5
+      }
+    },
+    {
+      "id": "extra_use",
+      "tier": "core",
+      "summary": "One more use of a limited ability.",
+      "count": 3,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "perks:jury_rig"
+      ],
+      "example": {
+        "op": "extra_use",
+        "context": "broken weapon or device",
+        "value": 1
+      }
+    },
+    {
+      "id": "faction_start",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "attitude",
+        "faction"
+      ],
+      "used_by": [
+        "traits:heretic",
+        "traits:rogue_element",
+        "traits:wanted"
+      ],
+      "example": {
+        "op": "faction_start",
+        "faction": "lawful",
+        "attitude": "hostile"
+      }
+    },
+    {
+      "id": "free_move",
+      "tier": "core",
+      "summary": "Movement that costs no AP.",
+      "count": 3,
+      "params": [
+        "tiles",
+        "when"
+      ],
+      "used_by": [
+        "perks:roll_with_it"
+      ],
+      "example": {
+        "op": "free_move",
+        "tiles": 1,
+        "when": "successful dodge"
+      }
+    },
+    {
+      "id": "heal_received_mult",
+      "tier": "core",
+      "summary": "Multiply healing received.",
+      "count": 3,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:factory_made",
+        "traits:humanity_first",
+        "traits:the_old_blood"
+      ],
+      "example": {
+        "op": "heal_received_mult",
+        "value": 0.5,
+        "context": "source_other_race"
+      }
+    },
+    {
+      "id": "heat_mod",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "action",
+        "value"
+      ],
+      "used_by": [
+        "classes:belt_discipline",
+        "classes:fire_discipline"
+      ],
+      "example": {
+        "op": "heat_mod",
+        "action": "aimed_shot",
+        "value": -1
+      }
+    },
+    {
+      "id": "karma_lock",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "band",
+        "leave_cost_mult"
+      ],
+      "used_by": [
+        "traits:mind_without_fog",
+        "traits:rogue_element",
+        "traits:symbol_of_order"
+      ],
+      "example": {
+        "op": "karma_lock",
+        "band": "current",
+        "leave_cost_mult": null
+      }
+    },
+    {
+      "id": "knockback",
+      "tier": "core",
+      "summary": "Push a target a number of tiles.",
+      "count": 3,
+      "params": [
+        "target",
+        "tiles"
+      ],
+      "used_by": [
+        "perks:breaching_strike"
+      ],
+      "example": {
+        "op": "knockback",
+        "tiles": 1,
+        "target": "target"
+      }
+    },
+    {
+      "id": "movement_mode",
+      "tier": "core",
+      "summary": "A new way to move (climb, swim, jump).",
+      "count": 3,
+      "params": [
+        "attack_mid_move",
+        "max_tiles",
+        "mode"
+      ],
+      "used_by": [
+        "perks:wall_run"
+      ],
+      "example": {
+        "op": "movement_mode",
+        "mode": "wall_run",
+        "max_tiles": 2
+      }
+    },
+    {
+      "id": "reaction",
+      "tier": "core",
+      "summary": "An action taken off-turn; uses the one reaction per round unless it says otherwise.",
+      "count": 3,
+      "params": [
+        "action",
+        "limit",
+        "trigger"
+      ],
+      "used_by": [
+        "perks:catch"
+      ],
+      "example": {
+        "op": "reaction",
+        "action": "catch_throwable",
+        "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+        "limit": "once_per_round"
+      }
+    },
+    {
+      "id": "rounding",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "mode",
+        "stat"
+      ],
+      "used_by": [
+        "perks:rounding_up"
+      ],
+      "example": {
+        "op": "rounding",
+        "stat": "ap",
+        "mode": "up"
+      }
+    },
+    {
+      "id": "song_state",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 3,
+      "params": [
+        "off",
+        "on"
+      ],
+      "used_by": [
+        "traits:headbanger",
+        "traits:the_soundscape_of_the_soul",
+        "traits:underground_sound"
+      ],
+      "example": {
+        "op": "song_state",
+        "on": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "core:soul",
+            "value": 1
+          }
+        ],
+        "off": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "core:mind",
+            "value": -1
+          },
+          {
+            "op": "skill_mod_tag",
+            "tag": "core:body",
+            "value": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "spawn_illusion",
+      "tier": "core",
+      "summary": "Create a decoy on the grid.",
+      "count": 3,
+      "params": [
+        "count",
+        "disbelieve",
+        "rounds"
+      ],
+      "used_by": [
+        "perks:mirage"
+      ],
+      "example": {
+        "op": "spawn_illusion",
+        "count": 1,
+        "rounds": 1,
+        "disbelieve": "analysis"
+      }
+    },
+    {
+      "id": "stat_mult",
+      "tier": "core",
+      "summary": "Multiply a derived stat.",
+      "count": 3,
+      "params": [
+        "context",
+        "stat",
+        "value"
+      ],
+      "used_by": [
+        "conditions:emplaced",
+        "traits:lowland_born",
+        "traits:old_timer"
+      ],
+      "example": {
+        "op": "stat_mult",
+        "stat": "recoil",
+        "value": 0.5
+      }
+    },
+    {
+      "id": "area_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "kind",
+        "value"
+      ],
+      "used_by": [
+        "classes:payload",
+        "classes:storm_front"
+      ],
+      "example": {
+        "op": "area_mult",
+        "value": 2
+      }
+    },
+    {
+      "id": "auto_success",
+      "tier": "core",
+      "summary": "The check succeeds without a roll.",
+      "count": 2,
+      "params": [
+        "choose",
+        "context",
+        "skill",
+        "uses"
+      ],
+      "used_by": [
+        "traits:machine_faced",
+        "traits:old_timer"
+      ],
+      "example": {
+        "op": "auto_success",
+        "skill": "composure",
+        "context": "dialogue"
+      }
+    },
+    {
+      "id": "blessing_received_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:factory_made",
+        "traits:the_old_blood"
+      ],
+      "example": {
+        "op": "blessing_received_mult",
+        "value": 0.5,
+        "context": "source_other_race"
+      }
+    },
+    {
+      "id": "bond",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "requires_consent"
+      ],
+      "used_by": [
+        "traits:rival",
+        "traits:sworn_sibling"
+      ],
+      "example": {
+        "op": "bond",
+        "requires_consent": true
+      }
+    },
+    {
+      "id": "choose",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "count",
+        "effects",
+        "options",
+        "what"
+      ],
+      "used_by": [
+        "traits:augmented",
+        "traits:sigil_savant"
+      ],
+      "example": {
+        "op": "choose",
+        "what": "sigil",
+        "count": 1,
+        "effects": [
+          {
+            "op": "core_cost",
+            "value": 0
+          },
+          {
+            "op": "action_cost",
+            "value": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "companion",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "ap",
+        "controlled_by",
+        "hp",
+        "id"
+      ],
+      "used_by": [
+        "traits:beast_handler",
+        "traits:drone_handler"
+      ],
+      "example": {
+        "op": "companion",
+        "id": "drone",
+        "hp": 30,
+        "ap": 3,
+        "controlled_by": "self"
+      }
+    },
+    {
+      "id": "detection_against_self",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:chain_smoker",
+        "traits:slicer"
+      ],
+      "example": {
+        "op": "detection_against_self",
+        "value": 2
+      }
+    },
+    {
+      "id": "duration_cap",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "conditions",
+        "rounds"
+      ],
+      "used_by": [
+        "perks:iron_stomach"
+      ],
+      "example": {
+        "op": "duration_cap",
+        "conditions": [
+          "nausea",
+          "fear"
+        ],
+        "rounds": 1
+      }
+    },
+    {
+      "id": "interrupt",
+      "tier": "core",
+      "summary": "Act before a triggering action resolves.",
+      "count": 2,
+      "params": [
+        "action",
+        "ap",
+        "trigger",
+        "uses"
+      ],
+      "used_by": [
+        "perks:angel_of_the_trenches",
+        "perks:between_heartbeats"
+      ],
+      "example": {
+        "op": "interrupt",
+        "ap": 2,
+        "trigger": "an enemy in your sight starts an action",
+        "uses": "per_combat"
+      }
+    },
+    {
+      "id": "power_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "action",
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "perks:field_surgeon",
+        "perks:jury_rig"
+      ],
+      "example": {
+        "op": "power_mult",
+        "action": "field_repair",
+        "value": 2,
+        "context": "vehicles and drones"
+      }
+    },
+    {
+      "id": "shared_penalty",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "effects",
+        "group"
+      ],
+      "used_by": [
+        "traits:oil_in_my_mind",
+        "traits:oil_in_my_soul"
+      ],
+      "example": {
+        "op": "shared_penalty",
+        "group": "oil",
+        "effects": [
+          {
+            "op": "skill_mod",
+            "skill": "durability",
+            "value": -1
+          },
+          {
+            "op": "skill_mod",
+            "skill": "pain_threshold",
+            "value": -1
+          },
+          {
+            "op": "skill_mod",
+            "skill": "sensory",
+            "value": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "to_hit_against_self",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:heavyworlder",
+        "traits:pacifist"
+      ],
+      "example": {
+        "op": "to_hit_against_self",
+        "value": 2
+      }
+    },
+    {
+      "id": "withdrawal",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 2,
+      "params": [
+        "context",
+        "effects"
+      ],
+      "used_by": [
+        "traits:ace_pilot",
+        "traits:lunarshine"
+      ],
+      "example": {
+        "op": "withdrawal",
+        "context": "day_without_drink",
+        "effects": [
+          {
+            "op": "skill_mod",
+            "skill": "camaraderie",
+            "value": -1
+          },
+          {
+            "op": "skill_mod",
+            "skill": "authority",
+            "value": -1
+          },
+          {
+            "op": "skill_mod",
+            "skill": "composure",
+            "value": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "xp_mod",
+      "tier": "core",
+      "summary": "Change XP gained.",
+      "count": 2,
+      "params": [
+        "source",
+        "value_pct"
+      ],
+      "used_by": [
+        "traits:born_performer"
+      ],
+      "example": {
+        "op": "xp_mod",
+        "source": "combat",
+        "value_pct": 20
+      }
+    },
+    {
+      "id": "ammo_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:spray_and_pray"
+      ],
+      "example": {
+        "op": "ammo_mult",
+        "value": 2
+      }
+    },
+    {
+      "id": "ap_carry",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "uses",
+        "value"
+      ],
+      "used_by": [
+        "perks:rounding_up"
+      ],
+      "example": {
+        "op": "ap_carry",
+        "value": 1,
+        "uses": "per_combat"
+      }
+    },
+    {
+      "id": "armor_class_max",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:forlorn_hope"
+      ],
+      "example": {
+        "op": "armor_class_max",
+        "value": 1
+      }
+    },
+    {
+      "id": "aura_break",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "penalty"
+      ],
+      "used_by": [
+        "traits:squad_anchor"
+      ],
+      "example": {
+        "op": "aura_break",
+        "context": "moved_more_than_2_tiles",
+        "penalty": {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1,
+          "context": "next_turn"
+        }
+      }
+    },
+    {
+      "id": "auto_fail",
+      "tier": "core",
+      "summary": "The check fails without a roll.",
+      "count": 1,
+      "params": [
+        "context"
+      ],
+      "used_by": [
+        "traits:demolitionist"
+      ],
+      "example": {
+        "op": "auto_fail",
+        "context": "hearing_checks"
+      }
+    },
+    {
+      "id": "blessing_cooldown",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:true_believer"
+      ],
+      "example": {
+        "op": "blessing_cooldown",
+        "value": -1
+      }
+    },
+    {
+      "id": "blessing_damage",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "source",
+        "value"
+      ],
+      "used_by": [
+        "traits:crawler_blooded"
+      ],
+      "example": {
+        "op": "blessing_damage",
+        "source": "lumeri",
+        "value": 10
+      }
+    },
+    {
+      "id": "blessing_fail",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "die",
+        "fail_on"
+      ],
+      "used_by": [
+        "traits:heretic"
+      ],
+      "example": {
+        "op": "blessing_fail",
+        "die": "d6",
+        "fail_on": [
+          1,
+          2
+        ],
+        "context": "ally_blessing_on_self"
+      }
+    },
+    {
+      "id": "blessing_without_faith",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "traits:heretic"
+      ],
+      "example": {
+        "op": "blessing_without_faith"
+      }
+    },
+    {
+      "id": "block_ap_transfer",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "from"
+      ],
+      "used_by": [
+        "traits:humanity_first"
+      ],
+      "example": {
+        "op": "block_ap_transfer",
+        "from": "non_human_ally"
+      }
+    },
+    {
+      "id": "broken_leg_move_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:glass_runner"
+      ],
+      "example": {
+        "op": "broken_leg_move_mult",
+        "value": 0.5
+      }
+    },
+    {
+      "id": "carry_weight_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:heavyworlder"
+      ],
+      "example": {
+        "op": "carry_weight_mult",
+        "value": 2
+      }
+    },
+    {
+      "id": "chance",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "result",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "perks:just_the_repairman"
+      ],
+      "example": {
+        "op": "chance",
+        "value": 0.5,
+        "when": "spotted while sneaking, carrying a toolbox",
+        "result": "observer treats you as maintenance staff"
+      }
+    },
+    {
+      "id": "choose_bonus",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "duration",
+        "pool",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "traits:born_performer"
+      ],
+      "example": {
+        "op": "choose_bonus",
+        "pool": "gamma",
+        "value": 2,
+        "when": "scene_start",
+        "duration": "scene"
+      }
+    },
+    {
+      "id": "climb_walls",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "move_mult"
+      ],
+      "used_by": [
+        "traits:crawler_blooded"
+      ],
+      "example": {
+        "op": "climb_walls",
+        "move_mult": 0.5
+      }
+    },
+    {
+      "id": "concentration_risk",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "die",
+        "fail_on",
+        "result"
+      ],
+      "used_by": [
+        "traits:drill_echo"
+      ],
+      "example": {
+        "op": "concentration_risk",
+        "die": "d6",
+        "fail_on": [
+          1
+        ],
+        "context": "sigil_draw|brain_power|rumination",
+        "result": "lose_action"
+      }
+    },
+    {
+      "id": "convert_condition",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "classes:rewrite"
+      ],
+      "example": {
+        "op": "convert_condition",
+        "target": "target",
+        "when": "on_use"
+      }
+    },
+    {
+      "id": "core_cost",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:sigil_savant"
+      ],
+      "example": {
+        "op": "core_cost",
+        "value": 0
+      }
+    },
+    {
+      "id": "counter",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "name",
+        "on_threshold",
+        "threshold"
+      ],
+      "used_by": [
+        "traits:cover_story"
+      ],
+      "example": {
+        "op": "counter",
+        "name": "identities_burned",
+        "threshold": 3,
+        "on_threshold": "narrator:old_con_returns"
+      }
+    },
+    {
+      "id": "creation_points",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "pool",
+        "value"
+      ],
+      "used_by": [
+        "traits:mind_without_fog"
+      ],
+      "example": {
+        "op": "creation_points",
+        "pool": "core",
+        "value": 2
+      }
+    },
+    {
+      "id": "crit_damage_mod",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value_pct"
+      ],
+      "used_by": [
+        "traits:one_shot"
+      ],
+      "example": {
+        "op": "crit_damage_mod",
+        "value_pct": 50,
+        "context": "first_shot_if_not_moved"
+      }
+    },
+    {
+      "id": "daily_upkeep",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "on_miss"
+      ],
+      "used_by": [
+        "traits:true_believer"
+      ],
+      "example": {
+        "op": "daily_upkeep",
+        "context": "church_rites",
+        "on_miss": [
+          {
+            "op": "skill_mod",
+            "skill": "faith",
+            "value": -1
+          },
+          {
+            "op": "skill_mod",
+            "skill": "will_power",
+            "value": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "debuff_duration",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:grudge_bearer"
+      ],
+      "example": {
+        "op": "debuff_duration",
+        "value": 1
+      }
+    },
+    {
+      "id": "disadvantage",
+      "tier": "core",
+      "summary": "Roll twice, keep the lower.",
+      "count": 1,
+      "params": [
+        "context"
+      ],
+      "used_by": [
+        "skills:athletics"
+      ],
+      "example": {
+        "op": "disadvantage",
+        "context": "attacks_against_self:armor_class_0"
+      }
+    },
+    {
+      "id": "double_or_nothing",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "uses"
+      ],
+      "used_by": [
+        "traits:gambler"
+      ],
+      "example": {
+        "op": "double_or_nothing",
+        "uses": "per_scene"
+      }
+    },
+    {
+      "id": "execute",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "classes:execution"
+      ],
+      "example": {
+        "op": "execute",
+        "target": "target",
+        "when": "hit_marked_below_25pct"
+      }
+    },
+    {
+      "id": "extend_action",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "action",
+        "targets"
+      ],
+      "used_by": [
+        "perks:field_surgeon"
+      ],
+      "example": {
+        "op": "extend_action",
+        "action": "field_repair",
+        "targets": [
+          "living",
+          "robotic"
+        ]
+      }
+    },
+    {
+      "id": "free_action",
+      "tier": "core",
+      "summary": "An action costs 0 AP under a trigger.",
+      "count": 1,
+      "params": [
+        "ap",
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "perks:supreme_command"
+      ],
+      "example": {
+        "op": "free_action",
+        "ap": 2,
+        "target": "all_allies",
+        "when": "supreme_command"
+      }
+    },
+    {
+      "id": "free_attack",
+      "tier": "core",
+      "summary": "An attack that costs no AP.",
+      "count": 1,
+      "params": [
+        "ap",
+        "attack",
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "perks:dance_of_iron"
+      ],
+      "example": {
+        "op": "free_attack",
+        "when": "successful dodge",
+        "target": "attacker",
+        "ap": 0,
+        "attack": "single_shot"
+      }
+    },
+    {
+      "id": "fused_cast",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "cost",
+        "sigil",
+        "soul"
+      ],
+      "used_by": [
+        "perks:twin_discipline"
+      ],
+      "example": {
+        "op": "fused_cast",
+        "sigil": "shape",
+        "soul": "school",
+        "cost": "both"
+      }
+    },
+    {
+      "id": "gear_wear_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:the_brightest_light"
+      ],
+      "example": {
+        "op": "gear_wear_mult",
+        "value": 2
+      }
+    },
+    {
+      "id": "grant_check",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "result",
+        "skill",
+        "when"
+      ],
+      "used_by": [
+        "perks:shadow_step"
+      ],
+      "example": {
+        "op": "grant_check",
+        "skill": "ingenuity",
+        "when": "after attacking from stealth",
+        "result": "stay hidden"
+      }
+    },
+    {
+      "id": "ignore_gear_mods",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "scope"
+      ],
+      "used_by": [
+        "traits:mind_without_fog"
+      ],
+      "example": {
+        "op": "ignore_gear_mods",
+        "scope": [
+          "attribute",
+          "skill"
+        ]
+      }
+    },
+    {
+      "id": "inner_voice_count",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:crowded_head"
+      ],
+      "example": {
+        "op": "inner_voice_count",
+        "value": 3
+      }
+    },
+    {
+      "id": "jump",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "tiles"
+      ],
+      "used_by": [
+        "traits:augmented"
+      ],
+      "example": {
+        "op": "jump",
+        "tiles": 2
+      }
+    },
+    {
+      "id": "karma_cost_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:symbol_of_order"
+      ],
+      "example": {
+        "op": "karma_cost_mult",
+        "context": "unlawful_act",
+        "value": 2
+      }
+    },
+    {
+      "id": "karma_gain_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:pacifist"
+      ],
+      "example": {
+        "op": "karma_gain_mult",
+        "context": "mercy",
+        "value": 2
+      }
+    },
+    {
+      "id": "leadership_step",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:born_officer"
+      ],
+      "example": {
+        "op": "leadership_step",
+        "value": 1
+      }
+    },
+    {
+      "id": "mana_cost_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:upper_touched"
+      ],
+      "example": {
+        "op": "mana_cost_mult",
+        "context": "outburst",
+        "value": 0.8
+      }
+    },
+    {
+      "id": "mana_short_outcome",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:hollow_heart"
+      ],
+      "example": {
+        "op": "mana_short_outcome",
+        "value": "unconscious"
+      }
+    },
+    {
+      "id": "meter",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:reactive_plate"
+      ],
+      "example": {
+        "op": "meter",
+        "value": 2,
+        "when": "per_3_guard_lost"
+      }
+    },
+    {
+      "id": "min_carry",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "count",
+        "item_tag"
+      ],
+      "used_by": [
+        "traits:gun_nut"
+      ],
+      "example": {
+        "op": "min_carry",
+        "item_tag": "gun",
+        "count": 3
+      }
+    },
+    {
+      "id": "mod_slots",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:gun_nut"
+      ],
+      "example": {
+        "op": "mod_slots",
+        "context": "guns",
+        "value": 1
+      }
+    },
+    {
+      "id": "move_cost_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:sworn_sibling"
+      ],
+      "example": {
+        "op": "move_cost_mult",
+        "value": 2,
+        "context": "away_from_downed_bond"
+      }
+    },
+    {
+      "id": "negate_failure",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "skill"
+      ],
+      "used_by": [
+        "perks:war_footing"
+      ],
+      "example": {
+        "op": "negate_failure",
+        "skill": "intimidation"
+      }
+    },
+    {
+      "id": "nonlethal_option",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "traits:pacifist"
+      ],
+      "example": {
+        "op": "nonlethal_option"
+      }
+    },
+    {
+      "id": "on_kill",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "effects"
+      ],
+      "used_by": [
+        "traits:pacifist"
+      ],
+      "example": {
+        "op": "on_kill",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "echo",
+            "set": 0,
+            "when": "on_kill"
+          },
+          {
+            "op": "condition",
+            "condition": "family:heart",
+            "target": "self",
+            "when": "rest_of_session"
+          }
+        ]
+      }
+    },
+    {
+      "id": "opposed",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "on_target_fail",
+        "skill",
+        "uses",
+        "vs"
+      ],
+      "used_by": [
+        "traits:trench_poet"
+      ],
+      "example": {
+        "op": "opposed",
+        "skill": "implication",
+        "vs": "implication",
+        "uses": "per_scene",
+        "on_target_fail": {
+          "op": "condition",
+          "condition": "confused",
+          "target": "target",
+          "when": "on_fail"
+        }
+      }
+    },
+    {
+      "id": "overreach_tn_mod",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:crowded_head"
+      ],
+      "example": {
+        "op": "overreach_tn_mod",
+        "value": 2
+      }
+    },
+    {
+      "id": "recoil_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:spray_and_pray"
+      ],
+      "example": {
+        "op": "recoil_mult",
+        "context": "full_auto",
+        "value": 0.5
+      }
+    },
+    {
+      "id": "redirect_attack",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "chance",
+        "context",
+        "to"
+      ],
+      "used_by": [
+        "perks:grapple"
+      ],
+      "example": {
+        "op": "redirect_attack",
+        "chance": 0.5,
+        "to": "grappled_captive",
+        "context": "attacks aimed at you while grappling"
+      }
+    },
+    {
+      "id": "repairable",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "hp_per_rank",
+        "skill"
+      ],
+      "used_by": [
+        "traits:factory_made"
+      ],
+      "example": {
+        "op": "repairable",
+        "skill": "proficiency",
+        "hp_per_rank": 10
+      }
+    },
+    {
+      "id": "reroll",
+      "tier": "core",
+      "summary": "Reroll a die.",
+      "count": 1,
+      "params": [
+        "target",
+        "uses"
+      ],
+      "used_by": [
+        "traits:rabbits_foot"
+      ],
+      "example": {
+        "op": "reroll",
+        "target": "any_d20_targeting_self",
+        "uses": "per_session"
+      }
+    },
+    {
+      "id": "rest_recovery_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "resources",
+        "value"
+      ],
+      "used_by": [
+        "traits:insomniac"
+      ],
+      "example": {
+        "op": "rest_recovery_mult",
+        "value": 0.5,
+        "resources": [
+          "hp",
+          "mana"
+        ]
+      }
+    },
+    {
+      "id": "reveal_self",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "range_tiles",
+        "when"
+      ],
+      "used_by": [
+        "traits:hollow_heart"
+      ],
+      "example": {
+        "op": "reveal_self",
+        "range_tiles": 10,
+        "when": "cast_outburst"
+      }
+    },
+    {
+      "id": "roll_floor",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "value"
+      ],
+      "used_by": [
+        "traits:drill_echo"
+      ],
+      "example": {
+        "op": "roll_floor",
+        "value": 10,
+        "context": "running_climbing_endurance"
+      }
+    },
+    {
+      "id": "sense",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "range_tiles",
+        "target"
+      ],
+      "used_by": [
+        "traits:upper_touched"
+      ],
+      "example": {
+        "op": "sense",
+        "target": "upper_realm",
+        "range_tiles": 10
+      }
+    },
+    {
+      "id": "share_state",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "state",
+        "target"
+      ],
+      "used_by": [
+        "perks:silent_partner"
+      ],
+      "example": {
+        "op": "share_state",
+        "state": "stealth",
+        "target": "one_adjacent_ally"
+      }
+    },
+    {
+      "id": "shared_ap",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "per",
+        "value"
+      ],
+      "used_by": [
+        "traits:sworn_sibling"
+      ],
+      "example": {
+        "op": "shared_ap",
+        "value": 1,
+        "per": "round",
+        "context": "adjacent"
+      }
+    },
+    {
+      "id": "side_effect_roll",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context",
+        "die"
+      ],
+      "used_by": [
+        "traits:upper_touched"
+      ],
+      "example": {
+        "op": "side_effect_roll",
+        "die": "d6",
+        "context": "blessing_received"
+      }
+    },
+    {
+      "id": "size_mod",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:heavyworlder"
+      ],
+      "example": {
+        "op": "size_mod",
+        "value": 1
+      }
+    },
+    {
+      "id": "skip_save",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "context"
+      ],
+      "used_by": [
+        "traits:grudge_bearer"
+      ],
+      "example": {
+        "op": "skip_save",
+        "context": "first_debuff_each_combat"
+      }
+    },
+    {
+      "id": "stacking_state",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "reset",
+        "resource",
+        "states"
+      ],
+      "used_by": [
+        "traits:lunarshine"
+      ],
+      "example": {
+        "op": "stacking_state",
+        "resource": "drinks",
+        "states": [
+          {
+            "at": 1,
+            "name": "tipsy",
+            "effects": [
+              {
+                "op": "skill_mod",
+                "skill": "camaraderie",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "lore_master",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "authority",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "at": 3,
+            "name": "drunk",
+            "effects": [
+              {
+                "op": "skill_mod",
+                "skill": "camaraderie",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "lore_master",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "authority",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "intimidation",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "guts",
+                "value": 1
+              },
+              {
+                "op": "skill_mod",
+                "skill": "durability",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "at": 5,
+            "name": "wasted",
+            "effects": [
+              {
+                "op": "skill_mod",
+                "skill": "reaction_speed",
+                "value": -2
+              },
+              {
+                "op": "skill_mod",
+                "skill": "dexterity",
+                "value": -2
+              },
+              {
+                "op": "skill_mod",
+                "skill": "proficiency",
+                "value": -2
+              },
+              {
+                "op": "skill_mod",
+                "skill": "vigilant",
+                "value": -2
+              },
+              {
+                "op": "skill_mod",
+                "skill": "analysis",
+                "value": -2
+              },
+              {
+                "op": "skill_mod",
+                "skill": "visualization",
+                "value": -2
+              }
+            ]
+          }
+        ],
+        "reset": "scene_end"
+      }
+    },
+    {
+      "id": "start_funds_mult",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value"
+      ],
+      "used_by": [
+        "traits:inner_ring_heir"
+      ],
+      "example": {
+        "op": "start_funds_mult",
+        "value": 3
+      }
+    },
+    {
+      "id": "stat_substitute",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "from",
+        "stat",
+        "to"
+      ],
+      "used_by": [
+        "traits:heretic"
+      ],
+      "example": {
+        "op": "stat_substitute",
+        "stat": "blessing_power",
+        "from": "faith",
+        "to": "will_power"
+      }
+    },
+    {
+      "id": "vehicle_mod",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "dodge",
+        "move"
+      ],
+      "used_by": [
+        "traits:ace_pilot"
+      ],
+      "example": {
+        "op": "vehicle_mod",
+        "move": 1,
+        "dodge": "use_driver"
+      }
+    },
+    {
+      "id": "weapon_mastery_rate",
+      "tier": "bespoke",
+      "summary": "",
+      "count": 1,
+      "params": [
+        "value_pct"
+      ],
+      "used_by": [
+        "traits:blade_recluse"
+      ],
+      "example": {
+        "op": "weapon_mastery_rate",
+        "value_pct": 25
+      }
+    }
+  ]
+}

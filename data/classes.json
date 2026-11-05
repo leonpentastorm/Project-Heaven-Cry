@@ -1,0 +1,2650 @@
+{
+  "$schema_version": "1.0",
+  "kind": "classes",
+  "source": "PHC Core Rules v1.0 (Classes) + PHC Class Roster, Revision 2",
+  "assignment": {
+    "unlock_level": 3,
+    "score": "sum of skill points in the class's 3 signature skills (trait bonuses never count)",
+    "eligible": "any base class whose score is among the character's two highest distinct scores (ties included)",
+    "tie_rule": "player chooses among all eligible classes; nobody is classless",
+    "rank_thresholds": {
+      "I": "on gaining the class",
+      "II": 15,
+      "III": 21
+    },
+    "rank_rule": "each rank unlocks the next signature move; rank uses the current signature total",
+    "advanced": {
+      "either_parent_min": 15,
+      "other_parent_min": 9,
+      "needs_tutor": true,
+      "needs_parent_class": false
+    },
+    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)"
+  },
+  "base": [
+    {
+      "id": "marksman",
+      "name": "Marksman",
+      "core": "body",
+      "economy": {
+        "runs_on": "ammo, weapons, technology",
+        "consumes": [
+          "ammo",
+          "supplies",
+          "gear"
+        ],
+        "produces": [
+          "kills (each death raises the ambient meter)"
+        ]
+      },
+      "role": "offense_ranged",
+      "tagline": "Guns for most; bows for the quiet ones.",
+      "signature": [
+        "dexterity",
+        "vigilant",
+        "reaction_speed"
+      ],
+      "resource": {
+        "id": "heat",
+        "max": "weapon heat_limit",
+        "per_turn": -2,
+        "rule": "Guns only: single +1, burst +2, auto +4 Heat; -1 to hit per 2 Heat; jam at the limit (2 AP to clear). Bows have no Heat or recoil, are silent, and scale with Raw Power."
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "fire_discipline",
+              "name": "Fire Discipline",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot gets +3 to hit instead of +2.",
+              "effects": [
+                {
+                  "op": "heat_mod",
+                  "action": "aimed_shot",
+                  "value": -1
+                },
+                {
+                  "op": "action_cost",
+                  "action": "burst",
+                  "value": -1,
+                  "uses": "per_turn"
+                },
+                {
+                  "op": "attack_mod",
+                  "context": "aimed_shot_with_bow",
+                  "value": 1
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "special_ammo",
+              "name": "Special Ammo",
+              "ap_cost": 0,
+              "uses": "per_rest",
+              "text": "You carry one magazine (or quiver) each of armour-piercing, hollow-point and incendiary, restocked at rest. You can switch ammo type as part of a reload.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "ammo",
+                  "value": 1,
+                  "when": "rest:each_special_type"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "killzone",
+              "name": "Killzone",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "When you hold AP for Overwatch, you may hold enough for two shots: one each at the first two enemies that move into your line, both at +2 to hit.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "overwatch_double",
+                  "ap": 0,
+                  "uses": "at_will"
+                },
+                {
+                  "op": "tn_mod",
+                  "context": "overwatch_shot",
+                  "value": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "duelist",
+      "name": "Duelist",
+      "core": "body",
+      "economy": {
+        "runs_on": "ammo, weapons, technology",
+        "consumes": [
+          "ammo",
+          "supplies",
+          "gear"
+        ],
+        "produces": [
+          "kills (each death raises the ambient meter)"
+        ]
+      },
+      "role": "offense_melee",
+      "tagline": "Guns jam. Blades don't.",
+      "signature": [
+        "athletics",
+        "raw_power",
+        "guts"
+      ],
+      "resource": {
+        "id": "momentum",
+        "max": 5,
+        "rule": "+1 for each tile you move toward a target before a melee attack (max +2 per turn), +1 for each melee hit. Resets to 0 after combat or if you end a turn without attacking."
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "lunge",
+              "name": "Lunge",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Spend 1 Momentum: move up to 2 tiles as part of a melee attack. This movement provokes no opportunity attacks.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "momentum",
+                  "value": -1,
+                  "when": "on_use"
+                },
+                {
+                  "op": "stat_mod",
+                  "stat": "move_in_attack",
+                  "value": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "riposte",
+              "name": "Riposte",
+              "ap_cost": 0,
+              "uses": "reaction",
+              "text": "When a melee attack against you misses, spend 1 Momentum to make a melee attack against the attacker for 0 AP, adding your Counter bonus to hit.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "momentum",
+                  "value": -1,
+                  "when": "reaction:melee_miss_against_self"
+                },
+                {
+                  "op": "grant_action",
+                  "action": "counter_attack",
+                  "ap": 0,
+                  "uses": "at_will"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "finisher",
+              "name": "Finisher",
+              "ap_cost": 3,
+              "uses": "at_will",
+              "text": "Spend all your Momentum on one melee strike: +20% damage per point spent (up to +100%).",
+              "effects": [
+                {
+                  "op": "damage_mult",
+                  "value": 0.2,
+                  "per": "momentum_spent",
+                  "max": 1.0
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "core": "body",
+      "economy": {
+        "runs_on": "ammo, weapons, technology",
+        "consumes": [
+          "ammo",
+          "supplies",
+          "gear"
+        ],
+        "produces": [
+          "kills (each death raises the ambient meter)"
+        ]
+      },
+      "role": "defense",
+      "tagline": "Someone has to stand in front.",
+      "signature": [
+        "durability",
+        "pain_threshold",
+        "guts"
+      ],
+      "resource": {
+        "id": "guard",
+        "max": 5,
+        "rule": "Gained by Brace. Interpose (reaction): when an adjacent ally is hit, spend 1 Guard to take the hit instead; your armour applies. Guard is lost after combat."
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "brace",
+              "name": "Brace",
+              "ap_cost": 2,
+              "uses": "at_will",
+              "text": "Gain Guard equal to 1 + your Durability modifier (max 5) and become Braced (+2 Defense) until you move. Interpose is available whenever you hold Guard.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "guard",
+                  "value": "1+mod(durability)",
+                  "when": "on_use"
+                },
+                {
+                  "op": "condition",
+                  "condition": "braced",
+                  "target": "self",
+                  "when": "on_use"
+                },
+                {
+                  "op": "stat_mod",
+                  "stat": "defense",
+                  "value": 2
+                },
+                {
+                  "op": "grant_action",
+                  "action": "interpose",
+                  "ap": 0,
+                  "uses": "at_will"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "draw_fire",
+              "name": "Draw Fire",
+              "ap_cost": 1,
+              "uses": "at_will",
+              "text": "Spend 1 Guard: one enemy you can see must attack you on its next turn, or take -2 to hit anyone else. Bosses and Celestials may ignore it at -2.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "guard",
+                  "value": -1,
+                  "when": "on_use"
+                },
+                {
+                  "op": "condition",
+                  "condition": "taunted",
+                  "target": "target",
+                  "when": "on_use"
+                }
+              ],
+              "adjudication": "hybrid"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "reactive_plate",
+              "name": "Reactive Plate",
+              "ap_cost": 0,
+              "uses": "reaction",
+              "text": "Your armour is bot-woven and hardens when struck. When you take damage, spend any Guard: each point cuts the damage by 10. Every 3 Guard you lose this way sheds bots: the ambient meter rises by 2.",
+              "effects": [
+                {
+                  "op": "stat_mod",
+                  "stat": "damage_reduction_per_guard",
+                  "value": 10
+                },
+                {
+                  "op": "meter",
+                  "value": 2,
+                  "when": "per_3_guard_lost"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "combat_medic",
+      "name": "Combat Medic",
+      "core": "body",
+      "economy": {
+        "runs_on": "ammo, weapons, technology",
+        "consumes": [
+          "ammo",
+          "supplies",
+          "gear"
+        ],
+        "produces": [
+          "kills (each death raises the ambient meter)"
+        ]
+      },
+      "role": "support",
+      "tagline": "Nobody stays behind.",
+      "signature": [
+        "sensory",
+        "camaraderie",
+        "proficiency"
+      ],
+      "resource": {
+        "id": "supplies",
+        "max": "3 + floor(proficiency / 2)",
+        "rule": "Stims, kits and med-drones. Restocked at rest."
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "triage",
+              "name": "Triage",
+              "ap_cost": 2,
+              "uses": "at_will",
+              "text": "Heal an adjacent ally 20 x your Healing given multiplier and end their Bleeding. Costs no Supplies. You stabilise a Downed ally for 1 AP.",
+              "effects": [
+                {
+                  "op": "heal",
+                  "value": 20,
+                  "target": "ally_adjacent",
+                  "scale": "healing_given"
+                },
+                {
+                  "op": "condition",
+                  "condition": "bleeding",
+                  "target": "ally",
+                  "when": "remove"
+                },
+                {
+                  "op": "action_cost",
+                  "action": "stabilise",
+                  "value": -1
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "stim_throw",
+              "name": "Stim Throw",
+              "ap_cost": 1,
+              "uses": "at_will",
+              "text": "Spend 1 Supply: an ally within 4 tiles heals 30 x your Healing given multiplier and stops Bleeding.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "supplies",
+                  "value": -1,
+                  "when": "on_use"
+                },
+                {
+                  "op": "heal",
+                  "value": 30,
+                  "target": "ally_within_4",
+                  "scale": "healing_given"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "field_surgery",
+              "name": "Field Surgery",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Out of combat, spend 1 Supply: treat one arm or leg injury, or clear every Body condition from one ally. Robot medics repair machines the same way.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "supplies",
+                  "value": -1,
+                  "when": "on_use"
+                },
+                {
+                  "op": "condition",
+                  "condition": "family:body",
+                  "target": "ally",
+                  "when": "remove"
+                },
+                {
+                  "op": "condition",
+                  "condition": "injured",
+                  "target": "ally",
+                  "when": "remove",
+                  "location": "limb"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "assassin",
+      "name": "Assassin",
+      "core": "body",
+      "economy": {
+        "runs_on": "ammo, weapons, technology",
+        "consumes": [
+          "ammo",
+          "supplies",
+          "gear"
+        ],
+        "produces": [
+          "kills (each death raises the ambient meter)"
+        ]
+      },
+      "role": "debuff",
+      "tagline": "Stealth, poison, and the patience to wait for the right moment.",
+      "signature": [
+        "ingenuity",
+        "intimidation",
+        "reaction_speed"
+      ],
+      "resource": {
+        "id": "marks",
+        "max": 3,
+        "rule": "Up to 3 enemies Marked at once. Toxin doses: 2 + floor(ingenuity / 3), restocked at rest."
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "mark",
+              "name": "Mark",
+              "ap_cost": 1,
+              "uses": "at_will",
+              "text": "Mark an enemy you can see: it becomes Marked (your squad gets +1 to hit it; it can't become Hidden).",
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "marked",
+                  "target": "target",
+                  "when": "on_use"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "toxin",
+              "name": "Toxin",
+              "ap_cost": 1,
+              "uses": "at_will",
+              "text": "Spend 1 toxin dose to coat a blade, dart or arrow. Your next hit also inflicts Weakened, Slowed or Bleeding (your choice; Body save).",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "toxin",
+                  "value": -1,
+                  "when": "on_use"
+                },
+                {
+                  "op": "condition",
+                  "condition": [
+                    "weakened",
+                    "slowed",
+                    "bleeding"
+                  ],
+                  "target": "target",
+                  "when": "next_hit",
+                  "choose": 1
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "execution",
+              "name": "Execution",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Your hit on a Marked enemy at or below a quarter of its max HP kills it outright. Bosses and Celestials are immune.",
+              "effects": [
+                {
+                  "op": "execute",
+                  "target": "target",
+                  "when": "hit_marked_below_25pct"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "artillerist",
+      "name": "Artillerist",
+      "core": "mind",
+      "economy": {
+        "runs_on": "Sigil magic through an Evoker",
+        "consumes": [
+          "mana_core"
+        ],
+        "produces": [
+          "mana (Vent raises the ambient meter by the Flux vented)"
+        ]
+      },
+      "role": "offense",
+      "tagline": "FIRE - CONDENSE - PUSH, at range, as often as the cores hold out.",
+      "signature": [
+        "brain_power",
+        "visualization",
+        "vigilant"
+      ],
+      "resource": {
+        "id": "flux",
+        "max": 6,
+        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "also_uses": [
+          "mana_core"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "barrage",
+              "name": "Barrage",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Damage words (FIRE, SHOCK, FREEZE) cost 1 charge less each. A spell still costs at least 1.",
+              "effects": [
+                {
+                  "op": "word_cost",
+                  "words": [
+                    "fire",
+                    "shock",
+                    "freeze"
+                  ],
+                  "value": -1
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "overcharge",
+              "name": "Overcharge",
+              "ap_cost": 0,
+              "uses": "per_scene",
+              "text": "Once per combat, add one word to a spell beyond your Max Sigil words, for no charge and no AP. It still adds Flux.",
+              "effects": [
+                {
+                  "op": "stat_mod",
+                  "stat": "max_sigil_words",
+                  "value": 1
+                },
+                {
+                  "op": "word_cost",
+                  "words": [
+                    "*"
+                  ],
+                  "value": "free_one"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "payload",
+              "name": "Payload",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Double a spell's area (or its number of targets). The spell adds double Flux.",
+              "effects": [
+                {
+                  "op": "area_mult",
+                  "value": 2
+                },
+                {
+                  "op": "resource",
+                  "resource": "flux",
+                  "value": "x2",
+                  "when": "on_cast"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "warden",
+      "name": "Warden",
+      "core": "mind",
+      "economy": {
+        "runs_on": "Sigil magic through an Evoker",
+        "consumes": [
+          "mana_core"
+        ],
+        "produces": [
+          "mana (Vent raises the ambient meter by the Flux vented)"
+        ]
+      },
+      "role": "defense",
+      "tagline": "WALL. HARDEN. HOLD.",
+      "signature": [
+        "rumination",
+        "composure",
+        "analysis"
+      ],
+      "resource": {
+        "id": "flux",
+        "max": 6,
+        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "also_uses": [
+          "mana_core"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "raise_cover",
+              "name": "Raise Cover",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "You can draw WALL as a one-word spell with no Subject: full cover on up to 2 tiles in range for 2 rounds + your Sigil duration bonus.",
+              "effects": [
+                {
+                  "op": "unlock_word",
+                  "word": "wall",
+                  "standalone": true
+                },
+                {
+                  "op": "state",
+                  "state": "full_cover",
+                  "tiles": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "ward",
+              "name": "Ward",
+              "ap_cost": 2,
+              "uses": "at_will",
+              "text": "Spend 1-3 charge: an ally within 6 tiles gains a shield of 10 x charge spent x your Healing given multiplier. Adds 1 Flux per charge.",
+              "effects": [
+                {
+                  "op": "shield",
+                  "value": "10*charge",
+                  "target": "ally_within_6",
+                  "scale": "healing_given"
+                },
+                {
+                  "op": "resource",
+                  "resource": "flux",
+                  "value": "charge",
+                  "when": "on_use"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "seal",
+              "name": "Seal",
+              "ap_cost": 3,
+              "uses": "at_will",
+              "text": "Spend 2 charge: a 3x3-tile zone in range where, for 2 rounds, enemy Sigils cost double charge and enemy Soul spells cost double MP.",
+              "effects": [
+                {
+                  "op": "state",
+                  "state": "sealed_zone",
+                  "area": "3x3",
+                  "rounds": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scribe",
+      "name": "Scribe",
+      "core": "mind",
+      "economy": {
+        "runs_on": "Sigil magic through an Evoker",
+        "consumes": [
+          "mana_core"
+        ],
+        "produces": [
+          "mana (Vent raises the ambient meter by the Flux vented)"
+        ]
+      },
+      "role": "support",
+      "tagline": "Most sigils are written in a hurry. A Scribe's are written to last.",
+      "signature": [
+        "proficiency",
+        "eloquence",
+        "rumination"
+      ],
+      "resource": {
+        "id": "flux",
+        "max": 6,
+        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "also_uses": [
+          "mana_core"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "quicken",
+              "name": "Quicken",
+              "ap_cost": 2,
+              "uses": "per_turn",
+              "text": "Spend 1 charge: an ally within 6 tiles gets +1 AP on their next turn (AP ceiling applies).",
+              "effects": [
+                {
+                  "op": "stat_mod",
+                  "stat": "ap",
+                  "value": 1,
+                  "target": "ally_within_6",
+                  "duration": "next_turn"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "inscribe_gear",
+              "name": "Inscribe Gear",
+              "ap_cost": 3,
+              "uses": "at_will",
+              "text": "Spend 2 charge (or do it out of combat): write a sigil onto an ally's weapon (+10% damage) or torso armour (+5 armour value) until the next rest. One inscription per item.",
+              "effects": [
+                {
+                  "op": "damage_mult",
+                  "value": 0.1,
+                  "target": "ally_weapon",
+                  "duration": "until_rest"
+                },
+                {
+                  "op": "stat_mod",
+                  "stat": "armor",
+                  "value": 5,
+                  "target": "ally",
+                  "duration": "until_rest"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "stored_spell",
+              "name": "Stored Spell",
+              "ap_cost": 0,
+              "uses": "per_rest",
+              "text": "Out of combat, write a whole Sigil spell onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "trigger_stored_spell",
+                  "ap": 1,
+                  "uses": "per_rest"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "hexwright",
+      "name": "Hexwright",
+      "core": "mind",
+      "economy": {
+        "runs_on": "Sigil magic through an Evoker",
+        "consumes": [
+          "mana_core"
+        ],
+        "produces": [
+          "mana (Vent raises the ambient meter by the Flux vented)"
+        ]
+      },
+      "role": "debuff",
+      "tagline": "BIND. BLIND. UNMAKE.",
+      "signature": [
+        "analysis",
+        "charisma",
+        "eloquence"
+      ],
+      "resource": {
+        "id": "flux",
+        "max": 6,
+        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "also_uses": [
+          "mana_core"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "bind",
+              "name": "Bind",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "The BIND word costs 1 charge less, and its Body save is against 14 + your debuff strength instead of 12.",
+              "effects": [
+                {
+                  "op": "word_cost",
+                  "words": [
+                    "bind"
+                  ],
+                  "value": -1
+                },
+                {
+                  "op": "tn_mod",
+                  "context": "save_vs_bind",
+                  "value": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "blind_and_slow",
+              "name": "Blind and Slow",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff), if you don't already know them; each costs 1 charge less.",
+              "effects": [
+                {
+                  "op": "unlock_word",
+                  "word": "blind"
+                },
+                {
+                  "op": "unlock_word",
+                  "word": "slow"
+                },
+                {
+                  "op": "unlock_word",
+                  "word": "muddle"
+                },
+                {
+                  "op": "word_cost",
+                  "words": [
+                    "blind",
+                    "slow",
+                    "muddle"
+                  ],
+                  "value": -1
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "rewrite",
+              "name": "Rewrite",
+              "ap_cost": 3,
+              "uses": "at_will",
+              "text": "Spend 3 charge: one buff or helpful state on an enemy in range flips into its opposite until it ends (Braced becomes Prone, +2 to hit becomes -2, a shield becomes damage). Brain save.",
+              "effects": [
+                {
+                  "op": "convert_condition",
+                  "target": "target",
+                  "when": "on_use"
+                },
+                {
+                  "op": "narrator",
+                  "note": "Pick the opposite of exotic buffs."
+                }
+              ],
+              "adjudication": "hybrid"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tempest",
+      "name": "Tempest",
+      "core": "soul",
+      "economy": {
+        "runs_on": "Soul magic through an Emanator",
+        "consumes": [
+          "ambient_mana"
+        ],
+        "produces": [
+          "mana_core (Crystallise)"
+        ]
+      },
+      "role": "offense",
+      "tagline": "Imagine the storm. The world agrees.",
+      "signature": [
+        "will_power",
+        "empathy",
+        "visualization"
+      ],
+      "resource": {
+        "id": "strain",
+        "max": "strain_limit (3 + floor(will_power / 2))",
+        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "also_uses": [
+          "mp"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "shape",
+              "name": "Shape",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "The first Damage-school spell you cast each turn adds no Strain.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "strain",
+                  "value": -1,
+                  "when": "first_damage_cast_each_turn"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "storm_front",
+              "name": "Storm Front",
+              "ap_cost": 0,
+              "uses": "per_turn",
+              "text": "Once per turn, a Damage spell hits up to 3 targets within 2 tiles of the first (one roll each), for +10 MP.",
+              "effects": [
+                {
+                  "op": "area_mult",
+                  "value": 3,
+                  "kind": "targets"
+                },
+                {
+                  "op": "resource",
+                  "resource": "mp",
+                  "value": -10,
+                  "when": "on_cast"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "heart_surge",
+              "name": "Heart Surge",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Cast a spell at double effect, for double Strain.",
+              "effects": [
+                {
+                  "op": "damage_mult",
+                  "value": 1.0
+                },
+                {
+                  "op": "resource",
+                  "resource": "strain",
+                  "value": "x2",
+                  "when": "on_cast"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "aegis",
+      "name": "Aegis",
+      "core": "soul",
+      "economy": {
+        "runs_on": "Soul magic through an Emanator",
+        "consumes": [
+          "ambient_mana"
+        ],
+        "produces": [
+          "mana_core (Crystallise)"
+        ]
+      },
+      "role": "defense",
+      "tagline": "If you can imagine it whole, it stays whole.",
+      "signature": [
+        "lore_master",
+        "conscience",
+        "faith"
+      ],
+      "resource": {
+        "id": "strain",
+        "max": "strain_limit (3 + floor(will_power / 2))",
+        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "also_uses": [
+          "mp"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "will_shield",
+              "name": "Will Shield",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "A Buff-school cast (Soul cast AP, 20 MP base): an ally in range gains a shield of 30 x your Healing given multiplier until the end of combat.",
+              "effects": [
+                {
+                  "op": "shield",
+                  "value": 30,
+                  "target": "ally_in_range",
+                  "scale": "healing_given",
+                  "duration": "combat"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "drink_it_in",
+              "name": "Drink It In",
+              "ap_cost": 0,
+              "uses": "reaction",
+              "text": "When an enemy spell hits a shield you made, its bots feed your Emanator: gain MP equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "mp",
+                  "value": "spell_cost",
+                  "when": "reaction:enemy_spell_hits_your_shield"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "sanctuary",
+              "name": "Sanctuary",
+              "ap_cost": 0,
+              "uses": "per_scene",
+              "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn.",
+              "effects": [
+                {
+                  "op": "state",
+                  "state": "sanctuary",
+                  "area": "3x3",
+                  "rounds": 1
+                },
+                {
+                  "op": "damage_mult",
+                  "value": -0.5,
+                  "target": "allies_in_zone"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "muse",
+      "name": "Muse",
+      "core": "soul",
+      "economy": {
+        "runs_on": "Soul magic through an Emanator",
+        "consumes": [
+          "ambient_mana"
+        ],
+        "produces": [
+          "mana_core (Crystallise)"
+        ]
+      },
+      "role": "support",
+      "tagline": "Your belief makes the squad better than it is.",
+      "signature": [
+        "camaraderie",
+        "implication",
+        "authority"
+      ],
+      "resource": {
+        "id": "strain",
+        "max": "strain_limit (3 + floor(will_power / 2))",
+        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "also_uses": [
+          "mp"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "inspire",
+              "name": "Inspire",
+              "ap_cost": 1,
+              "uses": "at_will",
+              "text": "Spend 10 MP: an ally within 6 tiles gets +2 on their next roll. Adds no Strain.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "mp",
+                  "value": -10,
+                  "when": "on_use"
+                },
+                {
+                  "op": "skill_mod_tag",
+                  "tag": "any",
+                  "value": 2,
+                  "target": "ally",
+                  "duration": "next_roll"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "mend",
+              "name": "Mend",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "A Buff-school cast that heals 40 x your Healing given multiplier x the ambient Healing multiplier: stronger in rich air.",
+              "effects": [
+                {
+                  "op": "heal",
+                  "value": 40,
+                  "target": "ally_in_range",
+                  "scale": "healing_given*ambient_healing"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "gift",
+              "name": "Gift",
+              "ap_cost": 0,
+              "uses": "per_rest",
+              "text": "Out of combat, hand an ally one of your ready designs. They cast it once, with their own AP, on your MP and your Strain.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "cast_gifted_design",
+                  "ap": "soul_cast_ap",
+                  "uses": "per_rest"
+                }
+              ],
+              "adjudication": "hybrid"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "haunt",
+      "name": "Haunt",
+      "core": "soul",
+      "economy": {
+        "runs_on": "Soul magic through an Emanator",
+        "consumes": [
+          "ambient_mana"
+        ],
+        "produces": [
+          "mana_core (Crystallise)"
+        ]
+      },
+      "role": "debuff",
+      "tagline": "The bots can build a fireball. They can also build what someone fears most.",
+      "signature": [
+        "intimidation",
+        "implication",
+        "lore_master"
+      ],
+      "resource": {
+        "id": "strain",
+        "max": "strain_limit (3 + floor(will_power / 2))",
+        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "also_uses": [
+          "mp"
+        ]
+      },
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "id": "dread",
+              "name": "Dread",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Status-school spells that inflict Fear cost 5 MP less, and Fear you inflict lasts 1 extra round.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "resource": "mp",
+                  "value": 5,
+                  "when": "cast_fear"
+                },
+                {
+                  "op": "condition",
+                  "condition": "fear",
+                  "target": "target",
+                  "when": "duration+1"
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 15,
+          "moves": [
+            {
+              "id": "mind_fog",
+              "name": "Mind Fog",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Your Status spells can inflict a Left or Right Brain Debuff with +2 to the save TN.",
+              "effects": [
+                {
+                  "op": "tn_mod",
+                  "context": "save_vs_brain_debuff_from_you",
+                  "value": 2
+                }
+              ],
+              "adjudication": "engine"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 21,
+          "moves": [
+            {
+              "id": "puppet",
+              "name": "Puppet",
+              "ap_cost": 0,
+              "uses": "per_scene",
+              "text": "Soul cast AP, 60 MP, Heart save: you choose the target's next action. It can't be made to harm itself directly. Bosses roll the save twice and keep the better.",
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "puppeted",
+                  "target": "target",
+                  "when": "on_use"
+                },
+                {
+                  "op": "narrator",
+                  "note": "Rule on what counts as harming itself."
+                }
+              ],
+              "adjudication": "hybrid"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "advanced": [
+    {
+      "id": "gunslinger",
+      "name": "Gunslinger",
+      "parents": [
+        "marksman",
+        "duelist"
+      ],
+      "tutor": "The Old Drifter's road (Ambrosius Costeau)",
+      "summary": "Gunplay with a swordsman's footwork.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "The Old Drifter's road (Ambrosius Costeau)"
+        }
+      ],
+      "moves": [
+        {
+          "id": "the_draw",
+          "name": "The Draw",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "Before the first initiative turn of a combat, fire one single shot with a pistol or revolver for 0 AP.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "draw_shot",
+              "ap": 0,
+              "uses": "per_scene"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "six_for_six",
+          "name": "Six for Six",
+          "ap_cost": 4,
+          "uses": "per_scene",
+          "text": "Fire up to six single shots from a pistol or revolver at targets within 4 tiles. Recoil and Heat apply to each.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "fan_fire",
+              "ap": 4,
+              "uses": "per_scene"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "called_shot",
+          "name": "Called Shot",
+          "ap_cost": 3,
+          "uses": "at_will",
+          "text": "Name head, arm or leg and shoot at -2. On a hit, apply that injury result (head: Dazed; arm: -2 to attacks with it; leg: half Tiles per Move) without needing a critical.",
+          "effects": [
+            {
+              "op": "tn_mod",
+              "context": "called_shot",
+              "value": -2
+            },
+            {
+              "op": "condition",
+              "condition": "injured",
+              "target": "target",
+              "when": "on_hit",
+              "location": "chosen"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "hellraiser_heavy",
+      "name": "Hellraiser Heavy",
+      "parents": [
+        "marksman",
+        "vanguard"
+      ],
+      "tutor": "Hellraiser Divisions",
+      "summary": "Emplaced, belt-fed fire that makes ground impossible to stand on.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Hellraiser Divisions"
+        }
+      ],
+      "moves": [
+        {
+          "id": "emplace",
+          "name": "Emplace",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "Become Emplaced: heavy weapons lose their unemplaced penalty, you ignore recoil, and you gain +5 armour until you move.",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "emplaced",
+              "target": "self",
+              "when": "on_use"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "armor",
+              "value": 5
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "suppression",
+          "name": "Suppression",
+          "ap_cost": 4,
+          "uses": "at_will",
+          "text": "While Emplaced, fire full auto into a 3x3-tile area. Until your next turn, any enemy there that moves or attacks takes one attack roll from you and is Pinned on a hit (Body save).",
+          "effects": [
+            {
+              "op": "state",
+              "state": "suppressed_zone",
+              "area": "3x3",
+              "rounds": 1
+            },
+            {
+              "op": "condition",
+              "condition": "pinned",
+              "target": "area",
+              "when": "on_hit"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "belt_discipline",
+          "name": "Belt Discipline",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "While Emplaced, your weapon's Heat limit is +6 and it loses 4 Heat at the start of your turn instead of 2.",
+          "effects": [
+            {
+              "op": "heat_mod",
+              "action": "limit",
+              "value": 6
+            },
+            {
+              "op": "heat_mod",
+              "action": "per_turn",
+              "value": -2
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "ccec_ballistician",
+      "name": "CCEC Ballistician",
+      "parents": [
+        "marksman",
+        "assassin"
+      ],
+      "tutor": "Central City Espionage Commission",
+      "summary": "Ballistics and weak points; one shot closes a case.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Central City Espionage Commission"
+        }
+      ],
+      "moves": [
+        {
+          "id": "case_file",
+          "name": "Case File",
+          "ap_cost": 1,
+          "uses": "at_will",
+          "text": "Analyze costs 1 AP and also Marks the target.",
+          "effects": [
+            {
+              "op": "action_cost",
+              "action": "analyze",
+              "value": -1
+            },
+            {
+              "op": "condition",
+              "condition": "marked",
+              "target": "target",
+              "when": "on_analyze"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "weak_point",
+          "name": "Weak Point",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Your Aimed shots against a Marked target ignore armour and are critical on a natural 18-20.",
+          "effects": [
+            {
+              "op": "state",
+              "state": "ignore_armor_vs_marked"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "crit_range",
+              "value": 2
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "one_shot",
+          "name": "One Shot",
+          "ap_cost": 4,
+          "uses": "per_scene",
+          "text": "If you haven't moved this turn, an Aimed shot at a Marked target deals triple damage.",
+          "effects": [
+            {
+              "op": "damage_mult",
+              "value": 2.0
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "banner_dancer",
+      "name": "Banner Dancer",
+      "parents": [
+        "duelist",
+        "combat_medic"
+      ],
+      "tutor": "237th Hellraiser Division",
+      "summary": "Armourless skirmisher whose bot-thread banners shield and rally allies.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "237th Hellraiser Division"
+        }
+      ],
+      "moves": [
+        {
+          "id": "banner_thread",
+          "name": "Banner Thread",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "With no torso armour (Class 0) you get +2 Defense and +1 Tiles per Move.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "defense",
+              "value": 2
+            },
+            {
+              "op": "stat_mod",
+              "stat": "move",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "rally_banner",
+          "name": "Rally Banner",
+          "ap_cost": 2,
+          "uses": "per_scene",
+          "text": "Plant a banner. Allies who start their turn within 2 tiles of it gain a 10-point shield (doesn't stack) while you stay within 3 tiles of it.",
+          "effects": [
+            {
+              "op": "shield",
+              "value": 10,
+              "target": "allies_near_banner",
+              "scale": "healing_given"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "sweep",
+          "name": "Sweep",
+          "ap_cost": 3,
+          "uses": "at_will",
+          "text": "Spend 3 Momentum: move up to 3 tiles. Make one melee attack against each enemy you pass adjacent to; each ally you pass heals 10.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "momentum",
+              "value": -3,
+              "when": "on_use"
+            },
+            {
+              "op": "heal",
+              "value": 10,
+              "target": "allies_passed"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "rtc_contractor",
+      "name": "RTC Contractor",
+      "parents": [
+        "marksman",
+        "combat_medic"
+      ],
+      "tutor": "Rigaz Trade Company",
+      "summary": "Credit buys supply drops, strikes and extractions.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Rigaz Trade Company"
+        }
+      ],
+      "moves": [
+        {
+          "id": "supply_drop",
+          "name": "Supply Drop",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "Spend 100 credits: next round a crate lands within 6 tiles. Anyone adjacent can take 1 Supply or one magazine from it (1 AP).",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "credits",
+              "value": -100,
+              "when": "on_use"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        {
+          "id": "strike_call",
+          "name": "Strike Call",
+          "ap_cost": 3,
+          "uses": "per_scene",
+          "text": "Spend 300 credits: at the start of your next turn, a 3x3-tile area takes 50 Physical damage. Anyone inside can spend their reaction to move 1 tile.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "credits",
+              "value": -300,
+              "when": "on_use"
+            },
+            {
+              "op": "narrator",
+              "note": "No strikes where the Company has no signal."
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        {
+          "id": "extraction",
+          "name": "Extraction",
+          "ap_cost": 4,
+          "uses": "per_session",
+          "text": "Spend 500 credits: a Company flyer lifts the squad out after 2 rounds.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "credits",
+              "value": -500,
+              "when": "on_use"
+            },
+            {
+              "op": "narrator",
+              "note": "Decide where the flyer can land and what follows."
+            }
+          ],
+          "adjudication": "narrator"
+        }
+      ]
+    },
+    {
+      "id": "blade_scribe",
+      "name": "Blade Scribe",
+      "parents": [
+        "duelist",
+        "artillerist"
+      ],
+      "tutor": "The southern sects",
+      "summary": "Evoker blades: each sword form draws a sigil.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "The southern sects"
+        }
+      ],
+      "moves": [
+        {
+          "id": "sword_form",
+          "name": "Sword Form",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Each melee attack can also draw one Sigil word for no extra AP. It still costs charge and adds Flux.",
+          "effects": [
+            {
+              "op": "action_cost",
+              "action": "draw_sigil_word",
+              "value": "0_with_melee"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "edge_sigil",
+          "name": "Edge Sigil",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "A damage word drawn through Sword Form adds its element damage to that hit as Elemental damage.",
+          "effects": [
+            {
+              "op": "damage_mod",
+              "source": "word_element",
+              "type": "elemental"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "three_cut_script",
+          "name": "Three-Cut Script",
+          "ap_cost": 6,
+          "uses": "per_scene",
+          "text": "Three melee attacks, each drawing one word; the three words resolve as one spell after the third cut.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "three_cut_script",
+              "ap": 6,
+              "uses": "per_scene"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "siege_engineer",
+      "name": "Siege Engineer",
+      "parents": [
+        "vanguard",
+        "warden"
+      ],
+      "tutor": "Central Command Center",
+      "summary": "Deployable cover and turrets reinforced with WALL sigils.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Central Command Center"
+        }
+      ],
+      "moves": [
+        {
+          "id": "deploy_cover",
+          "name": "Deploy Cover",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "Place a portable barricade on an adjacent tile: half cover, 40 HP. Draw WALL on it to make it full cover.",
+          "effects": [
+            {
+              "op": "state",
+              "state": "barricade",
+              "hp": 40
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "sentry_turret",
+          "name": "Sentry Turret",
+          "ap_cost": 3,
+          "uses": "per_scene",
+          "text": "Spend 2 charge: deploy a turret (40 HP, Defense 10) that fires once per round at the nearest enemy (+4 to hit, 20 damage). One at a time.",
+          "effects": [
+            {
+              "op": "state",
+              "state": "turret",
+              "hp": 40
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "bulwark_line",
+          "name": "Bulwark Line",
+          "ap_cost": 4,
+          "uses": "per_scene",
+          "text": "Until your next turn, all cover within 3 tiles counts as full cover and gains 20 HP.",
+          "effects": [
+            {
+              "op": "state",
+              "state": "bulwark",
+              "area": "radius_3",
+              "rounds": 1
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "spellslinger",
+      "name": "Spellslinger",
+      "parents": [
+        "marksman",
+        "scribe"
+      ],
+      "tutor": "Kortev Utility Shack",
+      "summary": "Sigils inscribed on rounds: every magazine carries a stored spell.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Kortev Utility Shack"
+        }
+      ],
+      "moves": [
+        {
+          "id": "inscribed_rounds",
+          "name": "Inscribed Rounds",
+          "ap_cost": 0,
+          "uses": "per_rest",
+          "text": "Out of combat, spend 1 charge per round to inscribe up to 6 rounds with a one-word effect (an element or a condition word).",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "inscribe_rounds",
+              "ap": 0,
+              "uses": "per_rest"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "spell_magazine",
+          "name": "Spell Magazine",
+          "ap_cost": 0,
+          "uses": "per_rest",
+          "text": "Store a full Sigil spell in a magazine. The first hit after loading it triggers the spell at the target.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "spell_magazine",
+              "ap": 0,
+              "uses": "per_rest"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "ricochet_glyph",
+          "name": "Ricochet Glyph",
+          "ap_cost": 0,
+          "uses": "per_turn",
+          "text": "When a shot misses, it can glance to another target within 4 tiles of the first: roll again at -2.",
+          "effects": [
+            {
+              "op": "tn_mod",
+              "context": "ricochet",
+              "value": -2
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "storm_hand",
+      "name": "Storm Hand",
+      "parents": [
+        "duelist",
+        "tempest"
+      ],
+      "tutor": "Kemizuchi Military Academy",
+      "summary": "One element infused into a weapon through an Emanator gauntlet; kills charge it.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Kemizuchi Military Academy"
+        }
+      ],
+      "moves": [
+        {
+          "id": "gauntlet_infusion",
+          "name": "Gauntlet Infusion",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Choose one element at each rest. Your melee hits deal +10 Elemental damage of it, paying 5 MP per hit and adding no Strain.",
+          "effects": [
+            {
+              "op": "damage_mod",
+              "value": 10,
+              "type": "elemental"
+            },
+            {
+              "op": "resource",
+              "resource": "mp",
+              "value": -5,
+              "when": "on_hit"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "charged_by_death",
+          "name": "Charged by Death",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Each kill you make gives 1 Charge (max 3). Charges fade after combat.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "storm_charge",
+              "value": 1,
+              "when": "on_kill"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "discharge",
+          "name": "Discharge",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Spend all Charges with a melee hit: everyone adjacent to the target takes 20 Elemental damage per Charge.",
+          "effects": [
+            {
+              "op": "damage_mod",
+              "value": "20*charges",
+              "type": "elemental",
+              "target": "adjacent_to_target"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "adamantile_knight",
+      "name": "Adamantile Knight",
+      "parents": [
+        "vanguard",
+        "aegis"
+      ],
+      "tutor": "Adamantile Brigade",
+      "summary": "Plate that hardens when struck and turns shed bots into shields for allies.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Adamantile Brigade"
+        }
+      ],
+      "moves": [
+        {
+          "id": "adamantile_plate",
+          "name": "Adamantile Plate",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "When Reactive Plate sheds bots, an adjacent ally of your choice gains a shield of 10 per Guard you lost.",
+          "effects": [
+            {
+              "op": "shield",
+              "value": "10*guard_lost",
+              "target": "ally_adjacent"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "bulwark_of_will",
+          "name": "Bulwark of Will",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Brace also gives you a shield of 20 x your Healing given multiplier.",
+          "effects": [
+            {
+              "op": "shield",
+              "value": 20,
+              "target": "self",
+              "scale": "healing_given",
+              "when": "on_brace"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "unbroken",
+          "name": "Unbroken",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "The first time in a combat you would drop to 0 HP, drop to 1 instead and gain 3 Guard.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "hp_floor_once",
+              "value": 1
+            },
+            {
+              "op": "resource",
+              "resource": "guard",
+              "value": 3,
+              "when": "would_drop_to_0"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "shade",
+      "name": "Shade",
+      "parents": [
+        "assassin",
+        "haunt"
+      ],
+      "tutor": "Smetanita Conjunction",
+      "summary": "Silent kills that leave fear behind; marked targets see their nightmares.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Smetanita Conjunction"
+        }
+      ],
+      "moves": [
+        {
+          "id": "silent_kill",
+          "name": "Silent Kill",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "A kill from Hidden doesn't reveal you.",
+          "effects": [
+            {
+              "op": "state",
+              "state": "stay_hidden_on_kill"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "nightmare_mark",
+          "name": "Nightmare Mark",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Enemies you Mark make a Heart save at the start of each of their turns or are Afraid of you (Fear) that turn.",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "fear",
+              "target": "marked",
+              "when": "turn_start_save"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "lingering_dread",
+          "name": "Lingering Dread",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "When you kill, every enemy within 3 tiles who saw it makes a Heart save or becomes Shaken.",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "shaken",
+              "target": "area",
+              "when": "on_kill"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "lumeri_templar",
+      "name": "Lumeri Templar",
+      "parents": [
+        "vanguard",
+        "muse"
+      ],
+      "tutor": "Lumeri Church",
+      "summary": "The paladin: Blessings fired as shells, a patron watching, Judgement.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Lumeri Church"
+        },
+        {
+          "patron": true
+        }
+      ],
+      "moves": [
+        {
+          "id": "blessed_shells",
+          "name": "Blessed Shells",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "When you Pray successfully, you can load the Blessing into a scattergun shell or your weapon instead. On your next hit it resolves at the target (if harmful) or on allies adjacent to the target (if helpful).",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "load_blessing",
+              "ap": 0,
+              "uses": "at_will"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        {
+          "id": "under_the_eye",
+          "name": "Under the Eye",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "While you are Witnessed, allies within 3 tiles also get +2 on actions on your patron's theme.",
+          "effects": [
+            {
+              "op": "skill_mod_tag",
+              "tag": "patron_theme",
+              "value": 2,
+              "target": "allies_within_3"
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        {
+          "id": "judgement",
+          "name": "Judgement",
+          "ap_cost": 4,
+          "uses": "per_scene",
+          "text": "Spend 3 Devotion: a melee or scattergun attack dealing damage x (1 + your Blessing power).",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "devotion",
+              "value": -3,
+              "when": "on_use"
+            },
+            {
+              "op": "damage_mult",
+              "value": "blessing_power"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "alt_parents": [
+        [
+          "duelist",
+          "muse"
+        ]
+      ]
+    },
+    {
+      "id": "stroke_gambler",
+      "name": "Stroke Gambler",
+      "parents": [
+        "artillerist",
+        "hexwright"
+      ],
+      "tutor": "Black Scavengers",
+      "summary": "Random half-sigils stitched into whole spells.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Black Scavengers"
+        }
+      ],
+      "moves": [
+        {
+          "id": "half_sigil",
+          "name": "Half-Sigil",
+          "ap_cost": 1,
+          "uses": "at_will",
+          "text": "Draw a random word from those you know (the engine rolls). It costs no charge but still adds Flux.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "random_word",
+              "ap": 1,
+              "uses": "at_will"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "stitch",
+          "name": "Stitch",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Cast a spell built only from Half-Sigils and roll a d20: 1-5 it hits you or your nearest ally instead; 16-20 its damage doubles.",
+          "effects": [
+            {
+              "op": "damage_mult",
+              "value": 1.0,
+              "when": "stitch_16_20"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "house_edge",
+          "name": "House Edge",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "Once per combat, reroll a Stitch roll.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "reroll_stitch",
+              "ap": 0,
+              "uses": "per_scene"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "devoted",
+      "name": "Devoted",
+      "parents": [
+        "tempest",
+        "muse"
+      ],
+      "tutor": "Arkvelton witches",
+      "summary": "A few spells, loved and boosted beyond anyone else's.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Arkvelton witches"
+        }
+      ],
+      "moves": [
+        {
+          "id": "beloved_spells",
+          "name": "Beloved Spells",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Choose up to 3 ready designs as Beloved. They cost 30% less MP and get +1 module slot.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "mp_cost_pct_beloved",
+              "value": -30
+            },
+            {
+              "op": "stat_mod",
+              "stat": "module_slots_beloved",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "hearts_own",
+          "name": "Heart's Own",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Strain from Beloved spells triggers a Mana Short only past your Strain limit + 2.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "strain_limit_beloved",
+              "value": 2
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "love_made_manifest",
+          "name": "Love Made Manifest",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "Once per combat, a Beloved spell's effect triples.",
+          "effects": [
+            {
+              "op": "damage_mult",
+              "value": 2.0
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ]
+    },
+    {
+      "id": "circuit_mage",
+      "name": "Circuit Mage",
+      "parents": [
+        "scribe",
+        "muse"
+      ],
+      "tutor": "The Institute of Forgotten Knowledge, in secret",
+      "summary": "Vents and crystallises in one body: the only caster who needs nobody's cores.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "The Institute of Forgotten Knowledge, in secret"
+        }
+      ],
+      "moves": [
+        {
+          "id": "closed_loop",
+          "name": "Closed Loop",
+          "ap_cost": 1,
+          "uses": "at_will",
+          "text": "When you Vent, your own Emanator takes the Flux as 10 MP per Flux instead of the air.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "mp",
+              "value": "10*flux",
+              "when": "on_vent"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "self_crystallise",
+          "name": "Self-Crystallise",
+          "ap_cost": 3,
+          "uses": "at_will",
+          "text": "Crystallise from your own MP: spend 100 MP to make a standard core, ignoring the meter.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "mp",
+              "value": -100,
+              "when": "on_use"
+            },
+            {
+              "op": "resource",
+              "resource": "core",
+              "value": 1,
+              "when": "on_use"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "fusion",
+          "name": "Fusion",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Cast a spell that joins Sigil Form or Motion words to a Soul school. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "fusion_cast",
+              "ap": "sigil_ap+soul_cast_ap",
+              "uses": "at_will"
+            },
+            {
+              "op": "narrator",
+              "note": "Each Fusion in sight of the world is a Knowing risk: decide whether a Celestial takes an interest."
+            }
+          ],
+          "adjudication": "hybrid"
+        }
+      ]
+    }
+  ]
+}

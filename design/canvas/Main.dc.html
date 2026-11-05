@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PHC · Story mode</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0D13}
+a{color:#4FC8DF}a:hover{color:#8FE0EE}
+input::placeholder{color:#7F8BA1}
+@keyframes diceA{0%{transform:rotate(-520deg) scale(.4);opacity:.2}70%{transform:rotate(12deg) scale(1.08);opacity:1}100%{transform:rotate(0) scale(1)}}
+@keyframes diceB{0%{transform:rotate(520deg) scale(.4);opacity:.2}70%{transform:rotate(-12deg) scale(1.08);opacity:1}100%{transform:rotate(0) scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+</style>
+</helmet>
+<div style="position: relative; min-height: 1040px; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 14px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 14px 24px; border-bottom: 1px solid #232D3F; background: #0D1119">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#4FC8DF" stroke-width="1.6" aria-hidden="true"><path d="M14 2 25 8.5v11L14 26 3 19.5v-11L14 2Z"/><path d="M14 8v12M8.5 11 14 14l5.5-3"/></svg>
+    <div style="display: flex; flex-direction: column; gap: 1px">
+      <span style="font-weight: 700; letter-spacing: 0.18em; font-size: 13px">PROJECT HEAVEN CRY</span>
+      <span style="color: #A3AEC2; font-size: 12px; letter-spacing: 0.06em">M813 · The Outpost at the Edge</span>
+    </div>
+  </div>
+  <nav aria-label="Mode" style="display: flex; gap: 4px; padding: 4px; border: 1px solid #232D3F; border-radius: 10px">
+    <a href="Main.dc.html" aria-current="page" style="padding: 8px 16px; border-radius: 7px; background: #1C2536; color: #E7EBF3; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 12px">STORY</a>
+    <a href="Combat.dc.html" style="padding: 8px 16px; border-radius: 7px; color: #A3AEC2; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 12px">COMBAT</a>
+  </nav>
+  <div style="flex: 1 1 40px"></div>
+  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #232D3F; border-radius: 999px">
+    <span style="width: 8px; height: 8px; border-radius: 50%; background: #6FD8A0"></span>
+    <span style="font-size: 12px; color: #A3AEC2">Narrator</span>
+    <span style="font-size: 12px; font-weight: 600">AI · your key</span>
+  </div>
+  <span style="font-size: 12px; color: #A3AEC2; letter-spacing: 0.06em">ROOM 7Q-K2</span>
+  <button type="button" aria-label="Settings" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #232D3F; background: transparent; color: #A3AEC2; display: grid; place-items: center; cursor: pointer">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+  </button>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; padding: 20px; max-width: 1640px; margin: 0 auto; box-sizing: border-box">
+
+  <!-- CHARACTER -->
+  <aside aria-label="Character" style="flex: 1 1 300px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 14px">
+    <div style="display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center">
+      <figure style="margin: 0; width: 96px; height: 96px; border-radius: 10px; overflow: hidden; border: 1px solid #232D3F; background: #151C29">
+        <svg viewBox="0 0 300 300" width="96" height="96" role="img" aria-label="Portrait placeholder: MPAT-813">
+          <g fill="none" stroke="#F2A54A" stroke-width="7" stroke-linejoin="round">
+            <path d="M96 92h108l18 34v62l-26 34H104l-26-34v-62Z"/>
+            <path d="M100 136h100v26H100Z" stroke="#4FC8DF"/>
+            <path d="M150 192v22M139 203h22" stroke="#E8604F"/>
+            <path d="M112 92 120 64h60l8 28"/>
+          </g>
+        </svg>
+      </figure>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600; line-height: 1.1">MPAT-813</span>
+        <span style="color: #A3AEC2; font-size: 12px">Combat Medic · Rank I · Level 3</span>
+        <span style="color: #A3AEC2; font-size: 12px">Robot · Outpost-813 Medical</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: grid; grid-template-columns: 30px 1fr 62px; align-items: center; gap: 8px">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #F0907F">HP</span>
+        <div style="height: 9px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 73.6%; height: 100%; background: #E8604F"></div></div>
+        <span style="text-align: right; font-variant-numeric: tabular-nums; font-size: 13px">184/250</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 30px 1fr 62px; align-items: center; gap: 8px">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #AE9BFF">MP</span>
+        <div style="height: 9px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 60%; height: 100%; background: #AE9BFF"></div></div>
+        <span style="text-align: right; font-variant-numeric: tabular-nums; font-size: 13px">60/100</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 30px 1fr 62px; align-items: center; gap: 8px">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #4FC8DF">XP</span>
+        <div style="height: 9px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 56%; height: 100%; background: #4FC8DF"></div></div>
+        <span style="text-align: right; font-variant-numeric: tabular-nums; font-size: 13px">340/600</span>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+      <div style="border: 1px solid #232D3F; border-radius: 9px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">ECHO</span>
+        <div style="display: flex; gap: 3px; align-items: center">
+          <sc-for list="{{echoes}}" as="e" hint-placeholder-count="3">
+            <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 13 7 7 13 1 7Z" fill="{{e.fill}}" stroke="#FFD27A" stroke-width="1.4"/></svg>
+          </sc-for>
+          <span style="margin-left: 3px; font-weight: 600; font-size: 13px">{{echoCount}}/3</span>
+        </div>
+      </div>
+      <div style="border: 1px solid #232D3F; border-radius: 9px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">SUPPLIES</span>
+        <span style="font-weight: 600; font-size: 13px">3/4</span>
+      </div>
+      <div style="border: 1px solid #232D3F; border-radius: 9px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">KARMA</span>
+        <span style="font-weight: 600; font-size: 13px">+4 Neutral</span>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Character sheet" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px">
+      <sc-for list="{{sheetTabs}}" as="t" hint-placeholder-count="5">
+        <button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="height: 470px; overflow-y: auto; padding-right: 6px; scrollbar-color: #2E3A50 transparent">
+
+      <sc-if value="{{tabSkills}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <div role="tablist" aria-label="Core" style="display: flex; gap: 6px">
+            <sc-for list="{{coreTabs}}" as="t" hint-placeholder-count="3">
+              <button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+            </sc-for>
+          </div>
+          <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+            <section style="display: flex; flex-direction: column; gap: 4px">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #232D3F; padding-bottom: 4px">
+                <h3 style="margin: 0; font-size: 12px; letter-spacing: 0.16em; color: {{coreColor}}">{{g.name}}</h3>
+                <span style="font-size: 12px; color: #A3AEC2">Attribute {{g.val}}</span>
+              </div>
+              <sc-for list="{{g.skills}}" as="s" hint-placeholder-count="3">
+                <div style="display: grid; grid-template-columns: 28px 1fr 64px 36px; align-items: center; gap: 8px; min-height: 26px">
+                  <span style="font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; color: {{s.modColor}}">{{s.modTxt}}</span>
+                  <span style="display: flex; align-items: center; gap: 6px; font-size: 13px">{{s.name}}<sc-if value="{{s.sig}}" hint-placeholder-val="{{false}}"><span title="Combat Medic signature skill" style="font-size: 9px; font-weight: 700; letter-spacing: 0.08em; padding: 1px 4px; border-radius: 4px; border: 1px solid {{coreColor}}; color: {{coreColor}}">SIG</span></sc-if></span>
+                  <div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{s.bar}}"></div></div>
+                  <span style="text-align: right; font-size: 12px; color: #A3AEC2; font-variant-numeric: tabular-nums">{{s.pts}}/10</span>
+                </div>
+              </sc-for>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabStatus}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBAT STATUS</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+              <sc-for list="{{statusRows}}" as="r" hint-placeholder-count="14">
+                <div style="display: flex; justify-content: space-between; gap: 6px; padding: 6px 8px; border-radius: 7px; background: #151C29; font-size: 12px"><span style="color: #A3AEC2">{{r.k}}</span><span style="font-weight: 600">{{r.v}}</span></div>
+              </sc-for>
+            </div>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</h3>
+            <div style="padding: 8px 10px; border-radius: 8px; border: 1px solid #232D3F; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Factory Made</span><span style="font-size: 12px; color: #A3AEC2; line-height: 1.45">Immune to poison, bleed and suffocation. Heals and Blessings work at half power; lightning and EMP deal double.</span></div>
+            <div style="padding: 8px 10px; border-radius: 8px; border: 1px solid #232D3F; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Machine-Faced</span><span style="font-size: 12px; color: #A3AEC2; line-height: 1.45">Composure in dialogue always succeeds; machines treat you as one of their own. No Implication or Charisma in dialogue.</span></div>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PERKS · ACQUIRED</h3>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1C2536"><span>Wind on the Skin</span><span style="font-size: 12px; color: #F2A54A">Sensory · I</span></div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1C2536"><span>Hot-Swap</span><span style="font-size: 12px; color: #4FC8DF">Proficiency · I</span></div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1C2536"><span>Soulmate → Kestrel</span><span style="font-size: 12px; color: #AE9BFF">Camaraderie · I</span></div>
+            <h3 style="margin: 6px 0 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PERKS · ACHIEVED</h3>
+            <span style="font-size: 12px; color: #A3AEC2">None yet. The Narrator grants these for deeds.</span>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">BUFFS · DEBUFFS</h3>
+            <span style="font-size: 12px; color: #A3AEC2">None active.</span>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabGear}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WEAPONS</h3>
+            <div style="padding: 10px; border-radius: 9px; border: 1px solid #4A3A20; background: #1A160F; display: flex; flex-direction: column; gap: 4px">
+              <div style="display: flex; justify-content: space-between"><span style="font-weight: 600">Service pistol (.32)</span><span style="font-size: 11px; color: #F2A54A; letter-spacing: 0.1em">MAIN HAND</span></div>
+              <span style="font-size: 12px; color: #A3AEC2">20 dmg · 8 tiles · Ammo 9/12 · Heat limit 6</span>
+            </div>
+            <div style="padding: 10px; border-radius: 9px; border: 1px solid #232D3F; display: flex; flex-direction: column; gap: 4px">
+              <div style="display: flex; justify-content: space-between"><span style="font-weight: 600">Stim injector</span><span style="font-size: 11px; color: #A3AEC2; letter-spacing: 0.1em">OFF HAND</span></div>
+              <span style="font-size: 12px; color: #A3AEC2">Tool · adjacent · uses Supplies</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A3AEC2; padding-top: 2px"><span>Mastery · Pistol</span><span>4 kills · Lv 1 · +0</span></div>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 4px">
+            <h3 style="margin: 0 0 2px; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">ARMOUR · CLASS II</h3>
+            <sc-for list="{{armour}}" as="a" hint-placeholder-count="9">
+              <div style="display: grid; grid-template-columns: 92px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1C2536; font-size: 13px"><span style="color: #A3AEC2; font-size: 12px">{{a.slot}}</span><span style="{{a.style}}">{{a.item}}</span></div>
+            </sc-for>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline"><h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">BACKPACK</h3><span style="font-size: 12px; font-weight: 600">4.2 / 10 kg</span></div>
+            <div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 42%; height: 100%; background: #F2A54A"></div></div>
+            <sc-for list="{{inventory}}" as="i" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: 1fr 30px 50px; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1C2536; font-size: 13px"><span>{{i.name}}</span><span style="text-align: right; color: #A3AEC2">×{{i.qty}}</span><span style="text-align: right; color: #A3AEC2">{{i.kg}}</span></div>
+            </sc-for>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabMagic}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #4FC8DF">SIGILS · MIND</h3>
+            <div style="padding: 10px; border-radius: 9px; border: 1px dashed #2E3A50; font-size: 13px; color: #A3AEC2; line-height: 1.5">No Evoker equipped. Sigils need an Evoker and mana cores. Known words: none.</div>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #AE9BFF">SOUL SPELLS</h3>
+            <div style="padding: 10px; border-radius: 9px; border: 1px solid #3A3260; background: #17142A; display: flex; flex-direction: column; gap: 4px">
+              <div style="display: flex; justify-content: space-between"><span style="font-weight: 600">Mending Pulse</span><span style="font-size: 12px; color: #AE9BFF">MP 30 · 3 AP</span></div>
+              <span style="font-size: 12px; color: #A3AEC2">Buff school · Periodic · heals an ally at the start of their next 2 turns.</span>
+            </div>
+            <span style="font-size: 12px; color: #A3AEC2">Strain 0 / 3 · Emanator: built-in</span>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 6px">
+            <h3 style="margin: 0; font-size: 11px; letter-spacing: 0.16em; color: #FFD27A">BLESSING</h3>
+            <div style="padding: 10px; border-radius: 9px; border: 1px dashed #2E3A50; font-size: 13px; color: #A3AEC2; line-height: 1.5">No patron. A pact needs a patron and Faith 3 to pray.</div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabBio}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <sc-for list="{{bio}}" as="b" hint-placeholder-count="10">
+            <div style="display: grid; grid-template-columns: 108px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid #1C2536; font-size: 13px"><span style="color: #A3AEC2; font-size: 12px">{{b.k}}</span><span style="{{b.style}}">{{b.v}}</span></div>
+          </sc-for>
+          <h3 style="margin: 10px 0 4px; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">HISTORY</h3>
+          <p style="margin: 0; font-family: 'Spectral', serif; font-size: 15px; line-height: 1.6; color: #DCE2EC">Built by the outpost’s own engineers when the last human medic shipped out. Has run the infirmary alone for six years. Has never lost a patient it could reach.</p>
+        </div>
+      </sc-if>
+    </div>
+  </aside>
+
+  <!-- STORY -->
+  <main style="flex: 999 1 560px; min-width: 0; height: 940px; display: flex; flex-direction: column; background: #10151F; border: 1px solid #232D3F; border-radius: 14px; overflow: hidden">
+    <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-color: #2E3A50 transparent">
+
+      <section aria-label="Opening" style="position: relative; border-bottom: 1px solid #232D3F">
+        <svg viewBox="0 0 960 420" width="100%" style="display: block; background: #07090E" role="img" aria-label="Opening picture placeholder: Outpost-813 on the rim of a black hole">
+          <g fill="#C9D3E3" opacity="0.7"><circle cx="80" cy="60" r="1.4"/><circle cx="190" cy="140" r="1"/><circle cx="300" cy="40" r="1.2"/><circle cx="860" cy="90" r="1.4"/><circle cx="770" cy="30" r="1"/><circle cx="910" cy="200" r="1.1"/><circle cx="40" cy="250" r="1"/><circle cx="420" cy="80" r="0.9"/><circle cx="640" cy="50" r="1.1"/></g>
+          <ellipse cx="620" cy="200" rx="250" ry="56" fill="none" stroke="#F2A54A" stroke-width="2" opacity="0.55"/>
+          <ellipse cx="620" cy="200" rx="200" ry="40" fill="none" stroke="#FFD27A" stroke-width="1.4" opacity="0.5"/>
+          <circle cx="620" cy="200" r="92" fill="#000000" stroke="#AE9BFF" stroke-width="2" opacity="0.95"/>
+          <path d="M370 200a250 56 0 0 0 500 0" fill="none" stroke="#F2A54A" stroke-width="3" opacity="0.8"/>
+          <g fill="none" stroke="#4FC8DF" stroke-width="2"><path d="M110 340h220M140 340v-60h40v60M200 340v-90h70v90M210 250l25-40 25 40M280 340v-40h40v40"/><path d="M235 210v-30"/><circle cx="235" cy="176" r="4"/></g>
+          <path d="M0 340h960" stroke="#232D3F"/>
+        </svg>
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 36px 22px; background: #07090ED9; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; letter-spacing: 0.24em; color: #FFD27A">CHAPTER ONE</span>
+          <h1 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 40px; line-height: 1.1">The Outpost at the Edge</h1>
+        </div>
+      </section>
+      <div style="padding: 24px 36px 8px; font-family: 'Spectral', serif; font-size: 20px; line-height: 1.75; color: #DCE2EC; max-width: 70ch; display: flex; flex-direction: column; gap: 14px">
+        <p style="margin: 0">Outpost-813 was built to watch the dark. It sits on the rim of a black hole the old charts call the Throat, close enough that time runs thick at the windows and every clock on the station disagrees.</p>
+        <p style="margin: 0">Six days ago the infirmary stopped reporting. Three days ago the relief shuttle docked, and nobody got off. You were sent to find out why.</p>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px; padding: 18px 36px 0">
+        <span style="height: 1px; flex: 1; background: #232D3F"></span>
+        <span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">HOUR 31 · AIR: RICH</span>
+        <span style="height: 1px; flex: 1; background: #232D3F"></span>
+      </div>
+
+      <div style="padding: 16px 36px 28px; display: flex; flex-direction: column; gap: 18px; font-family: 'Spectral', serif; font-size: 19px; line-height: 1.7; color: #DCE2EC; max-width: 70ch">
+        <h2 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 30px; color: #E7EBF3">The Quiet Ward</h2>
+        <p style="margin: 0">The infirmary lights come on one bank at a time, as if the station is deciding whether you deserve them.</p>
+        <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.3em; color: #A3AEC2">CLACK. CLACK. CLACK.</p>
+        <p style="margin: 0">Twelve beds. Eleven are made. The twelfth holds a station technician in a blue work suit, eyes open, one hand still curled around a stim injector. On the far wall, the morgue drawer marked <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 600">0417</span> ticks as it cools.</p>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 10px; background: #151C29">
+          <span style="font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #F2A54A">SENSORY <span style="color: #A3AEC2; font-weight: 500">[Easy 8 · Success]</span></span>
+          <span style="font-style: italic">The air tastes of copper and ozone. The mana count in here is high. Someone died recently, and not cleanly.</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-radius: 10px; border: 1px solid #232D3F">
+          <span aria-hidden="true" style="flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #F2A54A; display: grid; place-items: center; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">KE</span>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; font-weight: 600; color: #F2A54A">Kestrel</span>
+            <span style="font-size: 17px">I take the door. Nothing walks in behind us.</span>
+          </div>
+        </div>
+        <p style="margin: 0"><span style="color: #AE9BFF; font-weight: 600">Brother Hal</span> kneels by the bed and draws the sign of the open hand. <i>“Nerukhan keep him,”</i> he says, and then, quieter: <i>“MPAT. Tell me this was his heart.”</i></p>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 16px; border-radius: 10px; border: 1px solid #2B4A55; background: #0F1E25; font-family: 'Chakra Petch', sans-serif; font-size: 13px">
+          <span style="font-weight: 700; letter-spacing: 0.14em; color: #4FC8DF">PROFICIENCY</span>
+          <span style="color: #A3AEC2">Standard · TN 12</span>
+          <span style="font-variant-numeric: tabular-nums">d20 11 + 1 = 12</span>
+          <span style="margin-left: auto; font-weight: 700; letter-spacing: 0.12em; color: #6FD8A0">SUCCESS</span>
+        </div>
+        <p style="margin: 0">You read the injector’s log. Three doses in four minutes, each one signed with the technician’s own ID. Nobody doses themselves like that. Somebody held his hand while they did it.</p>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 10px; background: #151C29">
+          <span style="font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #AE9BFF">CAMARADERIE <span style="color: #A3AEC2; font-weight: 500">[Standard 12 · Success]</span></span>
+          <span style="font-style: italic">Hal already knows. He’s asking you to say it so he doesn’t have to.</span>
+        </div>
+        <p style="margin: 0">Behind you, drawer 0417 stops ticking.</p>
+      </div>
+    </div>
+
+    <form aria-label="Your turn" style="flex: 0 0 auto; border-top: 1px solid #232D3F; background: #0D1119; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline">
+        <span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{prompt}}</span>
+        <span style="font-size: 12px; color: #A3AEC2">{{speakerNote}}</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{suggestions}}" as="o" hint-placeholder-count="3">
+          <button type="button" onClick="{{o.pick}}" aria-pressed="{{o.selected}}" style="{{o.style}}">
+            <span style="font-size: 14px; color: #E7EBF3; font-weight: 600">{{o.title}}</span>
+            <span style="font-size: 12px; color: #A3AEC2">{{o.meta}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch">
+        <label for="act" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Your action</label>
+        <input id="act" value="{{input}}" onChange="{{onInput}}" disabled="{{notMyTurn}}" placeholder="Describe what MPAT does, or say a line…" style="flex: 1 1 280px; min-height: 48px; padding: 0 16px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 17px">
+        <button type="button" onClick="{{rollDice}}" disabled="{{notMyTurn}}" style="min-height: 48px; padding: 0 18px; border-radius: 10px; border: 1px solid #4FC8DF; background: transparent; color: #4FC8DF; font-family: inherit; font-weight: 700; letter-spacing: 0.1em; cursor: pointer">ROLL {{checkShort}}</button>
+        <button type="button" disabled="{{notMyTurn}}" style="min-height: 48px; padding: 0 22px; border-radius: 10px; border: 0; background: #4FC8DF; color: #06131A; font-family: inherit; font-weight: 700; letter-spacing: 0.1em; cursor: pointer">SEND</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- MAP + TURN -->
+  <aside aria-label="Map and speaking order" style="flex: 1 1 300px; max-width: 360px; display: flex; flex-direction: column; gap: 14px">
+    <section aria-label="Area map" style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2; font-weight: 600">AREA MAP · WARD B</h2>
+        <button type="button" style="min-height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; cursor: pointer">Expand</button>
+      </div>
+      <svg viewBox="0 0 320 240" width="100%" role="img" aria-label="Map of Ward B: beds on the left, morgue wall on the right with drawer 0417 marked, party near the twelfth bed, unexplored corridor to the east" style="display: block; border-radius: 9px; background: #0B1018">
+        <g stroke="#1A2232" stroke-width="1"><path d="M0 20H320M0 40H320M0 60H320M0 80H320M0 100H320M0 120H320M0 140H320M0 160H320M0 180H320M0 200H320M0 220H320M20 0V240M40 0V240M60 0V240M80 0V240M100 0V240M120 0V240M140 0V240M160 0V240M180 0V240M200 0V240M220 0V240M240 0V240M260 0V240M280 0V240M300 0V240"/></g>
+        <path d="M14 14H262V104M262 136V226H14Z" fill="none" stroke="#5B6880" stroke-width="3"/>
+        <g fill="#1E2738" stroke="#3B475D"><rect x="30" y="30" width="34" height="16"/><rect x="30" y="58" width="34" height="16"/><rect x="30" y="86" width="34" height="16"/><rect x="30" y="114" width="34" height="16"/><rect x="30" y="142" width="34" height="16"/><rect x="30" y="170" width="34" height="16" stroke="#E8604F"/></g>
+        <g fill="#151C29" stroke="#3B475D"><rect x="226" y="30" width="28" height="18"/><rect x="226" y="52" width="28" height="18"/><rect x="226" y="74" width="28" height="18"/></g>
+        <g fill="none" stroke="#FFD27A" stroke-width="1.8"><path d="M226 52l8-6h28l-8 6Z"/><path d="M254 52l8-6v18l-8 6"/><rect x="226" y="52" width="28" height="18"/></g>
+        <text x="190" y="64" font-family="Chakra Petch, sans-serif" font-size="10" fill="#FFD27A" text-anchor="end">0417</text>
+        <path d="M262 104h44v32h-44" fill="#0B1018" stroke="none"/>
+        <rect x="266" y="14" width="54" height="212" fill="#05070B" opacity="0.85"/>
+        <text x="293" y="124" font-family="Chakra Petch, sans-serif" font-size="9" fill="#7F8BA1" text-anchor="middle" transform="rotate(90 293 124)">UNEXPLORED</text>
+        <path d="M120 150 C150 120 190 90 222 70" fill="none" stroke="#F0907F" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <circle cx="96" cy="188" r="24" fill="#AE9BFF" fill-opacity="0.12" stroke="#AE9BFF" stroke-dasharray="4 4"/>
+        <g font-family="Chakra Petch, sans-serif" font-size="8" font-weight="700" text-anchor="middle">
+          <circle cx="84" cy="176" r="9" fill="#0A0D13" stroke="#F2A54A" stroke-width="2"/><text x="84" y="179" fill="#E7EBF3">MP</text>
+          <circle cx="104" cy="196" r="9" fill="#0A0D13" stroke="#AE9BFF" stroke-width="2"/><text x="104" y="199" fill="#E7EBF3">BH</text>
+          <circle cx="140" cy="160" r="9" fill="#0A0D13" stroke="#4FC8DF" stroke-width="2"/><text x="140" y="163" fill="#E7EBF3">OV</text>
+          <circle cx="250" cy="120" r="9" fill="#0A0D13" stroke="#F2A54A" stroke-width="2"/><text x="250" y="123" fill="#E7EBF3">KE</text>
+        </g>
+      </svg>
+      <div role="toolbar" aria-label="Narrator drawing tools" style="display: flex; gap: 4px; flex-wrap: wrap">
+        <sc-for list="{{tools}}" as="t" hint-placeholder-count="6">
+          <button type="button" aria-label="{{t.label}}" title="{{t.label}}" aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="{{t.icon}}"/></svg>
+          </button>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; color: #A3AEC2; line-height: 1.45">Drawn by the AI Narrator as the scene moves. A human Narrator draws with these tools; players see it read-only.</span>
+    </section>
+
+    <section aria-label="Speaking order" style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2; font-weight: 600">SPEAKING ORDER</h2>
+        <span style="font-size: 12px; color: #A3AEC2">Round 3</span>
+      </div>
+      <sc-for list="{{order}}" as="p" hint-placeholder-count="4">
+        <div style="{{p.rowStyle}}">
+          <span style="{{p.avatarStyle}}">{{p.init}}</span>
+          <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-weight: 600">{{p.name}}</span>
+            <span style="{{p.stateStyle}}">{{p.state}}</span>
+          </div>
+          <div style="height: 4px; border-radius: 99px; background: #1C2536; overflow: hidden; grid-column: 2"><div style="{{p.hp}}"></div></div>
+        </div>
+      </sc-for>
+      <div style="display: flex; gap: 8px">
+        <button type="button" onClick="{{passTurn}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.06em; cursor: pointer">{{passLabel}}</button>
+        <button type="button" onClick="{{requestTurn}}" disabled="{{requestDisabled}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #4FC8DF; background: transparent; color: #4FC8DF; font-family: inherit; font-weight: 600; letter-spacing: 0.06em; cursor: pointer">{{requestLabel}}</button>
+      </div>
+      <span style="font-size: 12px; color: #A3AEC2; line-height: 1.45">Everyone speaks once, then the Narrator answers all of it together. Request a turn to jump the queue; a player who’s away can be skipped by the host.</span>
+    </section>
+  </aside>
+</div>
+
+<sc-if value="{{showDice}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-label="Dice roll" style="position: absolute; inset: 0; z-index: 20; background: #05070BD1; display: flex; justify-content: center; align-items: flex-start; padding-top: 180px; animation: fadeIn 200ms ease-out">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">
+      <span style="font-size: 13px; letter-spacing: 0.24em; color: #A3AEC2">{{checkLine}}</span>
+      <span style="font-size: 30px; font-weight: 700; letter-spacing: 0.2em; color: {{checkColor}}">{{checkSkill}}</span>
+      <div style="width: 300px; height: 300px; animation: {{diceAnim}} 800ms cubic-bezier(.2,.8,.2,1)">
+        <svg viewBox="0 0 200 200" width="300" height="300" role="img" aria-label="d20 showing {{roll}}">
+          <path d="M100 10 178 55v90l-78 45-78-45V55Z" fill="#151C29" stroke="{{diceColor}}" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M100 40 152 130H48Z" fill="#1A2333" stroke="{{diceColor}}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M100 40V10M100 40 22 55M100 40l78 15M152 130l26-75M152 130l26 15M152 130l-52 60M48 130 22 55M48 130l-26 15M48 130l52 60" stroke="{{diceColor}}" stroke-width="1.4" stroke-opacity="0.55" fill="none"/>
+          <text x="100" y="114" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="34" font-weight="700" fill="#E7EBF3">{{roll}}</text>
+        </svg>
+      </div>
+      <span style="font-size: 18px; font-variant-numeric: tabular-nums">{{mathLine}}</span>
+      <span style="font-size: 30px; font-weight: 700; letter-spacing: 0.2em; color: {{verdictColor}}">{{verdict}}</span>
+      <div style="display: flex; gap: 10px; margin-top: 6px">
+        <button type="button" onClick="{{spendEcho}}" disabled="{{echoDisabled}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #FFD27A; background: transparent; color: #FFD27A; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; cursor: pointer">SPEND ECHO · REROLL</button>
+        <button type="button" onClick="{{closeDice}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #4FC8DF; color: #06131A; font-family: inherit; font-weight: 700; letter-spacing: 0.1em; cursor: pointer">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'skills', core: 'body', roll: 11, showDice: false, anim: 0, echo: 2, pick: -1, input: '',
+      speaker: 0, requested: { 3: true }, tool: 'cube',
+      check: { skill: 'Proficiency', core: 'mind', tn: 12, tnLabel: 'Standard', pts: 3 } };
+  }
+  renderVals() {
+    const S = this.state;
+    const CORE = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF' };
+    const DATA = {
+      body: [
+        { name: 'ENDURANCE', val: 3, skills: [['Durability', 3], ['Pain Threshold', 2], ['Sensory', 3, true]] },
+        { name: 'STRENGTH', val: 1, skills: [['Raw Power', 0], ['Guts', 1], ['Intimidation', 0]] },
+        { name: 'AGILITY', val: 2, skills: [['Athletics', 1], ['Dexterity', 2], ['Reaction Speed', 1]] }],
+      mind: [
+        { name: 'PERCEPTION', val: 3, skills: [['Ingenuity', 1], ['Proficiency', 3, true], ['Vigilant', 2]] },
+        { name: 'INTELLIGENCE', val: 2, skills: [['Brain Power', 1], ['Rumination', 2], ['Eloquence', 0]] },
+        { name: 'EXPRESSION', val: 1, skills: [['Visualization', 0], ['Analysis', 1], ['Charisma', 0]] }],
+      soul: [
+        { name: 'INSIGHT', val: 3, skills: [['Empathy', 2], ['Camaraderie', 3, true], ['Implication', 0]] },
+        { name: 'DETERMINATION', val: 2, skills: [['Will Power', 1], ['Lore Master', 0], ['Composure', 2]] },
+        { name: 'VIRTUE', val: 1, skills: [['Faith', 0], ['Conscience', 1], ['Authority', 0]] }]
+    };
+    const mod = (p) => (p === 0 ? -2 : Math.floor(p / 2));
+    const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
+    const color = CORE[S.core];
+    const tabBtn = (on, c) => 'min-height: 40px; padding: 0 2px; border-radius: 8px; font-family: inherit; font-weight: 700; letter-spacing: 0.08em; font-size: 11px; cursor: pointer; ' +
+      (on ? 'border: 1px solid ' + c + '; background: #1C2536; color: ' + c : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
+    const sheetTabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['gear', 'GEAR'], ['magic', 'MAGIC'], ['bio', 'BIO']].map(([id, label]) => ({
+      label, selected: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }), style: tabBtn(S.tab === id, '#E7EBF3') }));
+    const coreTabs = [['body', 'BODY'], ['mind', 'MIND'], ['soul', 'SOUL']].map(([id, label]) => ({
+      label, selected: S.core === id ? 'true' : 'false', pick: () => this.setState({ core: id }), style: 'flex: 1; ' + tabBtn(S.core === id, CORE[id]) }));
+    const groups = DATA[S.core].map((g) => ({ name: g.name, val: g.val,
+      skills: g.skills.map(([name, pts, sig]) => { const m = mod(pts);
+        return { name, pts, sig: !!sig, modTxt: fmt(m), modColor: m < 0 ? '#F0907F' : m === 0 ? '#A3AEC2' : color,
+          bar: 'width: ' + pts * 10 + '%; height: 100%; border-radius: 99px; background: ' + color }; }) }));
+    const statusRows = [['Defense', '10'], ['Initiative', '+1'], ['Move', '3 tiles'], ['Vision', '16 tiles'], ['Detection', '4 tiles'], ['Throw range', '4 tiles'],
+      ['Carry', '20 kg'], ['HP per level', '25'], ['Healing taken', '+30%'], ['Crit dmg taken', '−35%'], ['Elemental taken', '−20%'], ['Injury resist', '20%'],
+      ['Body save', '+0'], ['Heart save', '+1']].map(([k, v]) => ({ k, v }));
+    const empty = 'color: #7F8BA1';
+    const armour = [['Head', 'Sensor cowl'], ['Head acc.', '—'], ['Torso outer', 'Medic plate (Class II)'], ['Torso inner', 'Coolant mesh'], ['Lower torso', 'Tool belt'],
+      ['Legs', 'Servo greaves'], ['Hands', 'Surgical manipulators'], ['Footwear', 'Mag-soles'], ['Veil', '—']].map(([slot, item]) => ({ slot, item, style: item === '—' ? empty : '' }));
+    const inventory = [['Stim', 3, '0.3 kg'], ['Med-drone', 1, '1.2 kg'], ['.32 magazine', 3, '0.6 kg'], ['Field kit', 1, '2.0 kg'], ['Injector log (evidence)', 1, '0.1 kg'], ['Essence of Experience', 1, '0 kg']]
+      .map(([name, qty, kg]) => ({ name, qty, kg }));
+    const bio = [['Original name', '[NOT WRITTEN YET]'], ['Origin', 'Outpost-813 infirmary'], ['Race', 'Robot, built by NPCs'], ['Association', 'Outpost-813 Medical'],
+      ['Title', '—'], ['Reputation', 'Unknown'], ['Subject class', 'C'], ['Main hand', 'Right'], ['Last dream', '[NOT WRITTEN YET]'], ['Favorite song', '[NOT WRITTEN YET]']]
+      .map(([k, v]) => ({ k, v, style: v.startsWith('[') || v === '—' ? empty : '' }));
+
+    const SUG = [
+      { title: 'Scan drawer 0417', skill: 'Vigilant', core: 'mind', tn: 12, tnLabel: 'Standard', pts: 2 },
+      { title: 'Tell Hal the truth', skill: 'Camaraderie', core: 'soul', tn: 8, tnLabel: 'Easy', pts: 3 },
+      { title: 'Pry the drawer open', skill: 'Raw Power', core: 'body', tn: 12, tnLabel: 'Standard', pts: 0 }];
+    const myTurn = S.speaker === 0;
+    const suggestions = SUG.map((o, i) => { const on = S.pick === i;
+      return { title: o.title, selected: on ? 'true' : 'false',
+        meta: o.skill + ' · ' + o.tnLabel + ' ' + o.tn + ' · ' + fmt(mod(o.pts)) + (o.pts === 0 ? ' untrained' : ''),
+        pick: () => this.setState({ pick: i, input: o.title, check: o }),
+        style: 'min-height: 52px; padding: 6px 12px; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; cursor: pointer; font-family: inherit; background: ' +
+          (on ? '#1C2536; border: 1px solid ' + CORE[o.core] : 'transparent; border: 1px solid #2E3A50') }; });
+
+    const PEOPLE = [['MP', 'MPAT-813', '#F2A54A', 73.6], ['OV', 'Oda Vey', '#4FC8DF', 64], ['KE', 'Kestrel', '#F2A54A', 92], ['BH', 'Brother Hal', '#AE9BFF', 100]];
+    const order = PEOPLE.map(([init, name, ring, hp], i) => {
+      const now = S.speaker === i, done = i < S.speaker, req = !!S.requested[i];
+      const state = now ? (i === 0 ? 'Speaking now · you' : 'Speaking now') : done ? 'Spoke' : req ? 'Requested a turn' : 'Waiting';
+      return { init, name: i === 0 ? name + ' (you)' : name, state,
+        stateStyle: 'font-size: 12px; color: ' + (now ? '#4FC8DF' : req ? '#FFD27A' : '#A3AEC2'),
+        rowStyle: 'display: grid; grid-template-columns: 34px 1fr; gap: 4px 10px; align-items: center; padding: 8px; border-radius: 10px; ' +
+          (now ? 'border: 1px solid #4FC8DF; background: #12303A' : 'border: 1px solid transparent'),
+        avatarStyle: 'grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; border: 2px solid ' + ring + '; display: grid; place-items: center; font-size: 11px; font-weight: 700',
+        hp: 'width: ' + hp + '%; height: 100%; background: #E8604F' }; });
+
+    const TOOLS = [['select', 'Select', 'M5 3l14 8-6 2-2 6Z'], ['cube', 'Cube', 'M12 3 20 7.5v9L12 21l-8-4.5v-9ZM12 12l8-4.5M12 12v9M12 12 4 7.5'],
+      ['zone', 'Zone', 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18'], ['arrow', 'Arrow', 'M4 20 20 4M11 4h9v9'], ['label', 'Label', 'M5 5h14M12 5v14'], ['erase', 'Erase', 'M4 20h16M7 16l9-9 3 3-9 9H7Z']];
+    const tools = TOOLS.map(([id, label, icon]) => ({ label, icon, on: S.tool === id ? 'true' : 'false', pick: () => this.setState({ tool: id }),
+      style: 'width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; cursor: pointer; ' +
+        (S.tool === id ? 'border: 1px solid #FFD27A; background: #2A2113; color: #FFD27A' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }));
+
+    const c = S.check, m = mod(c.pts), total = S.roll + m;
+    let verdict, vColor;
+    if (S.roll === 20) { verdict = 'CRITICAL SUCCESS'; vColor = '#FFD27A'; }
+    else if (S.roll === 1) { verdict = 'COMPLICATION'; vColor = '#F0907F'; }
+    else if (total >= c.tn) { verdict = 'SUCCESS'; vColor = '#6FD8A0'; }
+    else { verdict = 'FAILURE'; vColor = '#F0907F'; }
+    const roll = () => {
+      this.setState({ roll: 1 + Math.floor(Math.random() * 20), showDice: true, anim: this.state.anim + 1 });
+    };
+    return {
+      sheetTabs, coreTabs, groups, coreColor: color, statusRows, armour, inventory, bio,
+      tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabMagic: S.tab === 'magic', tabBio: S.tab === 'bio',
+      echoes: [0, 1, 2].map((i) => ({ fill: i < S.echo ? '#FFD27A' : 'none' })), echoCount: S.echo,
+      suggestions, input: S.input, onInput: (e) => this.setState({ input: e.target.value }),
+      prompt: myTurn ? 'What does MPAT do?' : PEOPLE[S.speaker][1] + ' is speaking…',
+      speakerNote: myTurn ? 'Your turn to speak' : 'You can request the next turn',
+      notMyTurn: !myTurn,
+      order, tools,
+      passLabel: myTurn ? 'PASS TURN' : 'NEXT SPEAKER',
+      passTurn: () => this.setState({ speaker: (this.state.speaker + 1) % 4, pick: -1 }),
+      requestLabel: S.requested[0] ? 'REQUESTED' : 'REQUEST TURN',
+      requestDisabled: myTurn || !!S.requested[0],
+      requestTurn: () => this.setState({ requested: { ...this.state.requested, 0: true } }),
+      checkShort: c.skill.toUpperCase(),
+      showDice: S.showDice, closeDice: () => this.setState({ showDice: false }),
+      checkSkill: c.skill.toUpperCase(), checkColor: CORE[c.core],
+      checkLine: c.tnLabel.toUpperCase() + ' · TN ' + c.tn + ' · ' + fmt(m) + (c.pts === 0 ? ' UNTRAINED' : ''),
+      roll: S.roll, mathLine: 'd20 ' + S.roll + ' ' + (m < 0 ? '− ' + Math.abs(m) : '+ ' + m) + ' = ' + total,
+      verdict, verdictColor: vColor, diceColor: vColor, diceAnim: S.anim % 2 ? 'diceA' : 'diceB',
+      rollDice: roll,
+      spendEcho: () => { if (this.state.echo > 0) { this.setState({ echo: this.state.echo - 1 }); roll(); } },
+      echoDisabled: !(S.echo > 0)
+    };
+  }
+}
+</script>
+</body>
+</html>

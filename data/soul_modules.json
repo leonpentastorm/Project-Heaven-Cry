@@ -1,0 +1,289 @@
+{
+  "$schema_version": "1.0",
+  "kind": "soul_modules",
+  "source": "PHC Core Rules v1.0 (schools) + Recovered Design Notes (module names)",
+  "schools": [
+    {
+      "id": "damage",
+      "name": "Damage",
+      "base_cost": 20,
+      "text": "25 Soul damage.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "engine: 25 soul damage x soul multiplier, will_power vs defense"
+        }
+      ],
+      "damage": 25,
+      "hit": "will_power_vs_defense",
+      "provisional": false
+    },
+    {
+      "id": "buff",
+      "name": "Buff",
+      "base_cost": 20,
+      "text": "One ally: +2 to hit, or +2 Defense, or heal 30 x Healing multiplier; 2 rounds.",
+      "options": [
+        "to_hit_2",
+        "defense_2",
+        "heal_30"
+      ],
+      "duration_rounds": 2,
+      "hit": "auto",
+      "provisional": false
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "base_cost": 25,
+      "text": "Push or pull 3 tiles, or Pinned, or Slowed (Body save).",
+      "options": [
+        "push_3",
+        "pull_3",
+        "pinned",
+        "slowed"
+      ],
+      "save": "body",
+      "provisional": false
+    },
+    {
+      "id": "status",
+      "name": "Status",
+      "base_cost": 20,
+      "text": "Fear, Shaken, Confused, or a Left or Right Brain Debuff (Heart or Brain save).",
+      "options": [
+        "fear",
+        "shaken",
+        "confused",
+        "left_brain_debuff",
+        "right_brain_debuff"
+      ],
+      "save": "heart_or_brain_by_condition",
+      "provisional": false
+    }
+  ],
+  "cost_rules": "(school base + modules + 20 if second school) x band multiplier x (1 - 5% x (insight-1))",
+  "limits": {
+    "module_slots": "1 + floor(will_power/3)",
+    "two_schools_from_will_power": 5,
+    "ready_designs": "2 + floor(empathy/2)"
+  },
+  "notes": "School numbers are from the spec. All module costs and effects are new and provisional; the 2020 notes named the modules with no costs.",
+  "items": [
+    {
+      "id": "move",
+      "name": "Move",
+      "family": "behaviour",
+      "cost": 5,
+      "strain_extra": 0,
+      "text": "The spell travels: range 8 tiles (base reach is 4 tiles + Soul range bonus).",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "range_tiles": 8
+    },
+    {
+      "id": "duplicate",
+      "name": "Duplicate",
+      "family": "behaviour",
+      "cost": 20,
+      "strain_extra": 1,
+      "text": "A second copy hits a second target within 3 tiles of the first.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "extra_targets": 1
+    },
+    {
+      "id": "bounce",
+      "name": "Bounce",
+      "family": "behaviour",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "After hitting, jumps once to another target within 3 tiles at half effect.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "homing",
+      "name": "Homing",
+      "family": "behaviour",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Ignores half cover and gets +2 to hit.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "swift",
+      "name": "Swift",
+      "family": "behaviour",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Cast AP −1 (minimum 1; AP ceiling still applies).",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "rain",
+      "name": "Rain",
+      "family": "behaviour",
+      "cost": 25,
+      "strain_extra": 1,
+      "text": "Hits every tile in radius 2; damage x0.6.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "area": "radius_2",
+      "damage_mult": 0.6
+    },
+    {
+      "id": "teleport",
+      "name": "Teleport",
+      "family": "behaviour",
+      "cost": 30,
+      "strain_extra": 1,
+      "text": "The spell appears anywhere you can see, no line of sight needed past the first tile, or moves the target (ally) up to 4 tiles.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "mastery",
+      "name": "Mastery",
+      "family": "behaviour",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "Effect x1.25 for a design you have cast at least 10 times (the engine counts casts).",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "effect_mult": 1.25,
+      "requires_casts": 10
+    },
+    {
+      "id": "ether",
+      "name": "Ether",
+      "family": "behaviour",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "The spell passes through walls and solid cover.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "right",
+      "name": "Right",
+      "family": "augment",
+      "cost": 5,
+      "strain_extra": 0,
+      "text": "Shapes the spell for the heart: Status spells use the Heart save.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "left",
+      "name": "Left",
+      "family": "augment",
+      "cost": 5,
+      "strain_extra": 0,
+      "text": "Shapes the spell for the brain: Status spells use the Brain save.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "time",
+      "name": "Time",
+      "family": "augment",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "Duration +2 rounds; damage spells deal half again next turn.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "extra_rounds": 2
+    },
+    {
+      "id": "inverse",
+      "name": "Inverse",
+      "family": "augment",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Flips the effect: damage becomes a shield of the same size on an ally; a debuff becomes its opposite (narrator rules the opposite).",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "adjudication": "hybrid"
+    },
+    {
+      "id": "size",
+      "name": "Size",
+      "family": "augment",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "Area +1 radius, or a single-target spell becomes radius 1.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "area_plus": 1
+    },
+    {
+      "id": "random",
+      "name": "Random",
+      "family": "augment",
+      "cost": -10,
+      "strain_extra": 0,
+      "text": "Cost −10, but the engine rolls the target among all creatures within range.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "random_target": true
+    },
+    {
+      "id": "impact",
+      "name": "Impact",
+      "family": "trigger",
+      "cost": 0,
+      "strain_extra": 0,
+      "text": "Default: the effect happens when the spell lands.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "at_once",
+      "name": "At Once",
+      "family": "trigger",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "The effect lands on cast with no attack roll; damage spells deal half.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "no_roll": true,
+      "damage_mult": 0.5
+    },
+    {
+      "id": "expire",
+      "name": "Expire",
+      "family": "trigger",
+      "cost": 5,
+      "strain_extra": 0,
+      "text": "The effect lands when the spell's duration runs out (a delayed blast).",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+    },
+    {
+      "id": "periodic",
+      "name": "Periodic",
+      "family": "trigger",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "The effect repeats at the start of each of the target's turns for 2 rounds, at half strength.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "repeats_rounds": 2,
+      "strength_mult": 0.5
+    },
+    {
+      "id": "proximity",
+      "name": "Proximity",
+      "family": "trigger",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Placed on a tile; fires on the first enemy to enter within 1 tile, up to 3 rounds.",
+      "provisional": true,
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "lasts_rounds": 3
+    }
+  ]
+}
