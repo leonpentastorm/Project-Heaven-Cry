@@ -44,7 +44,27 @@ def epccg(x):
     e = x["epccg"]
     return {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
             "quote": e["quote"], "intro": e["intro"], "effect": e["effect"], "high": e["high_levels"],
-            "good": e["good_for"], "bad": e["bad_for"]}
+            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"])}
+
+PERK_TYPE = {"active_skill": "Active skill", "combat_interaction": "Combat interaction", "passive": "Passive", "ap_mod": "AP modifier", "combat_starter": "Combat starter", "conversation_quirk": "Conversation quirk"}
+
+cap = lambda t: t[:1].upper() + t[1:]
+
+def skill_perks(sid):
+    """A skill's two Acquired perks (take one at Mastery 1), with the Wick icon when the artist has drawn it."""
+    out = []
+    for p in load("perks.json")["items"]:
+        if p["tier"] != "acquired" or sid not in p["skills"]:
+            continue
+        t = p["tiers"]
+        meta = [PERK_TYPE.get(p["perk_type"], (p["perk_type"] or "").replace("_", " ").capitalize())]
+        if p.get("ap_cost"):
+            meta.append(str(p["ap_cost"]) + " AP")
+        if p.get("uses") and p["uses"] != "at_will":
+            meta.append(p["uses"].replace("_", " "))
+        out.append({"id": p["id"], "name": p["name"], "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), ""),
+                    "meta": " · ".join(m for m in meta if m), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"])})
+    return out
 
 EP_TPL = (BUILD / "epccg.template.html").read_text()
 EP_JS = (BUILD / "epccg.logic.js").read_text()
