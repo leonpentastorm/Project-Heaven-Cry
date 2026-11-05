@@ -1,6 +1,6 @@
 # MPAT and M813
 
-English summary of the 2020 character sheet `M1.4_8R4-D83-RRY_A5.xlsx` (Vietnamese original in the claude.ai Project). It's the seed for the **M813 one-shot**. This summary was written by Claude. Where it and the original differ, the original wins.
+English summary of the 2020 character sheet `M1.4_8R4-D83-RRY_A5.xlsx` (Vietnamese original in the claude.ai Project). It's the seed for the **M813 one-shot**. This summary was written by Claude. Where it and the original differ, the original wins; where the sheet is ambiguous, the EPCCG's account (`EPCCG-Player-Character-Creation-Guide.md`, sample character) wins. The survivors were all robots: MPAT, three other medic robots and 23 infantry robots.
 
 ## The character
 
@@ -27,8 +27,8 @@ English summary of the 2020 character sheet `M1.4_8R4-D83-RRY_A5.xlsx` (Vietname
 Logged by **Snowden "Eye" Wright**, Regiment 093 Technical Logistics, dated 15 October 4090 at Outpost-921, about events of **27 July 4084** at **Outpost-813**, troop carrier 093 and black hole **B813**:
 
 1. Regiment 093 of the Thousand-Planet City army met its resource quota on planet **M813** and prepared to withdraw. A Colonel ordered 100 infantry robots and 20 medic robots to hold the line. Five squads were nearly wiped out by overwhelming enemy numbers.
-2. MPAT survived with 3 human medics and 23 badly damaged combat robots that had no spare parts. The enemy also began leaving the exhausted planet.
-3. For reasons nobody recorded, four medic robots tried to save all the infantry robots.
+2. MPAT survived with 3 other medic robots and 23 badly damaged combat robots that had no spare parts. The enemy also began leaving the exhausted planet.
+3. For reasons nobody recorded, the four medic robots (MPAT and the other three) tried to save all the infantry robots.
 4. Back at the rear, the only group left was a team of engineers whose ship, the last one out, carried platinum. They refused to take 27 badly damaged robots ("not enough thrust... you're scrap, just shut yourselves down"). Both sides shouted and attacked. The engineers sealed the hatch, killed 2 medics and 19 infantry with guns and grenades, and flew to the troop carrier in orbit.
 5. Soon the data showed only MPAT and one still-working robot head. Their last recorded conversation seems to be about choosing which of them would be fully repaired from their fallen comrades' parts.
 6. The two stayed on the planet for nearly 5 years, gathering materials and fuel to restore an escape craft. They then flew straight to **Outpost-1** to confront **Colonel Alexei Novikov**, demanding equality between humans and machines and one new law: *"At the very least, a broken robot must be fitted with a mechanical arm so it can repair itself."*

@@ -17,6 +17,6 @@ PHC's lore comes in layers. Each layer keeps everything below it and adds to it.
 4. **In-world text only.** The EPCCG quotes carry some real-world references from 2020 ("Solid Snake cosplayer", "Alex Jones"). Game text replaces them.
 5. **Suggested isn't canon.** Anything marked Suggested in the World Bible or elsewhere is a proposal until Leon accepts it.
 
-## Known inconsistency
+## Settled
 
-`MPAT-and-M813.md` says MPAT survived "with 3 human medics"; the EPCCG says "3 medics" and later "the 4 medical robots tried to save every remaining infantry unit", which reads as MPAT plus 3 robot medics. Unresolved; the EPCCG reading is used in `art/briefs/m813-mpat.md`.
+- **MPAT's fellow survivors were robots** (decided 5 Nov 2026: MPAT follows the EPCCG). MPAT, three other medic robots and 23 infantry robots; the engineers destroyed 2 medics and 19 infantry. There were no human medics.
