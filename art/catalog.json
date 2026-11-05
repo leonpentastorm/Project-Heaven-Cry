@@ -3635,6 +3635,30 @@
         "44": "art/perks/wick/production-v1/exports/44/origami-hands.png",
         "40": "art/perks/wick/production-v1/exports/40/origami-hands.png"
       }
+    },
+    "running-reload": {
+      "label": "Wick — Running Reload",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/running-reload.png",
+      "sha256": "2f308ab2e6541caf456e8839495771730a6b042e5487249f8e6aae506acd72e6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "running_reload",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/running-reload.png",
+        "128": "art/perks/wick/production-v1/exports/128/running-reload.png",
+        "64": "art/perks/wick/production-v1/exports/64/running-reload.png",
+        "56": "art/perks/wick/production-v1/exports/56/running-reload.png",
+        "48": "art/perks/wick/production-v1/exports/48/running-reload.png",
+        "44": "art/perks/wick/production-v1/exports/44/running-reload.png",
+        "40": "art/perks/wick/production-v1/exports/40/running-reload.png"
+      }
     }
   },
   "illustrations": {

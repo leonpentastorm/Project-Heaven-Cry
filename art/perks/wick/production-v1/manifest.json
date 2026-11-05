@@ -350,6 +350,29 @@
       },
       "batch": "D",
       "source_sha256": "650c722a1b6d3ff3e6653df0de4160a4ee9fd98d409db18509530408fe0f21d0"
+    },
+    {
+      "id": "running-reload",
+      "data_id": "running_reload",
+      "name": "Running Reload",
+      "family": "perks",
+      "order": 16,
+      "mood": "Heroic, Tense",
+      "action": "Wick sprints mid-stride, slapping a fresh magazine into a big pistol, motion lines behind both feet.",
+      "screen": "Focused",
+      "prop": "Pistol and magazine",
+      "path": "art/perks/wick/production-v1/running-reload.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/running-reload.png",
+        "128": "art/perks/wick/production-v1/exports/128/running-reload.png",
+        "64": "art/perks/wick/production-v1/exports/64/running-reload.png",
+        "56": "art/perks/wick/production-v1/exports/56/running-reload.png",
+        "48": "art/perks/wick/production-v1/exports/48/running-reload.png",
+        "44": "art/perks/wick/production-v1/exports/44/running-reload.png",
+        "40": "art/perks/wick/production-v1/exports/40/running-reload.png"
+      },
+      "batch": "D",
+      "source_sha256": "512df677da2d5d285281d58b68276db37703957221ab6c010d5e70561d7fa27b"
     }
   ]
 }

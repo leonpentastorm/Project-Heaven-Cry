@@ -96,11 +96,12 @@
     "bone-talk",
     "wall-run",
     "roll-with-it",
-    "origami-hands"
+    "origami-hands",
+    "running-reload"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 17
+    "perks": 18
   },
   "revision_rounds": {
     "field-surgeon": 3,
