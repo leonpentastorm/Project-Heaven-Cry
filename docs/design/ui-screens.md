@@ -20,7 +20,7 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
   - **Area map.** A top-down map drawn by the AI Narrator: a cube on an object, zones, a sound trail, fog over unexplored areas. A human Narrator gets the drawing tools (Select, Cube, Zone, Arrow, Label, Erase); players see it read-only.
   - **Speaking order.** Who is speaking now, who has spoken, who has requested a turn, and who is waiting, plus Pass and Request buttons.
 - **Voices** (rules 1.1): each story beat can bring up to 2 private voice cards per player ("ANALYSIS [Passive 13 vs 12]" plus the line in that skill's voice). Clicking a skill in the sheet **asks** it (once per scene). When an Overreach fires, the skill's push appears as a card with two buttons: **Indulge (+1 Echo)** and **Resist (−1 Echo**, −2 if Mastered).
-- **Dice overlay:** a full-screen d20 spin showing the skill, TN and modifier, then the sum ("d20 11 + 1 = 12") and the verdict (Success, Failure, Critical Success, Complication). Spend Echo to reroll.
+- **Dice table:** when the Narrator calls for a check, a pop-up opens with the call (skill, TN, modifier) over a dice table. The player throws the d20 (it tumbles in and lands), then sees the sum and the verdict (Success, Failure, Critical Success, Complication). Spend Echo throws again. **Customise:** table surface (Field felt, Mess-hall oak, Lumeri velvet, Outpost slate, Ship hull, Black-hole glass) and dice (Ivory, Obsidian, Brass, Sigil glass, Bone, Oil-red); choices follow the player to every room, and co-op players see each other's dice. Reduced-motion users get no tumble.
 
 ## Combat mode — `Combat.dc.html`
 

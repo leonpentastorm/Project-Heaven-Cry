@@ -174,15 +174,62 @@
 </div>
 
 <sc-if value="{{dice}}" hint-placeholder-val="{{false}}">
-<div role="dialog" aria-modal="true" aria-label="Dice roll" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.86); display: grid; place-items: center; z-index: 10">
-<div style="display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 40px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; min-width: 360px">
+<div role="dialog" aria-modal="true" aria-label="Dice table" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(760px, 100%); box-sizing: border-box">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 11px; letter-spacing: 0.2em; color: #A3AEC2">THE NARRATOR CALLS FOR A CHECK</span>
 <span style="{{roll.headStyle}}">{{roll.head}}</span>
-<span style="font-size: 96px; font-weight: 700; line-height: 1">{{roll.die}}</span>
-<span style="font-size: 18px; color: #C9D3E3">{{roll.math}}</span>
-<span style="{{roll.verdictStyle}}">{{roll.verdict}}</span>
-<div style="display: flex; gap: 10px">
-<button type="button" onClick="{{reroll}}" disabled="{{noReroll}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">◆ Spend Echo · reroll</button>
-<button type="button" onClick="{{closeDice}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Continue</button>
+</div>
+<button type="button" onClick="{{toggleCustom}}" aria-pressed="{{customPressed}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{customLabel}}</button>
+</div>
+
+<div style="{{tableStyle}}">
+<span style="position: absolute; left: 16px; top: 12px; font-size: 11px; letter-spacing: 0.18em; color: rgba(231, 235, 243, 0.55)">{{tableName}}</span>
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg width="72" height="72" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="20" font-weight="700" fill="{{skin.ink}}">20</text></svg>
+<span style="font-size: 12px; color: rgba(231, 235, 243, 0.7)">In your hand</span>
+</div>
+</sc-if>
+<sc-if value="{{rolledA}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; animation: phcThrow 0.9s cubic-bezier(.2,.7,.3,1) both">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="d20 shows {{roll.die}}"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" font-weight="700" fill="{{skin.ink}}">{{roll.die}}</text></svg>
+</div>
+</sc-if>
+<sc-if value="{{rolledB}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; animation: phcThrow2 0.9s cubic-bezier(.2,.7,.3,1) both">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="d20 shows {{roll.die}}"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="{{skin.face}}" stroke="{{skin.edge}}" stroke-width="3"></polygon><polygon points="50,22 76,66 24,66" fill="none" stroke="{{skin.edge}}" stroke-width="2"></polygon><g stroke="{{skin.edge}}" stroke-width="2"><line x1="50" y1="4" x2="50" y2="22"></line><line x1="90" y1="27" x2="50" y2="22"></line><line x1="90" y1="27" x2="76" y2="66"></line><line x1="90" y1="73" x2="76" y2="66"></line><line x1="50" y1="96" x2="76" y2="66"></line><line x1="50" y1="96" x2="24" y2="66"></line><line x1="10" y1="73" x2="24" y2="66"></line><line x1="10" y1="27" x2="24" y2="66"></line><line x1="10" y1="27" x2="50" y2="22"></line></g><text x="50" y="57" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" font-weight="700" fill="{{skin.ink}}">{{roll.die}}</text></svg>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{custom}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TABLE</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{tables}}" as="t" hint-placeholder-count="6"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}"><span style="{{t.swatch}}"></span><span>{{t.name}}</span></button></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">DICE</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{skins}}" as="k" hint-placeholder-count="6"><button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}"><span style="{{k.swatch}}"></span><span>{{k.name}}</span></button></sc-for>
+</div>
+</div>
+<span style="grid-column: 1 / -1; font-size: 12px; color: #A3AEC2">Your choices follow you to every room. Co-op players see each other's dice on their own tables.</span>
+</div>
+</sc-if>
+
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; min-height: 48px">
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}"><span style="font-size: 16px; color: #C9D3E3">{{roll.pre}}</span></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; color: #C9D3E3">{{roll.math}}</span><span style="{{roll.verdictStyle}}">{{roll.verdict}}</span></span></sc-if>
+<div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap">
+<sc-if value="{{waiting}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{throwDie}}" style="min-height: 46px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Throw the d20</button></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{reroll}}" disabled="{{noReroll}}" style="min-height: 46px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">◆ Spend Echo · throw again</button></sc-if>
+<sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{closeDice}}" style="min-height: 46px; padding: 0 20px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Continue</button></sc-if>
+</div>
 </div>
 </div>
 </div>

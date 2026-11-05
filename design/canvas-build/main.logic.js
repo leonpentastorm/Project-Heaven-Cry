@@ -8,6 +8,10 @@ const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 const DICE = [14, 7, 19, 3, 20, 11, 1, 16, 9, 12];
 const ASK_ROLLS = { athletics: 15, dexterity: 6, camaraderie: 13, authority: 4, sensory: 17, proficiency: 12, durability: 8, pain_threshold: 10 };
 const ASK_TN = 12;
+const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall oak', '#5B3A22', '#3D2716'], ['velvet', 'Lumeri velvet', '#4A1830', '#2E0F1E'],
+  ['slate', 'Outpost slate', '#2B3138', '#1B2026'], ['hull', 'Ship hull', '#3A3F47', '#5B6270'], ['void', 'Black-hole glass', '#0B0F1E', '#AE9BFF']];
+const SKINS = [['ivory', 'Ivory', '#EFE6D2', '#8C7B5A', '#1A1A1A'], ['obsidian', 'Obsidian', '#15171C', '#6B7280', '#E7EBF3'], ['brass', 'Brass', '#C9A25A', '#6B4F1F', '#1A1208'],
+  ['glass', 'Sigil glass', '#173640', '#8BDEEE', '#E7EBF3'], ['bone', 'Bone', '#D9CBB0', '#7A6A4F', '#3A2E20'], ['blood', 'Oil-red', '#7A1121', '#F65157', '#FFFFFF']];
 
 const voiceCard = (id, head, line) => {
   const s = SK[id], ink = ATTR[s.attr].ink;
@@ -18,7 +22,7 @@ const voiceCard = (id, head, line) => {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0 };
+    this.state = { tab: 'skills', core: 'soul', echo: 1, push: 'open', asked: {}, extra: [], dice: false, roll: null, rollIx: 0, phase: 'ready', throws: 0, table: 'felt', skin: 'ivory', custom: false };
   }
 
   renderVals() {
@@ -79,22 +83,35 @@ class Component extends DCLogic {
     if (S.roll) {
       const r = S.roll, total = r.die + r.mod, ink = ATTR[SK[r.id].attr].ink;
       const [verdict, color] = r.die === 20 ? ['★ CRITICAL SUCCESS', '#6FEA77'] : r.die === 1 ? ['⚠ COMPLICATION', '#F65157'] : total >= r.tn ? ['✓ SUCCESS', '#6FEA77'] : ['✕ FAILURE', '#A3AEC2'];
-      roll = { head: SK[r.id].name.toUpperCase() + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 14px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
+      roll = { head: SK[r.id].name.toUpperCase() + ' · ' + r.label.toUpperCase() + ' ' + r.tn, headStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
+        pre: 'd20 ' + fmt(r.mod) + ' (' + SK[r.id].name + ' ' + (PTS[r.id] || 0) + ') vs TN ' + r.tn,
         die: r.die, math: 'd20 ' + r.die + ' ' + fmt(r.mod) + ' = ' + total + '  vs  TN ' + r.tn, verdict, verdictStyle: 'font-size: 28px; font-weight: 700; letter-spacing: 0.14em; color: ' + color };
     }
 
+    const T = TABLES.find((t) => t[0] === S.table), K = SKINS.find((k) => k[0] === S.skin);
+    const opt = (on) => 'display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 4px; border-radius: 8px; font-family: inherit; font-size: 11px; color: #E7EBF3; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: transparent');
+    const tables = TABLES.map(([id, name, c1, c2]) => ({ name, pick: () => this.setState({ table: id }), pressed: S.table === id ? 'true' : 'false', style: opt(S.table === id),
+      swatch: 'width: 40px; height: 26px; border-radius: 6px; background: ' + c1 + '; border: 3px solid ' + c2 }));
+    const skins = SKINS.map(([id, name, face, edge]) => ({ name, pick: () => this.setState({ skin: id }), pressed: S.skin === id ? 'true' : 'false', style: opt(S.skin === id),
+      swatch: 'width: 24px; height: 24px; transform: rotate(45deg); background: ' + face + '; border: 2px solid ' + edge }));
+    const rolled = S.phase === 'rolled';
     return {
+      tables, skins, skin: { face: K[2], edge: K[3], ink: K[4] }, tableName: T[1].toUpperCase(),
+      tableStyle: 'position: relative; height: 300px; border-radius: 16px; overflow: hidden; background: ' + T[2] + '; border: 10px solid ' + T[3] + '; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55)',
+      custom: S.custom, toggleCustom: () => this.setState({ custom: !this.state.custom }), customPressed: S.custom ? 'true' : 'false', customLabel: S.custom ? 'Done' : 'Customise',
+      waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
+      throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
       echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       status, gear, bio, wick: D.wick, pilot: D.pilot, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),
-      reroll: () => { if (this.state.echo < 1) return; const ix = this.state.rollIx + 1; this.setState({ echo: this.state.echo - 1, rollIx: ix, roll: { ...this.state.roll, die: DICE[ix % DICE.length] } }); },
+      reroll: () => { if (this.state.echo < 1) return; const ix = this.state.rollIx + 1; this.setState({ echo: this.state.echo - 1, rollIx: ix, throws: this.state.throws + 1, roll: { ...this.state.roll, die: DICE[ix % DICE.length] } }); },
       noReroll: S.echo < 1,
     };
   }
 
   rollFor(id, label, tn) {
     const ix = this.state.rollIx + 1;
-    this.setState({ dice: true, rollIx: ix, roll: { id, label, tn, mod: mod(PTS[id] || 0), die: DICE[ix % DICE.length] } });
+    this.setState({ dice: true, phase: 'ready', custom: false, rollIx: ix, roll: { id, label, tn, mod: mod(PTS[id] || 0), die: DICE[ix % DICE.length] } });
   }
 }
