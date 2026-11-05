@@ -82,11 +82,12 @@
     "moon-hunter",
     "beast-handler",
     "ace-pilot",
-    "bulwark"
+    "bulwark",
+    "shrug-it-off"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 3
+    "perks": 4
   },
   "revision_rounds": {
     "field-surgeon": 3,

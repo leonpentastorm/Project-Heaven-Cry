@@ -28,6 +28,29 @@
       },
       "batch": "D",
       "source_sha256": "6ae1df29529075be85e495cbf1370df17ee1b7fca027093de46d17d653b44ca4"
+    },
+    {
+      "id": "shrug-it-off",
+      "data_id": "shrug_it_off",
+      "name": "Shrug It Off",
+      "family": "perks",
+      "order": 2,
+      "mood": "Comic",
+      "action": "Wick, half-hunched, straightens with one big shoulder shrug that flings a heavy iron shackle off its back to clang away.",
+      "screen": "Unimpressed flat bars",
+      "prop": "Iron shackle",
+      "path": "art/perks/wick/production-v1/shrug-it-off.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shrug-it-off.png",
+        "128": "art/perks/wick/production-v1/exports/128/shrug-it-off.png",
+        "64": "art/perks/wick/production-v1/exports/64/shrug-it-off.png",
+        "56": "art/perks/wick/production-v1/exports/56/shrug-it-off.png",
+        "48": "art/perks/wick/production-v1/exports/48/shrug-it-off.png",
+        "44": "art/perks/wick/production-v1/exports/44/shrug-it-off.png",
+        "40": "art/perks/wick/production-v1/exports/40/shrug-it-off.png"
+      },
+      "batch": "D",
+      "source_sha256": "cff98425b296afa269b46b22df03c4a9261bb86cb3b3cabf95cf250b6adb980a"
     }
   ]
 }

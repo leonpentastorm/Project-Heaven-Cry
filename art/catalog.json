@@ -3299,6 +3299,30 @@
         "44": "art/perks/wick/production-v1/exports/44/bulwark.png",
         "40": "art/perks/wick/production-v1/exports/40/bulwark.png"
       }
+    },
+    "shrug-it-off": {
+      "label": "Wick — Shrug It Off",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/shrug-it-off.png",
+      "sha256": "c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "shrug_it_off",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/shrug-it-off.png",
+        "128": "art/perks/wick/production-v1/exports/128/shrug-it-off.png",
+        "64": "art/perks/wick/production-v1/exports/64/shrug-it-off.png",
+        "56": "art/perks/wick/production-v1/exports/56/shrug-it-off.png",
+        "48": "art/perks/wick/production-v1/exports/48/shrug-it-off.png",
+        "44": "art/perks/wick/production-v1/exports/44/shrug-it-off.png",
+        "40": "art/perks/wick/production-v1/exports/40/shrug-it-off.png"
+      }
     }
   },
   "illustrations": {
