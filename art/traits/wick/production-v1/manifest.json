@@ -396,6 +396,29 @@
       },
       "batch": "A",
       "source_sha256": "a88762a361e8cb1ce33cb6392ad87c3f8a7be20f81371b40e0612fb0d8e78f1f"
+    },
+    {
+      "id": "symbol-of-order",
+      "data_id": "symbol_of_order",
+      "name": "Symbol of Order",
+      "family": "traits",
+      "order": 23,
+      "mood": "Proud",
+      "action": "Wick stands rigidly at attention, thrusting a big shield-shaped badge out at arm's length the way an officer flashes ID",
+      "screen": "Stern flat brows",
+      "prop": "Badge (star, no text)",
+      "path": "art/traits/wick/production-v1/symbol-of-order.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/symbol-of-order.png",
+        "128": "art/traits/wick/production-v1/exports/128/symbol-of-order.png",
+        "64": "art/traits/wick/production-v1/exports/64/symbol-of-order.png",
+        "56": "art/traits/wick/production-v1/exports/56/symbol-of-order.png",
+        "48": "art/traits/wick/production-v1/exports/48/symbol-of-order.png",
+        "44": "art/traits/wick/production-v1/exports/44/symbol-of-order.png",
+        "40": "art/traits/wick/production-v1/exports/40/symbol-of-order.png"
+      },
+      "batch": "A",
+      "source_sha256": "48be62b8eefe5b65fe06cb713fbe6edef36315c7e551ea96b9086f1f23d8edae"
     }
   ]
 }

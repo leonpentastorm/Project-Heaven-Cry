@@ -2023,6 +2023,30 @@
         "44": "art/traits/wick/production-v1/exports/44/ghost-soldier.png",
         "40": "art/traits/wick/production-v1/exports/40/ghost-soldier.png"
       }
+    },
+    "symbol-of-order": {
+      "label": "Wick — Symbol of Order",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/symbol-of-order.png",
+      "sha256": "05ae9e1ee9a1cb5adc7a6806c05836d5070a6904294e12d78327e1ce6076ecfe",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "symbol_of_order",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/symbol-of-order.png",
+        "128": "art/traits/wick/production-v1/exports/128/symbol-of-order.png",
+        "64": "art/traits/wick/production-v1/exports/64/symbol-of-order.png",
+        "56": "art/traits/wick/production-v1/exports/56/symbol-of-order.png",
+        "48": "art/traits/wick/production-v1/exports/48/symbol-of-order.png",
+        "44": "art/traits/wick/production-v1/exports/44/symbol-of-order.png",
+        "40": "art/traits/wick/production-v1/exports/40/symbol-of-order.png"
+      }
     }
   },
   "character_collections": {

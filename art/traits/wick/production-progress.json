@@ -33,10 +33,11 @@
     "lunarshine",
     "heavyworlder",
     "born-performer",
-    "ghost-soldier"
+    "ghost-soldier",
+    "symbol-of-order"
   ],
   "catalog_coverage": {
-    "traits": 26,
+    "traits": 27,
     "perks": 2
   },
   "revision_rounds": {
