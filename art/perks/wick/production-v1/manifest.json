@@ -258,6 +258,29 @@
       },
       "batch": "D",
       "source_sha256": "8d531f80fb72779d5c7158b58e2603cf2ad367f54582962744c4748f0d64e859"
+    },
+    {
+      "id": "bone-talk",
+      "data_id": "bone_talk",
+      "name": "Bone Talk",
+      "family": "perks",
+      "order": 12,
+      "mood": "Grim, Comic",
+      "action": "Wick leans right into the viewer, screen close and foreshortened, slowly clacking a big pair of pliers between them.",
+      "screen": "Flat unblinking smile",
+      "prop": "Pliers",
+      "path": "art/perks/wick/production-v1/bone-talk.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bone-talk.png",
+        "128": "art/perks/wick/production-v1/exports/128/bone-talk.png",
+        "64": "art/perks/wick/production-v1/exports/64/bone-talk.png",
+        "56": "art/perks/wick/production-v1/exports/56/bone-talk.png",
+        "48": "art/perks/wick/production-v1/exports/48/bone-talk.png",
+        "44": "art/perks/wick/production-v1/exports/44/bone-talk.png",
+        "40": "art/perks/wick/production-v1/exports/40/bone-talk.png"
+      },
+      "batch": "D",
+      "source_sha256": "66b77796ff5b056a77fda3287ff682cfa0af5737d3e38af9d20876b9aa66efa8"
     }
   ]
 }

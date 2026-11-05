@@ -3539,6 +3539,30 @@
         "44": "art/perks/wick/production-v1/exports/44/grim-reaper.png",
         "40": "art/perks/wick/production-v1/exports/40/grim-reaper.png"
       }
+    },
+    "bone-talk": {
+      "label": "Wick — Bone Talk",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/bone-talk.png",
+      "sha256": "00576be483b0cc19ce0caa8e0f4168cf27e9dc987b8ccb476df5ecf4b3d18ff4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "bone_talk",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bone-talk.png",
+        "128": "art/perks/wick/production-v1/exports/128/bone-talk.png",
+        "64": "art/perks/wick/production-v1/exports/64/bone-talk.png",
+        "56": "art/perks/wick/production-v1/exports/56/bone-talk.png",
+        "48": "art/perks/wick/production-v1/exports/48/bone-talk.png",
+        "44": "art/perks/wick/production-v1/exports/44/bone-talk.png",
+        "40": "art/perks/wick/production-v1/exports/40/bone-talk.png"
+      }
     }
   },
   "illustrations": {

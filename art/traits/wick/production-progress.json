@@ -92,11 +92,12 @@
     "grapple",
     "into-the-dark",
     "iron-stomach",
-    "grim-reaper"
+    "grim-reaper",
+    "bone-talk"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 13
+    "perks": 14
   },
   "revision_rounds": {
     "field-surgeon": 3,
