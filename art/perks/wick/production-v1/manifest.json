@@ -764,6 +764,29 @@
       },
       "batch": "E",
       "source_sha256": "7152de9433292e8efd7306404822d36a7e5a7130d015834a530d47ced7ecf0b8"
+    },
+    {
+      "id": "pattern-lock",
+      "data_id": "pattern_lock",
+      "name": "Pattern Lock",
+      "family": "perks",
+      "order": 34,
+      "mood": "Calm, Proud",
+      "action": "Wick leans back just far enough as a big blade thrusts past its screen from frame edge, mittens loose and casual.",
+      "screen": "Looping replay arrow",
+      "prop": "Thrusting blade (partial)",
+      "path": "art/perks/wick/production-v1/pattern-lock.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/pattern-lock.png",
+        "128": "art/perks/wick/production-v1/exports/128/pattern-lock.png",
+        "64": "art/perks/wick/production-v1/exports/64/pattern-lock.png",
+        "56": "art/perks/wick/production-v1/exports/56/pattern-lock.png",
+        "48": "art/perks/wick/production-v1/exports/48/pattern-lock.png",
+        "44": "art/perks/wick/production-v1/exports/44/pattern-lock.png",
+        "40": "art/perks/wick/production-v1/exports/40/pattern-lock.png"
+      },
+      "batch": "E",
+      "source_sha256": "f2aedf8f5f6c440f969d28c437c5efe6430dba8f9f87025360b0a2eaff3a75b2"
     }
   ]
 }

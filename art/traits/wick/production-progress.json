@@ -114,11 +114,12 @@
     "burden-of-proof",
     "mirage",
     "blueprint",
-    "detectives-eye"
+    "detectives-eye",
+    "pattern-lock"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 35
+    "perks": 36
   },
   "revision_rounds": {
     "field-surgeon": 3,

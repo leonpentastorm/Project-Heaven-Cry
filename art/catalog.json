@@ -4067,6 +4067,30 @@
         "44": "art/perks/wick/production-v1/exports/44/detectives-eye.png",
         "40": "art/perks/wick/production-v1/exports/40/detectives-eye.png"
       }
+    },
+    "pattern-lock": {
+      "label": "Wick — Pattern Lock",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/pattern-lock.png",
+      "sha256": "d903c5b52fafa3ce40fc7b1f04fd695b879f73a81d51fdc2e03e09490816951c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "pattern_lock",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/pattern-lock.png",
+        "128": "art/perks/wick/production-v1/exports/128/pattern-lock.png",
+        "64": "art/perks/wick/production-v1/exports/64/pattern-lock.png",
+        "56": "art/perks/wick/production-v1/exports/56/pattern-lock.png",
+        "48": "art/perks/wick/production-v1/exports/48/pattern-lock.png",
+        "44": "art/perks/wick/production-v1/exports/44/pattern-lock.png",
+        "40": "art/perks/wick/production-v1/exports/40/pattern-lock.png"
+      }
     }
   },
   "illustrations": {
