@@ -3707,6 +3707,30 @@
         "44": "art/perks/wick/production-v1/exports/44/catch.png",
         "40": "art/perks/wick/production-v1/exports/40/catch.png"
       }
+    },
+    "sleight-of-hand": {
+      "label": "Wick — Sleight of Hand",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/sleight-of-hand.png",
+      "sha256": "c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "sleight_of_hand",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sleight-of-hand.png",
+        "128": "art/perks/wick/production-v1/exports/128/sleight-of-hand.png",
+        "64": "art/perks/wick/production-v1/exports/64/sleight-of-hand.png",
+        "56": "art/perks/wick/production-v1/exports/56/sleight-of-hand.png",
+        "48": "art/perks/wick/production-v1/exports/48/sleight-of-hand.png",
+        "44": "art/perks/wick/production-v1/exports/44/sleight-of-hand.png",
+        "40": "art/perks/wick/production-v1/exports/40/sleight-of-hand.png"
+      }
     }
   },
   "illustrations": {

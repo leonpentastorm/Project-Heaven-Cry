@@ -99,11 +99,12 @@
     "origami-hands",
     "running-reload",
     "rounding-up",
-    "catch"
+    "catch",
+    "sleight-of-hand"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 20
+    "perks": 21
   },
   "revision_rounds": {
     "field-surgeon": 3,

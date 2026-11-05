@@ -419,6 +419,29 @@
       },
       "batch": "D",
       "source_sha256": "6d48813672facdeed6b4e6ab8947b9c620ca52c1d88d237421aa3f168a6cf3b8"
+    },
+    {
+      "id": "sleight-of-hand",
+      "data_id": "sleight_of_hand",
+      "name": "Sleight of Hand",
+      "family": "perks",
+      "order": 19,
+      "mood": "Comic, Tense",
+      "action": "On tiptoe, Wick slips a round fused bomb into a big coat pocket hanging into frame, its other mitten raised for hush.",
+      "screen": "Shifty side-glance",
+      "prop": "Round fused bomb",
+      "path": "art/perks/wick/production-v1/sleight-of-hand.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sleight-of-hand.png",
+        "128": "art/perks/wick/production-v1/exports/128/sleight-of-hand.png",
+        "64": "art/perks/wick/production-v1/exports/64/sleight-of-hand.png",
+        "56": "art/perks/wick/production-v1/exports/56/sleight-of-hand.png",
+        "48": "art/perks/wick/production-v1/exports/48/sleight-of-hand.png",
+        "44": "art/perks/wick/production-v1/exports/44/sleight-of-hand.png",
+        "40": "art/perks/wick/production-v1/exports/40/sleight-of-hand.png"
+      },
+      "batch": "E",
+      "source_sha256": "1ca38f96172b0d3c6373ea7efa4e04e5bfce4bc31c551d0ea8c61783d9813c8b"
     }
   ]
 }
