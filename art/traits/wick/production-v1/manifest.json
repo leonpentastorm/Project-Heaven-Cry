@@ -511,6 +511,29 @@
       },
       "batch": "B",
       "source_sha256": "b365acc1162f92e80f916ee8db9ed2447ceeb048394e039dc1ebb2fc5233b013"
+    },
+    {
+      "id": "worldline-fracture",
+      "data_id": "worldline_fracture",
+      "name": "Worldline Fracture",
+      "family": "traits",
+      "order": 28,
+      "mood": "Eerie",
+      "action": "Wick leans through a jagged tear in the air; the half of its body on the far side of the tear is drawn upside down",
+      "screen": "Glitched, scattered pixels",
+      "prop": "The tear in the air",
+      "path": "art/traits/wick/production-v1/worldline-fracture.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/worldline-fracture.png",
+        "128": "art/traits/wick/production-v1/exports/128/worldline-fracture.png",
+        "64": "art/traits/wick/production-v1/exports/64/worldline-fracture.png",
+        "56": "art/traits/wick/production-v1/exports/56/worldline-fracture.png",
+        "48": "art/traits/wick/production-v1/exports/48/worldline-fracture.png",
+        "44": "art/traits/wick/production-v1/exports/44/worldline-fracture.png",
+        "40": "art/traits/wick/production-v1/exports/40/worldline-fracture.png"
+      },
+      "batch": "B",
+      "source_sha256": "9110df88c4e015953150feeb8768c3ff841cd45cc0450e2747884d50c206c091"
     }
   ]
 }
