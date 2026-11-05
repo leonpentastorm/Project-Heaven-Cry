@@ -12,7 +12,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `attributes.json` | 9 + 3 cores | Attributes with their α/β/γ skills and derived-stat formulas; cores with their economies |
 | `skills.json` | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, which classes count the skill as a signature |
 | `classes.json` | 13 base, 15 advanced | Signatures, economy, role, resource, rank I–III moves; advanced parents, tutor and moves; `assignment` holds the level-3 closest-class rule as data |
-| `archetypes.json` | 37 | Creation presets, guidance only: 8 families; each archetype spends every creation point (10-point skill preset, all 9 attributes, 3 cores; `tools/archetype_fill.py`) plus class leans |
+| `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset, all 9 attributes, 3 cores; `tools/archetype_fill.py`) plus class leans |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
 | `perks.json` | 76 | 54 Acquired (2 per skill, Tier I at 3 points and II at 7), 16 Achieved (combo plus a deed), 6 Ultimate |
 | `conditions.json` | 29 | Debuffs (body, brain or heart family), helpful states, Downed |

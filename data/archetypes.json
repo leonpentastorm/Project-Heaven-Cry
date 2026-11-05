@@ -49,6 +49,11 @@
       "id": "hybrids",
       "name": "Hybrids and wanderers",
       "blurb": "Two trades at once, or a little of everything."
+    },
+    {
+      "id": "all_in",
+      "name": "All-in",
+      "blurb": "Everything in one place: all 6 Core points in one Core, a skill at 7, and nothing else. A 7/1/1 character."
     }
   ],
   "items": [
@@ -64,8 +69,8 @@
         "guts": 3
       },
       "cores": {
-        "body": 5,
-        "mind": 2,
+        "body": 7,
+        "mind": 1,
         "soul": 1
       },
       "leans": [
@@ -73,9 +78,9 @@
         "duelist"
       ],
       "attributes": {
-        "endurance": 5,
+        "endurance": 7,
         "strength": 5,
-        "agility": 5,
+        "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
@@ -98,7 +103,7 @@
       },
       "cores": {
         "body": 4,
-        "mind": 3,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
@@ -108,10 +113,10 @@
       ],
       "attributes": {
         "endurance": 4,
-        "strength": 4,
-        "agility": 4,
-        "perception": 3,
-        "intelligence": 2,
+        "strength": 3,
+        "agility": 3,
+        "perception": 4,
+        "intelligence": 1,
         "expression": 1,
         "insight": 1,
         "determination": 1,
@@ -130,8 +135,8 @@
         "guts": 3
       },
       "cores": {
-        "body": 5,
-        "mind": 2,
+        "body": 6,
+        "mind": 1,
         "soul": 1
       },
       "leans": [
@@ -139,8 +144,8 @@
         "vanguard"
       ],
       "attributes": {
-        "endurance": 5,
-        "strength": 5,
+        "endurance": 4,
+        "strength": 6,
         "agility": 5,
         "perception": 1,
         "intelligence": 1,
@@ -163,8 +168,8 @@
         "intimidation": 1
       },
       "cores": {
-        "body": 5,
-        "mind": 2,
+        "body": 7,
+        "mind": 1,
         "soul": 1
       },
       "leans": [
@@ -173,8 +178,8 @@
       ],
       "attributes": {
         "endurance": 5,
-        "strength": 5,
-        "agility": 5,
+        "strength": 7,
+        "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
@@ -196,8 +201,8 @@
         "dexterity": 2
       },
       "cores": {
-        "body": 5,
-        "mind": 2,
+        "body": 7,
+        "mind": 1,
         "soul": 1
       },
       "leans": [
@@ -205,9 +210,9 @@
         "marksman"
       ],
       "attributes": {
-        "endurance": 5,
+        "endurance": 1,
         "strength": 5,
-        "agility": 5,
+        "agility": 7,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
@@ -231,7 +236,7 @@
       "cores": {
         "body": 4,
         "mind": 1,
-        "soul": 3
+        "soul": 4
       },
       "leans": [
         "duelist",
@@ -239,14 +244,14 @@
         "warden"
       ],
       "attributes": {
-        "endurance": 4,
+        "endurance": 3,
         "strength": 4,
-        "agility": 4,
+        "agility": 3,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 2,
-        "determination": 3,
+        "insight": 1,
+        "determination": 4,
         "virtue": 1
       }
     },
@@ -262,20 +267,20 @@
         "reaction_speed": 3
       },
       "cores": {
-        "body": 5,
-        "mind": 3,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
         "marksman",
-        "artillerist",
-        "assassin"
+        "assassin",
+        "artillerist"
       ],
       "attributes": {
-        "endurance": 5,
-        "strength": 1,
-        "agility": 5,
-        "perception": 3,
+        "endurance": 4,
+        "strength": 2,
+        "agility": 4,
+        "perception": 4,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
@@ -295,8 +300,8 @@
         "guts": 3
       },
       "cores": {
-        "body": 5,
-        "mind": 2,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
@@ -304,10 +309,10 @@
         "marksman"
       ],
       "attributes": {
-        "endurance": 5,
-        "strength": 4,
-        "agility": 5,
-        "perception": 2,
+        "endurance": 3,
+        "strength": 3,
+        "agility": 4,
+        "perception": 4,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
@@ -327,8 +332,8 @@
         "dexterity": 3
       },
       "cores": {
-        "body": 3,
-        "mind": 5,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
@@ -336,11 +341,11 @@
         "artillerist"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 1,
-        "agility": 3,
-        "perception": 5,
-        "intelligence": 3,
+        "endurance": 4,
+        "strength": 2,
+        "agility": 4,
+        "perception": 4,
+        "intelligence": 1,
         "expression": 1,
         "insight": 1,
         "determination": 1,
@@ -360,23 +365,23 @@
         "guts": 2
       },
       "cores": {
-        "body": 5,
-        "mind": 3,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
         "marksman",
-        "artillerist",
-        "combat_medic",
         "duelist",
-        "scribe",
-        "vanguard"
+        "vanguard",
+        "combat_medic",
+        "artillerist",
+        "scribe"
       ],
       "attributes": {
-        "endurance": 2,
-        "strength": 4,
-        "agility": 5,
-        "perception": 3,
+        "endurance": 3,
+        "strength": 3,
+        "agility": 4,
+        "perception": 4,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
@@ -396,8 +401,8 @@
         "vigilant": 3
       },
       "cores": {
-        "body": 3,
-        "mind": 5,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
@@ -405,11 +410,11 @@
         "marksman"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 1,
-        "agility": 3,
-        "perception": 5,
-        "intelligence": 3,
+        "endurance": 4,
+        "strength": 2,
+        "agility": 4,
+        "perception": 4,
+        "intelligence": 1,
         "expression": 1,
         "insight": 1,
         "determination": 1,
@@ -428,20 +433,20 @@
         "reaction_speed": 3
       },
       "cores": {
-        "body": 3,
-        "mind": 5,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
         "assassin",
-        "haunt",
-        "marksman"
+        "marksman",
+        "haunt"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 3,
-        "agility": 3,
-        "perception": 5,
+        "endurance": 2,
+        "strength": 4,
+        "agility": 4,
+        "perception": 4,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
@@ -461,22 +466,22 @@
         "proficiency": 3
       },
       "cores": {
-        "body": 3,
-        "mind": 5,
+        "body": 4,
+        "mind": 4,
         "soul": 1
       },
       "leans": [
         "assassin",
-        "combat_medic",
         "marksman",
+        "combat_medic",
         "scribe"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 1,
-        "agility": 3,
-        "perception": 5,
-        "intelligence": 3,
+        "endurance": 4,
+        "strength": 2,
+        "agility": 4,
+        "perception": 4,
+        "intelligence": 1,
         "expression": 1,
         "insight": 1,
         "determination": 1,
@@ -528,8 +533,8 @@
         "vigilant": 3
       },
       "cores": {
-        "body": 2,
-        "mind": 5,
+        "body": 1,
+        "mind": 6,
         "soul": 1
       },
       "leans": [
@@ -538,11 +543,11 @@
         "tempest"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 5,
-        "intelligence": 5,
+        "intelligence": 6,
         "expression": 4,
         "insight": 1,
         "determination": 1,
@@ -593,8 +598,8 @@
         "eloquence": 3
       },
       "cores": {
-        "body": 2,
-        "mind": 5,
+        "body": 1,
+        "mind": 6,
         "soul": 1
       },
       "leans": [
@@ -602,11 +607,11 @@
         "warden"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 5,
-        "intelligence": 5,
+        "intelligence": 6,
         "expression": 4,
         "insight": 1,
         "determination": 1,
@@ -625,8 +630,8 @@
         "eloquence": 3
       },
       "cores": {
-        "body": 3,
-        "mind": 5,
+        "body": 1,
+        "mind": 7,
         "soul": 1
       },
       "leans": [
@@ -634,12 +639,12 @@
         "warden"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
         "intelligence": 5,
-        "expression": 5,
+        "expression": 7,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -657,8 +662,8 @@
         "eloquence": 3
       },
       "cores": {
-        "body": 2,
-        "mind": 5,
+        "body": 1,
+        "mind": 6,
         "soul": 1
       },
       "leans": [
@@ -666,12 +671,12 @@
         "warden"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 4,
         "intelligence": 5,
-        "expression": 5,
+        "expression": 6,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -689,21 +694,21 @@
         "ingenuity": 2
       },
       "cores": {
-        "body": 2,
-        "mind": 5,
+        "body": 1,
+        "mind": 6,
         "soul": 1
       },
       "leans": [
         "combat_medic",
         "scribe",
-        "hexwright",
-        "warden"
+        "warden",
+        "hexwright"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
-        "perception": 5,
+        "perception": 6,
         "intelligence": 4,
         "expression": 5,
         "insight": 1,
@@ -723,8 +728,8 @@
         "brain_power": 3
       },
       "cores": {
-        "body": 2,
-        "mind": 5,
+        "body": 1,
+        "mind": 6,
         "soul": 1
       },
       "leans": [
@@ -732,11 +737,11 @@
         "scribe"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 4,
-        "intelligence": 5,
+        "intelligence": 6,
         "expression": 5,
         "insight": 1,
         "determination": 1,
@@ -756,8 +761,8 @@
       },
       "cores": {
         "body": 1,
-        "mind": 3,
-        "soul": 5
+        "mind": 4,
+        "soul": 4
       },
       "leans": [
         "tempest",
@@ -769,10 +774,10 @@
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
-        "expression": 3,
-        "insight": 4,
-        "determination": 5,
-        "virtue": 2
+        "expression": 4,
+        "insight": 3,
+        "determination": 4,
+        "virtue": 3
       }
     },
     {
@@ -787,22 +792,22 @@
         "implication": 3
       },
       "cores": {
-        "body": 3,
+        "body": 1,
         "mind": 1,
-        "soul": 5
+        "soul": 7
       },
       "leans": [
         "muse",
         "combat_medic"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 5,
+        "insight": 7,
         "determination": 1,
         "virtue": 5
       }
@@ -819,9 +824,9 @@
         "conscience": 3
       },
       "cores": {
-        "body": 3,
+        "body": 1,
         "mind": 1,
-        "soul": 5
+        "soul": 7
       },
       "leans": [
         "aegis",
@@ -829,7 +834,7 @@
         "muse"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
@@ -837,7 +842,7 @@
         "expression": 1,
         "insight": 5,
         "determination": 1,
-        "virtue": 5
+        "virtue": 7
       }
     },
     {
@@ -862,14 +867,14 @@
         "haunt"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 3,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
-        "determination": 3,
+        "determination": 5,
         "virtue": 5
       }
     },
@@ -885,23 +890,23 @@
         "implication": 3
       },
       "cores": {
-        "body": 3,
+        "body": 1,
         "mind": 1,
-        "soul": 5
+        "soul": 7
       },
       "leans": [
         "haunt",
         "aegis"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
         "insight": 5,
-        "determination": 5,
+        "determination": 7,
         "virtue": 1
       }
     },
@@ -926,14 +931,14 @@
         "muse"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 3,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
         "insight": 5,
-        "determination": 4,
+        "determination": 5,
         "virtue": 1
       }
     },
@@ -955,9 +960,9 @@
       },
       "leans": [
         "hexwright",
-        "haunt",
+        "scribe",
         "muse",
-        "scribe"
+        "haunt"
       ],
       "attributes": {
         "endurance": 1,
@@ -983,22 +988,22 @@
         "authority": 3
       },
       "cores": {
-        "body": 3,
+        "body": 1,
         "mind": 1,
-        "soul": 5
+        "soul": 7
       },
       "leans": [
         "muse",
         "haunt"
       ],
       "attributes": {
-        "endurance": 3,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 5,
+        "insight": 7,
         "determination": 1,
         "virtue": 5
       }
@@ -1015,9 +1020,9 @@
         "composure": 3
       },
       "cores": {
-        "body": 2,
+        "body": 1,
         "mind": 1,
-        "soul": 5
+        "soul": 6
       },
       "leans": [
         "muse",
@@ -1025,7 +1030,7 @@
         "warden"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 1,
         "perception": 1,
@@ -1033,7 +1038,7 @@
         "expression": 1,
         "insight": 5,
         "determination": 4,
-        "virtue": 5
+        "virtue": 6
       }
     },
     {
@@ -1048,24 +1053,24 @@
         "implication": 3
       },
       "cores": {
-        "body": 5,
+        "body": 4,
         "mind": 1,
-        "soul": 3
+        "soul": 4
       },
       "leans": [
         "haunt",
         "muse"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 5,
+        "endurance": 2,
+        "strength": 4,
         "agility": 1,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 3,
+        "insight": 4,
         "determination": 1,
-        "virtue": 3
+        "virtue": 4
       }
     },
     {
@@ -1090,12 +1095,12 @@
         "tempest"
       ],
       "attributes": {
-        "endurance": 2,
+        "endurance": 1,
         "strength": 1,
         "agility": 3,
         "perception": 1,
         "intelligence": 5,
-        "expression": 4,
+        "expression": 5,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -1113,24 +1118,24 @@
         "guts": 3
       },
       "cores": {
-        "body": 3,
+        "body": 4,
         "mind": 1,
-        "soul": 5
+        "soul": 4
       },
       "leans": [
         "vanguard",
         "aegis"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 3,
-        "agility": 1,
+        "endurance": 4,
+        "strength": 4,
+        "agility": 2,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 3,
+        "insight": 1,
         "determination": 1,
-        "virtue": 5
+        "virtue": 4
       }
     },
     {
@@ -1189,13 +1194,13 @@
       ],
       "attributes": {
         "endurance": 3,
-        "strength": 1,
+        "strength": 3,
         "agility": 3,
         "perception": 2,
         "intelligence": 1,
         "expression": 1,
         "insight": 4,
-        "determination": 3,
+        "determination": 1,
         "virtue": 1
       }
     },
@@ -1212,8 +1217,8 @@
         "pain_threshold": 2
       },
       "cores": {
-        "body": 4,
-        "mind": 4,
+        "body": 5,
+        "mind": 3,
         "soul": 1
       },
       "leans": [
@@ -1221,10 +1226,10 @@
         "assassin"
       ],
       "attributes": {
-        "endurance": 4,
-        "strength": 2,
-        "agility": 4,
-        "perception": 4,
+        "endurance": 5,
+        "strength": 1,
+        "agility": 5,
+        "perception": 3,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
@@ -1251,19 +1256,19 @@
         "soul": 3
       },
       "leans": [
-        "artillerist",
-        "combat_medic",
-        "duelist",
-        "hexwright",
         "marksman",
+        "duelist",
+        "combat_medic",
+        "artillerist",
         "scribe",
+        "hexwright",
         "tempest",
-        "aegis",
-        "assassin",
-        "haunt",
-        "muse",
         "vanguard",
-        "warden"
+        "assassin",
+        "warden",
+        "aegis",
+        "muse",
+        "haunt"
       ],
       "attributes": {
         "endurance": 3,
@@ -1275,6 +1280,291 @@
         "insight": 3,
         "determination": 1,
         "virtue": 1
+      }
+    },
+    {
+      "id": "living_wall",
+      "name": "Living Wall",
+      "family": "all_in",
+      "role": "All-in tank",
+      "blurb": "Doesn't dodge. Doesn't need to.",
+      "preset": {
+        "durability": 7,
+        "pain_threshold": 2,
+        "guts": 1
+      },
+      "cores": {
+        "body": 7,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "vanguard",
+        "duelist"
+      ],
+      "attributes": {
+        "endurance": 7,
+        "strength": 3,
+        "agility": 3,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "wrecking_ball",
+      "name": "Wrecking Ball",
+      "family": "all_in",
+      "role": "All-in bruiser",
+      "blurb": "One swing settles the argument, and the wall behind it.",
+      "preset": {
+        "raw_power": 7,
+        "guts": 2,
+        "intimidation": 1
+      },
+      "cores": {
+        "body": 7,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "duelist",
+        "vanguard"
+      ],
+      "attributes": {
+        "endurance": 3,
+        "strength": 7,
+        "agility": 3,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "deadeye",
+      "name": "Deadeye",
+      "family": "all_in",
+      "role": "All-in shooter",
+      "blurb": "Never the second shot.",
+      "preset": {
+        "dexterity": 7,
+        "reaction_speed": 3
+      },
+      "cores": {
+        "body": 7,
+        "mind": 1,
+        "soul": 1
+      },
+      "leans": [
+        "marksman",
+        "assassin"
+      ],
+      "attributes": {
+        "endurance": 3,
+        "strength": 3,
+        "agility": 7,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "phantom",
+      "name": "Phantom",
+      "family": "all_in",
+      "role": "All-in infiltrator",
+      "blurb": "Was in the room the whole time. Nobody remembers letting them in.",
+      "preset": {
+        "ingenuity": 7,
+        "vigilant": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 7,
+        "soul": 1
+      },
+      "leans": [
+        "assassin",
+        "marksman",
+        "artillerist"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 7,
+        "intelligence": 3,
+        "expression": 3,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "savant",
+      "name": "Savant",
+      "family": "all_in",
+      "role": "All-in Sigil caster",
+      "blurb": "Draws a Sigil before the rest of the room finishes the word.",
+      "preset": {
+        "brain_power": 7,
+        "rumination": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 7,
+        "soul": 1
+      },
+      "leans": [
+        "artillerist",
+        "warden",
+        "scribe"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 3,
+        "intelligence": 7,
+        "expression": 3,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "illusionist",
+      "name": "Illusionist",
+      "family": "all_in",
+      "role": "All-in elementalist",
+      "blurb": "Pictures the fire so clearly the Evoker can't tell it's not there yet.",
+      "preset": {
+        "visualization": 7,
+        "charisma": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 7,
+        "soul": 1
+      },
+      "leans": [
+        "artillerist",
+        "tempest",
+        "hexwright"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 3,
+        "intelligence": 3,
+        "expression": 7,
+        "insight": 1,
+        "determination": 1,
+        "virtue": 1
+      }
+    },
+    {
+      "id": "heartreader",
+      "name": "Heartreader",
+      "family": "all_in",
+      "role": "All-in Soul empath",
+      "blurb": "Hears what you meant, not what you said, and answers that.",
+      "preset": {
+        "empathy": 7,
+        "camaraderie": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 7
+      },
+      "leans": [
+        "tempest",
+        "combat_medic",
+        "muse"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 7,
+        "determination": 3,
+        "virtue": 3
+      }
+    },
+    {
+      "id": "unbroken",
+      "name": "Unbroken",
+      "family": "all_in",
+      "role": "All-in Soul blaster",
+      "blurb": "The heart holds. Everything in front of it doesn't.",
+      "preset": {
+        "will_power": 7,
+        "composure": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 7
+      },
+      "leans": [
+        "tempest",
+        "warden"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 3,
+        "determination": 7,
+        "virtue": 3
+      }
+    },
+    {
+      "id": "prophet",
+      "name": "Prophet",
+      "family": "all_in",
+      "role": "All-in faithful",
+      "blurb": "Their patron answers on the first ring.",
+      "preset": {
+        "faith": 7,
+        "authority": 3
+      },
+      "cores": {
+        "body": 1,
+        "mind": 1,
+        "soul": 7
+      },
+      "leans": [
+        "aegis",
+        "muse"
+      ],
+      "attributes": {
+        "endurance": 1,
+        "strength": 1,
+        "agility": 1,
+        "perception": 1,
+        "intelligence": 1,
+        "expression": 1,
+        "insight": 3,
+        "determination": 3,
+        "virtue": 7
       }
     }
   ]

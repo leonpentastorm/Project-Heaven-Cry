@@ -80,7 +80,7 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 **Order doesn't matter.** You can raise Cores and Attributes first, or place skills first: when a skill needs a higher Attribute or Core, it spends those points for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4) · −1 Core (Body 3→4)"). A skill can't go up if its Attribute or Core would need points you no longer have. Lock in needs every point of all three budgets spent.
 
-**Archetypes** (archetypes.json, 37 presets) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute and Core point, so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
+**Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute and Core point, so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
 
 **Levels and XP.** Levels run 1 to 20. XP is cumulative:
 
@@ -563,7 +563,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | skills.json | 27 | Slot, per-point effects, unlocks at 3/5/7/9/10, Overreach, voice card, signature-of |
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
 | traits.json | 74 | Upsides, downsides, excludes, Narrator hooks |
-| archetypes.json | 37 | Creation presets (guidance only): role, blurb, 10-point skill preset, cores, class leans |
+| archetypes.json | 46 | Creation presets (guidance only): role, blurb, 10-point skill preset, all attributes and cores (every creation point spent), class leans |
 | perks.json | 76 | 54 Acquired, 16 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons, each with its mastery family |

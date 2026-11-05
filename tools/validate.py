@@ -206,6 +206,10 @@ if isinstance(arch, dict):
             for x, v in at.items():
                 if v > co[attr_core[x]] or v > CAPC or v < 1:
                     errors.append(f"archetype {aid}: attribute {x} {v} breaks a cap")
+            for c, v in co.items():
+                top_attr = max([at[x] for x in at if attr_core[x] == c] + [1])
+                if v != top_attr:
+                    errors.append(f"archetype {aid}: core {c} {v} is raised for nothing (its attributes need {top_attr})")
             if any(v > CAPC or v < 1 for v in co.values()):
                 errors.append(f"archetype {aid}: a core is outside 1-10")
             a_sp, c_sp = sum(v - 1 for v in at.values()), sum(v - 1 for v in co.values())
