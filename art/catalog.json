@@ -3803,6 +3803,30 @@
         "44": "art/perks/wick/production-v1/exports/44/hot-swap.png",
         "40": "art/perks/wick/production-v1/exports/40/hot-swap.png"
       }
+    },
+    "got-you-in-my-sight": {
+      "label": "Wick — Got You in My Sight",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/got-you-in-my-sight.png",
+      "sha256": "1206dad25818b3b74649c4a0e89993cf04eb1d54923a70500f79cc9635e19a44",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "got_you_in_my_sight",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/got-you-in-my-sight.png",
+        "128": "art/perks/wick/production-v1/exports/128/got-you-in-my-sight.png",
+        "64": "art/perks/wick/production-v1/exports/64/got-you-in-my-sight.png",
+        "56": "art/perks/wick/production-v1/exports/56/got-you-in-my-sight.png",
+        "48": "art/perks/wick/production-v1/exports/48/got-you-in-my-sight.png",
+        "44": "art/perks/wick/production-v1/exports/44/got-you-in-my-sight.png",
+        "40": "art/perks/wick/production-v1/exports/40/got-you-in-my-sight.png"
+      }
     }
   },
   "illustrations": {

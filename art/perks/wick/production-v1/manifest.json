@@ -511,6 +511,29 @@
       },
       "batch": "E",
       "source_sha256": "23b1d42327d43166d65581baa8b21546c1ab5b9e35d8009d5475dc5316d14db2"
+    },
+    {
+      "id": "got-you-in-my-sight",
+      "data_id": "got_you_in_my_sight",
+      "name": "Got You in My Sight",
+      "family": "perks",
+      "order": 23,
+      "mood": "Tense",
+      "action": "Wick lunges and snatches the hem of a dashed-outline cloak as it fades to nothing; its wearer is already gone.",
+      "screen": "Crosshair",
+      "prop": "Fading cloak",
+      "path": "art/perks/wick/production-v1/got-you-in-my-sight.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/got-you-in-my-sight.png",
+        "128": "art/perks/wick/production-v1/exports/128/got-you-in-my-sight.png",
+        "64": "art/perks/wick/production-v1/exports/64/got-you-in-my-sight.png",
+        "56": "art/perks/wick/production-v1/exports/56/got-you-in-my-sight.png",
+        "48": "art/perks/wick/production-v1/exports/48/got-you-in-my-sight.png",
+        "44": "art/perks/wick/production-v1/exports/44/got-you-in-my-sight.png",
+        "40": "art/perks/wick/production-v1/exports/40/got-you-in-my-sight.png"
+      },
+      "batch": "E",
+      "source_sha256": "20db39633d2a0f8065c41f33d1e721836f5349cc92a2ed6c55c50ef205fc186f"
     }
   ]
 }
