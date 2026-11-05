@@ -51,6 +51,29 @@
       },
       "batch": "D",
       "source_sha256": "cff98425b296afa269b46b22df03c4a9261bb86cb3b3cabf95cf250b6adb980a"
+    },
+    {
+      "id": "used-to-the-pain",
+      "data_id": "used_to_the_pain",
+      "name": "Used to the Pain",
+      "family": "perks",
+      "order": 3,
+      "mood": "Comic, Proud",
+      "action": "Knocked to one knee by a big brick that just bounced off its head, Wick is already springing up, fists raised.",
+      "screen": "Charging bar filling up",
+      "prop": "Bouncing brick",
+      "path": "art/perks/wick/production-v1/used-to-the-pain.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/used-to-the-pain.png",
+        "128": "art/perks/wick/production-v1/exports/128/used-to-the-pain.png",
+        "64": "art/perks/wick/production-v1/exports/64/used-to-the-pain.png",
+        "56": "art/perks/wick/production-v1/exports/56/used-to-the-pain.png",
+        "48": "art/perks/wick/production-v1/exports/48/used-to-the-pain.png",
+        "44": "art/perks/wick/production-v1/exports/44/used-to-the-pain.png",
+        "40": "art/perks/wick/production-v1/exports/40/used-to-the-pain.png"
+      },
+      "batch": "D",
+      "source_sha256": "73901b1f3b19a088deb1db3658f2f4f1590b9acabe09d048475d943aee222191"
     }
   ]
 }

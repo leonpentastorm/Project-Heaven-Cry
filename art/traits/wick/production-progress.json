@@ -83,11 +83,12 @@
     "beast-handler",
     "ace-pilot",
     "bulwark",
-    "shrug-it-off"
+    "shrug-it-off",
+    "used-to-the-pain"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 4
+    "perks": 5
   },
   "revision_rounds": {
     "field-surgeon": 3,
