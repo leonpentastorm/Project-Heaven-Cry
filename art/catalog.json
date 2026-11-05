@@ -313,7 +313,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "durability",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "ivara-drenn": {
       "label": "Ivara Drenn",
@@ -323,7 +324,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "pain-threshold",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "nemi-sol": {
       "label": "Nemi Sol",
@@ -333,7 +335,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "sensory",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "basko-rell": {
       "label": "Basko Rell",
@@ -343,7 +346,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "raw-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "tessa-rook": {
       "label": "Tessa Rook",
@@ -353,7 +357,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "guts",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "veyra-salt": {
       "label": "Veyra Salt",
@@ -363,7 +368,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "intimidation",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "ketta-flint": {
       "label": "Ketta Flint",
@@ -373,7 +379,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "athletics",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "sera-venn": {
       "label": "Sera Venn",
@@ -383,7 +390,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "dexterity",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "milo-quill": {
       "label": "Milo Quill",
@@ -393,7 +401,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "reaction-speed",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "pell-morrow": {
       "label": "Pell Morrow",
@@ -403,7 +412,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "ingenuity",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "drava-keel": {
       "label": "Drava Keel",
@@ -413,7 +423,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "proficiency",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "asher-fen": {
       "label": "Asher Fen",
@@ -423,7 +434,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "vigilant",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "ilyen-taal": {
       "label": "Ilyen Taal",
@@ -433,7 +445,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "brain-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "marden-silt": {
       "label": "Marden Silt",
@@ -443,7 +456,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "rumination",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "yara-voss": {
       "label": "Yara Voss",
@@ -453,7 +467,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "eloquence",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "osa-reed": {
       "label": "Osa Reed",
@@ -463,7 +478,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "visualization",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "inspectant-latch-7": {
       "label": "Inspectant Latch-7",
@@ -473,7 +489,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "analysis",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "juniper-vale": {
       "label": "Juniper Vale",
@@ -483,7 +500,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "charisma",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "mallow-3": {
       "label": "Mallow-3",
@@ -493,7 +511,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "empathy",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "dema-brin": {
       "label": "Dema Brin",
@@ -503,7 +522,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "camaraderie",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "selka-noon": {
       "label": "Selka Noon",
@@ -513,7 +533,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "implication",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "ruen-ash": {
       "label": "Ruen Ash",
@@ -523,7 +544,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "will-power",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "anka-moss": {
       "label": "Anka Moss",
@@ -533,7 +555,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "lore-master",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "tal-ren": {
       "label": "Tal Ren",
@@ -543,7 +566,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "composure",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "brother-halden": {
       "label": "Brother Halden",
@@ -553,7 +577,8 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "faith",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "eris-ward": {
       "label": "Eris Ward",
@@ -563,12 +588,608 @@
       "height": 1000,
       "background": "opaque painted scene",
       "historical_skill_id": "conscience",
-      "usage": "character portrait"
+      "usage": "character portrait",
+      "collection": "new-faces"
     },
     "captain-nara-dusk": {
       "label": "Captain Nara Dusk",
       "path": "art/characters/heavenprint-new-faces/soul/virtue/authority.png",
       "sha256": "7fd7b84d2642490232e6f5fea7c2dc5b7f252b3987d68f2d0e2d6eff663a29e4",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "authority",
+      "usage": "character portrait",
+      "collection": "new-faces"
+    },
+    "original-heavenprint--durability": {
+      "label": "Durability",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/durability.png",
+      "sha256": "8d40535b899849d71eeed7ddaf0efbcec4d5943fd7edf26299a7ae260d41b5c1",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "durability",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--pain-threshold": {
+      "label": "Pain Threshold",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/pain-threshold.png",
+      "sha256": "f1d91d50fe1eba7b241e78e205be09c75b468d0589c2fe7b0addf8727961339c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "pain-threshold",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--sensory": {
+      "label": "Sensory",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/sensory.png",
+      "sha256": "bbacab27dc053ee57065da5bca2110b66115168b2f5c90c5ba4e26da420fe49d",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "sensory",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--raw-power": {
+      "label": "Raw Power",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/raw-power.png",
+      "sha256": "b5bd53556291b32dfb40edf2ac76b450ed7a3d91f9959c216c90e7f6a47e83b5",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "raw-power",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--guts": {
+      "label": "Guts",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/guts.png",
+      "sha256": "c096a03f65f839900c2095413bf90dcaadb12afc975992f20bd4a005cf2d5e17",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "guts",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--intimidation": {
+      "label": "Intimidation",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/intimidation.png",
+      "sha256": "7d2aa09ec279c56b671c0a0697e1fc8fa52f68bed916bd35255d328a00779d0f",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "intimidation",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--athletics": {
+      "label": "Athletics",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/athletics.png",
+      "sha256": "873ae3f80ce6324a39e28d6db743bda9eeb8bbe082157042bea99b3eed0228e4",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "athletics",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--dexterity": {
+      "label": "Dexterity",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/dexterity.png",
+      "sha256": "5ef9998e0a50cd3c1bbaee54f95675132a0ce1d70945401b2021030db47ed4c1",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "dexterity",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--reaction-speed": {
+      "label": "Reaction Speed",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/body/reaction-speed.png",
+      "sha256": "1efeb96f2f878e2e428fd2d121377a80e0ece07700e343519c5fa2cbd289bbf1",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "reaction-speed",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--ingenuity": {
+      "label": "Ingenuity",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/ingenuity.png",
+      "sha256": "89ff30b08d913ca9b1071bfffa31f4254c95aa37bd2c582f89b66b06548e77f8",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "ingenuity",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--proficiency": {
+      "label": "Proficiency",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/proficiency.png",
+      "sha256": "91906b9621158796cf04309107ecaf2bf0d526a10e31848c2674cf97f56e35f7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "proficiency",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--vigilant": {
+      "label": "Vigilant",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/vigilant.png",
+      "sha256": "205c659d2acaa839126fb51ecbb04f6f454cd75a39b76b4cf499bc99a24998cd",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "vigilant",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--brain-power": {
+      "label": "Brain Power",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/brain-power.png",
+      "sha256": "a82f8f5c6c49720c842c7f725bc4dff9b113ba46a132a8992863efae19dce0c9",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "brain-power",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--rumination": {
+      "label": "Rumination",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/rumination.png",
+      "sha256": "a1276a5a593540eb6c312ad3cfa44a3f2ad740deeeedc3cd6a157b1c5265eff3",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "rumination",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--eloquence": {
+      "label": "Eloquence",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/eloquence.png",
+      "sha256": "b8bfc5c446dc20784ab0f9f71543285d06aa9027729b79de702e81d55a23488c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "eloquence",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--visualization": {
+      "label": "Visualization",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/visualization.png",
+      "sha256": "1f1e2e3f5bf9a0fc54d7109d45ac25ca7db013765d582cc74f3ff14ec53b0a59",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "visualization",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--analysis": {
+      "label": "Analysis",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/analysis.png",
+      "sha256": "3f7b250fd487732316b601150e1be9e0fb01d09c831eeec2720bb100c9df46c3",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "analysis",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--charisma": {
+      "label": "Charisma",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/mind/charisma.png",
+      "sha256": "caaefd59231682a3f0a02fa76ad4196664ec716105f6a9857de063e806e46aef",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "charisma",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--empathy": {
+      "label": "Empathy",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/empathy.png",
+      "sha256": "c364434442659016481497c3f911ebe78be0b20a597a88c313502063f9ce0aa0",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "empathy",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--camaraderie": {
+      "label": "Camaraderie",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/camaraderie.png",
+      "sha256": "9f0df1008bd4599d27b891a2db20704637af0c2ca016407c2786d8f2796dc115",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "camaraderie",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--implication": {
+      "label": "Implication",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/implication.png",
+      "sha256": "f20f16d04117edc4ddda3f3a6aa5fd92ca2f98c9f870306cfd994482cc54c501",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "implication",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--will-power": {
+      "label": "Will Power",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/will-power.png",
+      "sha256": "3e393edb3abaff60cd6a1402ac2e032357ebff3b9818fe49b443f99611a336da",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "will-power",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--lore-master": {
+      "label": "Lore Master",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/lore-master.png",
+      "sha256": "bcf0fb128acc0530f63aef32468e4a8cb1832081cc272f3f33142663723543a2",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "lore-master",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--composure": {
+      "label": "Composure",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/composure.png",
+      "sha256": "7a30ad846674c6c1481987334634e8d23f31fdd3c42d5855417fc479ba638007",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "composure",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--faith": {
+      "label": "Faith",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/faith.png",
+      "sha256": "7b8771b0b2d491a420cda0a298409fab4703fe67ceec96aabec4fee37574ce3c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "faith",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--conscience": {
+      "label": "Conscience",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/conscience.png",
+      "sha256": "ef8a41ff5c819416957a3b374d2504fb48d1fc434338e9379de86118a5accef9",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "conscience",
+      "usage": "character portrait"
+    },
+    "original-heavenprint--authority": {
+      "label": "Authority",
+      "collection": "original-heavenprint",
+      "path": "art/characters/original-heavenprint/soul/authority.png",
+      "sha256": "80c2bba532b91ee06d7564f7f890c88cb06e2ad013539e19e0047e0e6220c3d9",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "authority",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--durability": {
+      "label": "Sanchez",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/endurance/durability.png",
+      "sha256": "5b1c989737d696a30a15f85c81a862c245fa3d46ca0f3bd71fac549be3b11ee3",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "durability",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--pain-threshold": {
+      "label": "Knight Jiren",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/endurance/pain-threshold.png",
+      "sha256": "ac1e1dc99bd2c69eb122a7b66f00c3f62153e8ff8d6107d3cc2175353bd99157",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "pain-threshold",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--sensory": {
+      "label": "Mrs. Marry",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/endurance/sensory.png",
+      "sha256": "54dc78124c6bac14c740417c7610c0ab42c39f6e499029d314cdaeba742f6a64",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "sensory",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--raw-power": {
+      "label": "Knight Andre \u2014 Giant Fist",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/strength/raw-power.png",
+      "sha256": "083ba8fdf9758b97e493c2cf8744c20cc4d2e5b939f7aff9847a4ed89d59654c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "raw-power",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--guts": {
+      "label": "Ragoul the Keeper",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/strength/guts.png",
+      "sha256": "3fb00a6c8ac9d83e95b8fd78472f36f21a9d31987ca8af47902e190b7425329c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "guts",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--intimidation": {
+      "label": "Tommy Avencio \u2014 Papa",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/strength/intimidation.png",
+      "sha256": "8e8e1f340269cbb28bcf3c721a631a5ff28c3f650d26994910a60672c31a7fb7",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "intimidation",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--athletics": {
+      "label": "Dominik Edelgard \u2014 Banner Lord",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/agility/athletics.png",
+      "sha256": "86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "athletics",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--dexterity": {
+      "label": "Ambrosius Costeau \u2014 Old Drifter",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/agility/dexterity.png",
+      "sha256": "06fcd4a9a944b5d5b558786d9e626c8bc840b8449fc7010b227b816291fe92d8",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "dexterity",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--reaction-speed": {
+      "label": "Yukimura",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/body/agility/reaction-speed.png",
+      "sha256": "6ae1ace68e09347d5db053df5b4b82defaea9b5fc7be133ff2e795fe15c98cdc",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "reaction-speed",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--ingenuity": {
+      "label": "Lin Shin Long",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/perception/ingenuity.png",
+      "sha256": "fcaeb97572f8d1a6677f62c317004171cf40317fe4616fe430fdb715e9ad7f27",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "ingenuity",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--proficiency": {
+      "label": "Demitri Kortev",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/perception/proficiency.png",
+      "sha256": "d2b35c88719d0d25d42991ca17913e3bd365781213205282b0c8ba4a32b65909",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "proficiency",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--vigilant": {
+      "label": "Vemilion Jasmine",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/perception/vigilant.png",
+      "sha256": "4faa077e027547a24f87ac19209e9a3af49b7789bb342851d7c68458b5f5eec3",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "vigilant",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--brain-power": {
+      "label": "Professor Avdol",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/intelligence/brain-power.png",
+      "sha256": "c22c140de2398c4c8c101e4735649a4334ba95b364d807a4864ebb2888a8a57d",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "brain-power",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--rumination": {
+      "label": "Thalat\u00fbl the Librarian",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/intelligence/rumination.png",
+      "sha256": "3e167bd8b6c5ec97a434dacd498c07c63206a2b6883e467ca43136f1d804243b",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "rumination",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--eloquence": {
+      "label": "Xander Badman",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/intelligence/eloquence.png",
+      "sha256": "e154375e391a069c50f75a2c91f3330aa98056d112fcf774067025090f8e0f43",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "eloquence",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--visualization": {
+      "label": "Master Sakamoto",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/expression/visualization.png",
+      "sha256": "4788506e99a5e293999ae35b3ce50ebbb2ac796ef37fba49b32ce7a5cea72654",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "visualization",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--analysis": {
+      "label": "D12.9.6",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/expression/analysis.png",
+      "sha256": "b6271bd26e576071f6417ec912c593a62fb1b2428dac850866b1acdf4096556c",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "analysis",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--charisma": {
+      "label": "Damian Nox",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/mind/expression/charisma.png",
+      "sha256": "37425aa277d99fd91f63112b77577e4674456ad77ab757ad0fd2cd866ae7da11",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "charisma",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--empathy": {
+      "label": "Paul Remarque",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/insight/empathy.png",
+      "sha256": "fcfe9e5703f107599f6849cd589cccf582f423c3591800e2d6ea0d7d15e1b606",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "empathy",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--camaraderie": {
+      "label": "Souji",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/insight/camaraderie.png",
+      "sha256": "6884338cc74d53ce695bf9cc017c96e47ce054ff9c99c517b2737db100b2a81e",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "camaraderie",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--implication": {
+      "label": "Aleksandr Donovik Artem",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/insight/implication.png",
+      "sha256": "8f518659a83c9f7d47ea727217ac3722f432fd4f316fbbaa0cc984ce6bfba817",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "implication",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--will-power": {
+      "label": "Nora \u2014 Witch of Arkvelton",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/determination/will-power.png",
+      "sha256": "a1beba36de842e526e38e4031497c2dc24391ec9d568b05fe0037a8f01b48a70",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "will-power",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--lore-master": {
+      "label": "Andrade LoveLace \u2014 Mother",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/determination/lore-master.png",
+      "sha256": "cfd738e1b60bef6ede4b786a21d9de87377e7f49999affb605401a83fb8e11eb",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "lore-master",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--composure": {
+      "label": "Kaizer Meyer Reinch Wolf",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/determination/composure.png",
+      "sha256": "d52901c5524ca7a88f7e346095904a119e3b57b43da9899a8c8556395aac47d2",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "composure",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--faith": {
+      "label": "Sister October",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/virtue/faith.png",
+      "sha256": "62ffff46de95feb9730ee5eb10b173496ab70121c295c1b8ae869a7eacc09920",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "faith",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--conscience": {
+      "label": "The Azure Blood Holder",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/virtue/conscience.png",
+      "sha256": "a8c5d5cb3a93672ac20b13fc9232681eb07f06f11cfa24d6ce7e4d50a3cb2d61",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque painted scene",
+      "historical_skill_id": "conscience",
+      "usage": "character portrait"
+    },
+    "first-patch-revival--authority": {
+      "label": "Hank Ladan",
+      "collection": "first-patch-revival",
+      "path": "art/characters/first-patch-revival/soul/virtue/authority.png",
+      "sha256": "a97b085d44298ef8b19fc953fc55d4172aca5108219568ac7a096e91a8302c07",
       "width": 800,
       "height": 1000,
       "background": "opaque painted scene",
@@ -586,6 +1207,23 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "trait icon"
+    }
+  },
+  "character_collections": {
+    "new-faces": {
+      "label": "Version 3 \u2014 New Faces",
+      "path": "art/characters/heavenprint-new-faces",
+      "count": 27
+    },
+    "original-heavenprint": {
+      "label": "Version 1 \u2014 Original Heavenprint",
+      "path": "art/characters/original-heavenprint",
+      "count": 27
+    },
+    "first-patch-revival": {
+      "label": "Version 2 \u2014 First-Patch Revival (latest revision)",
+      "path": "art/characters/first-patch-revival",
+      "count": 27
     }
   }
 }

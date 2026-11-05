@@ -1,6 +1,6 @@
 # Project Heaven Cry — art library
 
-Current art assets and implementation handoff: **27 abstract player-skill portraits, 27 character portraits, the approved Wick trait icon, and Heavenprint/Wick style guide v1.2**. Skill colours use **palette v3**.
+Current art assets and implementation handoff: **27 abstract player-skill portraits, 81 character portraits across three versions, the approved Wick trait icon, and Heavenprint/Wick style guide v1.2**. Skill colours use **palette v3**.
 
 ## Start implementing
 
@@ -31,8 +31,18 @@ Endurance is crimson; Strength is orange; Agility is gold. Expression is deep pe
 
 ## Validate the handoff
 
-Run `python3 scripts/validate_art.py` from the repository root. It checks the 55 primary images, PNG sizes and colour types, catalog paths, checksums and skill-to-attribute colour mappings. It uses the Python standard library only.
+Run `python3 scripts/validate_art.py` from the repository root. It checks the 109 primary images, PNG sizes and colour types, catalog paths, checksums and skill-to-attribute colour mappings. It uses the Python standard library only.
 
 This is an art library, not a game build. No engine import pipeline is assumed. Source PNGs and documentation are unpacked for direct use; there is no duplicate ZIP or Git LFS download step. Older experiments are outside this current production handoff. Reference images inside the guide are intentional style anchors, not additional game-slot assets.
 
 The guide preserves visual decisions; invented character names and imagery do not automatically establish world canon. For future art generation, attach the relevant guide and images rather than relying on the style name alone.
+
+## All three character versions
+
+| Version | Collection | Count |
+| --- | --- | --- |
+| 1 | [Original Heavenprint](art/characters/original-heavenprint/) | 27 |
+| 2 | [First-Patch Revival — latest revision](art/characters/first-patch-revival/) | 27 |
+| 3 | [New Faces](art/characters/heavenprint-new-faces/) | 27 |
+
+All 81 originals are preserved. Use `characters[*].collection` to filter the catalog. Earlier collections have namespaced IDs to prevent collisions with New Faces.

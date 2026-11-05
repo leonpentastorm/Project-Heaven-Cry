@@ -26,7 +26,7 @@ def validate():
     require(catalog['style_guide_version'] == palette['version'], 'Style guide version mismatch')
     require(catalog['skill_palette_version'] == palette['skill_palette_version'], 'Palette version mismatch')
     paths = set()
-    for family, count in [('skills', 27), ('characters', 27), ('traits', 1)]:
+    for family, count in [('skills', 27), ('characters', 81), ('traits', 1)]:
         require(len(catalog[family]) == count, f'Expected {count} {family}')
         for asset_id, asset in catalog[family].items():
             path = asset['path']
@@ -48,7 +48,7 @@ def validate():
     for line in checksums:
         expected, path = line.split('  ', 1)
         require(hashlib.sha256(local(path).read_bytes()).hexdigest() == expected, f'File integrity mismatch: {path}')
-    print(f'OK: 27 skills, 27 characters, 1 Wick trait; {len(checksums)} file checksums; dimensions, alpha and palette mappings valid.')
+    print(f'OK: 27 skills, 81 characters, 1 Wick trait; {len(checksums)} file checksums; dimensions, alpha and palette mappings valid.')
 
 if __name__ == '__main__':
     try:
