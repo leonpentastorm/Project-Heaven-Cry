@@ -3827,6 +3827,30 @@
         "44": "art/perks/wick/production-v1/exports/44/got-you-in-my-sight.png",
         "40": "art/perks/wick/production-v1/exports/40/got-you-in-my-sight.png"
       }
+    },
+    "eyes-in-the-back": {
+      "label": "Wick — Eyes in the Back",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/eyes-in-the-back.png",
+      "sha256": "627a28d60c5ab332ec18e45a2ded9c1700da32a31cefc3993627752fa596fe69",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "eyes_in_the_back",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/eyes-in-the-back.png",
+        "128": "art/perks/wick/production-v1/exports/128/eyes-in-the-back.png",
+        "64": "art/perks/wick/production-v1/exports/64/eyes-in-the-back.png",
+        "56": "art/perks/wick/production-v1/exports/56/eyes-in-the-back.png",
+        "48": "art/perks/wick/production-v1/exports/48/eyes-in-the-back.png",
+        "44": "art/perks/wick/production-v1/exports/44/eyes-in-the-back.png",
+        "40": "art/perks/wick/production-v1/exports/40/eyes-in-the-back.png"
+      }
     }
   },
   "illustrations": {

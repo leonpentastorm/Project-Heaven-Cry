@@ -534,6 +534,29 @@
       },
       "batch": "E",
       "source_sha256": "20db39633d2a0f8065c41f33d1e721836f5349cc92a2ed6c55c50ef205fc186f"
+    },
+    {
+      "id": "eyes-in-the-back",
+      "data_id": "eyes_in_the_back",
+      "name": "Eyes in the Back",
+      "family": "perks",
+      "order": 24,
+      "mood": "Calm, Comic",
+      "action": "Seen from behind, cape prominent, Wick holds a big round hand-mirror up over its shoulder, watching the way it isn't facing.",
+      "screen": "One wide eye, seen in the mirror",
+      "prop": "Hand-mirror",
+      "path": "art/perks/wick/production-v1/eyes-in-the-back.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/eyes-in-the-back.png",
+        "128": "art/perks/wick/production-v1/exports/128/eyes-in-the-back.png",
+        "64": "art/perks/wick/production-v1/exports/64/eyes-in-the-back.png",
+        "56": "art/perks/wick/production-v1/exports/56/eyes-in-the-back.png",
+        "48": "art/perks/wick/production-v1/exports/48/eyes-in-the-back.png",
+        "44": "art/perks/wick/production-v1/exports/44/eyes-in-the-back.png",
+        "40": "art/perks/wick/production-v1/exports/40/eyes-in-the-back.png"
+      },
+      "batch": "E",
+      "source_sha256": "acf8ca2d23434e4b7734feccc4c00309e99e1594398a4bbf650ae4774b4f8b5e"
     }
   ]
 }

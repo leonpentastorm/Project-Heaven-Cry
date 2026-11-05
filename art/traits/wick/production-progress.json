@@ -104,11 +104,12 @@
     "shadow-step",
     "jury-rig",
     "hot-swap",
-    "got-you-in-my-sight"
+    "got-you-in-my-sight",
+    "eyes-in-the-back"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 25
+    "perks": 26
   },
   "revision_rounds": {
     "field-surgeon": 3,
