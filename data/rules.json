@@ -182,19 +182,31 @@
       },
       "attributes": {
         "start_each": 1,
-        "auto": "rise to the highest skill under them"
+        "points": 10,
+        "max_at_creation": 5,
+        "cap": "its core"
       },
       "cores": {
         "start_each": 1,
-        "auto": "rise to the highest attribute under them"
+        "points": 6,
+        "max_at_creation": 5,
+        "unspent_core_point_trades_for_attribute_points": 2
       },
+      "auto_spend": "placing a skill above its attribute (or an attribute above its core) spends the attribute/core points it needs; blocked if those budgets can't cover it",
+      "lock_in_requires": "all skill, attribute and core points spent (unspent core points traded for attribute points count as spent once placed)",
       "after_creation": "caps apply normally; attribute and core points come from levelling",
       "traits": {
         "min": 0,
         "max": 2
       },
+      "source": "2020 EPCCG budgets (6 core, 10 attribute, 10 skill) restored after rules 1.1",
       "provisional": [
-        "skills.max_per_skill"
+        "skills.max_per_skill",
+        "attributes.max_at_creation",
+        "cores.max_at_creation",
+        "cores.unspent_core_point_trades_for_attribute_points",
+        "cores.points",
+        "attributes.points"
       ]
     },
     "levels": {

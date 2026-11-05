@@ -6,7 +6,8 @@
     "preset_points": 10,
     "max_per_skill": 5,
     "custom_option": true,
-    "leans": "base classes whose signature totals are among the preset's two highest (the level-3 closest-class rule); recomputed by tools/validate.py"
+    "leans": "base classes whose signature totals are among the preset's two highest (the level-3 closest-class rule); recomputed by tools/validate.py",
+    "budgets": "every preset fits the creation budgets (6 core, 10 attribute points); what it leaves is the player's to place"
   },
   "families": [
     {
@@ -777,19 +778,18 @@
       "blurb": "Knows what the shadow is, and what kind of round it needs.",
       "preset": {
         "dexterity": 4,
-        "lore_master": 3,
-        "vigilant": 3
+        "vigilant": 3,
+        "lore_master": 2,
+        "will_power": 1
       },
       "cores": {
         "body": 4,
         "mind": 3,
-        "soul": 3
+        "soul": 2
       },
       "leans": [
         "marksman",
-        "aegis",
-        "artillerist",
-        "haunt"
+        "artillerist"
       ]
     },
     {
@@ -801,11 +801,12 @@
       "preset": {
         "camaraderie": 4,
         "sensory": 3,
-        "proficiency": 3
+        "proficiency": 2,
+        "empathy": 1
       },
       "cores": {
         "body": 3,
-        "mind": 3,
+        "mind": 2,
         "soul": 4
       },
       "leans": [

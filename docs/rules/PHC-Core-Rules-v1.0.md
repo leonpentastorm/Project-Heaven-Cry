@@ -69,12 +69,16 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 
 | Pool | Starts at | At creation |
 |---|---|---|
-| Skills | 0 each | spend **10 points**; no skill above **5** |
-| Attributes | 1 each | rise automatically to the highest skill under them |
-| Cores | 1 each | rise automatically to the highest attribute under them |
+| Skills | 0 each | spend **10 Skill points**; no skill above **5** |
+| Attributes | 1 each | spend **10 Attribute points**; no Attribute above its Core, or above **5** |
+| Cores | 1 each | spend **6 Core points**; no Core above **5**. An unspent Core point trades for **2 Attribute points** |
 | Traits | none | pick 0–2 |
 
-**Archetypes** (archetypes.json, 37 presets) help new players: picking one pre-fills the 10 points, and anything can then be changed. They are guidance only and have no effect after creation. You only choose skills; the tree grows to fit them. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
+Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Skill points), so focusing on one Core costs nothing that spreading across three would save. A specialist who needs fewer Core points trades the rest for Attributes.
+
+**Order doesn't matter.** You can raise Cores and Attributes first, or place skills first: when a skill needs a higher Attribute or Core, it spends those points for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4) · −1 Core (Body 3→4)"). A skill can't go up if its Attribute or Core would need points you no longer have. Lock in needs every point of all three budgets spent.
+
+**Archetypes** (archetypes.json, 37 presets) help new players: picking one pre-fills the 10 Skill points, and the Attribute and Core points those skills need. Every preset fits inside the budgets; what's left of them is yours to place. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
 
 **Levels and XP.** Levels run 1 to 20. XP is cumulative:
 
@@ -601,7 +605,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 18. **Free shots and the reaction limit.** Dance of Iron and Catch give free shots. Do they use the one reaction per round? *Suggested: yes, unless the text says "free reaction".*
 19. **No dodge action.** Riposte now triggers when a melee attack against you misses.
 20. **Last Charge.** 7 m is not a whole number of tiles; *data uses 5 tiles*. Its shield of 100 × Armour Class is off the HP scale.
-21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation. Confirm both. *(1.1: with automatic Cores at creation, the 2 points raise any Core above what the skills need, which lifts its caps for later.)*
+21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation (8 instead of 6). Confirm both.
 22. **Undefined actions** that perks rely on: Field Repair, Shove, Break, wards and rituals, Improvise Tool, Analyze on NPCs.
 23. **Perk type labels.** Origami Hands, Hold the Stroke and Pattern Lock carry type labels that don't match their effects. Soulmate scales by Mastery inside Tier I.
 24. **Bone Talk** calls Shaken a body debuff; Shaken is in the heart family.
@@ -624,7 +628,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 **Added in revision 1.1 (provisional, settle in playtest)**
 
-35. **Creation cap of 5** points in any one skill.
+35. **Creation cap of 5** points in any one skill. *(Creation budgets restored after 1.1; see item 47.)*
 36. **Voice line cap** of 2 per player per beat, and the passive score 10 + mod(skill).
 37. **Overreach resist costs** (1 Echo at Mastery 2–4, 2 when Mastered) and **1 Echo at the start of each session**.
 38. **XP table and the 300 XP per session target.** Check that session 1 really ends at level 3.
@@ -639,3 +643,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 44. **The 30 weapon perks** are all new.
 45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25.
+47. **Creation budgets restored** (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, a cap of 5 on Cores and Attributes at creation, and the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.

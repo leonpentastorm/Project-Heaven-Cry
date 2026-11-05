@@ -172,6 +172,7 @@ if isinstance(arch, dict):
     rules = arch.get("rules", {})
     fams = {f.get("id") for f in arch.get("families", [])}
     skill_core = {x["id"]: x.get("core") for x in items("skills") if isinstance(x, dict)}
+    skill_attr = {x["id"]: x.get("attribute") for x in items("skills") if isinstance(x, dict)}
     seen = collections.Counter(a.get("id") for a in arch.get("items", []))
     for k, n in seen.items():
         if n > 1:
@@ -196,6 +197,22 @@ if isinstance(arch, dict):
                 cores[skill_core[s]] = max(cores[skill_core[s]], v)
         if a.get("cores") != cores:
             errors.append(f"archetype {aid}: cores should be {cores}")
+        # creation budgets (rules.character.creation): the preset's attributes and cores must fit them
+        cb = data.get("rules", {}).get("character", {}).get("creation", {})
+        core_pts = cb.get("cores", {}).get("points")
+        attr_pts = cb.get("attributes", {}).get("points")
+        if core_pts is not None and attr_pts is not None:
+            attr_need = {}
+            for s, v in preset.items():
+                if s in skill_attr:
+                    attr_need[skill_attr[s]] = max(attr_need.get(skill_attr[s], 1), v)
+            core_need = sum(v - 1 for v in cores.values())
+            spare = core_pts - core_need
+            trade = cb.get("cores", {}).get("unspent_core_point_trades_for_attribute_points", 0)
+            if core_need > core_pts:
+                errors.append(f"archetype {aid}: needs {core_need} core points, budget {core_pts}")
+            elif sum(v - 1 for v in attr_need.values()) > attr_pts + trade * spare:
+                errors.append(f"archetype {aid}: needs more attribute points than the budget")
         tot = {b["id"]: sum(preset.get(s, 0) for s in b.get("signature", [])) for b in base}
         top = sorted(set(tot.values()), reverse=True)[:2]
         leans = sorted(c for c, v in tot.items() if v in top)
