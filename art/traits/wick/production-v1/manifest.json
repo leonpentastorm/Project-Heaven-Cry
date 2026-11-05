@@ -879,6 +879,29 @@
       },
       "batch": "B",
       "source_sha256": "ecf37024a1422044aa85db5a74fe6c6b4c978376891384777d19e37a9152bfd4"
+    },
+    {
+      "id": "rival",
+      "data_id": "rival",
+      "name": "Rival",
+      "family": "traits",
+      "order": 47,
+      "mood": "Comic",
+      "action": "Wick stretches on tiptoe, arms folded, against a tall measuring post with a higher notch scratched just above its head",
+      "screen": "Pouting side-eye",
+      "prop": "Notched measuring post",
+      "path": "art/traits/wick/production-v1/rival.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/rival.png",
+        "128": "art/traits/wick/production-v1/exports/128/rival.png",
+        "64": "art/traits/wick/production-v1/exports/64/rival.png",
+        "56": "art/traits/wick/production-v1/exports/56/rival.png",
+        "48": "art/traits/wick/production-v1/exports/48/rival.png",
+        "44": "art/traits/wick/production-v1/exports/44/rival.png",
+        "40": "art/traits/wick/production-v1/exports/40/rival.png"
+      },
+      "batch": "B",
+      "source_sha256": "568a1ba217658be6e16410b507f642aead187c76f0f9c5545983d918789baaa2"
     }
   ]
 }

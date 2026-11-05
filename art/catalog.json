@@ -2527,6 +2527,30 @@
         "44": "art/traits/wick/production-v1/exports/44/sworn-sibling.png",
         "40": "art/traits/wick/production-v1/exports/40/sworn-sibling.png"
       }
+    },
+    "rival": {
+      "label": "Wick — Rival",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/rival.png",
+      "sha256": "37d663f24faaa0feca54898452d1defda9845c799ece8f5d225bea12006dafeb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "rival",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/rival.png",
+        "128": "art/traits/wick/production-v1/exports/128/rival.png",
+        "64": "art/traits/wick/production-v1/exports/64/rival.png",
+        "56": "art/traits/wick/production-v1/exports/56/rival.png",
+        "48": "art/traits/wick/production-v1/exports/48/rival.png",
+        "44": "art/traits/wick/production-v1/exports/44/rival.png",
+        "40": "art/traits/wick/production-v1/exports/40/rival.png"
+      }
     }
   },
   "character_collections": {

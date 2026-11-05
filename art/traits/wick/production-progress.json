@@ -54,10 +54,11 @@
     "gambler",
     "insomniac",
     "live-to-fight-another-day",
-    "sworn-sibling"
+    "sworn-sibling",
+    "rival"
   ],
   "catalog_coverage": {
-    "traits": 47,
+    "traits": 48,
     "perks": 2
   },
   "revision_rounds": {
