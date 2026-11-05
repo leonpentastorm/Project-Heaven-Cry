@@ -25,5 +25,8 @@
   "catalog_coverage": {
     "traits": 13,
     "perks": 2
+  },
+  "revision_rounds": {
+    "field-surgeon": 3
   }
 }

@@ -1745,8 +1745,8 @@
     "field-surgeon": {
       "label": "Wick — Field Surgeon",
       "collection": "wick-test-set-1-revisions",
-      "path": "art/traits/wick/test-set-1/revisions/field-surgeon.png",
-      "sha256": "421d74b16fa7370b6738879ef7f3478abd8e87f3051683aa9caebce285dd5504",
+      "path": "art/traits/wick/test-set-1/revisions/round-3/field-surgeon.png",
+      "sha256": "e12f6c9406f1aa817722ccd55beeedcbb7c03302d717b297067c71b376985a9e",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -1757,16 +1757,17 @@
       "production_approved": false,
       "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/revisions/exports/256/field-surgeon.png",
-        "128": "art/traits/wick/test-set-1/revisions/exports/128/field-surgeon.png",
-        "64": "art/traits/wick/test-set-1/revisions/exports/64/field-surgeon.png",
-        "56": "art/traits/wick/test-set-1/revisions/exports/56/field-surgeon.png",
-        "48": "art/traits/wick/test-set-1/revisions/exports/48/field-surgeon.png",
-        "44": "art/traits/wick/test-set-1/revisions/exports/44/field-surgeon.png",
-        "40": "art/traits/wick/test-set-1/revisions/exports/40/field-surgeon.png"
+        "256": "art/traits/wick/test-set-1/revisions/round-3/exports/256/field-surgeon.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-3/exports/128/field-surgeon.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-3/exports/64/field-surgeon.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-3/exports/56/field-surgeon.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-3/exports/48/field-surgeon.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-3/exports/44/field-surgeon.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-3/exports/40/field-surgeon.png"
       },
-      "revision": 2,
-      "previous_path": "art/traits/wick/test-set-1/field-surgeon.png"
+      "revision": 3,
+      "previous_path": "art/traits/wick/test-set-1/field-surgeon.png",
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/field-surgeon.png"
     },
     "supreme-command": {
       "label": "Wick — Supreme Command",

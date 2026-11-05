@@ -127,6 +127,9 @@ def validate_production_icons(catalog):
             require(ids == rules[family], f'Incomplete {family} icon coverage: {sorted(rules[family] - ids)}')
     folders = ['art/traits/wick/test-set-1/revisions',
                'art/traits/wick/production-v1', 'art/perks/wick/production-v1']
+    revisions_root = ROOT / 'art/traits/wick/test-set-1/revisions'
+    if revisions_root.exists():
+        folders += [str(p.parent.relative_to(ROOT)) for p in revisions_root.glob('round-*/manifest.json')]
     for folder in folders:
         manifest_path = ROOT / folder / 'manifest.json'
         if not manifest_path.exists():
@@ -138,6 +141,9 @@ def validate_production_icons(catalog):
         for item in manifest['icons']:
             family = item['family']
             asset = catalog[family][item['id']]
+            if item['path'] != asset['path'] and asset.get('previous_revision_path') == item['path']:
+                local(item['path'])  # Superseded revision is retained, not selected by the catalog.
+                continue
             require(item['data_id'] in rules[family] and item['data_id'] == asset['data_id'],
                     f'Bad production rules binding: {item["id"]}')
             require(item['path'] == asset['path'] and item['path'].startswith(folder + '/'),
