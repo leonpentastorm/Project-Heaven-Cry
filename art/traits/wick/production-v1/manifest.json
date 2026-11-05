@@ -580,6 +580,29 @@
       },
       "batch": "B",
       "source_sha256": "a99a3b139c72a37f428bdc43f2368b08fcf318025a41b1303200ce1dd9c42ffe"
+    },
+    {
+      "id": "daggerfall-veteran",
+      "data_id": "daggerfall_veteran",
+      "name": "Daggerfall Veteran",
+      "family": "traits",
+      "order": 32,
+      "mood": "Grim",
+      "action": "Wick sits on an upturned dented helmet, knees up, calmly ignoring a shell burst behind it",
+      "screen": "Tiny mushroom-cloud symbol",
+      "prop": "Dented helmet",
+      "path": "art/traits/wick/production-v1/daggerfall-veteran.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/daggerfall-veteran.png",
+        "128": "art/traits/wick/production-v1/exports/128/daggerfall-veteran.png",
+        "64": "art/traits/wick/production-v1/exports/64/daggerfall-veteran.png",
+        "56": "art/traits/wick/production-v1/exports/56/daggerfall-veteran.png",
+        "48": "art/traits/wick/production-v1/exports/48/daggerfall-veteran.png",
+        "44": "art/traits/wick/production-v1/exports/44/daggerfall-veteran.png",
+        "40": "art/traits/wick/production-v1/exports/40/daggerfall-veteran.png"
+      },
+      "batch": "B",
+      "source_sha256": "008355366ee22e397773dbb0c90bf703dd0f20d4875710ff930074b16635541f"
     }
   ]
 }

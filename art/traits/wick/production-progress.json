@@ -41,10 +41,11 @@
     "underground-sound",
     "worldline-fracture",
     "lowland-born",
-    "central-city-kid"
+    "central-city-kid",
+    "daggerfall-veteran"
   ],
   "catalog_coverage": {
-    "traits": 34,
+    "traits": 35,
     "perks": 2
   },
   "revision_rounds": {

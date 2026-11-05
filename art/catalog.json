@@ -2215,6 +2215,30 @@
         "44": "art/traits/wick/production-v1/exports/44/central-city-kid.png",
         "40": "art/traits/wick/production-v1/exports/40/central-city-kid.png"
       }
+    },
+    "daggerfall-veteran": {
+      "label": "Wick — Daggerfall Veteran",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/daggerfall-veteran.png",
+      "sha256": "58abb0e16abb7effeabbaab0369fff0473595ce005be42739a84f204d9d43af6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "daggerfall_veteran",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/daggerfall-veteran.png",
+        "128": "art/traits/wick/production-v1/exports/128/daggerfall-veteran.png",
+        "64": "art/traits/wick/production-v1/exports/64/daggerfall-veteran.png",
+        "56": "art/traits/wick/production-v1/exports/56/daggerfall-veteran.png",
+        "48": "art/traits/wick/production-v1/exports/48/daggerfall-veteran.png",
+        "44": "art/traits/wick/production-v1/exports/44/daggerfall-veteran.png",
+        "40": "art/traits/wick/production-v1/exports/40/daggerfall-veteran.png"
+      }
     }
   },
   "character_collections": {
