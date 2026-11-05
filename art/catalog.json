@@ -4523,6 +4523,30 @@
         "44": "art/perks/wick/production-v1/exports/44/clean-hands.png",
         "40": "art/perks/wick/production-v1/exports/40/clean-hands.png"
       }
+    },
+    "outclassed": {
+      "label": "Wick — Outclassed",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/outclassed.png",
+      "sha256": "33026562cc74514b7d1b75eef19d14b582d16210717d70449822ea2317bc599c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "outclassed",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/outclassed.png",
+        "128": "art/perks/wick/production-v1/exports/128/outclassed.png",
+        "64": "art/perks/wick/production-v1/exports/64/outclassed.png",
+        "56": "art/perks/wick/production-v1/exports/56/outclassed.png",
+        "48": "art/perks/wick/production-v1/exports/48/outclassed.png",
+        "44": "art/perks/wick/production-v1/exports/44/outclassed.png",
+        "40": "art/perks/wick/production-v1/exports/40/outclassed.png"
+      }
     }
   },
   "illustrations": {

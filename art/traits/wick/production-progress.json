@@ -133,11 +133,12 @@
     "litany",
     "holy-ordnance",
     "red-line",
-    "clean-hands"
+    "clean-hands",
+    "outclassed"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 54
+    "perks": 55
   },
   "revision_rounds": {
     "field-surgeon": 3,

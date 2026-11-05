@@ -1201,6 +1201,29 @@
       },
       "batch": "E",
       "source_sha256": "6da19531049e7d358e1f9402f38b1caa7b06afc82a5a0a917a321e6ea7b4c773"
+    },
+    {
+      "id": "outclassed",
+      "data_id": "outclassed",
+      "name": "Outclassed",
+      "family": "perks",
+      "order": 53,
+      "mood": "Proud, Comic",
+      "action": "Wick sits cross-legged on a toppled, empty enemy helmet as big as itself, buffing one mitten on its chest.",
+      "screen": "Smug half-lids",
+      "prop": "Empty enemy helmet",
+      "path": "art/perks/wick/production-v1/outclassed.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/outclassed.png",
+        "128": "art/perks/wick/production-v1/exports/128/outclassed.png",
+        "64": "art/perks/wick/production-v1/exports/64/outclassed.png",
+        "56": "art/perks/wick/production-v1/exports/56/outclassed.png",
+        "48": "art/perks/wick/production-v1/exports/48/outclassed.png",
+        "44": "art/perks/wick/production-v1/exports/44/outclassed.png",
+        "40": "art/perks/wick/production-v1/exports/40/outclassed.png"
+      },
+      "batch": "E",
+      "source_sha256": "dbfe72243f8cbb8ec25a5a67f461004278976aa976cce66c124e17600008c08f"
     }
   ]
 }
