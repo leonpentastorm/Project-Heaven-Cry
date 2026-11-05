@@ -1831,6 +1831,30 @@
         "44": "art/traits/wick/production-v1/exports/44/right-of-way.png",
         "40": "art/traits/wick/production-v1/exports/40/right-of-way.png"
       }
+    },
+    "drill-echo": {
+      "label": "Wick — Drill Echo",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/drill-echo.png",
+      "sha256": "9033d99591e2a898af82f45fda6ed7255c7351fc39d33300840e911effb80979",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "drill_echo",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/drill-echo.png",
+        "128": "art/traits/wick/production-v1/exports/128/drill-echo.png",
+        "64": "art/traits/wick/production-v1/exports/64/drill-echo.png",
+        "56": "art/traits/wick/production-v1/exports/56/drill-echo.png",
+        "48": "art/traits/wick/production-v1/exports/48/drill-echo.png",
+        "44": "art/traits/wick/production-v1/exports/44/drill-echo.png",
+        "40": "art/traits/wick/production-v1/exports/40/drill-echo.png"
+      }
     }
   },
   "character_collections": {

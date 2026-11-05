@@ -212,6 +212,29 @@
       },
       "batch": "A",
       "source_sha256": "f8c6ec4de3aadbc71b80399615ff821c15f2e44140bf02f70adf7f2f83039e77"
+    },
+    {
+      "id": "drill-echo",
+      "data_id": "drill_echo",
+      "name": "Drill Echo",
+      "family": "traits",
+      "order": 13,
+      "mood": "Tense, Comic",
+      "action": "Wick skids to a halt mid-sprint, one boot raised, clutching its head as an oversized stopwatch (tick marks only) swings on a cord from its neck",
+      "screen": "Circular restart-arrow symbol",
+      "prop": "Stopwatch",
+      "path": "art/traits/wick/production-v1/drill-echo.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/drill-echo.png",
+        "128": "art/traits/wick/production-v1/exports/128/drill-echo.png",
+        "64": "art/traits/wick/production-v1/exports/64/drill-echo.png",
+        "56": "art/traits/wick/production-v1/exports/56/drill-echo.png",
+        "48": "art/traits/wick/production-v1/exports/48/drill-echo.png",
+        "44": "art/traits/wick/production-v1/exports/44/drill-echo.png",
+        "40": "art/traits/wick/production-v1/exports/40/drill-echo.png"
+      },
+      "batch": "A",
+      "source_sha256": "fbac6a4f3ec22598ccc2fc3284aea9dc5ad09c6d43224464245d220108892aa2"
     }
   ]
 }
