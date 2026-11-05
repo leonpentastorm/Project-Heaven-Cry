@@ -514,9 +514,10 @@ A **patron** is a Celestial in a pact with you, played by the Narrator. They hav
 - Trait bonuses add to rolls; they never count as skill points, so they can't unlock perks, skill unlocks or classes.
 - Each trait has an upside, a downside and a Narrator hook. Upsides and downsides with plain numbers are engine-enforced; anything that needs judgement ("the Narrator decides when collectors turn up") is flagged for the Narrator.
 
-**Perks** (perks.json, 76 perks)
+**Perks** (perks.json, 103 perks)
 
-- **Acquired:** at Mastery 1 in a skill (3 points), take one of its two perks at Tier I. At Mastery 3 (7), upgrade it to Tier II or take the other at Tier I. At Mastered (10), you hold both at Tier II.
+- **Acquired:** every skill has two. Each Mastery level in the skill (3, 5, 7 and 9 points) gives one **perk step** in it: take one of its perks at Tier I, or upgrade one you hold to Tier II (Tier I always comes first). The order is the choice: at 5 points you hold both at Tier I or one at Tier II; at 7 you hold three of the four steps; at 9 you hold both at Tier II. Tier II replaces Tier I.
+- **Mastered:** every skill has one Mastered perk, granted automatically at 10 points. It's the capstone only a specialist reaches; nothing else gives it.
 - **Achieved:** need Mastery 1 in every skill listed, plus a deed done in play. The Narrator grants them; the engine checks the skill requirement and records the deed.
 - **Ultimate:** granted automatically when you hold both of the Achieved perks it names.
 - Every AP gain from perks obeys the AP ceiling: +3 per turn at most, 9 AP at most, 2 AP at least.
@@ -566,7 +567,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | classes.json | 13 + 15 | Signatures, economy, role, resource, rank moves; advanced parents, tutor, moves; the level-3 assignment rule |
 | traits.json | 74 | Upsides, downsides, excludes, Narrator hooks |
 | archetypes.json | 46 | Creation presets (guidance only): role, blurb, 10-point skill preset, all attributes and cores (every creation point spent), class leans |
-| perks.json | 76 | 54 Acquired, 16 Achieved, 6 Ultimate |
+| perks.json | 103 | 54 Acquired, 27 Mastered, 16 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons, each with its mastery family |
 | weapon_mastery.json | 10 + 30 | Weapon mastery families and levels, and 30 weapon perks (3 per family) |
@@ -649,3 +650,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25.
 47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
 48. **Movement is tiles per AP** (Leon: moving 4 tiles costs 4 AP unless you have good Agility). Restores the 2020 rule: Movement 1 + 0.5 × (Agility − 1) tiles per AP, never below 0.5, paid-for tiles carry over within the turn. Replaces 1.1's "3 + 0.5 × (Agility − 1) tiles for 1 AP". Check the pace in playtest (an Agility 1 character spending 4 of 6 AP to cross 4 tiles), and the converted armour penalties (−0.5 / −0.5 / −1 Movement).
+49. **A perk step at every Mastery level, and 27 Mastered perks** (Leon). Replaces Tier I at 3 / Tier II or second perk at 7 / both Tier II at 10. A skill at 5 points now holds two steps (Tier II can arrive at 5, two points earlier), and a 7/3 creation spread holds 4 steps instead of 3. The Mastered perks' numbers are all new: check Last Wall, Earthbreaker, Nothing Gets Past, Judgement Day and On My Mark against the AP ceiling and the action economy first.

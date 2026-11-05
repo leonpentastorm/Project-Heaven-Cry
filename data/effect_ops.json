@@ -7,7 +7,7 @@
       "id": "stat_mod",
       "tier": "core",
       "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
-      "count": 186,
+      "count": 189,
       "params": [
         "basis",
         "context",
@@ -43,7 +43,7 @@
       "id": "narrator",
       "tier": "core",
       "summary": "Not automatable: the Narrator (AI or human) decides using the item's text.",
-      "count": 141,
+      "count": 148,
       "params": [
         "note"
       ],
@@ -70,10 +70,11 @@
       "id": "grant_action",
       "tier": "core",
       "summary": "Give a new action with an AP cost and a use limit.",
-      "count": 92,
+      "count": 96,
       "params": [
         "action",
         "ap",
+        "effects",
         "range",
         "requires_state",
         "silent",
@@ -165,12 +166,14 @@
       "id": "condition",
       "tier": "core",
       "summary": "Apply a condition (or family:x / a choice list).",
-      "count": 48,
+      "count": 50,
       "params": [
+        "area",
         "choose",
         "condition",
         "duration",
         "filter",
+        "id",
         "location",
         "rounds",
         "save",
@@ -270,7 +273,7 @@
       "id": "action_cost",
       "tier": "core",
       "summary": "Change (value) or fix (set) the AP cost of an action.",
-      "count": 22,
+      "count": 23,
       "params": [
         "action",
         "context",
@@ -283,14 +286,14 @@
         "classes:fire_discipline",
         "classes:sword_form",
         "classes:triage",
+        "perks:overhaul",
         "traits:cold_case",
         "traits:demolitionist",
         "traits:drill_echo",
         "traits:field_medic",
         "traits:glass_runner",
         "traits:grenadiers_arm",
-        "traits:gun_nut",
-        "traits:live_to_fight_another_day"
+        "traits:gun_nut"
       ],
       "example": {
         "op": "action_cost",
@@ -303,23 +306,27 @@
       "id": "cost_mod",
       "tier": "core",
       "summary": "Change what a spell, blessing or item costs in its resource.",
-      "count": 21,
+      "count": 23,
       "params": [
         "action",
+        "context",
         "limit",
         "resource",
+        "uses",
         "value",
         "when"
       ],
       "used_by": [
         "perks:charge",
+        "perks:clean_draw",
         "perks:hot_swap",
         "perks:into_the_dark",
         "perks:parallel_thought",
         "perks:resonance",
         "perks:rite_in_the_field",
         "perks:shadow_step",
-        "perks:siege_engine"
+        "perks:siege_engine",
+        "perks:the_twin_pays"
       ],
       "example": {
         "op": "cost_mod",
@@ -329,10 +336,43 @@
       }
     },
     {
+      "id": "immunity",
+      "tier": "core",
+      "summary": "Can't gain a condition or damage type.",
+      "count": 21,
+      "params": [
+        "conditions",
+        "context",
+        "target",
+        "to"
+      ],
+      "used_by": [
+        "perks:clean_draw",
+        "perks:eyes_in_the_back",
+        "perks:iron_stomach",
+        "perks:make_way",
+        "perks:nothing_left_to_fear",
+        "perks:siege_engine",
+        "perks:still_water",
+        "perks:the_twin_pays",
+        "perks:walking_wounded",
+        "traits:augmented",
+        "traits:daggerfall_veteran",
+        "traits:factory_made"
+      ],
+      "example": {
+        "op": "immunity",
+        "conditions": [
+          "nausea",
+          "fear"
+        ]
+      }
+    },
+    {
       "id": "damage_mult",
       "tier": "core",
       "summary": "Multiply damage dealt.",
-      "count": 16,
+      "count": 19,
       "params": [
         "context",
         "count",
@@ -340,6 +380,7 @@
         "max",
         "per",
         "target",
+        "uses",
         "value",
         "when"
       ],
@@ -353,9 +394,9 @@
         "classes:sanctuary",
         "classes:stitch",
         "perks:breaching_strike",
+        "perks:case_closed",
         "perks:holy_ordnance",
-        "perks:last_charge",
-        "perks:origami_hands"
+        "perks:judgement_day"
       ],
       "example": {
         "op": "damage_mult",
@@ -368,7 +409,7 @@
       "id": "forbid",
       "tier": "core",
       "summary": "An action can't be taken.",
-      "count": 16,
+      "count": 17,
       "params": [
         "action",
         "context"
@@ -377,6 +418,7 @@
         "conditions:disarmed",
         "conditions:grappled",
         "conditions:taunted",
+        "perks:still_water",
         "traits:field_medic",
         "traits:forlorn_hope",
         "traits:hollow_heart",
@@ -389,6 +431,42 @@
       "example": {
         "op": "forbid",
         "action": "move_away"
+      }
+    },
+    {
+      "id": "damage_mod",
+      "tier": "core",
+      "summary": "Add flat damage.",
+      "count": 16,
+      "params": [
+        "area",
+        "basis",
+        "context",
+        "source",
+        "target",
+        "type",
+        "value",
+        "value_pct",
+        "when"
+      ],
+      "used_by": [
+        "classes:discharge",
+        "classes:edge_sigil",
+        "classes:gauntlet_infusion",
+        "perks:earthbreaker",
+        "perks:trick_shot",
+        "traits:augmented",
+        "traits:demolitionist",
+        "traits:ghost_soldier",
+        "traits:hollow_heart",
+        "traits:humanity_first",
+        "traits:moon_hunter",
+        "traits:pain_eater"
+      ],
+      "example": {
+        "op": "damage_mod",
+        "source": "word_element",
+        "type": "elemental"
       }
     },
     {
@@ -421,70 +499,6 @@
       }
     },
     {
-      "id": "immunity",
-      "tier": "core",
-      "summary": "Can't gain a condition or damage type.",
-      "count": 15,
-      "params": [
-        "conditions",
-        "target",
-        "to"
-      ],
-      "used_by": [
-        "perks:eyes_in_the_back",
-        "perks:iron_stomach",
-        "perks:make_way",
-        "perks:siege_engine",
-        "traits:augmented",
-        "traits:daggerfall_veteran",
-        "traits:factory_made",
-        "traits:heavyworlder",
-        "traits:insomniac",
-        "traits:mind_without_fog",
-        "traits:right_of_way"
-      ],
-      "example": {
-        "op": "immunity",
-        "conditions": [
-          "nausea",
-          "fear"
-        ]
-      }
-    },
-    {
-      "id": "damage_mod",
-      "tier": "core",
-      "summary": "Add flat damage.",
-      "count": 14,
-      "params": [
-        "context",
-        "source",
-        "target",
-        "type",
-        "value",
-        "value_pct"
-      ],
-      "used_by": [
-        "classes:discharge",
-        "classes:edge_sigil",
-        "classes:gauntlet_infusion",
-        "traits:augmented",
-        "traits:demolitionist",
-        "traits:ghost_soldier",
-        "traits:hollow_heart",
-        "traits:humanity_first",
-        "traits:moon_hunter",
-        "traits:pain_eater",
-        "traits:raised_by_orks",
-        "traits:southern_fist"
-      ],
-      "example": {
-        "op": "damage_mod",
-        "source": "word_element",
-        "type": "elemental"
-      }
-    },
-    {
       "id": "save_mod",
       "tier": "core",
       "summary": "Bonus or penalty to Body/Brain/Heart saves.",
@@ -511,6 +525,74 @@
         "family": "any",
         "value": 3,
         "context": "chemicals, gases and drugs you've identified"
+      }
+    },
+    {
+      "id": "state",
+      "tier": "core",
+      "summary": "A named toggled state with its own rules.",
+      "count": 13,
+      "params": [
+        "area",
+        "duration",
+        "ends_on",
+        "hp",
+        "rounds",
+        "save",
+        "state",
+        "tiles",
+        "uses",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:bulwark_line",
+        "classes:deploy_cover",
+        "classes:raise_cover",
+        "classes:sanctuary",
+        "classes:seal",
+        "classes:sentry_turret",
+        "classes:silent_kill",
+        "classes:suppression",
+        "classes:weak_point",
+        "perks:earthbreaker",
+        "perks:last_wall",
+        "perks:open_hand"
+      ],
+      "example": {
+        "op": "state",
+        "state": "full_cover",
+        "tiles": 2
+      }
+    },
+    {
+      "id": "attack_mod",
+      "tier": "core",
+      "summary": "Bonus or penalty to attack rolls.",
+      "count": 12,
+      "params": [
+        "context",
+        "duration",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [
+        "classes:fire_discipline",
+        "conditions:emplaced",
+        "conditions:grappled",
+        "perks:case_closed",
+        "perks:flat_line",
+        "perks:never_there",
+        "perks:spoon_feed",
+        "traits:spray_and_pray",
+        "weapon_mastery:double_tap",
+        "weapon_mastery:steady_breath"
+      ],
+      "example": {
+        "op": "attack_mod",
+        "context": "aimed_shot_with_bow",
+        "value": 1
       }
     },
     {
@@ -545,67 +627,10 @@
       }
     },
     {
-      "id": "attack_mod",
-      "tier": "core",
-      "summary": "Bonus or penalty to attack rolls.",
-      "count": 10,
-      "params": [
-        "context",
-        "duration",
-        "target",
-        "value",
-        "when"
-      ],
-      "used_by": [
-        "classes:fire_discipline",
-        "conditions:emplaced",
-        "conditions:grappled",
-        "perks:flat_line",
-        "perks:spoon_feed",
-        "traits:spray_and_pray",
-        "weapon_mastery:double_tap",
-        "weapon_mastery:steady_breath"
-      ],
-      "example": {
-        "op": "attack_mod",
-        "context": "aimed_shot_with_bow",
-        "value": 1
-      }
-    },
-    {
-      "id": "state",
-      "tier": "core",
-      "summary": "A named toggled state with its own rules.",
-      "count": 9,
-      "params": [
-        "area",
-        "hp",
-        "rounds",
-        "state",
-        "tiles"
-      ],
-      "used_by": [
-        "classes:bulwark_line",
-        "classes:deploy_cover",
-        "classes:raise_cover",
-        "classes:sanctuary",
-        "classes:seal",
-        "classes:sentry_turret",
-        "classes:silent_kill",
-        "classes:suppression",
-        "classes:weak_point"
-      ],
-      "example": {
-        "op": "state",
-        "state": "full_cover",
-        "tiles": 2
-      }
-    },
-    {
       "id": "damage_reduction",
       "tier": "core",
       "summary": "Reduce damage taken by a flat amount.",
-      "count": 7,
+      "count": 8,
       "params": [
         "context",
         "duration",
@@ -613,10 +638,12 @@
         "per",
         "target",
         "type",
-        "value"
+        "value",
+        "when"
       ],
       "used_by": [
         "perks:bulwark",
+        "perks:last_wall",
         "perks:scar_tissue"
       ],
       "example": {
@@ -679,6 +706,40 @@
       }
     },
     {
+      "id": "aura",
+      "tier": "core",
+      "summary": "An effect on everyone within N tiles.",
+      "count": 6,
+      "params": [
+        "effect",
+        "effects",
+        "radius",
+        "range_if_stationary",
+        "range_tiles",
+        "target",
+        "trigger",
+        "when"
+      ],
+      "used_by": [
+        "perks:nothing_left_to_fear",
+        "perks:war_footing",
+        "traits:born_officer",
+        "traits:live_to_fight_another_day",
+        "traits:squad_anchor",
+        "traits:trench_poet"
+      ],
+      "example": {
+        "op": "aura",
+        "radius": 3,
+        "target": "allies",
+        "when": "ally can see you",
+        "effect": {
+          "op": "immunity",
+          "to": "condition:fear"
+        }
+      }
+    },
+    {
       "id": "damage_taken_mod",
       "tier": "core",
       "summary": "Change damage taken (signed).",
@@ -702,55 +763,96 @@
       }
     },
     {
-      "id": "aura",
+      "id": "extra_use",
       "tier": "core",
-      "summary": "An effect on everyone within N tiles.",
-      "count": 5,
+      "summary": "One more use of a limited ability.",
+      "count": 6,
       "params": [
-        "effect",
-        "effects",
-        "radius",
-        "range_if_stationary",
-        "range_tiles",
-        "target",
-        "trigger",
-        "when"
+        "action",
+        "context",
+        "per",
+        "uses",
+        "value"
       ],
       "used_by": [
-        "perks:war_footing",
-        "traits:born_officer",
-        "traits:live_to_fight_another_day",
-        "traits:squad_anchor",
-        "traits:trench_poet"
+        "perks:before_the_blink",
+        "perks:jury_rig",
+        "perks:nothing_gets_past",
+        "traits:crowded_head"
       ],
       "example": {
-        "op": "aura",
-        "radius": 1,
-        "target": "enemies",
-        "when": "enemy ends its move in the aura",
-        "effect": {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -2
-        }
+        "op": "extra_use",
+        "context": "broken weapon or device",
+        "value": 1
       }
     },
     {
       "id": "ignore_cover",
       "tier": "core",
       "summary": "Attacks ignore a level of cover.",
-      "count": 5,
+      "count": 6,
       "params": [
         "context"
       ],
       "used_by": [
         "perks:breaching_strike",
+        "perks:trick_shot",
         "traits:one_shot",
         "weapon_mastery:room_clearer"
       ],
       "example": {
         "op": "ignore_cover",
         "context": "breaching_strike"
+      }
+    },
+    {
+      "id": "reveal",
+      "tier": "core",
+      "summary": "Make hidden things visible.",
+      "count": 6,
+      "params": [
+        "context",
+        "count",
+        "ignores",
+        "radius",
+        "range",
+        "target",
+        "what",
+        "when"
+      ],
+      "used_by": [
+        "perks:case_closed",
+        "perks:got_you_in_my_sight",
+        "perks:skin_map",
+        "perks:wind_on_the_skin"
+      ],
+      "example": {
+        "op": "reveal",
+        "what": "hidden_enemy",
+        "count": 1,
+        "range": "vision_range",
+        "when": "combat_start"
+      }
+    },
+    {
+      "id": "free_move",
+      "tier": "core",
+      "summary": "Movement that costs no AP.",
+      "count": 5,
+      "params": [
+        "context",
+        "tiles",
+        "when"
+      ],
+      "used_by": [
+        "perks:never_there",
+        "perks:roll_with_it",
+        "weapon_mastery:flow"
+      ],
+      "example": {
+        "op": "free_move",
+        "tiles": 1,
+        "when": "successful dodge"
       }
     },
     {
@@ -771,6 +873,29 @@
         "op": "knockback",
         "tiles": 1,
         "target": "target"
+      }
+    },
+    {
+      "id": "reaction",
+      "tier": "core",
+      "summary": "An action taken off-turn; uses the one reaction per round unless it says otherwise.",
+      "count": 5,
+      "params": [
+        "action",
+        "context",
+        "limit",
+        "trigger"
+      ],
+      "used_by": [
+        "perks:catch",
+        "perks:many_hands",
+        "weapon_mastery:last_word"
+      ],
+      "example": {
+        "op": "reaction",
+        "action": "catch_throwable",
+        "trigger": "grenade or thrown weapon targets you or an adjacent ally",
+        "limit": "once_per_round"
       }
     },
     {
@@ -795,46 +920,6 @@
         "family": "body",
         "count": 1,
         "target": "self"
-      }
-    },
-    {
-      "id": "extra_use",
-      "tier": "core",
-      "summary": "One more use of a limited ability.",
-      "count": 4,
-      "params": [
-        "action",
-        "context",
-        "uses",
-        "value"
-      ],
-      "used_by": [
-        "perks:jury_rig",
-        "traits:crowded_head"
-      ],
-      "example": {
-        "op": "extra_use",
-        "context": "broken weapon or device",
-        "value": 1
-      }
-    },
-    {
-      "id": "free_move",
-      "tier": "core",
-      "summary": "Movement that costs no AP.",
-      "count": 4,
-      "params": [
-        "tiles",
-        "when"
-      ],
-      "used_by": [
-        "perks:roll_with_it",
-        "weapon_mastery:flow"
-      ],
-      "example": {
-        "op": "free_move",
-        "tiles": 1,
-        "when": "successful dodge"
       }
     },
     {
@@ -904,52 +989,6 @@
       }
     },
     {
-      "id": "reaction",
-      "tier": "core",
-      "summary": "An action taken off-turn; uses the one reaction per round unless it says otherwise.",
-      "count": 4,
-      "params": [
-        "action",
-        "limit",
-        "trigger"
-      ],
-      "used_by": [
-        "perks:catch",
-        "weapon_mastery:last_word"
-      ],
-      "example": {
-        "op": "reaction",
-        "action": "catch_throwable",
-        "trigger": "grenade or thrown weapon targets you or an adjacent ally",
-        "limit": "once_per_round"
-      }
-    },
-    {
-      "id": "reveal",
-      "tier": "core",
-      "summary": "Make hidden things visible.",
-      "count": 4,
-      "params": [
-        "context",
-        "count",
-        "range",
-        "target",
-        "what",
-        "when"
-      ],
-      "used_by": [
-        "perks:got_you_in_my_sight",
-        "perks:wind_on_the_skin"
-      ],
-      "example": {
-        "op": "reveal",
-        "what": "hidden_enemy",
-        "count": 1,
-        "range": "vision_range",
-        "when": "combat_start"
-      }
-    },
-    {
       "id": "roll_bonus",
       "tier": "core",
       "summary": "One-off bonus to a specific roll.",
@@ -993,6 +1032,53 @@
         "op": "roll_mod_all",
         "value": -2,
         "context": "after_combat_until_rest"
+      }
+    },
+    {
+      "id": "spawn_illusion",
+      "tier": "core",
+      "summary": "Create a decoy on the grid.",
+      "count": 4,
+      "params": [
+        "context",
+        "count",
+        "disbelieve",
+        "duration",
+        "rounds",
+        "solid",
+        "uses"
+      ],
+      "used_by": [
+        "perks:mirage",
+        "perks:solid_image"
+      ],
+      "example": {
+        "op": "spawn_illusion",
+        "count": 1,
+        "rounds": 1,
+        "disbelieve": "analysis"
+      }
+    },
+    {
+      "id": "stat_mult",
+      "tier": "core",
+      "summary": "Multiply a derived stat.",
+      "count": 4,
+      "params": [
+        "context",
+        "stat",
+        "value"
+      ],
+      "used_by": [
+        "conditions:emplaced",
+        "perks:overhaul",
+        "traits:lowland_born",
+        "traits:old_timer"
+      ],
+      "example": {
+        "op": "stat_mult",
+        "stat": "recoil",
+        "value": 0.5
       }
     },
     {
@@ -1057,6 +1143,29 @@
         "action": "soul_cast",
         "pay": "hp",
         "rate": 2
+      }
+    },
+    {
+      "id": "auto_success",
+      "tier": "core",
+      "summary": "The check succeeds without a roll.",
+      "count": 3,
+      "params": [
+        "check",
+        "choose",
+        "context",
+        "skill",
+        "uses"
+      ],
+      "used_by": [
+        "perks:everyones_friend",
+        "traits:machine_faced",
+        "traits:old_timer"
+      ],
+      "example": {
+        "op": "auto_success",
+        "check": "charisma_lie",
+        "context": "first lie to that NPC this scene"
       }
     },
     {
@@ -1126,6 +1235,38 @@
       }
     },
     {
+      "id": "free_action",
+      "tier": "core",
+      "summary": "An action costs 0 AP under a trigger.",
+      "count": 3,
+      "params": [
+        "action",
+        "ap",
+        "context",
+        "effect",
+        "target",
+        "when"
+      ],
+      "used_by": [
+        "perks:on_my_mark",
+        "perks:open_hand",
+        "perks:supreme_command"
+      ],
+      "example": {
+        "op": "free_action",
+        "action": "offer_mercy",
+        "when": "enemy in sight drops to 25% HP or less",
+        "effect": {
+          "op": "state",
+          "state": "surrendered",
+          "save": "heart",
+          "duration": {
+            "until": "combat_end"
+          }
+        }
+      }
+    },
+    {
       "id": "heal_received_mult",
       "tier": "core",
       "summary": "Multiply healing received.",
@@ -1162,6 +1303,31 @@
         "op": "heat_mod",
         "action": "aimed_shot",
         "value": -1
+      }
+    },
+    {
+      "id": "interrupt",
+      "tier": "core",
+      "summary": "Act before a triggering action resolves.",
+      "count": 3,
+      "params": [
+        "action",
+        "ap",
+        "context",
+        "trigger",
+        "uses",
+        "when"
+      ],
+      "used_by": [
+        "perks:angel_of_the_trenches",
+        "perks:between_heartbeats",
+        "perks:nothing_gets_past"
+      ],
+      "example": {
+        "op": "interrupt",
+        "action": "overwatch_shot",
+        "when": "enemy moves into your line",
+        "context": "resolves before the move ends"
       }
     },
     {
@@ -1259,47 +1425,6 @@
       }
     },
     {
-      "id": "spawn_illusion",
-      "tier": "core",
-      "summary": "Create a decoy on the grid.",
-      "count": 3,
-      "params": [
-        "count",
-        "disbelieve",
-        "rounds"
-      ],
-      "used_by": [
-        "perks:mirage"
-      ],
-      "example": {
-        "op": "spawn_illusion",
-        "count": 1,
-        "rounds": 1,
-        "disbelieve": "analysis"
-      }
-    },
-    {
-      "id": "stat_mult",
-      "tier": "core",
-      "summary": "Multiply a derived stat.",
-      "count": 3,
-      "params": [
-        "context",
-        "stat",
-        "value"
-      ],
-      "used_by": [
-        "conditions:emplaced",
-        "traits:lowland_born",
-        "traits:old_timer"
-      ],
-      "example": {
-        "op": "stat_mult",
-        "stat": "recoil",
-        "value": 0.5
-      }
-    },
-    {
       "id": "area_mult",
       "tier": "bespoke",
       "summary": "",
@@ -1318,24 +1443,23 @@
       }
     },
     {
-      "id": "auto_success",
+      "id": "auto_fail",
       "tier": "core",
-      "summary": "The check succeeds without a roll.",
+      "summary": "The check fails without a roll.",
       "count": 2,
       "params": [
-        "choose",
+        "check",
         "context",
-        "skill",
-        "uses"
+        "target"
       ],
       "used_by": [
-        "traits:machine_faced",
-        "traits:old_timer"
+        "perks:judgement_day",
+        "traits:demolitionist"
       ],
       "example": {
-        "op": "auto_success",
-        "skill": "composure",
-        "context": "dialogue"
+        "op": "auto_fail",
+        "check": "next attack vs an ally",
+        "target": "judged enemy"
       }
     },
     {
@@ -1491,25 +1615,25 @@
       }
     },
     {
-      "id": "interrupt",
-      "tier": "core",
-      "summary": "Act before a triggering action resolves.",
+      "id": "mod_slots",
+      "tier": "bespoke",
+      "summary": "",
       "count": 2,
       "params": [
-        "action",
-        "ap",
-        "trigger",
-        "uses"
+        "context",
+        "limit",
+        "value",
+        "when"
       ],
       "used_by": [
-        "perks:angel_of_the_trenches",
-        "perks:between_heartbeats"
+        "perks:overhaul",
+        "traits:gun_nut"
       ],
       "example": {
-        "op": "interrupt",
-        "ap": 2,
-        "trigger": "an enemy in your sight starts an action",
-        "uses": "per_combat"
+        "op": "mod_slots",
+        "value": 1,
+        "when": "long_rest",
+        "limit": "once per item"
       }
     },
     {
@@ -1710,22 +1834,6 @@
           "value": -1,
           "context": "next_turn"
         }
-      }
-    },
-    {
-      "id": "auto_fail",
-      "tier": "core",
-      "summary": "The check fails without a roll.",
-      "count": 1,
-      "params": [
-        "context"
-      ],
-      "used_by": [
-        "traits:demolitionist"
-      ],
-      "example": {
-        "op": "auto_fail",
-        "context": "hearing_checks"
       }
     },
     {
@@ -2135,26 +2243,6 @@
       }
     },
     {
-      "id": "free_action",
-      "tier": "core",
-      "summary": "An action costs 0 AP under a trigger.",
-      "count": 1,
-      "params": [
-        "ap",
-        "target",
-        "when"
-      ],
-      "used_by": [
-        "perks:supreme_command"
-      ],
-      "example": {
-        "op": "free_action",
-        "ap": 2,
-        "target": "all_allies",
-        "when": "supreme_command"
-      }
-    },
-    {
       "id": "fused_cast",
       "tier": "bespoke",
       "summary": "",
@@ -2365,24 +2453,6 @@
         "op": "min_carry",
         "item_tag": "gun",
         "count": 3
-      }
-    },
-    {
-      "id": "mod_slots",
-      "tier": "bespoke",
-      "summary": "",
-      "count": 1,
-      "params": [
-        "context",
-        "value"
-      ],
-      "used_by": [
-        "traits:gun_nut"
-      ],
-      "example": {
-        "op": "mod_slots",
-        "context": "guns",
-        "value": 1
       }
     },
     {

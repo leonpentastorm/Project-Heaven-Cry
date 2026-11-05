@@ -14,7 +14,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `classes.json` | 13 base, 15 advanced | Signatures, economy, role, resource, rank I–III moves; advanced parents, tutor and moves; `assignment` holds the level-3 closest-class rule as data |
 | `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset, all 9 attributes, 3 cores; `tools/archetype_fill.py`) plus class leans |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
-| `perks.json` | 76 | 54 Acquired (2 per skill, Tier I at 3 points and II at 7), 16 Achieved (combo plus a deed), 6 Ultimate |
+| `perks.json` | 103 | 54 Acquired (2 per skill; one perk step at each Mastery level 3/5/7/9: a Tier I or an upgrade to Tier II), 27 Mastered (one per skill, automatic at 10; provisional), 16 Achieved (combo plus a deed), 6 Ultimate |
 | `conditions.json` | 29 | Debuffs (body, brain or heart family), helpful states, Downed |
 | `weapons.json` | 20 | Starter weapons: damage, range in tiles, AP, ammo, properties, mastery family |
 | `weapon_mastery.json` | 10 families, 30 perks | Weapon mastery by kills: levels 0–5 (attack bonus, perk tier) and one weapon perk per family per tier; **provisional numbers** |

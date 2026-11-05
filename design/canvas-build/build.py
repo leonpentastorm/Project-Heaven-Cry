@@ -46,11 +46,26 @@ def epccg(x):
     e = x["epccg"]
     return {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
             "quote": e["quote"], "intro": e["intro"], "effect": e["effect"], "high": e["high_levels"],
-            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"])}
+            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"])}
 
 PERK_TYPE = {"active_skill": "Active skill", "combat_interaction": "Combat interaction", "passive": "Passive", "ap_mod": "AP modifier", "combat_starter": "Combat starter", "conversation_quirk": "Conversation quirk"}
 
 cap = lambda t: t[:1].upper() + t[1:]
+USES = {"per_combat": "Once per combat", "per_scene": "Once per scene", "per_session": "Once per session", "per_round": "Once per round", "per_turn": "Once per turn"}
+
+def perk_meta(p):
+    meta = [PERK_TYPE.get(p["perk_type"], (p["perk_type"] or "").replace("_", " ").capitalize())]
+    if p.get("ap_cost"):
+        meta.append(str(p["ap_cost"]) + " AP")
+    if p.get("uses") in USES:
+        meta.append(USES[p["uses"]])
+    return " · ".join(m for m in meta if m)
+
+def skill_mastered(sid):
+    """The skill's Mastered perk (automatic at 10 points), for the gilded card."""
+    p = next(p for p in load("perks.json")["items"] if p["tier"] == "mastered" and p["skills"] == [sid])
+    return {"id": p["id"], "name": p["name"], "flavour": p["flavour"], "text": p["text"], "meta": perk_meta(p),
+            "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), "")}
 
 def skill_perks(sid):
     """A skill's two Acquired perks (take one at Mastery 1), with the Wick icon when the artist has drawn it."""
@@ -59,13 +74,8 @@ def skill_perks(sid):
         if p["tier"] != "acquired" or sid not in p["skills"]:
             continue
         t = p["tiers"]
-        meta = [PERK_TYPE.get(p["perk_type"], (p["perk_type"] or "").replace("_", " ").capitalize())]
-        if p.get("ap_cost"):
-            meta.append(str(p["ap_cost"]) + " AP")
-        if p.get("uses") and p["uses"] != "at_will":
-            meta.append(p["uses"].replace("_", " "))
         out.append({"id": p["id"], "name": p["name"], "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), ""),
-                    "meta": " · ".join(m for m in meta if m), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"])})
+                    "meta": perk_meta(p), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"])})
     return out
 
 EP_TPL = (BUILD / "epccg.template.html").read_text()
@@ -76,9 +86,16 @@ LB_JS = (BUILD / "lightbox.logic.js").read_text()
 # Small canvas image -> its large upload, for click-to-enlarge (keys "<name>-lg" in blobs.json).
 BIG = {BLOBS[k]: BLOBS[k + "-lg"] for k in BLOBS if k + "-lg" in BLOBS}
 
+MASTERED_TPL = (BUILD / "mastered.template.html").read_text()
+
+def with_mastered(tpl):
+    """Swap each <!--MASTERED:prefix--> for the gilded Mastered-perk card, its holes reading from that prefix."""
+    import re
+    return re.sub(r"<!--MASTERED:([\w.]+)-->", lambda m: MASTERED_TPL.replace("X.", m.group(1) + ".").rstrip("\n"), tpl)
+
 def with_epccg(tpl, js):
     """Inline the shared EPCCG pop-up and the click-to-enlarge lightbox where a file asks for them."""
-    return (tpl.replace("<!--EPCCG-->", EP_TPL).replace("<!--LIGHTBOX-->", LB_TPL),
+    return (with_mastered(tpl.replace("<!--EPCCG-->", EP_TPL).replace("<!--LIGHTBOX-->", LB_TPL)),
             js.replace("/*EPCCG*/", EP_JS).replace("/*LIGHTBOX*/", LB_JS))
 
 def skills():
@@ -219,7 +236,7 @@ def build():
     print("built Create + 5 step artboards")
     mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mpat"], "p2": BLOBS["char-inspectant-latch-7"],
              "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "outpost": BLOBS["world-outpost813"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery(), "big": BIG, "factoryIcon": BLOBS["wick-trait-factory-made"], "narrator": BLOBS["wick-narrator-placeholder"],
-             "perks": [{"id": x["id"], "name": x["name"], "text": x["tiers"]["I"]["text"][0].upper() + x["tiers"]["I"]["text"][1:], "icon": BLOBS.get("wick-perk-" + x["id"].replace("_", "-"), BLOBS["wick-mind-without-fog"])} for x in load("perks.json")["items"] if x["id"] in ("rally_cry", "roll_with_it")]}
+             "perks": [{"id": x["id"], "name": x["name"], "text": x["tiers"]["I"]["text"][0].upper() + x["tiers"]["I"]["text"][1:], "icon": BLOBS.get("wick-perk-" + x["id"].replace("_", "-"), BLOBS["wick-mind-without-fog"])} for x in load("perks.json")["items"] if x["id"] in ("rally_cry", "soulmate", "roll_with_it")]}
     tpl, js = with_epccg((BUILD / "main.template.html").read_text(),
                          (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False)))
     (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))

@@ -54,7 +54,7 @@ source/2020/              original material; english/ holds the 2020 trait book 
 
 - **Character tree:** 3 Cores (Body, Mind, Soul) → 9 Attributes → 27 Skills (α combat, β utility/defence, γ dialogue/exploration per Attribute). Caps: Skill ≤ Attribute ≤ Core ≤ 10.
 - **Rolls:** d20 + skill modifier vs TN 8 / 12 / 16 / 20 (Easy / Standard / Hard / Heroic). Modifier = −2 at 0 points, else **points − 1** (Mastered = +9). Nat 20 critical success, nat 1 complication.
-- **Mastery:** at 3/5/7/9 points (M1–M4), Mastered at 10.
+- **Mastery:** at 3/5/7/9 points (M1–M4), Mastered at 10. Each of M1–M4 gives one **perk step** in that skill (one of its two perks at Tier I, or a Tier I upgraded to Tier II, in the order you choose); Mastered grants the skill's own **Mastered perk** (27, one per skill).
 - **Voices:** every skill with 1+ point is a private inner voice with its own card (skills.json `voice`, toned after its EPCCG speaker). The Narrator attaches hidden voice hooks (skill, TN, truth flag) to each story beat; the engine passes them on passive 10 + mod; up to 2 lines per player per beat; voices can mislead. Ask a skill once per scene.
 - **Overreach** (Mastery 2+): the skill pushes; **indulge** (consequence, +1 Echo) or **resist** (1 Echo, 2 if Mastered). No roll; once per scene. **Echo:** 1 at session start, max 3, reroll a d20 (1 per roll).
 - **Creation:** 10 Skill points, 10 Attribute points and 6 Core points (the 2020 budgets; no creation caps beyond the tree's own, so 7/1/1 is legal; an unspent Core point trades for 2 Attribute points); placing a skill spends the Attribute/Core points it needs automatically; 0–2 traits. After creation, Attribute/Core points come from levelling. Class is **earned** at level 3 (250 XP, the end of session 1), not chosen. XP table paces level 20 at about session 51 (5e-like).
@@ -116,5 +116,5 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 1. Tech plan with Leon (engine as pure, deterministic TypeScript with seeded RNG; authoritative room server; client with a grid renderer; provider-agnostic Narrator adapter using structured tool calls).
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
-4. Settle the 42 open items in spec section 14 through playtests.
+4. Settle the 49 open items in spec section 14 through playtests.
 5. Lock the UI on the canvas (prototype v2, branch `ui-prototype-v2`; Leon comments, Claude fixes), then implement the real client from it.

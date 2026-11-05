@@ -30,6 +30,7 @@
 </div>
 <section aria-label="Perks" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #232D3F; padding-top: 16px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{ep.perkHead}}</span>
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">{{ep.perkNote}}</p>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
 <sc-for list="{{ep.perks}}" as="p" hint-placeholder-count="2"><div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
 <sc-if value="{{p.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{p.zoom}}" aria-label="Enlarge {{p.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{p.icon}}" alt="{{p.alt}}" style="width: 64px; height: 64px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"></button></sc-if>
@@ -38,10 +39,11 @@
 <span style="{{ep.perkNameStyle}}">{{p.name}}</span>
 <span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{p.meta}}</span>
 <p style="margin: 2px 0 0; font-size: 13px; line-height: 1.45; color: #DCE2EC"><b style="color: #E7EBF3">I</b> · {{p.t1}}</p>
-<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #A3AEC2"><b style="color: #E7EBF3">II</b> · {{p.t2}} <span style="color: #7F8BA1">(at Mastery 3, 7 points)</span></p>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #A3AEC2"><b style="color: #E7EBF3">II</b> · {{p.t2}} <span style="color: #7F8BA1">(a later step)</span></p>
 </div>
 </div></sc-for>
 </div>
+<!--MASTERED:ep.m-->
 </section>
 </article>
 </div>
