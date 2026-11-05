@@ -28,6 +28,29 @@
       },
       "batch": "A",
       "source_sha256": "66fb4b150d54b83367000f51f5702e929e50242eb413839c00218664caa553eb"
+    },
+    {
+      "id": "blade-recluse",
+      "data_id": "blade_recluse",
+      "name": "Blade Recluse",
+      "family": "traits",
+      "order": 7,
+      "mood": "Comic, Tender",
+      "action": "Wick lies on its side, curled around a sword longer than its body like a sleeping partner, cheek pressed to the blade",
+      "screen": "Single heart symbol",
+      "prop": "Long sword",
+      "path": "art/traits/wick/production-v1/blade-recluse.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/blade-recluse.png",
+        "128": "art/traits/wick/production-v1/exports/128/blade-recluse.png",
+        "64": "art/traits/wick/production-v1/exports/64/blade-recluse.png",
+        "56": "art/traits/wick/production-v1/exports/56/blade-recluse.png",
+        "48": "art/traits/wick/production-v1/exports/48/blade-recluse.png",
+        "44": "art/traits/wick/production-v1/exports/44/blade-recluse.png",
+        "40": "art/traits/wick/production-v1/exports/40/blade-recluse.png"
+      },
+      "batch": "A",
+      "source_sha256": "a4f732b76bd2ce407dc008485ba0f35a2ecdf0ca3d574c5320c8bd99f37b0bf7"
     }
   ]
 }

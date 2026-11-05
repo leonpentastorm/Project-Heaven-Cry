@@ -17,10 +17,11 @@
     "supreme-command"
   ],
   "new_icons_delivered": [
-    "southern-fist"
+    "southern-fist",
+    "blade-recluse"
   ],
   "catalog_coverage": {
-    "traits": 10,
+    "traits": 11,
     "perks": 2
   }
 }

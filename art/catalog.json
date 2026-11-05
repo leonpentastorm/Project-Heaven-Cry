@@ -1638,6 +1638,30 @@
         "44": "art/traits/wick/production-v1/exports/44/southern-fist.png",
         "40": "art/traits/wick/production-v1/exports/40/southern-fist.png"
       }
+    },
+    "blade-recluse": {
+      "label": "Wick — Blade Recluse",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/blade-recluse.png",
+      "sha256": "38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "blade_recluse",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/blade-recluse.png",
+        "128": "art/traits/wick/production-v1/exports/128/blade-recluse.png",
+        "64": "art/traits/wick/production-v1/exports/64/blade-recluse.png",
+        "56": "art/traits/wick/production-v1/exports/56/blade-recluse.png",
+        "48": "art/traits/wick/production-v1/exports/48/blade-recluse.png",
+        "44": "art/traits/wick/production-v1/exports/44/blade-recluse.png",
+        "40": "art/traits/wick/production-v1/exports/40/blade-recluse.png"
+      }
     }
   },
   "character_collections": {
