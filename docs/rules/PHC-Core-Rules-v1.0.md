@@ -196,18 +196,18 @@ Classes aren't picked; skills earn them. Each base class has three **signature s
 | Core | Class | Role | Signature skills | Resource |
 |---|---|---|---|---|
 | Body | Marksman | Ranged offense (guns or bows) | Dexterity, Vigilant, Reaction Speed | Heat |
-| Body | Duelist | Melee offense | Athletics, Raw Power, Guts | Momentum |
-| Body | Vanguard | Defense | Durability, Pain Threshold, Guts | Guard |
-| Body | Combat Medic | Support | Sensory, Camaraderie, Proficiency | Supplies |
+| Body | Fighter | Melee offense | Athletics, Raw Power, Guts | Momentum |
+| Body | Defender | Defense | Durability, Pain Threshold, Guts | Guard |
+| Body | Medic | Support | Sensory, Camaraderie, Proficiency | Supplies |
 | Body | Assassin | Debuff | Ingenuity, Intimidation, Reaction Speed | Marks, toxins |
-| Mind | Artillerist | Offense | Brain Power, Visualization, Vigilant | Flux |
+| Mind | Mage | Offense | Brain Power, Visualization, Vigilant | Flux |
 | Mind | Warden | Defense | Rumination, Composure, Analysis | Flux |
 | Mind | Scribe | Support | Proficiency, Eloquence, Rumination | Flux |
-| Mind | Hexwright | Debuff | Analysis, Charisma, Eloquence | Flux |
-| Soul | Tempest | Offense | Will Power, Empathy, Visualization | Strain |
-| Soul | Aegis | Defense | Lore Master, Conscience, Faith | Strain |
-| Soul | Muse | Support | Camaraderie, Implication, Authority | Strain |
-| Soul | Haunt | Debuff | Intimidation, Implication, Lore Master | Strain |
+| Mind | Trickster | Debuff | Analysis, Charisma, Eloquence | Flux |
+| Soul | Channeler | Offense | Will Power, Empathy, Visualization | Strain |
+| Soul | Guardian | Defense | Lore Master, Conscience, Faith | Strain |
+| Soul | Bard | Support | Camaraderie, Implication, Authority | Strain |
+| Soul | Hexer | Debuff | Intimidation, Implication, Lore Master | Strain |
 
 Each class's three signature moves, and all 15 advanced classes, are in classes.json.
 
@@ -313,7 +313,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Shields** are temporary HP, used up before real HP, and gone at the end of combat unless a rule says otherwise. Healing can't raise HP above its maximum.
 
-**Downed and dying.** At 0 HP you're Downed: you can't act. At the start of each of your turns, roll d20: 10 or more is a success, less is a failure. Three successes and you stabilise at 1 HP; three failures and you die. Each hit you take while Downed counts as a failure. An ally can stabilise you with a stim (1 AP for a Combat Medic, 2 AP for anyone else).
+**Downed and dying.** At 0 HP you're Downed: you can't act. At the start of each of your turns, roll d20: 10 or more is a success, less is a failure. Three successes and you stabilise at 1 HP; three failures and you die. Each hit you take while Downed counts as a failure. An ally can stabilise you with a stim (1 AP for a Medic, 2 AP for anyone else).
 
 **Every death releases bots.** When any person or beast dies, the ambient mana meter rises (see Mana).
 
@@ -453,7 +453,7 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 | A beast or monster dies | +3 |
 | A robot is destroyed | +2 |
 | A Sigil mage vents | + the Flux vented |
-| A Vanguard loses 3 Guard to reactive plate | +2 |
+| A Defender loses 3 Guard to reactive plate | +2 |
 | An enhanced round hits | +1 |
 | Syphon | −2 |
 | A Soul spell is cast | − its final mana cost ÷ 10, rounded up |
@@ -543,7 +543,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 | Rest | Takes | You recover |
 |---|---|---|
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
-| Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Combat Medic can treat injuries |
+| Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Medic can treat injuries |
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 

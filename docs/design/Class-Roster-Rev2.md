@@ -20,10 +20,10 @@ Mind and Soul close the loop between them: Mind turns cores into air, Soul turns
 
 | Role | Body | Mind | Soul |
 | --- | --- | --- | --- |
-| Offense | Marksman (ranged), Duelist (melee) | Artillerist | Tempest |
-| Defense | Vanguard | Warden | Aegis |
-| Support | Combat Medic | Scribe | Muse |
-| Debuff | Assassin | Hexwright | Haunt |
+| Offense | Marksman (ranged), Fighter (melee) | Mage | Channeler |
+| Defense | Defender | Warden | Guardian |
+| Support | Medic | Scribe | Bard |
+| Debuff | Assassin | Trickster | Hexer |
 
 **You don't pick a class; your skills earn one.** Every base class has three signature skills, and every one of the 27 skills is a signature of at least one class. At level 3, total your points in each class's three signature skills. The two highest totals are your options and you choose one; a tie for second adds that class to the choice. Nobody is classless, whatever way you chose to play. Your class grows with its signature total: rank II at 15, rank III at 21.
 
@@ -46,7 +46,7 @@ Body classes run on ammo, weapons and technology. They don't touch mana directly
 - **II · Special Ammo:** load armour-piercing, incendiary or hollow-point rounds, or arrowheads to match.
 - **III · Overwatch:** hold AP to fire at the first enemy that moves into your line.
 
-#### Duelist · Offense, melee
+#### Fighter · Offense, melee
 
 *Guns jam. Blades don't.*
 
@@ -57,7 +57,7 @@ Body classes run on ammo, weapons and technology. They don't touch mana directly
 - **II · Riposte:** after a successful dodge, spend 1 Momentum to counter-attack for 0 AP.
 - **III · Finisher:** spend all your Momentum on one strike: +20% damage per point.
 
-#### Vanguard · Defense
+#### Defender · Defense
 
 *Someone has to stand in front.*
 
@@ -68,7 +68,7 @@ Body classes run on ammo, weapons and technology. They don't touch mana directly
 - **II · Draw Fire:** spend 1 Guard: one enemy must target you next turn, or take −2 to hit anyone else.
 - **III · Reactive Plate:** your armour is bot-woven technology that hardens when struck. Every 3 Guard you lose sheds bots: the ambient mana rises one step.
 
-#### Combat Medic · Support
+#### Medic · Support
 
 *Nobody stays behind.*
 
@@ -96,7 +96,7 @@ Mind classes load mana cores into an Evoker and write spells as command words. A
 
 **Shared rule: Flux and venting.** Every spell leaves excess bots in the Evoker as Flux. Too much Flux overloads it. Any Mind class can **Vent** (1 AP): dump all Flux into the air and raise the ambient mana one step. That's how Mind creates mana, and why the squad's Soul mage wants a Mind mage nearby.
 
-#### Artillerist · Offense
+#### Mage · Offense
 
 *FIRE – CONDENSE – PUSH, at range, as often as the cores hold out.*
 
@@ -126,7 +126,7 @@ Mind classes load mana cores into an Evoker and write spells as command words. A
 - **II · Inscribe Gear:** write a sigil onto an ally's weapon or armour: +10% damage or +1 Armour Class until the next rest.
 - **III · Stored Spell:** write a whole spell onto an object. Anyone can trigger it later, for 1 AP.
 
-#### Hexwright · Debuff
+#### Trickster · Debuff
 
 *BIND. BLIND. UNMAKE.*
 
@@ -142,7 +142,7 @@ Soul classes pull ambient mana into the heart and think spells into being, built
 
 **Shared rules: Strain and crystallising.** Each cast adds Strain, the bots gathered in your heart. Past your Will Power rank, every cast risks a Mana Short. Bots stored in your Emanator can pay for a spell without adding Strain. Any Soul class can **Crystallise** (3 AP, or out of combat): lower the ambient mana one step and make a mana core. That's how Soul creates cores, and why the squad's Mind mage wants a Soul mage nearby.
 
-#### Tempest · Offense
+#### Channeler · Offense
 
 *Imagine the storm. The world agrees.*
 
@@ -152,7 +152,7 @@ Soul classes pull ambient mana into the heart and think spells into being, built
 - **II · Storm Front:** one Damage spell hits up to three targets.
 - **III · Heart Surge:** cast at double effect, for double Strain.
 
-#### Aegis · Defense
+#### Guardian · Defense
 
 *If you can imagine it whole, it stays whole.*
 
@@ -162,7 +162,7 @@ Soul classes pull ambient mana into the heart and think spells into being, built
 - **II · Drink It In:** an enemy spell that hits your shield feeds its bots into your Emanator instead.
 - **III · Sanctuary:** a zone where allies take half damage until your next turn.
 
-#### Muse · Support
+#### Bard · Support
 
 *Your belief makes the squad better than it is.*
 
@@ -172,7 +172,7 @@ Soul classes pull ambient mana into the heart and think spells into being, built
 - **II · Mend:** heal flesh by imagining it whole; stronger in rich air.
 - **III · Gift:** hand an ally one spell you designed; they cast it once, on your Strain.
 
-#### Haunt · Debuff
+#### Hexer · Debuff
 
 *The bots can build a fireball. They can also build what someone fears most.*
 
@@ -204,21 +204,21 @@ Each advanced class mixes two base classes and is taught by the faction that inv
 
 | Class | Mix | Taught by | What the mix does |
 | --- | --- | --- | --- |
-| Gunslinger | Marksman + Duelist | The Old Drifter's road (Ambrosius Costeau) | Gunplay with a swordsman's footwork: the Draw, Six for Six, Called Shots |
-| Hellraiser Heavy | Marksman + Vanguard | Hellraiser Divisions | Emplaced, belt-fed fire that makes ground impossible to stand on |
+| Gunslinger | Marksman + Fighter | The Old Drifter's road (Ambrosius Costeau) | Gunplay with a swordsman's footwork: the Draw, Six for Six, Called Shots |
+| Hellraiser Heavy | Marksman + Defender | Hellraiser Divisions | Emplaced, belt-fed fire that makes ground impossible to stand on |
 | CCEC Ballistician | Marksman + Assassin | Central City Espionage Commission | Ballistics and weak points; one shot closes a case |
-| Banner Dancer | Duelist + Combat Medic | 237th Hellraiser Division | Armourless skirmisher whose bot-thread banners shield and rally allies |
-| RTC Contractor | Marksman + Combat Medic | Rigaz Trade Company | Credit buys supply drops, strikes and extractions |
-| Blade Scribe | Duelist + Artillerist | The southern sects | Evoker blades: each sword form draws a sigil |
-| Siege Engineer | Vanguard + Warden | Central Command Center | Deployable cover and turrets reinforced with WALL sigils |
+| Banner Dancer | Fighter + Medic | 237th Hellraiser Division | Armourless skirmisher whose bot-thread banners shield and rally allies |
+| RTC Contractor | Marksman + Medic | Rigaz Trade Company | Credit buys supply drops, strikes and extractions |
+| Blade Scribe | Fighter + Mage | The southern sects | Evoker blades: each sword form draws a sigil |
+| Siege Engineer | Defender + Warden | Central Command Center | Deployable cover and turrets reinforced with WALL sigils |
 | Spellslinger | Marksman + Scribe | Kortev Utility Shack | Sigils inscribed on rounds: every magazine carries a stored spell |
-| Storm Hand | Duelist + Tempest | Kemizuchi Military Academy | One element infused into a weapon through an Emanator gauntlet; kills charge it |
-| Adamantile Knight | Vanguard + Aegis | Adamantile Brigade | Plate that hardens when struck and turns shed bots into shields for allies |
-| Shade | Assassin + Haunt | Smetanita Conjunction | Silent kills that leave fear behind; marked targets see their nightmares |
-| Lumeri Templar | Vanguard or Duelist + Muse, with a pact | Lumeri Church | The paladin: Blessings fired as shells, a patron watching, Judgement |
-| Stroke Gambler | Artillerist + Hexwright | Black Scavengers | Random half-sigils stitched into whole spells |
-| Devoted | Tempest + Muse | Arkvelton witches | A few spells, loved and boosted beyond anyone else's |
-| Circuit Mage | Scribe + Muse | The Institute of Forgotten Knowledge, in secret | Vents and crystallises in one body: the only caster who needs nobody's cores. Can fuse a Sigil's shape with a Soul school |
+| Storm Hand | Fighter + Channeler | Kemizuchi Military Academy | One element infused into a weapon through an Emanator gauntlet; kills charge it |
+| Adamantile Knight | Defender + Guardian | Adamantile Brigade | Plate that hardens when struck and turns shed bots into shields for allies |
+| Shade | Assassin + Hexer | Smetanita Conjunction | Silent kills that leave fear behind; marked targets see their nightmares |
+| Lumeri Templar | Defender or Fighter + Bard, with a pact | Lumeri Church | The paladin: Blessings fired as shells, a patron watching, Judgement |
+| Stroke Gambler | Mage + Trickster | Black Scavengers | Random half-sigils stitched into whole spells |
+| Devoted | Channeler + Bard | Arkvelton witches | A few spells, loved and boosted beyond anyone else's |
+| Circuit Mage | Scribe + Bard | The Institute of Forgotten Knowledge, in secret | Vents and crystallises in one body: the only caster who needs nobody's cores. Can fuse a Sigil's shape with a Soul school |
 
 The Circuit Mage is a problem on purpose. A caster who closes the mana loop alone is exactly the kind of NPC the Celestials would want to watch.
 

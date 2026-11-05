@@ -12,7 +12,7 @@ const HOSTILES = {
   e2: { name: 'Engineer', short: 'E2', pos: '12,1', hp: 64, max: 100, def: 12, cover: 'half cover' },
 };
 const ACTIONS = [
-  ['CLASS · COMBAT MEDIC I', [['triage', 'Triage', 2, 'Heal an adjacent ally 20 × your Healing given multiplier (×1.9 = 38) and end their Bleeding. No Supplies. Stabilise a Downed ally for 1 AP.'],
+  ['CLASS · MEDIC I', [['triage', 'Triage', 2, 'Heal an adjacent ally 20 × your Healing given multiplier (×1.9 = 38) and end their Bleeding. No Supplies. Stabilise a Downed ally for 1 AP.'],
     ['stim_throw', 'Stim Throw', 1, 'Spend 1 Supply: an ally within 4 tiles heals 30 × Healing given and stops Bleeding.', 'Locked: rank II at a signature total of 13 (MPAT has 7).']]],
   ['MOVEMENT', [['move', 'Move', 1, 'Each AP moves you ' + MOV + ' tiles (Movement, from Agility ' + AGILITY + '). Wrecked robots count double. Tiles you paid for and didn\'t walk stay yours this turn.'], ['sprint', 'Sprint', 2, 'Move up to ' + 3 * MOV + ' tiles (3 × Movement).'], ['disengage', 'Disengage', 1, 'Move 1 tile without provoking opportunity attacks.'], ['prone', 'Drop prone', 1, 'Melee against you +2, ranged against you −2.']]],
   ['ATTACK · SERVICE PISTOL', [['shot', 'Shot', 2, 'd20 + Dexterity (+1) vs Defense. 20 damage, Heat +1.'], ['aimed', 'Aimed shot', 3, '+2 to hit; crits on 19–20.'], ['melee', 'Melee (fists)', 2, 'd20 + Raw Power (−2) vs Defense. 10 damage.'], ['overwatch', 'Overwatch', 2, 'Hold 2 AP for one shot at the first enemy that moves into your line.']]],

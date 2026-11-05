@@ -133,8 +133,8 @@
       }
     },
     {
-      "id": "duelist",
-      "name": "Duelist",
+      "id": "fighter",
+      "name": "Fighter",
       "core": "body",
       "economy": {
         "runs_on": "ammo, weapons, technology",
@@ -237,8 +237,8 @@
       }
     },
     {
-      "id": "vanguard",
-      "name": "Vanguard",
+      "id": "defender",
+      "name": "Defender",
       "core": "body",
       "economy": {
         "runs_on": "ammo, weapons, technology",
@@ -357,8 +357,8 @@
       }
     },
     {
-      "id": "combat_medic",
-      "name": "Combat Medic",
+      "id": "medic",
+      "name": "Medic",
       "core": "body",
       "economy": {
         "runs_on": "ammo, weapons, technology",
@@ -583,8 +583,8 @@
       }
     },
     {
-      "id": "artillerist",
-      "name": "Artillerist",
+      "id": "mage",
+      "name": "Mage",
       "core": "mind",
       "economy": {
         "runs_on": "Sigil magic through an Evoker",
@@ -896,8 +896,8 @@
       }
     },
     {
-      "id": "hexwright",
-      "name": "Hexwright",
+      "id": "trickster",
+      "name": "Trickster",
       "core": "mind",
       "economy": {
         "runs_on": "Sigil magic through an Evoker",
@@ -1014,8 +1014,8 @@
       }
     },
     {
-      "id": "tempest",
-      "name": "Tempest",
+      "id": "channeler",
+      "name": "Channeler",
       "core": "soul",
       "economy": {
         "runs_on": "Soul magic through an Emanator",
@@ -1117,8 +1117,8 @@
       }
     },
     {
-      "id": "aegis",
-      "name": "Aegis",
+      "id": "guardian",
+      "name": "Guardian",
       "core": "soul",
       "economy": {
         "runs_on": "Soul magic through an Emanator",
@@ -1217,8 +1217,8 @@
       }
     },
     {
-      "id": "muse",
-      "name": "Muse",
+      "id": "bard",
+      "name": "Bard",
       "core": "soul",
       "economy": {
         "runs_on": "Soul magic through an Emanator",
@@ -1318,8 +1318,8 @@
       }
     },
     {
-      "id": "haunt",
-      "name": "Haunt",
+      "id": "hexer",
+      "name": "Hexer",
       "core": "soul",
       "economy": {
         "runs_on": "Soul magic through an Emanator",
@@ -1427,7 +1427,7 @@
       "name": "Gunslinger",
       "parents": [
         "marksman",
-        "duelist"
+        "fighter"
       ],
       "tutor": "The Old Drifter's road (Ambrosius Costeau)",
       "summary": "Gunplay with a swordsman's footwork.",
@@ -1510,7 +1510,7 @@
       "name": "Hellraiser Heavy",
       "parents": [
         "marksman",
-        "vanguard"
+        "defender"
       ],
       "tutor": "Hellraiser Divisions",
       "summary": "Emplaced, belt-fed fire that makes ground impossible to stand on.",
@@ -1684,8 +1684,8 @@
       "id": "banner_dancer",
       "name": "Banner Dancer",
       "parents": [
-        "duelist",
-        "combat_medic"
+        "fighter",
+        "medic"
       ],
       "tutor": "237th Hellraiser Division",
       "summary": "Armourless skirmisher whose bot-thread banners shield and rally allies.",
@@ -1771,7 +1771,7 @@
       "name": "RTC Contractor",
       "parents": [
         "marksman",
-        "combat_medic"
+        "medic"
       ],
       "tutor": "Rigaz Trade Company",
       "summary": "Credit buys supply drops, strikes and extractions.",
@@ -1855,8 +1855,8 @@
       "id": "blade_scribe",
       "name": "Blade Scribe",
       "parents": [
-        "duelist",
-        "artillerist"
+        "fighter",
+        "mage"
       ],
       "tutor": "The southern sects",
       "summary": "Evoker blades: each sword form draws a sigil.",
@@ -1930,7 +1930,7 @@
       "id": "siege_engineer",
       "name": "Siege Engineer",
       "parents": [
-        "vanguard",
+        "defender",
         "warden"
       ],
       "tutor": "Central Command Center",
@@ -2081,8 +2081,8 @@
       "id": "storm_hand",
       "name": "Storm Hand",
       "parents": [
-        "duelist",
-        "tempest"
+        "fighter",
+        "channeler"
       ],
       "tutor": "Kemizuchi Military Academy",
       "summary": "One element infused into a weapon through an Emanator gauntlet; kills charge it.",
@@ -2163,8 +2163,8 @@
       "id": "adamantile_knight",
       "name": "Adamantile Knight",
       "parents": [
-        "vanguard",
-        "aegis"
+        "defender",
+        "guardian"
       ],
       "tutor": "Adamantile Brigade",
       "summary": "Plate that hardens when struck and turns shed bots into shields for allies.",
@@ -2246,7 +2246,7 @@
       "name": "Shade",
       "parents": [
         "assassin",
-        "haunt"
+        "hexer"
       ],
       "tutor": "Smetanita Conjunction",
       "summary": "Silent kills that leave fear behind; marked targets see their nightmares.",
@@ -2320,8 +2320,8 @@
       "id": "lumeri_templar",
       "name": "Lumeri Templar",
       "parents": [
-        "vanguard",
-        "muse"
+        "defender",
+        "bard"
       ],
       "tutor": "Lumeri Church",
       "summary": "The paladin: Blessings fired as shells, a patron watching, Judgement.",
@@ -2401,8 +2401,8 @@
       ],
       "alt_parents": [
         [
-          "duelist",
-          "muse"
+          "fighter",
+          "bard"
         ]
       ]
     },
@@ -2410,8 +2410,8 @@
       "id": "stroke_gambler",
       "name": "Stroke Gambler",
       "parents": [
-        "artillerist",
-        "hexwright"
+        "mage",
+        "trickster"
       ],
       "tutor": "Black Scavengers",
       "summary": "Random half-sigils stitched into whole spells.",
@@ -2486,8 +2486,8 @@
       "id": "devoted",
       "name": "Devoted",
       "parents": [
-        "tempest",
-        "muse"
+        "channeler",
+        "bard"
       ],
       "tutor": "Arkvelton witches",
       "summary": "A few spells, loved and boosted beyond anyone else's.",
@@ -2565,7 +2565,7 @@
       "name": "Circuit Mage",
       "parents": [
         "scribe",
-        "muse"
+        "bard"
       ],
       "tutor": "The Institute of Forgotten Knowledge, in secret",
       "summary": "Vents and crystallises in one body: the only caster who needs nobody's cores.",

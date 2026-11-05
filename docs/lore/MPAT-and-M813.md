@@ -8,7 +8,7 @@ English summary of the 2020 character sheet `M1.4_8R4-D83-RRY_A5.xlsx` (Vietname
 | --- | --- |
 | Name | M1.4 8R4-D83-RRY, called **MPAT** |
 | Unit | 258th Medical Unit |
-| Class | Combat Medic |
+| Class | Medic (Combat Medic on the 2020 sheet) |
 | Race | Robot (origin: "The Factory") |
 | Age / height / weight | 7 / 180 cm / 73 kg |
 | Gender / blood type | Plug / Oil |

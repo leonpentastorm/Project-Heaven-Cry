@@ -74,8 +74,8 @@
         "soul": 3
       },
       "leans": [
-        "vanguard",
-        "duelist"
+        "defender",
+        "fighter"
       ],
       "attributes": {
         "endurance": 5,
@@ -108,7 +108,7 @@
       },
       "leans": [
         "marksman",
-        "vanguard",
+        "defender",
         "assassin"
       ],
       "attributes": {
@@ -140,8 +140,8 @@
         "soul": 4
       },
       "leans": [
-        "duelist",
-        "vanguard"
+        "fighter",
+        "defender"
       ],
       "attributes": {
         "endurance": 3,
@@ -173,8 +173,8 @@
         "soul": 3
       },
       "leans": [
-        "duelist",
-        "vanguard"
+        "fighter",
+        "defender"
       ],
       "attributes": {
         "endurance": 5,
@@ -206,7 +206,7 @@
         "soul": 1
       },
       "leans": [
-        "duelist",
+        "fighter",
         "marksman"
       ],
       "attributes": {
@@ -239,8 +239,8 @@
         "soul": 4
       },
       "leans": [
-        "duelist",
-        "vanguard",
+        "fighter",
+        "defender",
         "warden"
       ],
       "attributes": {
@@ -274,7 +274,7 @@
       "leans": [
         "marksman",
         "assassin",
-        "artillerist"
+        "mage"
       ],
       "attributes": {
         "endurance": 4,
@@ -305,7 +305,7 @@
         "soul": 1
       },
       "leans": [
-        "vanguard",
+        "defender",
         "marksman"
       ],
       "attributes": {
@@ -338,7 +338,7 @@
       },
       "leans": [
         "marksman",
-        "artillerist"
+        "mage"
       ],
       "attributes": {
         "endurance": 4,
@@ -371,10 +371,10 @@
       },
       "leans": [
         "marksman",
-        "duelist",
-        "vanguard",
-        "combat_medic",
-        "artillerist",
+        "fighter",
+        "defender",
+        "medic",
+        "mage",
         "scribe"
       ],
       "attributes": {
@@ -440,7 +440,7 @@
       "leans": [
         "assassin",
         "marksman",
-        "haunt"
+        "hexer"
       ],
       "attributes": {
         "endurance": 2,
@@ -473,7 +473,7 @@
       "leans": [
         "assassin",
         "marksman",
-        "combat_medic",
+        "medic",
         "scribe"
       ],
       "attributes": {
@@ -505,7 +505,7 @@
         "soul": 3
       },
       "leans": [
-        "hexwright",
+        "trickster",
         "assassin",
         "warden"
       ],
@@ -538,9 +538,9 @@
         "soul": 1
       },
       "leans": [
-        "artillerist",
+        "mage",
         "marksman",
-        "tempest"
+        "channeler"
       ],
       "attributes": {
         "endurance": 4,
@@ -635,7 +635,7 @@
         "soul": 3
       },
       "leans": [
-        "hexwright",
+        "trickster",
         "warden"
       ],
       "attributes": {
@@ -667,7 +667,7 @@
         "soul": 4
       },
       "leans": [
-        "hexwright",
+        "trickster",
         "warden"
       ],
       "attributes": {
@@ -699,10 +699,10 @@
         "soul": 1
       },
       "leans": [
-        "combat_medic",
+        "medic",
         "scribe",
         "warden",
-        "hexwright"
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -765,8 +765,8 @@
         "soul": 4
       },
       "leans": [
-        "tempest",
-        "artillerist"
+        "channeler",
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
@@ -797,8 +797,8 @@
         "soul": 5
       },
       "leans": [
-        "muse",
-        "combat_medic"
+        "bard",
+        "medic"
       ],
       "attributes": {
         "endurance": 3,
@@ -829,9 +829,9 @@
         "soul": 5
       },
       "leans": [
-        "aegis",
-        "combat_medic",
-        "muse"
+        "guardian",
+        "medic",
+        "bard"
       ],
       "attributes": {
         "endurance": 3,
@@ -862,9 +862,9 @@
         "soul": 5
       },
       "leans": [
-        "aegis",
+        "guardian",
         "assassin",
-        "haunt"
+        "hexer"
       ],
       "attributes": {
         "endurance": 1,
@@ -895,8 +895,8 @@
         "soul": 5
       },
       "leans": [
-        "haunt",
-        "aegis"
+        "hexer",
+        "guardian"
       ],
       "attributes": {
         "endurance": 1,
@@ -927,8 +927,8 @@
         "soul": 5
       },
       "leans": [
-        "haunt",
-        "muse"
+        "hexer",
+        "bard"
       ],
       "attributes": {
         "endurance": 1,
@@ -959,10 +959,10 @@
         "soul": 3
       },
       "leans": [
-        "hexwright",
+        "trickster",
         "scribe",
-        "muse",
-        "haunt"
+        "bard",
+        "hexer"
       ],
       "attributes": {
         "endurance": 1,
@@ -993,8 +993,8 @@
         "soul": 5
       },
       "leans": [
-        "muse",
-        "haunt"
+        "bard",
+        "hexer"
       ],
       "attributes": {
         "endurance": 1,
@@ -1025,8 +1025,8 @@
         "soul": 4
       },
       "leans": [
-        "muse",
-        "combat_medic",
+        "bard",
+        "medic",
         "warden"
       ],
       "attributes": {
@@ -1058,8 +1058,8 @@
         "soul": 4
       },
       "leans": [
-        "haunt",
-        "muse"
+        "hexer",
+        "bard"
       ],
       "attributes": {
         "endurance": 2,
@@ -1090,9 +1090,9 @@
         "soul": 1
       },
       "leans": [
-        "artillerist",
-        "duelist",
-        "tempest"
+        "mage",
+        "fighter",
+        "channeler"
       ],
       "attributes": {
         "endurance": 1,
@@ -1123,8 +1123,8 @@
         "soul": 4
       },
       "leans": [
-        "vanguard",
-        "aegis"
+        "defender",
+        "guardian"
       ],
       "attributes": {
         "endurance": 4,
@@ -1157,7 +1157,7 @@
       },
       "leans": [
         "marksman",
-        "artillerist"
+        "mage"
       ],
       "attributes": {
         "endurance": 4,
@@ -1189,8 +1189,8 @@
         "soul": 4
       },
       "leans": [
-        "combat_medic",
-        "muse"
+        "medic",
+        "bard"
       ],
       "attributes": {
         "endurance": 3,
@@ -1257,18 +1257,18 @@
       },
       "leans": [
         "marksman",
-        "duelist",
-        "combat_medic",
-        "artillerist",
+        "fighter",
+        "medic",
+        "mage",
         "scribe",
-        "hexwright",
-        "tempest",
-        "vanguard",
+        "trickster",
+        "channeler",
+        "defender",
         "assassin",
         "warden",
-        "aegis",
-        "muse",
-        "haunt"
+        "guardian",
+        "bard",
+        "hexer"
       ],
       "attributes": {
         "endurance": 3,
@@ -1299,8 +1299,8 @@
         "soul": 1
       },
       "leans": [
-        "vanguard",
-        "duelist"
+        "defender",
+        "fighter"
       ],
       "attributes": {
         "endurance": 7,
@@ -1331,8 +1331,8 @@
         "soul": 1
       },
       "leans": [
-        "duelist",
-        "vanguard"
+        "fighter",
+        "defender"
       ],
       "attributes": {
         "endurance": 3,
@@ -1395,7 +1395,7 @@
       "leans": [
         "assassin",
         "marksman",
-        "artillerist"
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
@@ -1425,7 +1425,7 @@
         "soul": 1
       },
       "leans": [
-        "artillerist",
+        "mage",
         "warden",
         "scribe"
       ],
@@ -1457,9 +1457,9 @@
         "soul": 1
       },
       "leans": [
-        "artillerist",
-        "tempest",
-        "hexwright"
+        "mage",
+        "channeler",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -1489,9 +1489,9 @@
         "soul": 7
       },
       "leans": [
-        "tempest",
-        "combat_medic",
-        "muse"
+        "channeler",
+        "medic",
+        "bard"
       ],
       "attributes": {
         "endurance": 1,
@@ -1521,7 +1521,7 @@
         "soul": 7
       },
       "leans": [
-        "tempest",
+        "channeler",
         "warden"
       ],
       "attributes": {
@@ -1552,8 +1552,8 @@
         "soul": 7
       },
       "leans": [
-        "aegis",
-        "muse"
+        "guardian",
+        "bard"
       ],
       "attributes": {
         "endurance": 1,

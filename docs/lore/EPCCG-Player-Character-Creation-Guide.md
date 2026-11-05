@@ -490,7 +490,7 @@ MPAT (M1.4 8R4-D83-RRY) is a robot combat medic built as a dodge-and-rescue supp
 | Field | Value |
 |---|---|
 | Unit | 258th Medical Unit |
-| Class / Race | Combat Medic / Robot |
+| Class / Race | Medic (2020: Combat Medic) / Robot |
 | Origin | The Factory |
 | Age / Height / Weight | 7 / 180 cm / 73 kg |
 | Blood type / Gender / Hand | Oil / Plug / Right |

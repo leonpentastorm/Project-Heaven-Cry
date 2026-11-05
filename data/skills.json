@@ -149,7 +149,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "vanguard"
+        "defender"
       ],
       "tags": [
         "alpha",
@@ -293,7 +293,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "vanguard"
+        "defender"
       ],
       "tags": [
         "beta",
@@ -442,7 +442,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "combat_medic"
+        "medic"
       ],
       "tags": [
         "gamma",
@@ -602,7 +602,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "duelist"
+        "fighter"
       ],
       "tags": [
         "alpha",
@@ -745,8 +745,8 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "duelist",
-        "vanguard"
+        "fighter",
+        "defender"
       ],
       "tags": [
         "beta",
@@ -904,7 +904,7 @@
       },
       "signature_of": [
         "assassin",
-        "haunt"
+        "hexer"
       ],
       "tags": [
         "gamma",
@@ -1056,7 +1056,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "duelist"
+        "fighter"
       ],
       "tags": [
         "alpha",
@@ -1665,7 +1665,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "combat_medic",
+        "medic",
         "scribe"
       ],
       "tags": [
@@ -1814,7 +1814,7 @@
       },
       "signature_of": [
         "marksman",
-        "artillerist"
+        "mage"
       ],
       "tags": [
         "gamma",
@@ -1973,7 +1973,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "artillerist"
+        "mage"
       ],
       "tags": [
         "alpha",
@@ -2280,7 +2280,7 @@
       },
       "signature_of": [
         "scribe",
-        "hexwright"
+        "trickster"
       ],
       "tags": [
         "gamma",
@@ -2427,8 +2427,8 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "artillerist",
-        "tempest"
+        "mage",
+        "channeler"
       ],
       "tags": [
         "alpha",
@@ -2572,7 +2572,7 @@
       },
       "signature_of": [
         "warden",
-        "hexwright"
+        "trickster"
       ],
       "tags": [
         "beta",
@@ -2720,7 +2720,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "hexwright"
+        "trickster"
       ],
       "tags": [
         "gamma",
@@ -2871,7 +2871,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "tempest"
+        "channeler"
       ],
       "tags": [
         "alpha",
@@ -3023,8 +3023,8 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "combat_medic",
-        "muse"
+        "medic",
+        "bard"
       ],
       "tags": [
         "beta",
@@ -3168,8 +3168,8 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "muse",
-        "haunt"
+        "bard",
+        "hexer"
       ],
       "tags": [
         "gamma",
@@ -3343,7 +3343,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "tempest"
+        "channeler"
       ],
       "tags": [
         "alpha",
@@ -3492,8 +3492,8 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "aegis",
-        "haunt"
+        "guardian",
+        "hexer"
       ],
       "tags": [
         "beta",
@@ -3802,7 +3802,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "aegis"
+        "guardian"
       ],
       "tags": [
         "alpha",
@@ -3951,7 +3951,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "aegis"
+        "guardian"
       ],
       "tags": [
         "beta",
@@ -4093,7 +4093,7 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "muse"
+        "bard"
       ],
       "tags": [
         "gamma",
