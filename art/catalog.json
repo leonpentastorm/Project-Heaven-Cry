@@ -3467,6 +3467,30 @@
         "44": "art/perks/wick/production-v1/exports/44/grapple.png",
         "40": "art/perks/wick/production-v1/exports/40/grapple.png"
       }
+    },
+    "into-the-dark": {
+      "label": "Wick — Into the Dark",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/into-the-dark.png",
+      "sha256": "88f55b2358e4f5043bf6454d005fd4aebc6f5ac5e760d313e36829395dbb639b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "into_the_dark",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/into-the-dark.png",
+        "128": "art/perks/wick/production-v1/exports/128/into-the-dark.png",
+        "64": "art/perks/wick/production-v1/exports/64/into-the-dark.png",
+        "56": "art/perks/wick/production-v1/exports/56/into-the-dark.png",
+        "48": "art/perks/wick/production-v1/exports/48/into-the-dark.png",
+        "44": "art/perks/wick/production-v1/exports/44/into-the-dark.png",
+        "40": "art/perks/wick/production-v1/exports/40/into-the-dark.png"
+      }
     }
   },
   "illustrations": {

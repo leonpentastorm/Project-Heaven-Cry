@@ -89,11 +89,12 @@
     "wind-on-the-skin",
     "bedside-manner",
     "breaching-strike",
-    "grapple"
+    "grapple",
+    "into-the-dark"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 10
+    "perks": 11
   },
   "revision_rounds": {
     "field-surgeon": 3,

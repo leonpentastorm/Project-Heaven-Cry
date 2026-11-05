@@ -189,6 +189,29 @@
       },
       "batch": "D",
       "source_sha256": "9d41ca3cba3d495cfc6fac17e931230ab13d541dc508217323a79baf7307e04c"
+    },
+    {
+      "id": "into-the-dark",
+      "data_id": "into_the_dark",
+      "name": "Into the Dark",
+      "family": "perks",
+      "order": 9,
+      "mood": "Tense, Proud",
+      "action": "Seen from behind, cape prominent, Wick strides without pause through a pitch-black doorway that looms over it.",
+      "screen": "Hidden (from behind)",
+      "prop": "Dark doorway",
+      "path": "art/perks/wick/production-v1/into-the-dark.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/into-the-dark.png",
+        "128": "art/perks/wick/production-v1/exports/128/into-the-dark.png",
+        "64": "art/perks/wick/production-v1/exports/64/into-the-dark.png",
+        "56": "art/perks/wick/production-v1/exports/56/into-the-dark.png",
+        "48": "art/perks/wick/production-v1/exports/48/into-the-dark.png",
+        "44": "art/perks/wick/production-v1/exports/44/into-the-dark.png",
+        "40": "art/perks/wick/production-v1/exports/40/into-the-dark.png"
+      },
+      "batch": "D",
+      "source_sha256": "46ce7da176340a276be57bbe4bcb52a642dfaeeafa4cbc067f228fd70abfe75b"
     }
   ]
 }
