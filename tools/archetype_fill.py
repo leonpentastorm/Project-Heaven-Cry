@@ -12,7 +12,10 @@ import json, pathlib, sys
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "data")
 rules = json.loads((root / "rules.json").read_text())["character"]["creation"]
 ATTR_PTS, CORE_PTS = rules["attributes"]["points"], rules["cores"]["points"]
-TRADE, CAP = rules["cores"]["unspent_core_point_trades_for_attribute_points"], rules["attributes"]["max_at_creation"]
+TRADE = rules["cores"]["unspent_core_point_trades_for_attribute_points"]
+# Players have no creation cap (a 7/1/1 build is legal). Presets stay at 5 or below on purpose:
+# they are moderate examples for new players, not the extremes the budgets allow.
+CAP = 5
 skills = {s["id"]: s for s in json.loads((root / "skills.json").read_text())["items"]}
 attrs = json.loads((root / "attributes.json").read_text())["items"]
 CORE_OF = {a["id"]: a["core"] for a in attrs}

@@ -4,10 +4,10 @@
   "note": "Guidance only (Leon, 5 Nov 2026). Archetypes are picked on the creation Cores screen as a preset that pre-fills the 10 skill points; the Skills step can change anything. Nothing about an archetype persists after that screen: no stats, no portrait, no label on the sheet, no change on level-up. Names are generic role words, never class names.",
   "rules": {
     "preset_points": 10,
-    "max_per_skill": 5,
     "custom_option": true,
     "leans": "base classes whose signature totals are among the preset's two highest (the level-3 closest-class rule); recomputed by tools/validate.py",
-    "budgets": "every archetype spends all three creation budgets: its preset places the 10 Skill points, and `attributes` and `cores` place every Attribute and Core point (tools/archetype_fill.py); picking one leaves nothing to spend"
+    "budgets": "every archetype spends all three creation budgets: its preset places the 10 Skill points, and `attributes` and `cores` place every Attribute and Core point (tools/archetype_fill.py); picking one leaves nothing to spend",
+    "preset_style": "presets keep everything at 5 or below as moderate examples; players have no creation cap (a 7/1/1 build is legal from Custom)"
   },
   "families": [
     {

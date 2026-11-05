@@ -190,12 +190,12 @@ if isinstance(arch, dict):
             errors.append(f"archetype {aid}: unknown skills {bad}")
         if sum(preset.values()) != rules.get("preset_points", 10):
             errors.append(f"archetype {aid}: preset spends {sum(preset.values())} points")
-        if preset and max(preset.values()) > rules.get("max_per_skill", 5):
-            errors.append(f"archetype {aid}: a skill is above the creation cap")
+        if preset and max(preset.values()) > 10:
+            errors.append(f"archetype {aid}: a skill is above 10")
         # creation budgets (rules.character.creation): every archetype spends all of them (decision 49)
         cb = data.get("rules", {}).get("character", {}).get("creation", {})
         A_PTS, C_PTS = cb.get("attributes", {}).get("points", 10), cb.get("cores", {}).get("points", 6)
-        TR, CAPC = cb.get("cores", {}).get("unspent_core_point_trades_for_attribute_points", 2), cb.get("attributes", {}).get("max_at_creation", 5)
+        TR, CAPC = cb.get("cores", {}).get("unspent_core_point_trades_for_attribute_points", 2), 10  # no creation caps beyond the tree's own
         at, co = a.get("attributes") or {}, a.get("cores") or {}
         if set(at) != set(skill_attr.values()) or set(co) != {"body", "mind", "soul"}:
             errors.append(f"archetype {aid}: needs all 9 attributes and 3 cores")
@@ -207,7 +207,7 @@ if isinstance(arch, dict):
                 if v > co[attr_core[x]] or v > CAPC or v < 1:
                     errors.append(f"archetype {aid}: attribute {x} {v} breaks a cap")
             if any(v > CAPC or v < 1 for v in co.values()):
-                errors.append(f"archetype {aid}: a core breaks the creation cap")
+                errors.append(f"archetype {aid}: a core is outside 1-10")
             a_sp, c_sp = sum(v - 1 for v in at.values()), sum(v - 1 for v in co.values())
             traded = -(-max(0, a_sp - A_PTS) // TR)
             if C_PTS - c_sp - traded != 0 or A_PTS + traded * TR - a_sp != 0:

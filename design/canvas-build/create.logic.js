@@ -11,8 +11,9 @@ const title = (id) => id.charAt(0).toUpperCase() + id.slice(1);
 const mod = (p) => (p === 0 ? -2 : p - 1);
 const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 // Creation budgets (spec: Creation budget; rules.character.creation): 10 Skill, 10 Attribute, 6 Core points,
-// caps of 5, and an unspent Core point trades for 2 Attribute points.
-const BUDGET = 10, CAP = 5, ATTR_PTS = 10, BASE_CORE_PTS = 6, TRADE = 2, STAT_CAP = 5;
+// and an unspent Core point trades for 2 Attribute points. No creation caps (Leon): only the tree's own,
+// skill <= attribute <= core <= 10, so 6 Core points into Body make a legal 7/1/1 character.
+const BUDGET = 10, CAP = 10, ATTR_PTS = 10, BASE_CORE_PTS = 6, TRADE = 2, STAT_CAP = 10;
 let CORE_PTS = BASE_CORE_PTS; // Mind Without Fog: +2 Core points at creation (set each render from the picked traits)
 
 function derive(skills, aSet, cSet) {
@@ -115,7 +116,7 @@ class Component extends DCLogic {
     // What one more point in a skill costs, as the stepper preview says it (spec: "Order doesn't matter").
     const costOf = (id) => {
       const k = SK[id], p = S.skills[id] || 0;
-      if (p >= CAP) return { ok: false, text: k.name + ' is at the creation cap of ' + CAP };
+      if (p >= CAP) return { ok: false, text: k.name + ' is at 10, the most anything can be' };
       if (der.spent >= BUDGET) return { ok: false, text: 'No Skill points left' };
       const nx = derive({ ...S.skills, [id]: p + 1 }, S.aSet, S.cSet), at = ATTR[k.attr], parts = ['−1 Skill'];
       if (nx.attr[k.attr] > der.attr[k.attr]) parts.push('−1 Attribute (' + at.name + ' ' + der.attr[k.attr] + '→' + nx.attr[k.attr] + ')');

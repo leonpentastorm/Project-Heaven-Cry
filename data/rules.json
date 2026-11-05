@@ -177,19 +177,16 @@
     "creation": {
       "skills": {
         "start_each": 0,
-        "points": 10,
-        "max_per_skill": 5
+        "points": 10
       },
       "attributes": {
         "start_each": 1,
         "points": 10,
-        "max_at_creation": 5,
         "cap": "its core"
       },
       "cores": {
         "start_each": 1,
         "points": 6,
-        "max_at_creation": 5,
         "unspent_core_point_trades_for_attribute_points": 2
       },
       "auto_spend": "placing a skill above its attribute (or an attribute above its core) spends the attribute/core points it needs; blocked if those budgets can't cover it",
@@ -201,13 +198,11 @@
       },
       "source": "2020 EPCCG budgets (6 core, 10 attribute, 10 skill) restored after rules 1.1",
       "provisional": [
-        "skills.max_per_skill",
-        "attributes.max_at_creation",
-        "cores.max_at_creation",
         "cores.unspent_core_point_trades_for_attribute_points",
         "cores.points",
         "attributes.points"
-      ]
+      ],
+      "caps": "none beyond the tree's own (skill <= attribute <= core <= 10); the budgets allow at most 7 in one core, attribute or skill at creation"
     },
     "levels": {
       "min": 1,
