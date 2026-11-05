@@ -166,6 +166,29 @@
       },
       "batch": "D",
       "source_sha256": "f4eb857930679a9fe78da2d121adf0d1b9c64a9ae4159c174d1e67d7e9d0f47c"
+    },
+    {
+      "id": "grapple",
+      "data_id": "grapple",
+      "name": "Grapple",
+      "family": "perks",
+      "order": 8,
+      "mood": "Comic, Tense",
+      "action": "Wick clamps itself around a huge armoured forearm entering frame, arms and legs wrapped tight, boots off the ground, refusing to let go.",
+      "screen": "Gritted teeth",
+      "prop": "Armoured forearm (partial)",
+      "path": "art/perks/wick/production-v1/grapple.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/grapple.png",
+        "128": "art/perks/wick/production-v1/exports/128/grapple.png",
+        "64": "art/perks/wick/production-v1/exports/64/grapple.png",
+        "56": "art/perks/wick/production-v1/exports/56/grapple.png",
+        "48": "art/perks/wick/production-v1/exports/48/grapple.png",
+        "44": "art/perks/wick/production-v1/exports/44/grapple.png",
+        "40": "art/perks/wick/production-v1/exports/40/grapple.png"
+      },
+      "batch": "D",
+      "source_sha256": "9d41ca3cba3d495cfc6fac17e931230ab13d541dc508217323a79baf7307e04c"
     }
   ]
 }

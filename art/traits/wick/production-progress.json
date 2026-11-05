@@ -88,11 +88,12 @@
     "scar-tissue",
     "wind-on-the-skin",
     "bedside-manner",
-    "breaching-strike"
+    "breaching-strike",
+    "grapple"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 9
+    "perks": 10
   },
   "revision_rounds": {
     "field-surgeon": 3,

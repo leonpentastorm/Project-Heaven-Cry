@@ -3443,6 +3443,30 @@
         "44": "art/perks/wick/production-v1/exports/44/breaching-strike.png",
         "40": "art/perks/wick/production-v1/exports/40/breaching-strike.png"
       }
+    },
+    "grapple": {
+      "label": "Wick — Grapple",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/grapple.png",
+      "sha256": "599e091b6e9cb044e28a38260fec3c3d86b5e7e82dfea1bfcfee6c609d48653c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "grapple",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/grapple.png",
+        "128": "art/perks/wick/production-v1/exports/128/grapple.png",
+        "64": "art/perks/wick/production-v1/exports/64/grapple.png",
+        "56": "art/perks/wick/production-v1/exports/56/grapple.png",
+        "48": "art/perks/wick/production-v1/exports/48/grapple.png",
+        "44": "art/perks/wick/production-v1/exports/44/grapple.png",
+        "40": "art/perks/wick/production-v1/exports/40/grapple.png"
+      }
     }
   },
   "illustrations": {
