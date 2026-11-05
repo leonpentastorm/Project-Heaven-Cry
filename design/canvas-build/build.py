@@ -190,7 +190,7 @@ def build():
         (OUT / fname).write_text(wrapper(title, step, arch, name, h))
     print("built Create + 5 step artboards")
     mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mpat"], "p2": BLOBS["char-inspectant-latch-7"],
-             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "outpost": BLOBS["world-outpost813"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery(), "factoryIcon": BLOBS["wick-trait-factory-made"],
+             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "outpost": BLOBS["world-outpost813"], "wick": BLOBS["wick-mind-without-fog"], "wm": weapon_mastery(), "factoryIcon": BLOBS["wick-trait-factory-made"], "narrator": BLOBS["wick-narrator-placeholder"],
              "perks": [{"id": x["id"], "name": x["name"], "text": x["tiers"]["I"]["text"][0].upper() + x["tiers"]["I"]["text"][1:], "icon": BLOBS.get("wick-perk-" + x["id"].replace("_", "-"), BLOBS["wick-mind-without-fog"])} for x in load("perks.json")["items"] if x["id"] in ("rally_cry", "roll_with_it")]}
     tpl, js = with_epccg((BUILD / "main.template.html").read_text(),
                          (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False)))

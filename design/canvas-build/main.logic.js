@@ -84,7 +84,7 @@ class Component extends DCLogic {
       imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid ' + PLAYER[key][1] });
     const order = [{ img: D.pc, name: 'MPAT (you)', ...who('leon'), state: 'SPEAKING', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF' },
       { img: D.p2, name: 'Ninety-Two', ...who('guest'), state: '✓ SPOKE', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6FEA77' },
-      { img: D.wick, name: 'Narrator', player: 'AI', playerStyle: 'font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+      { img: D.narrator, name: 'Narrator', player: 'AI', playerStyle: 'font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F', state: 'AFTER ALL', stateStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
     const mini = [];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = x + ',' + y, tok = TOKENS[k];
       mini.push({ style: 'aspect-ratio: 1; border-radius: ' + (tok ? '50%' : '1px') + '; background: ' + (tok || (HULL.has(k) ? '#1C2536' : CRATES.has(k) ? '#4A3A20' : WRECK.has(k) ? '#232D3F' : '#0D1119')) }); }
