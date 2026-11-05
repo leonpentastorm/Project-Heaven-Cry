@@ -304,6 +304,29 @@
       },
       "batch": "A",
       "source_sha256": "60e061a4f2cbd87eea808709423b87480f05f14619c66b852aed68cd21e08803"
+    },
+    {
+      "id": "lunarshine",
+      "data_id": "lunarshine",
+      "name": "Lunarshine",
+      "family": "traits",
+      "order": 18,
+      "mood": "Comic, Grim",
+      "action": "Wick sways tilted on one heel, toasting with a jug as big as its torso, free mitten raised in a gentlemanly flourish",
+      "screen": "Wobbly happy eyes",
+      "prop": "Jug",
+      "path": "art/traits/wick/production-v1/lunarshine.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/lunarshine.png",
+        "128": "art/traits/wick/production-v1/exports/128/lunarshine.png",
+        "64": "art/traits/wick/production-v1/exports/64/lunarshine.png",
+        "56": "art/traits/wick/production-v1/exports/56/lunarshine.png",
+        "48": "art/traits/wick/production-v1/exports/48/lunarshine.png",
+        "44": "art/traits/wick/production-v1/exports/44/lunarshine.png",
+        "40": "art/traits/wick/production-v1/exports/40/lunarshine.png"
+      },
+      "batch": "A",
+      "source_sha256": "405dd6b3f8a843377a9afb3c5358cad1ba08dd199a7975f83413b36773f054ef"
     }
   ]
 }

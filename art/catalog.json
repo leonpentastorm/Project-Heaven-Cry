@@ -1927,6 +1927,30 @@
         "44": "art/traits/wick/production-v1/exports/44/oil-in-my-soul.png",
         "40": "art/traits/wick/production-v1/exports/40/oil-in-my-soul.png"
       }
+    },
+    "lunarshine": {
+      "label": "Wick — Lunarshine",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/lunarshine.png",
+      "sha256": "5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "lunarshine",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "A",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/lunarshine.png",
+        "128": "art/traits/wick/production-v1/exports/128/lunarshine.png",
+        "64": "art/traits/wick/production-v1/exports/64/lunarshine.png",
+        "56": "art/traits/wick/production-v1/exports/56/lunarshine.png",
+        "48": "art/traits/wick/production-v1/exports/48/lunarshine.png",
+        "44": "art/traits/wick/production-v1/exports/44/lunarshine.png",
+        "40": "art/traits/wick/production-v1/exports/40/lunarshine.png"
+      }
     }
   },
   "character_collections": {
