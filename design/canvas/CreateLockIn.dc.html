@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PHC · Creation · lock in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0D13}
+a{color:#8BDEEE}a:hover{color:#E7EBF3}
+input,select,textarea{font-family:'Chakra Petch',sans-serif}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #0A0D13">
+<dc-import name="Create" start-step="lockin" sample-arch="field_medic" sample-name="MPAT" hint-size="100%,1000px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

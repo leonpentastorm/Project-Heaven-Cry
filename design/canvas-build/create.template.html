@@ -1,0 +1,283 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 18px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<img src="__WICK__" alt="Wick, the EPCCG mascot" style="width: 48px; height: 48px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 11px; letter-spacing: 0.22em; color: #A3AEC2">ANTI-HEAVEN OPERATIONS COMMAND · FORM EPCCG 1.7163-24C</span>
+<span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Emergency Player Character Creation Guide</span>
+</div>
+<div style="margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{headerName}}</span>
+<span style="{{budgetChipStyle}}">{{budgetChip}}</span>
+</div>
+</header>
+
+<nav aria-label="Creation steps" style="display: flex; gap: 8px; padding: 12px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<button type="button" onClick="{{s.go}}" aria-current="{{s.current}}" style="{{s.style}}"><span style="{{s.numStyle}}">{{s.n}}</span><span>{{s.label}}</span></button>
+</sc-for>
+</nav>
+
+<main style="flex: 1; display: flex; flex-direction: column">
+
+<sc-if value="{{isIdentity}}" hint-placeholder-val="{{true}}">
+<section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
+<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Who are you?</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 62ch">Everyone the Command processes fills in this form. Your look and your past go here. Skills come next.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">NAME
+<input value="{{name}}" onChange="{{onName}}" placeholder="What the squad calls you" style="min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 16px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">SECTOR
+<select style="min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 16px; letter-spacing: 0"><option>The Earth Sector</option><option disabled>More Sectors later</option></select></label>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHERE YOU GREW UP · EARTH SECTOR</h2>
+<span style="font-size: 13px; color: #A3AEC2">Checks about your home's places and people are one step easier.</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px">
+<sc-for list="{{originCards}}" as="o" hint-placeholder-count="14">
+<button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">
+<span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
+<span style="font-size: 16px; font-weight: 700">{{o.name}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 13px; line-height: 1.4; color: #C9D3E3">{{o.home}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{hasOrigin}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<div style="grid-column: 1 / -1; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{origin.name}}</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">UPBRINGING</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Upbringing}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU KNOW</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.knows}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PEOPLE SEE YOU AS</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.seen}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">FROM HOME</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Hook}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILLS IT SUGGESTS</span><span style="font-size: 14px">{{origin.Skills}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS THAT FIT</span><span style="font-size: 14px">{{origin.traitsFit}}</span></div>
+</div>
+</sc-if>
+</div>
+
+<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
+<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000">
+<div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PORTRAIT</span>
+<span style="font-size: 13px; color: #C9D3E3">{{portrait.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{portraitThumbs}}" as="p" hint-placeholder-count="6">
+<button type="button" onClick="{{p.pick}}" aria-label="{{p.label}}" aria-pressed="{{p.pressed}}" style="{{p.style}}"><img src="{{p.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px"></button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Upload</button>
+<button type="button" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Generate</button>
+</div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">RACE<select disabled style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #232D3F; background: #10151F; color: #A3AEC2; font-size: 14px; letter-spacing: 0"><option>Human (races later)</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">GENDER<input placeholder="Anything, or nothing" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">BLOOD TYPE<input placeholder="O, AB, Oil…" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">MAIN HAND<select style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"><option>Right</option><option>Left</option><option>Both</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ASSOCIATION<input placeholder="Unit, faction or crew" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">FAVOURITE SONG<input placeholder="A song from your world" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">LAST DREAM<input placeholder="What you dreamed last night" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">HISTORY<textarea rows="4" placeholder="A few lines the Narrator can use" style="padding: 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0; font-family: 'Spectral', serif; resize: vertical"></textarea></label>
+</div>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isArchetype}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
+<div style="flex: 999 1 720px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">What kind of character?</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 66ch">Pick an archetype and your 10 skill points are placed for you. You can change every point on the next screen. It's only a guide: nothing here is saved.</p>
+</div>
+<div role="tablist" aria-label="Archetype families" style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{famTabs}}" as="f" hint-placeholder-count="9">
+<button type="button" role="tab" aria-selected="{{f.selected}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.name}}</button>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px">
+<sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
+<button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 19px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{a.role}}</span></span>
+<span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
+<span style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
+</span>
+<span style="font-size: 12px; color: #A3AEC2">Leans: {{a.leans}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">PREVIEW</span>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pv.name}}</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #A3AEC2">{{pv.role}}</span></div>
+<sc-for list="{{pv.coreRows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 110px 44px minmax(0, 1fr); gap: 10px; align-items: center">
+<div style="display: flex; flex-direction: column"><span style="{{r.nameStyle}}">{{r.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{r.word}}</span></div>
+<span style="{{r.valStyle}}">{{r.val}}</span>
+<span style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILL POINTS</span>
+<sc-for list="{{pv.skills}}" as="k" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="{{k.style}}">{{k.name}}</span><span style="color: #E7EBF3">{{k.pts}}</span></div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #A3AEC2">Leans toward: <span style="color: #E7EBF3">{{pv.leans}}</span></span>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" onClick="{{useArch}}" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{useLabel}}</button>
+</div>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isSkills}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
+<div style="flex: 999 1 780px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Skills</h1>
+<span style="{{budgetStyle}}">{{budgetText}}</span>
+<span style="font-size: 13px; color: #A3AEC2">Max 5 in one skill. Attributes and Cores rise to fit, for free.</span>
+<button type="button" onClick="{{resetSkills}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Reset</button>
+</div>
+<div role="tablist" aria-label="Cores" style="display: flex; gap: 10px; flex-wrap: wrap">
+<sc-for list="{{coreTabs}}" as="t" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}"><span style="font-size: 20px; font-weight: 700">{{t.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{t.note}}</span></button>
+</sc-for>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 200px repeat(3, minmax(0, 1fr)); gap: 12px; align-items: stretch">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="{{r.nameStyle}}">{{r.name}}</span>
+<span style="font-size: 40px; font-weight: 700; line-height: 1">{{r.val}}</span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{r.fx}}</span>
+</div>
+<sc-for list="{{r.cards}}" as="k" hint-placeholder-count="3">
+<article style="{{k.style}}">
+<img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; background: #000">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 6px"><span style="{{k.nameStyle}}">{{k.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{k.slot}}</span></div>
+<span style="font-size: 13px; line-height: 1.35; color: #C9D3E3">{{k.summary}}</span>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 13px; line-height: 1.4; color: #A3AEC2">“{{k.quiet}}”</span>
+<span style="display: flex; gap: 4px"><sc-for list="{{k.dia}}" as="d" hint-placeholder-count="5"><span style="{{d.style}}"></span></sc-for></span>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" disabled="{{k.noDec}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 22px; cursor: pointer">‹</button>
+<span style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 26px; font-weight: 700; line-height: 1">{{k.pts}}</span><span style="{{k.modStyle}}">{{k.mod}}</span></span>
+<button type="button" aria-label="Raise {{k.name}}" onClick="{{k.inc}}" disabled="{{k.noInc}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 22px; cursor: pointer">›</button>
+</div>
+</article>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+<aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">YOUR CORES</span>
+<sc-for list="{{sideCores}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="{{c.nameStyle}}">{{c.name}}</span><span style="font-size: 13px; color: #A3AEC2">{{c.word}} · <span style="color: #E7EBF3; font-size: 18px; font-weight: 700">{{c.val}}</span></span></div>
+</sc-for>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2; padding-top: 8px; border-top: 1px solid #232D3F">CLASS AT LEVEL 3 (END OF SESSION 1)</span>
+<sc-for list="{{leanList}}" as="l" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; font-size: 14px"><span style="{{l.style}}">{{l.name}}</span><span style="color: #A3AEC2">signature {{l.total}}</span></div>
+</sc-for>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">You'll choose among the classes with your two highest signature totals.</span>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{archNote}}</span>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isTraits}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Traits</h1>
+<span style="{{traitChipStyle}}">{{traitChip}}</span>
+<span style="font-size: 13px; color: #A3AEC2">Up to two. One big upside, one big downside. They never come off.</span>
+</div>
+<div role="tablist" aria-label="Trait categories" style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{catTabs}}" as="c" hint-placeholder-count="10">
+<button type="button" role="tab" aria-selected="{{c.selected}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.name}}</button>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px">
+<sc-for list="{{traitCards}}" as="t" hint-placeholder-count="6">
+<article style="{{t.style}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<img src="__WICK__" alt="" style="width: 56px; height: 56px; flex: none">
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 18px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
+</div>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
+<sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
+<sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>
+<button type="button" onClick="{{t.toggle}}" disabled="{{t.disabled}}" aria-pressed="{{t.pressed}}" style="{{t.btnStyle}}">{{t.btn}}</button>
+</article>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 12px; color: #A3AEC2">Icons: every trait shows the approved Wick master until its own icon is drawn.</p>
+</section>
+</sc-if>
+
+<sc-if value="{{isKit}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
+<sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
+<button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
+<span style="font-size: 20px; font-weight: 700">{{k.name}}</span>
+<sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 14px; color: #C9D3E3">{{i.text}}</span></sc-for>
+</button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isLockin}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
+<div style="flex: 999 1 640px; min-width: 0; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000">
+<div style="flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>
+<span style="font-size: 14px; color: #A3AEC2">{{summaryLine}}</span>
+<div style="display: flex; gap: 14px; flex-wrap: wrap">
+<sc-for list="{{sideCores}}" as="c" hint-placeholder-count="3"><span style="{{c.nameStyle}}">{{c.name}} {{c.val}}</span></sc-for>
+</div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">SKILLS</span>
+<div style="display: flex; gap: 6px 14px; flex-wrap: wrap">
+<sc-for list="{{trainedSkills}}" as="k" hint-placeholder-count="4"><span style="{{k.style}}">{{k.label}}</span></sc-for>
+</div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">TRAITS</span>
+<span style="font-size: 14px">{{traitNames}}</span>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">CLASS AT LEVEL 3</span>
+<span style="font-size: 14px">{{leanText}}</span>
+</div>
+</div>
+<aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CHECKLIST</span>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="{{c.markStyle}}">{{c.mark}}</span><span>{{c.label}}</span></div>
+</sc-for>
+<button type="button" disabled="{{cantLock}}" style="{{lockStyle}}">Lock in</button>
+<button type="button" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Save as draft</button>
+<span style="font-size: 12px; color: #A3AEC2">Drafts can be brought into any room.</span>
+</aside>
+</section>
+</sc-if>
+
+</main>
+
+<footer style="display: flex; justify-content: space-between; gap: 12px; padding: 16px 32px; border-top: 1px solid #232D3F">
+<button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">‹ Back</button>
+<button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Next ›</button>
+</footer>
+</div>

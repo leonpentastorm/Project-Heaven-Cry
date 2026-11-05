@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>PHC · Character creation</title>
+<title>PHC · Character creation (EPCCG)</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,505 +12,454 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#0A0D13}
+a{color:#8BDEEE}a:hover{color:#E7EBF3}
+input,select,textarea{font-family:'Chakra Petch',sans-serif}
 </style>
 </helmet>
-<div style="min-height: 1000px; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 14px">
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
 
-<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 14px 24px; border-bottom: 1px solid #232D3F; background: #0D1119">
-  <div style="display: flex; align-items: center; gap: 12px">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#4FC8DF" stroke-width="1.6" aria-hidden="true"><path d="M14 2 25 8.5v11L14 26 3 19.5v-11L14 2Z"/><path d="M14 8v12M8.5 11 14 14l5.5-3"/></svg>
-    <span style="font-weight: 700; letter-spacing: 0.18em; font-size: 13px">PROJECT HEAVEN CRY</span>
-  </div>
-  <div style="flex: 1 1 40px"></div>
-  <a href="Room.dc.html" style="font-size: 13px; text-decoration: none">← Back to room 7Q-K2</a>
+<header style="display: flex; align-items: center; gap: 18px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<img src="/_blob/fbab53e29d4ca072828b8825af10136c" alt="Wick, the EPCCG mascot" style="width: 48px; height: 48px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 11px; letter-spacing: 0.22em; color: #A3AEC2">ANTI-HEAVEN OPERATIONS COMMAND · FORM EPCCG 1.7163-24C</span>
+<span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Emergency Player Character Creation Guide</span>
+</div>
+<div style="margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{headerName}}</span>
+<span style="{{budgetChipStyle}}">{{budgetChip}}</span>
+</div>
 </header>
 
-<div style="max-width: 1360px; margin: 0 auto; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
-    <div style="display: flex; flex-direction: column; gap: 4px">
-      <span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">NEW CHARACTER · LEVEL 1</span>
-      <h1 style="margin: 0; font-family: 'Spectral', serif; font-weight: 600; font-size: 40px; line-height: 1.1">Build who walks in</h1>
-    </div>
-    <span style="font-size: 13px; color: #A3AEC2; max-width: 46ch; line-height: 1.5">Lock your character in before the session starts. Drafts save to your account and can be brought into any room.</span>
-  </div>
+<nav aria-label="Creation steps" style="display: flex; gap: 8px; padding: 12px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<button type="button" onClick="{{s.go}}" aria-current="{{s.current}}" style="{{s.style}}"><span style="{{s.numStyle}}">{{s.n}}</span><span>{{s.label}}</span></button>
+</sc-for>
+</nav>
 
-  <nav aria-label="Creation steps" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
-    <sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
-      <button type="button" aria-current="{{s.current}}" onClick="{{s.pick}}" style="{{s.style}}">
-        <span style="font-size: 11px; letter-spacing: 0.16em; color: {{s.numColor}}">STEP {{s.n}}</span>
-        <span style="font-weight: 700; font-size: 15px">{{s.label}}</span>
-      </button>
-    </sc-for>
-  </nav>
+<main style="flex: 1; display: flex; flex-direction: column">
 
-  <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
-    <section style="flex: 999 1 640px; min-width: 0; background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 18px">
-
-      <sc-if value="{{isIdentity}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 16px">
-          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Identity</h2>
-          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="nm" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">NAME</label><input id="nm" value="{{name}}" onChange="{{onName}}" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="org" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ORIGIN</label><input id="org" placeholder="Where they come from" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="race" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">RACE</label><input id="race" placeholder="Human, robot, …" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="assoc" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ASSOCIATION</label><input id="assoc" placeholder="Faction, crew or none" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="dream" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">LAST DREAM</label><input id="dream" placeholder="What they dreamed last night" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-            <div style="display: flex; flex-direction: column; gap: 6px"><label for="song" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">FAVORITE SONG</label><input id="song" placeholder="A song from their world" style="min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px"></div>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px"><label for="hist" style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">HISTORY</label><textarea id="hist" rows="4" placeholder="A few lines the Narrator can use" style="padding: 12px 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 16px; resize: vertical"></textarea></div>
-          <div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 10px; border: 1px dashed #2E3A50">
-            <span style="width: 72px; height: 72px; border-radius: 10px; background: #151C29; border: 1px solid #232D3F; display: grid; place-items: center; color: #7F8BA1; font-size: 11px">PORTRAIT</span>
-            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1"><span style="font-weight: 600">Portrait</span><span style="font-size: 13px; color: #A3AEC2">Upload an image or generate one from the name, race and history.</span></div>
-            <button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #4FC8DF; background: transparent; color: #4FC8DF; font-family: inherit; font-weight: 600; cursor: pointer">Generate</button>
-          </div>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{isCores}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 14px">
-          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
-            <div style="display: flex; flex-direction: column; gap: 4px">
-              <h2 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: 0.08em">ADJUST CORES</h2>
-              <span style="font-size: 14px; color: #A3AEC2">Spend six points across your three cores. Your archetype takes shape as you go.</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px">
-              <span style="{{corePoolStyle}}">{{corePoolText}}</span>
-              <button type="button" onClick="{{randomCores}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; cursor: pointer">RANDOM</button>
-              <button type="button" onClick="{{revertCores}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; cursor: pointer">RESET</button>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
-            <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
-              <sc-for list="{{coreRows}}" as="r" hint-placeholder-count="3">
-                <div style="display: grid; grid-template-columns: minmax(0, 1fr) 170px minmax(0, 1.25fr); align-items: center; gap: 14px; padding: 16px 18px; border-radius: 14px; background: #0D1119; border: 1px solid {{r.line}}">
-                  <span style="text-align: right; font-size: 34px; font-weight: 700; letter-spacing: 0.04em; color: #E7EBF3">{{r.word}}</span>
-                  <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
-                    <div style="display: flex; align-items: center; gap: 2px">
-                      <button type="button" aria-label="Lower {{r.name}}" onClick="{{r.dec}}" disabled="{{r.noDec}}" style="width: 44px; height: 52px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 42px; line-height: 1; cursor: pointer">‹</button>
-                      <span style="font-size: 58px; font-weight: 700; line-height: 1; min-width: 44px; text-align: center; color: {{r.color}}">{{r.val}}</span>
-                      <button type="button" aria-label="Raise {{r.name}}" onClick="{{r.inc}}" disabled="{{r.noInc}}" style="width: 44px; height: 52px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 42px; line-height: 1; cursor: pointer">›</button>
-                    </div>
-                    <div style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="7"><span style="{{d.style}}"></span></sc-for></div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; gap: 4px">
-                    <span style="font-size: 40px; font-weight: 700; letter-spacing: 0.06em; line-height: 1; color: {{r.color}}">{{r.name}}</span>
-                    <span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.45; color: #DCE2EC">{{r.desc}}</span>
-                    <span style="font-size: 11px; color: #A3AEC2; letter-spacing: 0.04em">{{r.governs}}</span>
-                  </div>
-                </div>
-              </sc-for>
-              <span style="font-size: 13px; color: #A3AEC2; line-height: 1.5">A core caps its three attributes, and attributes cap their skills. Body {{coreBody}} means Endurance, Strength and Agility, and every skill under them, can grow to {{coreBody}} until you raise Body.</span>
-            </div>
-            <section aria-live="polite" aria-label="Your archetype" style="flex: 1 1 300px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 14px; background: #10151F; border: 2px solid {{arch.color}}">
-              <span style="font-size: 11px; letter-spacing: 0.2em; color: #A3AEC2">YOUR ARCHETYPE</span>
-              <div style="position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: 10px; background: #0B0F16; overflow: hidden">
-                <svg viewBox="0 0 24 24" width="48%" fill="none" stroke="{{arch.color}}" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{arch.glyph}}"/></svg>
-                <span style="position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 9px; letter-spacing: 0.18em; color: #7F8BA1">ARCHETYPE ART · {{arch.name}}</span>
-              </div>
-              <span style="padding: 10px 6px; background: #05070B; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 0.08em; color: #E7EBF3">{{arch.name}}</span>
-              <span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5; color: #DCE2EC">{{arch.desc}}</span>
-              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #A3AEC2">{{arch.leans}}</span>
-              <span style="{{arch.noteStyle}}">{{arch.note}}</span>
-            </section>
-          </div>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{isSkills}}" hint-placeholder-val="{{true}}">
-        <div style="display: flex; flex-direction: column; gap: 14px">
-          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
-            <div style="display: flex; flex-direction: column; gap: 4px">
-              <h2 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: 0.08em">SET SKILLS</h2>
-              <span style="font-size: 14px; color: #A3AEC2; line-height: 1.5; max-width: 62ch">Each row is one attribute and the three skills it holds. Raise a skill past its attribute and the attribute rises with it.</span>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(3, 150px); gap: 8px">
-              <sc-for list="{{pools}}" as="p" hint-placeholder-count="3">
-                <div style="display: flex; flex-direction: column; gap: 6px">
-                  <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{p.label}}</span><span style="{{p.style}}">{{p.text}}</span></div>
-                  <div style="display: flex; gap: 2px"><sc-for list="{{p.pips}}" as="q" hint-placeholder-count="10"><span style="{{q.style}}"></span></sc-for></div>
-                </div>
-              </sc-for>
-            </div>
-          </div>
-
-          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
-            <span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">START FROM A CLASS</span>
-            <sc-for list="{{presets}}" as="c" hint-placeholder-count="13">
-              <button type="button" onClick="{{c.pick}}" style="{{c.style}}">{{c.name}}</button>
-            </sc-for>
-            <span style="flex: 1"></span>
-            <button type="button" onClick="{{trim}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Refund unused</button>
-            <button type="button" onClick="{{clearAll}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Clear skills</button>
-          </div>
-
-          <div role="tablist" aria-label="Core" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
-            <sc-for list="{{ctabs}}" as="t" hint-placeholder-count="3">
-              <button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">
-                <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.2em; color: {{t.color}}">{{t.name}} {{t.val}}</span>
-                <span style="font-size: 12px; color: #A3AEC2">{{t.note}}</span>
-              </button>
-            </sc-for>
-          </div>
-
-          <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
-            <div style="display: grid; grid-template-columns: 210px repeat(3, minmax(0, 1fr)); gap: 10px; padding: 10px; border-radius: 14px; background: #0D1119; border: 1px solid {{r.line}}">
-              <div style="display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 10px; background: #151C29">
-                <span style="font-size: 16px; font-weight: 700; letter-spacing: 0.16em; color: {{r.color}}">{{r.name}}</span>
-                <div style="display: flex; align-items: center; gap: 2px">
-                  <button type="button" aria-label="Lower {{r.name}}" onClick="{{r.dec}}" disabled="{{r.noDec}}" style="width: 36px; height: 44px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 30px; line-height: 1; cursor: pointer">‹</button>
-                  <span style="font-size: 40px; font-weight: 700; line-height: 1; min-width: 30px; text-align: center">{{r.val}}</span>
-                  <button type="button" aria-label="Raise {{r.name}}" onClick="{{r.inc}}" disabled="{{r.noInc}}" style="width: 36px; height: 44px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 30px; line-height: 1; cursor: pointer">›</button>
-                </div>
-                <div style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="3"><span style="{{d.style}}"></span></sc-for></div>
-                <span style="font-size: 12px; color: #DCE2EC">{{r.derived}}</span>
-                <span style="font-size: 11px; color: #A3AEC2">Skills in this row can reach {{r.val}}</span>
-              </div>
-              <sc-for list="{{r.cards}}" as="k" hint-placeholder-count="3">
-                <div role="group" aria-label="{{k.name}}" style="{{k.style}}">
-                  <span style="position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: 7px; background: #0B0F16; overflow: hidden">
-                    <svg viewBox="0 0 24 24" width="58%" fill="none" stroke="{{k.color}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.glyph}}"/></svg>
-                    <sc-if value="{{k.sig}}" hint-placeholder-val="{{false}}"><span title="Signature skill of your leading class" style="position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; transform: rotate(45deg); background: #FFFFFF"></span></sc-if>
-                  </span>
-                  <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
-                    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
-                      <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em">{{k.upper}}</span>
-                      <span style="font-size: 12px; font-weight: 700; color: {{k.modColor}}">{{k.modTxt}}</span>
-                    </div>
-                    <span style="font-family: 'Spectral', serif; font-size: 13px; line-height: 1.4; color: #A9B4C7; min-height: 36px">{{k.summary}}</span>
-                    <div style="display: flex; gap: 3px; flex-wrap: wrap; min-height: 8px"><sc-for list="{{k.dia}}" as="d" hint-placeholder-count="3"><span style="{{d.style}}"></span></sc-for></div>
-                    <div style="display: flex; align-items: center; gap: 4px; margin-top: auto">
-                      <button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" onMouseEnter="{{k.hoverDec}}" onMouseLeave="{{unhover}}" onFocus="{{k.hoverDec}}" onBlur="{{unhover}}" disabled="{{k.noDec}}" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer">‹</button>
-                      <span style="{{k.badge}}">{{k.val}}</span>
-                      <button type="button" aria-label="Raise {{k.name}}" onClick="{{k.inc}}" onMouseEnter="{{k.hoverInc}}" onMouseLeave="{{unhover}}" onFocus="{{k.hoverInc}}" onBlur="{{unhover}}" disabled="{{k.noInc}}" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid {{k.color}}; background: transparent; color: {{k.color}}; font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer">›</button>
-                    </div>
-                    <span style="{{k.hintStyle}}">{{k.hint}}</span>
-                  </div>
-                </div>
-              </sc-for>
-            </div>
-          </sc-for>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{isTraits}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 14px">
-          <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Traits</h2><span style="font-size: 13px; color: #A3AEC2">{{traitCount}} of 2 chosen · optional</span></div>
-          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-            <sc-for list="{{traits}}" as="t" hint-placeholder-count="8">
-              <button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" disabled="{{t.blocked}}" style="{{t.style}}">
-                <span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 700; font-size: 15px; color: #E7EBF3">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{t.cat}}</span></span>
-                <span style="font-size: 13px; color: #6FEA77; line-height: 1.45">{{t.up}}</span>
-                <span style="font-size: 13px; color: #F65157; line-height: 1.45">{{t.down}}</span>
-              </button>
-            </sc-for>
-          </div>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{isGear}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 14px">
-          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Starting kit</h2>
-          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
-            <sc-for list="{{kits}}" as="k" hint-placeholder-count="3">
-              <button type="button" aria-pressed="{{k.on}}" onClick="{{k.pick}}" style="{{k.style}}">
-                <span style="font-weight: 700; font-size: 16px; color: #E7EBF3">{{k.name}}</span>
-                <span style="font-size: 13px; color: #A3AEC2; line-height: 1.5; white-space: pre-line">{{k.items}}</span>
-              </button>
-            </sc-for>
-          </div>
-          <span style="font-size: 13px; color: #A3AEC2">Armour slots, backpack and the rest of the sheet fill in from the kit. More gear is bought or found in play.</span>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{isLock}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 16px">
-          <h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Lock in</h2>
-          <p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.6; color: #DCE2EC; max-width: 62ch">Once you lock in, this character is yours for the session: points, traits and kit can’t change except by levelling up in play. Save a draft instead if you want to finish later or bring it to another room.</p>
-          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
-            <sc-for list="{{checks}}" as="k" hint-placeholder-count="4">
-              <div style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 9px; background: #151C29"><span>{{k.label}}</span><span style="{{k.style}}">{{k.state}}</span></div>
-            </sc-for>
-          </div>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px">
-            <button type="button" onClick="{{lockIn}}" disabled="{{cannotLock}}" style="min-height: 52px; padding: 0 26px; border-radius: 10px; border: 0; background: #4FC8DF; color: #06131A; font-family: inherit; font-weight: 700; letter-spacing: 0.14em; font-size: 15px; cursor: pointer">{{lockLabel}}</button>
-            <button type="button" onClick="{{saveDraft}}" style="min-height: 52px; padding: 0 22px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.1em; cursor: pointer">{{draftLabel}}</button>
-          </div>
-        </div>
-      </sc-if>
-
-      <div style="display: flex; justify-content: space-between; border-top: 1px solid #232D3F; padding-top: 14px">
-        <button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Back</button>
-        <button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #1C2536; color: #E7EBF3; font-family: inherit; font-weight: 700; letter-spacing: 0.08em; cursor: pointer">Next</button>
-      </div>
-    </section>
-
-    <sc-if value="{{showAside}}" hint-placeholder-val="{{false}}">
-    <aside aria-label="Preview" style="flex: 1 1 300px; max-width: 380px; display: flex; flex-direction: column; gap: 14px">
-      <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
-        <span style="font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2">PREVIEW</span>
-        <span style="font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">{{name}}</span>
-        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
-          <sc-for list="{{coreSummary}}" as="c" hint-placeholder-count="3">
-            <div style="padding: 8px; border-radius: 8px; border: 1px solid #232D3F; text-align: center; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; letter-spacing: 0.12em; color: {{c.color}}">{{c.name}}</span><span style="font-size: 18px; font-weight: 700">{{c.val}}</span></div>
-          </sc-for>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Max HP</span><span style="font-weight: 600">{{hp}}</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Max MP</span><span style="font-weight: 600">{{mp}}</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #A3AEC2">Traits</span><span style="font-weight: 600; text-align: right">{{traitNames}}</span></div>
-      </section>
-      <section style="background: #10151F; border: 1px solid #232D3F; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
-        <span style="font-size: 12px; letter-spacing: 0.16em; color: #A3AEC2">CLASS AT LEVEL 3 · IF NOTHING CHANGES</span>
-        <sc-for list="{{classes}}" as="k" hint-placeholder-count="5">
-          <div style="display: flex; flex-direction: column; gap: 4px">
-            <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="{{k.nameStyle}}">{{k.name}}</span><span style="color: #A3AEC2; font-variant-numeric: tabular-nums">{{k.total}}</span></div>
-            <div style="height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{k.bar}}"></div></div>
-          </div>
-        </sc-for>
-        <span style="font-size: 12px; color: #A3AEC2; line-height: 1.5">Totals are points in each class’s three signature skills. You’ll choose among the top two totals when you reach level 3.</span>
-      </section>
-    </aside>
-    </sc-if>
-  </div>
+<sc-if value="{{isIdentity}}" hint-placeholder-val="{{true}}">
+<section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
+<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Who are you?</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 62ch">Everyone the Command processes fills in this form. Your look and your past go here. Skills come next.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">NAME
+<input value="{{name}}" onChange="{{onName}}" placeholder="What the squad calls you" style="min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 16px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">SECTOR
+<select style="min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 16px; letter-spacing: 0"><option>The Earth Sector</option><option disabled>More Sectors later</option></select></label>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHERE YOU GREW UP · EARTH SECTOR</h2>
+<span style="font-size: 13px; color: #A3AEC2">Checks about your home's places and people are one step easier.</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px">
+<sc-for list="{{originCards}}" as="o" hint-placeholder-count="14">
+<button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">
+<span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
+<span style="font-size: 16px; font-weight: 700">{{o.name}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 13px; line-height: 1.4; color: #C9D3E3">{{o.home}}</span>
+</button>
+</sc-for>
 </div>
 </div>
+<sc-if value="{{hasOrigin}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<div style="grid-column: 1 / -1; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{origin.name}}</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">UPBRINGING</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Upbringing}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU KNOW</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.knows}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PEOPLE SEE YOU AS</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.seen}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">FROM HOME</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Hook}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILLS IT SUGGESTS</span><span style="font-size: 14px">{{origin.Skills}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS THAT FIT</span><span style="font-size: 14px">{{origin.traitsFit}}</span></div>
+</div>
+</sc-if>
+</div>
+
+<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
+<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000">
+<div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PORTRAIT</span>
+<span style="font-size: 13px; color: #C9D3E3">{{portrait.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{portraitThumbs}}" as="p" hint-placeholder-count="6">
+<button type="button" onClick="{{p.pick}}" aria-label="{{p.label}}" aria-pressed="{{p.pressed}}" style="{{p.style}}"><img src="{{p.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px"></button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Upload</button>
+<button type="button" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Generate</button>
+</div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">RACE<select disabled style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #232D3F; background: #10151F; color: #A3AEC2; font-size: 14px; letter-spacing: 0"><option>Human (races later)</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">GENDER<input placeholder="Anything, or nothing" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">BLOOD TYPE<input placeholder="O, AB, Oil…" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">MAIN HAND<select style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"><option>Right</option><option>Left</option><option>Both</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">ASSOCIATION<input placeholder="Unit, faction or crew" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">FAVOURITE SONG<input placeholder="A song from your world" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">LAST DREAM<input placeholder="What you dreamed last night" style="min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">HISTORY<textarea rows="4" placeholder="A few lines the Narrator can use" style="padding: 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 14px; letter-spacing: 0; font-family: 'Spectral', serif; resize: vertical"></textarea></label>
+</div>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isArchetype}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
+<div style="flex: 999 1 720px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">What kind of character?</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 66ch">Pick an archetype and your 10 skill points are placed for you. You can change every point on the next screen. It's only a guide: nothing here is saved.</p>
+</div>
+<div role="tablist" aria-label="Archetype families" style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{famTabs}}" as="f" hint-placeholder-count="9">
+<button type="button" role="tab" aria-selected="{{f.selected}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.name}}</button>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px">
+<sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
+<button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 19px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{a.role}}</span></span>
+<span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
+<span style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
+</span>
+<span style="font-size: 12px; color: #A3AEC2">Leans: {{a.leans}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">PREVIEW</span>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pv.name}}</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #A3AEC2">{{pv.role}}</span></div>
+<sc-for list="{{pv.coreRows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 110px 44px minmax(0, 1fr); gap: 10px; align-items: center">
+<div style="display: flex; flex-direction: column"><span style="{{r.nameStyle}}">{{r.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{r.word}}</span></div>
+<span style="{{r.valStyle}}">{{r.val}}</span>
+<span style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILL POINTS</span>
+<sc-for list="{{pv.skills}}" as="k" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="{{k.style}}">{{k.name}}</span><span style="color: #E7EBF3">{{k.pts}}</span></div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #A3AEC2">Leans toward: <span style="color: #E7EBF3">{{pv.leans}}</span></span>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" onClick="{{useArch}}" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{useLabel}}</button>
+</div>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isSkills}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
+<div style="flex: 999 1 780px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Skills</h1>
+<span style="{{budgetStyle}}">{{budgetText}}</span>
+<span style="font-size: 13px; color: #A3AEC2">Max 5 in one skill. Attributes and Cores rise to fit, for free.</span>
+<button type="button" onClick="{{resetSkills}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Reset</button>
+</div>
+<div role="tablist" aria-label="Cores" style="display: flex; gap: 10px; flex-wrap: wrap">
+<sc-for list="{{coreTabs}}" as="t" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}"><span style="font-size: 20px; font-weight: 700">{{t.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{t.note}}</span></button>
+</sc-for>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 200px repeat(3, minmax(0, 1fr)); gap: 12px; align-items: stretch">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="{{r.nameStyle}}">{{r.name}}</span>
+<span style="font-size: 40px; font-weight: 700; line-height: 1">{{r.val}}</span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{r.fx}}</span>
+</div>
+<sc-for list="{{r.cards}}" as="k" hint-placeholder-count="3">
+<article style="{{k.style}}">
+<img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; background: #000">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 6px"><span style="{{k.nameStyle}}">{{k.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{k.slot}}</span></div>
+<span style="font-size: 13px; line-height: 1.35; color: #C9D3E3">{{k.summary}}</span>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 13px; line-height: 1.4; color: #A3AEC2">“{{k.quiet}}”</span>
+<span style="display: flex; gap: 4px"><sc-for list="{{k.dia}}" as="d" hint-placeholder-count="5"><span style="{{d.style}}"></span></sc-for></span>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" disabled="{{k.noDec}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 22px; cursor: pointer">‹</button>
+<span style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 26px; font-weight: 700; line-height: 1">{{k.pts}}</span><span style="{{k.modStyle}}">{{k.mod}}</span></span>
+<button type="button" aria-label="Raise {{k.name}}" onClick="{{k.inc}}" disabled="{{k.noInc}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 22px; cursor: pointer">›</button>
+</div>
+</article>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+<aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">YOUR CORES</span>
+<sc-for list="{{sideCores}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="{{c.nameStyle}}">{{c.name}}</span><span style="font-size: 13px; color: #A3AEC2">{{c.word}} · <span style="color: #E7EBF3; font-size: 18px; font-weight: 700">{{c.val}}</span></span></div>
+</sc-for>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2; padding-top: 8px; border-top: 1px solid #232D3F">CLASS AT LEVEL 3 (END OF SESSION 1)</span>
+<sc-for list="{{leanList}}" as="l" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; font-size: 14px"><span style="{{l.style}}">{{l.name}}</span><span style="color: #A3AEC2">signature {{l.total}}</span></div>
+</sc-for>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">You'll choose among the classes with your two highest signature totals.</span>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{archNote}}</span>
+</aside>
+</section>
+</sc-if>
+
+<sc-if value="{{isTraits}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Traits</h1>
+<span style="{{traitChipStyle}}">{{traitChip}}</span>
+<span style="font-size: 13px; color: #A3AEC2">Up to two. One big upside, one big downside. They never come off.</span>
+</div>
+<div role="tablist" aria-label="Trait categories" style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{catTabs}}" as="c" hint-placeholder-count="10">
+<button type="button" role="tab" aria-selected="{{c.selected}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.name}}</button>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px">
+<sc-for list="{{traitCards}}" as="t" hint-placeholder-count="6">
+<article style="{{t.style}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<img src="/_blob/fbab53e29d4ca072828b8825af10136c" alt="" style="width: 56px; height: 56px; flex: none">
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 18px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
+</div>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
+<sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
+<sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>
+<button type="button" onClick="{{t.toggle}}" disabled="{{t.disabled}}" aria-pressed="{{t.pressed}}" style="{{t.btnStyle}}">{{t.btn}}</button>
+</article>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 12px; color: #A3AEC2">Icons: every trait shows the approved Wick master until its own icon is drawn.</p>
+</section>
+</sc-if>
+
+<sc-if value="{{isKit}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
+<sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
+<button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
+<span style="font-size: 20px; font-weight: 700">{{k.name}}</span>
+<sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 14px; color: #C9D3E3">{{i.text}}</span></sc-for>
+</button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isLockin}}" hint-placeholder-val="{{false}}">
+<section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
+<div style="flex: 999 1 640px; min-width: 0; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000">
+<div style="flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>
+<span style="font-size: 14px; color: #A3AEC2">{{summaryLine}}</span>
+<div style="display: flex; gap: 14px; flex-wrap: wrap">
+<sc-for list="{{sideCores}}" as="c" hint-placeholder-count="3"><span style="{{c.nameStyle}}">{{c.name}} {{c.val}}</span></sc-for>
+</div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">SKILLS</span>
+<div style="display: flex; gap: 6px 14px; flex-wrap: wrap">
+<sc-for list="{{trainedSkills}}" as="k" hint-placeholder-count="4"><span style="{{k.style}}">{{k.label}}</span></sc-for>
+</div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">TRAITS</span>
+<span style="font-size: 14px">{{traitNames}}</span>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">CLASS AT LEVEL 3</span>
+<span style="font-size: 14px">{{leanText}}</span>
+</div>
+</div>
+<aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CHECKLIST</span>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="{{c.markStyle}}">{{c.mark}}</span><span>{{c.label}}</span></div>
+</sc-for>
+<button type="button" disabled="{{cantLock}}" style="{{lockStyle}}">Lock in</button>
+<button type="button" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Save as draft</button>
+<span style="font-size: 12px; color: #A3AEC2">Drafts can be brought into any room.</span>
+</aside>
+</section>
+</sc-if>
+
+</main>
+
+<footer style="display: flex; justify-content: space-between; gap: 12px; padding: 16px 32px; border-top: 1px solid #232D3F">
+<button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">‹ Back</button>
+<button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Next ›</button>
+</footer>
+</div>
+
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"startStep":{"editor":"enum","options":[0,1,2,3,4,5],"default":0},"$preview":{"width":1440,"height":1000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"startStep":{"editor":"enum","options":["identity","archetype","skills","traits","kit","lockin"],"default":"identity"},"sampleArch":{"editor":null},"sampleName":{"editor":null},"$preview":{"width":1440,"height":1000}}'>
+const D = {"skills": [{"id": "durability", "name": "Durability", "attr": "endurance", "core": "body", "slot": "alpha", "summary": "The tank.", "quiet": "You're still standing. Of course you are.", "img": "/_blob/14ed7ee7e8d5e01aba9508f010403326"}, {"id": "pain_threshold", "name": "Pain Threshold", "attr": "endurance", "core": "body", "slot": "beta", "summary": "Wounds don't slow you down.", "quiet": "Something stung you a while back. Nothing to worry about. Probably.", "img": "/_blob/1c75ec1f5dc9898bdc4615ab8dbe571f"}, {"id": "sensory", "name": "Sensory", "attr": "endurance", "core": "body", "slot": "gamma", "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilant.", "quiet": "Rain's coming. You can feel it in the knuckles.", "img": "/_blob/1aae86e4e11bb5274aa7f12672065847"}, {"id": "raw_power", "name": "Raw Power", "attr": "strength", "core": "body", "slot": "alpha", "summary": "Hit harder, bend further, lift higher.", "quiet": "Your arms are the cleverest thing about you, and that's fine.", "img": "/_blob/7a7430de6f0627801c54b3365eab4da4"}, {"id": "guts", "name": "Guts", "attr": "strength", "core": "body", "slot": "beta", "summary": "Fear doesn't get a vote.", "quiet": "Hold your breath. Walk in. That's the whole secret.", "img": "/_blob/f8f8ab781aebfa57bc63b22bd7e1ae60"}, {"id": "intimidation", "name": "Intimidation", "attr": "strength", "core": "body", "slot": "gamma", "summary": "You run the conversation through fear.", "quiet": "Manners first. Then the bones.", "img": "/_blob/ebb317965296746e982279f7fd49a32b"}, {"id": "athletics", "name": "Athletics", "attr": "agility", "core": "body", "slot": "alpha", "summary": "Armour just slows you down.", "quiet": "Light on your feet. They swing like Orks; you move like you.", "img": "/_blob/43001e62b6dc885fccb9f64db859c0e8"}, {"id": "dexterity", "name": "Dexterity", "attr": "agility", "core": "body", "slot": "beta", "summary": "The gun hand. Reloads, recoil, quick-draw, throws. Attack skill for guns, bows and thrown weapons.", "quiet": "Breathe. Count the rounds. You have four.", "img": "/_blob/1e74e1e546abc6f473839b0af9120129"}, {"id": "reaction_speed", "name": "Reaction Speed", "attr": "agility", "core": "body", "slot": "gamma", "summary": "Spotting danger is one thing. Moving in time is another.", "quiet": "You're fast. Fast isn't the same as right.", "img": "/_blob/71b0be8f7a760563d0baac0a6c977547"}, {"id": "ingenuity", "name": "Ingenuity", "attr": "perception", "core": "mind", "slot": "alpha", "summary": "Stealth, sleight of hand, sticky fingers.", "quiet": "Nobody is watching the back stairs. Nobody ever is.", "img": "/_blob/2ea6701aed8441a86a7aa39525c30bd0"}, {"id": "proficiency", "name": "Proficiency", "attr": "perception", "core": "mind", "slot": "beta", "summary": "The mechanic. Fixes guns, gear and machines in the field, robot squadmates included.", "quiet": "Every piece fits somewhere. You just have to see all of them.", "img": "/_blob/cb73d2dc3839b4230fb763fca08ba124"}, {"id": "vigilant", "name": "Vigilant", "attr": "perception", "core": "mind", "slot": "gamma", "summary": "Sight, sound and hostile intent.", "quiet": "Your spine went cold a second ago. Listen to it.", "img": "/_blob/3e095ed0ab6f9380ca63a3f6e5cd5349"}, {"id": "brain_power", "name": "Brain Power", "attr": "intelligence", "core": "mind", "slot": "alpha", "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.", "quiet": "Breathe. Draw the path in your head first. Then the hand.", "img": "/_blob/1b0bc846f3e2ea7796b48513e923c694"}, {"id": "rumination", "name": "Rumination", "attr": "intelligence", "core": "mind", "slot": "beta", "summary": "The scientist's library. Mirrors Lore Master.", "quiet": "You have read about this. Page forty, or thereabouts.", "img": "/_blob/86a6e7428fa8fe1e62a42217d75a1753"}, {"id": "eloquence", "name": "Eloquence", "attr": "intelligence", "core": "mind", "slot": "gamma", "summary": "Logic as a weapon.", "quiet": "There is only one truth, and you happen to be holding it.", "img": "/_blob/fd5fc1d88f31282ec3556fd332c34f06"}, {"id": "visualization", "name": "Visualization", "attr": "expression", "core": "mind", "slot": "alpha", "summary": "Shapes thought into images and Sigils into forms.", "quiet": "Thousand-autumn red. You'll never mix it. Try anyway.", "img": "/_blob/d19a6bedc4a98cfd7bebc83bc308386e"}, {"id": "analysis", "name": "Analysis", "attr": "expression", "core": "mind", "slot": "beta", "summary": "Detective work and target analysis. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.", "quiet": "Send the apology letter later. Find the spy now.", "img": "/_blob/e2aec116d9e4c373da3fee9592783111"}, {"id": "charisma", "name": "Charisma", "attr": "expression", "core": "mind", "slot": "gamma", "summary": "Warmth, persuasion, and lying with a smile.", "quiet": "A gentleman never passes up a conversation he's sure to win.", "img": "/_blob/cdc77826aeab6111c9ff20293602da49"}, {"id": "empathy", "name": "Empathy", "attr": "insight", "core": "soul", "slot": "alpha", "summary": "Feeling what the other side feels, enemies included.", "quiet": "What was he thinking, right before? You'll wonder for years.", "img": "/_blob/81872dfe1939652c6c1a3b255a94bbec"}, {"id": "camaraderie", "name": "Camaraderie", "attr": "insight", "core": "soul", "slot": "beta", "summary": "The squad is a world of its own.", "quiet": "You're not alone in this. You never were.", "img": "/_blob/ed82ae8db0bab3b7f0d1da9908d28ad6"}, {"id": "implication", "name": "Implication", "attr": "insight", "core": "soul", "slot": "gamma", "summary": "Metaphor, subtext, poetry and flirting.", "quiet": "The perfume of corpse-flowers. Someone in this room is rotting.", "img": "/_blob/9abe0a4ddaff4c557efa41a883f3407d"}, {"id": "will_power", "name": "Will Power", "attr": "determination", "core": "soul", "slot": "alpha", "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.", "quiet": "Breathe deep. Meditate until the doubt falls away.", "img": "/_blob/07fd57c1dc008a9d6fdad606815369de"}, {"id": "lore_master", "name": "Lore Master", "attr": "determination", "core": "soul", "slot": "beta", "summary": "The occultist's library. Mirrors Rumination.", "quiet": "Mother wanted to know. So do you.", "img": "/_blob/e9831fdd3f34857a157ec0868a49c242"}, {"id": "composure", "name": "Composure", "attr": "determination", "core": "soul", "slot": "gamma", "summary": "A face that never moves.", "quiet": "Stand still. Then stand stiller.", "img": "/_blob/6262948574fe851183a625f20feafef2"}, {"id": "faith", "name": "Faith", "attr": "virtue", "core": "soul", "slot": "alpha", "summary": "The saints judge. You deliver.", "quiet": "Only the saints may judge. You only deliver.", "img": "/_blob/2d7f7f468c0635c726fead55c3ec1879"}, {"id": "conscience", "name": "Conscience", "attr": "virtue", "core": "soul", "slot": "beta", "summary": "Seeing where an act leads.", "quiet": "It is not a question of right or left. Only of conscience.", "img": "/_blob/2c1672a628f503e9835d411e7adf469f"}, {"id": "authority", "name": "Authority", "attr": "virtue", "core": "soul", "slot": "gamma", "summary": "The measure of cool, and your Leadership rating.", "quiet": "They'll fall in line. They always do.", "img": "/_blob/bde71fe0711c2d963299dc307edc378c"}], "attrs": [{"id": "endurance", "name": "Endurance", "core": "body", "ink": "#F65157", "fx": "Max HP and injury resistance"}, {"id": "strength", "name": "Strength", "core": "body", "ink": "#F68A38", "fx": "Physical damage and carry weight"}, {"id": "agility", "name": "Agility", "core": "body", "ink": "#E3BF51", "fx": "Initiative and tiles per move"}, {"id": "perception", "name": "Perception", "core": "mind", "ink": "#40BAA0", "fx": "Vision range and critical damage"}, {"id": "intelligence", "name": "Intelligence", "core": "mind", "ink": "#8BDEEE", "fx": "Sigil words per spell and Sigil damage"}, {"id": "expression", "name": "Expression", "core": "mind", "ink": "#5394AC", "fx": "Sigil AP cost and elemental damage"}, {"id": "insight", "name": "Insight", "core": "soul", "ink": "#EB95B7", "fx": "Healing given and Soul spell cost"}, {"id": "determination", "name": "Determination", "core": "soul", "ink": "#9D7ADC", "fx": "Soul damage and Mana Syphon"}, {"id": "virtue", "name": "Virtue", "core": "soul", "ink": "#D36A90", "fx": "Max MP and prayer cooldown"}], "classes": [{"id": "marksman", "name": "Marksman", "core": "body", "role": "offense_ranged", "sig": ["dexterity", "vigilant", "reaction_speed"]}, {"id": "duelist", "name": "Duelist", "core": "body", "role": "offense_melee", "sig": ["athletics", "raw_power", "guts"]}, {"id": "vanguard", "name": "Vanguard", "core": "body", "role": "defense", "sig": ["durability", "pain_threshold", "guts"]}, {"id": "combat_medic", "name": "Combat Medic", "core": "body", "role": "support", "sig": ["sensory", "camaraderie", "proficiency"]}, {"id": "assassin", "name": "Assassin", "core": "body", "role": "debuff", "sig": ["ingenuity", "intimidation", "reaction_speed"]}, {"id": "artillerist", "name": "Artillerist", "core": "mind", "role": "offense", "sig": ["brain_power", "visualization", "vigilant"]}, {"id": "warden", "name": "Warden", "core": "mind", "role": "defense", "sig": ["rumination", "composure", "analysis"]}, {"id": "scribe", "name": "Scribe", "core": "mind", "role": "support", "sig": ["proficiency", "eloquence", "rumination"]}, {"id": "hexwright", "name": "Hexwright", "core": "mind", "role": "debuff", "sig": ["analysis", "charisma", "eloquence"]}, {"id": "tempest", "name": "Tempest", "core": "soul", "role": "offense", "sig": ["will_power", "empathy", "visualization"]}, {"id": "aegis", "name": "Aegis", "core": "soul", "role": "defense", "sig": ["lore_master", "conscience", "faith"]}, {"id": "muse", "name": "Muse", "core": "soul", "role": "support", "sig": ["camaraderie", "implication", "authority"]}, {"id": "haunt", "name": "Haunt", "core": "soul", "role": "debuff", "sig": ["intimidation", "implication", "lore_master"]}], "arch": {"families": [{"id": "frontline", "name": "Frontline", "blurb": "Hold the line, or break theirs."}, {"id": "gunners", "name": "Guns and hunters", "blurb": "Range, patience and a lot of brass."}, {"id": "shadows", "name": "Shadows", "blurb": "Unseen, unheard, already gone."}, {"id": "sigils", "name": "Sigil casters", "blurb": "Mind magic: command words drawn through an Evoker."}, {"id": "minds", "name": "Minds", "blurb": "Thinkers, fixers and finders."}, {"id": "soul", "name": "Soul and faith", "blurb": "Heart magic, prayer and the things that answer."}, {"id": "voices", "name": "Voices and leaders", "blurb": "Words as weapons, people as armies."}, {"id": "hybrids", "name": "Hybrids and wanderers", "blurb": "Two trades at once, or a little of everything."}], "items": [{"id": "bulwark", "name": "Bulwark", "family": "frontline", "role": "Tank", "blurb": "Stands in the doorway so nobody else has to. Has been shot more times than most people have been hugged.", "preset": {"durability": 4, "pain_threshold": 3, "guts": 3}, "cores": {"body": 4, "mind": 1, "soul": 1}, "leans": ["vanguard", "duelist"]}, {"id": "bodyguard", "name": "Bodyguard", "family": "frontline", "role": "Protector", "blurb": "Sees the knife before the client does, and gets between them. Paid by the day, loyal past it.", "preset": {"durability": 3, "reaction_speed": 3, "vigilant": 2, "guts": 2}, "cores": {"body": 3, "mind": 2, "soul": 1}, "leans": ["marksman", "vanguard", "assassin"]}, {"id": "brawler", "name": "Brawler", "family": "frontline", "role": "Melee striker", "blurb": "Fixes problems with fists and leaves the paperwork to people with smaller hands.", "preset": {"raw_power": 4, "athletics": 3, "guts": 3}, "cores": {"body": 4, "mind": 1, "soul": 1}, "leans": ["duelist", "vanguard"]}, {"id": "berserker", "name": "Berserker", "family": "frontline", "role": "Frenzied fighter", "blurb": "Doesn't feel the wound until the fight is over, and doesn't stop until somebody makes it over.", "preset": {"raw_power": 4, "guts": 3, "pain_threshold": 2, "intimidation": 1}, "cores": {"body": 4, "mind": 1, "soul": 1}, "leans": ["duelist", "vanguard"]}, {"id": "fencer", "name": "Fencer", "family": "frontline", "role": "Finesse duellist", "blurb": "Blade or pistol, the same rule: be somewhere else when they swing.", "preset": {"athletics": 4, "guts": 2, "reaction_speed": 2, "dexterity": 2}, "cores": {"body": 4, "mind": 1, "soul": 1}, "leans": ["duelist", "marksman"]}, {"id": "monk", "name": "Monk", "family": "frontline", "role": "Unarmed adept", "blurb": "Trained until the body and the breath became one weapon. Calm right up to the point of impact.", "preset": {"athletics": 3, "raw_power": 3, "composure": 2, "pain_threshold": 2}, "cores": {"body": 3, "mind": 1, "soul": 2}, "leans": ["duelist", "vanguard", "warden"]}, {"id": "sharpshooter", "name": "Sharpshooter", "family": "gunners", "role": "Sniper", "blurb": "Identify. Squeeze. Breathe. Patient as stone, and the last thing a lot of people never saw.", "preset": {"dexterity": 4, "vigilant": 3, "reaction_speed": 3}, "cores": {"body": 4, "mind": 3, "soul": 1}, "leans": ["marksman", "artillerist", "assassin"]}, {"id": "heavy_gunner", "name": "Heavy Gunner", "family": "gunners", "role": "Suppression", "blurb": "Carries the gun nobody else can lift and believes volume of fire is a personality.", "preset": {"dexterity": 4, "durability": 3, "guts": 3}, "cores": {"body": 4, "mind": 1, "soul": 1}, "leans": ["vanguard", "marksman"]}, {"id": "ranger", "name": "Ranger", "family": "gunners", "role": "Scout and hunter", "blurb": "Reads tracks, wind and silence. Knows where the enemy is before the map does.", "preset": {"vigilant": 4, "sensory": 3, "dexterity": 3}, "cores": {"body": 3, "mind": 4, "soul": 1}, "leans": ["marksman", "artillerist"]}, {"id": "grenadier", "name": "Grenadier", "family": "gunners", "role": "Explosives", "blurb": "Every problem is a load-bearing wall, and every wall has a weak spot.", "preset": {"dexterity": 4, "vigilant": 2, "proficiency": 2, "guts": 2}, "cores": {"body": 4, "mind": 2, "soul": 1}, "leans": ["marksman", "artillerist", "combat_medic", "duelist", "scribe", "vanguard"]}, {"id": "infiltrator", "name": "Infiltrator", "family": "shadows", "role": "Stealth", "blurb": "In and out before the guard finishes yawning. Nobody remembers seeing them, which is the point.", "preset": {"ingenuity": 4, "reaction_speed": 3, "vigilant": 3}, "cores": {"body": 3, "mind": 4, "soul": 1}, "leans": ["assassin", "marksman"]}, {"id": "stalker", "name": "Stalker", "family": "shadows", "role": "Ambusher", "blurb": "Waits in the dark for the right moment, then becomes the reason people fear the dark.", "preset": {"ingenuity": 4, "intimidation": 3, "reaction_speed": 3}, "cores": {"body": 3, "mind": 4, "soul": 1}, "leans": ["assassin", "haunt", "marksman"]}, {"id": "thief", "name": "Thief", "family": "shadows", "role": "Burglar and pickpocket", "blurb": "Light fingers, quick hands, and a professional respect for good locks.", "preset": {"ingenuity": 4, "reaction_speed": 3, "proficiency": 3}, "cores": {"body": 3, "mind": 4, "soul": 1}, "leans": ["assassin", "combat_medic", "marksman", "scribe"]}, {"id": "spy", "name": "Spy", "family": "shadows", "role": "Infiltrating face", "blurb": "Smiles, lies and never sweats. Has had four names this year and liked two of them.", "preset": {"charisma": 4, "ingenuity": 3, "composure": 3}, "cores": {"body": 1, "mind": 4, "soul": 3}, "leans": ["hexwright", "assassin", "warden"]}, {"id": "sigilist", "name": "Sigilist", "family": "sigils", "role": "Sigil blaster", "blurb": "Draws FIRE · CONDENSE · PUSH faster than most people draw breath. Smells faintly of scorched Evoker.", "preset": {"brain_power": 4, "visualization": 3, "vigilant": 3}, "cores": {"body": 1, "mind": 4, "soul": 1}, "leans": ["artillerist", "marksman", "tempest"]}, {"id": "sentinel", "name": "Sentinel", "family": "sigils", "role": "Sigil defender", "blurb": "Raises walls of command words around the squad, and lectures them about it afterwards.", "preset": {"rumination": 4, "composure": 3, "analysis": 3}, "cores": {"body": 1, "mind": 4, "soul": 3}, "leans": ["warden", "scribe"]}, {"id": "enchanter", "name": "Enchanter", "family": "sigils", "role": "Sigil support", "blurb": "Inscribes the squad's gear before the fight, so the fight is shorter than it should be.", "preset": {"rumination": 4, "proficiency": 3, "eloquence": 3}, "cores": {"body": 1, "mind": 4, "soul": 1}, "leans": ["scribe", "warden"]}, {"id": "jinx", "name": "Jinx", "family": "sigils", "role": "Sigil controller", "blurb": "Finds the weakness, names it, and makes it worse. Enemies blind, slow and confused, in that order.", "preset": {"analysis": 4, "charisma": 3, "eloquence": 3}, "cores": {"body": 1, "mind": 4, "soul": 1}, "leans": ["hexwright", "warden"]}, {"id": "detective", "name": "Detective", "family": "minds", "role": "Investigator", "blurb": "First: no casings. Second: the wall is dented from the far side. Third: you're lying.", "preset": {"analysis": 4, "vigilant": 3, "eloquence": 3}, "cores": {"body": 1, "mind": 4, "soul": 1}, "leans": ["hexwright", "warden"]}, {"id": "engineer", "name": "Engineer", "family": "minds", "role": "Gadgeteer and fixer", "blurb": "Keeps the guns firing, the doors opening and the robots alive. Talks to machines more than people.", "preset": {"proficiency": 5, "analysis": 3, "ingenuity": 2}, "cores": {"body": 1, "mind": 5, "soul": 1}, "leans": ["combat_medic", "scribe", "hexwright", "warden"]}, {"id": "scholar", "name": "Scholar", "family": "minds", "role": "Knowledge", "blurb": "Has read about it. Has read about everything. Will tell you, at length, in the middle of the firefight.", "preset": {"rumination": 4, "analysis": 3, "brain_power": 3}, "cores": {"body": 1, "mind": 4, "soul": 1}, "leans": ["warden", "scribe"]}, {"id": "stormcaller", "name": "Stormcaller", "family": "soul", "role": "Soul blaster", "blurb": "Imagines the lightning so hard the world gives it to them. Heart pounding, hands smoking.", "preset": {"will_power": 4, "empathy": 3, "visualization": 3}, "cores": {"body": 1, "mind": 3, "soul": 4}, "leans": ["tempest", "artillerist"]}, {"id": "mender", "name": "Mender", "family": "soul", "role": "Soul healer", "blurb": "Feels your wound from across the room and closes it before you finish screaming.", "preset": {"camaraderie": 4, "empathy": 3, "implication": 3}, "cores": {"body": 1, "mind": 1, "soul": 4}, "leans": ["muse", "combat_medic"]}, {"id": "confessor", "name": "Confessor", "family": "soul", "role": "Faith healer", "blurb": "Hears the squad's sins, prays over their wounds, and reports to nobody but the saints.", "preset": {"faith": 4, "camaraderie": 3, "conscience": 3}, "cores": {"body": 1, "mind": 1, "soul": 4}, "leans": ["aegis", "combat_medic", "muse"]}, {"id": "zealot", "name": "Zealot", "family": "soul", "role": "Holy wrath", "blurb": "Only the saints may judge. The zealot delivers. Usually with a shotgun.", "preset": {"faith": 4, "intimidation": 3, "conscience": 3}, "cores": {"body": 3, "mind": 1, "soul": 4}, "leans": ["aegis", "assassin", "haunt"]}, {"id": "witch", "name": "Witch", "family": "soul", "role": "Occult caster", "blurb": "Knows the old stories are true and the twin world is listening. Respected, feared, never invited twice.", "preset": {"lore_master": 4, "will_power": 3, "implication": 3}, "cores": {"body": 1, "mind": 1, "soul": 4}, "leans": ["haunt", "aegis"]}, {"id": "harbinger", "name": "Harbinger", "family": "soul", "role": "Fear and dread", "blurb": "Speaks in omens. Enemies hear their own worst fear in every word, and run from it.", "preset": {"implication": 4, "intimidation": 3, "lore_master": 3}, "cores": {"body": 3, "mind": 1, "soul": 4}, "leans": ["haunt", "muse"]}, {"id": "silver_tongue", "name": "Silver Tongue", "family": "voices", "role": "Face and persuader", "blurb": "Can talk anyone into anything, and has talked several people into regretting it.", "preset": {"charisma": 4, "eloquence": 3, "implication": 3}, "cores": {"body": 1, "mind": 4, "soul": 3}, "leans": ["hexwright", "haunt", "muse", "scribe"]}, {"id": "troubadour", "name": "Troubadour", "family": "voices", "role": "Inspiring support", "blurb": "Turns a squad into a chorus. Morale goes up, enemy morale goes elsewhere.", "preset": {"implication": 4, "camaraderie": 3, "authority": 3}, "cores": {"body": 1, "mind": 1, "soul": 4}, "leans": ["muse", "haunt"]}, {"id": "captain", "name": "Captain", "family": "voices", "role": "Leader", "blurb": "Doesn't raise their voice. Doesn't need to. People simply do what they say.", "preset": {"authority": 4, "camaraderie": 3, "composure": 3}, "cores": {"body": 1, "mind": 1, "soul": 4}, "leans": ["muse", "combat_medic", "warden"]}, {"id": "enforcer", "name": "Enforcer", "family": "voices", "role": "Intimidator", "blurb": "Every conversation ends with the other side agreeing. How it gets there is up to them.", "preset": {"intimidation": 4, "authority": 3, "implication": 3}, "cores": {"body": 4, "mind": 1, "soul": 3}, "leans": ["haunt", "muse"]}, {"id": "spellblade", "name": "Spellblade", "family": "hybrids", "role": "Sigil melee", "blurb": "Draws Sigils with the sword tip. Three slashes, then a storm opens in the enemy's head.", "preset": {"brain_power": 4, "athletics": 3, "visualization": 3}, "cores": {"body": 3, "mind": 4, "soul": 1}, "leans": ["artillerist", "duelist", "tempest"]}, {"id": "crusader", "name": "Crusader", "family": "hybrids", "role": "Holy defender", "blurb": "Strong arm, certain heart. Walks into the dark first and says a word for those who don't walk out.", "preset": {"faith": 4, "durability": 3, "guts": 3}, "cores": {"body": 3, "mind": 1, "soul": 4}, "leans": ["vanguard", "aegis"]}, {"id": "witch_hunter", "name": "Witch Hunter", "family": "hybrids", "role": "Anti-magic gunner", "blurb": "Knows what the shadow is, and what kind of round it needs.", "preset": {"dexterity": 4, "lore_master": 3, "vigilant": 3}, "cores": {"body": 4, "mind": 3, "soul": 3}, "leans": ["marksman", "aegis", "artillerist", "haunt"]}, {"id": "field_medic", "name": "Field Medic", "family": "hybrids", "role": "Combat healer", "blurb": "Under fire, on their knees, hands in someone's chest, telling them a terrible joke. Never leaves anyone behind.", "preset": {"camaraderie": 4, "sensory": 3, "proficiency": 3}, "cores": {"body": 3, "mind": 3, "soul": 4}, "leans": ["combat_medic", "muse"]}, {"id": "survivor", "name": "Survivor", "family": "hybrids", "role": "Scavenger", "blurb": "Lived where nothing lives. Throws first, ducks second, eats whatever's left.", "preset": {"reaction_speed": 3, "vigilant": 3, "ingenuity": 2, "pain_threshold": 2}, "cores": {"body": 3, "mind": 3, "soul": 1}, "leans": ["marksman", "assassin"]}, {"id": "drifter", "name": "Drifter", "family": "hybrids", "role": "Generalist", "blurb": "A little of everything and no home in any of it. Never quite who the room expects.", "preset": {"athletics": 2, "vigilant": 2, "charisma": 2, "empathy": 2, "proficiency": 2}, "cores": {"body": 2, "mind": 2, "soul": 2}, "leans": ["artillerist", "combat_medic", "duelist", "hexwright", "marksman", "scribe", "tempest", "aegis", "assassin", "haunt", "muse", "vanguard", "warden"]}]}, "origins": [{"n": 1, "name": "Central City", "Home": "Earth, the capital of the old centre.", "Upbringing": "precincts, bank cards, shock batons, somebody else doing the dirty work.", "You know": "city services, officials, the precincts, the inner ring's gossip, how to get anything done with paperwork.", "People see you as": "soft, rich, connected, out of place past the walls.", "Skills": "Charisma, Ingenuity, Authority.", "Traits that fit": "Central City Kid, Inner Ring Heir, Slicer, Wanted, Machine-Faced, Right of Way.", "Hook": "a family account someone at the CCEC is watching."}, {"n": 2, "name": "The Thousand-Planet frontier", "Home": "an extraction world, outpost or mining moon of the Thousand-Planet City.", "Upbringing": "quotas, shift sirens, robots doing the jobs nobody survives.", "You know": "mining, logistics, outpost life, the Thousand World Legion's ranks and rackets.", "People see you as": "hard-working, expendable, owned by the quota.", "Skills": "Proficiency, Durability, Camaraderie.", "Traits that fit": "Glass Runner, Heavyworlder, Symbol of Order, Field Medic, Moon Hunter.", "Hook": "the foreman who still owes you a shift's pay."}, {"n": 3, "name": "Hellraiser camps", "Home": "the barracks worlds and mess halls behind the Hellraiser front.", "Upbringing": "a soldier's child, or a soldier from sixteen. Orks were the bedtime story, and then the job.", "You know": "Hellraiser doctrine, Orks, weapons, field rations, which officers get people killed.", "People see you as": "brave, loud, disposable, a thug to the polite.", "Skills": "Dexterity, Guts, Athletics.", "Traits that fit": "Forlorn Hope, Spray and Pray, Grenadier's Arm, Live to Fight Another Day, Squad Anchor.", "Hook": "a sergeant who'd take you back, and a deserter who wants you to say nothing."}, {"n": 4, "name": "Lumeri cloisters", "Home": "a cloister or pilgrim world of the Lumeri Church.", "Upbringing": "rites, scripture, the saints' feast days, nuns who could field-strip a shotgun.", "You know": "the Church, its saints and Holy Father Nerukhan, its rites, its politics, its charity.", "People see you as": "devout, trustworthy, judgemental, the Church's eyes.", "Skills": "Faith, Conscience, Composure.", "Traits that fit": "Mind Without Fog, True Believer, Heretic, Pacifist.", "Hook": "the abbess who expects a report."}, {"n": 5, "name": "The Adamantile Brigade", "Home": "a fortress-house of the knightly order.", "Upbringing": "squire to a knight who slept in snake pits and arm-wrestled concrete for fun.", "You know": "the Brigade's oaths and feuds, heavy arms, endurance, the Church's ceremonies.", "People see you as": "honourable, terrifying, a little absurd.", "Skills": "Raw Power, Pain Threshold, Authority.", "Traits that fit": "Sworn Sibling, Pain Eater, Squad Anchor.", "Hook": "the knight you squired for, still alive, still asking for help with breakfast."}, {"n": 6, "name": "Kemizuchi, or the school across town", "Home": "the officer academy, or its rival.", "Upbringing": "drills, rankings, rivalries, friendship speeches nobody was embarrassed by.", "You know": "officers, tactics, the old-boy network, the rival school's secrets (or yours).", "People see you as": "a future officer, arrogant, privileged.", "Skills": "Camaraderie, Authority, Analysis.", "Traits that fit": "Blade Recluse, Drill Echo, Rival, Born Officer.", "Hook": "your classmate, now outranking you. (Suggested: the rival school quietly takes mixed families' children.)"}, {"n": 7, "name": "Arkvelton", "Home": "the witches' enclave.", "Upbringing": "breathing exercises, meditation, the heart's link to the twin world, friends who shorted out.", "You know": "Soul magic, Emanators, Mana Shorts, witch lore, the stories outside Albert Town.", "People see you as": "a witch, gifted, dangerous, faintly heretical.", "Skills": "Will Power, Empathy, Lore Master.", "Traits that fit": "Upper-Touched, Hollow Heart, Heaven's Faithful.", "Hook": "the teacher who told you never to come back without the thing you took."}, {"n": 8, "name": "The southern sects", "Home": "the martial sects of the south.", "Upbringing": "forms, katas and Sigils drawn with fists and blades. Professor Avdol sneers at people like you.", "You know": "martial arts, the sects' lineages and feuds, Blade Scribe lore.", "People see you as": "a mystic brawler, superstitious, unscientific.", "Skills": "Athletics, Raw Power, Visualization.", "Traits that fit": "Southern Fist, Blade Recluse.", "Hook": "a sect elder who wants a scroll back."}, {"n": 9, "name": "The scholar halls", "Home": "the Science Team's labs, a university, or the Institute of Forgotten Knowledge.", "Upbringing": "libraries, lectures, Evokers, or banned books.", "You know": "Sigil theory, history, science (or the occult), who's publishing what.", "People see you as": "clever, useless in a fight, insufferable.", "Skills": "Brain Power, Rumination, Lore Master.", "Traits that fit": "Sigil Savant, Occultist, Bottle Butts for Eyes, Cold Case.", "Hook": "a research partner who credited themselves for your work."}, {"n": 10, "name": "Mandestra and the trade lanes", "Home": "a merchant house, a market stall, or a Rigaz Trade Company posting.", "Upbringing": "haggling, ledgers, armed caravans, contracts with small print.", "You know": "prices, routes, merchants, the RTC, who's smuggling what.", "People see you as": "greedy, useful, untrustworthy.", "Skills": "Charisma, Implication, Ingenuity.", "Traits that fit": "Market Blood, Company Man, Cover Story, Lunarshine.", "Hook": "a creditor, and a shipment that never arrived."}, {"n": 11, "name": "The gold-coin frontier", "Home": "a frontier town past Central City's reach, where gold coins are money and the Smetanita Conjunction is the law.", "Upbringing": "saloons, debts, favours, the Papa's people on every corner.", "You know": "the black market, crime families, smuggling, frontier law.", "People see you as": "a hustler, dangerous, possibly owned.", "Skills": "Intimidation, Reaction Speed, Ingenuity.", "Traits that fit": "Gambler, Wanted, Cover Story, Rogue Element.", "Hook": "a favour you owe the Conjunction."}, {"n": 12, "name": "The lowlands", "Home": "Earth's ruined lowlands past the desert: Black Scavenger country, a forest of dead buildings.", "Upbringing": "salvage, ambushes, throwing first.", "You know": "ruins, scavenging, traps, survival, the Black Scavengers.", "People see you as": "feral, quick, a thief.", "Skills": "Reaction Speed, Vigilant, Dexterity.", "Traits that fit": "Lowland Born, Insomniac, Demolitionist.", "Hook": "the scavenger crew that thinks you're dead."}, {"n": 13, "name": "Bazaim", "Home": "the human nation that made peace with Daggerfall's survivors.", "Upbringing": "neighbours with abilities, families mixed by love, Central City's spies everywhere.", "You know": "espers, the truth about Crawlers (you've seen them as people), Bazaim's politics, how the CCEC operates.", "People see you as (in Central City)": "a spy, a traitor, a monster-lover.", "Skills": "Empathy, Implication, Vigilant.", "Traits that fit": "Crawler-Blooded (needs a review against the one-way curse), Cover Story, Heaven's Faithful.", "Hook": "someone in your family is a Crawler, and you can see them."}, {"n": 14, "name": "The Ork borderlands", "Home": "the frontier where human towns sit next to Ork warbands.", "Upbringing": "raids, truces, trading with the enemy, maybe raised by them.", "You know": "Orks, their warbands and parley, border survival.", "People see you as": "half-savage, a traitor to some, a guide to others.", "Skills": "Raw Power, Intimidation, Guts.", "Traits that fit": "Raised by Orks, Beast Handler, Moon Hunter.", "Hook": "the warband that wants you home."}], "traits": [{"id": "mind_without_fog", "name": "Mind Without Fog", "cat": "Combat", "flavour": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.", "up": ["Still Water: gain 2 Core points at creation, to raise any Core above what your skills need. Heart Debuffs never affect you."], "down": ["Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change."], "ex": []}, {"id": "the_brightest_light", "name": "The Brightest Light", "cat": "Combat", "flavour": "Burn it down, all of it. The brightest light burns out the fastest, and you've never cared how long you last.", "up": ["Blaze: each kill this combat gives +10% damage, up to +50%."], "down": ["Burnout: weapons wear twice as fast in your hands, and when the fighting stops you crash: −2 on every roll until you rest."], "ex": ["pacifist"]}, {"id": "southern_fist", "name": "Southern Fist", "cat": "Combat", "flavour": "You trained with the southern sects, where martial arts and magic were never separated. Your fists are weapons. Anything else in your hands is a clumsy stick.", "up": ["These Hands: while fighting with nothing but gloves, +1 AP per turn and +20% Physical Damage."], "down": ["Not That: every attack with any other weapon, guns included, costs +1 AP."], "ex": []}, {"id": "forlorn_hope", "name": "Forlorn Hope", "cat": "Combat", "flavour": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.", "up": ["Charge: +2 AP on any turn you end closer to an enemy than you started."], "down": ["No Way Back: no armour above Class I, and you can never take the Retreat or Disengage action."], "ex": []}, {"id": "grenadiers_arm", "name": "Grenadier's Arm", "cat": "Combat", "flavour": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.", "up": ["Long Throw: +2 throwing range. You can throw anything under your carry weight, allies and enemies included; damage scales with its weight."], "down": ["Strained Arm: thrown weapons cost +1 AP."], "ex": []}, {"id": "glass_runner", "name": "Glass Runner", "cat": "Combat", "flavour": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.", "up": ["Runner: +5 Initiative, and your first move each combat costs 0 AP."], "down": ["Glass: +50% limb damage taken. A broken leg halves your Movement until it's set."], "ex": []}, {"id": "blade_recluse", "name": "Blade Recluse", "cat": "Combat", "flavour": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.", "up": ["One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot."], "down": ["Rusty Manners: −1 Charisma, Implication and Authority. If anyone asks about your weapon, you tell them, at length."], "ex": []}, {"id": "pain_eater", "name": "Pain Eater", "cat": "Combat", "flavour": "Pain is the only thing that makes you sharp. Theirs or yours, it doesn't matter.", "up": ["Bloodied: while you're below half HP, +50% damage."], "down": ["Fresh: while you're above half HP, +50% damage taken."], "ex": ["pacifist"]}, {"id": "bottle_butts_for_eyes", "name": "Bottle Butts for Eyes", "cat": "Skill and state", "flavour": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.", "up": ["Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Proficiency and Ingenuity."], "down": ["Glasses Off: without them, −4 Proficiency and Ingenuity."], "ex": []}, {"id": "the_mask", "name": "The Mask", "cat": "Skill and state", "flavour": "Bare-faced, nobody looks at you twice. Put the mask on and the street parts for you.", "up": ["Behind the Mask: start with a [Smiling Mask]. While masked, +2 Composure and Authority."], "down": ["Bare Face: unmasked, −3 Composure and Authority.", "Two Faces: people who met you masked don't recognise you unmasked, and the other way round."], "ex": []}, {"id": "machine_faced", "name": "Machine-Faced", "cat": "Skill and state", "flavour": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.", "up": ["Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own."], "down": ["Uncanny: you can't use Implication or Charisma in dialogue (their combat perks still work), and children and animals panic around you."], "ex": []}, {"id": "right_of_way", "name": "Right of Way", "cat": "Skill and state", "flavour": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.", "up": ["I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove."], "down": ["Old Injury: −1 Movement, −2 Reaction Speed."], "ex": []}, {"id": "drill_echo", "name": "Drill Echo", "cat": "Skill and state", "flavour": "Ten years ago you passed the academy's endurance drill with the best time in your cohort. The announcer's voice never stopped counting in your head.", "up": ["Best Time: the Sprint action costs 1 AP less, and running, climbing and endurance checks can't roll below 10."], "down": ["The Count: whenever you concentrate (drawing a Sigil, a Brain Power or Rumination check), roll a d6. On a 1 the count starts again, and you lose the action."], "ex": []}, {"id": "the_old_blood", "name": "The Old Blood", "cat": "Skill and state", "flavour": "You distrust anything unusual. You're conservative, and you don't want anything to change. Your own blood first, and only.", "up": ["Bloodline: +2 Rumination and Guts. Among people of your own race and homeworld, +2 Authority."], "down": ["Prejudice: with people of any other race, +2 Intimidation but −2 Charisma, Authority and Lore Master. Heals and Blessings from them work at half power on you, and you buy from them at +20% and sell to them at −20%."], "ex": ["factory_made"]}, {"id": "holo_drama_addict", "name": "Holo-Drama Addict", "cat": "Skill and state", "flavour": "Three days without food, or three days without a holo-drama? You'd live on water.", "up": ["Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3."], "down": ["Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Composure check first. On a fail you refuse, or do it at −3."], "ex": []}, {"id": "oil_in_my_mind", "name": "Oil in My Mind", "cat": "Skill and state", "flavour": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.", "up": ["Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Analysis and Rumination."], "down": ["Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once."], "ex": []}, {"id": "oil_in_my_soul", "name": "Oil in My Soul", "cat": "Skill and state", "flavour": "You don't know the technique. You know exactly how the painter felt.", "up": ["Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Implication."], "down": ["Still Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once."], "ex": []}, {"id": "lunarshine", "name": "Lunarshine", "cat": "Skill and state", "flavour": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?", "up": ["Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.", "Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability."], "down": ["Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.", "The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Composure check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure."], "ex": []}, {"id": "heavyworlder", "name": "Heavyworlder", "cat": "Skill and state", "flavour": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.", "up": ["Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation."], "down": ["Too Big: −3 Athletics and −1 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you."], "ex": []}, {"id": "born_performer", "name": "Born Performer", "cat": "Skill and state", "flavour": "Every conversation is a stage, and you've never once been yourself on it. The world may not understand you, but you understand the world.", "up": ["Adaptable: at the start of each scene, pick one γ skill: +2 to it for the scene. +20% XP from combat."], "down": ["Hollow: conversation never gives you XP, and anyone using Empathy on you gets +2: they sense nobody is home."], "ex": []}, {"id": "rabbits_foot", "name": "Rabbit's Foot", "cat": "Skill and state", "flavour": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.", "up": ["Lucky Foot: once per session, force a reroll of any d20 that targets you.", "Vengeful: when an ally is downed, your next turn has +2 AP."], "down": ["Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and Take the Hit or taunts can't pull their attacks off you."], "ex": []}, {"id": "ghost_soldier", "name": "Ghost Soldier", "cat": "Skill and state", "flavour": "You fought in a war the records say never happened. The arm is new. The habits aren't.", "up": ["Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify."], "down": ["The War Never Ended: resting in a settlement takes a Composure check, or you get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure."], "ex": []}, {"id": "symbol_of_order", "name": "Symbol of Order", "cat": "Karma", "flavour": "The law is the only wall between the Thousand-Planet City and the dark. You are a stone in that wall.", "up": ["I Am the Law: Karma starts locked to LAWFUL. Once per scene, when you invoke law or rank, an official must answer one question truthfully."], "down": ["My Way: leaving Lawful costs double Karma, and every unlawful act you commit costs double Karma too."], "ex": ["rogue_element"]}, {"id": "rogue_element", "name": "Rogue Element", "cat": "Karma", "flavour": "Plans, permits, chains of command: all of them break the same way, if you push hard enough.", "up": ["Spanner in the Works: Karma starts locked to CHAOTIC. Once per scene, when you wreck someone's plan or property, gain 1 Echo."], "down": ["My Way: leaving Chaotic costs double Karma. Lawful factions start hostile to you."], "ex": ["symbol_of_order"]}, {"id": "the_soundscape_of_the_soul", "name": "The Soundscape of the Soul", "cat": "Music", "flavour": "Gentle as a ripple, violent as a flood in the wet season, deep enough to drown your whole soul in.", "up": ["Vibing: while your song plays, +1 to every Soul skill."], "down": ["Lost the Vibe: silent too long, −1 to every Mind and Body skill."], "ex": []}, {"id": "headbanger", "name": "Headbanger", "cat": "Music", "flavour": "The bass hits harder than a .700 Blackpoint round, and you want it louder.", "up": ["Banger: while your song plays, +1 to every Body skill."], "down": ["Losing It: silent too long, −1 to every Mind and Soul skill."], "ex": []}, {"id": "underground_sound", "name": "Underground Sound", "cat": "Music", "flavour": "Music while you sleep, cook, drive, even while you're listening to other music. And this band is criminally underrated.", "up": ["Brain Dancing: while your song plays, +1 to every Mind skill."], "down": ["Dead Air: silent too long, −1 to every Body and Soul skill."], "ex": []}, {"id": "worldline_fracture", "name": "Worldline Fracture", "cat": "Worldline", "flavour": "The worldlines are merging. Things that shouldn't exist walk your streets, and nobody else seems to notice.", "up": ["Wild: the strangest, most impossible events show up in your campaign."], "down": ["Unravelling: those events replace the normal events of that area."], "ex": []}, {"id": "factory_made", "name": "Factory Made", "cat": "Origin", "flavour": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.", "up": ["Machine Body: immune to poison, bleed and suffocation. Proficiency's Field Repair restores your HP, at 10 per Proficiency rank."], "down": ["Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine."], "ex": ["humanity_first", "the_old_blood", "augmented"]}, {"id": "lowland_born", "name": "Lowland Born", "cat": "Origin", "flavour": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.", "up": ["Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out."], "down": ["Open Sky: in open terrain, −2 Vigilant and half Detection Range."], "ex": []}, {"id": "central_city_kid", "name": "Central City Kid", "cat": "Origin", "flavour": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.", "up": ["Plugged In: start with a city ID and a bank card. +2 on social rolls with officials and merchants; city services are open to you."], "down": ["Soft Hands: the first time you're wounded in each combat, lose 2 AP from shock. Outside the city, −2 Guts."], "ex": []}, {"id": "daggerfall_veteran", "name": "Daggerfall Veteran", "cat": "Origin", "flavour": "You were there. You remember what the speeches left out.", "up": ["I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before."], "down": ["Flashback: shelling, burning, or a Crawler child: Composure check (target 13) or lose your next turn."], "ex": []}, {"id": "upper_touched", "name": "Upper-Touched", "cat": "Origin", "flavour": "You were born too close to the veil, and your twin soul in the upper realm talks back.", "up": ["Thin Veil: Outbursts cost 20% less mana, and you sense upper-realm beings within 10 tiles."], "down": ["Seen From Above: upper-realm beings always know where you are. Blessings cast on you roll a d6 for a side effect."], "ex": []}, {"id": "raised_by_orks", "name": "Raised by Orks", "cat": "Origin", "flavour": "Your first word was a war-cry. Your second was the name of a weapon.", "up": ["Ork Steel: +20% damage with melee weapons. Orks will parley with you instead of attacking."], "down": ["Can't Read: you can't use written documents, maps or text-based Rumination. Humans who know your history start at −2 Charisma; other squad members choose whether this applies to them."], "ex": []}, {"id": "gun_nut", "name": "Gun Nut", "cat": "Gun", "flavour": "You can name the rifle from its echo and the factory from its casing.", "up": ["Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP."], "down": ["Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Composure check; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."], "ex": []}, {"id": "old_school", "name": "Old School", "cat": "Gun", "flavour": "The drifter's creed: identify, squeeze, breathe the powder smoke, dig the grave.", "up": ["Fan the Hammer: with a revolver or lever gun, fire every remaining round in one 3 AP action, at −2 to hit per shot."], "down": ["Analog: no smart optics, Evoker-linked guns or electronic sights."], "ex": ["spray_and_pray"]}, {"id": "spray_and_pray", "name": "Spray and Pray", "cat": "Gun", "flavour": "The Hellraiser doctrine: volume of fire is a tactic.", "up": ["Suppression: a full-auto burst pins every target in its cone, hit or miss. Pinned targets lose 1 AP next turn and can't take reactions or Overwatch. Your full-auto recoil penalty is halved."], "down": ["Ammo Hog: you burn double ammo, and single aimed shots are at −2."], "ex": ["old_school"]}, {"id": "one_shot", "name": "One Shot", "cat": "Gun", "flavour": "Breathe out. Squeeze. Don't look away.", "up": ["Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage."], "down": ["Tunnel Vision: until your next move, you can't make Vigilant checks, and ambushes against you do +50% damage."], "ex": []}, {"id": "sigil_savant", "name": "Sigil Savant", "cat": "Magic", "flavour": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.", "up": ["Muscle Memory: choose one Sigil. It always costs 0 Core and 1 AP less."], "down": ["Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission."], "ex": []}, {"id": "hollow_heart", "name": "Hollow Heart", "cat": "Magic", "flavour": "A Mana Short left a hole in your chest. The fear went out through it.", "up": ["Hollow: a Mana Short can't kill you; you fall unconscious instead. +10% Outburst Damage."], "down": ["Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast."], "ex": []}, {"id": "heretic", "name": "Heretic", "cat": "Magic", "flavour": "You learned to call down a Blessing without kneeling to anyone. The saints noticed.", "up": ["Stolen Fire: you can use Blessings without Faith. Your Blessing Power runs on Will Power instead."], "down": ["Excommunicated: every faith-based faction is hostile to you, the Lumeri Church first. Allied Blessings on you fail on a 1–2 on a d6."], "ex": ["true_believer"]}, {"id": "gambler", "name": "Gambler", "cat": "Vice", "flavour": "The house always wins. You are not the house, and you've never once let that stop you.", "up": ["Double or Nothing: once per scene, declare \"double\" before a d20. A success becomes a critical success; a failure becomes a critical failure."], "down": ["In Debt: you owe the Smetanita Conjunction. Their collectors turn up when the Narrator decides."], "ex": []}, {"id": "insomniac", "name": "Insomniac", "cat": "Vice", "flavour": "Sleep is for people without a watch rotation.", "up": ["Always Up: you can't be ambushed while the squad rests, and you take a watch with no penalty."], "down": ["Wired: resting restores only half your HP and mana."], "ex": []}, {"id": "chain_smoker", "name": "Chain Smoker", "cat": "Vice", "flavour": "Smoke break. Now. The Orks can wait.", "up": ["Light Up: 2 AP: +2 Composure for the scene and remove one Heart Debuff."], "down": ["Hacking Cough: −1 Athletics. Enemies smell you coming: +2 to their Detection against you."], "ex": []}, {"id": "live_to_fight_another_day", "name": "Live to Fight Another Day", "cat": "Vice", "flavour": "Brave is a word they carve on headstones.", "up": ["Tactical Withdrawal: Retreat and Disengage cost 0 AP, and you get +2 Dodge while retreating."], "down": ["Yellow: allies within 3 tiles take −1 on Fear saves. It's contagious."], "ex": []}, {"id": "sworn_sibling", "name": "Sworn Sibling", "cat": "Bond", "flavour": "Blood, oath, or something stronger. Where they go, you go.", "up": ["Bound: while adjacent, the two of you share one free AP per round. You always know where they are."], "down": ["Bound: if they go down, you must reach them. Until you do, every attack and skill roll that isn't moving you toward them, healing them or defending them is at −2, and moving away from them costs double. HP, damage and other combat stats aren't affected."], "ex": []}, {"id": "rival", "name": "Rival", "cat": "Bond", "flavour": "Jealous? Why would you be jealous? Completely ridiculous.", "up": ["Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2."], "down": ["Petty: helping your rival (handing them AP, healing, giving cover) takes a Composure check first."], "ex": []}, {"id": "humanity_first", "name": "Humanity First", "cat": "Bond", "flavour": "The stars belong to humankind. Robots are tools, Crawlers are vermin, and anything from the upper realm is the enemy.", "up": ["For Humanity: +15% damage against non-humans (robots, Crawlers, Orks, upper-realm beings) and +2 on saves against their Fear effects."], "down": ["Xenophobe: you can't use Empathy, Charisma or Camaraderie with non-humans. Non-human squadmates can't hand you AP, and their heals work at half power on you."], "ex": ["factory_made", "crawler_blooded", "heavens_faithful"]}, {"id": "wanted", "name": "Wanted", "cat": "Faction", "flavour": "Your face is on a poster in every Central City precinct, and it's a bad likeness.", "up": ["Notorious: +2 Intimidation with the underworld; start with one piece of contraband."], "down": ["Bounty: bounty hunters appear when the Narrator decides, and Central City officials start hostile."], "ex": []}, {"id": "company_man", "name": "Company Man", "cat": "Faction", "flavour": "Rigaz Trade Company (RTC™®). The card has no limit. The contract does.", "up": ["Company Card: buy gear from RTC at cost. Once per campaign, RTC extracts you from anywhere."], "down": ["Contract: RTC sends you jobs. You can't refuse one without breaking the contract, and RTC remembers."], "ex": []}, {"id": "field_medic", "name": "Field Medic", "cat": "Support and command", "flavour": "You learned triage under fire, in a medical unit where the casualty rate was the point.", "up": ["Triage: healing an ally costs 1 AP less. Once per combat, you can heal a downed ally up to 3 tiles away with a thrown stim."], "down": ["First, Do No Harm: on a turn when an ally within 5 tiles is below a quarter of their HP, you can't attack until you've healed someone."], "ex": []}, {"id": "squad_anchor", "name": "Squad Anchor", "cat": "Support and command", "flavour": "Someone has to hold the line so everyone else can move.", "up": ["Hold Fast: allies within 2 tiles of you get +1 on all saves and +1 Dodge. If you don't move this turn, the range becomes 3 tiles."], "down": ["Fixed Point: on a turn you move more than 2 tiles, the effect drops and you lose 1 AP next turn."], "ex": []}, {"id": "born_officer", "name": "Born Officer", "cat": "Support and command", "flavour": "A commission, a bloodline, or just the voice. When you speak, soldiers move.", "up": ["Command: once per round, spend 1 AP to give an ally a free 1 AP move or attack. Your Leadership rating counts one step higher."], "down": ["The Squad Leans on You: if you're downed or out of sight, allies within 5 tiles lose 1 AP next turn. Taking an order from anyone else takes a Composure check."], "ex": []}, {"id": "cold_case", "name": "Cold Case", "cat": "Mind-game", "flavour": "The CCEC washed you out, or you walked. Either way, you never stopped working cases.", "up": ["Case File: the Analyze action costs 1 AP less. Once per session, after investigating a scene, ask the Narrator one yes-or-no question about whoever is responsible. The answer is true."], "down": ["Obsession: while a case is open, −1 on every roll in scenes that have nothing to do with it."], "ex": []}, {"id": "interrogator", "name": "Interrogator", "cat": "Mind-game", "flavour": "Central Command taught you the quiet room. You still know where every bone in the hand is.", "up": ["The Quiet Room: alone with a captive, +2 on Intimidation and Eloquence. A captive you break gives one true answer they'd never give anyone else."], "down": ["Known Trade: civilians who learn what you do start at −2 Charisma and Empathy with you."], "ex": []}, {"id": "trench_poet", "name": "Trench Poet", "cat": "Mind-game", "flavour": "You can't say anything plainly. Plain words are for orders and obituaries.", "up": ["Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene."], "down": ["Nothing Straight: giving a plain, direct answer takes a Composure check."], "ex": []}, {"id": "grudge_bearer", "name": "Grudge Bearer", "cat": "Mind-game", "flavour": "You remember every slight. You've written most of them down.", "up": ["Spite: Debuffs you inflict last 1 extra round, and the first one each combat skips the target's save."], "down": ["Never Forgive: when someone wrongs you, the Narrator marks them. Until you get even, −2 on rolls that don't target them."], "ex": []}, {"id": "crowded_head", "name": "Crowded Head", "cat": "Mind-game", "flavour": "Every skill in your head has an opinion, and none of them wait their turn.", "up": ["Chorus: up to 4 voice lines per beat instead of 2, and you can Ask a skill twice per scene instead of once."], "down": ["Cacophony: resisting an Overreach costs 1 more Echo, and once per session the Narrator may turn one of your voice lines misleading, even when the hook was true."], "ex": []}, {"id": "market_blood", "name": "Market Blood", "cat": "Trade and deception", "flavour": "You grew up behind a stall in Mandestra. You can price a man by his boots.", "up": ["Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake."], "down": ["Price on Everything: giving away an item or accepting a gift takes a Composure check. −1 Camaraderie."], "ex": []}, {"id": "cover_story", "name": "Cover Story", "cat": "Trade and deception", "flavour": "You've sold the same bridge in four systems, under four names.", "up": ["New Name: once per session, set up a false identity in one sentence. NPCs accept it until you fail a roll in front of them."], "down": ["Paper Trail: the Narrator tallies every identity you burn. At 3, someone from an old con turns up."], "ex": []}, {"id": "inner_ring_heir", "name": "Inner Ring Heir", "cat": "Trade and deception", "flavour": "Old money from Central City's inner ring. Your family name opens doors, and paints a target.", "up": ["Allowance: start with triple funds. Once per session, call in a favour from the family."], "down": ["The Name: every enemy of your house knows you, kidnappers included, and you can't refuse a family summons."], "ex": []}, {"id": "slicer", "name": "Slicer", "cat": "Tech", "flavour": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.", "up": ["Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on a Proficiency check against its tier."], "down": ["Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you."], "ex": []}, {"id": "demolitionist", "name": "Demolitionist", "cat": "Tech", "flavour": "Every problem is a load-bearing wall.", "up": ["Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage."], "down": ["Ringing Ears: −2 Vigilant, and any check that depends on hearing fails."], "ex": []}, {"id": "drone_handler", "name": "Drone Handler", "cat": "Tech", "flavour": "It's small, it's loud, and it's the only one in the squad that never complains.", "up": ["Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Proficiency repairs it."], "down": ["Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials."], "ex": []}, {"id": "augmented", "name": "Augmented", "cat": "Tech", "flavour": "Part of you came out of a catalogue.", "up": ["Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles."], "down": ["Maintenance: after each rest, make a Proficiency check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns."], "ex": ["factory_made"]}, {"id": "true_believer", "name": "True Believer", "cat": "Faith and upper-realm", "flavour": "Holy Father Nerukhan, or some other saint, has never once let you down. You've never once let them down either.", "up": ["Unshaken: Blessing cooldowns are 1 turn shorter. Once per session, your prayer is answered: the Narrator grants a small miracle."], "down": ["Rites: keep your church's daily rites (dawn prayer, fasting days). Each day you can't, −1 Faith and Will Power until you make amends."], "ex": ["heretic"]}, {"id": "heavens_faithful", "name": "Heaven's Faithful", "cat": "Faith and upper-realm", "flavour": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.", "up": ["Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range."], "down": ["Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Composure check or hesitate and lose 2 AP."], "ex": ["humanity_first"]}, {"id": "occultist", "name": "Occultist", "cat": "Faith and upper-realm", "flavour": "The Institute of Forgotten Knowledge lent you one book. You never gave it back.", "up": ["Forbidden Text: start with a grimoire. Once per session, learn any supernatural creature's weakness. Out of combat, you can spend 10 minutes warding an area against the supernatural."], "down": ["Overdue: the Institute wants its book back. The book talks too: once per session, the Narrator whispers you one false line through it."], "ex": []}, {"id": "crawler_blooded", "name": "Crawler-Blooded", "cat": "Body and blood", "flavour": "Your grandmother crossed the line at Daggerfall. Her blood still shows under your skin.", "up": ["Chitin: 30% less limb damage taken. You can climb walls at half Movement, and Crawlers never attack you first."], "down": ["Marked: humans who see your blood start hostile. Lumeri Blessings burn you for 10 damage before they take effect."], "ex": ["humanity_first"]}, {"id": "old_timer", "name": "Old Timer", "cat": "Body and blood", "flavour": "You were already old when Daggerfall happened.", "up": ["Seen It All: start each session with 1 Echo. Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically."], "down": ["Old Bones: −1 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day."], "ex": []}, {"id": "pacifist", "name": "Pacifist", "cat": "Body and blood", "flavour": "You won't kill. Not even them.", "up": ["Sanctuary: while you haven't attacked this combat, enemies get −2 to hit you. Every attack you make can be nonlethal, and enemies you defeat that way surrender to a talk at +3. Mercy earns you double Karma."], "down": ["The Vow: if you kill, lose all your Echo and take a Heart Debuff for the rest of the session."], "ex": ["pain_eater", "the_brightest_light"]}, {"id": "moon_hunter", "name": "Moon Hunter", "cat": "Wilds and machines", "flavour": "You tracked game across three moons before you ever tracked a man.", "up": ["Tracker: follow any trail less than a day old. Your first attack on a creature you tracked this scene does +30% damage."], "down": ["Wild Born: in cities, −2 Charisma, Eloquence and Authority."], "ex": []}, {"id": "beast_handler", "name": "Beast Handler", "cat": "Wilds and machines", "flavour": "It came to you half-starved. Now it would die for you, and nearly has.", "up": ["Companion: a trained beast fights at your side: 60 HP, 4 AP of its own, bite and grapple. It obeys your Empathy checks."], "down": ["Bond: if it dies, you take a Heart Debuff for the rest of the campaign arc. It can't enter most buildings in Central City."], "ex": []}, {"id": "ace_pilot", "name": "Ace Pilot", "cat": "Wilds and machines", "flavour": "Give you anything with an engine and you'll find out what it can really do.", "up": ["Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge."], "down": ["Grounded: after a full day on foot, −1 Movement and Reaction Speed until you're back in a seat."], "ex": []}], "portraits": [{"id": "mallow-3", "label": "Automaton (stand-in for MPAT)", "img": "/_blob/310dd2cc5f5c4485ebe3bf35bf234fe0"}, {"id": "drava-keel", "label": "Drava Keel", "img": "/_blob/cb80e344bb8ba8ef325ad96bba51036b"}, {"id": "ilyen-taal", "label": "Ilyen Taal", "img": "/_blob/698f1db5ec5d271636ddd9adfa044158"}, {"id": "ketta-flint", "label": "Ketta Flint", "img": "/_blob/34f4bd70aa93be4f19a657fc5dfadca0"}, {"id": "brother-halden", "label": "Brother Halden", "img": "/_blob/3d9346a7d0e761c31a3ca2f9e6f95216"}, {"id": "inspectant-latch-7", "label": "Inspectant Latch-7", "img": "/_blob/352d89952dad34d00d9ab4132cc821c3"}], "kits": [{"id": "medic", "name": "Field medic", "items": ["Service pistol (.32 Decrkm)", "Stim injector, 3 stims", "Medic plate (Class II)", "Field kit"]}, {"id": "soldier", "name": "Line soldier", "items": ["Hellraiser service rifle, 3 magazines", "Combat knife", "Flak vest (Class III)", "Ration pack"]}, {"id": "sigil", "name": "Sigil student", "items": ["Evoker, 4 standard cores", "Service pistol", "Padded coat (Class I)", "Chalk and wax"]}, {"id": "soul", "name": "Soul initiate", "items": ["Emanator", "Drifter revolver", "Padded coat (Class I)", "Prayer beads and incense"]}], "core": {"body": "#F2A54A", "mind": "#4FC8DF", "soul": "#AE9BFF"}, "coreText": {"body": ["Muscle, blood, and how well you command your own flesh.", "Endurance · Strength · Agility", "Runs on ammo, weapons and tech"], "mind": ["The brain: absorbing theory and thinking logically.", "Perception · Intelligence · Expression", "Burns mana cores to draw Sigils"], "soul": ["The heart: emotional awareness and social perception.", "Insight · Determination · Virtue", "Spends mana on Soul spells and prayer"]}, "wick": "/_blob/fbab53e29d4ca072828b8825af10136c"};
+const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['kit', 'Kit'], ['lockin', 'Lock in']];
+const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
+const CORES = ['body', 'mind', 'soul'];
+const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
+const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
+const ARCH = {}; D.arch.items.forEach((a) => { ARCH[a.id] = a; });
+const CLASSNAME = {}; D.classes.forEach((c) => { CLASSNAME[c.id] = c.name; });
+const title = (id) => id.charAt(0).toUpperCase() + id.slice(1);
+const mod = (p) => (p === 0 ? -2 : p - 1);
+const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
+const BUDGET = 10, CAP = 5;
+
+function derive(skills) {
+  const attr = {}, core = { body: 1, mind: 1, soul: 1 };
+  D.attrs.forEach((a) => { attr[a.id] = 1; });
+  D.skills.forEach((s) => { const p = skills[s.id] || 0; if (p > attr[s.attr]) attr[s.attr] = p; });
+  D.attrs.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
+  const spent = Object.values(skills).reduce((x, y) => x + y, 0);
+  const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, total: c.sig.reduce((t, s) => t + (skills[s] || 0), 0) }));
+  const top = [...new Set(totals.map((t) => t.total))].sort((a, b) => b - a).slice(0, 2);
+  const leans = spent ? totals.filter((t) => top.includes(t.total)).sort((a, b) => b.total - a.total) : [];
+  return { attr, core, spent, leans };
+}
+
+const btn = (on, color) => 'min-height: 40px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; ' +
+  (on ? 'border: 1px solid ' + color + '; background: #1C2536; color: ' + color : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
+const chip = (color) => 'padding: 4px 10px; border-radius: 999px; border: 1px solid ' + color + '; color: ' + color + '; font-size: 12px; font-weight: 700; letter-spacing: 0.1em';
+const dia = (n, filled, color, size) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
+  (i < filled ? 'background: ' + color : 'border: 1px solid #3B475D') }));
+
 class Component extends DCLogic {
   constructor(props) {
     super(props);
+    const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
-      step: props && props.startStep != null ? Number(props.startStep) : 0, ctab: 'body', name: 'MPAT-813', kit: 1, traits: ['factory_made'], locked: false, saved: false,
-      core: { body: 3, mind: 3, soul: 3 },
-      attr: { endurance: 3, strength: 1, agility: 2, perception: 3, intelligence: 2, expression: 1, insight: 3, determination: 2, virtue: 1 },
-      skill: { durability: 1, sensory: 2, proficiency: 2, vigilant: 1, camaraderie: 2, empathy: 1 }
+      step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
+      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, applied: arch,
+      ctab: 'body', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
     };
   }
+
   renderVals() {
     const S = this.state;
-    const CORE = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF' };
-    const ATTR = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', intelligence: '#8BDEEE', expression: '#5394AC', insight: '#EB95B7', determination: '#9D7ADC', virtue: '#D36A90' };
-    const TREE = {
-      body: [['endurance', ['durability', 'pain_threshold', 'sensory']], ['strength', ['raw_power', 'guts', 'intimidation']], ['agility', ['athletics', 'dexterity', 'reaction_speed']]],
-      mind: [['perception', ['ingenuity', 'proficiency', 'vigilant']], ['intelligence', ['brain_power', 'rumination', 'eloquence']], ['expression', ['visualization', 'analysis', 'charisma']]],
-      soul: [['insight', ['empathy', 'camaraderie', 'implication']], ['determination', ['will_power', 'lore_master', 'composure']], ['virtue', ['faith', 'conscience', 'authority']]]
+    const set = (patch) => () => this.setState(patch);
+    const der = derive(S.skills);
+    const left = BUDGET - der.spent;
+    const stepIdx = STEPS.findIndex((s) => s[0] === S.step);
+
+    const steps = STEPS.map(([id, label], i) => ({
+      n: i + 1, label, go: set({ step: id }), current: S.step === id ? 'step' : 'false',
+      style: 'display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 8px; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ' +
+        (S.step === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2'),
+      numStyle: 'display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; ' + (S.step === id ? 'background: #E7EBF3; color: #0A0D13' : 'background: #1C2536; color: #A3AEC2'),
+    }));
+
+    // identity
+    const originCards = D.origins.map((o, i) => ({
+      num: String(o.n).padStart(2, '0'), name: o.name, home: o.Home, pick: set({ origin: i }), pressed: S.origin === i ? 'true' : 'false',
+      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 12px 14px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' +
+        (S.origin === i ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'),
+    }));
+    const o = S.origin === null ? null : D.origins[S.origin];
+    const origin = o ? { ...o, knows: o['You know'], seen: o['People see you as'], traitsFit: o['Traits that fit'] } : {};
+    const portrait = D.portraits[S.portrait];
+    const portraitThumbs = D.portraits.map((p, i) => ({ ...p, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
+      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
+
+    // archetype
+    const fams = [...D.arch.families, { id: 'custom', name: 'Custom', blurb: 'Start from zero and place all 10 points yourself.' }];
+    const famTabs = fams.map((f) => ({ name: f.name, pick: set({ fam: f.id, arch: f.id === 'custom' ? 'custom' : (D.arch.items.find((a) => a.family === f.id) || {}).id }), selected: S.fam === f.id ? 'true' : 'false', style: btn(S.fam === f.id, '#E7EBF3') }));
+    const famBlurb = (fams.find((f) => f.id === S.fam) || {}).blurb || '';
+    const coreChips = (cores) => CORES.map((c) => ({ label: c.toUpperCase() + ' ' + cores[c], style: 'padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; ' + (cores[c] > 1 ? 'color: #0A0D13; background: ' + D.core[c] : 'color: #A3AEC2; background: #1C2536') }));
+    const archCards = S.fam === 'custom'
+      ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', cores: coreChips({ body: 1, mind: 1, soul: 1 }), leans: 'whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
+      : D.arch.items.filter((a) => a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
+    archCards.forEach((c) => { c.style = 'display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; padding: 16px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
+    const A = S.arch === 'custom' ? null : ARCH[S.arch];
+    const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
+    const pv = {
+      name: A ? A.name : 'Custom', role: A ? A.role.toUpperCase() : 'YOUR CALL',
+      coreRows: CORES.map((c) => ({ name: c.toUpperCase(), word: WORDS[pvCores[c]], val: pvCores[c], dia: dia(10, pvCores[c], D.core[c], 9),
+        nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),
+      skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
+      leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
     };
-    const title = (id) => id.split('_').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
-    const sk = (id) => S.skill[id] || 0;
-    const set = (k, id, v) => this.setState({ [k]: { ...this.state[k], [id]: v }, locked: false });
-    const mod = (p) => (p === 0 ? -2 : p - 1);
-    const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
+    const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, applied: A ? A.id : null, step: 'skills', ctab: A ? CORES.reduce((b, c) => (A.cores[c] > A.cores[b] ? c : b), 'body') : 'body' });
+    const useLabel = A ? 'Use ' + A.name + ' ›' : 'Start from scratch ›';
 
-    const SIG = { 'Marksman': ['dexterity', 'vigilant', 'reaction_speed'], 'Duelist': ['athletics', 'raw_power', 'guts'], 'Vanguard': ['durability', 'pain_threshold', 'guts'],
-      'Combat Medic': ['sensory', 'camaraderie', 'proficiency'], 'Assassin': ['ingenuity', 'intimidation', 'reaction_speed'], 'Artillerist': ['brain_power', 'visualization', 'vigilant'],
-      'Warden': ['rumination', 'composure', 'analysis'], 'Scribe': ['proficiency', 'eloquence', 'rumination'], 'Hexwright': ['analysis', 'charisma', 'eloquence'],
-      'Tempest': ['will_power', 'empathy', 'visualization'], 'Aegis': ['lore_master', 'conscience', 'faith'], 'Muse': ['camaraderie', 'implication', 'authority'],
-      'Haunt': ['intimidation', 'implication', 'lore_master'] };
-    const SUM = { durability: 'The tank. More HP every level.', pain_threshold: 'Wounds don’t slow you down; elemental damage hurts less.', sensory: 'Touch, smell, temperature, the ground under your feet. Healing works better on you.',
-      raw_power: 'Hit harder, bend further, lift higher.', guts: 'Fear doesn’t get a vote. Body saves.', intimidation: 'Run the conversation through fear.',
-      athletics: 'Run, climb, dodge. Armour slows you less.', dexterity: 'The gun hand: reloads, recoil, quick-draw, throws.', reaction_speed: 'Moving in time: initiative and ambushes.',
-      ingenuity: 'Stealth, sleight of hand, sticky fingers.', proficiency: 'The mechanic. Fixes guns, gear and machines in the field.', vigilant: 'Sight, sound and hostile intent.',
-      brain_power: 'Raw processing for Sigils; the attack skill for striking Sigils.', rumination: 'The scientist’s library.', eloquence: 'Logic as a weapon.',
-      visualization: 'Shapes thought into images and Sigils into forms.', analysis: 'Detective work; Analyze reveals an enemy’s weak points.', charisma: 'Warmth, persuasion, lying with a smile.',
-      empathy: 'Feel what the other side feels, enemies included.', camaraderie: 'The squad is a world of its own. Better healing given.', implication: 'Metaphor, subtext, poetry, flirting.',
-      will_power: 'The strength of the soul; the attack skill for Soul spells.', lore_master: 'The occultist’s library.', composure: 'A face that never moves. Heart saves.',
-      faith: 'The saints judge. You deliver. Prayers and Blessings.', conscience: 'Seeing where an act leads.', authority: 'Cool under pressure; your Leadership rating.' };
-    const DERIVED = { endurance: (v) => 'Max HP ' + (100 + 50 * (v - 1)), strength: (v) => 'Carry ' + (20 + 5 * (v - 1)) + ' kg', agility: (v) => 'Move ' + (3 + 0.5 * (v - 1)) + ' tiles',
-      perception: (v) => 'Vision ' + (12 + 2 * (v - 1)) + ' tiles', intelligence: (v) => 'Sigil length ' + (2 + Math.floor((v - 1) / 2)) + ' words', expression: (v) => 'Elemental damage ×' + (1 + 0.2 * (v - 1)).toFixed(1),
-      insight: (v) => 'Healing given ×' + (1 + 0.1 * (v - 1)).toFixed(1), determination: (v) => 'Soul power ×' + (1 + 0.1 * (v - 1)).toFixed(1), virtue: (v) => 'Max MP ' + (100 + 100 * (v - 1)) };
-    const ATTR_OF = {}, CORE_OF = {};
-    Object.entries(TREE).forEach(([c, attrs]) => attrs.forEach(([a, skills]) => { CORE_OF[a] = c; skills.forEach((x) => { ATTR_OF[x] = a; }); }));
-    const leftOf = (st) => ({ core: 6 - Object.values(st.core).reduce((x, y) => x + y - 1, 0), attr: 10 - Object.values(st.attr).reduce((x, y) => x + y - 1, 0), skill: 10 - Object.values(st.skill).reduce((x, y) => x + y, 0) });
-    const costOf = (st, sid, v) => { const a = ATTR_OF[sid], c = CORE_OF[a], s0 = st.skill[sid] || 0;
-      const aNew = Math.max(st.attr[a], v), cNew = Math.max(st.core[c], aNew);
-      return { skill: v - s0, attr: aNew - st.attr[a], core: cNew - st.core[c], aNew, cNew, a, c, s0 }; };
-    const fits = (st, k) => { const L = leftOf(st); return k.skill <= L.skill && k.attr <= L.attr && k.core <= L.core; };
-    const applySkill = (st, sid, v) => { if (v < 0 || v > 10) return null; const k = costOf(st, sid, v); if (!fits(st, k)) return null;
-      return { core: { ...st.core, [k.c]: k.cNew }, attr: { ...st.attr, [k.a]: k.aNew }, skill: { ...st.skill, [sid]: v } }; };
-    const BASE = { core: { body: 1, mind: 1, soul: 1 }, attr: { endurance: 1, strength: 1, agility: 1, perception: 1, intelligence: 1, expression: 1, insight: 1, determination: 1, virtue: 1 }, skill: {} };
-    const pre = Object.entries(SIG).map(([n, x]) => [x, x.reduce((a, id) => a + sk(id), 0)]).sort((p, q) => q[1] - p[1]);
-    const SIG_SET = new Set(pre[0][1] > 0 ? pre[0][0] : []);
-    const L = leftOf(S), coreLeft = L.core, attrLeft = L.attr, skillLeft = L.skill;
-    const GLYPH = {
-      durability: 'M12 3 20 6v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6Z',
-      pain_threshold: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10ZM12 7.5l-1.5 4 3 1.5-1.5 4',
-      sensory: 'M8 13V5a1.5 1.5 0 0 1 3 0v6M11 11V3.5a1.5 1.5 0 0 1 3 0V11M14 11V5a1.5 1.5 0 0 1 3 0v8c0 4-3 7-6.5 7S5 17 4 14l-1.5-3a1.5 1.5 0 0 1 2.6-1.5L8 13',
-      raw_power: 'M4 14h11v6H4ZM15 15h3a2 2 0 0 0 0-4h-3M7 14V9M10 14V7M13 14V9',
-      guts: 'M12 21c-4 0-6-3-6-6 0-4 4-6 4-11 3 2 8 6 8 11 0 3-2 6-6 6ZM12 21c-1.5 0-3-1-3-3 0-2 3-3 3-6 1.5 1 3 3 3 6 0 2-1.5 3-3 3',
-      intimidation: 'M5 10a7 7 0 0 1 14 0v4l-2 2v4H7v-4l-2-2ZM9 11h.01M15 11h.01M10 20v-3M14 20v-3',
-      athletics: 'M14 4a1.5 1.5 0 1 0 .01 0M10 21l2-6 3 3v3M7 12l3-4h4l2 3h3M12 15l-1-4',
-      dexterity: 'M12 3v4M12 17v4M3 12h4M17 12h4M7 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0',
-      reaction_speed: 'M13 2 4 14h7l-1 8 9-12h-7Z',
-      ingenuity: 'M12 3c-5 0-8 5-8 10v8h16v-8c0-5-3-10-8-10ZM8 15c1.5-2 6.5-2 8 0',
-      proficiency: 'M15 4a4 4 0 0 0-4 5l-7 7 3 3 7-7a4 4 0 0 0 5-4l-2 2-2-2 2-2a4 4 0 0 0-2-2Z',
-      vigilant: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0',
-      brain_power: 'M7 7h10v10H7ZM10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4',
-      rumination: 'M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1ZM12 6v14',
-      eloquence: 'M12 4v16M6 20h12M6 8h12M6 8l-3 6h6ZM18 8l-3 6h6Z',
-      visualization: 'M12 3 21 19H3ZM8 14h8M12 9v10',
-      analysis: 'M4 10a6 6 0 1 0 12 0a6 6 0 1 0-12 0M15 15l6 6',
-      charisma: 'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z',
-      empathy: 'M3 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0M11 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0',
-      camaraderie: 'M8 10a3 3 0 1 0 0-6a3 3 0 1 0 0 6M16 10a3 3 0 1 0 0-6a3 3 0 1 0 0 6M2 20c0-4 3-6 6-6s6 2 6 6M10 20c0-4 3-6 6-6s6 2 6 6',
-      implication: 'M3 16c3-4 6 4 9 0s6 4 9 0M3 9c3-4 6 4 9 0s6 4 9 0',
-      will_power: 'M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2',
-      lore_master: 'M12 3 16 8 12 13 8 8ZM12 13v8M8 21h8',
-      composure: 'M5 5h14v14H5ZM8 10h2M14 10h2M9 15h6',
-      faith: 'M7 4c0-1 2.2-2 5-2s5 1 5 2-2.2 2-5 2-5-1-5-2ZM12 8v13M7 13l5-4 5 4',
-      conscience: 'M12 21V11M12 11 6 5M12 11l6-6M4 5h4M16 5h4',
-      authority: 'M5 21V3M5 4h12l-3 4 3 4H5'
+    // skills
+    const coreTabs = CORES.map((c) => ({ name: c.toUpperCase(), note: WORDS[der.core[c]] + ' · ' + der.core[c], pick: set({ ctab: c }), selected: S.ctab === c ? 'true' : 'false',
+      style: 'display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 60px; padding: 6px 18px; border-radius: 12px; font-family: inherit; cursor: pointer; color: ' + D.core[c] + '; ' +
+        (S.ctab === c ? 'background: #1C2536; border: 2px solid ' + D.core[c] : 'background: transparent; border: 2px solid #232D3F') }));
+    const setSkill = (id, v) => () => {
+      const cur = this.state.skills[id] || 0; const spent = derive(this.state.skills).spent;
+      if (v < 0 || v > CAP || (v > cur && spent + (v - cur) > BUDGET)) return;
+      const next = { ...this.state.skills }; if (v === 0) delete next[id]; else next[id] = v;
+      this.setState({ skills: next });
     };
-    const hov = S.hov && S.hov.sid ? S.hov : null;
-    const pv = hov ? costOf(S, hov.sid, hov.v) : null;
-    const pvOk = pv ? fits(S, pv) : true;
-    const dia = (n, filled, col, size, gold) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
-      (i < filled ? 'background: ' + col : (gold && i < gold ? 'background: #FFFFFF' : 'border: 1px solid ' + col + '99')) }));
-    const LINE = { body: '#4A3A20', mind: '#1E4552', soul: '#352E5E' };
+    const rows = D.attrs.filter((a) => a.core === S.ctab).map((a) => ({
+      name: a.name.toUpperCase(), val: der.attr[a.id], fx: a.fx, nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + a.ink,
+      cards: D.skills.filter((s) => s.attr === a.id).map((s) => {
+        const p = S.skills[s.id] || 0, m = mod(p);
+        return { ...s, pts: p, slot: s.slot === 'alpha' ? 'α' : s.slot === 'beta' ? 'β' : 'γ',
+          mod: fmt(m) + (p === 0 ? ' untrained' : p >= 5 ? ' · Mastery 2' : p >= 3 ? ' · Mastery 1' : ''),
+          modStyle: 'font-size: 12px; color: ' + (m < 0 ? '#A3AEC2' : a.ink),
+          nameStyle: 'font-size: 16px; font-weight: 700; color: ' + a.ink, dia: dia(5, p, a.ink, 9),
+          inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: p >= CAP || left <= 0, noDec: p <= 0,
+          style: 'display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid ' + (p > 0 ? a.ink : '#232D3F') };
+      }),
+    }));
+    const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
+    const leanList = der.leans.length ? der.leans.map((l) => ({ name: l.name, total: l.total, style: 'font-weight: 700; color: ' + D.core[l.core] })) : [{ name: 'Place some points first', total: 0, style: 'color: #A3AEC2' }];
+    const archNote = S.applied ? 'Started from the ' + ARCH[S.applied].name + ' archetype. Change anything; the archetype is not saved.' : 'Built from scratch.';
 
-    // archetype follows the cores
-    const ARCHS = {
-      body: ['SOLDIER', 'Built for the line. Takes a hit, returns two, and thinks with the trigger finger.', 'Vanguard · Marksman · Duelist', GLYPH.durability],
-      mind: ['SCHOLAR', 'Reads Sigils like scripture and machines like open books. Brilliant, brittle, first to notice what is wrong with the room.', 'Artillerist · Scribe · Hexwright', GLYPH.brain_power],
-      soul: ['BELIEVER', 'Hears something above the sky and answers it. Holds the squad together; holds a rifle like it might bite.', 'Aegis · Muse · Tempest', GLYPH.will_power],
-      'body+mind': ['OPERATOR', 'Hands and head in step. Picks the lock, then the target, and never in the wrong order.', 'Assassin · Marksman · Combat Medic', GLYPH.proficiency],
-      'body+soul': ['CRUSADER', 'Strong arm, certain heart. Walks into the dark because someone has to, and says a word for the ones who don’t walk out.', 'Vanguard · Haunt · Aegis', GLYPH.faith],
-      'mind+soul': ['MYSTIC', 'Thinks in symbols and feels in signals. Sees the shape of the simulation where others see a wall.', 'Warden · Tempest · Muse', GLYPH.lore_master],
-      even: ['DRIFTER', 'A little of everything and no home in any of it. Adapts, survives, and is never quite who the room expects.', 'Combat Medic · any', GLYPH.conscience] };
-    const ORDER = ['body', 'mind', 'soul'];
-    const ranked = ORDER.map((k) => [k, S.core[k]]).sort((p, q) => q[1] - p[1] || ORDER.indexOf(p[0]) - ORDER.indexOf(q[0]));
-    const [[k1, v1], [k2, v2], [, v3]] = ranked;
-    let akey;
-    if (v1 === v3) akey = 'even'; else if (v1 - v2 >= 2 || v2 === v3) akey = k1; else akey = [k1, k2].sort((p, q) => ORDER.indexOf(p) - ORDER.indexOf(q)).join('+');
-    const A = ARCHS[akey];
-    const arch = { name: A[0], desc: A[1], leans: 'LEANS: ' + A[2].toUpperCase(), glyph: A[3], color: akey === 'even' ? '#E7EBF3' : CORE[k1],
-      note: coreLeft > 0 ? coreLeft + ' core points still to place.' : 'All core points placed.', noteStyle: 'font-size: 13px; font-weight: 600; color: ' + (coreLeft > 0 ? '#FFFFFF' : '#6FEA77') };
-
-    // cores screen
-    const WORD = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
-    const CDESC = { body: ['Muscle, nerve and skin. How hard you hit, how much you take, how fast you move.', 'Endurance · Strength · Agility  —  runs on ammo, weapons and tech'],
-      mind: ['Senses, logic and expression. How much you notice and how well you think it through.', 'Perception · Intelligence · Expression  —  burns mana cores to draw Sigils'],
-      soul: ['Insight, will and virtue. How you read people, hold your nerve and reach the upper realm.', 'Insight · Determination · Virtue  —  spends mana on Soul spells and prayer'] };
-    const coreRows = Object.keys(CORE).map((cid) => { const cv = S.core[cid];
-      return { name: cid.toUpperCase(), word: WORD[cv], val: cv, color: CORE[cid], line: LINE[cid], desc: CDESC[cid][0], governs: CDESC[cid][1].toUpperCase(),
-        dia: dia(7, cv, CORE[cid], 9), inc: () => set('core', cid, cv + 1), noInc: coreLeft <= 0 || cv >= 10,
-        dec: () => set('core', cid, cv - 1), noDec: cv <= 1 || TREE[cid].some(([a]) => S.attr[a] > cv - 1) }; });
-    const randomCores = () => { const c = { body: 1, mind: 1, soul: 1 }; const keys = Object.keys(c);
-      for (let i = 0; i < 6; i++) c[keys[Math.floor(Math.random() * 3)]]++;
-      this.setState({ core: c, attr: { ...BASE.attr }, skill: {}, locked: false }); };
-    const revertCores = () => this.setState({ core: { ...BASE.core }, attr: { ...BASE.attr }, skill: {}, locked: false });
-
-    // skills screen
-    const ctab = S.ctab || 'body';
-    const spentIn = (cid) => TREE[cid].reduce((a, [, skills]) => a + skills.reduce((b, x) => b + sk(x), 0), 0);
-    const ctabs = Object.keys(CORE).map((cid) => { const on = ctab === cid;
-      return { name: cid.toUpperCase(), val: S.core[cid], color: CORE[cid], note: spentIn(cid) + ' skill points here', on: on ? 'true' : 'false',
-        pick: () => this.setState({ ctab: cid, hov: null }),
-        style: 'min-height: 64px; padding: 8px 16px; border-radius: 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer; ' +
-          (on ? 'background: #1A2232; border: 2px solid ' + CORE[cid] : 'background: transparent; border: 2px solid #1C2536') }; });
-    const cv = S.core[ctab], col = CORE[ctab];
-    const rows = TREE[ctab].map(([aid, skills]) => { const av = S.attr[aid], col = ATTR[aid];
-      return { name: aid.toUpperCase(), val: av, color: col, line: LINE[ctab], derived: DERIVED[aid](av), dia: dia(cv, av, col, 8),
-        inc: () => set('attr', aid, av + 1), noInc: attrLeft <= 0 || av >= cv,
-        dec: () => set('attr', aid, av - 1), noDec: av <= 1 || skills.some((x) => sk(x) > av - 1),
-        cards: skills.map((sid) => { const s0 = sk(sid), m = mod(s0), isH = hov && hov.sid === sid;
-          const up1 = costOf(S, sid, s0 + 1), canUp = s0 < 10 && fits(S, up1);
-          const nextTxt = s0 >= 10 ? 'Mastered' : 'Next: 1 skill' + (up1.attr ? ' + ' + title(aid) + ' ' + up1.aNew : '') + (up1.core ? ' + ' + title(ctab) + ' ' + up1.cNew : '');
-          let hint = nextTxt, hintCol = canUp ? '#A3AEC2' : '#F65157';
-          if (isH && pv) {
-            if (hov.v > s0) { hint = pvOk ? ('−1 skill' + (pv.attr ? ' · ' + title(aid) + ' ' + av + '→' + pv.aNew : '') + (pv.core ? ' · ' + title(ctab) + ' ' + S.core[ctab] + '→' + pv.cNew : '') + ([3, 5, 7, 9].includes(hov.v) ? ' · Mastery ' + ([3, 5, 7, 9].indexOf(hov.v) + 1) : '')) : 'Not enough points'; hintCol = pvOk ? '#FFFFFF' : '#F65157'; }
-            else { hint = '+1 skill point back'; hintCol = '#A3AEC2'; }
-          }
-          return { name: title(sid), upper: title(sid).toUpperCase(), summary: SUM[sid], val: s0, color: col, glyph: GLYPH[sid], sig: SIG_SET.has(sid),
-            modTxt: fmt(m) + (s0 === 0 ? ' untrained' : ''), modColor: m < 0 ? '#F65157' : m === 0 ? '#A3AEC2' : col,
-            dia: dia(Math.max(av, isH && pv ? pv.aNew : 0), s0, col, 8, isH && pv && hov.v > s0 ? hov.v : 0),
-            inc: () => { const ns = applySkill(this.state, sid, sk(sid) + 1); if (ns) this.setState({ ...ns, locked: false, hov: { sid, v: sk(sid) + 2 } }); },
-            dec: () => { const ns = applySkill(this.state, sid, sk(sid) - 1); if (ns) this.setState({ ...ns, locked: false, hov: null }); },
-            hoverInc: () => this.setState({ hov: { sid, v: s0 + 1 } }), hoverDec: () => this.setState({ hov: s0 > 0 ? { sid, v: s0 - 1 } : null }),
-            noInc: !canUp, noDec: s0 <= 0, hint, hintStyle: 'font-size: 11px; line-height: 1.35; min-height: 15px; color: ' + hintCol,
-            badge: 'min-width: 40px; height: 34px; box-sizing: border-box; display: grid; place-items: center; border-radius: 6px; font-size: 18px; font-weight: 700; ' +
-              (s0 > 0 ? 'background: ' + col + '; color: #0A0D13' : 'border: 1px solid #2E3A50; color: #A3AEC2'),
-            style: 'display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (isH ? col : '#1C2536') }; }) }; });
-
-    const pools = [['CORE', 6, coreLeft, pv ? pv.core : 0], ['ATTRIBUTE', 10, attrLeft, pv ? pv.attr : 0], ['SKILL', 10, skillLeft, pv ? pv.skill : 0]].map(([label, n, left, add]) => {
-      const spent = n - left;
-      return { label, text: left + ' left', style: 'font-weight: 700; font-size: 13px; color: ' + (left === 0 ? '#6FEA77' : '#FFFFFF'),
-        pips: Array.from({ length: n }, (_, i) => {
-          let st = 'border: 1px solid #2E3A50';
-          if (i < spent) st = 'background: #4FC8DF; border: 1px solid #4FC8DF';
-          if (add > 0 && i >= spent && i < spent + add) st = 'background: ' + (pvOk ? '#FFFFFF' : '#F65157') + '; border: 1px solid transparent';
-          if (add < 0 && i < spent && i >= spent + add) st = 'background: #3A1E1E; border: 1px solid #F65157';
-          return { style: 'flex: 1; height: 10px; border-radius: 2px; box-sizing: border-box; ' + st };
-        }) };
+    // traits
+    const cats = ['All', ...new Set(D.traits.map((t) => t.cat))];
+    const catTabs = cats.map((c) => ({ name: c, pick: set({ tcat: c }), selected: S.tcat === c ? 'true' : 'false', style: btn(S.tcat === c, '#E7EBF3') }));
+    const picked = S.traits;
+    const blocked = new Set(); picked.forEach((id) => { const t = D.traits.find((x) => x.id === id); (t ? t.ex : []).forEach((e) => blocked.add(e)); });
+    D.traits.forEach((t) => { if (t.ex.some((e) => picked.includes(e))) blocked.add(t.id); });
+    const traitCards = D.traits.filter((t) => S.tcat === 'All' || t.cat === S.tcat).map((t) => {
+      const on = picked.includes(t.id), ex = blocked.has(t.id) && !on, full = picked.length >= 2 && !on;
+      return { name: t.name, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
+        toggle: () => this.setState({ traits: on ? picked.filter((x) => x !== t.id) : [...picked, t.id] }), disabled: ex || full, pressed: on ? 'true' : 'false',
+        btn: on ? 'Remove' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
+        btnStyle: 'margin-top: auto; min-height: 40px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
+        style: 'display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid ' + (on ? '#E7EBF3' : '#232D3F') + (ex ? '; opacity: 0.55' : '') };
     });
-    const presets = Object.keys(SIG).map((n) => ({ name: n,
-      style: 'min-height: 34px; padding: 0 11px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' +
-        (S.preset === n ? 'border: 1px solid #4FC8DF; background: #12303A; color: #E7EBF3' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2'),
-      pick: () => { let st = { core: { ...this.state.core }, attr: { ...BASE.attr }, skill: {} }, changed = true;
-        while (changed) { changed = false; for (const sid of SIG[n]) { const ns = applySkill(st, sid, (st.skill[sid] || 0) + 1); if (ns) { st = ns; changed = true; } } }
-        this.setState({ ...st, preset: n, locked: false, hov: null, ctab: CORE_OF[ATTR_OF[SIG[n][0]]] }); } }));
-    const trim = () => { const st = this.state, attr = { ...st.attr }, core = { ...st.core };
-      Object.entries(TREE).forEach(([c, attrs]) => { attrs.forEach(([a, skills]) => { attr[a] = Math.max(1, ...skills.map((x) => st.skill[x] || 0)); });
-        core[c] = Math.max(core[c], ...attrs.map(([a]) => attr[a])); });
-      this.setState({ attr, core, locked: false }); };
-    const clearAll = () => this.setState({ attr: { ...BASE.attr }, skill: {}, preset: null, locked: false, hov: null });
-    const totals = Object.entries(SIG).map(([n, s]) => ({ n, t: s.reduce((a, id) => a + sk(id), 0) })).sort((a, b) => b.t - a.t);
-    const distinct = [...new Set(totals.map((x) => x.t))].slice(0, 2);
-    const maxT = Math.max(1, totals[0].t);
-    const classes = totals.slice(0, 5).map((x) => { const ok = distinct.includes(x.t) && x.t > 0;
-      return { name: x.n + (ok ? ' · eligible' : ''), total: x.t, nameStyle: ok ? 'font-weight: 700; color: #E7EBF3' : 'color: #A3AEC2',
-        bar: 'width: ' + Math.round(100 * x.t / maxT) + '%; height: 100%; background: ' + (ok ? '#4FC8DF' : '#3B475D') }; });
+    const traitChip = picked.length + ' OF 2 PICKED';
 
-    const TRAITS = [
-      ['factory_made', 'Factory Made', 'ORIGIN', 'Immune to poison, bleed and suffocation.', 'Heals and Blessings at half power; lightning and EMP deal double.', ['central_city_kid']],
-      ['machine_faced', 'Machine-Faced', 'SKILL', 'Composure in dialogue always succeeds; machines trust you.', 'No Implication or Charisma in dialogue; children and animals panic.', []],
-      ['mind_without_fog', 'Mind Without Fog', 'COMBAT', '+2 Core points at creation; Heart Debuffs never land.', 'Gear bonuses to stats don’t work; Karma never changes.', []],
-      ['drill_echo', 'Drill Echo', 'SKILL', 'Sprint costs 1 AP less; running and climbing checks can’t roll under 10.', 'Concentration checks are disrupted by the count in your head.', []],
-      ['heavyworlder', 'Heavyworlder', 'SKILL', 'One size larger: can’t be shoved, carry weight doubles.', '−3 Athletics, −1 Movement, +2 to be hit, can’t hide.', []],
-      ['central_city_kid', 'Central City Kid', 'ORIGIN', 'City ID and bank card; +2 social with officials and merchants.', 'The first wound in each fight costs 2 AP from shock.', ['factory_made']],
-      ['insomniac', 'Insomniac', 'VICE', 'Can’t be ambushed while the squad rests.', 'Resting restores only half your HP and mana.', []],
-      ['beast_handler', 'Beast Handler', 'WILDS', 'A trained beast fights beside you: 60 HP, 4 AP of its own.', 'If it dies you carry a Heart Debuff for the arc.', []]];
-    const chosen = S.traits;
-    const traits = TRAITS.map(([id, name, cat, up, down, ex]) => {
-      const on = chosen.includes(id);
-      const blocked = !on && (chosen.length >= 2 || ex.some((e) => chosen.includes(e)));
-      return { name, cat, up: '+ ' + up, down: '− ' + down, on: on ? 'true' : 'false', blocked,
-        pick: () => this.setState({ traits: on ? chosen.filter((t) => t !== id) : [...chosen, id], locked: false }),
-        style: 'min-height: 104px; padding: 12px 14px; border-radius: 12px; text-align: left; display: flex; flex-direction: column; gap: 6px; font-family: inherit; ' +
-          (on ? 'border: 1px solid #4FC8DF; background: #12303A; cursor: pointer' : blocked ? 'border: 1px solid #1C2536; background: transparent; opacity: 0.45; cursor: not-allowed' : 'border: 1px solid #2E3A50; background: transparent; cursor: pointer') };
-    });
-    const KITS = [['Field medic', 'Service pistol\nStim injector · 3 stims\nMedic plate (Class II)\nField kit'], ['Line soldier', 'Carbine · 3 magazines\nCombat knife\nFlak vest (Class III)\nRation pack'], ['Sigil student', 'Evoker · 4 standard cores\nSidearm\nPadded coat (Class I)\nChalk and wax']];
-    const kits = KITS.map(([name, items], i) => ({ name, items, on: S.kit === i ? 'true' : 'false', pick: () => this.setState({ kit: i, locked: false }),
-      style: 'min-height: 150px; padding: 14px; border-radius: 12px; text-align: left; display: flex; flex-direction: column; gap: 8px; font-family: inherit; cursor: pointer; ' +
-        (S.kit === i ? 'border: 1px solid #F2A54A; background: #2A2113' : 'border: 1px solid #2E3A50; background: transparent') }));
+    // kit
+    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
+      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
 
-    const done = (b) => b ? 'color: #6FEA77; font-weight: 700' : 'color: #FFFFFF; font-weight: 700';
-    const checks = [['Name', !!S.name], ['All points spent', coreLeft === 0 && attrLeft === 0 && skillLeft === 0], ['Traits (0–2)', true], ['Starting kit', S.kit !== null]]
-      .map(([label, ok]) => ({ label, state: ok ? 'Done' : 'Not yet', style: done(ok) }));
-    const ready = checks.every((c) => c.state === 'Done');
+    // lock in
+    const trainedSkills = D.skills.filter((s) => S.skills[s.id]).map((s) => ({ label: s.name + ' ' + S.skills[s.id], style: 'font-size: 14px; font-weight: 600; color: ' + ATTR[s.attr].ink }));
+    const traitNames = picked.length ? picked.map((id) => (D.traits.find((t) => t.id === id) || {}).name).join(' · ') : 'None';
+    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 skill points spent', left === 0], ['Starting kit', !!S.kit]].map(([label, ok]) => ({
+      label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
+    const cantLock = checks.some((c) => c.mark !== '✓');
 
-    const STEPS = ['Identity', 'Cores', 'Skills', 'Traits', 'Kit', 'Lock in'];
-    const steps = STEPS.map((label, i) => { const on = S.step === i;
-      return { n: i + 1, label, current: on ? 'step' : 'false', pick: () => this.setState({ step: i }), numColor: on ? '#4FC8DF' : '#7F8BA1',
-        style: 'min-height: 60px; padding: 8px 14px; border-radius: 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' +
-          (on ? 'border: 1px solid #4FC8DF; background: #12303A' : 'border: 1px solid #232D3F; background: transparent') }; });
-
-    const tname = TRAITS.filter((t) => chosen.includes(t[0])).map((t) => t[1]).join(', ') || 'None';
     return {
-      steps, isIdentity: S.step === 0, isCores: S.step === 1, isSkills: S.step === 2, isTraits: S.step === 3, isGear: S.step === 4, isLock: S.step === 5,
-      showAside: [0, 3, 4, 5].includes(S.step), arch, coreRows, randomCores, revertCores, ctabs, rows, coreBody: S.core.body,
-      corePoolText: coreLeft + ' CORE POINTS LEFT', corePoolStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: ' + (coreLeft === 0 ? '#6FEA77' : '#FFFFFF'),
-      back: () => this.setState({ step: Math.max(0, this.state.step - 1) }), next: () => this.setState({ step: Math.min(5, this.state.step + 1) }),
-      atStart: S.step === 0, atEnd: S.step === 5,
-      name: S.name || 'Unnamed', onName: (e) => this.setState({ name: e.target.value, locked: false }),
-      pools, traits, traitCount: chosen.length, kits, checks,
-      cannotLock: !ready || S.locked, lockLabel: S.locked ? 'LOCKED IN' : 'LOCK IN CHARACTER',
-      lockIn: () => this.setState({ locked: true, saved: true }),
-      draftLabel: S.saved ? 'Saved to your characters' : 'Save as draft', saveDraft: () => this.setState({ saved: true }),
-      coreSummary: Object.keys(CORE).map((c) => ({ name: c.toUpperCase(), color: CORE[c], val: S.core[c] })),
-      presets, trim, clearAll, unhover: () => this.setState({ hov: null }),
-      hp: 100 + 50 * (S.attr.endurance - 1), mp: 100 + 100 * (S.attr.virtue - 1), traitNames: tname, classes
+      steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' / 10 SKILL POINTS LEFT', budgetChipStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'),
+      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
+      name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
+      famTabs, famBlurb, archCards, pv, useArch, useLabel,
+      budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, applied: null }), coreTabs, rows, sideCores, leanList, archNote,
+      catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
+      kitCards,
+      summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),
+      trainedSkills, traitNames, leanText: der.leans.length ? der.leans.map((l) => l.name).join(' or ') : 'Place some points first',
+      checks, cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; ' + (cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
+      back: set({ step: STEPS[Math.max(0, stepIdx - 1)][0] }), next: set({ step: STEPS[Math.min(STEPS.length - 1, stepIdx + 1)][0] }), atStart: stepIdx === 0, atEnd: stepIdx === STEPS.length - 1,
     };
   }
 }
+
 </script>
 </body>
 </html>
