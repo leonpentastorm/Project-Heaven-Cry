@@ -718,6 +718,29 @@
       },
       "batch": "E",
       "source_sha256": "8fdbe8f4848b35c121f709b1ebbc08aee433a5e3302d2a4f0f885114d0dbdc6d"
+    },
+    {
+      "id": "blueprint",
+      "data_id": "blueprint",
+      "name": "Blueprint",
+      "family": "perks",
+      "order": 32,
+      "mood": "Calm, Proud",
+      "action": "Wick kneels over a big unrolled plan, drawing a bold route arrow across it with a chalk stick.",
+      "screen": "Focused, tongue out",
+      "prop": "Unrolled plan",
+      "path": "art/perks/wick/production-v1/blueprint.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/blueprint.png",
+        "128": "art/perks/wick/production-v1/exports/128/blueprint.png",
+        "64": "art/perks/wick/production-v1/exports/64/blueprint.png",
+        "56": "art/perks/wick/production-v1/exports/56/blueprint.png",
+        "48": "art/perks/wick/production-v1/exports/48/blueprint.png",
+        "44": "art/perks/wick/production-v1/exports/44/blueprint.png",
+        "40": "art/perks/wick/production-v1/exports/40/blueprint.png"
+      },
+      "batch": "E",
+      "source_sha256": "026a62833eace4df6deca7c97fb1a3a98081390de372472817f35481434d8212"
     }
   ]
 }

@@ -4019,6 +4019,30 @@
         "44": "art/perks/wick/production-v1/exports/44/mirage.png",
         "40": "art/perks/wick/production-v1/exports/40/mirage.png"
       }
+    },
+    "blueprint": {
+      "label": "Wick — Blueprint",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/blueprint.png",
+      "sha256": "c8502dd54eab14e50b0d65f5c055863cb886eb5c526500733c5d9ce5ab86cc3e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "blueprint",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/blueprint.png",
+        "128": "art/perks/wick/production-v1/exports/128/blueprint.png",
+        "64": "art/perks/wick/production-v1/exports/64/blueprint.png",
+        "56": "art/perks/wick/production-v1/exports/56/blueprint.png",
+        "48": "art/perks/wick/production-v1/exports/48/blueprint.png",
+        "44": "art/perks/wick/production-v1/exports/44/blueprint.png",
+        "40": "art/perks/wick/production-v1/exports/40/blueprint.png"
+      }
     }
   },
   "illustrations": {
