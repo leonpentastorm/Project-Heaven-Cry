@@ -2383,6 +2383,30 @@
         "44": "art/traits/wick/production-v1/exports/44/sigil-savant.png",
         "40": "art/traits/wick/production-v1/exports/40/sigil-savant.png"
       }
+    },
+    "hollow-heart": {
+      "label": "Wick — Hollow Heart",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/hollow-heart.png",
+      "sha256": "fd3fd037700b4356edaba40b41855c8a2fc7f938a161c200445b0753990b69ac",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "hollow_heart",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "B",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/hollow-heart.png",
+        "128": "art/traits/wick/production-v1/exports/128/hollow-heart.png",
+        "64": "art/traits/wick/production-v1/exports/64/hollow-heart.png",
+        "56": "art/traits/wick/production-v1/exports/56/hollow-heart.png",
+        "48": "art/traits/wick/production-v1/exports/48/hollow-heart.png",
+        "44": "art/traits/wick/production-v1/exports/44/hollow-heart.png",
+        "40": "art/traits/wick/production-v1/exports/40/hollow-heart.png"
+      }
     }
   },
   "character_collections": {

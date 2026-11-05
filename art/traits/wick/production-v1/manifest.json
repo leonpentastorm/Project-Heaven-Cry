@@ -741,6 +741,29 @@
       },
       "batch": "B",
       "source_sha256": "d21dfc573b0d8fcbae5de604be50481500a751a41800ffc950c9b2218a880bee"
+    },
+    {
+      "id": "hollow-heart",
+      "data_id": "hollow_heart",
+      "name": "Hollow Heart",
+      "family": "traits",
+      "order": 40,
+      "mood": "Grim, Eerie",
+      "action": "Wick braces wide and thrusts both mittens forward, loosing huge, loud Soul-spell shockwave rings; its lantern window is an empty ring you can see straight through (allowed exception to the cross anchor: the hole is the trait)",
+      "screen": "Calm, flat, unafraid",
+      "prop": "Shockwave rings",
+      "path": "art/traits/wick/production-v1/hollow-heart.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/hollow-heart.png",
+        "128": "art/traits/wick/production-v1/exports/128/hollow-heart.png",
+        "64": "art/traits/wick/production-v1/exports/64/hollow-heart.png",
+        "56": "art/traits/wick/production-v1/exports/56/hollow-heart.png",
+        "48": "art/traits/wick/production-v1/exports/48/hollow-heart.png",
+        "44": "art/traits/wick/production-v1/exports/44/hollow-heart.png",
+        "40": "art/traits/wick/production-v1/exports/40/hollow-heart.png"
+      },
+      "batch": "B",
+      "source_sha256": "5af72f23f43f746dac3494d4659b5d33596ef0b0699c7cdcac408c15f68f4f32"
     }
   ]
 }

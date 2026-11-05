@@ -48,10 +48,11 @@
     "old-school",
     "spray-and-pray",
     "one-shot",
-    "sigil-savant"
+    "sigil-savant",
+    "hollow-heart"
   ],
   "catalog_coverage": {
-    "traits": 41,
+    "traits": 42,
     "perks": 2
   },
   "revision_rounds": {
