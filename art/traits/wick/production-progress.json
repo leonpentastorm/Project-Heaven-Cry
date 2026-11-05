@@ -94,11 +94,12 @@
     "iron-stomach",
     "grim-reaper",
     "bone-talk",
-    "wall-run"
+    "wall-run",
+    "roll-with-it"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 15
+    "perks": 16
   },
   "revision_rounds": {
     "field-surgeon": 3,

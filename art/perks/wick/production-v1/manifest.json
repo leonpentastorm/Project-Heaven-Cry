@@ -304,6 +304,29 @@
       },
       "batch": "D",
       "source_sha256": "c63220ff40a77c0ecfb7ee7b581ad1020d8434071fc6db51f564a013c815d7a3"
+    },
+    {
+      "id": "roll-with-it",
+      "data_id": "roll_with_it",
+      "name": "Roll With It",
+      "family": "perks",
+      "order": 14,
+      "mood": "Comic",
+      "action": "Wick tumbles in a tight forward roll, curled into a ball, as a big sword blade sweeps through the air just above it.",
+      "screen": "Dizzy swirl",
+      "prop": "Sword blade (partial)",
+      "path": "art/perks/wick/production-v1/roll-with-it.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/roll-with-it.png",
+        "128": "art/perks/wick/production-v1/exports/128/roll-with-it.png",
+        "64": "art/perks/wick/production-v1/exports/64/roll-with-it.png",
+        "56": "art/perks/wick/production-v1/exports/56/roll-with-it.png",
+        "48": "art/perks/wick/production-v1/exports/48/roll-with-it.png",
+        "44": "art/perks/wick/production-v1/exports/44/roll-with-it.png",
+        "40": "art/perks/wick/production-v1/exports/40/roll-with-it.png"
+      },
+      "batch": "D",
+      "source_sha256": "72cce8656d47e640a9555456b4b4fc2e19c4dfc19b57fa764b8c3735c6dacec2"
     }
   ]
 }

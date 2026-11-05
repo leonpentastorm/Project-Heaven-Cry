@@ -3587,6 +3587,30 @@
         "44": "art/perks/wick/production-v1/exports/44/wall-run.png",
         "40": "art/perks/wick/production-v1/exports/40/wall-run.png"
       }
+    },
+    "roll-with-it": {
+      "label": "Wick — Roll With It",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/roll-with-it.png",
+      "sha256": "53174d3432e8764758296d4c6b986eaaaba9d71130417e8e4548ad972451ae35",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "roll_with_it",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "D",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/roll-with-it.png",
+        "128": "art/perks/wick/production-v1/exports/128/roll-with-it.png",
+        "64": "art/perks/wick/production-v1/exports/64/roll-with-it.png",
+        "56": "art/perks/wick/production-v1/exports/56/roll-with-it.png",
+        "48": "art/perks/wick/production-v1/exports/48/roll-with-it.png",
+        "44": "art/perks/wick/production-v1/exports/44/roll-with-it.png",
+        "40": "art/perks/wick/production-v1/exports/40/roll-with-it.png"
+      }
     }
   },
   "illustrations": {
