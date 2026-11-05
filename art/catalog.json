@@ -4283,6 +4283,30 @@
         "44": "art/perks/wick/production-v1/exports/44/double-meaning.png",
         "40": "art/perks/wick/production-v1/exports/40/double-meaning.png"
       }
+    },
+    "heart-overload": {
+      "label": "Wick — Heart Overload",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/heart-overload.png",
+      "sha256": "1de31002763ed9b22ca5bd7d180fa859466d6dac7ed703b636f811f0e073ba0e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "heart_overload",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/heart-overload.png",
+        "128": "art/perks/wick/production-v1/exports/128/heart-overload.png",
+        "64": "art/perks/wick/production-v1/exports/64/heart-overload.png",
+        "56": "art/perks/wick/production-v1/exports/56/heart-overload.png",
+        "48": "art/perks/wick/production-v1/exports/48/heart-overload.png",
+        "44": "art/perks/wick/production-v1/exports/44/heart-overload.png",
+        "40": "art/perks/wick/production-v1/exports/40/heart-overload.png"
+      }
     }
   },
   "illustrations": {

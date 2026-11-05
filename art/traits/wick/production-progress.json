@@ -123,11 +123,12 @@
     "soulmate",
     "rally-cry",
     "sweet-talker",
-    "double-meaning"
+    "double-meaning",
+    "heart-overload"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 44
+    "perks": 45
   },
   "revision_rounds": {
     "field-surgeon": 3,

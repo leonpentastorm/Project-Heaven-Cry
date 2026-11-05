@@ -971,6 +971,29 @@
       },
       "batch": "E",
       "source_sha256": "e00a3ea03bbb03b635654a1962c9dc8992cd58c53496ee220b17d0475f322c40"
+    },
+    {
+      "id": "heart-overload",
+      "data_id": "heart_overload",
+      "name": "Heart Overload",
+      "family": "perks",
+      "order": 43,
+      "mood": "Grim, Heroic",
+      "action": "Wick lunges, thrusting an Emanator gauntlet that pours out a flowing ribbon blast, while thick cracks spider out from its own lantern heart.",
+      "screen": "Gritted teeth",
+      "prop": "Emanator gauntlet",
+      "path": "art/perks/wick/production-v1/heart-overload.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/heart-overload.png",
+        "128": "art/perks/wick/production-v1/exports/128/heart-overload.png",
+        "64": "art/perks/wick/production-v1/exports/64/heart-overload.png",
+        "56": "art/perks/wick/production-v1/exports/56/heart-overload.png",
+        "48": "art/perks/wick/production-v1/exports/48/heart-overload.png",
+        "44": "art/perks/wick/production-v1/exports/44/heart-overload.png",
+        "40": "art/perks/wick/production-v1/exports/40/heart-overload.png"
+      },
+      "batch": "E",
+      "source_sha256": "d44a4bd5aba1cc3d04fb8fb3032b5af71b921dca8d3607c551ae1a1aa8c60063"
     }
   ]
 }
