@@ -3143,6 +3143,30 @@
         "44": "art/traits/wick/production-v1/exports/44/moon-hunter.png",
         "40": "art/traits/wick/production-v1/exports/40/moon-hunter.png"
       }
+    },
+    "beast-handler": {
+      "label": "Wick — Beast Handler",
+      "collection": "wick-production-v1",
+      "path": "art/traits/wick/production-v1/beast-handler.png",
+      "sha256": "3fb0f35869d7dd730a0f956b7545da688635249b3c2037bf54e49c3ee0cda2fb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "trait icon",
+      "data_id": "beast_handler",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "C",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/beast-handler.png",
+        "128": "art/traits/wick/production-v1/exports/128/beast-handler.png",
+        "64": "art/traits/wick/production-v1/exports/64/beast-handler.png",
+        "56": "art/traits/wick/production-v1/exports/56/beast-handler.png",
+        "48": "art/traits/wick/production-v1/exports/48/beast-handler.png",
+        "44": "art/traits/wick/production-v1/exports/44/beast-handler.png",
+        "40": "art/traits/wick/production-v1/exports/40/beast-handler.png"
+      }
     }
   },
   "character_collections": {

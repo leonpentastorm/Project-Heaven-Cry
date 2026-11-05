@@ -1470,6 +1470,29 @@
       },
       "batch": "C",
       "source_sha256": "d18f8d1758db017be6c238156cd35f2a301149fccfab3eee25fd5b06087e68b6"
+    },
+    {
+      "id": "beast-handler",
+      "data_id": "beast_handler",
+      "name": "Beast Handler",
+      "family": "traits",
+      "order": 73,
+      "mood": "Tender",
+      "action": "Wick rides belly-down on a huge shaggy back, the beast's head off-frame and only one ear showing, hugging the fur",
+      "screen": "Content closed eyes",
+      "prop": "The beast's back (partial)",
+      "path": "art/traits/wick/production-v1/beast-handler.png",
+      "exports": {
+        "256": "art/traits/wick/production-v1/exports/256/beast-handler.png",
+        "128": "art/traits/wick/production-v1/exports/128/beast-handler.png",
+        "64": "art/traits/wick/production-v1/exports/64/beast-handler.png",
+        "56": "art/traits/wick/production-v1/exports/56/beast-handler.png",
+        "48": "art/traits/wick/production-v1/exports/48/beast-handler.png",
+        "44": "art/traits/wick/production-v1/exports/44/beast-handler.png",
+        "40": "art/traits/wick/production-v1/exports/40/beast-handler.png"
+      },
+      "batch": "C",
+      "source_sha256": "e571090a085db3abb6c14f08cc0bcdae518151c4c67ddb1dc838a9d1cde96963"
     }
   ]
 }

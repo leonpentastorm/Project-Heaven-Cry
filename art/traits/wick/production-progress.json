@@ -79,10 +79,11 @@
     "crawler-blooded",
     "old-timer",
     "pacifist",
-    "moon-hunter"
+    "moon-hunter",
+    "beast-handler"
   ],
   "catalog_coverage": {
-    "traits": 72,
+    "traits": 73,
     "perks": 2
   },
   "revision_rounds": {
