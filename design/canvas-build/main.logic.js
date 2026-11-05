@@ -112,6 +112,10 @@ class Component extends DCLogic {
         bonus: lv.attack_bonus ? '+' + lv.attack_bonus + ' to hit' : '+0 to hit', perk: perks.length ? 'Perk: ' + perks.join(', ') : 'Perk at ' + D.wm.levels[1].kills + ' kills',
         fill: 'height: 100%; border-radius: 99px; background: #E7EBF3; width: ' + (nx ? Math.round((kills - lo) / (hi - lo) * 100) : 100) + '%' };
     });
+    // Acquired perks at Mastery 1 (3 points). Requirement chips use the attribute's UI ink (colour-system.md, Icons).
+    const perks = [['rally_cry', 'camaraderie'], ['roll_with_it', 'athletics']].map(([id, sk]) => { const k = D.perks.find((x) => x.id === id), ink = ATTR[SK[sk].attr].ink;
+      return { name: k.name, tier: 'ACQUIRED · TIER I', text: k.text, icon: k.icon, chip: SK[sk].name + ' ' + PTS[sk],
+        chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink }; });
     const eoe = { locked: true, why: 'Needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator. Nobody in the squad can crack it yet.' };
     const bio = [['Original name', 'M1.4 8R4-D83-RRY'], ['Unit', '258th Medical Unit'], ['Origin', 'The Factory · Thousand-Planet frontier'], ['Race', 'Robot'], ['Age', '7'], ['Height', '180 cm'], ['Blood type', 'Oil'],
       ['Gender', 'Plug'], ['Main hand', 'Right'], ['Trivia', 'Can\'t tell a joke. Cooks well. Never leaves a teammate behind.']].map(([k, v]) => ({ k, v }));
@@ -148,7 +152,7 @@ class Component extends DCLogic {
       waiting: !rolled, rolled, rolledA: rolled && S.throws % 2 === 1, rolledB: rolled && S.throws % 2 === 0,
       throwDie: () => this.setState({ phase: 'rolled', throws: this.state.throws + 1 }),
       ...epccgVals(this), echoPips, echo: S.echo, pc: { img: D.pc }, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
-      status, rep, gear, emptySlots, mastery, eoe, bio, wick: D.wick, factoryIcon: D.factoryIcon, pilot: D.pilot, outpost: D.outpost, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
+      status, rep, perks, gear, emptySlots, mastery, eoe, bio, wick: D.wick, factoryIcon: D.factoryIcon, pilot: D.pilot, outpost: D.outpost, npc: D.npc, p2: D.p2, voices, pushImg: SK.camaraderie.img,
       showPush: S.push === 'open', pushDone: S.push !== 'open', pushResult, indulge, resist, cantResist: S.echo < 1,
       actions, order, dice: S.dice, roll, closeDice: () => this.setState({ dice: false }),
       reroll: () => { if (this.state.echo < 1) return; const ix = this.state.rollIx + 1; this.setState({ echo: this.state.echo - 1, rollIx: ix, throws: this.state.throws + 1, roll: { ...this.state.roll, die: DICE[ix % DICE.length] } }); },

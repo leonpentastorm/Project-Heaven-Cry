@@ -16,8 +16,9 @@ a{color:#8BDEEE}a:hover{color:#E7EBF3}
 input,select,textarea{font-family:'Chakra Petch',sans-serif}
 @keyframes phcThrow{0%{transform:translate(-220px,140px) rotate(-540deg) scale(.55);opacity:0}55%{transform:translate(40px,-30px) rotate(40deg) scale(1.05);opacity:1}75%{transform:translate(-12px,8px) rotate(-14deg)}100%{transform:translate(0,0) rotate(0) scale(1)}}
 @keyframes phcThrow2{0%{transform:translate(220px,140px) rotate(540deg) scale(.55);opacity:0}55%{transform:translate(-40px,-30px) rotate(-40deg) scale(1.05);opacity:1}75%{transform:translate(12px,8px) rotate(14deg)}100%{transform:translate(0,0) rotate(0) scale(1)}}
+.phc-icon{transition:transform .15s ease;transform-origin:center}.phc-icon:hover{transform:scale(1.35)}
 .phc-help{opacity:.3;transition:opacity .15s}.phc-card:hover .phc-help,.phc-help:hover,.phc-help:focus-visible{opacity:1}
-@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </helmet>
 <div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
@@ -237,7 +238,7 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <sc-for list="{{traitCards}}" as="t" hint-placeholder-count="6">
 <article style="{{t.style}}">
 <div style="display: flex; gap: 12px; align-items: flex-start">
-<img src="{{t.icon}}" alt="" style="width: 56px; height: 56px; flex: none">
+<img class="phc-icon" src="{{t.icon}}" alt="" style="width: 56px; height: 56px; flex: none">
 <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 18px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
 </div>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
@@ -324,7 +325,7 @@ input,select,textarea{font-family:'Chakra Petch',sans-serif}
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
 <sc-for list="{{traitFull}}" as="t" hint-placeholder-count="1">
 <article style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
-<div style="display: flex; gap: 12px; align-items: center"><img src="{{t.icon}}" alt="" style="width: 48px; height: 48px; flex: none"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></span></div>
+<div style="display: flex; gap: 12px; align-items: center"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 48px; height: 48px; flex: none"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></span></div>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
 <sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
 <sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>

@@ -9,7 +9,8 @@ Shared visual language: near-black ground; skills in their attribute's colour (9
 - **Header:** wordmark, Story/Combat switch, Narrator chip ("AI · your key"), room code, settings.
 - **Left: character panel.** Portrait, HP/MP/XP bars, Echo, Supplies and Karma. Five tabs, which together cover the 2020 Excel character sheet:
   - **Skills:** core tabs, attributes and skills, modifiers, signature tags.
-  - **Status:** derived combat stats, Leadership, Karma, Reputation per faction, traits, perks, buffs and debuffs.
+  - **Status:** derived combat stats, Leadership, Karma, Reputation per faction, traits, perks (each with its requirement chips in the attribute's UI ink), buffs and debuffs.
+  - **Trait and perk icons** zoom a little (×1.35) on hover everywhere they appear, so the small Wick drawing can be read; with reduced motion the zoom still happens, without the animation.
   - **Gear:** both hands, weapon mastery, the armour slots (head, torso, hands, footwear…; torso sets Armour Class), backpack load against carry weight, and inventory. The prototype shows the filled slots, a line of empty ones (the Veil included), the Essence of Experience with a **Crack the Essence** button that stays locked until someone in the squad qualifies, and **weapon mastery** per family: level, kills with a neutral progress bar toward the next level, attack bonus and weapon perks.
   - **Magic:** Sigils, Soul spells, Blessing.
   - **Bio:** the Character Bio sheet fields.

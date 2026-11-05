@@ -67,7 +67,17 @@
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</span>
-<div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><img src="{{factoryIcon}}" alt="" style="width: 44px; height: 44px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">Factory Made</span><span style="font-size: 12px; color: #A3AEC2">Immune to poison, bleed and suffocation</span></span></div>
+<div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><img class="phc-icon" src="{{factoryIcon}}" alt="" style="width: 44px; height: 44px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">Factory Made</span><span style="font-size: 12px; color: #A3AEC2">Immune to poison, bleed and suffocation</span></span></div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">PERKS</span>
+<sc-for list="{{perks}}" as="k" hint-placeholder-count="2">
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
+<img class="phc-icon" src="{{k.icon}}" alt="" style="width: 44px; height: 44px; flex: none">
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 700">{{k.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{k.tier}}</span><span style="{{k.chipStyle}}">{{k.chip}}</span></span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{k.text}}</span>
+</span>
+</div>
+</sc-for>
 </div>
 </sc-if>
 
