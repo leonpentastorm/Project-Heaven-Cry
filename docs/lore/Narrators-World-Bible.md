@@ -43,8 +43,13 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 - **Create, never erase.** A Celestial can create (a people, a monster, a curse, a whole plot) but can't intervene to remove what exists. So plots get started for fun and abandoned when their maker gets bored, and the consequences stay. The world is full of them.
 - **Only by cause.** A Celestial appears in the world only through a cause: a summoning, a miracle answering a prayer, a pact. **A Celestial appearing without a cause is a very big deal.**
 - **The Unspoken Name** (above).
+- **The Veil exception** (below).
 
-**Suggested: the Veil exception.** The Progenitors were hunted, which looks like intervention to erase. Proposed reconciliation: the Veil is the one exception the Accords allow. An NPC who *proves* the truth may be erased. Suspicion isn't proof, which is why the Progenitors' descendants are still alive. (Needs Leon's confirmation.)
+**The Veil exception (canon).** The Veil is the one exception the Accords allow to "create, never erase": an NPC who *proves* the truth may be erased. That is why the Progenitors were hunted. Suspicion isn't proof, which is why their descendants are still alive, and why Anti-Heaven Operations Command must never find the proof it was founded to find.
+
+**Heroes are patches (canon).** A Celestial who regrets a creation can't erase it; it can only create something new to stop it. So some of the world's heroes and legends are a Celestial's patch for its own mistake: made with exactly the gifts to end one monster, one curse, one plot. A player character might be one without knowing it.
+
+**Celestial politics (canon).** Celestials are mega-powerful humans, and where there are humans there is politics. They don't fight, but they lobby, trade favours and bot quotas, form cliques around shared tastes, hold grudges, argue the Knowing, renegotiate the Accords, and sulk. **Suggested** shapes for it: Accord sessions where clauses are amended; cliques by genre (the ones who build academy stories, the ones who think that's cringe); patrons competing for worshippers; a Celestial who loses a vote and takes it out on a plot. Their politics is the weather NPCs live under.
 
 **Suggested Accord clauses**
 
