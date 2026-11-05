@@ -1,5 +1,7 @@
 # Version 1.3 — 5 November 2026
 
+- **Wick's modes:** flat white ink is for trait and perk icons only (plus the welcome mark used as the app icon, `art/mascot/`). The Narrator's avatar is a fully 3D, rendered Wick: `art/briefs/wick-narrator-3d.md`. Section 11, "Wick's modes".
+
 - **Review 1 fixes:** seven versioned revisions preserve first attempts and the approved three. UI exports now include 44/48/56 px. Leon requested continuous per-image delivery after the fixes; progress and incremental validation distinguish delivered candidates from full coverage and production approval.
 - **Wick review 1 and production rules:** three test icons approved, six to revise, one redo. New binding rules for every trait and perk icon (no lettering, one full figure, a big single prop, an ink-weight range, checks at the UI's 44/48/56 px) in section 14. Production brief for all 74 traits and 76 perks: `art/briefs/wick-production-icons.md`.
 

@@ -2954,5 +2954,19 @@
       "spoiler": true,
       "visibility": "ending-only"
     }
+  },
+  "mascot": {
+    "wick-welcome": {
+      "label": "Wick — welcome pose (app mark)",
+      "path": "art/mascot/wick-welcome.png",
+      "sha256": "757b112eb8a7a3b7c263f56daa2ba211308bca455e463d0e6d1b1b54353e6939",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "UI: Wick's own mark, top-left app icon on the creation screens",
+      "status": "approved",
+      "approved_by": "Leon, 5 November 2026"
+    }
   }
 }
