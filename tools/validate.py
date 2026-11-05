@@ -206,6 +206,8 @@ if isinstance(arch, dict):
             for x, v in at.items():
                 if v > co[attr_core[x]] or v > CAPC or v < 1:
                     errors.append(f"archetype {aid}: attribute {x} {v} breaks a cap")
+            if a.get("family") != "all_in" and sum(1 for v in co.values() if v > 1) < 2:
+                errors.append(f"archetype {aid}: regular presets spread over at least two Cores (only All-in goes single-Core)")
             for c, v in co.items():
                 top_attr = max([at[x] for x in at if attr_core[x] == c] + [1])
                 if v != top_attr:

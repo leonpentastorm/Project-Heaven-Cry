@@ -20,18 +20,20 @@ CORE_OF = {a["id"]: a["core"] for a in attrs}
 ALL = [a["id"] for a in attrs]
 
 # Where each role puts points its skills don't need (after the attributes the skills use).
+# Regular presets spread over at least two Cores (Leon); the last entry is often the second Core's attribute.
+# Only the All-in family goes single-Core.
 EXTRA = {
-    "bulwark": ["endurance", "strength"], "bodyguard": ["endurance", "agility"], "brawler": ["strength", "endurance"],
-    "berserker": ["strength", "endurance"], "fencer": ["agility", "strength"], "monk": ["agility", "strength", "determination"],
+    "bulwark": ["endurance", "strength", "determination"], "bodyguard": ["endurance", "agility"], "brawler": ["strength", "endurance", "determination"],
+    "berserker": ["strength", "endurance", "determination"], "fencer": ["agility", "strength", "perception"], "monk": ["agility", "strength", "determination"],
     "sharpshooter": ["perception", "agility"], "heavy_gunner": ["strength", "endurance", "perception"],
     "ranger": ["perception", "agility", "endurance"], "grenadier": ["strength", "perception", "endurance"],
     "infiltrator": ["agility", "perception"], "stalker": ["agility", "perception"], "thief": ["agility", "perception"],
-    "spy": ["expression", "perception"], "sigilist": ["intelligence", "expression"], "sentinel": ["intelligence", "determination"],
-    "enchanter": ["intelligence", "expression"], "jinx": ["intelligence", "expression"], "detective": ["intelligence", "perception"],
-    "engineer": ["perception", "intelligence"], "scholar": ["intelligence", "perception"], "stormcaller": ["determination", "virtue"],
-    "mender": ["insight", "virtue"], "confessor": ["virtue", "insight"], "zealot": ["virtue", "determination"],
-    "witch": ["determination", "insight"], "harbinger": ["insight", "determination"], "silver_tongue": ["expression", "insight"],
-    "troubadour": ["insight", "virtue"], "captain": ["virtue", "insight"], "enforcer": ["strength", "virtue"],
+    "spy": ["expression", "perception"], "sigilist": ["intelligence", "expression", "endurance"], "sentinel": ["intelligence", "determination"],
+    "enchanter": ["intelligence", "expression", "insight"], "jinx": ["intelligence", "expression", "insight"], "detective": ["intelligence", "perception", "insight"],
+    "engineer": ["perception", "intelligence", "agility"], "scholar": ["intelligence", "perception", "determination"], "stormcaller": ["determination", "virtue"],
+    "mender": ["insight", "virtue", "endurance"], "confessor": ["virtue", "insight", "endurance"], "zealot": ["virtue", "determination"],
+    "witch": ["determination", "insight", "intelligence"], "harbinger": ["insight", "determination"], "silver_tongue": ["expression", "insight"],
+    "troubadour": ["insight", "virtue", "expression"], "captain": ["virtue", "insight", "endurance"], "enforcer": ["strength", "virtue"],
     "spellblade": ["intelligence", "agility"], "crusader": ["virtue", "endurance"], "witch_hunter": ["agility", "perception"],
     "field_medic": ["insight", "endurance", "agility"], "survivor": ["endurance", "agility", "perception"], "drifter": ["endurance", "insight"],
     # All-in: everything in one Core (7/1/1)
