@@ -1,0 +1,95 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
+<nav aria-label="Mode" style="display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F">
+<a href="Main.dc.html" style="padding: 8px 16px; border-radius: 7px; color: #A3AEC2; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">STORY</a>
+<a href="Combat.dc.html" aria-current="page" style="padding: 8px 16px; border-radius: 7px; background: #3A1E1E; color: #F65157; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">COMBAT</a>
+</nav>
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ROUND 2 · M813 REAR PAD</span>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">AMBIENT MANA</span>
+<div style="width: 160px; height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="width: 47.5%; height: 100%; background: #AE9BFF"></div></div>
+<span style="font-size: 13px; font-weight: 700">19 · NORMAL</span>
+</div>
+</header>
+
+<div aria-label="Initiative order" style="display: flex; gap: 10px; padding: 10px 24px; border-bottom: 1px solid #232D3F; overflow-x: auto">
+<sc-for list="{{initiative}}" as="i" hint-placeholder-count="5">
+<div style="{{i.style}}">
+<sc-if value="{{i.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{i.img}}" alt="" style="{{i.imgStyle}}"></sc-if>
+<sc-if value="{{i.noImg}}" hint-placeholder-val="{{false}}"><span style="{{i.badgeStyle}}">{{i.short}}</span></sc-if>
+<span style="display: flex; flex-direction: column"><span style="font-size: 13px; font-weight: 700">{{i.name}}</span><span style="font-size: 11px; color: #A3AEC2">INIT {{i.init}}</span></span>
+</div>
+</sc-for>
+</div>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px; padding: 18px 24px">
+<section aria-label="Tactical grid" style="flex: 999 1 760px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="overflow-x: auto"><div style="display: grid; grid-template-columns: repeat(16, 46px); grid-auto-rows: 46px; gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
+<button type="button" onClick="{{t.click}}" aria-label="{{t.label}}" style="{{t.style}}">
+<sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
+<sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
+<sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span style="font-size: 9px; letter-spacing: 0.06em; color: #7F8BA1">{{t.text}}</span></sc-if>
+</button>
+</sc-for>
+</div></div>
+<div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid #E7EBF3"></span>Squad</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border-radius: 3px; border: 2px solid #F65157"></span>Hostile</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3"></span>Move range</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #2A2113"></span>Half cover (crates)</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #1C2536"></span>Full cover (hull)</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBAT LOG</span>
+<sc-for list="{{log}}" as="l" hint-placeholder-count="3"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 15px; line-height: 1.55; color: #DCE2EC">{{l.text}}</p></sc-for>
+</div>
+</section>
+
+<aside aria-label="Turn" style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; gap: 12px; align-items: center">
+<img src="{{pc}}" alt="MPAT (portrait stand-in)" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000">
+<div style="display: flex; flex-direction: column"><span style="font-size: 18px; font-weight: 700">MPAT's turn</span><span style="font-size: 12px; color: #A3AEC2">HP 120 / 120 · Supplies 3 · Echo 1</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2"><span>ACTION POINTS</span><span style="color: #E7EBF3; font-weight: 700">{{apText}}</span></div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{apPips}}" as="p" hint-placeholder-count="6"><span style="{{p.style}}"></span></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{g.name}}</span>
+<sc-for list="{{g.items}}" as="a" hint-placeholder-count="4">
+<button type="button" onClick="{{a.pick}}" disabled="{{a.locked}}" aria-pressed="{{a.pressed}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="font-size: 15px; font-weight: 700">{{sel.name}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">{{sel.text}}</span>
+<span style="font-size: 12px; color: #A3AEC2">{{sel.extra}}</span>
+</div>
+<sc-if value="{{hasTarget}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; gap: 12px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #F65157">
+<sc-if value="{{target.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{target.img}}" alt="" style="width: 64px; height: 80px; object-fit: cover; border-radius: 6px; background: #000"></sc-if>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #F65157">TARGET</span>
+<span style="font-size: 16px; font-weight: 700">{{target.name}}</span>
+<div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{target.hpFill}}"></div></div>
+<span style="font-size: 12px; color: #A3AEC2">{{target.line}}</span>
+<span style="font-size: 13px; font-weight: 700">{{target.odds}}</span>
+</div>
+</div>
+</sc-if>
+<div style="display: flex; gap: 10px">
+<button type="button" onClick="{{confirm}}" disabled="{{cantConfirm}}" style="flex: 1; min-height: 46px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Confirm</button>
+<button type="button" onClick="{{endTurn}}" style="flex: 1; min-height: 46px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
+</div>
+</aside>
+</div>
+</div>

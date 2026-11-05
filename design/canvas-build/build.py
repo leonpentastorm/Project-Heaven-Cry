@@ -41,7 +41,7 @@ def skills():
     for x in load("skills.json")["items"]:
         out.append({
             "id": x["id"], "name": x["name"], "attr": x["attribute"], "core": x["core"], "slot": x["slot"],
-            "summary": x["summary"], "quiet": x["voice"]["sample_lines"]["quiet"],
+            "summary": x["summary"], "quiet": x["voice"]["sample_lines"]["quiet"], "notices": x["voice"]["sample_lines"]["notices"],
             "img": BLOBS["skill-" + x["id"].replace("_", "-")],
         })
     return out
@@ -53,6 +53,17 @@ def attrs():
 
 def classes():
     return [{"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "sig": b["signature"]} for b in load("classes.json")["base"]]
+
+def classes_full():
+    out = []
+    for b in load("classes.json")["base"]:
+        m = b["ranks"]["I"]["moves"][0]
+        res = b["resource"]
+        out.append({"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "sig": b["signature"],
+                    "resource": res["id"].capitalize() + (" (max " + str(res["max"]) + ")" if res.get("max") else ""),
+                    "move": m["name"].upper(), "moveText": m["text"]})
+    return out
+
 
 def archetypes():
     d = load("archetypes.json")
@@ -149,6 +160,21 @@ def build():
     ]:
         (OUT / fname).write_text(wrapper(title, step, arch, name, h))
     print("built Create + 5 step artboards")
+    mdata = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
+             "npc": BLOBS["char-drava-keel"], "pilot": BLOBS["world-pilot"], "wick": BLOBS["wick-mind-without-fog"]}
+    tpl = (BUILD / "main.template.html").read_text()
+    js = (BUILD / "main.logic.js").read_text().replace("__DATA__", json.dumps(mdata, ensure_ascii=False))
+    (OUT / "Main.dc.html").write_text(page("PHC · Story mode · M813", tpl, js, '{"$preview":{"width":1440,"height":1240}}'))
+    print("built Main")
+    common = {"skills": skills(), "attrs": attrs(), "core": CORE, "pc": BLOBS["char-mallow-3"], "p2": BLOBS["char-inspectant-latch-7"],
+              "p3": BLOBS["char-drava-keel"], "npc": BLOBS["char-drava-keel"], "wick": BLOBS["wick-mind-without-fog"], "classes": classes_full()}
+    for name, fname, title, h in [("combat", "Combat.dc.html", "PHC · Combat · M813 rear pad", 1160),
+                                  ("room", "Room.dc.html", "PHC · Room · squad and Narrator", 900),
+                                  ("levelup", "LevelUp.dc.html", "PHC · Level up · level 3 and class", 1200)]:
+        tpl = (BUILD / (name + ".template.html")).read_text()
+        js = (BUILD / (name + ".logic.js")).read_text().replace("__DATA__", json.dumps(common, ensure_ascii=False))
+        (OUT / fname).write_text(page(title, tpl, js, '{"$preview":{"width":1440,"height":%d}}' % h))
+    print("built Combat, Room, LevelUp")
 
 
 if __name__ == "__main__":

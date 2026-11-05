@@ -1,0 +1,190 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
+<nav aria-label="Mode" style="display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F">
+<a href="Main.dc.html" aria-current="page" style="padding: 8px 16px; border-radius: 7px; background: #1C2536; color: #E7EBF3; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">STORY</a>
+<a href="Combat.dc.html" style="padding: 8px 16px; border-radius: 7px; color: #A3AEC2; text-decoration: none; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">COMBAT</a>
+</nav>
+<span style="padding: 6px 12px; border-radius: 999px; border: 1px solid #232D3F; font-size: 12px; color: #A3AEC2">AI NARRATOR · YOUR KEY</span>
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ROOM 7Q-M813</span>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ECHO</span>
+<sc-for list="{{echoPips}}" as="e" hint-placeholder-count="3"><span style="{{e.style}}" aria-hidden="true"></span></sc-for>
+<span style="font-size: 13px; font-weight: 700; color: #FFFFFF">{{echo}} / 3</span>
+</div>
+</header>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 0; min-height: 0">
+
+<aside aria-label="Character sheet" style="flex: 1 1 340px; max-width: 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
+<div style="display: flex; gap: 14px">
+<img src="{{pc.img}}" alt="MPAT (portrait stand-in)" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">MPAT</span>
+<span style="font-size: 12px; color: #A3AEC2; line-height: 1.4">M1.4 8R4-D83-RRY · 258th Medical Unit</span>
+<span style="font-size: 12px; color: #A3AEC2; line-height: 1.4">Level 5 · Combat Medic I · Thousand-Planet frontier</span>
+<span style="font-size: 11px; color: #7F8BA1">Portrait: stand-in until MPAT is painted</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 34px minmax(0, 1fr) 76px; gap: 8px; align-items: center">
+<span style="{{b.labelStyle}}">{{b.label}}</span>
+<div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div>
+<span style="font-size: 12px; text-align: right; color: #C9D3E3">{{b.text}}</span>
+</div>
+</sc-for>
+</div>
+<div role="tablist" aria-label="Sheet" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+
+<sc-if value="{{tabSkills}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 6px">
+<sc-for list="{{coreTabs}}" as="c" hint-placeholder-count="3"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #A3AEC2">Ask a skill what it thinks: once per scene each.</span>
+<sc-for list="{{sheetSkills}}" as="s" hint-placeholder-count="9">
+<div style="display: grid; grid-template-columns: 36px minmax(0, 1fr) 52px 54px; gap: 8px; align-items: center">
+<img src="{{s.img}}" alt="" style="width: 36px; height: 45px; object-fit: cover; border-radius: 4px; background: #000">
+<span style="display: flex; flex-direction: column; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.attr}}</span></span>
+<span style="{{s.modStyle}}">{{s.pts}} · {{s.mod}}</span>
+<button type="button" onClick="{{s.ask}}" disabled="{{s.noAsk}}" aria-label="Ask {{s.name}}" style="{{s.askStyle}}">{{s.askLabel}}</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{tabStatus}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
+<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{r.k}}</span><span>{{r.v}}</span></div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</span>
+<div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><img src="{{wick}}" alt="" style="width: 44px; height: 44px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">Factory Made</span><span style="font-size: 12px; color: #A3AEC2">Immune to poison, bleed and suffocation</span></span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{tabGear}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{gear}}" as="g" hint-placeholder-count="5"><div style="display: flex; justify-content: space-between; gap: 10px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; font-size: 13px"><span style="font-weight: 600">{{g.name}}</span><span style="color: #A3AEC2">{{g.note}}</span></div></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{tabBio}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{bio}}" as="b" hint-placeholder-count="8"><div style="display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{b.k}}</span><span>{{b.v}}</span></div></sc-for>
+</div>
+</sc-if>
+</aside>
+
+<main aria-label="Story" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
+<figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
+<img src="{{pilot}}" alt="Chapter illustration (placeholder: the approved world pilot)" style="width: 100%; height: 260px; object-fit: cover; display: block">
+<figcaption style="position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px; background: rgba(10, 13, 19, 0.82); display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; letter-spacing: 0.24em; color: #A3AEC2">M813 · CHAPTER ONE</span>
+<span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">The Last Ship Out</span>
+</figcaption>
+</figure>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC">27 July 4084, Central City reckoning. Regiment 093 has met its quota on M813 and is leaving. Above the rear pad, black hole B813 bends the starlight into a thin bright ring. Twenty-three infantry robots sit where they stopped walking. Some still have legs.</p>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC">The last ship's engines are idling. Its hold is full of platinum. At the top of the ramp, <span style="color: #F2A54A; font-weight: 600">Chief Engineer Keel</span> wipes her hands on a rag and doesn't look at any of you.</p>
+
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<img src="{{npc}}" alt="Chief Engineer Keel" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex: none">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; letter-spacing: 0.16em; color: #F2A54A">CHIEF ENGINEER KEEL</span>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.6">“Not enough thrust. We take you, we never shake their targeting. You're scrap. Shut yourselves down.”</p>
+</div>
+</div>
+
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<img src="{{p2}}" alt="Ninety-Two, player 2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; background: #000; flex: none">
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 17px; line-height: 1.6; color: #C9D3E3"><span style="color: #4FC8DF; font-weight: 600">Ninety-Two</span> hoists 4-Ten's torso onto its shoulders. “I'm carrying him up that ramp. She can shoot me first.”</p>
+</div>
+
+<sc-for list="{{voices}}" as="v" hint-placeholder-count="2">
+<div style="{{v.style}}">
+<img src="{{v.img}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="{{v.headStyle}}">{{v.head}}</span>
+<p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 17px; line-height: 1.55">{{v.line}}</p>
+</div>
+</div>
+</sc-for>
+
+<sc-if value="{{showPush}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #EB95B7">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<img src="{{pushImg}}" alt="" style="width: 56px; height: 70px; object-fit: cover; border-radius: 6px; background: #000; flex: none">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: #EB95B7">CAMARADERIE PUSHES · OVERREACH · ONLY YOU SEE THIS</span>
+<p style="margin: 0; font-family: 'Spectral', serif; font-style: italic; font-size: 18px; line-height: 1.55">The order says leave them. The order is wrong. Your people come first.</p>
+<span style="font-size: 13px; color: #A3AEC2">If you indulge: you side with the squad, whatever the orders say.</span>
+</div>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" onClick="{{indulge}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Indulge · +1 Echo</button>
+<button type="button" onClick="{{resist}}" disabled="{{cantResist}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">Resist · −1 Echo</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{pushDone}}" hint-placeholder-val="{{false}}">
+<p style="margin: 0; padding: 12px 16px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; font-size: 14px; color: #C9D3E3">{{pushResult}}</p>
+</sc-if>
+
+<p style="margin: 0; font-size: 14px; color: #A3AEC2"><span style="color: #D36A90; font-weight: 700; letter-spacing: 0.12em">AUTHORITY</span> · Hard 16 · d20 9 + 1 = 10 · <span style="color: #A3AEC2; font-weight: 700">✕ FAILURE</span>. Keel doesn't move.</p>
+</div>
+
+<div style="position: sticky; bottom: 0; border-top: 1px solid #232D3F; background: #0A0D13; padding: 14px 32px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{actions}}" as="a" hint-placeholder-count="4">
+<button type="button" onClick="{{a.roll}}" style="{{a.style}}"><span style="font-weight: 600">{{a.title}}</span><span style="{{a.tagStyle}}">{{a.tag}}</span></button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px">
+<input aria-label="What do you do?" placeholder="Say or do something…" style="flex: 1; min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-size: 15px">
+<button type="button" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Send</button>
+</div>
+</div>
+</main>
+
+<aside aria-label="Map and speaking order" style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">AREA · M813 REAR PAD</span>
+<div style="position: relative; height: 230px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; overflow: hidden">
+<div style="position: absolute; left: 14px; top: 14px; width: 150px; height: 120px; border: 1px dashed #3B475D; border-radius: 8px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #A3AEC2">LANDING PAD</div>
+<div style="position: absolute; right: 14px; top: 24px; width: 120px; height: 70px; border: 1px solid #F2A54A; border-radius: 8px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #F2A54A">SHIP · RAMP · HATCH</div>
+<div style="position: absolute; right: 30px; bottom: 20px; width: 90px; height: 44px; border: 1px solid #3B475D; border-radius: 6px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #A3AEC2">PLATINUM</div>
+<div style="position: absolute; left: 14px; bottom: 16px; width: 170px; height: 56px; border: 1px solid #F65157; border-radius: 6px; padding: 6px; box-sizing: border-box; font-size: 11px; color: #F65157">23 DAMAGED ROBOTS</div>
+<span style="position: absolute; left: 70px; top: 60px; width: 14px; height: 14px; border-radius: 50%; background: #E7EBF3" aria-hidden="true"></span>
+<span style="position: absolute; left: 98px; top: 72px; width: 14px; height: 14px; border-radius: 50%; background: #4FC8DF" aria-hidden="true"></span>
+</div>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
+<sc-for list="{{order}}" as="o" hint-placeholder-count="3">
+<div style="display: flex; gap: 10px; align-items: center"><img src="{{o.img}}" alt="" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000"><span style="flex: 1; font-size: 14px">{{o.name}}</span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
+</sc-for>
+<div style="display: flex; gap: 8px">
+<button type="button" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button>
+<button type="button" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Request turn</button>
+</div>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">Everyone speaks once; then the Narrator answers all of it together.</span>
+</aside>
+</div>
+
+<sc-if value="{{dice}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="Dice roll" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.86); display: grid; place-items: center; z-index: 10">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 40px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; min-width: 360px">
+<span style="{{roll.headStyle}}">{{roll.head}}</span>
+<span style="font-size: 96px; font-weight: 700; line-height: 1">{{roll.die}}</span>
+<span style="font-size: 18px; color: #C9D3E3">{{roll.math}}</span>
+<span style="{{roll.verdictStyle}}">{{roll.verdict}}</span>
+<div style="display: flex; gap: 10px">
+<button type="button" onClick="{{reroll}}" disabled="{{noReroll}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">◆ Spend Echo · reroll</button>
+<button type="button" onClick="{{closeDice}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Continue</button>
+</div>
+</div>
+</div>
+</sc-if>
+</div>

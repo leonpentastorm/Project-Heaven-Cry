@@ -1,0 +1,53 @@
+<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+<header style="display: flex; align-items: center; gap: 16px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<img src="{{pc}}" alt="MPAT (portrait stand-in)" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000">
+<div style="display: flex; flex-direction: column"><span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">END OF SESSION 1 · 250 XP</span><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">MPAT reaches level 3</span></div>
+<div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap">
+<span style="padding: 6px 12px; border-radius: 999px; border: 1px solid #F65157; color: #F65157; font-size: 12px; font-weight: 700; letter-spacing: 0.1em">HP +5 → 110</span>
+<span style="{{pointChipStyle}}">{{pointChip}}</span>
+<span style="{{classChipStyle}}">{{classChip}}</span>
+</div>
+</header>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
+<section aria-label="Choose your class" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">Your class has found you</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 66ch">You choose among the classes with your two highest signature totals. Spend your skill point first if you like: it can change the list.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px">
+<sc-for list="{{classCards}}" as="c" hint-placeholder-count="3">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">
+<span style="display: flex; justify-content: space-between; width: 100%; align-items: baseline"><span style="{{c.nameStyle}}">{{c.name}}</span><span style="font-size: 12px; color: #A3AEC2">signature {{c.total}}</span></span>
+<span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{c.meta}}</span>
+<span style="font-size: 13px; color: #C9D3E3">Signature: {{c.sig}}</span>
+<span style="font-size: 13px; color: #C9D3E3">Resource: {{c.resource}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 8px; background: #0A0D13; width: 100%; box-sizing: border-box"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">RANK I · {{c.move}}</span><span style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{c.moveText}}</span></span>
+<span style="font-size: 12px; color: #A3AEC2">Rank II at 13 · rank III at 18</span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SPEND 1 SKILL POINT · A SKILL CAN'T PASS ITS ATTRIBUTE</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px">
+<sc-for list="{{skillRows}}" as="s" hint-placeholder-count="9">
+<button type="button" onClick="{{s.pick}}" disabled="{{s.blocked}}" title="{{s.why}}" style="{{s.style}}"><img src="{{s.img}}" alt="" style="width: 32px; height: 40px; object-fit: cover; border-radius: 4px; background: #000"><span style="display: flex; flex-direction: column; align-items: flex-start; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{s.note}}</span></span><span style="margin-left: auto; font-size: 18px; font-weight: 700">{{s.pts}}</span></button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<aside aria-label="Cores" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CORES</span>
+<sc-for list="{{coreRows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 120px 48px minmax(0, 1fr); gap: 10px; align-items: center">
+<div style="display: flex; flex-direction: column"><span style="{{r.nameStyle}}">{{r.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{r.word}}</span></div>
+<span style="{{r.valStyle}}">{{r.val}}</span>
+<span style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
+</div>
+</sc-for>
+<span style="font-size: 12px; line-height: 1.5; color: #A3AEC2; padding-top: 8px; border-top: 1px solid #232D3F">Attribute points come every even level (next: level 4). Core points every 5th level. Spend them on this screen when they arrive.</span>
+<button type="button" disabled="{{notDone}}" style="{{doneStyle}}">{{doneLabel}}</button>
+</aside>
+</div>
+</div>
