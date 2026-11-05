@@ -7,6 +7,8 @@ so the prototype always shows the real skills, voices, archetypes, origins and t
 
 Publishing: on the canvas artifact the boards live under project/ (project/Create.dc.html,
 project/canvas.json, ...). A file published at the top level is not a board and never shows up.
+Images must be canvas uploads (upload_asset -> /_blob/<id>, mapped in blobs.json); a PNG published as a
+file under project/ does not load in the boards.
 """
 import json, pathlib
 
