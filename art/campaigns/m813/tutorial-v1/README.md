@@ -46,4 +46,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `obj-cargo-pylon` | E | [PNG](../../../sprites/objects/v1/obj-cargo-pylon.png) | opening-safe |
 | `obj-toppled-pylon` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-toppled-pylon.png) | opening-safe |
 | `obj-door-closed` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-closed.png) | opening-safe |
-| `obj-door-open` | E | [PNG](../../../sprites/objects/v1/obj-door-open.png) | opening-safe |
+| `obj-door-open` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-open.png) | opening-safe |
