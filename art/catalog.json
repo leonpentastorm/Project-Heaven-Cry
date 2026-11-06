@@ -5529,8 +5529,8 @@
     "clean-draw": {
       "label": "Wick — Clean Draw",
       "collection": "wick-production-v1",
-      "path": "art/perks/wick/production-v1/clean-draw.png",
-      "sha256": "ef7dad2410f2f658ca566b0fb453fe56e58197db9bf6ee65007edeeeeb3bcc82",
+      "path": "art/perks/wick/production-v1/revisions/v2/clean-draw.png",
+      "sha256": "f055a642081c161af6fb01e3ffce2fdf67f699ede5464c8749944ac143582896",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -5541,17 +5541,20 @@
       "production_approved": false,
       "batch": "G",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/clean-draw.png",
-        "128": "art/perks/wick/production-v1/exports/128/clean-draw.png",
-        "64": "art/perks/wick/production-v1/exports/64/clean-draw.png",
-        "56": "art/perks/wick/production-v1/exports/56/clean-draw.png",
-        "48": "art/perks/wick/production-v1/exports/48/clean-draw.png",
-        "44": "art/perks/wick/production-v1/exports/44/clean-draw.png",
-        "40": "art/perks/wick/production-v1/exports/40/clean-draw.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/clean-draw.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/clean-draw.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/clean-draw.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/clean-draw.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/clean-draw.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/clean-draw.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/clean-draw.png"
       },
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
-      "medallion_safe_circle": 0.9
+      "medallion_safe_circle": 0.9,
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/clean-draw.png",
+      "previous_revision_path": "art/perks/wick/production-v1/clean-draw.png"
     },
     "established-fact": {
       "label": "Wick — Established Fact",
