@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-27d638f6841b4b6a92ada6ae13ce96531a4859a188523d9d1d064afbde66f42d  art/campaigns/m813/tutorial-v1/README.md
-4c2f24f624df33c9ef0cc1c0666df007b1c25ecd5f3d730791abd4f13152a5ed  art/campaigns/m813/tutorial-v1/manifest.json
-c12568e58dfb35ec2d737b053062f280d7c0e4b20517645185de098b9b85d969  art/campaigns/m813/tutorial-v1/production-progress.json
-1e85d3ed8e1d8762d49d6c36b1e44a02c9eb94a9320906d3c5f89dffd2721e76  art/catalog.json
+96ce022fe4a6d5880e51750147a7dd30a3eb484379578e51e35678306f5c77a9  art/campaigns/m813/tutorial-v1/README.md
+ee1949f287da97d8e46129f4a8b5c01e2b6702f913ab4808d926639fd2ac06b2  art/campaigns/m813/tutorial-v1/manifest.json
+386879bbf7d1a3943c04819b41b6e0a20af9aedaf788fcd50a251b7e7cf90d8d  art/campaigns/m813/tutorial-v1/production-progress.json
+30c9a7463ff4099231ac401c40d0799e169becb9badbc4b5fd932b6c85ba50fa  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -92,6 +92,7 @@ ee1870b77fd662d1444448cf7d68dec925bf99051ea2edce0475ccebabf5d4e5  art/character-
 f418d56101bec84389755bda9e0e7c55c0469c82436167fdb2c9a0061770613b  art/character-portraits/m813/mpat-comrade.png
 7a88360ae51a71c757e21d8b73cf932bb228f6d677e379e54a5453340dcf385f  art/character-portraits/m813/mpat.png
 2ae804c69b73296e6a10ff2be51e029492a54d0304efed08c7d78dd809e88f88  art/character-portraits/m813/v2/m813-hum.png
+dbc2c1767f717293a5896d110070ff3bad5a4ec0cea63a3e1d256a6f81faae15  art/character-portraits/m813/v2/m813-ilse-varga.png
 dec08550aaa238cca1b98d33140a9356a32414b19b9041d8af3dde57970f2239  art/character-portraits/m813/v2/m813-keel.png
 e819096722ed78e348196abe89bace77f45c54517f75f7afb6a05207ce4fc452  art/character-portraits/m813/v2/m813-lantern.png
 ffcff8b865a985a6ef28732b20917967d76a41673544f8409ca3b7e07fc2d42f  art/character-portraits/m813/v2/m813-nine-nine.png
@@ -100,6 +101,7 @@ d9545bd041a2b429605b14a83b8846f231d27497aaa9ab705a4709ae6acff054  art/character-
 3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227  art/character-portraits/m813/v2/m813-seven-seven.png
 f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc  art/character-portraits/m813/v2/m813-soft-hands.png
 058d5d2889e2f795e107b50233dcf4faac00b61551b2395ba1f8779741cbfe14  art/character-portraits/m813/v2/previews/m813-hum-320px.png
+50989a1b53fdc875e828ca3ac0c6ffbea3eac6bbb01cb10d455955099d1ead19  art/character-portraits/m813/v2/previews/m813-ilse-varga-320px.png
 d46bc9ed768cf789fd450a1a413c176354df2355e0e2eace0449ce768435b854  art/character-portraits/m813/v2/previews/m813-keel-320px.png
 a54d49c0e339d95d86ff6b28b6e1a5f89d3a75070ddae5b116f0576f5f0a9e3f  art/character-portraits/m813/v2/previews/m813-lantern-320px.png
 45e86e5f10e71fc0678494244fbe0d3fcb991cddff7ddfdcebc1ba5a21933619  art/character-portraits/m813/v2/previews/m813-nine-nine-320px.png
@@ -109,6 +111,8 @@ d5c6d3e3e4e78c707878f735b3f3a9694fede1001d544a585afd2af974e5bff0  art/character-
 b20997cba88b6866c71b56142fb158acc7e6e455db31cf844551930d5cb42e47  art/character-portraits/m813/v2/previews/m813-soft-hands-320px.png
 be09737beb75d5b31e8ccf8c03badaef93a60fad55cfde91671a6386891b7fb8  art/character-portraits/m813/v2/sources/m813-hum.png
 ea03148fb6f59ca005151a8d24edc235678341d2068592a48b8b654a457f6bfc  art/character-portraits/m813/v2/sources/m813-hum.prompt.txt
+6bf9e45d63ac0335c92e22e57a77f2ec0069963b7107beb75024b259edd0ddb5  art/character-portraits/m813/v2/sources/m813-ilse-varga.png
+aa6fca959adbef3f606befefff7ada548672040a6d8fb9202f08378317ea87e3  art/character-portraits/m813/v2/sources/m813-ilse-varga.prompt.txt
 ca82ea13a03d1b563d04111ae64358b3ae91df0d75ae4571e36acd98670fac34  art/character-portraits/m813/v2/sources/m813-keel.png
 3946fd2d0bc468f29b1b9ff7e7b3cd13abb868a3751eec7c49a95a8c58b0c436  art/character-portraits/m813/v2/sources/m813-keel.prompt.txt
 898b422bd5f6efbc6da30a27f73f88a6780cf9643c608015d3952457c04e0c91  art/character-portraits/m813/v2/sources/m813-lantern.png
