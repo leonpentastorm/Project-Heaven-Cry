@@ -54,6 +54,7 @@
 <sc-if value="{{hasOrigin}}" hint-placeholder-val="{{true}}">
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="grid-column: 1 / -1; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{origin.name}}</div>
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">HOME</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Home}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">UPBRINGING</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Upbringing}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU KNOW</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.knows}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PEOPLE SEE YOU AS</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.seen}}</span></div>
@@ -66,7 +67,7 @@
 
 <aside style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
-<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 280px; height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button>
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 280px; max-width: calc(100vw - 64px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button>
 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOUR PORTRAIT</span>
 <div role="radiogroup" aria-label="Portraits" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; max-height: 470px; overflow-y: auto; padding-right: 6px">

@@ -57,7 +57,7 @@ export class RoomLogic extends DCLogic {
       ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : '● RECONNECTING',
       connStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
-      copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url)); },
+      copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },
       canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
         f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
       leave: () => leaveRoom(), leaveLabel: isHost ? 'Save and leave' : 'Leave', leaveTitle: 'Back to the title screen. Resume this room any time from Saved sessions.',

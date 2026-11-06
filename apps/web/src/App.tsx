@@ -43,8 +43,10 @@ export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
   const Screen = SCREENS[st.screen];
   // Leaving the title screen, the next screen slides in from the right (spec: title screen §4).
-  const prev = React.useRef(st.screen); const slideIn = prev.current === 'home' && st.screen !== 'home' && !reducedMotion();
-  React.useEffect(() => { prev.current = st.screen; }, [st.screen]);
+  // Decided once per screen change and kept for that screen's wrapper, so later renders don't cut the slide short.
+  const prev = React.useRef(st.screen), slideFor = React.useRef<string | null>(null);
+  if (prev.current !== st.screen) { slideFor.current = prev.current === 'home' && !reducedMotion() ? st.screen : null; prev.current = st.screen; }
+  const slideIn = slideFor.current === st.screen;
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
   React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);

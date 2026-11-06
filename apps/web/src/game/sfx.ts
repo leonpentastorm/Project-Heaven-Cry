@@ -28,20 +28,32 @@ export function setUiPrefs(p: Partial<UiPrefs>) { prefs = { ...prefs, ...p }; tr
 export const reducedMotion = () => prefs.reduceMotion || (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 // ---------- playback ----------
-let ctx: AudioContext | null = null, out: GainNode | null = null, unlocked = false;
+let ctx: AudioContext | null = null, out: GainNode | null = null, unlocked = false, noAudio = false;
 const buffers = new Map<string, AudioBuffer | null>();
-function audio() {
-  if (!ctx) { ctx = new AudioContext(); out = ctx.createGain(); out.connect(ctx.destination); }
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+/** The audio context, or null where the browser has none (then the game is silent, never broken). */
+function audio(): AudioContext | null {
+  if (!ctx && !noAudio) {
+    try {
+      const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!AC) { noAudio = true; return null; }
+      ctx = new AC() as AudioContext; out = ctx.createGain();
+      // A limiter, so overlapping sounds at full volume never clip.
+      const lim = ctx.createDynamicsCompressor(); lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.08;
+      out.connect(lim); lim.connect(ctx.destination);
+    } catch { noAudio = true; ctx = null; return null; }
+  }
+  if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
   return ctx;
 }
-/** Call from the first user gesture: sound is allowed from then on. */
-export function unlockSfx() { unlocked = true; audio(); for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) load(f); }
-if (typeof window !== 'undefined') for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => { if (!unlocked) unlockSfx(); }, { capture: true, once: true });
+/** Call from a user gesture: sound is allowed from then on. */
+export function unlockSfx() { unlocked = true; if (!audio()) return; for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) load(f); }
+// Touch only grants permission on the finger lifting, so listen to every kind of gesture and resume a suspended context.
+if (typeof window !== 'undefined') for (const ev of ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click']) window.addEventListener(ev, () => { if (!unlocked) unlockSfx(); else if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); }, { capture: true });
 async function load(url: string) {
   if (buffers.has(url)) return buffers.get(url) || null;
+  const ac = audio(); if (!ac) return null;
   buffers.set(url, null);
-  try { const b = await audio().decodeAudioData(await (await fetch(url)).arrayBuffer()); buffers.set(url, b); return b; } catch { return null; }
+  try { const b = await ac.decodeAudioData(await (await fetch(url)).arrayBuffer()); buffers.set(url, b); return b; } catch { return null; }
 }
 const level = () => (prefs.mute ? 0 : prefs.sfx / 100) * (voiceState().speaking ? 0.4 : 1);
 let lastHover = 0;
@@ -49,11 +61,14 @@ let lastHover = 0;
 export function sfx(name: Sfx) {
   if (!unlocked || level() <= 0) return;
   if (name === 'hover') { const t = performance.now(); if (t - lastHover < 60) return; lastHover = t; }
-  const ac = audio(), g = ac.createGain(); g.gain.value = level() * (MIX[name] ?? 0.4) * 2; g.connect(out!);
-  const list = files(name), file = list[Math.floor(Math.random() * list.length)], buf = file ? buffers.get(file) : null;
-  if (buf) { const s = ac.createBufferSource(); s.buffer = buf; s.connect(g); s.start(); return; }
-  if (file && !buffers.has(file)) load(file);
-  synth(ac, g, name);
+  try {
+    const ac = audio(); if (!ac || !out) return;
+    const g = ac.createGain(); g.gain.value = Math.min(1, level() * (MIX[name] ?? 0.4) * 2); g.connect(out);
+    const list = files(name), file = list[Math.floor(Math.random() * list.length)], buf = file ? buffers.get(file) : null;
+    if (buf) { const s = ac.createBufferSource(); s.buffer = buf; s.connect(g); s.start(); return; }
+    if (file && !buffers.has(file)) load(file);
+    synth(ac, g, name);
+  } catch { /* sound must never break the game */ }
 }
 
 /** Stand-ins: a few oscillator blips, quiet and short. */

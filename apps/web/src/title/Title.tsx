@@ -18,6 +18,8 @@ type Item = { id: string; label: string; sub?: string; start?: boolean; bubble: 
 const ink = { text: '#E7EBF3', muted: '#A3AEC2', dim: '#7F8BA1', line: '#232D3F', panel: 'rgba(13, 17, 25, 0.86)' };
 const ago = (t: number) => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; };
 const PRESSED = 'phc.pressedAnyKey', BACK_TO = 'phc.titlePanel';
+/** A ?room= invite opens Join once per page load, not every time the title comes back. */
+let inviteUsed = false;
 const toCreate = (draft: any) => { try { sessionStorage.setItem(BACK_TO, 'characters'); } catch { /* */ } go('create', { draft }); };
 const WICK_H = 48;
 /** A sprite strip if the artist's frames are in, else null (the stand-in is used). */
@@ -31,7 +33,7 @@ export function Title() {
   const [pressed, setPressed] = React.useState(() => { try { return sessionStorage.getItem(PRESSED) === '1'; } catch { return false; } });
   // Coming back from the creation screen reopens Characters.
   const [panel, setPanel] = React.useState<Panel>(() => { try { const p = sessionStorage.getItem(BACK_TO) as Panel; sessionStorage.removeItem(BACK_TO); return p || null; } catch { return null; } });
-  const [after, setAfter] = React.useState<null | 'host' | 'join'>(null);
+  const [after, setAfter] = React.useState<null | string>(null); // what the name prompt continues into: 'host' or 'resume:CODE'
   const [code, setCode] = React.useState(roomParam);
   const [sel, setSel] = React.useState(0);
   const [hello, setHello] = React.useState<null | string>(null);
@@ -45,22 +47,25 @@ export function Title() {
   const motion = !reducedMotion();
   React.useEffect(() => () => { timers.current.forEach(clearTimeout); }, []);
   const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)); };
+  // The tap that begins must not also press a menu item (touch fires the click after pointerdown).
+  const armedAt = React.useRef(0);
 
   // ---------- press any key ----------
   React.useEffect(() => {
     if (pressed) return;
-    const begin = () => { setPressed(true); try { sessionStorage.setItem(PRESSED, '1'); } catch { /* */ } later(30, () => sfx('start')); };
+    const begin = () => { armedAt.current = performance.now() + 450; setPressed(true); try { sessionStorage.setItem(PRESSED, '1'); } catch { /* */ } later(30, () => sfx('start')); };
     window.addEventListener('keydown', begin, { once: true }); window.addEventListener('pointerdown', begin, { once: true });
     return () => { window.removeEventListener('keydown', begin); window.removeEventListener('pointerdown', begin); };
   }, [pressed]);
   // A ?room= link opens straight on Join.
-  React.useEffect(() => { if (pressed && roomParam && !panel) setPanel('join'); }, [pressed]);
+  React.useEffect(() => { if (pressed && roomParam && !panel && !inviteUsed) { inviteUsed = true; setPanel('join'); } }, [pressed]);
 
   // ---------- the menu ----------
-  const sessions = listSessions(), last = lastRoom(), lastInfo = last && sessions.find((s) => s.code === last.code);
-  const needName = (then: 'host' | 'join') => { if (st.me.name.trim()) return false; setAfter(then); return true; };
+  // CONTINUE: the room you were last in, else the newest saved one.
+  const sessions = listSessions(), last = lastRoom(), lastInfo = (last && sessions.find((s) => s.code === last.code)) || [...sessions].sort((a, b) => b.savedAt - a.savedAt)[0];
+  const needName = (then: string) => { if (st.me.name.trim()) return false; setAfter(then); return true; };
   const items: Item[] = [
-    ...(lastInfo ? [{ id: 'continue', label: 'CONTINUE', sub: 'Room ' + lastInfo.code + ' · ' + ago(lastInfo.savedAt), start: true, bubble: 'Welcome back!', run: () => resumeSession(lastInfo.code) }] : []),
+    ...(lastInfo ? [{ id: 'continue', label: 'CONTINUE', sub: 'Room ' + lastInfo.code + ' · ' + ago(lastInfo.savedAt), start: true, bubble: 'Welcome back!', run: () => (needName('resume:' + lastInfo.code) ? setPanel('name') : resumeSession(lastInfo.code)) }] : []),
     { id: 'new', label: 'NEW GAME', start: true, bubble: "Let's go!", run: () => (needName('host') ? setPanel('name') : hostRoom()) },
     { id: 'join', label: 'JOIN A FRIEND', bubble: 'Who\'s there?', run: () => setPanel('join') },
     { id: 'chars', label: 'CHARACTERS', bubble: 'Hello!', run: () => setPanel('characters') },
@@ -71,18 +76,26 @@ export function Title() {
   const selIdx = Math.min(sel, items.length - 1);
 
   // Wick runs along the gutter to the selected item.
-  const place = React.useCallback((i: number) => {
+  const place = React.useCallback((i: number, silent = false) => {
     const el = menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[i]; if (!el) return;
     const y = el.offsetTop + el.offsetHeight / 2 - WICK_H / 2 - 2;
-    setWickY((prev) => { if (prev !== y && motion) { setRunning(true); sfx('wick_steps'); } return y; });
+    setWickY((prev) => { if (!silent && prev !== y && motion) { setRunning(true); sfx('wick_steps'); } return y; });
   }, [motion]);
   React.useLayoutEffect(() => { if (pressed && !panel) place(selIdx); }, [pressed, panel, selIdx, items.length, place]);
+  // Fonts loading or the window resizing move the items: Wick follows quietly.
+  React.useEffect(() => {
+    const nav = menuRef.current; if (!pressed || panel || !nav || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => place(selIdx, true)); ro.observe(nav); return () => ro.disconnect();
+  }, [pressed, panel, selIdx, place]);
   const runMs = 260;
   React.useEffect(() => { if (!running) return; const t = window.setTimeout(() => setRunning(false), runMs); return () => clearTimeout(t); }, [running, wickY]);
 
-  const choose = (i: number) => { if (i === selIdx) return; setSel(i); sfx('hover'); };
+  const itemEl = (i: number) => menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[i];
+  // Keep DOM focus on the highlighted item, so Enter always presses what Wick stands beside.
+  const choose = (i: number, focus = false) => { if (focus) itemEl(i)?.focus({ preventScroll: true }); if (i === selIdx) return; setSel(i); sfx('hover'); };
   /** The press: click effect, Wick says hello, then the slide (spec §4). A second press skips ahead. */
   const press = (it: Item, e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (performance.now() < armedAt.current) return;
     if (hello) { finish(); return; }
     sfx(it.start ? 'start' : 'click');
     const r = (e && 'clientX' in e && e.clientX) ? { x: e.clientX, y: e.clientY } : (() => { const b = (e?.currentTarget as HTMLElement | undefined)?.getBoundingClientRect(); return b ? { x: b.left + 40, y: b.top + b.height / 2 } : { x: 200, y: 400 }; })();
@@ -99,26 +112,29 @@ export function Title() {
     setHello(null); setLeaving(false);
     if (f) f();
   };
-  const back = () => { sfx('back'); sfx('slide_back'); setPanel(null); setAfter(null); };
+  const back = () => { sfx('back'); sfx('slide_back'); setPanel(null); setAfter(null); later(30, () => itemEl(selIdx)?.focus({ preventScroll: true })); };
 
   // Keyboard: arrows move Wick, Enter presses (native on the focused button), Escape goes back.
   React.useEffect(() => {
     const k = (e: KeyboardEvent) => {
       if (!pressed) return;
+      // The Report and Spend dialogs own the keyboard while open; so do text fields.
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      const t = e.target as HTMLElement | null, typing = !!t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
       if (e.key === 'Escape' && panel) { e.preventDefault(); back(); return; }
-      if (panel || (e.target as HTMLElement)?.tagName === 'INPUT') return;
+      if (panel || typing) return;
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault(); const n = (selIdx + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
-        choose(n); menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[n]?.focus();
-      }
+        choose(n, true);
+      } else if (e.key === 'Enter' && !(t && t.hasAttribute('data-item'))) { e.preventDefault(); press(items[selIdx]); }
     };
-    window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k);
+    window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true);
   });
 
   // ---------- parallax ----------
   const stage = React.useRef<HTMLDivElement>(null), layers = React.useRef<(HTMLDivElement | null)[]>([]);
   React.useEffect(() => {
-    if (!motion) return;
+    if (!motion || panel) return;
     let tx = 0, ty = 0, x = 0, y = 0, raf = 0, idle = 0, lastMove = performance.now();
     const move = (e: PointerEvent) => { tx = (e.clientX / innerWidth) * 2 - 1; ty = (e.clientY / innerHeight) * 2 - 1; lastMove = performance.now(); };
     const tilt = (e: DeviceOrientationEvent) => { if (e.gamma == null) return; tx = Math.max(-1, Math.min(1, e.gamma / 25)); ty = Math.max(-1, Math.min(1, ((e.beta || 45) - 45) / 25)); lastMove = performance.now(); };
@@ -134,12 +150,12 @@ export function Title() {
     window.addEventListener('pointermove', move); window.addEventListener('deviceorientation', tilt);
     raf = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(raf); window.removeEventListener('pointermove', move); window.removeEventListener('deviceorientation', tilt); };
-  }, [motion]);
+  }, [motion, panel]);
 
   // ---------- embers and rising motes, between the middle and front layers ----------
   const canvas = React.useRef<HTMLCanvasElement>(null);
   React.useEffect(() => {
-    const c = canvas.current; if (!c || !motion) return;
+    const c = canvas.current; if (!c || !motion || panel) return;
     const g = c.getContext('2d')!; let raf = 0;
     const fit = () => { c.width = innerWidth; c.height = innerHeight; }; fit(); addEventListener('resize', fit);
     const P = Array.from({ length: 70 }, (_, i) => ({ x: Math.random(), y: Math.random(), v: 0.0006 + Math.random() * 0.0016, s: 1 + Math.random() * 2.5, sq: i % 3 === 0, a: Math.random() * Math.PI * 2 }));
@@ -156,7 +172,7 @@ export function Title() {
     };
     raf = requestAnimationFrame(draw);
     return () => { cancelAnimationFrame(raf); removeEventListener('resize', fit); };
-  }, [motion]);
+  }, [motion, panel]);
 
   const back0 = ART('title-back-lg') || ART('title-back') || ART('world-outpost813-lg') || ART('world-outpost813');
   const mid = ART('title-mid'), front = ART('title-front'), fx = ART('title-fx');
@@ -180,17 +196,17 @@ export function Title() {
       {panel && <div aria-hidden style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(6px)', background: 'rgba(5,7,11,0.45)' }} />}
 
       {/* the title and menu */}
-      <div className={'phc-col' + (leaving && motion ? ' phc-col-out' : '') + (panel ? ' phc-col-away' : '')} style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', top: 0, bottom: 0, width: 'min(560px, 88vw)', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28 }}>
-        <h1 className={'phc-wordmark' + (pressed ? ' phc-wordmark-up' : '')} style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, lineHeight: 0.92, letterSpacing: '0.06em', fontSize: 'clamp(52px, 7.4vw, 128px)', color: '#F4ECDD' }}>
+      <div inert={!!panel} className={'phc-col' + (leaving && motion ? ' phc-col-out' : '') + (panel ? ' phc-col-away' : '')} style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', top: 0, bottom: 0, width: 'min(560px, 88vw)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingTop: 16, paddingBottom: 56, boxSizing: 'border-box', gap: 28 }}>
+        <h1 className={'phc-wordmark' + (pressed ? ' phc-wordmark-up' : '')} style={{ margin: 0, marginTop: 'auto', fontFamily: "'Spectral', serif", fontWeight: 600, lineHeight: 0.92, letterSpacing: '0.06em', fontSize: 'clamp(36px, min(7.4vw, 13vh), 128px)', color: '#F4ECDD' }}>
           PROJECT<br />HEAVEN<br /><span style={{ letterSpacing: '0.22em' }}>CRY</span>
           <span style={{ display: 'block', marginTop: 16, fontFamily: "'Chakra Petch', sans-serif", fontSize: 'clamp(12px, 1vw, 15px)', fontWeight: 500, letterSpacing: '0.24em', color: ink.muted }}>A TACTICAL RPG WITH AN AI NARRATOR</span>
         </h1>
-        {!pressed && <div className="phc-press" role="status" style={{ fontSize: 16, letterSpacing: '0.32em', color: '#FFFFFF' }}>{'ontouchstart' in window ? 'TAP TO BEGIN' : 'PRESS ANY KEY'}</div>}
+        {!pressed && <div className="phc-press" role="status" style={{ marginBottom: 'auto', fontSize: 16, letterSpacing: '0.32em', color: '#FFFFFF' }}>{'ontouchstart' in window ? 'TAP TO BEGIN' : 'PRESS ANY KEY'}</div>}
         {pressed && (
-          <nav aria-label="Main menu" ref={menuRef} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 64 }}>
+          <nav aria-label="Main menu" ref={menuRef} style={{ marginBottom: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 64 }}>
             {items.map((it, i) => (
               <button key={it.id} type="button" data-item data-sfx="none" className={'phc-item' + (i === selIdx ? ' on' : '')} style={{ animationDelay: (i * 40) + 'ms' }}
-                onMouseEnter={() => choose(i)} onFocus={() => choose(i)} onClick={(e) => press(it, e)}>
+                onMouseEnter={() => choose(i, true)} onFocus={() => choose(i)} onClick={(e) => press(it, e)}>
                 <span className="phc-label">{it.label}</span>
                 {it.sub && <span style={{ display: 'block', fontSize: 12, letterSpacing: '0.12em', color: ink.dim, marginTop: 2 }}>{it.sub}</span>}
               </button>
@@ -210,7 +226,7 @@ export function Title() {
       {/* sub-screens */}
       {panel && (
         <section className="phc-panel" aria-label={panel} style={{ position: 'absolute', left: 'clamp(16px, 6vw, 120px)', top: '6vh', bottom: '6vh', width: 'min(760px, 92vw)', overflowY: 'auto', padding: '22px 24px', borderRadius: 16, background: ink.panel, border: '1px solid #2E3A50', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <button type="button" data-sfx="none" onClick={back} style={{ ...btn, alignSelf: 'flex-start', minHeight: 36 }}>‹ Back</button>
+          <button type="button" data-sfx="none" autoFocus={panel !== 'name' && panel !== 'join'} onClick={back} style={{ ...btn, alignSelf: 'flex-start', minHeight: 36 }}>‹ Back</button>
           {panel === 'name' && <NamePanel after={after} />}
           {panel === 'join' && <JoinPanel code={code} setCode={setCode} />}
           {panel === 'characters' && <CharactersPanel />}
@@ -252,11 +268,12 @@ function NameInput() {
   const st = getState();
   return <label style={lab}>YOUR NAME (THE OTHER PLAYERS SEE IT)<input autoFocus value={st.me.name} onChange={(e) => setName(e.target.value)} placeholder="Leon" style={field} /></label>;
 }
-function NamePanel(_: { after: null | 'host' | 'join' }) {
+function NamePanel({ after }: { after: null | string }) {
+  const resume = after && after.startsWith('resume:') ? after.slice(7) : null;
   return <>
     <h2 style={h2}>Who's playing?</h2>
     <NameInput />
-    <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => hostRoom()}>Open a room ›</button>
+    <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => (resume ? resumeSession(resume) : hostRoom())}>{resume ? 'Continue ›' : 'Open a room ›'}</button>
     <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>You run the Narrator with your Anthropic key. Share the room code; friends join from anywhere.</span>
   </>;
 }

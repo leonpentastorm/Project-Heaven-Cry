@@ -307,8 +307,8 @@ export class CreateLogic extends DCLogic {
     saveToLibrary(sheet);
     const st = getState();
     if (st.code && st.game && st.game.phase === 'lobby') { act({ type: 'char/add', sheet }); go('room', { draft: null }); }
-    else { toast(sheet.name + ' is saved to your library.'); go(st.code ? 'room' : 'home', { draft: null }); }
+    else { toast(sheet.name + ' is saved to your library.', true); go(st.code ? 'room' : 'home', { draft: null }); }
   }
-  saveDraft() { const sheet = this.sheet(); if (!sheet.name) return toast('Give the draft a name first.'); saveToLibrary({ ...sheet, draft: true }); toast('Draft saved: ' + sheet.name); }
+  saveDraft() { const sheet = this.sheet(); if (!sheet.name) return toast('Give the draft a name first.'); saveToLibrary({ ...sheet, draft: true }); toast('Draft saved: ' + sheet.name, true); }
 }
 
