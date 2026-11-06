@@ -4612,6 +4612,31 @@
         "40": "art/perks/wick/production-v1/exports/40/real-power.png"
       },
       "tier": "acquired"
+    },
+    "charge": {
+      "label": "Wick — Charge!",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/charge.png",
+      "sha256": "f4e5a4336d1193bab9c0493518fa430a9012f486ab090efd422a1fd68b2cf5c0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "charge",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/charge.png",
+        "128": "art/perks/wick/production-v1/exports/128/charge.png",
+        "64": "art/perks/wick/production-v1/exports/64/charge.png",
+        "56": "art/perks/wick/production-v1/exports/56/charge.png",
+        "48": "art/perks/wick/production-v1/exports/48/charge.png",
+        "44": "art/perks/wick/production-v1/exports/44/charge.png",
+        "40": "art/perks/wick/production-v1/exports/40/charge.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

@@ -135,11 +135,12 @@
     "red-line",
     "clean-hands",
     "outclassed",
-    "real-power"
+    "real-power",
+    "charge"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 56
+    "perks": 57
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -189,7 +190,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "charge",
     "make-way",
     "just-the-repairman",
     "spoon-feed",

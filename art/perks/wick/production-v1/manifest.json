@@ -1258,6 +1258,30 @@
       "batch": "E",
       "source_sha256": "4ee67b971d0e709d0c9a209dbef82659348ebc31559e07fcf5c349abe7104bba",
       "tier": "acquired"
+    },
+    {
+      "id": "charge",
+      "data_id": "charge",
+      "name": "Charge!",
+      "family": "perks",
+      "order": 55,
+      "mood": "Heroic, Comic",
+      "action": "Wick sprints flat-out, body leaning almost horizontal, a bayonet rifle levelled ahead, mouth wide in a roar, dust kicking up behind.",
+      "screen": "Roaring mouth",
+      "prop": "Bayonet rifle",
+      "path": "art/perks/wick/production-v1/charge.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/charge.png",
+        "128": "art/perks/wick/production-v1/exports/128/charge.png",
+        "64": "art/perks/wick/production-v1/exports/64/charge.png",
+        "56": "art/perks/wick/production-v1/exports/56/charge.png",
+        "48": "art/perks/wick/production-v1/exports/48/charge.png",
+        "44": "art/perks/wick/production-v1/exports/44/charge.png",
+        "40": "art/perks/wick/production-v1/exports/40/charge.png"
+      },
+      "batch": "F",
+      "source_sha256": "e789bee0086fc4a61c407aaf9a48900eb669b76584f118046c82b372de31551c",
+      "tier": "achieved"
     }
   ]
 }
