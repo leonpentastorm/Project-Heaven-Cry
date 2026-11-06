@@ -92,7 +92,7 @@ export function mapBrief(map: MapDef): string {
   const refs = (ks: string[]) => ks.map(refOf).join(', ');
   return [map.name + ': ' + map.w + ' columns (A–' + colName(map.w - 1) + ') × ' + map.h + ' rows (1–' + map.h + '); 1.5 m tiles.',
     ...(map.notes || []).map((n) => n.at + ': ' + n.text),
-    'Half cover at ' + (refs(map.cover) || 'none') + '; full cover at ' + (refs(map.full || []) || 'none') + '; solid ' + (map.solid.length ? map.solid.length + ' tiles' : 'none') + '.'].join('\n');
+    ...(map.cover.length || (map.full || []).length ? ['Half cover at ' + (refs(map.cover) || 'none') + '; full cover at ' + (refs(map.full || []) || 'none') + '.'] : [])].join('\n');
 }
 /** The map's notes that cover one tile ("N1–P6" is a rectangle; commas separate parts). Most specific first. */
 export function notesAt(map: MapDef, k: string): string[] {

@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, songOf, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, songOf, comboEligible, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -9,6 +9,13 @@ import m813 from '../../../../docs/lore/MPAT-and-M813.md?raw';
 
 /** Lore docs carry design notes (bylines, "a proposal for Leon"). The Narrator must not learn a real person's name from them. */
 const clean = (t: string) => t.replace(/^.*\bLeon PT\b.*$/gm, '').replace(/a proposal for Leon/g, 'a proposal, not yet canon').replace(/\bLeon\b/g, 'the designer');
+/** Markdown without the named "## " sections (design notes, prototype notes, open questions). */
+const drop = (md: string, heads: string[]) => md.split(/(?=^## )/m).filter((sec) => !heads.some((h) => sec.startsWith('## ' + h))).join('');
+/** The Sector doc with only the origins the party has (the rest is creation material the Narrator never needs). */
+function sectorFor(g: GameState): string {
+  const mine = Object.values(g.characters).map((c) => c.origin.toLowerCase());
+  return drop(sectorEarth, ['Starting hooks']).split(/(?=^### )/m).filter((sec) => !/^### \d+\. /.test(sec) || mine.some((o) => sec.split('\n')[0].toLowerCase().includes(o))).join('');
+}
 
 const TRAIT = Object.fromEntries(TRAITS.map((t: any) => [t.id, t]));
 
@@ -39,11 +46,11 @@ COMBO PERKS (deeds)
 
 FIGHTS
 - When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
-- Enemy tiers: ${ENEMIES.map((e: any) => `${e.id} (HP ${e.hp}, Defense ${e.defense}, attack +${e.attack_bonus}, armour ${e.armour})`).join('; ')}.
+- Enemy tiers, weakest to strongest: minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). The engine sets their numbers.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
 THE MAP (grid references)
-- Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. The current map and what is where is in the campaign block; each turn tells you where everyone stands.
+- Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. Each turn gives you the current map, what is where, and where everyone stands.
 - The party moves between the campaign's zones with travel (a zone id, or "" to stay). Travel when the story does: a walk, a flight, years passing. Each zone keeps its objects as the party left them. When a player asks to travel (their line reads "asks to travel to … [travel:zone]"), travel if the story allows it; otherwise narrate what stops them.
 - Players may say "I move to A15"; they can also move themselves on the map between your turns. You may move characters when the story moves them: add moves[] with charId and a grid reference (an empty array otherwise). Keep descriptions consistent with the map's notes.
 - When a fight starts on the current map, characters start where they stand. Give each enemy an "at" grid reference to place it (an empty string lets the engine choose). Place enemies on open tiles, not on hulls or cover.
@@ -85,11 +92,11 @@ export function campaignPrompt(g: GameState): string {
     c.cast?.length ? '\nCAST:\n' + c.cast.map((x) => `- ${x.name} (${x.role}): ${x.text}`).join('\n') : '',
     '\nZONES (move the party between them with travel):\n' + zones,
     c.encounters?.length ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
-    c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(m813) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
-    '\nTHE MAP WHERE THE STORY IS NOW:\n' + mapBrief(zoneMap(g)),
-    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(worldBible),
-    '\nTHE EARTH SECTOR AND ORIGINS:\n' + clean(sectorEarth),
-    '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
+    c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(drop(m813, ['Use in the game'])) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
+    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(drop(worldBible, ['Advanced classes', 'How the existing material', 'Open questions'])),
+    '\nTHE EARTH SECTOR (the party\'s origins only):\n' + clean(sectorFor(g)),
+    // The EPCCG cast belongs to stories set among them: the player-made campaign, not a premade one with its own cast.
+    c.cast?.length ? '' : '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
   ].filter(Boolean).join('\n');
 }
 
@@ -112,14 +119,15 @@ ${voices}`;
 }
 
 export function partyPrompt(g: GameState): string {
-  const combos = PERKS.filter((p: any) => p.tier === 'achieved').map((p: any) => `${p.id} (${p.skills.map((s: string) => SKILL[s].name).join(' + ')} 5 each): deed "${p.deed}"`).join('\n');
-  return 'THE PARTY\n' + Object.values(g.characters).map((c) => characterBrief(g, c)).join('\n\n') + '\n\nSKILL IDS: ' + SKILLS.map((s) => s.id).join(', ') + '\n\nCOMBO PERKS (perkId, skills, deed):\n' + combos;
+  // Only combos someone in the party can earn right now (5+ in every skill, not yet held): the rest is noise and a spoiler.
+  const combos = PERKS.filter((p: any) => p.tier === 'achieved' && Object.values(g.characters).some((c) => !c.dead && !comboEligible(c, p.id))).map((p: any) => `${p.id} (${p.skills.map((s: string) => SKILL[s].name).join(' + ')} 5 each): deed "${p.deed}"`).join('\n');
+  return 'THE PARTY\n' + Object.values(g.characters).map((c) => characterBrief(g, c)).join('\n\n') + '\n\nSKILL IDS: ' + SKILLS.map((s) => s.id).join(', ') + '\n\nCOMBO PERKS THE PARTY CAN EARN NOW (perkId, skills, deed):\n' + (combos || 'none yet');
 }
 
 /** The uncached part: memory, recent transcript, and what this call must do. */
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
-  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$/.test(e.text)).slice(-40).map((e) => {
+  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$/.test(e.text)).slice(-40).map((e) => {
     if (e.kind === 'player') return `[${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
     if (e.kind === 'narration') return `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
@@ -135,13 +143,15 @@ export function turnPrompt(g: GameState): string {
   const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + ' HP'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
   const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
   const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
-  const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } }).filter((o) => o.kind !== 'crate' && o.kind !== 'pillar' && o.kind !== 'rubble' || o.approaches.length);
-  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null ? ', HP ' + o.hp + '/' + o.max : ''}${o.resolved ? ', dealt with' : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
+  const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
+    // Plain cover and exits are the engine's business (exits are listed with the zones); POIs, hazards, doors and anything with approaches stay.
+    .filter((o) => o.approaches.length || !['crate', 'pillar', 'rubble', 'low_wall', 'barricade', 'exit'].includes(o.kind));
+  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null && o.hp <= 0 ? ', broken' : o.hp != null && o.max && o.hp < o.max ? ', damaged' : ''}${o.resolved ? ', dealt with' : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
     + (o.approaches.length ? '\n    approaches: ' + o.approaches.map((a, i) => `${i + 1}. ${a.label} [${a.skills.join('+')} TN ${a.tn}${a.success ? ', ' + a.success : ''}]${a.tries.length ? ' tries: ' + a.tries.map((t) => t.name + ' ' + (t.ok ? 'succeeded' : 'failed') + ' (' + t.total + ')').join(', ') : ''}`).join('; ') : '')).join('\n  ');
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
   const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}${music}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
