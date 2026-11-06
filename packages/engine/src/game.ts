@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, type MapDef, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, type MapDef, type AttackMode, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
@@ -97,7 +97,8 @@ export type Action =
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
   | { type: 'levelup/perk'; charId: string; perkId: string }
-  | { type: 'combat/move'; unitId: string; to: string } | { type: 'combat/attack'; unitId: string; targetId: string; mode: 'shot' | 'aimed' | 'melee' }
+  | { type: 'combat/move'; unitId: string; to: string; how?: 'move' | 'sprint' | 'disengage' } | { type: 'combat/attack'; unitId: string; targetId: string; mode: AttackMode }
+  | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
@@ -462,9 +463,15 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (!c || c.owner !== by) fail('Not your unit.');
   let err: string | null = null;
   switch (a.type) {
-    case 'combat/move': err = moveUnit(cb!, u, a.to); break;
+    case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
+    case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side === u.side) fail('Pick a hostile.'); err = shove(cb!, g.rng, u, t!); break; }
+    case 'combat/prone': err = toggleProne(cb!, u); break;
+    case 'combat/brace': err = brace(cb!, u); break;
+    case 'combat/overwatch': err = setOverwatch(cb!, u, a.mode); break;
     case 'combat/attack': {
       const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side === u.side) fail('Pick a hostile.');
+      if (a.mode === 'burst') { err = fireBurst(cb!, g.rng, u, t!, c); break; }
+      if (a.mode === 'auto') { err = fireAuto(cb!, g.rng, u, t!, c); break; }
       const pv = previewAttack(cb!, u, t!, a.mode); if (!pv.ok) fail(pv.why!);
       resolveAttack(cb!, g.rng, u, t!, a.mode, c); break;
     }

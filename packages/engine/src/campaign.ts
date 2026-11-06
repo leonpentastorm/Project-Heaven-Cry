@@ -21,6 +21,8 @@ export interface CampaignZone {
   notes?: { at: string; text: string }[]; objects?: CampaignObject[];
   /** Where you can go from here (the Narrator moves the party with travel). */
   exits?: { to: string; at?: string; text: string }[];
+  /** Dark zones halve sight except near light sources (spec: Vision). */
+  dark?: boolean;
 }
 export interface Campaign {
   id: string; title: string; short: string; kicker: string; art?: string; artNote?: string; focus?: string;
@@ -53,7 +55,7 @@ export function expandRefs(list: string[] | undefined, w: number, h: number): st
 export function zoneToMap(z: CampaignZone, names: Record<string, string> = {}): MapDef {
   const keys = (l?: string[]) => expandRefs(l, z.w, z.h);
   return {
-    id: z.id, name: z.name, w: z.w, h: z.h, solid: keys(z.solid), cover: [], full: [], difficult: keys(z.difficult),
+    id: z.id, name: z.name, w: z.w, h: z.h, dark: !!z.dark, solid: keys(z.solid), cover: [], full: [], difficult: keys(z.difficult),
     pcStart: keys(z.start), foeStart: keys(z.enemyStart).length ? keys(z.enemyStart) : keys(z.start).map((k) => { const [x, y] = k.split(',').map(Number); return (z.w - 1 - x) + ',' + y; }),
     notes: [...(z.notes || []), ...(z.exits || []).filter((e) => e.at).map((e) => ({ at: e.at!, text: 'Way out: ' + e.text }))],
     objects: [...(z.objects || []).map((o) => ({ ...o })), ...(z.exits || []).filter((e) => e.at).map((e) => ({ kind: 'exit', at: e.at!, name: 'To ' + (names[e.to] || e.to), text: e.text, to: e.to }))] as any,

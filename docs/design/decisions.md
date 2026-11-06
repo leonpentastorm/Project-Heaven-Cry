@@ -101,3 +101,9 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Enemies** carry Endurance and ammo (thieves will need things to steal).
     - **Art tools:** ComfyUI waits for Leon's prompt.
     - **No mid-fight Narrator lines:** screen shake, VFX, loot and sound will carry fights.
+73. **Combat grows its full action set, and Vision is one stat** (Leon: Movement / Attack & defend / Utility; write the undefined actions; vision, fog of war and darkness governed by a vision stat shaped by Sensory and Vigilant).
+    - **Built as the spec already had them:** Sprint, Disengage, drop prone and stand up, opportunity attacks (one reaction per round), Overwatch, Burst, Full auto, and Brace (the LMG's −2 and the Blackpoint's braced-or-prone).
+    - **Written and built:** Shove.
+    - **Written:** Field Repair (built with weapon durability), Break, Improvise Tool, Analyze on NPCs, and wards and rituals (Narrator until the magic branch).
+    - **Vision:** 12 + 2 × (Perception − 1) + Vigilant, halved in darkness except near light sources (fire, lamps, terminals; torches later). The squad shares sight: unseen enemies aren't drawn or targetable. Sensory senses close unseen enemies as a "?". Enemies see by the same rule.
+    - **Darkness:** Outpost-813's hangar is the dark zone, where the tutorial teaches it.

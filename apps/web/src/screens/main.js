@@ -3,7 +3,7 @@
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
@@ -197,7 +197,8 @@ export class MainLogic extends DCLogic {
     // ---------- the zone: the story's map (or the fight's), with grid references (spec: Grid references) ----------
     const cb = g.combat, inFight = g.phase === 'combat', map = inFight && cb ? cb.map : zoneMap(g);
     const pos = inFight ? {} : positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
-    const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
+    const seenNow = inFight && cb ? visibility(cb, 'pc').seen : null;
+    const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe') && (u.side === 'pc' || seenNow.has(u.id)))
       : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }));
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });

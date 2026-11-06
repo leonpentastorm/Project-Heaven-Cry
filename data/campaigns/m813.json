@@ -830,7 +830,7 @@
     {
       "id": "outpost",
       "name": "Outpost-813",
-      "summary": "The outpost's ground floor: barracks, infirmary, comms, a corridor, and the hangar with a wrecked escape craft.",
+      "summary": "The outpost's ground floor: barracks, infirmary, comms, a corridor, and the hangar with a wrecked escape craft. The power is long gone: dark, except where the survivors keep lamps lit.",
       "w": 16,
       "h": 11,
       "solid": [
@@ -1071,6 +1071,18 @@
               "success": ""
             }
           ]
+        },
+        {
+          "kind": "lamp",
+          "at": "I9",
+          "name": "Work lamp",
+          "text": "The survivors' work lamp over the escape craft."
+        },
+        {
+          "kind": "lamp",
+          "at": "H3",
+          "name": "Infirmary lamp",
+          "text": "A field lamp on the medical bay."
         }
       ],
       "exits": [
@@ -1088,7 +1100,8 @@
           "to": "outpost_1",
           "text": "By the rebuilt craft, to Outpost-1. The Narrator says when it's ready."
         }
-      ]
+      ],
+      "dark": true
     },
     {
       "id": "outpost_1",

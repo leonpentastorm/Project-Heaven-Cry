@@ -2,13 +2,14 @@
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
-import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf } from './objects';
+import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
   notes?: { at: string; text: string }[];
   /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
+  dark?: boolean;
   objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
@@ -55,6 +56,8 @@ export interface Unit {
   extra?: { weapon: string; rounds: number }[];
   /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
   analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number; overweight?: number;
+  /** Stances and reactions (spec: Prone; Brace; Overwatch; reactions). */
+  prone?: boolean; braced?: boolean; overwatch?: 'shot' | 'aimed' | 'melee' | null; reactedRound?: number; vision?: number; sensory?: number; noSprint?: boolean; strength?: number;
 }
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
@@ -128,7 +131,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), w.magazine ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
-    vigilant: c.skills.vigilant || 0, overweight: overweightKg(c), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    vigilant: c.skills.vigilant || 0, overweight: overweightKg(c), vision: 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
   };
 }
 
@@ -139,7 +142,7 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     pos, hp: t.hp, maxHp: t.hp, def: t.defense, armour: t.armour, attack: t.attack_bonus, weapon: w.id, movement: t.movement,
     init: d20(rng) + t.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
-    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right',
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: t.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
   };
 }
@@ -279,6 +282,31 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
 }
 export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);
 
+// ---------- vision and fog of war (spec: Vision) ----------
+export function litAt(cb: Combat, k: string): boolean {
+  if (!cb.map.dark) return true;
+  return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o));
+}
+/** Can this unit see that tile (range, darkness, line of sight)? */
+export function unitSees(cb: Combat, u: Unit, k: string): boolean {
+  if (u.dead || u.downed) return false;
+  const range = litAt(cb, k) ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
+  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k));
+}
+/** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
+export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>();
+  for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) { const k = key(x, y); if (eyes.some((u) => unitSees(cb, u, k))) tiles.add(k); }
+  const seen = new Set<string>(), sensed = new Set<string>();
+  for (const t of cb.units) if (t.side !== side && !t.dead) {
+    if (tiles.has(t.pos)) seen.add(t.id);
+    else if (eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3))) sensed.add(t.id);
+  }
+  return { tiles, seen, sensed };
+}
+/** Does anyone on the attacker's side see the target? */
+export const sideSees = (cb: Combat, side: 'pc' | 'foe', tgt: Unit) => cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));
+
 // ---------- attacks ----------
 export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
 export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
@@ -287,12 +315,16 @@ export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.cat
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
 export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; coverTile?: string | null; rangePenalty: number }
-export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | 'aimed' | 'melee'): AttackPreview {
+export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto';
+export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean } = {}): AttackPreview {
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
-  const ap = attackApCost(useW, mode);
+  const ap = opts.free ? 0 : mode === 'burst' ? 3 : mode === 'auto' ? 4 : attackApCost(useW, mode === 'aimed' ? 'aimed' : mode === 'melee' ? 'melee' : 'shot');
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
   if (!alive(tgt) && !tgt.downed) return fail('Target is out of the fight.');
   if (att.ap < ap) return fail('Needs ' + ap + ' AP.');
+  if ((mode === 'burst' || mode === 'auto') && !(w.modes || []).includes(mode)) return fail('This weapon has no ' + (mode === 'auto' ? 'full auto' : 'burst') + '.');
+  if (!sideSees(cb, att.side, tgt)) return fail('You can\'t see it.');
+  if (!melee && (w.properties || []).includes('requires_braced_or_prone') && !att.braced && !att.prone) return fail('Brace it first (1 AP), or go prone.');
   const r = dist(att.pos, tgt.pos);
   if (melee && r > (useW.properties?.includes('reach_2') || useW.id === 'lance' ? 2 : 1)) return fail('Out of melee reach.');
   if (!melee && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
@@ -303,14 +335,15 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | '
   const coverTile = melee ? null : coverTileFor(cb, att.pos, tgt.pos), cover = coverTile ? 5 : 0;
   const rangePenalty = -2 * bands;
   const heat = melee ? 0 : -Math.floor(att.heat / 2);
-  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0) - cover;
+  const prone = tgt.prone ? (melee ? 2 : -2) : 0, unbraced = !melee && (w.properties || []).includes('minus2_to_hit_unless_emplaced') && !att.braced && !att.prone ? -2 : 0;
+  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + (mode === 'auto' ? -2 : 0) + (opts.extra || 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0) + prone + unbraced - cover;
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty };
 }
 
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 'shot' | 'aimed' | 'melee', who: Character | null): AttackResult {
-  const pv = previewAttack(cb, att, tgt, mode);
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean } = {}): AttackResult {
+  const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp });
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
   att.ap -= pv.ap;
   const roll = d20(rng), total = roll + pv.toHit;
@@ -381,7 +414,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   if (!u) return;
   u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)));
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
-  u.stunnedNext = 0; u.dazedNext = 0; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
   const hz = objectsAt(cb, u.pos).map(hazardOf).find(Boolean);
   if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true)); if (u.downed || u.dead) { u.ap = 0; return; } }
   if (u.bleed && !u.dead && !u.downed) {
@@ -420,22 +453,95 @@ export function endTurn(cb: Combat, rng: Rng) {
   }
 }
 
-export function moveUnit(cb: Combat, u: Unit, to: string): string | null {
+/** Move (spec: Moving; Sprint; Disengage). Opportunity attacks and Overwatch fire as reactions when rng is given. */
+export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move'): string | null {
   if (u.downed || u.dead) return 'Downed units can\'t move.';
+  if (u.prone) return 'Stand up first (1 AP).';
   const P = paths(cb, u.pos, u.id);
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
-  const ap = apForTiles(tiles, u.bank, u.movement);
+  let ap: number;
+  if (how === 'sprint') { if (u.noSprint) return 'Overburdened or in Juggernaut armour: no Sprint.'; if (tiles > Math.floor(3 * u.movement)) return 'Too far to sprint (' + Math.floor(3 * u.movement) + ' tiles).'; ap = 2; }
+  else if (how === 'disengage') { if (tiles > 1) return 'Disengage moves 1 tile.'; ap = 1; }
+  else ap = apForTiles(tiles, u.bank, u.movement);
   if (ap > u.ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap; u.bank = u.bank + ap * u.movement - tiles;
+  const from = u.pos;
+  u.ap -= ap; if (how === 'move') u.bank = u.bank + ap * u.movement - tiles; u.braced = false;
   // Walk the path: a hidden trap stops you on its tile and springs (spec: Map objects).
   const route: string[] = []; for (let k = to; k !== u.pos && P.prev[k]; k = P.prev[k]) route.unshift(k);
   let end = to, sprung = '';
   for (const k of route) { const t = objectsAt(cb, k).find(isTrap); if (t) { end = k; t.resolved = true; t.hidden = false; sprung = ' · steps on a trap' + hurtUnit(u, kindOf(t).trap!.damage); cb.objects = objectsOf(cb).filter((x) => x !== t); break; } }
   u.pos = end;
-  cb.log.push(u.name + ' moves to ' + refOf(end) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP)' + sprung + '.');
+  cb.log.push(u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l));
+  if (rng) {
+    // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging.
+    if (how !== 'disengage') for (const h of cb.units) if (h.side !== u.side && alive(h) && dist(h.pos, from) <= 1 && dist(h.pos, u.pos) > 1 && h.reactedRound !== cb.round && !u.dead) {
+      h.reactedRound = cb.round; cb.log.push(h.name + ' takes an opportunity attack.'); react(cb, rng, h, u, 'melee');
+    }
+    triggerOverwatch(cb, rng, u);
+  }
   return null;
+}
+
+function react(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
+  const pv = previewAttack(cb, h, t, mode, { free: true });
+  if (!pv.ok) { cb.log.push('(' + h.name + ' can\'t: ' + pv.why + ')'); return; }
+  resolveAttack(cb, rng, h, t, mode, null, { noAp: true }); checkOver(cb);
+}
+/** Overwatch (spec): a unit holding a shot fires at the first enemy that moves in its sight and range. */
+export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit) {
+  for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && h.reactedRound !== cb.round && unitSees(cb, h, mover.pos)) {
+    const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
+    h.reactedRound = cb.round; const mode = h.overwatch; h.overwatch = null;
+    cb.log.push(h.name + ' fires from overwatch.'); resolveAttack(cb, rng, h, mover, mode, null, { noAp: true }); checkOver(cb);
+  }
+}
+export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'melee'): string | null {
+  const w = WEAPON[u.weapon], cost = attackApCost(isMelee(w) ? w : w, mode);
+  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  u.ap -= cost; u.overwatch = mode; cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
+}
+/** Burst (spec): 3 AP, 3 rounds at one target, each later round −1 more. Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
+export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
+  const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
+  u.ap -= 3; cb.log.push(u.name + ' fires a burst.');
+  for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true });
+  u.heat = Math.max(0, u.heat - 1); checkOver(cb); return null;
+}
+export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
+  const pv = previewAttack(cb, u, t, 'auto'); if (!pv.ok) return pv.why!;
+  const [ax, ay] = xy(u.pos), [tx, ty] = xy(t.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
+  const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= 1.5; };
+  const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
+  u.ap -= 4; cb.log.push(u.name + ' opens up on full auto.');
+  const w = WEAPON[u.weapon], startAmmo = u.ammo;
+  for (const v of hits) resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true });
+  if (w.magazine != null) u.ammo = Math.max(0, startAmmo - 10);
+  u.heat += 4 - hits.length; checkOver(cb); return null;
+}
+/** Shove (spec): 2 AP, adjacent; d20 + Raw Power vs 10 + the target's best of Raw Power and Athletics; pushed 1 tile, or prone if blocked. */
+export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
+  if (dist(u.pos, t.pos) > 1 || t.dead) return 'Shove someone next to you.';
+  if (u.ap < 2) return 'Needs 2 AP.';
+  u.ap -= 2;
+  const roll = d20(rng), total = roll + (u.strength ?? 0), need = 10 + Math.max(t.strength ?? 0, 0);
+  let line = u.name + ' shoves ' + t.name + ': d20 ' + roll + ' ' + ((u.strength ?? 0) >= 0 ? '+' : '−') + Math.abs(u.strength ?? 0) + ' = ' + total + ' vs ' + need;
+  if (total >= need) {
+    const [ux, uy] = xy(u.pos), [tx, ty] = xy(t.pos), to = key(tx + Math.sign(tx - ux), ty + Math.sign(ty - uy));
+    const [nx, ny] = xy(to), blocked = nx < 0 || ny < 0 || nx >= cb.map.w || ny >= cb.map.h || moveBlockers(cb).has(to) || cb.units.some((v) => !v.dead && v.pos === to);
+    if (blocked) { t.prone = true; line += ' · knocked prone'; } else { t.pos = to; t.braced = false; line += ' · pushed to ' + refOf(to); }
+  } else line += ' · holds firm';
+  cb.log.push(line + '.'); return null;
+}
+export function toggleProne(cb: Combat, u: Unit): string | null {
+  if (u.ap < 1) return 'Needs 1 AP.';
+  u.ap -= 1; u.prone = !u.prone; cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.')); return null;
+}
+export function brace(cb: Combat, u: Unit): string | null {
+  if (u.braced) return 'Already braced.';
+  if (u.ap < 1) return 'Needs 1 AP.';
+  u.ap -= 1; u.braced = true; cb.log.push(u.name + ' braces.'); return null;
 }
 
 /** Reload (spec: Reloading): 2 AP. A magazine weapon swaps in the fullest spare and drops the one in the gun on the floor;
@@ -543,6 +649,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
+    if (u.prone && u.ap >= 1) { toggleProne(cb, u); continue; }
     if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
@@ -564,7 +671,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
       const score = (sees ? 0 : 100) + near + tiles * 0.1;
       if (score < bestScore) { bestScore = score; best = k; }
     }
-    if (!best || moveUnit(cb, u, best)) break;
+    if (!best || moveUnit(cb, u, best, rng)) break;
   }
 }
 

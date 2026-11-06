@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -121,6 +121,40 @@ describe('campaigns', () => {
     expect(() => apply(g, { type: 'campaign/load', campaign: { id: 'bad' } } as any, 'host')).toThrow(/problems/);
     g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id) }, 'host'); g = apply(g, { type: 'session/start' }, 'host');
     expect(g.campaign!.title).toBe('My Campaign');
+  });
+});
+
+describe('vision, stances and reactions', () => {
+  const setup = (dark = false) => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const map = { ...MAPS.yard, dark, cover: [], full: [] };
+    const cb = startCombat('t', map, [{ c, pos: '1,5' }], [{ name: 'E', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: 'J6' }], 'easy', { state: 5 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!; u.weapon = 'hellraiser_service_rifle'; u.ammo = 24; u.ap = 9;
+    return { c, cb, u, e: cb.units.find((x) => x.side === 'foe')! };
+  };
+  it('darkness halves sight; fog hides what nobody sees; Sensory senses what is close', () => {
+    let { cb, u, e } = setup(false); u.vision = 12; e.pos = '11,5';
+    expect(visibility(cb).seen.has(e.id)).toBe(true);
+    ({ cb, u, e } = setup(true)); u.vision = 12; u.sensory = 3; e.pos = '11,5';
+    const v = visibility(cb); expect(v.seen.has(e.id)).toBe(false); expect(previewAttack(cb, u, e, 'shot').why).toMatch(/can't see/);
+    e.pos = '3,5'; expect(visibility(cb).sensed.has(e.id)).toBe(false); expect(visibility(cb).seen.has(e.id)).toBe(true); // 2 tiles: within half sight
+  });
+  it('prone, shove, brace, burst, overwatch and opportunity attacks', () => {
+    const { cb, u, e, c } = setup(false); u.ap = 9; e.pos = '2,5';
+    const base = previewAttack(cb, u, e, 'shot').toHit; e.prone = true;
+    expect(previewAttack(cb, u, e, 'shot').toHit).toBe(base - 2); expect(previewAttack(cb, u, e, 'melee').toHit).toBeGreaterThan(previewAttack({ ...cb } as any, u, { ...e, prone: false } as any, 'melee').toHit);
+    e.prone = false; u.strength = 20; expect(shove(cb, { state: 3 }, u, e)).toBeNull(); expect(e.pos).toBe('3,5');
+    u.ap = 9; expect(fireBurst(cb, { state: 9 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6);
+    u.ap = 9; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true);
+    expect(toggleProne(cb, u)).toBeNull(); expect(moveUnit(cb, u, '1,6')).toMatch(/Stand up/); toggleProne(cb, u);
+    // overwatch: e moves in sight and takes the shot
+    u.ap = 9; e.pos = '8,5'; expect(setOverwatch(cb, u, 'shot')).toBeNull(); e.ap = 9;
+    const before = cb.log.length; moveUnit(cb, e, '7,5', { state: 11 }); expect(cb.log.slice(before).some((l) => /overwatch/.test(l))).toBe(true);
+    // opportunity attack: leaving melee reach without disengaging
+    cb.round++; e.pos = '2,5'; u.pos = '1,5'; e.ap = 9; const b2 = cb.log.length; moveUnit(cb, e, '4,5', { state: 13 });
+    expect(cb.log.slice(b2).some((l) => /opportunity/.test(l))).toBe(true);
+    cb.round++; e.pos = '2,5'; e.ap = 9; const b3 = cb.log.length; moveUnit(cb, e, '3,5', { state: 13 }, 'disengage');
+    expect(cb.log.slice(b3).some((l) => /opportunity/.test(l))).toBe(false);
   });
 });
 

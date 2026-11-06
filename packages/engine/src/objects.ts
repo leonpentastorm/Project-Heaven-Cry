@@ -8,6 +8,8 @@ export interface ObjKind {
   id: string; name: string; glyph: string; blocks_move: boolean; blocks_sight: boolean; cover: 'half' | 'full' | null; hp: number | null;
   difficult?: boolean; hidden?: boolean; door?: boolean; text: string;
   trap?: { damage: number; detect_tn: number; detect_range: number }; hazard?: { damage: number }; explodes?: { damage: number; radius: number };
+  /** Light radius in tiles (spec: Vision). */
+  light?: number;
 }
 export const OBJECT_KINDS: ObjKind[] = (objectsJ as any).items;
 export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map((k) => [k.id, k]));
@@ -47,3 +49,4 @@ export function mergeApproaches(old: Approach[], fresh: Omit<Approach, 'tries'>[
 }
 /** May this character try this approach now? Once per character per scene. */
 export const triedThisScene = (a: Approach, charId: string, scene: number) => a.tries.some((t) => t.charId === charId && t.scene === scene);
+export const lightOf = (o: MapObject) => ((o.hp == null || o.hp > 0) ? kindOf(o).light || 0 : 0);

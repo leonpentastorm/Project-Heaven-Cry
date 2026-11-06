@@ -146,7 +146,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Stat | Formula |
 |---|---|
-| Vision range | 12 + 2 × (Perception − 1); halved in darkness |
+| Vision range | 12 + 2 × (Perception − 1) + Vigilant; halved in darkness (see Vision) |
 | Detection range | 2 + Vigilant |
 | Stealth | 0.5 × Ingenuity, subtracted from enemies' Detection range against you |
 | Throwing range | 6 + 0.5 × Dexterity |
@@ -295,8 +295,28 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Pray | 3 |
 | Speak a sentence | 0 |
 | Persuade, threaten or parley mid-fight (a skill check) | 2 |
+| Shove an adjacent enemy | 2 |
+| Brace (set a heavy weapon) | 1 |
+| Field Repair | 2 |
 
 ## Attacks, damage and armour
+
+**The actions perks rely on** (item 22, written 7 Nov 2026; provisional):
+- **Shove** (2 AP): an adjacent enemy. Roll d20 + Raw Power modifier against 10 + the target's Raw Power or Athletics modifier, whichever is higher (an enemy uses its attack bonus). On a success it moves 1 tile directly away from you. If that tile is blocked, it is knocked prone instead. Shoving someone into fire or a toxic spill is the point.
+- **Break**: attacking an object (Shoot an object; a melee strike works the same way). See Cover and Map objects.
+- **Brace** (1 AP): set a heavy weapon. While braced (or prone) you don't move, the LMG loses its −2, the .700 Blackpoint can fire, and Recoil is halved. Moving ends it.
+- **Field Repair** (2 AP): Proficiency 3+, uses a spare-parts kit charge, restores 10% + 5% per Proficiency point above 3 of a weapon's or a robot's Durability. Out of combat, 10 minutes per charge restores 50%.
+- **Improvise Tool**: out of combat, a Proficiency check the Narrator calls; on a success you have a one-use tool for the job, as the Narrator describes it.
+- **Analyze on NPCs**: out of combat it is an Analysis check the Narrator calls (TN by how guarded they are). On a success you learn what Analyze reveals in a fight, in words.
+- **Wards and rituals** belong to Sigil and Soul magic; until that pass, the Narrator rules them from the perk's text.
+
+**Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
+
+**Vision** (written 7 Nov 2026, Leon: vision, fog of war and darkness are one stat; provisional):
+- **Vision range** = 12 + 2 × (Perception − 1) + Vigilant tiles.
+- **Darkness** halves it. A zone is lit or dark. Light sources (fire, lamps, torches) light a radius around them, and a target standing in light is seen at full range.
+- **Fog of war:** the squad shares what any member sees. An enemy out of every member's sight (range and line of sight) isn't shown and can't be targeted. **Sensory** lets you sense what you can't see: within 1 + Sensory ÷ 3 tiles (rounded down), an unseen enemy shows as a presence, with no details.
+- Enemies see by the same rule (Vision 12, halved in darkness).
 
 **Analyze.** 2 AP (1 with Analysis's Quick Read), at an enemy you can see within 4 + Analysis tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has Weak Point (Analysis 5), the squad deals +15% damage to that enemy. Details are provisional (item 56).
 
@@ -670,7 +690,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 19. **No dodge action.** Riposte now triggers when a melee attack against you misses.
 20. **Last Charge.** 7 m is not a whole number of tiles; *data uses 5 tiles*. Its shield of 100 × Armour Class is off the HP scale.
 21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation (8 instead of 6). Confirm both.
-22. **Undefined actions** that perks rely on: Field Repair, Shove, Break, wards and rituals, Improvise Tool, Analyze on NPCs.
+22. ~~Undefined actions.~~ *Written 7 Nov 2026 (see Analyze and the actions perks rely on); provisional, item 60.*
 23. **Perk type labels.** Origami Hands, Hold the Stroke and Pattern Lock carry type labels that don't match their effects. Soulmate scales by Mastery inside Tier I.
 24. **Bone Talk** calls Shaken a body debuff; Shaken is in the heart family.
 25. **Roster terms replaced by spec terms:** "Outburst" became Soul spell, GM became Narrator, and the Roster's Mastery-gated recipes became signature totals.
@@ -720,3 +740,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 57. **Two kinds of cover with HP** (Leon): half cover −5 to hit, full cover blocks sight; HP 30 / 80; misses caused by the −5 hit the cover; broken cover becomes rubble. Replaces +2 / +5 Defense.
 58. **Picking up and loading** (Leon: dropped magazines can be picked up; empty magazines can be loaded for AP by the rounds needed): pick-up 1 AP per tile, loading 1 AP per 5 rounds, the kits' loose rounds.
 59. **Map objects and points of interest** (Leon): the object list and its numbers (trap 25 damage, TN 12, 2-tile detection; barrel 40 within 2; fire 10, toxic 8; door 40 HP), and approaches tried once per character per scene.
+60. **The written actions and Vision** (Shove, Brace, Field Repair, Improvise Tool, Analyze on NPCs; Vision + Vigilant, darkness, light radius, Sensory presence): all numbers are first drafts.
