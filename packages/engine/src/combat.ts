@@ -1,6 +1,6 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
-import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
+import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf } from './objects';
 
@@ -9,7 +9,7 @@ export interface MapDef { id: string; name: string; w: number; h: number; solid:
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
   notes?: { at: string; text: string }[];
   /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
-  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
+  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
@@ -54,7 +54,7 @@ export interface Unit {
   /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
   extra?: { weapon: string; rounds: number }[];
   /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
-  analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number;
+  analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number; overweight?: number;
 }
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
@@ -128,7 +128,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), w.magazine ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
-    vigilant: c.skills.vigilant || 0, mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    vigilant: c.skills.vigilant || 0, overweight: overweightKg(c), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
   };
 }
 
@@ -139,7 +139,8 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     pos, hp: t.hp, maxHp: t.hp, def: t.defense, armour: t.armour, attack: t.attack_bonus, weapon: w.id, movement: t.movement,
     init: d20(rng) + t.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
-    injuries: [], bleed: 0, dazedNext: 0, injResist: 0, hand: 'right', // stat blocks have no Endurance yet: they resist as Endurance 1
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right',
+    mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
   };
 }
 
@@ -157,7 +158,7 @@ export function defaultObjects(map: MapDef): MapObject[] {
   return [...map.cover.map((k) => makeObject(id(), 'crate', k)), ...(map.full || []).map((k) => makeObject(id(), 'pillar', k)),
     ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); if (!k) return null;
       const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })) });
-      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; return ob; }).filter(Boolean) as MapObject[]];
+      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.to) ob.to = o.to; return ob; }).filter(Boolean) as MapObject[]];
 }
 /** The fight's objects; saves from before objects existed are rebuilt from their cover state. */
 export function objectsOf(cb: Combat): MapObject[] {
@@ -443,7 +444,7 @@ export function reload(cb: Combat, u: Unit): string | null {
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
   if (u.ap < 2) return 'Needs 2 AP.';
-  if (u.side === 'foe' || !u.mags) { u.ap -= 2; u.ammo = w.magazine; u.jammed = false; cb.log.push(u.name + ' reloads.'); return null; }
+  if (!u.mags) { u.ap -= 2; u.ammo = w.magazine; u.jammed = false; cb.log.push(u.name + ' reloads.'); return null; }
   if (w.reload === 'loose') {
     const room = w.magazine - u.ammo, take = Math.min(room, u.loose || 0);
     if (room <= 0) return 'Already full.';
@@ -544,12 +545,14 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
     const w = WEAPON[u.weapon];
-    if (w.magazine != null && u.ammo <= 0 && u.ap >= 2) { reload(cb, u); continue; }
+    const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
+    if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2) { reload(cb, u); continue; }
+    const mode: 'melee' | 'shot' = isMelee(w) || dry ? 'melee' : 'shot';
     const targets = cb.units.filter((t) => t.side === 'pc' && !t.dead)
-      .map((t) => ({ t, pv: previewAttack(cb, u, t, isMelee(w) ? 'melee' : 'shot') }))
+      .map((t) => ({ t, pv: previewAttack(cb, u, t, mode) }))
       .filter((x) => x.pv.ok)
       .sort((a, b) => (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
-    if (targets.length) { resolveAttack(cb, rng, u, targets[0].t, isMelee(w) ? 'melee' : 'shot', null); checkOver(cb); continue; }
+    if (targets.length) { resolveAttack(cb, rng, u, targets[0].t, mode, null); checkOver(cb); continue; }
     // close in: the reachable tile that is nearest a living PC and has line of sight to one
     const P = paths(cb, u.pos, u.id), pcs = cb.units.filter((t) => t.side === 'pc' && !t.dead);
     if (!pcs.length) break;
@@ -557,7 +560,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     for (const [k, tiles] of Object.entries(P.dist)) {
       if (k === u.pos || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
       const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
-      const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= effectiveRange(w));
+      const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
       const score = (sees ? 0 : 100) + near + tiles * 0.1;
       if (score < bestScore) { bestScore = score; best = k; }
     }

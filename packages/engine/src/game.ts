@@ -101,7 +101,7 @@ export type Action =
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
-  | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
+  | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string };
 
 export class RuleError extends Error {}
@@ -286,7 +286,7 @@ function reduce(g: GameState, a: Action, by: string) {
       o!.open = !o!.open; push(g, { kind: 'system', text: c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.' });
       return;
     }
-    case 'poi/examine': case 'poi/try': {
+    case 'poi/examine': case 'poi/try': case 'poi/travel': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase !== 'story') fail('Deal with it after the fight.');
       if (g.story.await !== 'players') fail('Wait for your turn to speak.');
@@ -294,6 +294,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
       const o = storyObjects(g).find((x) => x.id === a.objId); if (!o || o.hidden) fail('Nothing like that here.');
       if (dist(positionsOf(g)[c!.id], o!.pos) > 1) fail('Walk up to it first (stand on it or next to it).');
+      if (a.type === 'poi/travel') {
+        if (!o!.to) fail('That doesn\'t lead anywhere.');
+        const dest = campaignOf(g)?.zones.find((z) => z.id === o!.to)?.name || o!.to;
+        const text = 'asks to travel to ' + dest + ' (the way out at ' + refOf(o!.pos) + ') [travel:' + o!.to + ']';
+        g.story.spoken[by] = text; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
+        closeRoundIfDone(g); return;
+      }
       if (a.type === 'poi/examine') {
         const text = 'examines the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + ' [' + o!.id + ']';
         g.story.spoken[by] = text; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
@@ -583,7 +590,7 @@ const mapCache = new WeakMap<object, Record<string, MapDef>>();
 /** A zone of the campaign as a map, or a built-in map by id. */
 export function mapFor(g: GameState, id: string): MapDef | null {
   const c = campaignOf(g), z = c?.zones.find((x) => x.id === id);
-  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } return (cache[id] ||= zoneToMap(z)); }
+  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } return (cache[id] ||= zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name])))); }
   return MAPS[id] || null;
 }
 export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -87,6 +87,12 @@ describe('campaigns', () => {
     const skills = new Set(storyObjects(g).flatMap((o) => o.approaches.flatMap((a) => a.skills)));
     expect(skills.size).toBe(27); // every skill has a way in, in the tutorial zone
     expect(storyObjects(g).find((o) => o.kind === 'trap')!.hidden).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'The guns stop.' } as any }, 'host'); // the opening
+    const id0 = Object.keys(g.characters)[0], exit = storyObjects(g).find((o) => o.to === 'rear_pad')!;
+    expect(exit.name).toBe('To Outpost-813 rear landing pad');
+    g = apply(g, { type: 'story/move', charId: id0, to: 'O6' }, 'host');
+    g = apply(g, { type: 'poi/travel', charId: id0, objId: exit.id }, 'host');
+    expect(g.story.entries.at(-1)!.text).toMatch(/asks to travel to Outpost-813 rear landing pad/);
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
     const ramp = storyObjects(g).find((o) => o.name === 'The loading ramp')!;
     expect(ramp.approaches.length).toBe(5); expect(refOf(ramp.pos)).toBe('M5');
@@ -189,6 +195,8 @@ describe('combat', () => {
     expect(u.hp).toBe(hp - 5); expect(u.bleed).toBe(2);
     expect(movement({ ...c, injuries: [{ loc: 'leg', side: 'left' }] })).toBe(movement(c) / 2);
     expect(packOf(c).map((x) => x.id)).toContain('field_kit');
+    const heavy = { ...c, pack: [...packOf(c), { id: 'rocks', name: 'Rocks', qty: 6, kind: 'weapon' as const, weapon: 'blackpoint_700' }] }; // +90 kg
+    expect(overweightKg(heavy)).toBeGreaterThan(0); expect(movement(heavy)).toBe(Math.max(0.5, movement(c) - Math.ceil(overweightKg(heavy) / 5)));
   });
   it('reloading uses up magazines and drops the one in the gun, rounds and all', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); // medic kit: pistol, 2 spare magazines

@@ -3,7 +3,7 @@
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
@@ -68,7 +68,9 @@ export class MainLogic extends DCLogic {
     const rep = [{ k: 'Factions', v: 'No standing yet' }];
     const inj = c ? c.injuries || [] : [];
     const statusFig = bodyFigure({ injuries: inj, mainSide: side0(c) });
-    const injuries = inj.map((i, n) => ({ key: n, where: ((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), what: injuryText[i.loc] }));
+    const ow = c ? overweightKg(c) : 0;
+    const injuries = [...inj.map((i, n) => ({ key: n, where: ((i.side ? i.side + ' ' : '') + i.loc).toUpperCase() + ' · INJURED', what: injuryText[i.loc] })),
+      ...(ow > 0 ? [{ key: 'ow', where: 'OVERBURDENED', what: ow + ' kg over your carry limit: −' + Math.ceil(ow / 5) + ' Movement and no Sprint until you drop something.' }] : [])];
     const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon') })) : [];
     const perks = c ? c.perks.map((x) => { const p = PERK[x.id], sk = p.skills[0], ink = sk ? ATTR[SK[sk].attr].ink : '#FFFFFF', icon = PERK_ICON[x.id] || IMG['wick-mind-without-fog'];
       const text = p.tiers ? (x.tier === 'II' ? p.tiers.II.text : p.tiers.I.text) : p.text;
@@ -246,6 +248,7 @@ export class MainLogic extends DCLogic {
           style: 'display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F; border-left: 3px solid ' + ink }; }),
       noApproaches: !P0.approaches.length, cantExamine: !(myTurn && isNear),
       examine: () => { act({ type: 'poi/examine', charId: c.id, objId: P0.id }); this.setState({ objPanel: null }); },
+      isExit: !!P0.to, cantTravel: !(myTurn && isNear), travel: () => { act({ type: 'poi/travel', charId: c.id, objId: P0.id }); this.setState({ objPanel: null }); },
       isDoor: !!kindOf(P0).door, doorLabel: P0.open ? 'Close it' : 'Open it', cantDoor: !isNear || !!P0.locked || g.phase !== 'story', door: () => act({ type: 'story/door', charId: c.id, objId: P0.id }),
       canWalk: !!mover && !isNear, walk: () => { const [ox, oy] = P0.pos.split(',').map(Number), taken = new Set(Object.values(pos)); let best = null, bd = 1e9;
         for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const k = (ox + dx) + ',' + (oy + dy), d = myPos ? Math.abs(ox + dx - +myPos.split(',')[0]) + Math.abs(oy + dy - +myPos.split(',')[1]) : 0;
@@ -266,7 +269,7 @@ export class MainLogic extends DCLogic {
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       zoomPc: zoomer(this, pc.img, pc.name, 'portrait'), canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
-      status, rep, statusFig, injuries, noInjuries: !inj.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, noRig: !rig.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, noRig: !rig.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
       hero, stream, pushes,

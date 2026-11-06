@@ -131,7 +131,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | AP per turn | 6 |
 | Initiative bonus | (Agility − 1) + Reaction Speed modifier |
 | Movement (tiles per AP) | 1 + 0.5 × (Agility − 1); never below 0.5 |
-| Carry weight | 20 kg + 5 kg × (Strength − 1) |
+| Carry weight | 20 kg + 5 kg × (Strength − 1). Over it you are **Overburdened** (a permanent status while it lasts): −1 Movement per started 5 kg over, never below 0.5, and no Sprint (provisional, item 54) |
 | Defense | 10 + Dodge, where Dodge = mod(Athletics), minimum 0 |
 | Counter bonus | mod(Raw Power), minimum 0 |
 | Injury resistance | 10% × (Endurance − 1) chance to ignore an injury |
@@ -352,7 +352,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Item weights.** Everything carried has a weight, down to the single round, and counts against Carry weight: the weapon itself, the loaded magazine (magazine plus rounds), every spare magazine and loose round, armour, and every item in the backpack. Armour by class: none 0, Light 4 kg, Medium 8, Heavy 12, Assault 18, Juggernaut 28. Rounds: .32 Decrkm 0.01 kg, revolver 0.015, rifle 0.012, shell 0.04, .700 0.12, arrow 0.03, bolt 0.04. Empty magazines: service pistol 0.1 kg, Decrkm SMG 0.2, service rifle 0.15, revolver speedloader 0.05, .700 Blackpoint 0.3, LMG box 0.8. Gear: stim 0.1, field kit 1.5, ration pack 0.6, Evoker 1.2, standard mana core 0.2, chalk and wax 0.4, Emanator 0.4, prayer beads and incense 0.3, Essence of Experience 0.1. All provisional (item 54); more items get weights as they're added. What happens over the limit isn't settled yet.
 
-**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated. Details (item 53): Injury resistance is a d100 at or under 10% × (Endurance − 1); arms and legs are left or right on a d2; an arm injury hurts attacks with a two-handed weapon (anything but pistols, revolvers, light melee, thrown and unarmed) whichever arm it is, and a one-handed weapon only if it's the main-hand arm; leg injuries halve Movement once, however many; head and torso injuries end with the fight, arm and leg injuries go back to the character. The Narrator decides when the story treats them (a long rest with a Medic, surgery, a field hospital). Enemy stat blocks have no Endurance yet, so enemies resist as Endurance 1 (0%).
+**Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated. Details (item 53): Injury resistance is a d100 at or under 10% × (Endurance − 1); arms and legs are left or right on a d2; an arm injury hurts attacks with a two-handed weapon (anything but pistols, revolvers, light melee, thrown and unarmed) whichever arm it is, and a one-handed weapon only if it's the main-hand arm; leg injuries halve Movement once, however many; head and torso injuries end with the fight, arm and leg injuries go back to the character. The Narrator decides when the story treats them (a long rest with a Medic, surgery, a field hospital). Enemies resist with their tier's Endurance.
 
 **Shields** are temporary HP, used up before real HP, and gone at the end of combat unless a rule says otherwise. Healing can't raise HP above its maximum.
 
@@ -362,14 +362,14 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Enemy stat blocks** (enemies.json, provisional). Hostiles that aren't full characters use one of four tiers. The Narrator picks the tier, a name and a weapon from weapons.json when it starts a fight; the engine runs them.
 
-| Tier | HP | Defense | Attack bonus | Armour | Movement (tiles per AP) |
-|---|---|---|---|---|---|
-| Minion | 30 | 10 | +1 | 0 | 1.5 |
-| Soldier | 60 | 12 | +3 | 5 | 1.5 |
-| Elite | 100 | 13 | +5 | 10 | 2 |
-| Boss | 200 | 14 | +6 | 10 | 2 |
+| Tier | HP | Defense | Attack bonus | Armour | Movement (tiles per AP) | Endurance | Spare magazines |
+|---|---|---|---|---|---|---|---|
+| Minion | 30 | 10 | +1 | 0 | 1.5 | 1 | 1 |
+| Soldier | 60 | 12 | +3 | 5 | 1.5 | 3 | 2 |
+| Elite | 100 | 13 | +5 | 10 | 2 | 5 | 3 |
+| Boss | 200 | 14 | +6 | 10 | 2 | 7 | 4 |
 
-Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery.
+Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery. Their Endurance sets their Injury resistance (10% × (Endurance − 1)), like a character's. They carry their weapon's spare magazines, which they reload from like anyone else. When a gun runs dry they fight with their fists, and what they carry is there to be stolen or looted.
 
 ## Weapons
 
@@ -394,7 +394,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Incendiary | target is Burning; −10% damage |
 | Enhanced | a sliver of mana core in every round. Ignores armour, deals Elemental damage, and each hit releases bots (+1 on the ambient mana meter). One core makes 10 rounds. Rare, and expensive to buy. |
 
-**Reloading** (2 AP) uses up ammo you carry. Magazine weapons (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) swap in your fullest spare magazine, and the one in the gun drops on the floor: empty, or with whatever rounds were left in it, which are lost with it. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry unlimited spares until their stat blocks list ammo. Provisional (item 55).
+**Reloading** (2 AP) uses up ammo you carry. Magazine weapons (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) swap in your fullest spare magazine, and the one in the gun drops on the floor: empty, or with whatever rounds were left in it, which are lost with it. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry the spare magazines their tier lists (Enemy stat blocks). Provisional (item 55).
 
 **Magazines and rounds are inventory.** The backpack lists loaded, part-loaded and empty magazines, and loose rounds, separately, each with its weight. Reload only takes a magazine with rounds in it. **Picking up** (1 AP) takes everything on your tile or one adjacent tile: dropped magazines, empty or not, go back in the pack. **Loading** a magazine from loose rounds costs 1 AP per 5 rounds in combat (load part of one if you're short of AP), and nothing out of combat. Starting kits also carry loose rounds: 24 for the pistols, 48 rifle rounds for the line soldier, 12 for the revolver. Provisional (item 58).
 
@@ -652,7 +652,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 4. **Initiative ties** after Agility. *Suggested: compare Reaction Speed, then the players choose.*
 5. ~~Inner Voice ties.~~ *Obsolete in 1.1: Voices replace Inner Voice; ties between hooks go to the bigger margin, then the Narrator's choice.*
 6. ~~Echo rerolls.~~ *Settled in 1.1: at most 1 Echo per roll.*
-7. **Durability gains.** Does extra HP per level apply retroactively when Durability rises? *Suggested: yes.*
+7. ~~Durability gains.~~ *Settled (Leon): yes, retroactive; max HP is always recomputed from current Durability.*
 8. **Mana over time.** Does the ambient meter rise on its own (the World Bible's Tide), and on what interval do new bots spawn?
 9. **Armour slots.** The slot list is settled (the 2020 sheet's, see Attacks, damage and armour). Head, hands, feet and the other non-torso pieces still have no items. The Veil slot is reserved: rules to come.
 10. **Braced and Emplaced bonuses** aren't stated. *Data: Emplaced gives +2 to attacks and halves Recoil.*
@@ -684,10 +684,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 28. The numbers for Sigil words, Soul modules and patron blessings are all new and provisional.
 29. Of the 82 bespoke effect ops, merge any that turn out to be the same rule in disguise.
-30. Is a 15/9 signature split plus a tutor the right bar for advanced classes?
-31. Can a character gain a second base class later?
-32. Do enhanced rounds stay, as rare bought ammo?
-33. The Quartermaster and The Laughing Mask are invented patrons: keep, rename or replace them.
+30. ~~Advanced class bar.~~ *Settled (Leon): keep 15/9 plus a tutor.*
+31. ~~Second base class.~~ *Settled (Leon): no; saved for a later expansion.*
+32. ~~Enhanced rounds.~~ *Settled (Leon): they stay, rare and bought (15 credits each), and some classes make them: Mind classes and the Spellslinger press 10 from a standard core in an hour out of combat (provisional).*
+33. ~~Invented patrons.~~ *Settled (Leon): keep; inventing is welcome, and he flags what feels off.*
 34. **Class balance.** Monte Carlo over 100k level-3 builds: 0% classless, an average of 3.5 class options per character, and each class reachable by 26–28% of builds. *(1.1 changes creation to 10 skill points; rerun the Monte Carlo.)*
 
 **Added in revision 1.1 (provisional, settle in playtest)**
@@ -712,9 +712,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 49. **A perk step at every Mastery level, and 27 Mastered perks** (Leon). Replaces Tier I at 3 / Tier II or second perk at 7 / both Tier II at 10. A skill at 5 points now holds two steps (Tier II can arrive at 5, two points earlier), and a 7/3 creation spread holds 4 steps instead of 3. The Mastered perks' numbers are all new: check Last Wall, Earthbreaker, Nothing Gets Past, Judgement Day and On My Mark against the AP ceiling and the action economy first.
 50. **Rival's Neck and Neck** (Leon: rivals help each other grow): 50 XP (tagged `bond`) when your rival reaches a new level, and +10% XP from every source but Essence while your rival is a higher level; both ways. Check that two rivals don't pull ahead of the rest of the squad.
 51. **Combo perks at Mastery 2** (Leon: combos are for high levels in 2–3 skills): 5 points in every listed skill, up from 3, now that each Mastery level also gives a perk step. A two-skill combo costs 10 points, a three-skill one 15. Plus three new combos so every skill is in one: Bite the Bullet (Guts + Pain Threshold), Sixth Sense (Sensory + Vigilant), What Could Be (Visualization + Conscience).
-52. **Enemy stat tiers** (Minion, Soldier, Elite, Boss): HP 30/60/100/200, Defense 10/12/13/14, attack +1/+3/+5/+6, armour 0/5/10/10. Written for the first playable build; tune from playtest fights.
+52. **Enemy stat tiers** (Minion, Soldier, Elite, Boss): HP 30/60/100/200, Defense 10/12/13/14, attack +1/+3/+5/+6, armour 0/5/10/10, Endurance 1/3/5/7, spare magazines 1/2/3/4. Written for the first playable build; tune from playtest fights.
 53. **Injury details** (provisional): the d2 side, the two-handed list, one halving for legs, and enemies at 0% resistance were set for the first playable build. Tune from playtests.
-54. **Item weights** (Leon: everything has weight, down to the single bullet): the armour, round, magazine and gear weights under Item weights were set for the first playable build. The effect of going over Carry weight is still open.
+54. **Item weights** (Leon: everything has weight, down to the single bullet): the armour, round, magazine and gear weights under Item weights were set for the first playable build. Over the limit: Overburdened, −1 Movement per started 5 kg over (Leon accepted the shape; the numbers are provisional).
 55. **Ammo and reloading** (Leon: reloading uses ammo up; reloading early drops the magazine and its rounds): the round-by-round list, the kits' spare magazines, and enemies' unlimited spares.
 56. **Analyze details:** no roll, line of sight needed, shared with the whole squad for the rest of the fight, and what the squad sees before it.
 57. **Two kinds of cover with HP** (Leon): half cover −5 to hit, full cover blocks sight; HP 30 / 80; misses caused by the −5 hit the cover; broken cover becomes rubble. Replaces +2 / +5 Defense.

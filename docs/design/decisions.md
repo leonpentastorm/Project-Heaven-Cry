@@ -83,3 +83,21 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 69. **Campaigns are packages; hosts can bring their own** (Leon: premade campaigns with their maps, areas and interaction points built, text for the intended beginning, middle and end, and an opening for the Narrator; and you can create your own). Every campaign is one JSON file: pitch, arc (Narrator only; steer, never force), secrets, opening, cast, prepared fights, and zones (maps with notes, objects and pre-written approaches). The Narrator gets the whole package in its cached campaign block, and moves the party between zones with `travel`; each zone keeps its objects as the party left them. M813 is now a four-zone campaign (rear pad, wreck field, Outpost-813, Outpost-1) following the logged incident. The other four starts are one-zone campaigns. A host loads a custom campaign in the Room; the engine validates it and explains any problems. A campaign editor screen is the next step for people who don't want to write JSON.
 70. **M813 is the tutorial, built on Goodsprings** (Leon: make it poignant; every skill represented in POI checks; tutorial format, after Fallout: New Vegas's Goodsprings). A new first zone, the shield line, teaches one system per beat through things the players want to do anyway, with Sergeant Nine-Nine as the teacher, and nothing there can kill a player character. Every one of the 27 skills has an approach in that zone. The ramp standoff becomes the first real test, prepared from nine angles. The names learned on the shield line (Nine-Nine, Seven-Seven, Hum, Lantern) are what the ramp threatens, since the record says nineteen die there. The wreck field merged into the shield line; the outpost gains the record's choice and MPAT's cookbook. Notes in `docs/design/M813-tutorial-campaign.md`.
 71. **The tutorial campaign's art list, and the map tests that came with it** (Leon: a banner per area, profile pictures for every NPC, the maps tested, everything for a high-quality campaign, drawn by GPT to spec). `art/briefs/m813-tutorial-campaign.md` lists 52 images in priority order: 4 zone banners, 16 portraits, 4 top-down map backgrounds, 4 story moments and 24 object sprites. `tools/render_map_guides.py` renders each zone's tile layout from the campaign file as the painter's guide, so the art matches the rules exactly. Backgrounds hold only walls and ground; objects are sprites on top. Rendering the maps exposed two bugs, both fixed: units could squeeze diagonally between two wall tiles, and moving outside a fight ignored walls and closed doors. Now no diagonal step passes a wall corner, and story moves need a real path. The locked security door at Outpost-1 got its ways through.
+72. **Leon's answers to the open questions** (7 Nov 2026):
+    - **Weapons v2:** keep the rarity names and paired-attack penalties; durability wears per attack; one Vision stat governs darkness and fog of war, shaped by Sensory and Vigilant; the machete becomes one-handed; keep every weapon type.
+    - **Overburdened** is a permanent status while over the carry limit.
+    - **Invention:** Claude invents names, patrons and NPCs freely, and Leon flags what feels off.
+    - **Campaigns:** the Room shows M813, Heaven Cry at Astradoel (the 50-hour campaign, coming after the systems) and the host's own; the sketches are hidden.
+    - **Classes:** no second base class (saved for an expansion).
+    - **Enhanced rounds** are rare and bought, and Mind classes and the Spellslinger make them.
+    - **Durability** HP gains are retroactive.
+    - **Actions:** Claude writes the undefined actions, and the combat action panel splits into Movement / Attack & defend / Utility.
+    - **Armour:** Claude drafts items for the other slots.
+    - **Magic:** Sigils and Outbursts get their own branch later.
+    - **Narrator providers:** other providers come after the playtest.
+    - **Coming soon:** the human Narrator screen.
+    - **Campaign editor:** after the human Narrator screen.
+    - **Travel:** players may ask to travel from a way out.
+    - **Enemies** carry Endurance and ammo (thieves will need things to steal).
+    - **Art tools:** ComfyUI waits for Leon's prompt.
+    - **No mid-fight Narrator lines:** screen shake, VFX, loot and sound will carry fights.

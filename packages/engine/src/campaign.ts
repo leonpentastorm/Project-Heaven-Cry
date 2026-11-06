@@ -33,6 +33,8 @@ export interface Campaign {
   startZone: string; zones: CampaignZone[];
   /** Extra lore the Narrator reads (built-in campaigns name repo lore docs here; custom ones can inline text). */
   lore?: string;
+  /** false hides a built-in campaign from the Room (sketches kept for later). */
+  listed?: boolean;
 }
 
 /** "N1–P6", "F4–F5, H2" or "C7" to tile keys. */
@@ -48,13 +50,13 @@ export function expandRefs(list: string[] | undefined, w: number, h: number): st
 }
 
 /** A zone as the engine's map. Cover comes from objects (crates, pillars…), so the cover lists stay empty. */
-export function zoneToMap(z: CampaignZone): MapDef {
+export function zoneToMap(z: CampaignZone, names: Record<string, string> = {}): MapDef {
   const keys = (l?: string[]) => expandRefs(l, z.w, z.h);
   return {
     id: z.id, name: z.name, w: z.w, h: z.h, solid: keys(z.solid), cover: [], full: [], difficult: keys(z.difficult),
     pcStart: keys(z.start), foeStart: keys(z.enemyStart).length ? keys(z.enemyStart) : keys(z.start).map((k) => { const [x, y] = k.split(',').map(Number); return (z.w - 1 - x) + ',' + y; }),
     notes: [...(z.notes || []), ...(z.exits || []).filter((e) => e.at).map((e) => ({ at: e.at!, text: 'Way out: ' + e.text }))],
-    objects: [...(z.objects || []).map((o) => ({ ...o })), ...(z.exits || []).filter((e) => e.at).map((e) => ({ kind: 'exit', at: e.at!, name: 'To ' + e.to, text: e.text }))] as any,
+    objects: [...(z.objects || []).map((o) => ({ ...o })), ...(z.exits || []).filter((e) => e.at).map((e) => ({ kind: 'exit', at: e.at!, name: 'To ' + (names[e.to] || e.to), text: e.text, to: e.to }))] as any,
   };
 }
 

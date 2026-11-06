@@ -149,7 +149,10 @@ export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dod
 export const hpPerLevel = (c: Character) => 5 + 2 * P(c, 'durability');
 export const maxHp = (c: Character) => 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c);
 export const initiativeBonus = (c: Character) => (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed'));
-export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1));
+/** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
+export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
+export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
+export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c));
 export const defense = (c: Character) => 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0));
 export const physicalMult = (c: Character) => 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power');
 export const critMult = (c: Character) => 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics');

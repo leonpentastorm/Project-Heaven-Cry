@@ -21,6 +21,8 @@ export interface Approach {
 export interface MapObject {
   id: string; kind: string; pos: string; name: string; text: string;
   hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
+  /** A way out: the zone it leads to. */
+  to?: string;
 }
 
 export function makeObject(id: string, kind: string, pos: string, extra: Partial<MapObject> = {}): MapObject {

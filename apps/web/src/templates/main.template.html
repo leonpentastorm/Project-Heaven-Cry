@@ -68,7 +68,7 @@
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CONDITION</span>
 <span style="font-size: 14px; font-weight: 700; color: #F65157">{{hpLine}}</span>
 <sc-if value="{{noInjuries}}"><span style="font-size: 12px; color: #A3AEC2">No injuries. A critical hit can wound a head, torso, arm or leg; arm and leg wounds stay until treated.</span></sc-if>
-<sc-for list="{{injuries}}" as="i"><div style="display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 8px; border: 1px solid #F65157; background: rgba(246, 81, 87, 0.08)"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #F65157">✚ {{i.where}} · INJURED</span><span style="font-size: 12px; color: #E7EBF3">{{i.what}}</span></div></sc-for>
+<sc-for list="{{injuries}}" as="i"><div style="display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 8px; border: 1px solid #F65157; background: rgba(246, 81, 87, 0.08)"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #F65157">✚ {{i.where}}</span><span style="font-size: 12px; color: #E7EBF3">{{i.what}}</span></div></sc-for>
 </div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
@@ -277,7 +277,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-if value="{{objPanel.hasWhy}}"><span style="font-size: 12px; color: #A3AEC2">{{objPanel.why}}</span></sc-if>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-if value="{{objPanel.canWalk}}"><button type="button" onClick="{{objPanel.walk}}" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Walk up to it</button></sc-if>
-<sc-if value="{{objPanel.isDoor}}"><button type="button" onClick="{{objPanel.door}}" disabled="{{objPanel.cantDoor}}" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">{{objPanel.doorLabel}}</button></sc-if>
+<sc-if value="{{objPanel.isExit}}"><button type="button" onClick="{{objPanel.travel}}" disabled="{{objPanel.cantTravel}}" title="Uses your turn; the Narrator decides whether the party goes" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">Ask to travel there</button></sc-if><sc-if value="{{objPanel.isDoor}}"><button type="button" onClick="{{objPanel.door}}" disabled="{{objPanel.cantDoor}}" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">{{objPanel.doorLabel}}</button></sc-if>
 <button type="button" onClick="{{objPanel.examine}}" disabled="{{objPanel.cantExamine}}" title="Uses your turn this round; the Narrator answers with everyone else" style="margin-left: auto; min-height: 42px; padding: 0 16px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Examine (uses your turn)</button>
 </div>
 </div>

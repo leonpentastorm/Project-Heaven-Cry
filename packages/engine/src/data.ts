@@ -19,7 +19,7 @@ export interface WeaponDef { id: string; name: string; category: string; damage:
 export interface ClassDef { id: string; name: string; core: CoreId; role: string; signature: string[]; ranks: any; resource: any }
 export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastered' | 'achieved' | 'ultimate'; skills: string[]; requires: any[]; text: string; tiers?: any; deed?: string; flavour?: string }
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }
-export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; movement: number; ap: number; kills: number }
+export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number }
 
 export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
