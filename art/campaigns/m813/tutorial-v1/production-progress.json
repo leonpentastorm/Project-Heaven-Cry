@@ -9,10 +9,10 @@
     "m813-nine-nine",
     "m813-seven-seven",
     "m813-hum",
-    "m813-lantern"
+    "m813-lantern",
+    "m813-soft-hands"
   ],
   "remaining": [
-    "m813-soft-hands",
     "m813-rook",
     "m813-penny",
     "m813-keel",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:25:39.638837+00:00",
+  "updated_utc": "2026-11-06T03:27:18.364976+00:00",
   "status": "in-progress",
   "production_approved": false
 }

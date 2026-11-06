@@ -1558,6 +1558,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-lantern.prompt.txt"
+    },
+    "m813-soft-hands": {
+      "id": "m813-soft-hands",
+      "group": "B",
+      "order": 5,
+      "name": "Soft Hands",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-soft-hands.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B5 | `m813-soft-hands` | **Soft-Hands**, medic robot of the 258th (MPAT's design language). Slender, delicate manipulators, a cloak patched with bandage cloth. | Mid-repair on someone's arm off-frame; gentle, tired. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.png",
+      "source_sha256": "9d70f762bbea1638629181b4fd015c763d7159850b55f08daea645db8e272ad7",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-soft-hands-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.prompt.txt"
     }
   },
   "traits": {
