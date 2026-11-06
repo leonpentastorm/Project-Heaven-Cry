@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-20ca7ffb8db6580b983d76110845c0007476bc77ec23af7b911396942392ebaa  art/campaigns/m813/tutorial-v1/README.md
-a32a78cf2de3a4d50d873d07385be9c82d5cf0c4f6f465effc2b9f602e92a3f2  art/campaigns/m813/tutorial-v1/manifest.json
-4d89228f43a666d45c63f8ec1493b90c4b4359cbbcd637e341648bef94193560  art/campaigns/m813/tutorial-v1/production-progress.json
-e3e7c55bd946754cd0e4ff96d0d13bfd7adf1f1c63842cd86d8eae5e2b6d0468  art/catalog.json
+aa9749d9cc400f3089099889d69ea004c61c50a11f1a96b04d7ef1d627986aef  art/campaigns/m813/tutorial-v1/README.md
+2bef7405c3851091954953a7bda94b434d9301c3d45160514b0f70f3da4f6d2d  art/campaigns/m813/tutorial-v1/manifest.json
+60c0256dc41e088e2e4fb49535db465473cd28aef4959315ea8831ec5d47666c  art/campaigns/m813/tutorial-v1/production-progress.json
+a23d9c8f3376a75d526fd2bab0239dae870b4b999628cb9b3880f456bbfdd579  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -224,6 +224,8 @@ c4f488a2692c2e7267740e1c47773ec8184f9a2da6aef241c3eee16c705d920d  art/illustrati
 bd8608298ecf3a8a631bc0d1ae3f8c6b6980f6eb99cd44016c3de680f101a861  art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt
 2153dfc443c70988ebaec2f57315517ce2f7fe4b1658cabfe17944723b5a8fe9  art/illustrations/m813/v2/sources/m813-shield-line.png
 d739d5ef4d23b14676fe09fd68852eef1a86d5cef02046685d63883318978cb6  art/maps/m813/v1/outpost.png
+ce2f05adf5c717c8e6fdbf6b46580f8468e05a2407f6429136bed135f852f17b  art/maps/m813/v1/outpost_1.png
+7b7fefe6da6ac7fd47dde6f6eefc2fd733a8e7b78ac38f1ce9128b7d37083716  art/maps/m813/v1/previews/map-m813-outpost-1-320px.png
 4d438ce8e861caaddc0a8c36e64ded00e0e56b51e55135122515401ee27888cc  art/maps/m813/v1/previews/map-m813-outpost-320px.png
 e5637cd722ecd325c5de89ef29adaf5070d7308447514b2f8fd6bcb6ac262b3b  art/maps/m813/v1/previews/map-m813-rear-pad-320px.png
 ccb29b936ed8dbb5c625e9a9d8227c406cb260e0128aa79e486846599dc11e1d  art/maps/m813/v1/previews/map-m813-shield-line-320px.png
@@ -238,6 +240,8 @@ a7bdca0a58db58339abf1417fabb467265c4e2e0b10d31cea66dc753afc7196c  art/maps/m813/
 29ccda94a185a6bff213e1e0d2c25f4b4a8701b88d1ce29c34f7a7157ae332cb  art/maps/m813/v1/revisions/v2/sources/map-m813-rear-pad.png
 6cdc33ac9488e1392aa0d3f4b566aa6750ac852e981069984c40b45fcddeba99  art/maps/m813/v1/revisions/v2/sources/map-m813-shield-line.png
 d190837d348e7ed1ef6374f08378fcebb440adb6fef080cc6b06778e95bce54c  art/maps/m813/v1/shield_line.png
+4320e1e4d07268968eceb408915963ccbfdd1318088fb38a70a67b2cf0cba6c9  art/maps/m813/v1/sources/map-m813-outpost-1.png
+b4393a7b7a547890f3dee269a6c9525b9d5ba22a2f7420f72e93bb8336183a96  art/maps/m813/v1/sources/map-m813-outpost-1.prompt.txt
 373acda1c7cdee18fb082de40675f9c784f2660aeee2b4ccc3d566b474d8f163  art/maps/m813/v1/sources/map-m813-outpost.png
 cdf67d8b3db70a7dc108cebe883d1de68ff11065353e7cb40f2b4046ae915f21  art/maps/m813/v1/sources/map-m813-outpost.prompt.txt
 fafadaa0d44d00c4e2508f6d678025e16f99b27062afba3bb053fae5c8fd2551  art/maps/m813/v1/sources/map-m813-rear-pad.png

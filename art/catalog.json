@@ -6803,6 +6803,41 @@
       "previous_path": "art/maps/m813/v1/outpost.png",
       "previous_revision_path": "art/maps/m813/v1/outpost.png",
       "revision": 2
+    },
+    "map-m813-outpost-1": {
+      "id": "map-m813-outpost-1",
+      "group": "C",
+      "order": 4,
+      "name": "Outpost 1",
+      "family": "maps",
+      "path": "art/maps/m813/v1/outpost_1.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C4 | `map-m813-outpost-1` · `.../outpost_1.png` | Outpost-1 | Polished institutional floors; the Colonel's office carpet (A1–E4); security room (L1–P3); atrium (A6–F11); the repair bay's clean deck with drainage grilles (H7–P11); the bay doors' frame along the east wall. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost_1-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "ce2f05adf5c717c8e6fdbf6b46580f8468e05a2407f6429136bed135f852f17b",
+      "source_path": "art/maps/m813/v1/sources/map-m813-outpost-1.png",
+      "source_sha256": "4320e1e4d07268968eceb408915963ccbfdd1318088fb38a70a67b2cf0cba6c9",
+      "source_dimensions": [
+        1513,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/previews/map-m813-outpost-1-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/maps/m813/v1/sources/map-m813-outpost-1.prompt.txt"
     }
   }
 }

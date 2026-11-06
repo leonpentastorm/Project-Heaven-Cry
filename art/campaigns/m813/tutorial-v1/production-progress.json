@@ -24,10 +24,10 @@
     "m813-rearguard",
     "map-m813-shield-line",
     "map-m813-rear-pad",
-    "map-m813-outpost"
+    "map-m813-outpost",
+    "map-m813-outpost-1"
   ],
   "remaining": [
-    "map-m813-outpost-1",
     "m813-how-many",
     "m813-the-ramp",
     "m813-the-choice",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:04:25.000269+00:00",
+  "updated_utc": "2026-11-06T04:05:41.181367+00:00",
   "status": "in-progress",
   "production_approved": false
 }
