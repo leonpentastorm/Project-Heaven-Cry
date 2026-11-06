@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-35 of 52 new images delivered. All are review candidates pending Leon.
+36 of 52 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -47,3 +47,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `obj-toppled-pylon` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-toppled-pylon.png) | opening-safe |
 | `obj-door-closed` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-closed.png) | opening-safe |
 | `obj-door-open` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-open.png) | opening-safe |
+| `obj-crater` | E | [PNG](../../../sprites/objects/v1/obj-crater.png) | opening-safe |
