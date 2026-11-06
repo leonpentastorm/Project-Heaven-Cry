@@ -2092,6 +2092,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "established-fact",
+      "data_id": "established_fact",
+      "name": "Established Fact",
+      "family": "perks",
+      "order": 89,
+      "mood": "Comic, Proud",
+      "action": "Wick brings a huge rubber stamp down with both mittens onto a blank sheet, leaving one big checkmark.",
+      "screen": "Satisfied",
+      "prop": "Rubber stamp",
+      "path": "art/perks/wick/production-v1/established-fact.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/established-fact.png",
+        "128": "art/perks/wick/production-v1/exports/128/established-fact.png",
+        "64": "art/perks/wick/production-v1/exports/64/established-fact.png",
+        "56": "art/perks/wick/production-v1/exports/56/established-fact.png",
+        "48": "art/perks/wick/production-v1/exports/48/established-fact.png",
+        "44": "art/perks/wick/production-v1/exports/44/established-fact.png",
+        "40": "art/perks/wick/production-v1/exports/40/established-fact.png"
+      },
+      "batch": "G",
+      "source_sha256": "69f1ee2775cf8ab945aaac8ed6ecd93bea38872215150b567cf992f2b5171235",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

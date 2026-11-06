@@ -5552,6 +5552,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "established-fact": {
+      "label": "Wick — Established Fact",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/established-fact.png",
+      "sha256": "8b93b3083372b9151c552cb1e3e4d36deb79c027a33c47e511f51586a6d739c2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "established_fact",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/established-fact.png",
+        "128": "art/perks/wick/production-v1/exports/128/established-fact.png",
+        "64": "art/perks/wick/production-v1/exports/64/established-fact.png",
+        "56": "art/perks/wick/production-v1/exports/56/established-fact.png",
+        "48": "art/perks/wick/production-v1/exports/48/established-fact.png",
+        "44": "art/perks/wick/production-v1/exports/44/established-fact.png",
+        "40": "art/perks/wick/production-v1/exports/40/established-fact.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

@@ -171,11 +171,12 @@
     "vanishing-act",
     "overhaul",
     "nothing-gets-past",
-    "clean-draw"
+    "clean-draw",
+    "established-fact"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 92
+    "perks": 93
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -201,7 +202,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "established-fact",
     "closing-argument",
     "solid-image",
     "case-closed",
