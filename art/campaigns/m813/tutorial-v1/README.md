@@ -34,4 +34,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-rearguard` | B | [PNG](../../../character-portraits/m813/v2/m813-rearguard.png) | opening-safe |
 | `map-m813-shield-line` | C | [PNG](../../../maps/m813/v1/revisions/v2/shield_line.png) | opening-safe |
 | `map-m813-rear-pad` | C | [PNG](../../../maps/m813/v1/revisions/v2/rear_pad.png) | opening-safe |
-| `map-m813-outpost` | C | [PNG](../../../maps/m813/v1/outpost.png) | opening-safe |
+| `map-m813-outpost` | C | [PNG](../../../maps/m813/v1/revisions/v2/outpost.png) | opening-safe |
