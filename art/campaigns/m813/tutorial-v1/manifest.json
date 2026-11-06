@@ -139,6 +139,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-1.prompt.txt"
+    },
+    {
+      "id": "m813-nine-nine",
+      "group": "B",
+      "order": 1,
+      "name": "Nine Nine",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-nine-nine.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B1 | `m813-nine-nine` | **Sergeant Nine-Nine**, infantry sergeant: a torso and one shoulder, wedged in barrier stakes, voice box cracked, a sergeant's stripes painted on the shoulder plate. | Giving an order with his one arm, a dry joke in the tilt of the visor. Dying slowly and refusing to be dramatic about it. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "ffcff8b865a985a6ef28732b20917967d76a41673544f8409ca3b7e07fc2d42f",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.png",
+      "source_sha256": "9173b791d83694f913033f0accf925054e821465b668d2792d205406b30a09e0",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-nine-nine-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.prompt.txt"
     }
   ]
 }
