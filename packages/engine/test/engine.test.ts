@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -383,5 +383,84 @@ describe('a full session', () => {
     const v = viewFor(g, 'p2');
     expect(v.story.entries.some((e) => e.to && e.to !== 'p2')).toBe(false);
     expect(v.story.scene.hooks.length).toBe(0);
+  });
+});
+
+describe('music (spec: Music)', () => {
+  const songLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1m5s';
+  const room = (traits: string[] = []) => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'music');
+    const act = (a: any, by = 'host') => { g = apply(g, a, by); };
+    act({ type: 'player/join', id: 'p2', name: 'Friend' });
+    act({ type: 'char/add', sheet: { ...sheetFrom('field_medic', 'MPAT'), traits, identity: { song: songLink, songTitle: 'Song A', songArtist: 'Artist A' } } });
+    act({ type: 'char/add', sheet: { ...sheetFrom('field_medic', 'Seven'), identity: { song: 'https://youtu.be/aaaaaaaaaaa', songTitle: 'Song B' } } }, 'p2');
+    act({ type: 'session/start' });
+    act({ type: 'narrator/turn', turn: { narration: 'Begin.', sceneTitle: 'Shield line' } });
+    const [a, b] = Object.values(g.characters);
+    return { get g() { return g; }, set g(x) { g = x; }, act, a, b };
+  };
+  it('reads YouTube links: id and start time', () => {
+    expect(ytId(songLink)).toBe('dQw4w9WgXcQ'); expect(ytId('https://youtu.be/dQw4w9WgXcQ?si=x')).toBe('dQw4w9WgXcQ'); expect(ytId('not a link')).toBeNull();
+    expect(ytStart(songLink)).toBe(65); expect(songOf({ identity: { song: songLink } } as any)!.start).toBe(65);
+  });
+  it('area music comes from the zone, else the campaign; a fight switches to fight music', () => {
+    const r = room();
+    for (const z of r.g.campaign!.zones) delete z.music;
+    r.g.campaign!.music = { ambient: { yt: 'aaaaaaaaaaa', title: 'Camp' }, combat: { yt: 'bbbbbbbbbbb', title: 'Fight' } } as any;
+    expect(musicFor(r.g).track!.title).toBe('Camp');
+    r.g.campaign!.zones.find((z) => z.id === r.g.story.zone)!.music = { ambient: { yt: 'ccccccccccc', title: 'Zone', artist: '' } };
+    expect(musicFor(r.g).track!.title).toBe('Zone'); expect(musicFor(r.g).layer).toBe('ambient');
+    r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Odd fight', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
+    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Fight' } });
+  });
+  it('a spotlight: once per scene, never cuts off a playing song, ends after one play (host says so)', () => {
+    const r = room(), log: string[] = [], g = r.g;
+    const a = g.characters[r.a.id], b = g.characters[r.b.id];
+    expect(startSong(g, a, 'a critical success', 'spotlight', (t) => log.push(t))).toBe(true);
+    expect(musicFor(g)).toMatchObject({ layer: 'spotlight', charId: a.id });
+    expect(startSong(g, b, 'x', 'spotlight', () => {})).toBe(false);
+    const seq = g.music!.now!.seq; r.g = g; r.act({ type: 'music/end', seq });
+    expect(r.g.music!.now).toBeNull();
+    expect(startSong(r.g, r.g.characters[a.id], 'again', 'spotlight', () => {})).toBe(false);
+    expect(startSong(r.g, r.g.characters[b.id], 'b turn', 'spotlight', () => {})).toBe(true);
+    expect(log[0]).toContain('MPAT');
+    expect(() => r.act({ type: 'music/end', seq: 1 }, 'p2')).toThrow(RuleError);
+  });
+  it('a music trait plays on demand, pins for 2 area changes, and its bonus follows the song', () => {
+    const r = room(['headbanger']);
+    const zones = r.g.campaign!.zones.map((z) => z.id);
+    expect(packOf(r.g.characters[r.a.id]).some((x) => x.id === 'musek_blestor')).toBe(true);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+    expect(() => r.act({ type: 'music/play', charId: r.b.id }, 'p2')).toThrow(RuleError);
+    r.act({ type: 'music/play', charId: r.a.id });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(1);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'analysis')).toBe(0);
+    r.act({ type: 'music/pin', charId: r.a.id });
+    expect(r.g.music!.now!.layer).toBe('pin');
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[1] } });
+    expect(r.g.music!.now!.areasLeft).toBe(1);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[2] } });
+    expect(r.g.music!.now).toBeNull();
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(1);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[0] } });
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[1] } });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[2] } });
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[0] } });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'analysis')).toBe(-1);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+  });
+  it('in a fight: Play my song costs 2 AP, and a song started in the fight stops when it ends', () => {
+    const r = room(['headbanger']);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Test', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
+    let u = active(r.g.combat!)!;
+    for (let i = 0; i < 6 && u.charId !== r.a.id; i++) { r.act({ type: 'combat/end-turn', unitId: u.id }, r.g.characters[u.charId!].owner); u = active(r.g.combat!)!; }
+    expect(u.charId).toBe(r.a.id);
+    const ap = u.ap; r.act({ type: 'combat/song', unitId: u.id });
+    expect(active(r.g.combat!)!.ap).toBe(ap - 2);
+    expect(r.g.music!.now).toMatchObject({ inCombat: true, charId: r.a.id });
+    expect(active(r.g.combat!)!.song).toBe(1);
+    r.act({ type: 'music/end', seq: r.g.music!.now!.seq });
+    expect(r.g.music!.now).not.toBeNull();
   });
 });

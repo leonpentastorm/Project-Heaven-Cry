@@ -8,6 +8,7 @@ import {
 import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
+import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -49,6 +50,8 @@ export interface GameState {
   narrator: { busy: boolean; error: string | null; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number } };
   /** The campaign being played (spec: Campaigns): copied in at session start, or loaded from a file by the host. */
   campaign?: Campaign | null;
+  /** What the room hears (spec: Music). */
+  music?: MusicState;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -107,7 +110,8 @@ export type Action =
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
-  | { type: 'award/ack'; charId: string; perkId: string };
+  | { type: 'award/ack'; charId: string; perkId: string }
+  | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
 
 export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -146,6 +150,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (!g.players.some((p) => p.id === by)) fail('Join the room first.');
       if (charsOf(g, by).length >= 2) fail('Two characters per player at most.');
       const c = newCharacter(id(g, 'c'), by, a.sheet);
+      if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: 'tool' }];
       g.characters[c.id] = c;
       push(g, { kind: 'system', text: c.name + ' is locked in.' });
       if (g.phase !== 'lobby') c.echo = 1;
@@ -205,6 +210,7 @@ function reduce(g: GameState, a: Action, by: string) {
       // Echo (spec: Echo): spend 1 to reroll a d20, at most 1 per roll. The reroll stands.
       if (a.type === 'check/reroll') { if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.'); c.echo--; rollCheck(g, ck!, c, true); }
       ck!.done = true;
+      if (ck!.roll!.crit && ck!.roll!.ok && ck!.tn >= 16) startSong(g, c, 'a critical success on a ' + (ck!.tn >= 20 ? 'Heroic' : 'Hard') + ' check', 'spotlight', (t) => push(g, { kind: 'system', text: t }));
       if (ck!.poi) poiResult(g, ck!, by);
       afterPending(g);
       return;
@@ -259,6 +265,21 @@ function reduce(g: GameState, a: Action, by: string) {
       if (held) held.tier = 'II'; else c!.perks.push({ id: a.perkId, tier: 'I' });
       push(g, { kind: 'system', text: c!.name + ' takes ' + PERK[a.perkId].name + ' (Tier ' + step!.tier + ').' });
       return;
+    }
+    case 'music/end': { if (!isHost(g, by)) fail('Host only.'); songEnded(g, a.seq); return; }
+    case 'music/play': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
+      if (g.phase === 'combat') fail('In a fight, playing your song costs ' + SONG_AP + ' AP on your turn.');
+      const m = musicOf(g), k = 'play' + g.story.scene.n;
+      if (m.used['play:' + c.id] === k) fail('Once per scene outside a fight.');
+      if (!startSong(g, c, 'on the Musek Blestor', 'manual', (t) => push(g, { kind: 'system', text: t }))) fail(m.now?.charId === c.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
+      m.used['play:' + c.id] = k; return;
+    }
+    case 'music/pin': case 'music/unpin': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      const err = a.type === 'music/pin' ? pinSong(g, c) : unpinSong(g, c); if (err) fail(err);
+      push(g, { kind: 'system', text: a.type === 'music/pin' ? '♪ ' + c.name + ' keeps the song playing.' : '♪ ' + c.name + '\'s song stops.' }); return;
     }
     case 'award/ack': { g.awards = g.awards.filter((x) => !(x.charId === a.charId && x.perkId === a.perkId)); return; }
     case 'campaign/load': {
@@ -348,7 +369,7 @@ function closeRoundIfDone(g: GameState) {
 
 function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   // Combined checks (spec): the lowest modifier among the skills, +2 for each other skill with at least 1 point.
-  const mods = ck.skills.map((s) => mod(c.skills[s] || 0)), low = Math.min(...mods), lowIx = mods.indexOf(low);
+  const mods = ck.skills.map((s) => mod(c.skills[s] || 0) + songMod(g, c, s)), low = Math.min(...mods), lowIx = mods.indexOf(low);
   const m = low + 2 * ck.skills.filter((s, i) => i !== lowIx && (c.skills[s] || 0) > 0).length;
   const die = d20(g.rng), total = die + m, crit = die === 20, fumble = die === 1, ok = crit || (!fumble && total >= ck.tn);
   const first = reroll ? ck.roll!.die : undefined;
@@ -366,7 +387,7 @@ function afterPending(g: GameState) {
 function awardAutomatic(g: GameState, c: Character) {
   for (const pid of grantAutomaticPerks(c)) {
     const p = PERK[pid];
-    if (p.tier === 'ultimate') g.awards.push({ charId: c.id, perkId: pid });
+    if (p.tier === 'ultimate') { g.awards.push({ charId: c.id, perkId: pid }); startSong(g, c, 'an Ultimate', 'spotlight', (x) => push(g, { kind: 'system', text: x })); }
     else push(g, { kind: 'system', text: c.name + ' gains the Mastered perk ' + p.name + '.' });
   }
 }
@@ -426,6 +447,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const c = g.characters[d.charId]; if (!c || comboEligible(c, d.perkId)) continue;
     c.perks.push({ id: d.perkId, tier: 'achieved' }); c.deeds.push(d.deed);
     push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
+    startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
     awardAutomatic(g, c);
   }
   for (const x of t.treat || []) {
@@ -443,6 +465,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const zo = (g.story.zoneObjects ||= {}); zo[zoneMap(g).id] = storyObjects(g);
     g.story.zone = t.travel; g.story.positions = {}; g.story.objects = zo[t.travel] || defaultObjects(zoneMap(g)); positionsOf(g);
     push(g, { kind: 'system', text: 'The party travels to ' + zoneMap(g).name + '.' });
+    musicOnTravel(g);
   }
   for (const op of t.objects || []) applyObjectOp(g, op);
   for (const l of t.loot || []) {
@@ -461,7 +484,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
     const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
     g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
-    g.phase = 'combat'; g.story.await = 'none';
+    g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
     push(g, { kind: 'combat', text: 'Combat: ' + g.combat.name });
     runEnemies(g);
     return;
@@ -482,6 +505,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const c = u.charId ? g.characters[u.charId] : null;
   if (!c || c.owner !== by) fail('Not your unit.');
   let err: string | null = null;
+  const before = cb!.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
   switch (a.type) {
     case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side === u.side) fail('Pick a hostile.'); err = shove(cb!, g.rng, u, t!); break; }
@@ -507,11 +531,37 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, c!.classId === 'medic'); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
+    case 'combat/song': {
+      if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
+      if (u.ap < SONG_AP) fail('Needs ' + SONG_AP + ' AP.');
+      if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
+      u.ap -= SONG_AP; break;
+    }
     default: fail('Unknown action.');
   }
   if (err) fail(err);
+  songTriggers(g, u, c!, before);
   checkOver(cb!);
   runEnemies(g);
+}
+
+/** Spotlight moments in a fight (spec: Music): an elite or boss taken down, an ally revived; for the music traits also any kill and any big heal. */
+function songTriggers(g: GameState, u: Combat['units'][number], c: Character, before: { id: string; dead: boolean; downed: boolean; hp: number }[]) {
+  const cb = g.combat!, log = (t: string) => cb.log.push(t), was = Object.fromEntries(before.map((b) => [b.id, b]));
+  const killed = cb.units.filter((x) => x.side === 'foe' && x.dead && was[x.id] && !was[x.id].dead);
+  const big = killed.find((x) => x.tier === 'elite' || x.tier === 'boss');
+  const revived = cb.units.find((x) => x.side === 'pc' && was[x.id]?.downed && !x.downed && !x.dead);
+  const healed = cb.units.find((x) => x.side === 'pc' && was[x.id] && !was[x.id].downed && x.hp - was[x.id].hp >= 30);
+  if (big) startSong(g, c, 'took down ' + big.name, 'spotlight', log);
+  else if (revived) startSong(g, c, 'brought ' + revived.name + ' back', 'spotlight', log);
+  else if (killed.length) startSong(g, c, 'a kill', 'trait', log);
+  else if (healed) startSong(g, c, 'a big heal', 'trait', log);
+  if (revived && musicOf(g).now?.charId !== c.id) startSong(g, c, 'brought ' + revived.name + ' back', 'trait', log);
+  syncSong(g);
+}
+/** Fighters carry their music trait's modifier to their weapon skill (spec: Music). */
+function syncSong(g: GameState) {
+  for (const x of g.combat?.units || []) if (x.charId && g.characters[x.charId]) { const ch = g.characters[x.charId]; x.song = songMod(g, ch, WEAPON[x.weapon]?.skill || ''); }
 }
 
 /** Enemies act on their own turns until a PC is up or the fight ends. */
@@ -554,6 +604,7 @@ function finishCombat(g: GameState) {
   g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
   for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
   g.phase = 'story'; g.story.await = 'narrator'; g.story.work = { kind: 'combat_end', note: combatReport(cb) };
+  musicAfterFight(g);
   g.combat = { ...cb };
 }
 

@@ -119,3 +119,26 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Names only:** the body slots and backpack rows show the item's name (and kg in the pack). Hovering, or focusing with the keyboard, opens a card with the icon, the stats, the granted skill, the weight and price, and the lore line.
     - **Click to act:** clicking opens that item's actions in place: Equip, Hold in the off hand, Wear, Take off, Fit mod, Load magazines. In a fight the menu says gear changes after the fight.
     - **Art hooks:** the frames and cards look up `weapon-<id>` and `item-<id>` in the art catalog. Until those exist they show the weapon type's glyph.
+76. **Music: one room soundtrack through YouTube, spotlight songs, and the music traits wired in** (Leon, 6 Nov 2026: YouTube from channels that give their music away, Suno-made tracks later; spotlight triggers as proposed; pins last two areas; build it now).
+    - **Layers:** pinned song › spotlight › encounter theme › combat › ambient. The engine decides (`musicFor`). Each browser plays the track in YouTube's embedded player, which sits in the ♪ panel.
+    - **Spotlight:** a natural 20 on a Hard or Heroic check, taking down an elite or boss, a revive, a deed, or an Ultimate. Once per character per scene and per fight, and a playing song is never cut off. It lasts one full play, or until the fight ends if it started in one. The host's browser ends a one-play song on the clock (`music/end`).
+    - **Music traits:**
+      - Start with a Musek Blestor.
+      - Play my song: 2 AP in a fight, free once per scene outside one.
+      - Their own triggers (kill, revive, a heal of 30 or more) have no once-per-scene limit.
+      - Keep it playing for 2 area changes.
+      - The trait's +1 and −1 follow the room's song state, never a player's local pause.
+    - **Credits:** every change shows the title and artist. The panel adds the licence and a link to the video.
+    - **Players' songs:** whatever the player links is their choice. Creation checks the link with YouTube's oEmbed: it rejects videos that block embedding and fills in the title and artist. The Narrator only hears whose song is playing, never its title (the Unspoken Name).
+    - **M813 tracks** (verified to embed; CC-BY, credited in the panel):
+
+      | Slot | Track |
+      |---|---|
+      | Shield line | Scott Buckley, "I Walk With Ghosts" |
+      | Rear pad | "Decoherence" |
+      | Outpost | Kevin MacLeod, "Ossuary 6 – Air" |
+      | Outpost-1 | "Machina" |
+      | Default ambient | "Shadows and Dust" |
+      | Default combat | "Volatile Reaction" |
+      | The ramp | "Red" |
+      | Station security | "Pursuit" |

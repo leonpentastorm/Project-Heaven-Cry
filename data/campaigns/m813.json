@@ -118,7 +118,14 @@
           "weapon": "decrkm_smg",
           "at": "L8"
         }
-      ]
+      ],
+      "music": {
+        "yt": "1skC53i8FBc",
+        "title": "Red",
+        "artist": "Scott Buckley",
+        "length": 214,
+        "licence": "CC-BY 4.0 · scottbuckley.com.au"
+      }
     },
     {
       "name": "Station security",
@@ -150,7 +157,14 @@
           "weapon": "hellraiser_service_rifle",
           "at": "J4"
         }
-      ]
+      ],
+      "music": {
+        "yt": "Ra1mufO9VR4",
+        "title": "Pursuit",
+        "artist": "Scott Buckley",
+        "length": 165,
+        "licence": "CC-BY 4.0 · scottbuckley.com.au"
+      }
     }
   ],
   "startZone": "shield_line",
@@ -562,7 +576,16 @@
           "at": "H1",
           "text": "North: the outpost's side gate."
         }
-      ]
+      ],
+      "music": {
+        "ambient": {
+          "yt": "HR4drmVZLGI",
+          "title": "I Walk With Ghosts",
+          "artist": "Scott Buckley",
+          "length": 485,
+          "licence": "CC-BY 4.0 · scottbuckley.com.au"
+        }
+      }
     },
     {
       "id": "rear_pad",
@@ -825,7 +848,16 @@
           "at": "A2",
           "text": "North-west: the outpost buildings."
         }
-      ]
+      ],
+      "music": {
+        "ambient": {
+          "yt": "wM_AjpJL5I4",
+          "title": "Decoherence",
+          "artist": "Scott Buckley",
+          "length": 619,
+          "licence": "CC-BY 4.0 · scottbuckley.com.au"
+        }
+      }
     },
     {
       "id": "outpost",
@@ -1101,7 +1133,16 @@
           "text": "By the rebuilt craft, to Outpost-1. The Narrator says when it's ready."
         }
       ],
-      "dark": true
+      "dark": true,
+      "music": {
+        "ambient": {
+          "yt": "aJ55nO02BRk",
+          "title": "Ossuary 6 – Air",
+          "artist": "Kevin MacLeod",
+          "length": 250,
+          "licence": "CC-BY · incompetech.com"
+        }
+      }
     },
     {
       "id": "outpost_1",
@@ -1295,8 +1336,33 @@
           "text": "Beyond the glass, the black hole. The doors are rated to vent the room into it."
         }
       ],
-      "exits": []
+      "exits": [],
+      "music": {
+        "ambient": {
+          "yt": "FSryKsTMp2M",
+          "title": "Machina",
+          "artist": "Scott Buckley",
+          "length": 291,
+          "licence": "CC-BY 4.0 · scottbuckley.com.au"
+        }
+      }
     }
   ],
-  "lore": "docs/lore/MPAT-and-M813.md"
+  "lore": "docs/lore/MPAT-and-M813.md",
+  "music": {
+    "ambient": {
+      "yt": "hmF5P5SgaOY",
+      "title": "Shadows and Dust",
+      "artist": "Scott Buckley",
+      "length": 409,
+      "licence": "CC-BY 4.0 · scottbuckley.com.au"
+    },
+    "combat": {
+      "yt": "2pXa5jzaOBg",
+      "title": "Volatile Reaction",
+      "artist": "Kevin MacLeod",
+      "length": 164,
+      "licence": "CC-BY · incompetech.com"
+    }
+  }
 }

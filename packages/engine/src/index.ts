@@ -5,3 +5,4 @@ export * from './combat';
 export * from './game';
 export * from './objects';
 export * from './campaign';
+export * from './music';

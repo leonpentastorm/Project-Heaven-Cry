@@ -18,10 +18,11 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `secrets` | no | Truths the Narrator never states outright. |
 | `opening` | yes | What the Narrator's first turn should do: where to open, who's there, the first problem, the last line. |
 | `cast` | no | `{ name, role, text }` for each important NPC. |
-| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. |
+| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). |
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
+| `music` | no | `{ ambient, combat }`: the default tracks where a zone has none. A track is `{ yt, title, artist, start?, length?, licence? }`: `yt` is the 11-character YouTube video id, and the video must allow embedding. An encounter can have its own `music` track (a boss theme). See the spec's Music section. |
 
 ## Zones
 
@@ -38,6 +39,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | `notes` | no | `{ at, text }`: what is where. Players see it when they hover a tile; the Narrator reads all of it. |
 | `objects` | no | Things on tiles (below). |
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
+| `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
 
 ## Objects and points of interest
 

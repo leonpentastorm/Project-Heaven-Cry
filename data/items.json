@@ -691,6 +691,17 @@
           "value": 10
         }
       ]
+    },
+    {
+      "id": "musek_blestor",
+      "name": "Musek Blestor",
+      "category": "tool",
+      "weight_kg": 0.3,
+      "price_credits": 120,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A palm-sized player with a speaker that can fill a hangar. The music traits start with one: it plays your favourite song for the room (2 AP in a fight; once per scene outside one).",
+      "effects": []
     }
   ]
 }

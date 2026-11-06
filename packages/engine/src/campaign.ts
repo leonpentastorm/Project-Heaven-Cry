@@ -3,6 +3,7 @@
 // in data/campaigns/; a host can load their own file in the same format (docs/design/campaign-format.md).
 import { type MapDef, keyOf } from './combat';
 import { OBJ } from './objects';
+import type { Track } from './music';
 import { SKILL, TN_LADDER, ENEMY, WEAPON } from './data';
 import m813J from '../../../data/campaigns/m813.json';
 import godplotJ from '../../../data/campaigns/godplot.json';
@@ -23,6 +24,8 @@ export interface CampaignZone {
   exits?: { to: string; at?: string; text: string }[];
   /** Dark zones halve sight except near light sources (spec: Vision). */
   dark?: boolean;
+  /** Area and fight music for this zone (spec: Music). */
+  music?: { ambient?: Track; combat?: Track };
 }
 export interface Campaign {
   id: string; title: string; short: string; kicker: string; art?: string; artNote?: string; focus?: string;
@@ -31,12 +34,14 @@ export interface Campaign {
   /** Narrator only. */
   arc: { beginning: string; middle: string; end: string }; secrets?: string[]; opening: string;
   cast?: { name: string; role: string; text: string }[];
-  encounters?: { name: string; zone: string; when: string; difficulty: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] }[];
+  encounters?: { name: string; zone: string; when: string; difficulty: string; music?: Track; enemies: { name: string; tier: string; weapon: string; at?: string }[] }[];
   startZone: string; zones: CampaignZone[];
   /** Extra lore the Narrator reads (built-in campaigns name repo lore docs here; custom ones can inline text). */
   lore?: string;
   /** false hides a built-in campaign from the Room (sketches kept for later). */
   listed?: boolean;
+  /** Campaign-wide music, used where a zone has none (spec: Music). */
+  music?: { ambient?: Track; combat?: Track };
 }
 
 /** "N1–P6", "F4–F5, H2" or "C7" to tile keys. */
@@ -86,6 +91,10 @@ export function validateCampaign(c: any): string[] {
     }
     for (const e of z.exits || []) need(ids.has(e.to), z.id + ': exit to unknown zone "' + e.to + '".');
   }
+  const track = (t: any, where: string) => { if (t && !(typeof t.yt === 'string' && /^[\w-]{11}$/.test(t.yt) && t.title)) errs.push(where + ': music needs a YouTube id (11 characters) and a title.'); };
+  track(c.music?.ambient, 'Campaign ambient'); track(c.music?.combat, 'Campaign combat');
+  for (const z of c.zones || []) { track(z.music?.ambient, z.id + ' ambient'); track(z.music?.combat, z.id + ' combat'); }
+  for (const e of c.encounters || []) track(e.music, 'Encounter "' + e.name + '"');
   for (const e of c.encounters || []) {
     need(ids.has(e.zone), 'Encounter "' + e.name + '" is in unknown zone "' + e.zone + '".');
     for (const f of e.enemies || []) need(ENEMY[f.tier] && WEAPON[f.weapon], 'Encounter "' + e.name + '": enemy "' + f.name + '" needs a known tier and weapon.');

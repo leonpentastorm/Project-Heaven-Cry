@@ -44,6 +44,14 @@ Two browsers, two locations, Anthropic key on the host. Tick what works; note wh
 - [ ] Carry too much: you become Overburdened and slow down.
 - [ ] If you reach the outpost: is the darkness readable, and do lamps help?
 
+## Music
+- [ ] Each area has its own music; a fight switches tracks, and "The ramp" has its own theme.
+- [ ] The credit pops up on every change; the ♪ panel shows the title, artist and licence.
+- [ ] Pause and volume affect only you (ask your friend).
+- [ ] Put a YouTube link in Favourite Song at creation; it says "Plays in the game".
+- [ ] A spotlight: a nat 20 on a Hard check, an elite or boss kill, or a revive plays that character's song for both of you.
+- [ ] With a music trait (Headbanger and the others): Play my song, Keep it playing, and the +1 shows on rolls.
+
 ## Saving and coming back
 - [ ] Save; leave; Resume from the title screen.
 - [ ] The friend refreshes mid-round and lands back in place.

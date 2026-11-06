@@ -24,6 +24,14 @@ describe('Narrator context', () => {
     expect(all).not.toMatch(/Leon|Zephyrine/);
     expect(all).toContain('[MPAT] I check the ramp.');
   });
+  it('never names a favourite song: only whose song is playing', () => {
+    let g = game(); const c = Object.values(g.characters)[0];
+    g.characters[c.id].identity = { song: 'https://youtu.be/dQw4w9WgXcQ', songTitle: 'Glass Hymn', songArtist: 'Quietband' };
+    g.music = { seq: 1, fight: 0, used: {}, silent: {}, now: { seq: 1, layer: 'spotlight', charId: c.id, track: { yt: 'dQw4w9WgXcQ', title: 'Glass Hymn', artist: 'Quietband' }, reason: 'a critical success', inCombat: false } };
+    const all = [partyPrompt(g), turnPrompt({ ...g, story: { ...g.story, work: { kind: 'round' } as any } })].join('\n');
+    expect(all).not.toMatch(/Glass Hymn|Quietband|dQw4w9WgXcQ/);
+    expect(all).toContain("MPAT's song is playing");
+  });
 });
 
 describe('Anthropic Narrator adapter', () => {

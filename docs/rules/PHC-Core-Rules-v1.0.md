@@ -959,6 +959,44 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 5. **Hold the tone line:** NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them, careless and therefore cruel. The tragedy belongs to the NPCs.
 6. Leave numbers to the engine. The Narrator asks for a roll and narrates the result; it never invents a modifier.
 
+## Music
+
+The room hears one song at a time. The engine decides what plays and why; each player's browser plays it through YouTube's embedded player and can pause it or turn it down for that player alone. **Pausing changes nothing in the rules:** a song counts as playing for everyone while the room plays it.
+
+**Layers** (the highest one playing wins):
+
+| Layer | Source | Ends |
+|---|---|---|
+| Pinned song | A music-trait holder's song, kept on | After 2 area changes, or when its holder stops it |
+| Spotlight | The favourite song of the character who did something amazing | One full play outside a fight; the end of the fight if it started in one |
+| Encounter | The campaign's encounter music (boss themes) | The end of the fight |
+| Combat | The zone's combat track, else the campaign's | The end of the fight |
+| Ambient | The zone's ambient track, else the campaign's | Leaving the zone |
+
+**The spotlight.** These start the character's favourite song for the whole room:
+
+- A critical success (natural 20) on a Hard or Heroic check (TN 16 or 20).
+- Taking down an elite or a boss.
+- Reviving a downed ally.
+- Earning a combo perk by a deed.
+- An Ultimate.
+
+Each character gets one spotlight per scene, and one per fight. A song that is already playing is never cut off: a trigger while it plays does nothing.
+
+**The favourite song** is a YouTube link on the character's identity (Favourite Song), with its title, artist, start time and length. The link must allow embedding. What a player picks is up to the player.
+
+**Music traits** (Soundscape of the Soul, Headbanger, Underground Sound; see the traits) add to this:
+
+- You start with a **Musek Blestor** (0.3 kg, 120 credits).
+- **Play my song:** 2 AP in a fight; free once per scene outside one. It can take over another holder's pinned song, but never a spotlight.
+- **Your trait's own triggers** start your song with no once-per-scene limit: any kill, reviving an ally, or a heal of 30 HP or more.
+- **Keep it playing:** while your song plays, you can pin it for the room. It stays on for 2 area changes, or until you stop it.
+- **The bonus and the penalty:** the trait's +1 holds while your song plays and until 2 area changes pass without it. The −1 starts once 4 area changes have passed without it. A new character starts at 2 (no bonus, no penalty). In a fight the modifier applies to your weapon skill's attack and to checks.
+
+**Credits.** Every change of song shows its title and artist to every player, and the music panel names the track, the artist, why it plays, and a link to the video.
+
+**The Narrator** is told whose song is playing, never its title (the Unspoken Name).
+
 ## 13. Data files
 
 The engine never reads this document; it reads the data pack. Every rule-bearing item carries its player-facing `text`, machine-readable `effects`, and an `adjudication` tag (engine, hybrid or narrator). Ids are snake_case and every cross-reference is by id. `validate.py` checks the whole pack and must report 0 errors before anything ships. **Where a file and this spec disagree, the spec wins and the file is the bug.**
@@ -1068,3 +1106,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 59. **Map objects and points of interest** (Leon): the object list and its numbers (trap 25 damage, TN 12, 2-tile detection; barrel 40 within 2; fire 10, toxic 8; door 40 HP), and approaches tried once per character per scene.
 60. **The written actions and Vision** (Shove, Brace, Field Repair, Improvise Tool, Analyze on NPCs; Vision + Vigilant, darkness, light radius, Sensory presence): all numbers are first drafts.
 61. **Weapons v2** (accepted 7 Nov 2026): every new weapon, mod, rarity, durability, calibre and price number, the 58 weapon skills, off-hand items and the slot armour.
+62. **Music:** the spotlight triggers and their once-per-scene limit, the 2-area pin, the big-heal line at 30 HP, the Musek Blestor's weight and price, and the starting silence of 2.

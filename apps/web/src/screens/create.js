@@ -2,11 +2,11 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet } from '@engine';
+import { validateSheet, ytId, ytStart } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
-const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'dream', 'history'];
+const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
 const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['kit', 'Kit'], ['lockin', 'Lock in']];
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const CORES = ['body', 'mind', 'soul'];
@@ -57,7 +57,7 @@ export class CreateLogic extends DCLogic {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
       fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
-      idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', dream: '', history: '' },
+      idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', songTitle: '', songArtist: '', dream: '', history: '' },
     };
     const d = getState().draft;
     if (d) {
@@ -219,7 +219,7 @@ export class CreateLogic extends DCLogic {
     const AV = der.attr, PT = (id) => S.skills[id] || 0, MD = (id) => mod(PT(id)), pos = (m) => Math.max(0, m);
     const sample = !!this.props.sampleName;
     const I = S.idv; const record = [['Race', 'Human (races later)'], ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand],
-      ['Association', I.association], ['Favourite song', I.song], ['Last dream', I.dream], ['History', I.history]]
+      ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
       .map(([k, v]) => ({ k, v: v || 'Not filled in', vStyle: 'font-size: 14px; line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
     const seenKey = o ? Object.keys(o).find((k) => k.startsWith('People see you as')) : null; // Bazaim's reads "(in Central City)"
     const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], [seenKey || 'People see you as', seenKey ? o[seenKey] : ''], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
@@ -257,7 +257,17 @@ export class CreateLogic extends DCLogic {
       record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, kitItems, kitName: kit ? kit.name : 'No kit yet', voiceList, hasVoices: voiceList.length > 0, leanCards,
       originName: o ? o.name : 'No origin yet', hasOriginRows: !!o,
       checks, cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; ' + (cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
-      idv: S.idv, idc: Object.fromEntries(ID_KEYS.map((k) => [k, (e) => this.setState({ idv: { ...this.state.idv, [k]: e.target.value } })])),
+      ...(() => { const yt = ytId(S.idv.song), st = S.songState;
+        const note = !S.idv.song ? 'Played for the whole room when you do something amazing. Pick a video that allows embedding.' : !yt ? 'Not a YouTube link: it stays as text and won\'t play.' : st === 'checking' ? 'Checking the video…' : st === 'bad' ? '✗ This video doesn\'t allow embedding, so it can\'t play in the game. Try another upload of the song.' : st === 'ok' ? '✓ Plays in the game' + (ytStart(S.idv.song) ? ' from ' + Math.floor(ytStart(S.idv.song) / 60) + ':' + String(ytStart(S.idv.song) % 60).padStart(2, '0') : '') + '.' : 'Leave the field to check the link.';
+        return { songHas: !!yt, songNote: note, songNoteStyle: 'font-size: 12px; color: ' + (st === 'ok' && yt ? '#6FEA77' : st === 'bad' && yt ? '#F65157' : '#A3AEC2'),
+          songCheck: async () => { const link = this.state.idv.song, id = ytId(link); if (!id) return this.setState({ songState: null });
+            this.setState({ songState: 'checking' });
+            try { const r = await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id));
+              if (!r.ok) return this.setState({ songState: 'bad' });
+              const j = await r.json(), I = this.state.idv;
+              this.setState({ songState: 'ok', idv: { ...I, songTitle: I.songTitle || (j.title || '').replace(/\s*[\[(][^\])]*[\])]/g, '').replace(new RegExp('\\s*-\\s*' + (j.author_name || '').replace(/ - Topic$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i'), '').replace(/^['"‘“](.*)['"’”]$/, '$1').trim() || j.title || '', songArtist: I.songArtist || (j.author_name || '').replace(/ - Topic$/, '') } });
+            } catch { this.setState({ songState: null }); } } }; })(),
+      idv: S.idv, idc: { ...Object.fromEntries(ID_KEYS.map((k) => [k, (e) => this.setState({ idv: { ...this.state.idv, [k]: e.target.value } })])), song: (e) => this.setState({ songState: null, idv: { ...this.state.idv, song: e.target.value, ...(ytId(e.target.value) !== ytId(this.state.idv.song) ? { songTitle: '', songArtist: '' } : {}) } }) },
       lockIn: () => this.lockIn(der), saveDraft: () => this.saveDraft(der), exit: () => go(getState().code ? 'room' : 'home', { draft: null }), exitLabel: getState().code ? 'Back to the room' : 'Home',
       lockLabel: getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
       generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length) }),
