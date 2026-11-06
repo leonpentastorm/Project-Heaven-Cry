@@ -581,6 +581,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-security-guard.prompt.txt"
+    },
+    {
+      "id": "m813-guard-captain",
+      "group": "B",
+      "order": 14,
+      "name": "Guard Captain",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-guard-captain.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B14 | `m813-guard-captain` | **Guard captain**: older, scarred, a service rifle across the chest, captain's bar. | Assessing you, unimpressed. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c071885d16cfd4b24fea8726b83c5b2873970be75562ef816ed5aa08e8e5b18c",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-guard-captain.png",
+      "source_sha256": "29b0dfd160d9b784d44faaa7d15f690e71e8c3218f0d8d57e2fcf51a135c6beb",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-guard-captain-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-guard-captain.prompt.txt"
     }
   ]
 }
