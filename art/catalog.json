@@ -5023,8 +5023,8 @@
     "last-charge": {
       "label": "Wick — Last Charge",
       "collection": "wick-production-v1",
-      "path": "art/perks/wick/production-v1/last-charge.png",
-      "sha256": "c5d9ccee222d5f289aad91d97fa69d9db2ef3a1573b1a4b4710ef05a63cc40ad",
+      "path": "art/perks/wick/production-v1/revisions/v2/last-charge.png",
+      "sha256": "f355e0d81e9de5e029c3af7833baade922ba1d73d73b26c54ef5b76dc3a3c295",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -5035,16 +5035,19 @@
       "production_approved": false,
       "batch": "F",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/last-charge.png",
-        "128": "art/perks/wick/production-v1/exports/128/last-charge.png",
-        "64": "art/perks/wick/production-v1/exports/64/last-charge.png",
-        "56": "art/perks/wick/production-v1/exports/56/last-charge.png",
-        "48": "art/perks/wick/production-v1/exports/48/last-charge.png",
-        "44": "art/perks/wick/production-v1/exports/44/last-charge.png",
-        "40": "art/perks/wick/production-v1/exports/40/last-charge.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/last-charge.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/last-charge.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/last-charge.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/last-charge.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/last-charge.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/last-charge.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/last-charge.png"
       },
       "tier": "ultimate",
-      "visibility": "awarded-only"
+      "visibility": "awarded-only",
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/last-charge.png",
+      "previous_revision_path": "art/perks/wick/production-v1/last-charge.png"
     },
     "angel-of-the-trenches": {
       "label": "Wick — Angel of the Trenches",
