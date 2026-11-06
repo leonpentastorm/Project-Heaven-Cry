@@ -1643,6 +1643,31 @@
       "source_sha256": "632b5754f940ee5d3f7ea832caa8ed574f3f6918a1fcb84eafa3666b9e4c0c6e",
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    {
+      "id": "last-charge",
+      "data_id": "last_charge",
+      "name": "Last Charge",
+      "family": "perks",
+      "order": 72,
+      "mood": "Heroic",
+      "action": "Wick leaps forward at the end of a long charge, sword raised in both mittens, wrapped in a big bubble shield, speed lines far behind.",
+      "screen": "Roaring",
+      "prop": "Sword",
+      "path": "art/perks/wick/production-v1/last-charge.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/last-charge.png",
+        "128": "art/perks/wick/production-v1/exports/128/last-charge.png",
+        "64": "art/perks/wick/production-v1/exports/64/last-charge.png",
+        "56": "art/perks/wick/production-v1/exports/56/last-charge.png",
+        "48": "art/perks/wick/production-v1/exports/48/last-charge.png",
+        "44": "art/perks/wick/production-v1/exports/44/last-charge.png",
+        "40": "art/perks/wick/production-v1/exports/40/last-charge.png"
+      },
+      "batch": "F",
+      "source_sha256": "c6621c0b2355e5691e0d0d9bc4ff181fceef549552e4bfb3b18d3d2a17ce312e",
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   ]
 }

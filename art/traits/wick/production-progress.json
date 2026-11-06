@@ -151,11 +151,12 @@
     "dead-signal",
     "twin-souls",
     "the-voice",
-    "war-footing"
+    "war-footing",
+    "last-charge"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 72
+    "perks": 73
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -208,7 +209,6 @@
     "bite-the-bullet",
     "sixth-sense",
     "what-could-be",
-    "last-charge",
     "angel-of-the-trenches",
     "every-lie-is-a-door",
     "twin-discipline"
