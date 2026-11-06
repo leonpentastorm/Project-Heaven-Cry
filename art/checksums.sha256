@@ -7,7 +7,7 @@ bffba70dfaa1c64951a0e4596be1999a3fdea3ed4f8580b22cc4987ee244c281  art/README.md
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 428d0085f33c832d7c6f07ebce6d4c75cec50c255b2c256fad47321aac90a1b8  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-10bd64a3665228e4c00d40e180ce182afd568e4f7eba7d194657783bec6380b2  art/catalog.json
+9c9abb25b6ce14f799206082c7869b9bd30cfc6e1d64550322d6f7b215599699  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -130,6 +130,7 @@ b019edb80709a754b8966d6d158a3a748c3545ad6e257657595c9799c5db15de  art/perks/wick
 f4e5a4336d1193bab9c0493518fa430a9012f486ab090efd422a1fd68b2cf5c0  art/perks/wick/production-v1/charge.png
 6c50eb5cd85dc41ca01d375c83a35e8e88007a51d72f99ded2c657fe67943acb  art/perks/wick/production-v1/clean-hands.png
 8d10c11cca353fcff23934b335ceed2ec13a8e429352766b0d1a0f9011e3cc6c  art/perks/wick/production-v1/crowd-pleaser.png
+3c35d4fb0f080f598a2597130982abd47b8f946933354e38ee176e28a8f1d182  art/perks/wick/production-v1/cultured.png
 736ed86831e7a2221202135c547e6f5dc17207bf3ab7dfe0a2d8bbd65e3c9a52  art/perks/wick/production-v1/detectives-eye.png
 1bd7e0fdc30f4314fcc62ccce84daf07ee6c60bee32d29f93c8081a36ac959e0  art/perks/wick/production-v1/double-meaning.png
 5bb15dcb3ef64d7569f2ba0ad1bd90bc10d2e0d029d0d2b4d8f4ab933571b6c7  art/perks/wick/production-v1/exports/128/bedside-manner.png
@@ -142,6 +143,7 @@ f7852fd8538d514d765880248f7d09008ffef98aeb1d5fcbed95f9332674c7aa  art/perks/wick
 edf4392381705b0c1ad9058f4b36398a0639d540d53e1514fc8e17033920bfa2  art/perks/wick/production-v1/exports/128/charge.png
 c91e4970e2b31f252dcdae4bf1f42329178e7b69a9270f76f47474914db4665b  art/perks/wick/production-v1/exports/128/clean-hands.png
 841c387431483a98cbc2415a069435d4892291dbce741c90f84b1c44c8bf9a3b  art/perks/wick/production-v1/exports/128/crowd-pleaser.png
+c88835cae4080e20c8422356f002e929b141368853542509cb8f8864cb7d9c5b  art/perks/wick/production-v1/exports/128/cultured.png
 3b316518cbc87897e4d5afca16514c0e9dde7aa5b19a02469544e06aad4fdde0  art/perks/wick/production-v1/exports/128/detectives-eye.png
 6e5835de35cf80432b4a87672e435787289285e7399a59cbf7e2c2209e8812f1  art/perks/wick/production-v1/exports/128/double-meaning.png
 e614adf614fda676b8507a082f7192bc8778b6aeedf6e32bffbb4f6531f99100  art/perks/wick/production-v1/exports/128/eyes-in-the-back.png
@@ -200,6 +202,7 @@ c1d386aaf4833fa3c7620e55b3f78801cc10216ff982392a9fb0ac66089e1974  art/perks/wick
 bfb71c3fdf32af720a5222325cb0d650e0179cd5c526e377c451527920879d19  art/perks/wick/production-v1/exports/256/charge.png
 ecdb1609f437a4835b64beec1542cd206e79986765ed0073307f40dd5b54e69a  art/perks/wick/production-v1/exports/256/clean-hands.png
 128aeb3dc62cd1de9a971c76fb089c5918bbcca06f9292266eff3424ff39cda9  art/perks/wick/production-v1/exports/256/crowd-pleaser.png
+baa54b024b6e995b65decfc691a59a8378b91d516ecacc51ab643fd4630c471a  art/perks/wick/production-v1/exports/256/cultured.png
 7e48201eedfd818ab3508b15f79ecc5a28f48e81ea9c8dbb8c3c4c9150dd65e2  art/perks/wick/production-v1/exports/256/detectives-eye.png
 c0432182bcc81e2744ec3fad86fe5caf08ad24f1bca6d37a5e736c3c88f155aa  art/perks/wick/production-v1/exports/256/double-meaning.png
 d8e8e201d0d2d7ee680c5f8caedb4e70af51429cd69e9bdd4083d110360bb89e  art/perks/wick/production-v1/exports/256/eyes-in-the-back.png
@@ -258,6 +261,7 @@ aa950f200f0102fb9484f7fccacf86f96dd59d9c1982eb01e18a22bde3a8eecb  art/perks/wick
 4ce754313adde3ffa213a5bd08907adf0dfba8c57ac6593172693331f85c192e  art/perks/wick/production-v1/exports/40/charge.png
 07c4f4ecf219ee6368ee9806d72b6905cd0f7394e7726a0f675b64d49618bd71  art/perks/wick/production-v1/exports/40/clean-hands.png
 f9715fa79b2019eab0adcc73a50810e0ac40e2109e64ed337cab520bde4df853  art/perks/wick/production-v1/exports/40/crowd-pleaser.png
+ecac6eaf6f16a1f32ccbacfaf0a5f66c3e7138d079de7650aa59a360b1c52cd8  art/perks/wick/production-v1/exports/40/cultured.png
 bcf0d3626db890117f80320cb48dbc2c94800291006c82b90d5e017c26424c34  art/perks/wick/production-v1/exports/40/detectives-eye.png
 bcab93cf204fd8ac36a870b2840811a30a7f2c4a42851b6c7ffd92986035af80  art/perks/wick/production-v1/exports/40/double-meaning.png
 9a5bded8096076f4cc817231fd91703d9988770ca7aaf27964cb9791e880a5c3  art/perks/wick/production-v1/exports/40/eyes-in-the-back.png
@@ -316,6 +320,7 @@ ea2a0f2b3b71b3173cbd0e852975ef5b64c9e8987c6faf3591e2eacd5574d0f8  art/perks/wick
 99caf37717834faaa8b156a1c01e3b59da25ce4d5e8e2c427e616bb83d0707c8  art/perks/wick/production-v1/exports/44/charge.png
 b0c7637a31e714553fffdb1abb9b5a0171984e1f49268af2a5e655c355dba17d  art/perks/wick/production-v1/exports/44/clean-hands.png
 2d1ff271318a1ef0c8cc2c108ef213bcd3f78cdd254f239fa250b847eb4e2f7d  art/perks/wick/production-v1/exports/44/crowd-pleaser.png
+8a84c21b8180a59b76b37e0b23d631e68cd39eed96bd6b33fce768a851fc93a4  art/perks/wick/production-v1/exports/44/cultured.png
 b89615830c53407eaa70a18b5896acd2e8edb188cf405635fca3ba973636ffeb  art/perks/wick/production-v1/exports/44/detectives-eye.png
 ad48dfafec37ba275c1f7d2a0c23e16dc9f6fdcefe3170f6be638100798cee22  art/perks/wick/production-v1/exports/44/double-meaning.png
 cccac4dd6df7a83dd71d555db825913871d0d35abf69952fd1641587793dab9c  art/perks/wick/production-v1/exports/44/eyes-in-the-back.png
@@ -374,6 +379,7 @@ a0a2d046e1293c6ca6bfcac3ba4ed404ab3042405c5d441a293b687dcbd9c6d9  art/perks/wick
 a9056df54237d0f5fedfb5744b61440e77cc151b86df6d557731b99c43793132  art/perks/wick/production-v1/exports/48/charge.png
 9cd5079ee300dd26a81b25fba2bf31df88c30172e8096bd3a43c198b33188675  art/perks/wick/production-v1/exports/48/clean-hands.png
 4656305ead4befab5fd80366711da0fba21b5b10bd92ce7ef57335312f031e16  art/perks/wick/production-v1/exports/48/crowd-pleaser.png
+c87c0e2dac7d0aa1989e5d4aefaa947585dd27ee4781cc3b6aad1b48e0d270d3  art/perks/wick/production-v1/exports/48/cultured.png
 4583eb6fdd8fd72bd7c024f6ce4bc09d340606284bc86c4cfcb07f76e1668dd3  art/perks/wick/production-v1/exports/48/detectives-eye.png
 7f4a40830a1641840c9818541a9e7c670168cf7acef8fb9426803e392573a97a  art/perks/wick/production-v1/exports/48/double-meaning.png
 5a120b330f46f046a7e167773e0ca44a8ee9afded9fe5c78217a83c4cf3efc5c  art/perks/wick/production-v1/exports/48/eyes-in-the-back.png
@@ -432,6 +438,7 @@ f6af9c4897769080aadec076c6c16e650990cd5f7df93a190c4b8eb17b0edffc  art/perks/wick
 26c61e12edf78c6f82267317555f986e67d504cf1ae25f3990e962f6f80eabc6  art/perks/wick/production-v1/exports/56/charge.png
 8951c65fe23c2d060a1d4fe70c4a68821e9d3e8fcd03ba7ccaed7ea663129617  art/perks/wick/production-v1/exports/56/clean-hands.png
 586ff0e64b9ebf18d575d7abb7480255cce7795db6bbd05eab5743898dff1bcb  art/perks/wick/production-v1/exports/56/crowd-pleaser.png
+9c2fa3db427d0128b26b21c5f9b808330789844b23babfb4c694924d795fa101  art/perks/wick/production-v1/exports/56/cultured.png
 7b5a8338e3abb6837e70d18b1bc409a6ee228ee1edf0e4d6de3c90e76de7d8c7  art/perks/wick/production-v1/exports/56/detectives-eye.png
 faca464fc70f1342bc9ebc2e41d1be734dac1c6ac3249ea86e9a847be560cf2c  art/perks/wick/production-v1/exports/56/double-meaning.png
 c7c0627e4853122b7fe0c286987a42fa288f2cbdaeb472d3de627143b6854877  art/perks/wick/production-v1/exports/56/eyes-in-the-back.png
@@ -490,6 +497,7 @@ e76e526f6bba2229d3c2eefbd9bdd319b26151266fb1f1bb39ae883bf9f24612  art/perks/wick
 c186c77c3029b7f1a2ab5776fc06572a809ab9e49711734ef3739796efc00501  art/perks/wick/production-v1/exports/64/charge.png
 a9fe91e5f82f7fee23117052766501fcefe314cb58a0f3704664545d5af43493  art/perks/wick/production-v1/exports/64/clean-hands.png
 fd539f431738f1b0ea4f92b12e8a8004ce1abeef78e89ca849064fced295bea2  art/perks/wick/production-v1/exports/64/crowd-pleaser.png
+2374261ba0188ac7b89c9b8aa70bb3aafcb8c1bb727f8998461218ba9674c319  art/perks/wick/production-v1/exports/64/cultured.png
 8e90282dcfc7c183369197d111b5fd424d269d5d2e7c25e29a5e47ba8174bb51  art/perks/wick/production-v1/exports/64/detectives-eye.png
 7736a2729337bd5d7a6c46f387258d9094a932b53b09d29c38dd9f2180e50601  art/perks/wick/production-v1/exports/64/double-meaning.png
 d86b5253c0a05ca0500b21052198a27f5f10585a156481d36aaf05ab8d1d84db  art/perks/wick/production-v1/exports/64/eyes-in-the-back.png
@@ -556,7 +564,7 @@ dd89f4e2135fab19e8d9d7f1a4b2e31730d1fd79bff1764b8ebbb0c9507aab78  art/perks/wick
 4041e4644d3bc2db32f3d8c19d6458aa10993c6574837c5e3dd9608916f820d5  art/perks/wick/production-v1/lay-down-arms.png
 35723a7b8ce5f1d8e354e3e25cb62d88e9b8b2f6f115c6c4aec086bb58317ffd  art/perks/wick/production-v1/litany.png
 abbcdd0bba486a23ccbb351d253a03c95a59a018bd05e33f6f2493a1f9505016  art/perks/wick/production-v1/make-way.png
-602490ec1c2c789f4a8b0316f8baa53377d53d36f1e547bea6f9044eb33e6234  art/perks/wick/production-v1/manifest.json
+9e4c6dd1786c2723cdddc57d3f718f6857048e4490038d77c6bc1de73e62269a  art/perks/wick/production-v1/manifest.json
 6605ced5415055069a6a38ab981de041a7060382fc92998745a999a81af46d09  art/perks/wick/production-v1/mirage.png
 32fa00cd9e1aae4c922128f2e6aa7e020cb16a3b7f3248add612c34cfa882771  art/perks/wick/production-v1/old-tongue.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/perks/wick/production-v1/origami-hands.png
@@ -576,13 +584,13 @@ f387cfeb7668392b6b1e2de927f3314bd1fa86cb985e676b7678256318c099f9  art/perks/wick
 98e35696185db7b0984f1cc83f62957b4a3a9ef47c5e370a5887d70055e63607  art/perks/wick/production-v1/previews/batch-e-48px.png
 c1a67b3a7fec21cf0bb44dd15e2a1fe664db9ae485067374864c1723942af978  art/perks/wick/production-v1/previews/batch-e-56px.png
 c2f3d2d0427d4d2964c30b98ee0baec2611324e8ab616b4a8c3dbddecd7cce16  art/perks/wick/production-v1/previews/batch-e-light-dark-64px.png
-827a586c9dbcf87ace96bc24c07360288e7541a4f979787d33294178cbee1d0d  art/perks/wick/production-v1/previews/batch-f-128px.png
-a46a99dd214e53b774a44d460d6ca90b2e24f3e163ea0a98d13cf90abb7d03d8  art/perks/wick/production-v1/previews/batch-f-40px.png
-ceabb4625da3da0ccd29d4a335316eed35378374cacfdf8b05b2ed43674a7bbc  art/perks/wick/production-v1/previews/batch-f-44px.png
-4fe0a8c10533c0e822bb0546811fac10a8ef5cc1bc253ab11220c2ac581847d1  art/perks/wick/production-v1/previews/batch-f-48px.png
-6d01897dfc605fb158ef19563c49672f084ba4f46ec05cf8eb12fafb6f763ff6  art/perks/wick/production-v1/previews/batch-f-56px.png
-8ad468d0a6d1ada803e738dd52e4005940249616df86e28601ba46860968f53a  art/perks/wick/production-v1/previews/batch-f-light-dark-64px.png
-4549dede7585795b178055704a7c190332ab53cb5fd5fd46dbbe8db8f01a34a3  art/perks/wick/production-v1/previews/latest.png
+3687c7d7cea6000755b83e791fd95c327e638c4149f90f22bd24bbb1b303e74d  art/perks/wick/production-v1/previews/batch-f-128px.png
+72e40aee75ee0ac2624092132a10c9d2f1a74bbc5a58fa45ebda7720d3bc5194  art/perks/wick/production-v1/previews/batch-f-40px.png
+f6f047662dad9b1b120524f31ec9f325335cacca91e14497c177ce3f30004806  art/perks/wick/production-v1/previews/batch-f-44px.png
+b4587dc970932b7ca8400aad851399c5553915e910ba7cd39053345400697c03  art/perks/wick/production-v1/previews/batch-f-48px.png
+25fed54737d95421e7c8baa42e62dfc7b481e6a73cc509b717eb60939cb66d67  art/perks/wick/production-v1/previews/batch-f-56px.png
+b05023135f4b9756fcedbfc26a859be503a6473b0534260a5c811fb54efeb99c  art/perks/wick/production-v1/previews/batch-f-light-dark-64px.png
+ca19d44990adea8aa1eeb55853d2d8b7c64898cf94511e64c0474d14648b6492  art/perks/wick/production-v1/previews/latest.png
 be1c96b1364db87643416cfd75171a5c528d142919e6838a1a449d78bf79f015  art/perks/wick/production-v1/rally-cry.png
 088e0b295407d78f1ce5976bf5f5612b4abae19d6de042778a615d4aab17b6d5  art/perks/wick/production-v1/real-power.png
 9998a9892e26b748e7fe5982dde860a293717f434f338a14be6ec22d9d784f9e  art/perks/wick/production-v1/red-line.png
@@ -715,7 +723,7 @@ a201c0f61491d2d0faeb40cd303d30a9780545ff6c3a5012f912a859d5b4b76a  art/traits/wic
 faa95017f15b9774142be5996920103b14fb0b086a113fe0408522dcf7319d31  art/traits/wick/mind-without-fog/STYLE-LOCK.md
 4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444  art/traits/wick/mind-without-fog/mind-without-fog.png
 ebd5062d48d3610f689c20bfc7f80f79d357b4444e44dd77d2ee11ca642679e9  art/traits/wick/pending-at-usage-limit-2026-11-05.json
-a9af4abcc53b5ea2881d21b0d1f15353e67605883dd932c5a504006243ce7554  art/traits/wick/production-progress.json
+77d0689e040efe8341bb18a23d69e99aa7b4b169e014cb64a35e6c480f4a9a27  art/traits/wick/production-progress.json
 9e6746fe11e2c0d41184e0c6c63eb7d83cd3c937cfc8ad4485d3c1405f646c5c  art/traits/wick/production-v1/README.md
 a5989b18d518aef797b912484dca317c85036f2939f91d555d8f176a0783a4cb  art/traits/wick/production-v1/ace-pilot.png
 3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a  art/traits/wick/production-v1/augmented.png

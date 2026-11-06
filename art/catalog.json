@@ -4712,6 +4712,31 @@
         "40": "art/perks/wick/production-v1/exports/40/spoon-feed.png"
       },
       "tier": "achieved"
+    },
+    "cultured": {
+      "label": "Wick — Cultured",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/cultured.png",
+      "sha256": "3c35d4fb0f080f598a2597130982abd47b8f946933354e38ee176e28a8f1d182",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "cultured",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/cultured.png",
+        "128": "art/perks/wick/production-v1/exports/128/cultured.png",
+        "64": "art/perks/wick/production-v1/exports/64/cultured.png",
+        "56": "art/perks/wick/production-v1/exports/56/cultured.png",
+        "48": "art/perks/wick/production-v1/exports/48/cultured.png",
+        "44": "art/perks/wick/production-v1/exports/44/cultured.png",
+        "40": "art/perks/wick/production-v1/exports/40/cultured.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

@@ -1354,6 +1354,30 @@
       "batch": "F",
       "source_sha256": "b49f99f5cce2bc5c3e101900089d6bd8a75f4e2bd821854591337b9f23ebdce9",
       "tier": "achieved"
+    },
+    {
+      "id": "cultured",
+      "data_id": "cultured",
+      "name": "Cultured",
+      "family": "perks",
+      "order": 59,
+      "mood": "Tender, Comic",
+      "action": "Wick sits on a stool strumming a small round-bodied lute, eyes closed, one boot tapping, a few music notes drifting up.",
+      "screen": "Closed eyes, small smile",
+      "prop": "Lute",
+      "path": "art/perks/wick/production-v1/cultured.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/cultured.png",
+        "128": "art/perks/wick/production-v1/exports/128/cultured.png",
+        "64": "art/perks/wick/production-v1/exports/64/cultured.png",
+        "56": "art/perks/wick/production-v1/exports/56/cultured.png",
+        "48": "art/perks/wick/production-v1/exports/48/cultured.png",
+        "44": "art/perks/wick/production-v1/exports/44/cultured.png",
+        "40": "art/perks/wick/production-v1/exports/40/cultured.png"
+      },
+      "batch": "F",
+      "source_sha256": "4b655f910ab4c1fb2693129cee99550d868d4a551e6b9529e44bf4400649d974",
+      "tier": "achieved"
     }
   ]
 }
