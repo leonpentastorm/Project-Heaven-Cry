@@ -1330,6 +1330,30 @@
       "batch": "F",
       "source_sha256": "af4917c3c537e80c8bf7f72a950665106ba48ad3276f4d9a7a84cd7c7b0e147a",
       "tier": "achieved"
+    },
+    {
+      "id": "spoon-feed",
+      "data_id": "spoon_feed",
+      "name": "Spoon-Feed",
+      "family": "perks",
+      "order": 58,
+      "mood": "Comic, Tender",
+      "action": "Wick kneels and holds a huge spoon out to the viewer, a small geometric sigil (lines and angles, no letters) balanced in its bowl.",
+      "screen": "Encouraging open \"aah\" mouth",
+      "prop": "Huge spoon",
+      "path": "art/perks/wick/production-v1/spoon-feed.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/spoon-feed.png",
+        "128": "art/perks/wick/production-v1/exports/128/spoon-feed.png",
+        "64": "art/perks/wick/production-v1/exports/64/spoon-feed.png",
+        "56": "art/perks/wick/production-v1/exports/56/spoon-feed.png",
+        "48": "art/perks/wick/production-v1/exports/48/spoon-feed.png",
+        "44": "art/perks/wick/production-v1/exports/44/spoon-feed.png",
+        "40": "art/perks/wick/production-v1/exports/40/spoon-feed.png"
+      },
+      "batch": "F",
+      "source_sha256": "b49f99f5cce2bc5c3e101900089d6bd8a75f4e2bd821854591337b9f23ebdce9",
+      "tier": "achieved"
     }
   ]
 }

@@ -138,11 +138,12 @@
     "real-power",
     "charge",
     "make-way",
-    "just-the-repairman"
+    "just-the-repairman",
+    "spoon-feed"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 59
+    "perks": 60
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -192,7 +193,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "spoon-feed",
     "cultured",
     "dance-of-iron",
     "cold-read",

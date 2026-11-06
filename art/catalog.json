@@ -4687,6 +4687,31 @@
         "40": "art/perks/wick/production-v1/exports/40/just-the-repairman.png"
       },
       "tier": "achieved"
+    },
+    "spoon-feed": {
+      "label": "Wick — Spoon-Feed",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/spoon-feed.png",
+      "sha256": "68338b6f2e3498cfcde0b1f4bf4d21232c040eed3d4fd5183103423ad0fc0277",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "spoon_feed",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/spoon-feed.png",
+        "128": "art/perks/wick/production-v1/exports/128/spoon-feed.png",
+        "64": "art/perks/wick/production-v1/exports/64/spoon-feed.png",
+        "56": "art/perks/wick/production-v1/exports/56/spoon-feed.png",
+        "48": "art/perks/wick/production-v1/exports/48/spoon-feed.png",
+        "44": "art/perks/wick/production-v1/exports/44/spoon-feed.png",
+        "40": "art/perks/wick/production-v1/exports/40/spoon-feed.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
