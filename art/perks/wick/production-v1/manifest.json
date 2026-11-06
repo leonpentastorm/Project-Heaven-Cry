@@ -1402,6 +1402,30 @@
       "batch": "F",
       "source_sha256": "1d0844a01b04523b0eefbb8fa20b5a36dde4a7b816c123eaec9d08aa6f2281ae",
       "tier": "achieved"
+    },
+    {
+      "id": "cold-read",
+      "data_id": "cold_read",
+      "name": "Cold Read",
+      "family": "perks",
+      "order": 62,
+      "mood": "Eerie, Tender",
+      "action": "Wick crouches and peers through a big heart-shaped keyhole plate held up in both mittens like a frame.",
+      "screen": "One magnified eye",
+      "prop": "Heart-shaped keyhole",
+      "path": "art/perks/wick/production-v1/cold-read.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/cold-read.png",
+        "128": "art/perks/wick/production-v1/exports/128/cold-read.png",
+        "64": "art/perks/wick/production-v1/exports/64/cold-read.png",
+        "56": "art/perks/wick/production-v1/exports/56/cold-read.png",
+        "48": "art/perks/wick/production-v1/exports/48/cold-read.png",
+        "44": "art/perks/wick/production-v1/exports/44/cold-read.png",
+        "40": "art/perks/wick/production-v1/exports/40/cold-read.png"
+      },
+      "batch": "F",
+      "source_sha256": "82778f04183eaecdbf0f29d317a6da67d9e3a6af9d48a13e534cc417362e1a56",
+      "tier": "achieved"
     }
   ]
 }

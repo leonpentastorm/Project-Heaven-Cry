@@ -4762,6 +4762,31 @@
         "40": "art/perks/wick/production-v1/exports/40/dance-of-iron.png"
       },
       "tier": "achieved"
+    },
+    "cold-read": {
+      "label": "Wick — Cold Read",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/cold-read.png",
+      "sha256": "f0faaeef5b7c690023e00cfd7c7eee9ca05d940c082c2acd65d3feb58399d271",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "cold_read",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/cold-read.png",
+        "128": "art/perks/wick/production-v1/exports/128/cold-read.png",
+        "64": "art/perks/wick/production-v1/exports/64/cold-read.png",
+        "56": "art/perks/wick/production-v1/exports/56/cold-read.png",
+        "48": "art/perks/wick/production-v1/exports/48/cold-read.png",
+        "44": "art/perks/wick/production-v1/exports/44/cold-read.png",
+        "40": "art/perks/wick/production-v1/exports/40/cold-read.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

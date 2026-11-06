@@ -141,11 +141,12 @@
     "just-the-repairman",
     "spoon-feed",
     "cultured",
-    "dance-of-iron"
+    "dance-of-iron",
+    "cold-read"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 62
+    "perks": 63
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -195,7 +196,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "cold-read",
     "fire-sermon",
     "silent-partner",
     "verse-of-war",
