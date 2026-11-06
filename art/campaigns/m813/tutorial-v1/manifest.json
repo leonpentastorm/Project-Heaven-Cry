@@ -547,6 +547,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-novikov.prompt.txt"
+    },
+    {
+      "id": "m813-security-guard",
+      "group": "B",
+      "order": 13,
+      "name": "Security Guard",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B13 | `m813-security-guard` | **Station security guard**, generic token: Outpost-1 security armour, helmet visor up, SMG. | Alert, blocking a corridor. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "cc61f9c8c3207901a938bd06a50c26788338598516c1ca30decbd6fbff71f624",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-security-guard.png",
+      "source_sha256": "a2a57bd47aa48e92ed33004120b48980a7378d8014c33dda60cf7d95aec2389e",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-security-guard-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-security-guard.prompt.txt"
     }
   ]
 }
