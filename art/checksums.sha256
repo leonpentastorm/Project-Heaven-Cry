@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-783665ca0cba2e562cb066aae8f96ea15bf544f255fa9a8f6f880fdacb2ad411  art/campaigns/m813/tutorial-v1/README.md
-51a1671eed19ca7e737e56c837d0566f9a42b46856041d65c362ac6325e70b28  art/campaigns/m813/tutorial-v1/manifest.json
-dbdcc776e418384101a404b48d93b1121dad68706571d73df20a8ed8ed46d840  art/campaigns/m813/tutorial-v1/production-progress.json
-baaff84e14efb3b1fd5e84101f6218676177f253e2db65bbb6f40db7a774124c  art/catalog.json
+ad331a2ce111abc1037ef9f4bd859d9ca07c21369c2277edff7d0481706fc807  art/campaigns/m813/tutorial-v1/README.md
+d3a0a9c1e7f9f198d85c8c1ed3c9041db6f1afa6e98d5ada0c8061e85cb3b86c  art/campaigns/m813/tutorial-v1/manifest.json
+c5931ede49ff5c725e0944277e70c926886c36a390978aaf981f1c7419757fcf  art/campaigns/m813/tutorial-v1/production-progress.json
+214a99bc6d8d61c0cbafd769d2b6d2579d795734e4f003e81786ed9c5b101cbb  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -92,6 +92,7 @@ ee1870b77fd662d1444448cf7d68dec925bf99051ea2edce0475ccebabf5d4e5  art/character-
 f418d56101bec84389755bda9e0e7c55c0469c82436167fdb2c9a0061770613b  art/character-portraits/m813/mpat-comrade.png
 7a88360ae51a71c757e21d8b73cf932bb228f6d677e379e54a5453340dcf385f  art/character-portraits/m813/mpat.png
 f75b1ecd448b6850088c08071f64a090b1aaa94a82d1195072e368dea9ac1770  art/character-portraits/m813/v2/m813-engineer-a.png
+7060d4c22fb29bcf992f4ca6f19c893e7aa91c9d2b6c3443b6a4c856f97208b2  art/character-portraits/m813/v2/m813-engineer-b.png
 2ae804c69b73296e6a10ff2be51e029492a54d0304efed08c7d78dd809e88f88  art/character-portraits/m813/v2/m813-hum.png
 dbc2c1767f717293a5896d110070ff3bad5a4ec0cea63a3e1d256a6f81faae15  art/character-portraits/m813/v2/m813-ilse-varga.png
 dec08550aaa238cca1b98d33140a9356a32414b19b9041d8af3dde57970f2239  art/character-portraits/m813/v2/m813-keel.png
@@ -102,6 +103,7 @@ d9545bd041a2b429605b14a83b8846f231d27497aaa9ab705a4709ae6acff054  art/character-
 3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227  art/character-portraits/m813/v2/m813-seven-seven.png
 f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc  art/character-portraits/m813/v2/m813-soft-hands.png
 6ba3bf623c85b26a141abf56fc1ef2c1fdda615919d9ecacdbb55536efd69f6d  art/character-portraits/m813/v2/previews/m813-engineer-a-320px.png
+155164d09c73eea7b70505ec700c7c6fb8e49398023b496e1dd42bfa675f6726  art/character-portraits/m813/v2/previews/m813-engineer-b-320px.png
 058d5d2889e2f795e107b50233dcf4faac00b61551b2395ba1f8779741cbfe14  art/character-portraits/m813/v2/previews/m813-hum-320px.png
 50989a1b53fdc875e828ca3ac0c6ffbea3eac6bbb01cb10d455955099d1ead19  art/character-portraits/m813/v2/previews/m813-ilse-varga-320px.png
 d46bc9ed768cf789fd450a1a413c176354df2355e0e2eace0449ce768435b854  art/character-portraits/m813/v2/previews/m813-keel-320px.png
@@ -113,6 +115,8 @@ d5c6d3e3e4e78c707878f735b3f3a9694fede1001d544a585afd2af974e5bff0  art/character-
 b20997cba88b6866c71b56142fb158acc7e6e455db31cf844551930d5cb42e47  art/character-portraits/m813/v2/previews/m813-soft-hands-320px.png
 04c371b3a6c7817ee5ee41dfea058c2b844cedad47cc51880afb5923c7d50c43  art/character-portraits/m813/v2/sources/m813-engineer-a.png
 2a809d3dc51ccb5a4a5f62796d2f542c279a1b3452a6e759f13cf112a6883bd2  art/character-portraits/m813/v2/sources/m813-engineer-a.prompt.txt
+91221cc32b540eadd45103c783a7ecf8e18932554cf0f7bce8bf690ba0f4b0a7  art/character-portraits/m813/v2/sources/m813-engineer-b.png
+a64d7fbeeb5074a52712ac4c720011bc61ae54e0ea36c507768b9ae5ea42452b  art/character-portraits/m813/v2/sources/m813-engineer-b.prompt.txt
 be09737beb75d5b31e8ccf8c03badaef93a60fad55cfde91671a6386891b7fb8  art/character-portraits/m813/v2/sources/m813-hum.png
 ea03148fb6f59ca005151a8d24edc235678341d2068592a48b8b654a457f6bfc  art/character-portraits/m813/v2/sources/m813-hum.prompt.txt
 6bf9e45d63ac0335c92e22e57a77f2ec0069963b7107beb75024b259edd0ddb5  art/character-portraits/m813/v2/sources/m813-ilse-varga.png

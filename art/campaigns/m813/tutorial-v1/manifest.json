@@ -479,6 +479,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.prompt.txt"
+    },
+    {
+      "id": "m813-engineer-b",
+      "group": "B",
+      "order": 11,
+      "name": "Engineer B",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-engineer-b.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B11 | `m813-engineer-b` | **Engineer**, generic token, a second face: a different age, build and gear. | Clutching a grenade belt, sweating. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "7060d4c22fb29bcf992f4ca6f19c893e7aa91c9d2b6c3443b6a4c856f97208b2",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.png",
+      "source_sha256": "91221cc32b540eadd45103c783a7ecf8e18932554cf0f7bce8bf690ba0f4b0a7",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-engineer-b-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.prompt.txt"
     }
   ]
 }
