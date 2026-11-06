@@ -246,7 +246,7 @@ export class MainLogic extends DCLogic {
       }
       if (e.kind === 'check') return { ...base, isCheck: true, headStyle: 'font-weight: 700; letter-spacing: 0.06em; color: ' + (e.ok ? '#6FEA77' : '#A3AEC2') };
       // An action on the area map reads as an action, not a footnote: a shot is red-edged.
-      if (e.act) { const hit = /\b(fires|shoots|strikes|smashes|attacks|hits|misses)\b/.test(e.text);
+      if (e.act) { const hit = /\b(fires|shoots|aimed shot|strikes|smashes|attacks|hits|misses)\b/.test(e.text);
         return { ...base, isNote: true, text: (hit ? '⚔ ' : '› ') + e.text, noteStyle: 'margin: 0; padding: 6px 10px; border-radius: 6px; background: #10151F; border-left: 3px solid ' + (hit ? '#F65157' : '#E7EBF3') + '; font-size: 14px; line-height: 1.5; color: #E7EBF3' }; }
       return { ...base, isNote: true, noteStyle: 'margin: 0; font-size: 13px; line-height: 1.5; color: ' + (e.kind === 'xp' ? '#FFFFFF' : e.kind === 'combat' ? '#F65157' : '#A3AEC2') };
     }), ...(heldAt >= 0 ? [{ key: 'gathering', text: 'The Narrator gathers their voice…' + (VS.status === 'loading' && VS.progress < 100 ? ' (preparing the voice on this device, once: ' + VS.progress + '%)' : ''), isGathering: true, paras: [] }] : [])];
@@ -361,7 +361,8 @@ export class MainLogic extends DCLogic {
     const openObj = (o) => { this.setState({ objPanel: o.id }); if (c && !inFight && g.phase === 'story') act({ type: 'story/focus', charId: c.id, objId: o.id }); };
     const fOwner = fChar ? playerOf(fChar.owner) : null;
     const isNear = !!(P0 && near.includes(P0));
-    if (S.awaitPoi && !S.dice) { const pk = myChecks.find((k) => k.poi && k.poi.objId === S.awaitPoi); if (pk) queueMicrotask(() => this.setState({ dice: pk.id, awaitPoi: null })); }
+    // An unfinished attempt of mine always has its dice open (it survives a reload or a remount; the table can't close before the roll).
+    if (!S.dice) { const pk = myChecks.find((k) => k.poi && (!S.awaitPoi || k.poi.objId === S.awaitPoi)) || myChecks.find((k) => k.poi); if (pk) queueMicrotask(() => this.setState({ dice: pk.id, awaitPoi: null })); }
     const myTurn = !!c && !c.dead && g.phase === 'story' && g.story.await === 'players' && !(g.story.ended || {})[c.id] && !g.checks.some((k) => !k.done && k.poi && charOf(k.charId)?.owner === me);
     const tnWord = (tn) => ({ 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' }[tn] || 'TN');
     const poiWhy = spectating ? '' : !c ? 'You have no character here.' : g.phase !== 'story' ? 'After the fight.' : !isNear ? 'Walk up to it first.' : g.story.await !== 'players' ? 'Wait for the round to open.' : (g.story.ended || {})[c.id] ? 'You ended your turn this round.' : apLeft(g, c) < 1 ? 'No AP left this round.' : '';
@@ -517,7 +518,7 @@ export class MainLogic extends DCLogic {
         return { has: true, bars: hb, ammo, ammoStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: ' + (w && w.magazine && loaded <= 0 ? '#F65157' : '#E7EBF3') }; })(),
       ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
         const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
-          style: 'font-size: 12px; line-height: 1.4; color: ' + (e.act && /\b(fires|shoots|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3') }));
+          style: 'font-size: 12px; line-height: 1.4; color: ' + (e.act && /\b(fires|shoots|aimed shot|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3') }));
         return { areaLog: L, noAreaLog: !L.length }; })(),
       areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + '. Tell the Narrator "I move to C7", or click a tile.',
       zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',

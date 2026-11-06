@@ -15,8 +15,10 @@ function ramp(to: number, ms: number, then?: () => void) {
 export function playTitleMusic() {
   want = 1;
   if (!el) { el = new Audio(SRC); el.loop = true; el.preload = 'auto'; el.volume = 0; }
+  if (vol() === 0) return; // muted: don't start at all (iOS ignores volume)
   const a = el; a.play().then(() => { if (want) ramp(vol(), 2000); }).catch(() => { /* not allowed yet; the next gesture retries */ });
 }
 /** Fade out and pause (leaving the title). */
 export function stopTitleMusic(ms = 1200) { want = 0; if (!el || el.paused) return; ramp(0, ms, () => { if (!want) el?.pause(); }); }
-onUiPrefs(() => { if (el && want && !el.paused) el.volume = vol(); });
+// A settings change cancels any fade; silence means paused, since some browsers (iOS) ignore volume.
+onUiPrefs(() => { if (!el || !want) return; cancelAnimationFrame(fade); const v = vol(); if (v === 0) el.pause(); else { el.volume = v; if (el.paused) el.play().catch(() => {}); } });

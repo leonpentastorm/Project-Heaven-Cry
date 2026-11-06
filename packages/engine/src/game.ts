@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost } from './combat';
+import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -60,6 +60,8 @@ export interface GameState {
     /** Overworld rounds (spec: Overworld rounds): AP left and turn ended per character, this round's paths, Sneak. */
     ap?: Record<string, number>; ended?: Record<string, boolean>; trail?: Record<string, string[]>;
     sneak?: Record<string, boolean>; hidden?: Record<string, boolean>;
+    /** Weapon heat and jams carried between overworld actions (heat cools by 2 each round; a jam stays until cleared). */
+    heat?: Record<string, number>; jammed?: Record<string, boolean>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
     /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
@@ -843,6 +845,7 @@ function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.
 export function newRound(g: GameState) {
   g.story.round++; g.story.spoken = {}; g.story.await = 'players';
   g.story.ap = {}; g.story.ended = {}; g.story.trail = {}; g.story.needs = false; g.story.noticed = {}; g.story.focus = null;
+  for (const k in g.story.heat || {}) g.story.heat![k] = Math.max(0, g.story.heat![k] - 2);
   // What the Narrator mapped from players' words runs now, as those players' own actions, from their fresh AP.
   const q = g.story.queued || []; g.story.queued = [];
   for (const x of q) {
@@ -887,7 +890,7 @@ const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard cap
  * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
 function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
-  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
+  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
   return { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
 }
@@ -966,16 +969,24 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (!t && o) {
       if (o.hp == null || o.hp <= 0) {
         // Something without HP: the shot is real (a round, heat, sight, range) and the Narrator rules what it does.
-        const w = WEAPON[u.weapon], melee = isMelee(w), cost = attackApCost(w, melee ? 'melee' : 'shot'), r = dist(u.pos, o.pos);
+        // The mode the player chose counts: melee strikes with the weapon (or fists), aimed costs the aimed AP.
+        const w = WEAPON[u.weapon], mode = a.mode || 'shot', melee = isMelee(w) || mode === 'melee', useW = melee && !isMelee(w) ? WEAPON.fists : w;
+        const fx: any = (w as any).grants?.effect || {}, r = dist(u.pos, o.pos);
+        const cost = !melee && mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot');
         if (u.ap < cost) fail('Needs ' + cost + ' AP.');
         if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); }
         else {
           if (u.jammed) fail('Weapon jammed: clear it (2 AP).');
+          if (u.maxDur && (u.dur ?? 1) <= 0) fail('Broken: Field Repair first.');
+          if ((w.properties || []).includes('requires_braced_or_prone') && !u.braced && !u.prone) fail('Brace it first (1 AP), or go prone.');
           if (w.magazine != null && u.ammo <= 0) fail('Empty: reload (2 AP).');
           if (!lineOfSight(cb, u.pos, o.pos)) fail('No line of sight.');
+          if (Math.ceil(r / effectiveRange(w)) - 1 > 2) fail('Out of range.');
           if (w.magazine != null) u.ammo--; u.heat += 1;
+          if ((w as any).heat_limit && u.heat >= (w as any).heat_limit) u.jammed = true;
+          if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
         }
-        u.ap -= cost; cb.log.push(c!.name + (melee ? ' strikes ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ').'));
+        u.ap -= cost; cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
         g.story.needs = true;
       }
       else err = shootCover(cb, u, o.pos, c!);
@@ -989,7 +1000,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   if (err) fail(err);
   // Write back: AP, the character's state, objects (doors, traps), and the log as story lines.
   spendAp(g, c!, before - u.ap);
-  for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false, true);
+  for (const x of cb.units) if (x.charId) { unitToCharacter(g, x, false, true); (g.story.heat ||= {})[x.charId] = x.heat || 0; (g.story.jammed ||= {})[x.charId] = !!x.jammed; }
   g.story.objects = cb.objects;
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
   noticeFor(g, c!);

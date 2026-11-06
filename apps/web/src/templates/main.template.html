@@ -14,7 +14,7 @@
 
 <div class="phc-play-row" style="flex: 1; display: flex; gap: 0; min-height: 0; overflow: hidden">
 
-<aside aria-label="Character sheet" class="phc-col-scroll" style="flex: 1 1 340px; max-width: 400px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
+<aside aria-label="Character sheet" class="phc-col-scroll" style="flex: 1 1 340px; max-width: 400px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 18px 18px 120px; border-right: 1px solid #232D3F">
 <sc-if value="{{multi}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px"><sc-for list="{{myChars}}" as="c" hint-placeholder-count="2"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.name}}</button></sc-for></div></sc-if>
 <div style="display: flex; gap: 14px">
 <button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{pc.name}}" style="{{zoomBtn}}"><img src="{{pc.img}}" alt="{{pc.name}}" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F"></button>
@@ -166,7 +166,7 @@
 </aside>
 
 <main aria-label="Story" style="flex: 999 1 560px; min-width: 0; min-height: 0; display: flex; flex-direction: column">
-<div class="phc-story phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none">
+<div class="phc-story phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto">
 <div style="display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
 <figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
 <button type="button" onClick="{{hero.zoom}}" aria-label="Enlarge the art for {{hero.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}"></button>
@@ -227,7 +227,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 </main>
 
-<aside aria-label="Map and speaking order" class="phc-col-scroll" style="flex: 1 1 300px; max-width: 360px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
+<aside aria-label="Map and speaking order" class="phc-col-scroll" style="flex: 1 1 300px; max-width: 360px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 18px 18px 120px; border-left: 1px solid #232D3F">
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{zoneLabel}}</span>
 <button type="button" onClick="{{openArea}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Area map</button></div>
 <div style="{{zoneStyle}}">

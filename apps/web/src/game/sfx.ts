@@ -121,11 +121,18 @@ export function installButtonSounds() {
 }
 
 /** Combat and area-map feedback: each new log line that describes a shot, a hit, a miss or a reload sounds. */
+const RE_RELOAD = /\breload|\bloads? (a|the|loose|\d+)\b|speedloader|clears? the jam/;
+const RE_SHOT = /\b(fires|shoots|opens fire|aimed shot|burst|full auto)\b/;
+const RE_MELEE = /\b(strikes|smashes|punches|slashes|stabs|swings)\b/;
+const RE_DOWN = /\b(is downed|goes down|drops to 0|is dead|dies)\b/;
+/** Whether a log line makes any sound (so a burst of quiet lines never crowds out the shot). */
+export const hasSfx = (text: string) => { const t = text.toLowerCase(); return !/death save/.test(t) && (RE_RELOAD.test(t) || RE_SHOT.test(t) || RE_MELEE.test(t) || /\bmiss/.test(t) || RE_DOWN.test(t)); };
 export function sfxForLine(text: string) {
   const t = text.toLowerCase();
-  if (/\breload|loads? (a|the|loose)|speedloader|clears? the jam/.test(t)) return sfx('reload');
-  if (/\b(fires|shoots|opens fire|burst|full auto)\b/.test(t)) { sfx('shot'); if (/\bmiss/.test(t)) setTimeout(() => sfx('miss'), 90); else if (/\bhit|damage|\d+ dmg|−\d+/.test(t)) setTimeout(() => sfx('hit'), 90); return; }
-  if (/\b(strikes|smashes|punches|slashes|stabs|swings)\b/.test(t)) return sfx('melee');
+  if (/death save/.test(t)) return; // every turn while Downed: no sound
+  if (RE_RELOAD.test(t)) return sfx('reload');
+  if (RE_SHOT.test(t)) { sfx('shot'); if (/\bmiss|jams/.test(t)) setTimeout(() => sfx('miss'), 90); else if (/· (critical|hit)\b|\d+ damage|\d+ dmg|−\d+ hp/.test(t)) setTimeout(() => sfx('hit'), 90); return; }
+  if (RE_MELEE.test(t)) return sfx('melee');
   if (/\bmiss/.test(t)) return sfx('miss');
-  if (/\b(is downed|goes down|drops to 0|is dead|dies)\b/.test(t)) return sfx('down');
+  if (RE_DOWN.test(t)) return sfx('down');
 }
