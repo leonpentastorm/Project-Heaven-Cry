@@ -115,10 +115,11 @@
 </sc-for>
 </div>
 <p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
+<p style="margin: 0; font-size: 12px; color: #A3AEC2">The portrait beside each archetype is a suggested character icon, not part of the build. Your portrait is your choice on the Identity step.</p>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px">
 <sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
 <button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
-<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="" loading="lazy" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"></sc-if>
+<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><span style="display: flex; align-items: flex-end; gap: 8px"><img src="{{a.card}}" alt="Suggested character portrait for {{a.name}}" loading="lazy" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"><span style="font-size: 11px; line-height: 1.4; color: #A3AEC2">Suggested portrait.<br>Pick any portrait on the Identity step.</span></span></sc-if>
 <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 19px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{a.role}}</span></span>
 <span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
 <span style="display: flex; gap: 6px; flex-wrap: wrap">
