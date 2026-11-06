@@ -142,7 +142,8 @@
   },
   "revision_rounds": {
     "field-surgeon": 3,
-    "factory-made": 3
+    "factory-made": 3,
+    "supreme-command": 4
   },
   "production_revisions": {
     "southern-fist": 2,
@@ -155,7 +156,8 @@
   },
   "review_4_fixes_delivered": [
     "into-the-dark",
-    "holy-ordnance"
+    "holy-ordnance",
+    "supreme-command"
   ],
   "remaining_new_icons": [
     "real-power",

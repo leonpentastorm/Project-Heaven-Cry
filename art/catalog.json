@@ -3282,8 +3282,8 @@
     "supreme-command": {
       "label": "Wick — Supreme Command",
       "collection": "wick-test-set-1-revisions",
-      "path": "art/traits/wick/test-set-1/revisions/supreme-command.png",
-      "sha256": "a5c0fbc18d2ca2e2b78e57f59c3bf746b5b9d601f61596722e8175b832bd3613",
+      "path": "art/traits/wick/test-set-1/revisions/round-4/supreme-command.png",
+      "sha256": "b6acf30c1da7626d665a6eccd7c84666583882b41fc71b7ae801eec3ea092076",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -3294,16 +3294,19 @@
       "production_approved": false,
       "batch": "revisions",
       "exports": {
-        "256": "art/traits/wick/test-set-1/revisions/exports/256/supreme-command.png",
-        "128": "art/traits/wick/test-set-1/revisions/exports/128/supreme-command.png",
-        "64": "art/traits/wick/test-set-1/revisions/exports/64/supreme-command.png",
-        "56": "art/traits/wick/test-set-1/revisions/exports/56/supreme-command.png",
-        "48": "art/traits/wick/test-set-1/revisions/exports/48/supreme-command.png",
-        "44": "art/traits/wick/test-set-1/revisions/exports/44/supreme-command.png",
-        "40": "art/traits/wick/test-set-1/revisions/exports/40/supreme-command.png"
+        "256": "art/traits/wick/test-set-1/revisions/round-4/exports/256/supreme-command.png",
+        "128": "art/traits/wick/test-set-1/revisions/round-4/exports/128/supreme-command.png",
+        "64": "art/traits/wick/test-set-1/revisions/round-4/exports/64/supreme-command.png",
+        "56": "art/traits/wick/test-set-1/revisions/round-4/exports/56/supreme-command.png",
+        "48": "art/traits/wick/test-set-1/revisions/round-4/exports/48/supreme-command.png",
+        "44": "art/traits/wick/test-set-1/revisions/round-4/exports/44/supreme-command.png",
+        "40": "art/traits/wick/test-set-1/revisions/round-4/exports/40/supreme-command.png"
       },
-      "revision": 2,
-      "previous_path": "art/traits/wick/test-set-1/supreme-command.png"
+      "tier": "ultimate",
+      "visibility": "awarded-only",
+      "revision": 4,
+      "previous_path": "art/traits/wick/test-set-1/supreme-command.png",
+      "previous_revision_path": "art/traits/wick/test-set-1/revisions/supreme-command.png"
     },
     "bulwark": {
       "label": "Wick — Bulwark",
