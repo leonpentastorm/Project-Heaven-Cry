@@ -163,11 +163,12 @@
     "walking-wounded",
     "skin-map",
     "earthbreaker",
-    "nothing-left-to-fear"
+    "nothing-left-to-fear",
+    "the-name-they-whisper"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 84
+    "perks": 85
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -193,7 +194,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "the-name-they-whisper",
     "never-there",
     "trick-shot",
     "before-the-blink",

@@ -1884,6 +1884,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "the-name-they-whisper",
+      "data_id": "the_name_they_whisper",
+      "name": "The Name They Whisper",
+      "family": "perks",
+      "order": 81,
+      "mood": "Grim, Eerie",
+      "action": "Wick stands in a bright open doorway, back-lit, its long shadow stretching all the way toward the viewer; two tiny Wick silhouettes duck behind cover in the foreground.",
+      "screen": "Two thin glowing slits",
+      "prop": "Long shadow",
+      "path": "art/perks/wick/production-v1/the-name-they-whisper.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/the-name-they-whisper.png",
+        "128": "art/perks/wick/production-v1/exports/128/the-name-they-whisper.png",
+        "64": "art/perks/wick/production-v1/exports/64/the-name-they-whisper.png",
+        "56": "art/perks/wick/production-v1/exports/56/the-name-they-whisper.png",
+        "48": "art/perks/wick/production-v1/exports/48/the-name-they-whisper.png",
+        "44": "art/perks/wick/production-v1/exports/44/the-name-they-whisper.png",
+        "40": "art/perks/wick/production-v1/exports/40/the-name-they-whisper.png"
+      },
+      "batch": "G",
+      "source_sha256": "0ebcc2f18cde76873ac253961856ce12b7f0a8eb53a6b5e4e1473516157dc277",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

@@ -5336,6 +5336,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "the-name-they-whisper": {
+      "label": "Wick — The Name They Whisper",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/the-name-they-whisper.png",
+      "sha256": "31bc47d1540c122a0458755a77a0a90847bae888fb51e08efd8c87f1638b3c38",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "the_name_they_whisper",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/the-name-they-whisper.png",
+        "128": "art/perks/wick/production-v1/exports/128/the-name-they-whisper.png",
+        "64": "art/perks/wick/production-v1/exports/64/the-name-they-whisper.png",
+        "56": "art/perks/wick/production-v1/exports/56/the-name-they-whisper.png",
+        "48": "art/perks/wick/production-v1/exports/48/the-name-they-whisper.png",
+        "44": "art/perks/wick/production-v1/exports/44/the-name-they-whisper.png",
+        "40": "art/perks/wick/production-v1/exports/40/the-name-they-whisper.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
