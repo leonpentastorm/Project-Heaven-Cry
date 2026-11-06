@@ -766,6 +766,41 @@
       "previous_path": "art/maps/m813/v1/rear_pad.png",
       "previous_revision_path": "art/maps/m813/v1/rear_pad.png",
       "revision": 2
+    },
+    {
+      "id": "map-m813-outpost",
+      "group": "C",
+      "order": 3,
+      "name": "Outpost",
+      "family": "maps",
+      "path": "art/maps/m813/v1/outpost.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11). Walls as thick ceramic-concrete. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "d739d5ef4d23b14676fe09fd68852eef1a86d5cef02046685d63883318978cb6",
+      "source_path": "art/maps/m813/v1/sources/map-m813-outpost.png",
+      "source_sha256": "373acda1c7cdee18fb082de40675f9c784f2660aeee2b4ccc3d566b474d8f163",
+      "source_dimensions": [
+        1513,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/previews/map-m813-outpost-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/maps/m813/v1/sources/map-m813-outpost.prompt.txt"
     }
   ]
 }
