@@ -1988,6 +1988,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "vanishing-act",
+      "data_id": "vanishing_act",
+      "name": "Vanishing Act",
+      "family": "perks",
+      "order": 85,
+      "mood": "Comic, Eerie",
+      "action": "Wick whips its capelet out into a huge magician's sweep; the lower half of its body is already gone, shown only as a dotted outline.",
+      "screen": "Wink",
+      "prop": "Swept cape-cloth",
+      "path": "art/perks/wick/production-v1/vanishing-act.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/vanishing-act.png",
+        "128": "art/perks/wick/production-v1/exports/128/vanishing-act.png",
+        "64": "art/perks/wick/production-v1/exports/64/vanishing-act.png",
+        "56": "art/perks/wick/production-v1/exports/56/vanishing-act.png",
+        "48": "art/perks/wick/production-v1/exports/48/vanishing-act.png",
+        "44": "art/perks/wick/production-v1/exports/44/vanishing-act.png",
+        "40": "art/perks/wick/production-v1/exports/40/vanishing-act.png"
+      },
+      "batch": "G",
+      "source_sha256": "edabd759a7868f779f12544da38a78631f6f084acb33118d2ec02d80af21ceb2",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

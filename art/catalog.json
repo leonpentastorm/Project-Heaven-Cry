@@ -5444,6 +5444,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "vanishing-act": {
+      "label": "Wick — Vanishing Act",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/vanishing-act.png",
+      "sha256": "bfa39f947dfa51314ee4fb4f9c8e1623a73558a190bd114eb4bc516c3223a9e2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "vanishing_act",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/vanishing-act.png",
+        "128": "art/perks/wick/production-v1/exports/128/vanishing-act.png",
+        "64": "art/perks/wick/production-v1/exports/64/vanishing-act.png",
+        "56": "art/perks/wick/production-v1/exports/56/vanishing-act.png",
+        "48": "art/perks/wick/production-v1/exports/48/vanishing-act.png",
+        "44": "art/perks/wick/production-v1/exports/44/vanishing-act.png",
+        "40": "art/perks/wick/production-v1/exports/40/vanishing-act.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

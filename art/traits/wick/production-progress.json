@@ -167,11 +167,12 @@
     "the-name-they-whisper",
     "never-there",
     "trick-shot",
-    "before-the-blink"
+    "before-the-blink",
+    "vanishing-act"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 88
+    "perks": 89
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -197,7 +198,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "vanishing-act",
     "overhaul",
     "nothing-gets-past",
     "clean-draw",
