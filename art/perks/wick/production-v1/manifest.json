@@ -1743,6 +1743,30 @@
       "source_sha256": "a94f97c0122828ee4ae9d9a15503d89268fde74a3d77dedf597ba110e139a98f",
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    {
+      "id": "bite-the-bullet",
+      "data_id": "bite_the_bullet",
+      "name": "Bite the Bullet",
+      "family": "perks",
+      "order": 98,
+      "mood": "Grim, Heroic",
+      "action": "Wick, dented and smoking, pushes up off one knee with a big bullet clamped sideways across its screen like a bit, one fist planted on the ground.",
+      "screen": "Gritted pixel teeth",
+      "prop": "Bullet",
+      "path": "art/perks/wick/production-v1/bite-the-bullet.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bite-the-bullet.png",
+        "128": "art/perks/wick/production-v1/exports/128/bite-the-bullet.png",
+        "64": "art/perks/wick/production-v1/exports/64/bite-the-bullet.png",
+        "56": "art/perks/wick/production-v1/exports/56/bite-the-bullet.png",
+        "48": "art/perks/wick/production-v1/exports/48/bite-the-bullet.png",
+        "44": "art/perks/wick/production-v1/exports/44/bite-the-bullet.png",
+        "40": "art/perks/wick/production-v1/exports/40/bite-the-bullet.png"
+      },
+      "batch": "F",
+      "source_sha256": "c36140ec65745c66152ab05129509085ba1fb3afc95352d77e00bffc9d882add",
+      "tier": "achieved"
     }
   ]
 }

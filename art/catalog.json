@@ -5117,6 +5117,31 @@
       },
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    "bite-the-bullet": {
+      "label": "Wick — Bite the Bullet",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/bite-the-bullet.png",
+      "sha256": "7eeeee539d0e962b68d8b5be28c1406084ce6a114ef49b2e5b332f6ac98e6ac4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "bite_the_bullet",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/bite-the-bullet.png",
+        "128": "art/perks/wick/production-v1/exports/128/bite-the-bullet.png",
+        "64": "art/perks/wick/production-v1/exports/64/bite-the-bullet.png",
+        "56": "art/perks/wick/production-v1/exports/56/bite-the-bullet.png",
+        "48": "art/perks/wick/production-v1/exports/48/bite-the-bullet.png",
+        "44": "art/perks/wick/production-v1/exports/44/bite-the-bullet.png",
+        "40": "art/perks/wick/production-v1/exports/40/bite-the-bullet.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
