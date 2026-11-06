@@ -38,10 +38,10 @@
     "obj-door-closed",
     "obj-door-open",
     "obj-crater",
-    "obj-mine"
+    "obj-mine",
+    "obj-coolant"
   ],
   "remaining": [
-    "obj-coolant",
     "obj-fire",
     "obj-fuel-drum",
     "obj-rubble",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:41:32.900595+00:00",
+  "updated_utc": "2026-11-06T04:42:47.056940+00:00",
   "status": "in-progress",
   "production_approved": false
 }

@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-a8335f6fe896001567b2c8386cd6f44dd64e7a736f2bec38e6309add8acccd8b  art/campaigns/m813/tutorial-v1/README.md
-7f2509c4cdc72d630d0713a77265fda195e3cec7d5d9edc33d316cbca8898c00  art/campaigns/m813/tutorial-v1/manifest.json
-2a513808f5ed700ca4462c4a77a4701d8986c1626a3837fb8ddc8dcb2656fa6c  art/campaigns/m813/tutorial-v1/production-progress.json
-637d87a7cdf55dd1dd01f32481f30e38b26c4e42787e962af39ebb1d0677c1c9  art/catalog.json
+64685a94eddaa8d458b0d0ebe9ecd462778309d480f8bc26bd01014ddce5d9f4  art/campaigns/m813/tutorial-v1/README.md
+e2854f3a9b356fa662c1450466099144ccb1315c0d87727b44d5097004705694  art/campaigns/m813/tutorial-v1/manifest.json
+3845b6f2b1f9df067b030d987f701b07906d53dab41a73eb4749a6939987eab8  art/campaigns/m813/tutorial-v1/production-progress.json
+e6dee3cf0cb8bc899da913f70fe5595485a55570cb6030c45a2546569e9f0411  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1231,6 +1231,7 @@ ffa7293de8374ca0cf9c9b0d4e95ed4c182074de86b7033152b2778d3afeca19  art/skills/poc
 2f4649acf0426da9472a3a3c87100fd0650f847fe15d8146b4b24f6ae5b53e27  art/skills/poc4-palette-v3/soul/virtue/faith.png
 4f3e85d2eca2a7d3e58683c93ef7197c3f59e10123f8d18a0b59670b52a406f1  art/sprites/objects/v1/obj-barrier-stakes.png
 366bb80a40a22c9671b2c69d67afd3a7cda98caebddcdf1bede0bce0d78938b4  art/sprites/objects/v1/obj-cargo-pylon.png
+ebf502966ba36a9ac9763c405f1a86c0bdd8f87470ac7e87d2045676125da18a  art/sprites/objects/v1/obj-coolant.png
 b37313bde9dfd56dad25dde2ee952412f16f750f59fb08c703d142b9bff8c460  art/sprites/objects/v1/obj-crater.png
 8044cc360f932be5c0f28140b692ff743db630a2c5728b31491245fdeb4bc98e  art/sprites/objects/v1/obj-door-closed.png
 c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3  art/sprites/objects/v1/obj-door-open.png
@@ -1244,6 +1245,9 @@ a4ae26aceebf5ed1a2a2744fca8655281496eaae7b2bcef007a1d97116c2b0e8  art/sprites/ob
 94f0102336bea6dffa3af3f4e6579e924d08e18d923cfec07633040f5180d8d9  art/sprites/objects/v1/previews/obj-cargo-pylon-128px.png
 31d12b04cc867b782e1336c1552156cae9ab4acf5dca66808d9d446d57a6f35e  art/sprites/objects/v1/previews/obj-cargo-pylon-46px.png
 7b6f17123eb870ef27255ff6c8c8d8a555c0a88770a8946a43fe7da19c363c51  art/sprites/objects/v1/previews/obj-cargo-pylon-64px.png
+5638ee96f913261f0ed396867802a1e9047f02453de4d65feee218c5e0c4d179  art/sprites/objects/v1/previews/obj-coolant-128px.png
+e607fb3631bcf86565456b0e00b29d0f8bcfa8c077bb9b866a311fa891679dcb  art/sprites/objects/v1/previews/obj-coolant-46px.png
+24fba264a69e344f4e8e45b990bf6c3f250ed276375ff5513ddfafbce2c55133  art/sprites/objects/v1/previews/obj-coolant-64px.png
 6f91340d5e4a67134d2f435d10e40429a5956f73569f65e4fa0097dcb1ab3e11  art/sprites/objects/v1/previews/obj-crater-128px.png
 9ce39d9fb35b56059a51b6d3be142a2e1e2ed8645cd78fe2013967774dd03607  art/sprites/objects/v1/previews/obj-crater-46px.png
 982e294979d26a648487318b9f61abc505977a7214fef4693117ecc93bac1864  art/sprites/objects/v1/previews/obj-crater-64px.png
@@ -1292,6 +1296,8 @@ f020682c4035640705364a90fdf15908a4553ea8b58edb74a4136101b89aa90a  art/sprites/ob
 46a325a253ec3b974de3c04c38aa521b0a7540ce9050db2b0a95f0a46677a1e3  art/sprites/objects/v1/sources/obj-barrier-stakes.prompt.txt
 45d3af0ab23b267af967315831ea0223644e482b6606ebc80a513ef2a39ba85b  art/sprites/objects/v1/sources/obj-cargo-pylon.png
 1097ff1d43d5232c927e893421ae5f72e1c0868afd3805a276399837d73137c4  art/sprites/objects/v1/sources/obj-cargo-pylon.prompt.txt
+163409ada5b7031f318ea079fb56d5e5f04497f74b5769fa4e38a6fc8e248205  art/sprites/objects/v1/sources/obj-coolant.png
+bbc65fea8a5c834e7a40eb6c7f4e1d2d5c92b4871d465dd836f988e06cf4d4c8  art/sprites/objects/v1/sources/obj-coolant.prompt.txt
 3c4d7b77667002d3807c302380f2003f85afe26d6438eed03c4e10a3a4510202  art/sprites/objects/v1/sources/obj-crater.png
 07b742a37583ea63041c13fde51b240ed629fe2bfd6a4c221eaa1672fe116ef9  art/sprites/objects/v1/sources/obj-crater.prompt.txt
 13da4d5ceaffacdc65520fd45a95330f93b31165d4d50016584df35172f31dd0  art/sprites/objects/v1/sources/obj-door-closed.png
