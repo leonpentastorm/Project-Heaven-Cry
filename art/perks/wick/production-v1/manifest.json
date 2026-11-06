@@ -1780,6 +1780,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "walking-wounded",
+      "data_id": "walking_wounded",
+      "name": "Walking Wounded",
+      "family": "perks",
+      "order": 77,
+      "mood": "Comic, Proud",
+      "action": "Wick strides forward mid-step, one leg wrapped in a long trailing bandage, flinging a crutch away over its shoulder.",
+      "screen": "Gritted-teeth grin",
+      "prop": "Tossed crutch",
+      "path": "art/perks/wick/production-v1/walking-wounded.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/walking-wounded.png",
+        "128": "art/perks/wick/production-v1/exports/128/walking-wounded.png",
+        "64": "art/perks/wick/production-v1/exports/64/walking-wounded.png",
+        "56": "art/perks/wick/production-v1/exports/56/walking-wounded.png",
+        "48": "art/perks/wick/production-v1/exports/48/walking-wounded.png",
+        "44": "art/perks/wick/production-v1/exports/44/walking-wounded.png",
+        "40": "art/perks/wick/production-v1/exports/40/walking-wounded.png"
+      },
+      "batch": "G",
+      "source_sha256": "fa10c81b57baaada4ff54fcbf448872ff3b645a203f5ee571d4d6a1af23550dc",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

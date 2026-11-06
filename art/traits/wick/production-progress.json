@@ -159,11 +159,12 @@
     "bite-the-bullet",
     "sixth-sense",
     "what-could-be",
-    "last-wall"
+    "last-wall",
+    "walking-wounded"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 80
+    "perks": 81
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -189,7 +190,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "walking-wounded",
     "skin-map",
     "earthbreaker",
     "nothing-left-to-fear",

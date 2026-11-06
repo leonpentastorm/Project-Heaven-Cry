@@ -5228,6 +5228,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "walking-wounded": {
+      "label": "Wick — Walking Wounded",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/walking-wounded.png",
+      "sha256": "783a18fa21c352858a570e715812fcc9fc8a2c4f6ac89fef7e68fa772f87dbc4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "walking_wounded",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/walking-wounded.png",
+        "128": "art/perks/wick/production-v1/exports/128/walking-wounded.png",
+        "64": "art/perks/wick/production-v1/exports/64/walking-wounded.png",
+        "56": "art/perks/wick/production-v1/exports/56/walking-wounded.png",
+        "48": "art/perks/wick/production-v1/exports/48/walking-wounded.png",
+        "44": "art/perks/wick/production-v1/exports/44/walking-wounded.png",
+        "40": "art/perks/wick/production-v1/exports/40/walking-wounded.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
