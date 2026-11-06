@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-2bdebe76f63d7fd4fd0491cf1d49464daa3ffd20e2765f0ab4513f94c0b055c0  art/campaigns/m813/tutorial-v1/README.md
-cbe8d40a765ea40f250667a26bcc05f7d3faf4d1f78716aedfecaa415ba1a095  art/campaigns/m813/tutorial-v1/manifest.json
-17819e325ce75e8cd3e5c48676840439d538ba2f8ff4e21096fd923c95e9db8a  art/campaigns/m813/tutorial-v1/production-progress.json
-6d832b3816f5ebd23c88bd544934a978c377b2fb5a4612a77386efa6b701ced3  art/catalog.json
+3b5bc27ea0329e23d8f5ccc644c90ac352e27ea8ad4d8e662961993a9c7c4a4b  art/campaigns/m813/tutorial-v1/README.md
+e2c8c1007bfc2d8574f49ed81181e6c7a2476b5f49f723c7bc5db2169c0d1875  art/campaigns/m813/tutorial-v1/manifest.json
+a62217c9aefe84a27c1f4cb846a2d1e4dfbeba4890ff8bb0ba638a1c37f35633  art/campaigns/m813/tutorial-v1/production-progress.json
+213797f971f12de669b58c652617f32e2dd4bf51c9dbdb88f7341386aa3bb334  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1244,6 +1244,7 @@ c4857262c60724c1279f4a9a223f3e983a54267c33161584c439897f65fc11d3  art/sprites/ob
 cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/objects/v1/obj-platinum-crates.png
 4f2f9846e219e3ee3a1c4a5629e4574995dcbb8f0414bc4d55b6e86f8a559414  art/sprites/objects/v1/obj-platinum-net.png
 9817ce4c73ca855c685f6f0b6d51e281315ce85433e39e90525ee902a5d8cbea  art/sprites/objects/v1/obj-rubble.png
+6e8c60132dc68697485e8a977024181a827df3cf9dfc950581e2661f5c8a7165  art/sprites/objects/v1/obj-terminal-field.png
 64f39d65b7554e44d73cf29c3da1d74279cbd81555ef5dc804380e99cba206ed  art/sprites/objects/v1/obj-tool-rack.png
 5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3  art/sprites/objects/v1/obj-toppled-pylon.png
 f444f5edf9efec91f95bf70db343dcb72ac185e086566cb35ed398bf102fae74  art/sprites/objects/v1/obj-triage-line.png
@@ -1292,6 +1293,9 @@ a2eb976118e25e247864019aa4dad5096cf41ea08a51a85ecb9871d9c64cb9ad  art/sprites/ob
 00ee6ef0a9c2cc628a74b59e61b1943ae8964578fb9df6e5838ec49c0cc7dea0  art/sprites/objects/v1/previews/obj-rubble-128px.png
 47eaa13160d5b87d4f80f7bb1f6c49eff330fbbb6be7c33a10605389b76fea7d  art/sprites/objects/v1/previews/obj-rubble-46px.png
 8bc27ac2413f43940a55d3d00bf113cb73266a2c8a907bfdfa836ef650d3fdc8  art/sprites/objects/v1/previews/obj-rubble-64px.png
+bddc0d3a7b689c7183cebe589972ee9cadbd0e88feb283358ae8a072313c509b  art/sprites/objects/v1/previews/obj-terminal-field-128px.png
+b066601df83374d5e214817b578a718bcae8936d5f145af5fa9e8e6dd15bad11  art/sprites/objects/v1/previews/obj-terminal-field-46px.png
+51e14faf6b66ca7da5111ffe7c27b23e6f440420443a3bad65f6f219817943b7  art/sprites/objects/v1/previews/obj-terminal-field-64px.png
 502edbada28a94fb9593124f27c958051aa111c8e25555e030f35bc7d6196b79  art/sprites/objects/v1/previews/obj-tool-rack-128px.png
 8c5ac3fdfc1c3d922381e976d64b353d989ef765205e8a75447dfa07509344fd  art/sprites/objects/v1/previews/obj-tool-rack-46px.png
 0fd6cd5d211493b33b0fe4255608494ff77611314974afbe1f7f3c92902765b4  art/sprites/objects/v1/previews/obj-tool-rack-64px.png
@@ -1354,6 +1358,8 @@ e8b52f64807a0efb292c16a6cb54821dd2152ddc4b89a12a41e5b030c145a840  art/sprites/ob
 e03cc424027b127e0921c284ecf617e562b7a9a11c1fec20f7e219c26c26c713  art/sprites/objects/v1/sources/obj-platinum-net.prompt.txt
 0555a81700343b33ffd103633c9ebb644254e0a47d02d3f25bb755da7a3ddaf9  art/sprites/objects/v1/sources/obj-rubble.png
 3433250d7e4c137b5ca906e8213f96ca838ce1818e32c6f71921530f29440010  art/sprites/objects/v1/sources/obj-rubble.prompt.txt
+38987034a8959565f9f29f3f2c38e6ce469128fda34bc2f1b84a87f9191b8427  art/sprites/objects/v1/sources/obj-terminal-field.png
+da2b1c721c1b95a46b0928224a0fb15c13f3d537f70e6934a0419a6ac885950d  art/sprites/objects/v1/sources/obj-terminal-field.prompt.txt
 0f1f9403d5b40d5cdf1b3f73a4910dd796086f4b56529664ed36233d34b6a36b  art/sprites/objects/v1/sources/obj-tool-rack.png
 e4feb89b9f83233384e57a3ff11ce99a8965847a5ee05c133cbd6394f1dd6156  art/sprites/objects/v1/sources/obj-tool-rack.prompt.txt
 b7a56d7b5286a1b8045ec5dce848053f7d47cb61a5a3547255a65468c3280c51  art/sprites/objects/v1/sources/obj-toppled-pylon.png

@@ -47,17 +47,17 @@
     "obj-triage-line",
     "obj-footlockers",
     "obj-cookbook",
-    "obj-platinum-net"
+    "obj-platinum-net",
+    "obj-terminal-field"
   ],
   "remaining": [
-    "obj-terminal-field",
     "obj-drop-pod",
     "obj-console",
     "obj-escape-craft",
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:54:59.793735+00:00",
+  "updated_utc": "2026-11-06T04:56:25.429015+00:00",
   "status": "in-progress",
   "production_approved": false
 }
