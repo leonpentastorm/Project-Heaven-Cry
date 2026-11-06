@@ -127,7 +127,7 @@ export function Title() {
       const resting = t - lastMove > 2500; idle = t / 20000 * Math.PI * 2;
       const gx = resting ? Math.sin(idle) * 0.35 : tx, gy = resting ? Math.cos(idle * 0.7) * 0.2 : ty;
       x += (gx - x) * 0.08; y += (gy - y) * 0.08;
-      layers.current.forEach((el, i) => { if (el) el.style.transform = `translate3d(${(-x * depth[i] * 100).toFixed(3)}vw, ${(-y * depth[i] * 50).toFixed(3)}vh, 0) scale(${1.08 + i * 0.01})`; });
+      layers.current.forEach((el, i) => { if (el) el.style.transform = `translate3d(${(-x * depth[i] * 100).toFixed(3)}vw, ${(-y * depth[i] * 50).toFixed(3)}vh, 0) scale(${[1.02, 1.05, 1.08][i]})`; });
       if (stage.current) stage.current.style.transform = `rotateY(${(x * 1.5).toFixed(3)}deg) rotateX(${(-y * 1.5).toFixed(3)}deg)`;
       raf = requestAnimationFrame(tick);
     };
@@ -158,7 +158,7 @@ export function Title() {
     return () => { cancelAnimationFrame(raf); removeEventListener('resize', fit); };
   }, [motion]);
 
-  const back0 = ART('title-back') || ART('world-outpost813-lg') || ART('world-outpost813');
+  const back0 = ART('title-back-lg') || ART('title-back') || ART('world-outpost813-lg') || ART('world-outpost813');
   const mid = ART('title-mid'), front = ART('title-front'), fx = ART('title-fx');
   const standIn = !ART('title-back');
 
@@ -167,7 +167,7 @@ export function Title() {
       <style>{CSS}</style>
       {/* the art */}
       <div ref={stage} aria-hidden style={{ position: 'absolute', inset: '-4%', transformStyle: 'preserve-3d', transition: motion ? undefined : 'none' }}>
-        <div ref={(el) => { layers.current[0] = el; }} style={{ position: 'absolute', inset: 0, backgroundImage: `url(${back0})`, backgroundSize: 'cover', backgroundPosition: '60% center', filter: standIn ? 'brightness(0.62) saturate(0.85)' : undefined, transition: 'transform 0.4s ease-out' }}>
+        <div ref={(el) => { layers.current[0] = el; }} style={{ position: 'absolute', inset: 0, backgroundImage: `url(${back0})`, backgroundSize: 'cover', backgroundPosition: standIn ? '60% center' : 'center top', filter: standIn ? 'brightness(0.62) saturate(0.85)' : undefined, transition: 'transform 0.4s ease-out' }}>
           {standIn && <div className="phc-celestial" />}
         </div>
         <div ref={(el) => { layers.current[1] = el; }} style={{ position: 'absolute', inset: 0, backgroundImage: mid ? `url(${mid})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} />
@@ -176,7 +176,7 @@ export function Title() {
         {fx && <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fx})`, backgroundSize: 'cover', mixBlendMode: 'screen' }} />}
       </div>
       {/* keep the left third dark for the title */}
-      <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,7,11,0.88) 0%, rgba(5,7,11,0.62) 32%, rgba(5,7,11,0.0) 58%), linear-gradient(0deg, rgba(5,7,11,0.7) 0%, rgba(5,7,11,0) 30%)', pointerEvents: 'none' }} />
+      <div aria-hidden className="phc-shade" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,7,11,0.88) 0%, rgba(5,7,11,0.62) 32%, rgba(5,7,11,0.0) 58%), linear-gradient(0deg, rgba(5,7,11,0.7) 0%, rgba(5,7,11,0) 30%)', pointerEvents: 'none' }} />
       {panel && <div aria-hidden style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(6px)', background: 'rgba(5,7,11,0.45)' }} />}
 
       {/* the title and menu */}
@@ -384,5 +384,6 @@ ${[4, 8, 16].map((n) => `@keyframes phc-frames-${n} { to { background-position: 
 @keyframes phc-slide-in { from { transform: translateX(40px); opacity: 0 } to { transform: none; opacity: 1 } }
 .phc-bit { position: absolute; left: 0; top: 0; background: #FFFFFF; animation: phc-bit 0.5s ease-out forwards; }
 @keyframes phc-bit { from { transform: translate(0, 0); opacity: 1 } to { transform: translate(var(--dx), var(--dy)); opacity: 0 } }
+@media (max-width: 760px) { .phc-shade { background: linear-gradient(180deg, rgba(5,7,11,0.35) 0%, rgba(5,7,11,0.72) 30%, rgba(5,7,11,0.86) 70%, rgba(5,7,11,0.92) 100%) !important; } }
 @media (prefers-reduced-motion: reduce) { .phc-item, .phc-panel { animation: none; opacity: 1 } .phc-col { transition: opacity 0.15s } .phc-celestial, .phc-celestial::before, .phc-celestial::after { animation: none } }
 `;
