@@ -26,10 +26,10 @@
     "map-m813-rear-pad",
     "map-m813-outpost",
     "map-m813-outpost-1",
-    "m813-how-many"
+    "m813-how-many",
+    "m813-the-ramp"
   ],
   "remaining": [
-    "m813-the-ramp",
     "m813-the-choice",
     "m813-the-demand",
     "obj-barrier-stakes",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:08:59.271009+00:00",
+  "updated_utc": "2026-11-06T04:10:29.387350+00:00",
   "status": "in-progress",
   "production_approved": false
 }

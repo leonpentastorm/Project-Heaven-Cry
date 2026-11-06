@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-1791ad8be28786deedabd2964b2d65ce149c60d583cfa1250df5d739eb717b83  art/campaigns/m813/tutorial-v1/README.md
-6fd2673c6e454d091326b2d7769390ae39d31ac3474df3602826841143d08bf9  art/campaigns/m813/tutorial-v1/manifest.json
-61efaca2ca98fd13e47ed6160a46a72c3acf5b028fb3353c709a0fafdc85a287  art/campaigns/m813/tutorial-v1/production-progress.json
-94f96144389c2fe156e4dcb9bc4f67a31d2383e01044e185b1949080dd4e3b6a  art/catalog.json
+a12c0e16322b5581997408e8a2571ce55f12463934d003b91bf447a8d98f6f33  art/campaigns/m813/tutorial-v1/README.md
+3d7dc096418f2c7df7f1b4e1a80b028cb709bd601068a890d0d3688c36334a54  art/campaigns/m813/tutorial-v1/manifest.json
+8abc90942fdf3539e598c82113e4f3fe6d720518430c4dd818356c43ff0f7e33  art/campaigns/m813/tutorial-v1/production-progress.json
+dcb53771ad49d236901007803d63feaf730ae587b46e9aac8b577e5911f3b1d1  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -206,6 +206,7 @@ a6a716b6078e6aa31b6640791a4d0a5b5df006fb9826325292c90cfe554a4ce5  art/illustrati
 41a31397b8652bc30d2e6407610e950938bfc7f536ed39d1a6ffa83bef2ca2ec  art/illustrations/m813/v1/previews/opening-safe.png
 29b9b8c9f8181353f87e22632938d84778d61db8912f9ff9d9da913fee64b628  art/illustrations/m813/v1/spoilers/outpost1-repair-bay.png
 9ef7a29744565fb10994673aa9261e3c251872cb073f2dfb36da6724bf05c091  art/illustrations/m813/v2/m813-how-many.png
+4b49abc62d4779da91f8f0c434745df8a4d0b3521fe8b886e5033bc92291e254  art/illustrations/m813/v2/m813-the-ramp.png
 e4e66398a91991788a7777786c82fc146f24e6b2d7007b7c4fd58b0806d89c64  art/illustrations/m813/v2/outpost-1.png
 8b928714567ecef0a93b001012a737c1088270fe1b2af17a50bf26bb5f41536d  art/illustrations/m813/v2/outpost-hangar.png
 6fbbf28a2cf537ec89fdb0a0356e407cb8e36f0304c4e2a8eff092f23b98859a  art/illustrations/m813/v2/previews/m813-how-many-320px.png
@@ -213,6 +214,7 @@ c285b3c3280bc4ace83ec5b29ddca7e1f09aec4822a256d1375535626eca370a  art/illustrati
 62cafbd3badd2b770eb6b8717ecdc986739b42f6e80e890741953ff9470632fd  art/illustrations/m813/v2/previews/m813-outpost-hangar-320px.png
 c4e7e73cd55c1de81f5d71539ce805349327facda62f3661f57a6a6dd01abc65  art/illustrations/m813/v2/previews/m813-rear-pad-loading-320px.png
 5e8d3b8881c3800b24cf9fbbafc2ffcf783ff31fc5a5a7d57ab3b1a445a791d5  art/illustrations/m813/v2/previews/m813-shield-line-320px.png
+494ca968efcdb20ccfe26ee05547bee5d462c49bfacf91fd3d0f0cab5374793d  art/illustrations/m813/v2/previews/m813-the-ramp-320px.png
 a5226b0e8f075393ae7fc44df56bb79d9b79b20776880e1d1325f591d37a200e  art/illustrations/m813/v2/rear-pad-loading.png
 c1a6a0f6c019ce0756547ffd74236337d8b518c0d9c0edc6bc7c7097be6b571e  art/illustrations/m813/v2/revisions/v2/outpost-hangar.png
 659a0bb3ac4c93588b5a4b13daecc9cdaba077da5935c1a3f08f992211e872ad  art/illustrations/m813/v2/revisions/v2/previews/m813-outpost-hangar-320px.png
@@ -227,6 +229,8 @@ c4f488a2692c2e7267740e1c47773ec8184f9a2da6aef241c3eee16c705d920d  art/illustrati
 754f677ae11754b5333dd6f28ccff3f4bbe0d780203db58b05131cb9e4a8aa81  art/illustrations/m813/v2/sources/m813-rear-pad-loading.png
 bd8608298ecf3a8a631bc0d1ae3f8c6b6980f6eb99cd44016c3de680f101a861  art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt
 2153dfc443c70988ebaec2f57315517ce2f7fe4b1658cabfe17944723b5a8fe9  art/illustrations/m813/v2/sources/m813-shield-line.png
+7ee44cbf705a54acc859b8419b8e573cd599a40f24f312e44c89b3b4b79cea46  art/illustrations/m813/v2/sources/m813-the-ramp.png
+5d411d691a97bf0bcaeb8ad670244db52675101b9af2afbeff6afe1e32bd28ee  art/illustrations/m813/v2/sources/m813-the-ramp.prompt.txt
 d739d5ef4d23b14676fe09fd68852eef1a86d5cef02046685d63883318978cb6  art/maps/m813/v1/outpost.png
 ce2f05adf5c717c8e6fdbf6b46580f8468e05a2407f6429136bed135f852f17b  art/maps/m813/v1/outpost_1.png
 7b7fefe6da6ac7fd47dde6f6eefc2fd733a8e7b78ac38f1ce9128b7d37083716  art/maps/m813/v1/previews/map-m813-outpost-1-320px.png

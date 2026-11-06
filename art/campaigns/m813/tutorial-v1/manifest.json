@@ -874,6 +874,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-how-many.prompt.txt"
+    },
+    {
+      "id": "m813-the-ramp",
+      "group": "D",
+      "order": 2,
+      "name": "The Ramp",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D2 | `m813-the-ramp` | The ramp standoff | Keel and the engineers above on the ramp; the column below; Lantern being carried up front, chest plate open. Guns not yet raised. | Mid |",
+      "spoiler": true,
+      "visibility": "mid-campaign",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "4b49abc62d4779da91f8f0c434745df8a4d0b3521fe8b886e5033bc92291e254",
+      "source_path": "art/illustrations/m813/v2/sources/m813-the-ramp.png",
+      "source_sha256": "7ee44cbf705a54acc859b8419b8e573cd599a40f24f312e44c89b3b4b79cea46",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-the-ramp-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-the-ramp.prompt.txt"
     }
   ]
 }
