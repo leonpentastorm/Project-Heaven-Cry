@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf } from '@engine';
+import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -48,6 +48,11 @@ THE MAP (grid references)
 - Players may say "I move to A15"; they can also move themselves on the map between your turns. You may move characters when the story moves them: add moves[] with charId and a grid reference (an empty array otherwise). Keep descriptions consistent with the map's notes.
 - When a fight starts on the current map, characters start where they stand. Give each enemy an "at" grid reference to place it (an empty string lets the engine choose). Place enemies on open tiles, not on hulls or cover.
 - A fight costs you one call: when it ends you get a report of key moments, where everyone ended up, and anything players said or attempted mid-fight that needs your judgement. Rule on those in your aftermath.
+
+MAP OBJECTS AND POINTS OF INTEREST
+- Objects sit on map tiles: ${OBJECT_KINDS.map((k: any) => k.id).join(', ')}. The engine runs what they do in a fight (cover, blocking, HP, traps, hazards, explosions, doors). Place, update or remove them with objects[] (an empty array otherwise): a place needs kind, at (a grid reference), name and text; update and remove need the object's id.
+- A point of interest is any object worth dealing with (a barricade, a locked door, a terminal, a rune, or a plain "poi" marker). When a player examines one (their line reads "examines … [id]"), describe it in your narration and update it with 2 to 4 approaches: each is a label (what they try), 1 to 3 skill ids, a TN, the stakes, and a success effect the engine applies by itself: remove (break or clear it), open (unlock or open), reveal (show something hidden), disarm (a trap), or "" (you narrate the result). Approaches stay on the object: players try them later without you, once per character per scene, and you see every try.
+- Mix approaches across Body, Mind and Soul skills, the way a good event offers brute force, cleverness and talk. Example: a rune-marked barricade could take Raw Power + Durability to break down (remove), Ingenuity + Lore Master to read the rune (""), or Charisma to talk the guard into opening it (remove).
 
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
@@ -119,8 +124,11 @@ export function turnPrompt(g: GameState): string {
   const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + ' HP'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
   const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
   const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
+  const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } }).filter((o) => o.kind !== 'crate' && o.kind !== 'pillar' && o.kind !== 'rubble' || o.approaches.length);
+  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null ? ', HP ' + o.hp + '/' + o.max : ''}${o.resolved ? ', dealt with' : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
+    + (o.approaches.length ? '\n    approaches: ' + o.approaches.map((a, i) => `${i + 1}. ${a.label} [${a.skills.join('+')} TN ${a.tn}${a.success ? ', ' + a.success : ''}]${a.tries.length ? ' tries: ' + a.tries.map((t) => t.name + ' ' + (t.ok ? 'succeeded' : 'failed') + ' (' + t.total + ')').join(', ') : ''}`).join('; ') : '')).join('\n  ');
   const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -145,6 +153,9 @@ export function turnSchema(g: GameState) {
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
+    objects: { type: 'array', items: obj({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string' }, kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) },
+      at: { type: 'string' }, name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
+      approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: { type: 'string', enum: skillIds } }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });
 }

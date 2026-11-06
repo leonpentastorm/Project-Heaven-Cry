@@ -26,6 +26,7 @@
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
 <sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span style="font-size: 9px; letter-spacing: 0.06em; color: #7F8BA1">{{t.text}}</span></sc-if>
 <sc-if value="{{t.hasArrow}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 700; color: #FFFFFF">{{t.arrow}}</span></sc-if>
+<sc-if value="{{t.hasObj}}"><span aria-hidden="true" style="{{t.objStyle}}">{{t.objGlyph}}</span></sc-if>
 <sc-if value="{{t.hasFloor}}"><span aria-hidden="true" style="position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 700; color: #A3AEC2">{{t.floor}}</span></sc-if>
 <sc-if value="{{t.hasTok}}"><!--TOKPOP:t.t--></sc-if>
 <sc-if value="{{t.hasCost}}" hint-placeholder-val="{{false}}"><span style="position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 2; padding: 2px 6px; border-radius: 6px; background: #FFFFFF; color: #0A0D13; font-size: 11px; font-weight: 700; white-space: nowrap">{{t.cost}}</span></sc-if>

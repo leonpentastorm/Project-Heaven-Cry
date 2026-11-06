@@ -232,6 +232,27 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 **Moving outside a fight.** Between fights each character stands on a tile of the story's map. Players move their own characters freely (no AP), and the Narrator moves characters when the story moves them ("Leon moves to A15"). A fight on the same map starts with everyone where they stand; the Narrator places enemies by grid reference. When a fight ends, everyone stays where they ended up.
 
+**Map objects.** Everything that matters on a map is an object on a tile; the background image is only for looks. The kinds (`objects.json`):
+
+| Kind | Blocks | Cover | HP | What it does |
+|---|---|---|---|---|
+| Crate | movement | half | 30 | |
+| Low wall | movement | half | 60 | |
+| Pillar | movement, sight | full | 80 | |
+| Barricade | movement, sight | full | 60 | Breaks into rubble |
+| Door | movement, sight (closed) | | 40 | Open or close: 1 AP in a fight, free outside one. Locked doors need a check or enough damage |
+| Hole | movement | | | Falling in is the Narrator's call |
+| Trap | | | | Hidden until spotted by passive Vigilant (10 + modifier) against its TN 12 within 2 tiles. Stepping on it deals 25 and springs it. Disarming is a check |
+| Fire · Toxic spill | | | | 10 · 8 damage to anyone who starts a turn in it |
+| Explosive barrel | movement | half | 20 | At 0 HP: 40 damage within 2 tiles, and the tile burns |
+| Rubble | | | | Slow ground (2 per tile) |
+| Container · Terminal | movement | half · none | 40 · 30 | Using it is a check |
+| Point of interest · Way out | | | | Markers with text |
+
+Shooting any object with HP works like shooting cover. Hidden objects (unspotted traps) are never shown to players. All numbers are provisional (item 59).
+
+**Points of interest.** Any object can carry a description and **approaches**: the ways to deal with it, each a check (one to three skills and a TN) with stakes and an optional effect the engine applies on success: remove it, open it, reveal something, or disarm it. The Narrator writes them, usually when a player **examines** the object. A player standing on or next to it may **try** an approach instead of speaking that round, and the roll goes to the dice table like any other check. Each character may try each approach once per scene. Every try is recorded on the object, so the party can come back and try another way, or someone else can, without the Narrator setting anything up again.
+
 **Speaking in a fight** costs 0 AP. What a character says or attempts that needs judgement (a bluff, a surrender offer, a prayer) goes in the combat log and is ruled on by the Narrator when the fight ends. A fight costs the AI Narrator one call: the engine runs every roll, move and enemy turn, then sends one report (key moments, who's left where, what was said).
 
 **Moving.** Movement is tiles per AP: at Agility 1 every tile costs 1 AP; Agility 3 moves 2 tiles per AP, Agility 5 three, Agility 7 four. Moving N tiles costs N ÷ Movement AP, rounded up. Tiles you've paid for but not walked carry over to the rest of the turn, so half a Movement is never wasted. Before you commit, the grid shows your path and its AP cost.
@@ -689,3 +710,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 56. **Analyze details:** no roll, line of sight needed, shared with the whole squad for the rest of the fight, and what the squad sees before it.
 57. **Two kinds of cover with HP** (Leon): half cover −5 to hit, full cover blocks sight; HP 30 / 80; misses caused by the −5 hit the cover; broken cover becomes rubble. Replaces +2 / +5 Defense.
 58. **Picking up and loading** (Leon: dropped magazines can be picked up; empty magazines can be loaded for AP by the rounds needed): pick-up 1 AP per tile, loading 1 AP per 5 rounds, the kits' loose rounds.
+59. **Map objects and points of interest** (Leon): the object list and its numbers (trap 25 damage, TN 12, 2-tile detection; barrel 40 within 2; fire 10, toxic 8; door 40 HP), and approaches tried once per character per scene.

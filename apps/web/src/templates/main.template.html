@@ -207,12 +207,18 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <button type="button" onClick="{{openArea}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Area map</button></div>
 <div style="{{zoneStyle}}">
 <div class="phc-mini" style="{{miniGrid}}">
-<sc-for list="{{mini}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
+<sc-for list="{{mini}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.hasGlyph}}"><span aria-hidden="true" style="{{m.glyphStyle}}">{{m.glyph}}</span></sc-if><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
 <!--TOKPOP:m.t-->
 </sc-if></button></sc-if></sc-for>
 </div>
 <button type="button" onClick="{{toCombat}}" disabled="{{noCombat}}" aria-label="{{zoneAria}}" style="display: block; width: 100%; padding: 6px 0 0; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer"><span style="{{zoneNoteStyle}}">{{zoneNote}}</span></button>
 </div>
+<sc-if value="{{hasNearby}}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">NEARBY</span>
+<sc-for list="{{nearby}}" as="n"><button type="button" onClick="{{n.open}}" style="display: block; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer">{{n.label}}</button></sc-for>
+</div>
+</sc-if>
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
 <sc-for list="{{order}}" as="o" hint-placeholder-count="3">
 <div style="display: flex; gap: 10px; align-items: center"><button type="button" onClick="{{o.zoom}}" aria-label="Enlarge {{o.name}}" style="{{zoomBtn}}"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"></button><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
@@ -231,7 +237,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <div style="display: flex; align-items: center; gap: 10px"><span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">{{areaTitle}}</span><button type="button" onClick="{{closeArea}}" style="margin-left: auto; min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close</button></div>
 <div style="padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F">
 <div style="{{areaGrid}}">
-<sc-for list="{{areaCells}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
+<sc-for list="{{areaCells}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.hasGlyph}}"><span aria-hidden="true" style="{{m.glyphStyle}}">{{m.glyph}}</span></sc-if><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
 <!--TOKPOP:m.t-->
 </sc-if></button></sc-if></sc-for>
 </div>
@@ -246,6 +252,34 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 <span aria-live="polite" style="min-height: 20px; padding: 8px 10px; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; font-size: 13px; color: #E7EBF3">{{hereText}}</span>
 <span style="font-size: 12px; color: #A3AEC2">{{areaNote}}</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{objPanelOpen}}">
+<div role="dialog" aria-modal="true" aria-label="{{objPanel.name}}" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 12; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 12px; width: min(620px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; padding: 22px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid #FFFFFF; box-sizing: border-box">
+<div style="display: flex; align-items: flex-start; gap: 10px"><div style="display: flex; flex-direction: column; gap: 4px; flex: 1"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #A3AEC2">{{objPanel.kicker}}</span><span style="font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">{{objPanel.name}}</span></div>
+<button type="button" onClick="{{objPanel.close}}" style="min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close</button></div>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #E7EBF3">{{objPanel.text}}</p>
+<sc-if value="{{objPanel.hasRules}}"><span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{objPanel.rules}}</span></sc-if>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2; padding-top: 4px">WAYS TO DEAL WITH IT</span>
+<sc-if value="{{objPanel.noApproaches}}"><span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">None known yet. Examine it: the Narrator describes it and writes the ways in. Examining or trying uses your turn this round.</span></sc-if>
+<sc-for list="{{objPanel.approaches}}" as="a">
+<div style="{{a.style}}">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="font-size: 15px; font-weight: 700">{{a.label}}</span><sc-for list="{{a.skills}}" as="k"><span style="{{k.style}}">{{k.name}}</span></sc-for></div>
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2">{{a.tn}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">{{a.stakes}}</span>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><sc-if value="{{a.hasTries}}"><span style="display: flex; gap: 10px; flex-wrap: wrap"><sc-for list="{{a.tries}}" as="t"><span style="{{t.style}}">{{t.text}}</span></sc-for></span></sc-if>
+<button type="button" onClick="{{a.go}}" disabled="{{a.cant}}" style="margin-left: auto; min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">{{a.label2}}</button></div>
+</div>
+</sc-for>
+<sc-if value="{{objPanel.hasWhy}}"><span style="font-size: 12px; color: #A3AEC2">{{objPanel.why}}</span></sc-if>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-if value="{{objPanel.canWalk}}"><button type="button" onClick="{{objPanel.walk}}" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Walk up to it</button></sc-if>
+<sc-if value="{{objPanel.isDoor}}"><button type="button" onClick="{{objPanel.door}}" disabled="{{objPanel.cantDoor}}" style="min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">{{objPanel.doorLabel}}</button></sc-if>
+<button type="button" onClick="{{objPanel.examine}}" disabled="{{objPanel.cantExamine}}" title="Uses your turn this round; the Narrator answers with everyone else" style="margin-left: auto; min-height: 42px; padding: 0 16px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Examine (uses your turn)</button>
+</div>
 </div>
 </div>
 </sc-if>

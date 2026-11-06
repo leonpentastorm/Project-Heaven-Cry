@@ -1,0 +1,205 @@
+{
+  "$schema_version": "1.0",
+  "kind": "map_objects",
+  "source": "PHC Core Rules v1.0, Map objects and points of interest (provisional, item 59)",
+  "items": [
+    {
+      "id": "crate",
+      "name": "Crate",
+      "glyph": "▣",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": "half",
+      "hp": 30,
+      "text": "Crates, sandbags, low wreckage: half cover. Can be shot to pieces.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "low_wall",
+      "name": "Low wall",
+      "glyph": "▬",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": "half",
+      "hp": 60,
+      "text": "Waist-high masonry or plating: half cover.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "pillar",
+      "name": "Pillar",
+      "glyph": "●",
+      "blocks_move": true,
+      "blocks_sight": true,
+      "cover": "full",
+      "hp": 80,
+      "text": "A pillar, pylon or hull plate: full cover, blocks sight.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "barricade",
+      "name": "Barricade",
+      "glyph": "▦",
+      "blocks_move": true,
+      "blocks_sight": true,
+      "cover": "full",
+      "hp": 60,
+      "text": "Something built to keep people out. Break it, climb it, or find another way.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "door",
+      "name": "Door",
+      "glyph": "⊓",
+      "blocks_move": true,
+      "blocks_sight": true,
+      "cover": null,
+      "hp": 40,
+      "door": true,
+      "text": "Closed, it blocks movement and sight. Opening or closing costs 1 AP in a fight. A locked door needs a key, a check or a lot of damage.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "hole",
+      "name": "Hole",
+      "glyph": "◯",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "A pit, shaft or breach. Nobody walks across; what happens to someone who falls is the Narrator's call.",
+      "adjudication": "hybrid",
+      "provisional": true
+    },
+    {
+      "id": "trap",
+      "name": "Trap",
+      "glyph": "⚠",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "hidden": true,
+      "trap": {
+        "damage": 25,
+        "detect_tn": 12,
+        "detect_range": 2
+      },
+      "text": "Hidden until spotted: passive Vigilant (10 + modifier) against its TN, within 2 tiles. Stepping on it deals its damage and springs it. Disarming is a check.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "glyph": "✹",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "hazard": {
+        "damage": 10
+      },
+      "text": "Burning ground: 10 damage to anyone who starts a turn in it.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "toxic",
+      "name": "Toxic spill",
+      "glyph": "☣",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "hazard": {
+        "damage": 8
+      },
+      "text": "Chemicals or bad mana: 8 damage to anyone who starts a turn in it.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "barrel",
+      "name": "Explosive barrel",
+      "glyph": "⬢",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": "half",
+      "hp": 20,
+      "explodes": {
+        "damage": 40,
+        "radius": 2
+      },
+      "text": "Half cover until it isn't: at 0 HP it explodes for 40 within 2 tiles and leaves fire.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "rubble",
+      "name": "Rubble",
+      "glyph": "▪",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "difficult": true,
+      "text": "What's left of broken cover: slow ground, no cover.",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "container",
+      "name": "Container",
+      "glyph": "▤",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": "half",
+      "hp": 40,
+      "text": "A locker, chest or cargo box. What's inside is the Narrator's; opening a locked one is a check.",
+      "adjudication": "hybrid",
+      "provisional": true
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "glyph": "▭",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": 30,
+      "text": "A console or machine. Using it is a check, usually Proficiency.",
+      "adjudication": "hybrid",
+      "provisional": true
+    },
+    {
+      "id": "poi",
+      "name": "Point of interest",
+      "glyph": "◆",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "Something worth a closer look. Examine it, and the Narrator writes the ways to deal with it.",
+      "adjudication": "hybrid",
+      "provisional": true
+    },
+    {
+      "id": "exit",
+      "name": "Way out",
+      "glyph": "➔",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "Where this map leads elsewhere. Travel is the Narrator's call.",
+      "adjudication": "hybrid",
+      "provisional": true
+    }
+  ]
+}

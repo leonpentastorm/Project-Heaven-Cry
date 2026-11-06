@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -74,6 +74,42 @@ describe('grid references and the story map', () => {
   });
 });
 
+describe('map objects and points of interest', () => {
+  it('traps spring, barrels explode, doors block until opened', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,1' }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol', at: 'P1' }], 'easy', { state: 3 },
+      [makeObject('t1', 'trap', '3,1'), makeObject('b1', 'barrel', '13,1'), makeObject('d1', 'door', '1,3')]);
+    const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
+    u.ap = 9; u.vigilant = 0; const hp = u.hp;
+    expect(moveUnit(cb, u, '5,1')).toBeNull();
+    expect(u.pos).toBe('3,1'); expect(u.hp).toBeLessThan(hp); // stopped on the hidden trap
+    e.pos = '14,1'; const ehp = e.hp; damageObject(cb, '13,1', 99);
+    expect(e.hp).toBeLessThan(ehp); expect(cb.objects!.some((o) => o.kind === 'fire' && o.pos === '13,1')).toBe(true);
+    u.pos = '1,2'; u.ap = 9;
+    expect(paths(cb, u.pos, u.id).dist['1,3']).toBeUndefined(); // closed door blocks
+    expect(toggleDoor(cb, u, '1,3')).toBeNull(); expect(paths(cb, u.pos, u.id).dist['1,3']).toBe(1);
+  });
+  it('POIs: the Narrator writes approaches, players try them, success acts by itself, tries are kept', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A barricade.', objects: [{ action: 'place', id: '', kind: 'barricade', at: 'H7', name: 'Rune-marked barricade', text: 'Welded plates, a rune scratched in.',
+      approaches: [{ label: 'Break it down', skills: ['raw_power', 'durability'], tn: 8, stakes: 'Smash through.', success: 'remove' }, { label: 'Read the rune', skills: ['ingenuity', 'lore_master'], tn: 12, stakes: 'What is it warding?', success: '' }] }] } as any }, 'host');
+    const bar = storyObjects(g).find((o) => o.kind === 'barricade')!;
+    expect(refOf(bar.pos)).toBe('H7'); expect(bar.approaches).toHaveLength(2);
+    expect(() => apply(g, { type: 'poi/try', charId: id, objId: bar.id, idx: 0 }, 'host')).toThrow(/Walk up/);
+    g = apply(g, { type: 'story/move', charId: id, to: 'G7' }, 'host');
+    g = apply(g, { type: 'poi/try', charId: id, objId: bar.id, idx: 0 }, 'host');
+    const ck = g.checks.find((k) => k.poi)!; expect(ck.skills).toEqual(['raw_power', 'durability']); expect(ck.tn).toBe(8);
+    g = apply(g, { type: 'check/roll', checkId: ck.id }, 'host'); g = apply(g, { type: 'check/accept', checkId: ck.id }, 'host');
+    const after = storyObjects(g).find((o) => o.id === bar.id);
+    const ok = g.checks.find((k) => k.id === ck.id)!.roll!.ok;
+    if (ok) expect(after).toBeUndefined(); else expect(after!.approaches[0].tries[0].name).toBe('MPAT');
+    expect(g.story.await).toBe('narrator'); // the attempt was MPAT's turn this round
+  });
+});
+
 describe('combat', () => {
   it('movement cost: tiles ÷ Movement, rounded up, with carry-over', () => {
     expect(apForTiles(4, 0, 1)).toBe(4); expect(apForTiles(3, 0, 2)).toBe(2); expect(apForTiles(3, 1, 2)).toBe(1);
@@ -136,8 +172,8 @@ describe('combat', () => {
     expect(lineOfSight(cb, '9,6', '11,6')).toBe(false); // full cover at 10,6
     expect(lineOfSight(cb, '4,3', '6,3')).toBe(true);  // half cover doesn't block sight
     while (coverOf(cb)['5,3']) { u.ap = 9; expect(shootCover(cb, u, '5,3', c)).toBeNull(); }
-    expect(shootCover(cb, u, '5,3', c)).toMatch(/isn't cover/);
-    expect(coverOf(cb)['5,3']).toBeUndefined(); expect(cb.rubble).toContain('5,3');
+    expect(shootCover(cb, u, '5,3', c)).toMatch(/Nothing there/);
+    expect(coverOf(cb)['5,3']).toBeUndefined(); expect(cb.objects!.some((o) => o.kind === 'rubble' && o.pos === '5,3')).toBe(true);
     expect(previewAttack(cb, u, e, 'shot').coverTile).toBe('5,4'); // the crate beside it still protects
   });
   it('picking up and loading magazines', () => {

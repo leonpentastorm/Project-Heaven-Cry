@@ -2,11 +2,14 @@
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
+import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf } from './objects';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
-  notes?: { at: string; text: string }[] }
+  notes?: { at: string; text: string }[];
+  /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
+  objects?: { kind: string; at: string; name?: string; text?: string }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
@@ -24,6 +27,7 @@ export const MAPS: Record<string, MapDef> = {
       { at: 'B10–I11', text: 'The edge of the wreck field: dead infantry robots, twisted plating. Slow going.' },
       { at: 'A1–J9', text: 'Open landing pad, scorched, under the black hole\'s light. The squad comes in from the west.' },
     ],
+    objects: [{ kind: 'poi', at: 'M5', name: 'The loading ramp', text: 'The ship\'s ramp, down and guarded. Chief Engineer Keel stands at its foot with a pistol on his hip and a manifest in his hand.' }],
   },
   yard: {
     id: 'yard', name: 'Open ground', w: 16, h: 11, solid: [],
@@ -50,7 +54,7 @@ export interface Unit {
   /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
   extra?: { weapon: string; rounds: number }[];
   /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
-  analyzedBy?: string; weakPoint?: boolean; analysis?: number;
+  analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number;
 }
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
@@ -58,7 +62,9 @@ export interface Combat { name: string; map: MapDef; units: Unit[]; order: strin
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
   notes?: string[];
   /** Cover still standing, with its HP; broken cover becomes rubble (spec: Cover). Old saves fall back to the map. */
-  cover?: Record<string, { kind: 'half' | 'full'; hp: number; max: number }>; rubble?: string[] }
+  cover?: Record<string, { kind: 'half' | 'full'; hp: number; max: number }>; rubble?: string[];
+  /** Everything placed on the grid: cover, barricades, doors, traps, hazards, POIs (spec: Map objects). */
+  objects?: MapObject[] }
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
@@ -104,7 +110,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), w.magazine ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
-    mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    vigilant: c.skills.vigilant || 0, mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
   };
 }
 
@@ -125,30 +131,87 @@ export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i
 export const alive = (u: Unit) => !u.dead && !u.downed;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === cb.order[cb.turn]);
 
-// ---------- cover (spec: Cover) ----------
-export const COVER_HP = { half: 30, full: 80 };
-export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number }> {
-  if (!cb.cover) {
-    cb.cover = {};
-    for (const k of cb.map.cover) cb.cover[k] = { kind: 'half', hp: COVER_HP.half, max: COVER_HP.half };
-    for (const k of cb.map.full || []) cb.cover[k] = { kind: 'full', hp: COVER_HP.full, max: COVER_HP.full };
+// ---------- map objects in a fight (spec: Map objects; Cover) ----------
+export const COVER_HP = { half: OBJ.crate?.hp || 30, full: OBJ.pillar?.hp || 80 };
+/** The objects a map starts with: its half-cover tiles become crates, its full-cover tiles pillars, plus what it declares. */
+export function defaultObjects(map: MapDef): MapObject[] {
+  let n = 0; const id = () => 'm' + (++n);
+  return [...map.cover.map((k) => makeObject(id(), 'crate', k)), ...(map.full || []).map((k) => makeObject(id(), 'pillar', k)),
+    ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); return k ? makeObject(id(), o.kind, k, { name: o.name, text: o.text }) : null; }).filter(Boolean) as MapObject[]];
+}
+/** The fight's objects; saves from before objects existed are rebuilt from their cover state. */
+export function objectsOf(cb: Combat): MapObject[] {
+  if (!cb.objects) {
+    cb.objects = cb.cover
+      ? [...Object.entries(cb.cover).map(([k, c], i) => makeObject('m' + (i + 1), c.kind === 'full' ? 'pillar' : 'crate', k, { hp: c.hp, max: c.max })), ...(cb.rubble || []).map((k, i) => makeObject('r' + (i + 1), 'rubble', k))]
+      : defaultObjects(cb.map);
   }
-  return cb.cover;
+  return cb.objects;
+}
+export const objectsAt = (cb: Combat, k: string) => objectsOf(cb).filter((o) => o.pos === k);
+/** Cover still standing, by tile, with its HP. */
+export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number; id: string; name: string }> {
+  const out: Record<string, any> = {};
+  for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
+  return out;
 }
 const coverKeys = (cb: Combat, kind?: 'half' | 'full') => Object.entries(coverOf(cb)).filter(([, c]) => !kind || c.kind === kind).map(([k]) => k);
-export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...(cb.rubble || [])]);
-/** Damage a cover tile; at 0 HP it breaks into rubble. Returns a log suffix. */
-export function damageCover(cb: Combat, k: string, dmg: number): string {
-  const c = coverOf(cb)[k]; if (!c) return '';
-  c.hp = Math.max(0, c.hp - Math.max(1, Math.floor(dmg)));
-  if (c.hp > 0) return ' · the ' + (c.kind === 'half' ? 'half' : 'full') + ' cover takes ' + Math.floor(dmg) + ' (' + c.hp + '/' + c.max + ')';
-  delete cb.cover![k]; (cb.rubble ||= []).push(k);
-  return ' · the ' + c.kind + ' cover breaks into rubble';
+export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
+export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
+export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]);
+
+/** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
+export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false): string {
+  if (u.dead) return '';
+  const d = Math.max(1, Math.floor(dmg) - (ignoreArmour ? 0 : u.armour));
+  if (u.downed) { u.saves.fail += 1; if (u.saves.fail >= 3) u.dead = true; return ' · ' + u.name + ' takes a hit while Downed' + (u.dead ? ' and dies' : ''); }
+  u.hp = Math.max(0, u.hp - d);
+  if (u.hp === 0) { if (u.side === 'foe') u.dead = true; else u.downed = true; }
+  return ' · ' + u.name + ' takes ' + d + (u.hp === 0 ? (u.side === 'foe' ? ', down for good' : ', Downed') : '');
+}
+/** Damage an object on a tile; at 0 HP cover becomes rubble and barrels explode. Returns a log suffix. */
+export function damageObject(cb: Combat, k: string, dmg: number, depth = 0): string {
+  const o = objectsAt(cb, k).find((x) => x.hp != null && x.hp > 0); if (!o) return '';
+  const name = o.name.toLowerCase();
+  o.hp = Math.max(0, o.hp! - Math.max(1, Math.floor(dmg)));
+  if (o.hp > 0) return ' · the ' + name + ' takes ' + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
+  cb.objects = objectsOf(cb).filter((x) => x !== o);
+  const kd = kindOf(o);
+  if (kd.explodes && depth < 4) {
+    let out = ' · the ' + name + ' EXPLODES';
+    for (const u of cb.units) if (!u.dead && dist(u.pos, k) <= kd.explodes.radius) out += hurtUnit(u, kd.explodes.damage);
+    for (const x of [...objectsOf(cb)]) if (x.pos !== k && dist(x.pos, k) <= kd.explodes.radius) out += damageObject(cb, x.pos, kd.explodes.damage, depth + 1);
+    cb.objects.push(makeObject('x' + cb.objects.length + '_' + k.replace(',', '_'), 'fire', k));
+    return out;
+  }
+  if (kd.cover || kd.id === 'barricade') { cb.objects.push(makeObject('r_' + k.replace(',', '_') + '_' + cb.round, 'rubble', k)); return ' · the ' + name + ' breaks into rubble'; }
+  return ' · the ' + name + ' is destroyed';
+}
+export const damageCover = damageObject;
+
+/** Spot hidden traps near a PC: passive Vigilant (10 + modifier) against the trap's TN (spec: Map objects). */
+export function spotTraps(objs: MapObject[], pos: string, vigilant: number, name: string, log: (s: string) => void) {
+  for (const o of objs) if (o.hidden && isTrap(o)) {
+    const t = kindOf(o).trap!, passive = 10 + (vigilant <= 0 ? -2 : vigilant - 1);
+    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
+  }
+}
+/** Open or close an adjacent door (1 AP in a fight). */
+export function toggleDoor(cb: Combat, u: Unit, tile: string): string | null {
+  const o = objectsAt(cb, tile).find((x) => kindOf(x).door); if (!o) return 'No door there.';
+  if (dist(u.pos, tile) > 1) return 'Stand next to it.';
+  if (o.locked) return 'Locked.';
+  if (o.open && cb.units.some((x) => !x.dead && x.pos === tile)) return 'Someone is in the doorway.';
+  if (u.ap < 1) return 'Needs 1 AP.';
+  u.ap -= 1; o.open = !o.open;
+  cb.log.push(u.name + (o.open ? ' opens ' : ' closes ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(tile) + '.');
+  return null;
 }
 
 // ---------- movement (spec: Moving; port of the prototype's paths()) ----------
 export function paths(cb: Combat, from: string, self: string) {
-  const { w, h } = cb.map, solid = new Set([...cb.map.solid, ...coverKeys(cb)]), diff = difficultOf(cb);
+  const { w, h } = cb.map, me = cb.units.find((u) => u.id === self), diff = difficultOf(cb);
+  const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && (me?.side === 'foe' || !o.hidden)).map((o) => o.pos)]);
   const blocked = new Set(cb.units.filter((u) => u.id !== self && !u.dead).map((u) => u.pos));
   const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
   while (open.length) {
@@ -170,7 +233,7 @@ export const apForTiles = (tiles: number, bank: number, mov: number) => Math.cei
 
 // ---------- line of sight and cover ----------
 export function lineOfSight(cb: Combat, a: string, b: string): boolean {
-  const solid = new Set([...cb.map.solid, ...coverKeys(cb, 'full')]); // half cover doesn't block sight
+  const solid = sightBlockers(cb); // half cover doesn't block sight
   let [x0, y0] = xy(a); const [x1, y1] = xy(b);
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy;
@@ -276,15 +339,16 @@ export function rollInjury(rng: Rng, t: Unit): string {
 
 // ---------- turns ----------
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
-export function startCombat(name: string, mapId: string, pcs: { c: Character; pos?: string }[], foes: { name: string; tier: string; weapon: string; at?: string }[], difficulty: string, rng: Rng): Combat {
+export function startCombat(name: string, mapId: string, pcs: { c: Character; pos?: string }[], foes: { name: string; tier: string; weapon: string; at?: string }[], difficulty: string, rng: Rng, objects?: MapObject[]): Combat {
   const map = MAPS[mapId] || MAPS.rear_pad;
-  const units: Unit[] = [], taken = new Set<string>();
+  const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
+  const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
   const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || fallback[0]; taken.add(k); return k; };
   pcs.forEach(({ c, pos }) => units.push(unitFromCharacter(c, place(pos, map.pcStart), rng)));
   foes.slice(0, map.foeStart.length).forEach((f, i) => units.push(unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng)));
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null };
-  coverOf(cb);
+  cb.objects = objs;
   beginTurn(cb, rng);
   return cb;
 }
@@ -296,6 +360,8 @@ export function beginTurn(cb: Combat, rng: Rng) {
   u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)));
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
   u.stunnedNext = 0; u.dazedNext = 0; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  const hz = objectsAt(cb, u.pos).map(hazardOf).find(Boolean);
+  if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true)); if (u.downed || u.dead) { u.ap = 0; return; } }
   if (u.bleed && !u.dead && !u.downed) {
     u.bleed--; u.hp = Math.max(0, u.hp - 5);
     cb.log.push(u.name + ' bleeds: 5 damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
@@ -339,8 +405,14 @@ export function moveUnit(cb: Combat, u: Unit, to: string): string | null {
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
   const ap = apForTiles(tiles, u.bank, u.movement);
   if (ap > u.ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap; u.bank = u.bank + ap * u.movement - tiles; u.pos = to;
-  cb.log.push(u.name + ' moves to ' + refOf(to) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP).');
+  u.ap -= ap; u.bank = u.bank + ap * u.movement - tiles;
+  // Walk the path: a hidden trap stops you on its tile and springs (spec: Map objects).
+  const route: string[] = []; for (let k = to; k !== u.pos && P.prev[k]; k = P.prev[k]) route.unshift(k);
+  let end = to, sprung = '';
+  for (const k of route) { const t = objectsAt(cb, k).find(isTrap); if (t) { end = k; t.resolved = true; t.hidden = false; sprung = ' · steps on a trap' + hurtUnit(u, kindOf(t).trap!.damage); cb.objects = objectsOf(cb).filter((x) => x !== t); break; } }
+  u.pos = end;
+  cb.log.push(u.name + ' moves to ' + refOf(end) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP)' + sprung + '.');
+  if (u.side === 'pc' && !u.dead) spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l));
   return null;
 }
 
@@ -395,7 +467,7 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
 }
 /** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
 export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
-  const c = coverOf(cb)[tile]; if (!c) return 'That isn\'t cover.';
+  const c = objectsAt(cb, tile).find((x) => x.hp != null && x.hp > 0); if (!c) return 'Nothing there to shoot.';
   const w = WEAPON[u.weapon], melee = isMelee(w), ap = attackApCost(w, melee ? 'melee' : 'shot');
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const r = dist(u.pos, tile);
@@ -408,7 +480,7 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
     if (w.magazine != null) u.ammo--; u.heat += 1;
   }
   u.ap -= ap;
-  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the cover' + damageCover(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1)) + '.');
+  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1)) + '.');
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
