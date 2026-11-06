@@ -6810,7 +6810,7 @@
       "order": 4,
       "name": "Outpost 1",
       "family": "maps",
-      "path": "art/maps/m813/v1/outpost_1.png",
+      "path": "art/maps/m813/v1/revisions/v2/outpost_1.png",
       "dimensions": [
         1600,
         1100
@@ -6823,21 +6823,23 @@
       "layout_guide": "art/briefs/m813-tutorial/maps/outpost_1-layout.png",
       "width": 1600,
       "height": 1100,
-      "sha256": "ce2f05adf5c717c8e6fdbf6b46580f8468e05a2407f6429136bed135f852f17b",
-      "source_path": "art/maps/m813/v1/sources/map-m813-outpost-1.png",
-      "source_sha256": "4320e1e4d07268968eceb408915963ccbfdd1318088fb38a70a67b2cf0cba6c9",
+      "sha256": "5b950df8236f72d517d0bc7befe7a2e02f9ea917b6e7657fb3c1fda3b6f64d8e",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-outpost-1.png",
+      "source_sha256": "2e716e9b2c80ec074dd155ae3637c41d4ff82bdbbc9f126b8c1a81451a940486",
       "source_dimensions": [
-        1513,
+        1512,
         1040
       ],
       "previews": {
-        "320": "art/maps/m813/v1/previews/map-m813-outpost-1-320px.png"
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-outpost-1-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/maps/m813/v1/sources/map-m813-outpost-1.prompt.txt"
+      "previous_path": "art/maps/m813/v1/outpost_1.png",
+      "previous_revision_path": "art/maps/m813/v1/outpost_1.png",
+      "revision": 2
     }
   }
 }
