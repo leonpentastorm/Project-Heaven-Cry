@@ -150,10 +150,12 @@
     "daggerfall-veteran": 2,
     "glass-runner": 2,
     "upper-touched": 2,
-    "into-the-dark": 2
+    "into-the-dark": 2,
+    "holy-ordnance": 2
   },
   "review_4_fixes_delivered": [
-    "into-the-dark"
+    "into-the-dark",
+    "holy-ordnance"
   ],
   "remaining_new_icons": [
     "real-power",

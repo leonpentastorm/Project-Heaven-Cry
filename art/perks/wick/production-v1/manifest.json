@@ -1145,21 +1145,26 @@
       "family": "perks",
       "order": 50,
       "mood": "Heroic, Comic",
-      "action": "Wick raises a rifle magazine overhead in both mittens like a relic, thick radiant rays bursting from it.",
-      "screen": "Sparkle star",
-      "prop": "Rifle magazine",
-      "path": "art/perks/wick/production-v1/holy-ordnance.png",
+      "action": "Normal Wick with its recognisable broad clipped-corner pixel-screen head kneels and raises one oversized blessed artillery shell in both mittens; three bold radiating rays come from the shell only. No knight armour, hood, visor or costume around the head.",
+      "screen": "Delighted pixel eyes and smile",
+      "prop": "One large blessed shell",
+      "path": "art/perks/wick/production-v1/revisions/v2/holy-ordnance.png",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/holy-ordnance.png",
-        "128": "art/perks/wick/production-v1/exports/128/holy-ordnance.png",
-        "64": "art/perks/wick/production-v1/exports/64/holy-ordnance.png",
-        "56": "art/perks/wick/production-v1/exports/56/holy-ordnance.png",
-        "48": "art/perks/wick/production-v1/exports/48/holy-ordnance.png",
-        "44": "art/perks/wick/production-v1/exports/44/holy-ordnance.png",
-        "40": "art/perks/wick/production-v1/exports/40/holy-ordnance.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/holy-ordnance.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/holy-ordnance.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/holy-ordnance.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/holy-ordnance.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/holy-ordnance.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/holy-ordnance.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/holy-ordnance.png"
       },
       "batch": "E",
-      "source_sha256": "e3ca733e535c6ca7cb6b792442c7c121433a8392f940540f3dac692b262ff531"
+      "source_sha256": "6f6b01484152e3dadf21ff0e3a7b42a88995287b5be97ab005086eac95437017",
+      "tier": "acquired",
+      "review_round": 4,
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/holy-ordnance.png",
+      "previous_revision_path": "art/perks/wick/production-v1/holy-ordnance.png"
     },
     {
       "id": "red-line",
