@@ -4587,6 +4587,31 @@
         "44": "art/perks/wick/production-v1/exports/44/outclassed.png",
         "40": "art/perks/wick/production-v1/exports/40/outclassed.png"
       }
+    },
+    "real-power": {
+      "label": "Wick — Real Power",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/real-power.png",
+      "sha256": "088e0b295407d78f1ce5976bf5f5612b4abae19d6de042778a615d4aab17b6d5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "real_power",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "E",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/real-power.png",
+        "128": "art/perks/wick/production-v1/exports/128/real-power.png",
+        "64": "art/perks/wick/production-v1/exports/64/real-power.png",
+        "56": "art/perks/wick/production-v1/exports/56/real-power.png",
+        "48": "art/perks/wick/production-v1/exports/48/real-power.png",
+        "44": "art/perks/wick/production-v1/exports/44/real-power.png",
+        "40": "art/perks/wick/production-v1/exports/40/real-power.png"
+      },
+      "tier": "acquired"
     }
   },
   "illustrations": {

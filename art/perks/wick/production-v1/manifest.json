@@ -1234,6 +1234,30 @@
       },
       "batch": "E",
       "source_sha256": "dbfe72243f8cbb8ec25a5a67f461004278976aa976cce66c124e17600008c08f"
+    },
+    {
+      "id": "real-power",
+      "data_id": "real_power",
+      "name": "Real Power",
+      "family": "perks",
+      "order": 54,
+      "mood": "Eerie, Comic",
+      "action": "Wick crouches beneath a small crown dangling on puppet strings, ignoring it, one mitten pointing up the strings to where they vanish.",
+      "screen": "Knowing narrowed eyes",
+      "prop": "Crown on strings",
+      "path": "art/perks/wick/production-v1/real-power.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/real-power.png",
+        "128": "art/perks/wick/production-v1/exports/128/real-power.png",
+        "64": "art/perks/wick/production-v1/exports/64/real-power.png",
+        "56": "art/perks/wick/production-v1/exports/56/real-power.png",
+        "48": "art/perks/wick/production-v1/exports/48/real-power.png",
+        "44": "art/perks/wick/production-v1/exports/44/real-power.png",
+        "40": "art/perks/wick/production-v1/exports/40/real-power.png"
+      },
+      "batch": "E",
+      "source_sha256": "4ee67b971d0e709d0c9a209dbef82659348ebc31559e07fcf5c349abe7104bba",
+      "tier": "acquired"
     }
   ]
 }

@@ -134,11 +134,12 @@
     "holy-ordnance",
     "red-line",
     "clean-hands",
-    "outclassed"
+    "outclassed",
+    "real-power"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 55
+    "perks": 56
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -161,7 +162,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "real-power",
     "last-wall",
     "walking-wounded",
     "skin-map",
