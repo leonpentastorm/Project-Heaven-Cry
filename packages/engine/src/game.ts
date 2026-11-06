@@ -6,7 +6,7 @@ import {
   packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
-import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { type Combat, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -48,7 +48,9 @@ export interface GameState {
   story: {
     entries: Entry[]; round: number; spoken: Record<string, string>;
     await: 'none' | 'players' | 'narrator' | 'rolls' | 'choices';
-    scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]> };
+    scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]>;
+      /** In a player's view only: for each of their characters, the skills with a voice hook not yet revealed to it (no lines, no TNs). */
+      voiced?: Record<string, string[]> };
     journal: string[]; work: NarratorWork;
     /** Where the story happens (a map id) and where each character stands on it, by tile key (spec: Grid references). */
     zone?: string; positions?: Record<string, string>;
@@ -77,6 +79,8 @@ export interface GameState {
     npcs?: Npc[]; zoneNpcs?: Record<string, Npc[]>;
     /** The party's shared spotlight: who is dealing with what (a point of interest), and what they're hovering. */
     focus?: { charId: string; objId?: string; hover?: number; seq: number } | null;
+    /** Presentation events from area-map actions (the same shape as a fight's, see FxEvent), capped at FX_CAP. */
+    fx?: FxEvent[]; fxSeq?: number;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -705,7 +709,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
       if (u.ap < SONG_AP) fail('Needs ' + SONG_AP + ' AP.');
       if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
-      u.ap -= SONG_AP; break;
+      u.ap -= SONG_AP; emitFx(cb!, 'song', { unit: u.id, at: u.pos }); break;
     }
     default: fail('Unknown action.');
   }
@@ -857,7 +861,10 @@ export function positionsOf(g: GameState): Record<string, string> {
 // ---------- views ----------
 /** What one player may see: no hooks, no one else's voices or Overreach. */
 export function viewFor(g: GameState, playerId: string): GameState {
-  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...g.story.scene, hooks: [] } } };
+  // The skill panel shows Ask only where a voice has something (Silent elsewhere): which skills, never the hooks themselves.
+  const sc = g.story.scene, voiced: Record<string, string[]> = {};
+  for (const c of Object.values(g.characters)) if (c.owner === playerId) voiced[c.id] = [...new Set(sc.hooks.filter((h) => !sc.revealed.includes(c.id + ':' + h.id)).map((h) => h.skill))];
+  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
@@ -1007,7 +1014,16 @@ function storyMagicRound(g: GameState) {
   for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); if (u.mg) u.mg.cast = false; }
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
   magicOut(g, cb, false);
+  storyFx(g, cb);
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true });
+}
+/** The overworld's throwaway fight keeps its presentation events in the story (renumbered, capped), so area-map
+ * actions animate for everyone as fights do. */
+function storyFx(g: GameState, cb: Combat) {
+  if (!cb.fx?.length) return;
+  const list = (g.story.fx ||= []);
+  for (const e of cb.fx) list.push({ ...e, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) });
+  if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
 }
 /** Learn a word, a school or a module (spec: The Magic panel). */
 function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string }, why: string): string {
@@ -1090,7 +1106,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   } else if (a.act === 'door') {
     const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
     if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
-    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
   } else if (a.act === 'reload') err = reload(cb, u);
   else if (a.act === 'load') err = loadMagazine(cb, u);
   else if (a.act === 'clear') err = clearJam(cb, u);
@@ -1124,7 +1140,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
           if ((w as any).heat_limit && u.heat >= (w as any).heat_limit) u.jammed = true;
           if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
         }
-        u.ap -= cost; cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
+        u.ap -= cost; emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
+        cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
         g.story.needs = true;
       }
       else err = shootCover(cb, u, o.pos, c!);
@@ -1153,6 +1170,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   for (const x of cb.units) if (x.charId) { unitToCharacter(g, x, false, true); (g.story.heat ||= {})[x.charId] = x.heat || 0; (g.story.jammed ||= {})[x.charId] = !!x.jammed; }
   magicOut(g, cb, false);
   g.story.objects = cb.objects;
+  storyFx(g, cb);
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
   noticeFor(g, c!);
   closeRoundIfDone(g);

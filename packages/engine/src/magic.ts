@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, coresCarried, mpNow, evoChargeNow,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
 
 type Fam = 'body' | 'brain' | 'heart';
@@ -48,6 +48,7 @@ export const manaOf = (cb: Combat) => (cb.mana ??= MANA_START);
 export function shiftMana(cb: Combat, by: number, why?: string) {
   const was = manaOf(cb), now = Math.max(0, Math.min(40, was + by)); cb.mana = now;
   const a = manaBand(was).id, b = manaBand(now).id;
+  if (a !== b) emitFx(cb, 'mana', { band: b, mana: now });
   if (a !== b) cb.log.push('The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
 }
 /** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. */
@@ -100,9 +101,10 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: st
   const f = fam || def.fam;
   if (!BOOST.has(id)) {
     const r = d20(rng), m = saveOf(t, f), tn = 12 + (by ? debuffOf(by, f) : 0), ok = r === 20 || (r !== 1 && r + m >= tn);
-    if (ok) return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')';
+    if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
   }
   const n = rounds || def.rounds, had = condOn(t, id);
+  emitFx(cb, 'cond', { target: t.id, at: t.pos, id });
   (t.conds ||= {})[id] = Math.max(t.conds[id] || 0, n);
   if (!had) {
     if (id === 'slowed') { t.baseMove ??= t.movement; t.movement = t.baseMove / 2; }
@@ -119,29 +121,34 @@ function endCond(u: Unit, id: string) {
 }
 /** Damage from magic (or a wall zone): the shield first, then armour (Sigil damage takes full armour, Elemental half,
  * Soul none), then HP, Downed or dead, kill credit. A held Outburst may slip. Returns a log suffix. */
+/** Why the next harm() hurts, for the effects layer only (burn, short, overload, wall); reset after each call. */
+let hurtWhy = '';
+const harmFor = (why: string, f: () => string) => { hurtWhy = why; try { return f(); } finally { hurtWhy = ''; } };
 export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true'): string {
   if (t.dead) return '';
   let dmg = Math.floor(raw), out = '';
   const arm = type === 'sigil' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
-  if (t.shield && t.shield > 0) { const s = Math.min(t.shield, dmg); t.shield -= s; dmg -= s; out += ' (' + s + ' on the shield)'; if (dmg <= 0) return ' · ' + t.name + "'s shield takes it" + out; }
-  if (t.downed) { t.saves.fail += 1; if (t.saves.fail >= 3) t.dead = true; return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
+  if (t.shield && t.shield > 0) { const s = Math.min(t.shield, dmg); t.shield -= s; dmg -= s; out += ' (' + s + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: s }); if (dmg <= 0) return ' · ' + t.name + "'s shield takes it" + out; }
+  if (t.downed) { t.saves.fail += 1; if (t.saves.fail >= 3) t.dead = true; emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   t.hp = Math.max(0, t.hp - dmg);
   let killed = false;
   if (t.hp === 0) { if (t.side === 'foe') t.dead = true; else t.downed = true; killed = true; }
+  emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg, why: hurtWhy || type, killed }); if (killed) fxFell(cb, t);
   if (killed && att && att.side !== t.side) att.kills += t.tier === 'boss' ? 3 : 1;
   out = ' · ' + dmg + ' damage to ' + t.name + out + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '');
   if (!t.dead && !t.downed && t.mg?.held) out += slip(cb, rng, t, dmg);
   return out;
 }
-export function heal(t: Unit, n: number): string {
+export function heal(t: Unit, n: number, cb?: Combat): string {
   if (t.dead) return '';
   n = Math.floor(n);
-  if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, n)); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
-  const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + n); return ' · ' + t.name + ' heals ' + (t.hp - was);
+  if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, n)); if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
+  const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + n); if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was }); return ' · ' + t.name + ' heals ' + (t.hp - was);
 }
 function shove(cb: Combat, t: Unit, from: string, n: number): string {
   if (t.dead || n === 0) return '';
+  const was = t.pos;
   const [fx, fy] = from.split(',').map(Number); let [x, y] = t.pos.split(',').map(Number);
   let dx = Math.sign(x - fx), dy = Math.sign(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
   let moved = 0;
@@ -151,7 +158,7 @@ function shove(cb: Combat, t: Unit, from: string, n: number): string {
     x += dx; y += dy; moved++;
   }
   if (!moved) return '';
-  t.pos = x + ',' + y; return ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos);
+  t.pos = x + ',' + y; emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true }); return ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos);
 }
 
 // ---------- turns ----------
@@ -161,13 +168,13 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (u.dead) return;
   noteDeaths(cb);
   if (u.conds) for (const id of Object.keys(u.conds)) {
-    if (id === 'burning' && !u.downed) cb.log.push(u.name + ' burns' + harm(cb, rng, null, u, 5, 'true'));
+    if (id === 'burning' && !u.downed) cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, null, u, 5, 'true')));
     u.conds[id]--; if (u.conds[id] <= 0) { endCond(u, id); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
   }
   const m = u.mg;
   if (m && !u.downed) {
     if (m.held) {
-      if (m.held.stage < 4) { m.held.stage++; cb.log.push(u.name + "'s Outburst grows to stage " + m.held.stage + ' (×' + stageMult(m.held.stage) + ').'); }
+      if (m.held.stage < 4) { m.held.stage++; emitFx(cb, 'grow', { unit: u.id, at: u.pos, stage: m.held.stage }); cb.log.push(u.name + "'s Outburst grows to stage " + m.held.stage + ' (×' + stageMult(m.held.stage) + ').'); }
       addStrain(cb, rng, u, manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1, 'holding');
     } else if (!m.cast && m.strain > 0) m.strain--;
     m.cast = false;
@@ -188,7 +195,8 @@ function zoneBite(cb: Combat, rng: Rng, z: Zone, u: Unit) {
   if (u.dead || ((z.hit ||= {})[u.id] === cb.round)) return;
   z.hit[u.id] = cb.round;
   const by = cb.units.find((x) => x.id === z.by) || null; let line = '';
-  for (const w of z.words) line += subjectEffect(cb, rng, by, u, SIGIL[w], z.mult, by?.mg?.sigilMult || 1, by?.mg?.elemMult || 1, true, z.tiles[0]);
+  hurtWhy = 'wall';
+  try { for (const w of z.words) line += subjectEffect(cb, rng, by, u, SIGIL[w], z.mult, by?.mg?.sigilMult || 1, by?.mg?.elemMult || 1, true, z.tiles[0]); } finally { hurtWhy = ''; }
   if (line) cb.log.push(u.name + ' crosses the ' + z.words.map((w) => w.toUpperCase()).join('·') + ' wall' + line + '.');
 }
 /** Sight blockers and light from magic (VEIL smoke, LIGHT). */
@@ -216,6 +224,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
   u.ap = Math.round((u.ap - ap) * 10) / 10; m.charge -= w.charge;
   const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: tile, by: u.id, side: u.side, left: 2 + m.durBonus, who: u.name };
   cb.glyphs = [...(cb.glyphs || []), g];
+  emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile, word, side: u.side });
   // Only so many glyphs of yours on the ground: the oldest fades.
   const mine = cb.glyphs.filter((x) => x.by === u.id);
   let faded = '';
@@ -226,26 +235,27 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
 function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
   const m = u.mg!; m.flux += n;
   if (m.flux <= FLUX_MAX) return '';
-  const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round; shiftMana(cb, all, 'an Evoker overloads');
-  return ' OVERLOAD: the Evoker bursts' + harm(cb, rng, null, u, 10 * over, 'true') + ', locked until next round';
+  const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
+  emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
+  return ' OVERLOAD: the Evoker bursts' + harmFor('overload', () => harm(cb, rng, null, u, 10 * over, 'true')) + ', locked until next round';
 }
 export function vent(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
   if (u.ap < SPELL_AP.vent) return 'Needs 1 AP.'; if (!m.flux) return 'No Flux to vent.';
-  u.ap -= SPELL_AP.vent; const n = m.flux; m.flux = 0; cb.log.push(u.name + ' vents ' + n + ' Flux into the air.'); shiftMana(cb, n, 'vented Flux');
+  u.ap -= SPELL_AP.vent; const n = m.flux; m.flux = 0; emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: n }); cb.log.push(u.name + ' vents ' + n + ' Flux into the air.'); shiftMana(cb, n, 'vented Flux');
   return null;
 }
 export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
   if (u.ap < SPELL_AP.core) return 'Needs 2 AP.'; if (m.cores < 1) return 'No spare cores.';
-  u.ap -= SPELL_AP.core; m.cores--; m.charge = CORE_CHARGE; cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  u.ap -= SPELL_AP.core; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Scuff (1 AP): wipe the glyphs on the tile you stand on. */
 export function scuff(cb: Combat, u: Unit): string | null {
   const here = (cb.glyphs || []).filter((g) => g.pos === u.pos); if (!here.length) return 'No glyphs under you.';
   if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
-  u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos);
+  u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos); emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   cb.log.push(u.name + ' scuffs out ' + here.map((g) => g.word.toUpperCase()).join(' and ') + ' at ' + refOf(u.pos) + '.');
   return null;
 }
@@ -326,7 +336,7 @@ function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilD
     if (!auto && by) {
       const r = d20(rng), cover = !opts.seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + (by.mg?.brain ?? 0) + condHit(by) - cover;
       crit = r === 20; roll = r;
-      if (r === 1 || (!crit && tot < t.def)) return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')';
+      if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: w.id }); return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')'; }
     }
     const dmg = (w.damage || 0) * mult * sm * (w.damage_type === 'elemental' ? em : 1) * (crit ? 2 : 1);
     let line = ' · ' + w.word + (roll ? ' hits (d20 ' + roll + (crit ? ', CRITICAL' : '') + ')' : '') + harm(cb, rng, by, t, dmg, w.damage_type === 'elemental' ? 'elemental' : 'sigil');
@@ -337,7 +347,7 @@ function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilD
   }
   switch (w.id) {
     case 'ward': { const s = Math.floor(30 * sm * mult); t.shield = Math.max(t.shield || 0, s); return ' · ' + t.name + ' is warded (' + s + ' shield)'; }
-    case 'mend': return heal(t, 25 * sm * mult * (by?.mg?.healMult || 1));
+    case 'mend': return heal(t, 25 * sm * mult * (by?.mg?.healMult || 1), cb);
     case 'bind': return applyCond(cb, rng, by, t, 'pinned');
     case 'blind': return applyCond(cb, rng, by, t, 'blinded');
     case 'slow': return applyCond(cb, rng, by, t, 'slowed');
@@ -377,11 +387,13 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string)
     const tiles = p.shape === 'line' ? p.tiles : p.shape === 'ring' ? [p.centre!] : p.tiles;
     const left = Math.max(...p.glyphs.map((g) => g.left));
     const veil = subjects.includes('veil'), light = subjects.includes('light');
+    emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.shape === 'line' ? p.far : p.centre || p.tiles[0], impact: null, targets: [], words: p.words, element: subjects[0] || null, stay: true, side: u.side });
     cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: veil ? 'veil' : light ? 'light' : 'wall', tiles: veil ? tiles.flatMap((k) => around(k, 1)) : light ? tiles.flatMap((k) => around(k, 4)) : tiles, words: subjects, by: u.id, side: u.side, left, mult: 0.5, who: u.name }];
     cb.log.push(head + ': it stands' + (veil ? ' as smoke' : light ? ' as light' : ' as a wall') + ' at ' + tiles.map(refOf).join(', ') + ' for ' + left + ' round' + (left === 1 ? '' : 's') + '.');
     return null;
   }
   const path = spellPath(cb, u, p, aim);
+  emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: path.src, impact: path.impact, targets: path.targets.map((t) => t.id), targetAt: path.targets.map((t) => t.pos), words: p.words, element: subjects[0] || null, cone: !!path.cone, side: u.side });
   const formMult = path.cone ? 0.6 : has('spread') ? 0.6 : p.shape === 'ring' ? 0.8 : 1;
   let line = '';
   const hitAll = (targets: Unit[], src: string) => {
@@ -421,13 +433,14 @@ function addStrain(cb: Combat, rng: Rng, u: Unit, n: number, why: string) {
  * never dead (Leon). A failure hurts and stuns, and anything held releases wild. */
 function manaShort(cb: Combat, rng: Rng, u: Unit) {
   const m = u.mg!, over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
+  emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
   if (r === 1) {
-    u.hp = 0; if (u.side === 'foe') u.dead = true; else u.downed = true;
+    u.hp = 0; if (u.side === 'foe') u.dead = true; else u.downed = true; fxFell(cb, u);
     cb.log.push('MANA SHORT: ' + u.name + "'s heart bursts (d20 1 vs " + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed') + '.');
     m.held = null; return;
   }
   if (r !== 20 && tot < tn) {
-    cb.log.push('MANA SHORT: ' + u.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')' + harm(cb, rng, null, u, 15 * m.strain, 'true') + ', Stunned.');
+    cb.log.push('MANA SHORT: ' + u.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')' + harmFor('short', () => harm(cb, rng, null, u, 15 * m.strain, 'true')) + ', Stunned.');
     u.stunnedNext = 1;
     if (m.held && !u.dead && !u.downed) wildRelease(cb, rng, u);
   } else cb.log.push(u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ').');
@@ -440,7 +453,7 @@ function slip(cb: Combat, rng: Rng, u: Unit, dmg: number): string {
 function wildRelease(cb: Combat, rng: Rng, u: Unit): boolean {
   const m = u.mg!, d = m.designs.find((x) => x.id === m.held?.design); if (!d) { m.held = null; return false; }
   const near = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= designRange(m, d));
-  if (!near.length) { cb.log.push(u.name + "'s Outburst bursts into the air."); m.held = null; return true; }
+  if (!near.length) { emitFx(cb, 'release', { unit: u.id, at: u.pos, to: u.pos, school: d.school, stage: m.held?.stage || 1, wild: true, area: 0, targets: [], air: true }); cb.log.push(u.name + "'s Outburst bursts into the air."); m.held = null; return true; }
   const t = near[die(rng, near.length) - 1];
   cb.log.push(u.name + "'s Outburst releases wild at " + t.name + '.');
   releaseAt(cb, rng, u, d, t.pos, true);
@@ -474,6 +487,7 @@ export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, a
   u.ap -= pv.ap; if (m.emanator) m.mp -= pv.cost; m.cast = true;
   shiftMana(cb, -Math.ceil(pv.cost / 10));
   m.held = { design: d.id, stage: 1, cost: pv.cost };
+  emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: d.id, school: d.school, hold, stage: 1 });
   cb.log.push(u.name + (hold ? ' begins ' + d.name + ' and holds it: the heart glows' : ' lets ' + d.name + ' go') + ' (' + pv.cost + ' MP' + (m.emanator ? '' : ' from the air') + ').');
   addStrain(cb, rng, u, pv.strain, 'cast');
   if (!hold && m.held && !u.dead && !u.downed) releaseAt(cb, rng, u, d, aim!, false);
@@ -497,6 +511,7 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
   if (has('random') && !wild) { const pool = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= range); if (pool.length) aim = pool[die(rng, pool.length) - 1].pos; }
   const radius = has('rain') ? 2 : 0, size = has('size') ? 1 : 0, area = radius + size;
   let targets = area ? cb.units.filter((v) => !v.dead && dist(v.pos, aim) <= area) : cb.units.filter((v) => !v.dead && v.pos === aim);
+  emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, school: d.school, option: d.option || null, stage, wild, area, targets: targets.map((t) => t.id) });
   const school = d.school, line: string[] = [];
   const one = (t: Unit, f: number) => {
     if (school === 'damage') {
@@ -504,14 +519,14 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
       if (has('inverse') && t.side === u.side) { const s = Math.floor(base); t.shield = Math.max(t.shield || 0, s); line.push(t.name + ' is shielded (' + s + ')'); return; }
       if (!has('at_once')) {
         const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (has('homing') ? 2 : 0) + condHit(u) - cover;
-        if (r === 1 || (r !== 20 && tot < t.def)) { line.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return; }
+        if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); line.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return; }
         line.push('hits ' + t.name + ' (d20 ' + r + (r === 20 ? ', CRITICAL' : '') + ')' + harm(cb, rng, u, t, base * (r === 20 ? 2 : 1), 'soul'));
       } else line.push(harm(cb, rng, u, t, base, 'soul').replace(/^ · /, ''));
     } else if (school === 'buff') {
       const opt = d.option || 'heal';
       if (opt === 'defense') line.push(applyCond(cb, rng, u, t, 'guarded', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
       else if (opt === 'hit') line.push(applyCond(cb, rng, u, t, 'inspired', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
-      else line.push(heal(t, 30 * m.healMult * sm * f).replace(/^ · /, ''));
+      else line.push(heal(t, 30 * m.healMult * sm * f, cb).replace(/^ · /, ''));
     } else if (school === 'control') {
       const opt = d.option || 'push';
       if (opt === 'push' || opt === 'pull') { const r = d20(rng), ok = r === 20 || (r !== 1 && r + saveOf(t, 'body') >= 12 + m.debuff.body); line.push(ok ? t.name + ' holds its ground (Body save)' : (shove(cb, t, u.pos, opt === 'push' ? 3 : -3).replace(/^ · /, '') || t.name + ' can\'t be moved')); }
@@ -536,14 +551,14 @@ export function syphon(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return 'You need an Emanator to Syphon.';
   if (u.ap < SPELL_AP.syphon) return 'Needs 1 AP.'; if (m.mp >= m.mpMax) return 'Your Emanator is full.';
   u.ap -= SPELL_AP.syphon; const gain = Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), was = m.mp; m.mp = Math.min(m.mpMax, m.mp + gain);
-  shiftMana(cb, -2); cb.log.push(u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
+  emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: m.mp - was }); shiftMana(cb, -2); cb.log.push(u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
   return null;
 }
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return 'You need an Emanator to Crystallise.';
   if (u.ap < SPELL_AP.crystallise) return 'Needs 3 AP.'; if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  u.ap -= SPELL_AP.crystallise; m.coresMade++; shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
+  u.ap -= SPELL_AP.crystallise; m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Enemies scuff a player's glyph they stand on (spec: Sigils, 4). */
