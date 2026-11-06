@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  ARCHETYPES, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -87,6 +87,12 @@ describe('campaigns', () => {
     const skills = new Set(storyObjects(g).flatMap((o) => o.approaches.flatMap((a) => a.skills)));
     expect(skills.size).toBe(27); // every skill has a way in, in the tutorial zone
     expect(storyObjects(g).find((o) => o.kind === 'trap')!.hidden).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'The guns stop.' } as any }, 'host'); // the opening
+    const id0 = Object.keys(g.characters)[0], exit = storyObjects(g).find((o) => o.to === 'rear_pad')!;
+    expect(exit.name).toBe('To Outpost-813 rear landing pad');
+    g = apply(g, { type: 'story/move', charId: id0, to: 'O6' }, 'host');
+    g = apply(g, { type: 'poi/travel', charId: id0, objId: exit.id }, 'host');
+    expect(g.story.entries.at(-1)!.text).toMatch(/asks to travel to Outpost-813 rear landing pad/);
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
     const ramp = storyObjects(g).find((o) => o.name === 'The loading ramp')!;
     expect(ramp.approaches.length).toBe(5); expect(refOf(ramp.pos)).toBe('M5');
@@ -115,6 +121,81 @@ describe('campaigns', () => {
     expect(() => apply(g, { type: 'campaign/load', campaign: { id: 'bad' } } as any, 'host')).toThrow(/problems/);
     g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id) }, 'host'); g = apply(g, { type: 'session/start' }, 'host');
     expect(g.campaign!.title).toBe('My Campaign');
+  });
+});
+
+describe('vision, stances and reactions', () => {
+  const setup = (dark = false) => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const map = { ...MAPS.yard, dark, cover: [], full: [] };
+    const cb = startCombat('t', map, [{ c, pos: '1,5' }], [{ name: 'E', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: 'J6' }], 'easy', { state: 5 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!; u.weapon = 'hellraiser_service_rifle'; u.ammo = 24; u.ap = 9;
+    return { c, cb, u, e: cb.units.find((x) => x.side === 'foe')! };
+  };
+  it('darkness halves sight; fog hides what nobody sees; Sensory senses what is close', () => {
+    let { cb, u, e } = setup(false); u.vision = 12; e.pos = '11,5';
+    expect(visibility(cb).seen.has(e.id)).toBe(true);
+    ({ cb, u, e } = setup(true)); u.vision = 12; u.sensory = 3; e.pos = '11,5';
+    const v = visibility(cb); expect(v.seen.has(e.id)).toBe(false); expect(previewAttack(cb, u, e, 'shot').why).toMatch(/can't see/);
+    e.pos = '3,5'; expect(visibility(cb).sensed.has(e.id)).toBe(false); expect(visibility(cb).seen.has(e.id)).toBe(true); // 2 tiles: within half sight
+  });
+  it('prone, shove, brace, burst, overwatch and opportunity attacks', () => {
+    const { cb, u, e, c } = setup(false); u.ap = 9; e.pos = '2,5';
+    const base = previewAttack(cb, u, e, 'shot').toHit; e.prone = true;
+    expect(previewAttack(cb, u, e, 'shot').toHit).toBe(base - 2); expect(previewAttack(cb, u, e, 'melee').toHit).toBeGreaterThan(previewAttack({ ...cb } as any, u, { ...e, prone: false } as any, 'melee').toHit);
+    e.prone = false; u.strength = 20; expect(shove(cb, { state: 3 }, u, e)).toBeNull(); expect(e.pos).toBe('3,5');
+    u.ap = 9; expect(fireBurst(cb, { state: 9 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6);
+    u.ap = 9; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true);
+    expect(toggleProne(cb, u)).toBeNull(); expect(moveUnit(cb, u, '1,6')).toMatch(/Stand up/); toggleProne(cb, u);
+    // overwatch: e moves in sight and takes the shot
+    u.ap = 9; e.pos = '8,5'; expect(setOverwatch(cb, u, 'shot')).toBeNull(); e.ap = 9;
+    const before = cb.log.length; moveUnit(cb, e, '7,5', { state: 11 }); expect(cb.log.slice(before).some((l) => /overwatch/.test(l))).toBe(true);
+    // opportunity attack: leaving melee reach without disengaging
+    cb.round++; e.pos = '2,5'; u.pos = '1,5'; e.ap = 9; const b2 = cb.log.length; moveUnit(cb, e, '4,5', { state: 13 });
+    expect(cb.log.slice(b2).some((l) => /opportunity/.test(l))).toBe(true);
+    cb.round++; e.pos = '2,5'; e.ap = 9; const b3 = cb.log.length; moveUnit(cb, e, '3,5', { state: 13 }, 'disengage');
+    expect(cb.log.slice(b3).some((l) => /opportunity/.test(l))).toBe(false);
+  });
+});
+
+describe('weapons v2', () => {
+  const give = (c: any, extra: any[]) => { c.pack = [...packOf(c), ...extra]; };
+  it('equip, slot armour, mods, durability and repair, rarity', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    give(c, [{ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' }, { id: 'ballistic_helmet', item: 'ballistic_helmet', name: 'Helmet', qty: 1, kind: 'tool' },
+      { id: 'mod_quick_release', item: 'mod_quick_release', name: 'QR', qty: 1, kind: 'tool' }, { id: 'magistrate_pistol', name: 'Magistrate', qty: 1, kind: 'weapon', weapon: 'magistrate_pistol', rarity: 'masterwork' }]);
+    const d0 = defense(c);
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'buckler'), 'off')).toBeNull(); expect(defense(c)).toBe(d0 + 1);
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'ballistic_helmet'), 'worn')).toBeNull(); expect(c.worn!.head).toBe('ballistic_helmet');
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'magistrate_pistol'), 'main')).toBeNull(); expect(c.weapon).toBe('magistrate_pistol');
+    expect(packOf(c).some((x) => x.weapon === 'service_pistol')).toBe(true); // the old pistol went back to the pack
+    expect(fitMod(c, packOf(c).findIndex((x) => x.id === 'mod_quick_release'))).toBeNull();
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
+    expect(u.armour).toBe(10 + 2); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
+    u.ap = 9; u.ammo = 0; u.mags = [7]; expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(8); // quick-release: 1 AP
+    const d1 = u.dur!; u.ap = 9; resolveAttack(cb, { state: 3 }, u, e, 'shot', c); expect(u.dur).toBeLessThan(d1);
+    u.dur = 10; u.proficiency = 3; u.parts = 1; u.ap = 9; expect(fieldRepair(cb, u)).toBeNull(); expect(u.dur).toBeGreaterThan(10); expect(u.parts).toBe(0);
+    u.dur = 0; expect(previewAttack(cb, u, e, 'shot').why).toMatch(/Broken/);
+  });
+  it('weapon skill actions and paired attacks', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'C5' }, { name: 'F', tier: 'boss', weapon: 'service_pistol', at: 'C6' }], 'easy', { state: 4 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!, [e, f] = cb.units.filter((x) => x.side === 'foe');
+    u.weapon = 'drifter_revolver'; u.ammo = 6; u.ap = 9; const before = cb.log.length;
+    expect(useWeaponSkill(cb, { state: 8 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6); expect(cb.log.slice(before).filter((l) => /fires at/.test(l)).length).toBe(3); // Fan the Hammer
+    u.weapon = 'adamantile_greatsword'; u.pos = '2,5'; e.pos = '3,5'; f.pos = '3,6'; u.ap = 9; u.maxDur = 0;
+    expect(useWeaponSkill(cb, { state: 8 }, u, null, c)).toBeNull(); expect(u.ap).toBe(5); // Sweep hits both
+    u.weapon = 'combat_knife'; u.offWeapon = 'hatchet'; u.ap = 9; const b2 = cb.log.length;
+    expect(pairedAttack(cb, { state: 2 }, u, e, null, c)).toBeNull(); expect(u.ap).toBe(6); expect(cb.log.slice(b2).filter((l) => /strikes/.test(l)).length).toBe(2);
+  });
+  it('the Narrator hands out loot', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host'); g = apply(g, { type: 'session/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', loot: [{ charId: id, item: 'legion_bullpup', qty: 1, rarity: 'fine', name: 'Keel\'s bullpup' }, { charId: id, item: 'riot_shield', qty: 1 }] } as any }, 'host');
+    const pack = packOf(g.characters[id]);
+    expect(pack.find((x) => x.weapon === 'legion_bullpup')!.rarity).toBe('fine'); expect(pack.some((x) => x.id === 'riot_shield')).toBe(true);
   });
 });
 
@@ -189,6 +270,8 @@ describe('combat', () => {
     expect(u.hp).toBe(hp - 5); expect(u.bleed).toBe(2);
     expect(movement({ ...c, injuries: [{ loc: 'leg', side: 'left' }] })).toBe(movement(c) / 2);
     expect(packOf(c).map((x) => x.id)).toContain('field_kit');
+    const heavy = { ...c, pack: [...packOf(c), { id: 'rocks', name: 'Rocks', qty: 6, kind: 'weapon' as const, weapon: 'blackpoint_700' }] }; // +90 kg
+    expect(overweightKg(heavy)).toBeGreaterThan(0); expect(movement(heavy)).toBe(Math.max(0.5, movement(c) - Math.ceil(overweightKg(heavy) / 5)));
   });
   it('reloading uses up magazines and drops the one in the gun, rounds and all', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); // medic kit: pistol, 2 spare magazines
@@ -204,7 +287,7 @@ describe('combat', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     const k = carriedKg(c);
     // pistol 1 + empty magazine 0.1 + 12 rounds × 0.01; Medium armour 8; 2 magazines (0.2 + 24 × 0.01), field kit 1.5, 3 stims 0.3, Essence 0.1
-    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 0.24 + 1.5 + 0.3 + 0.1, 5); // + 24 loose rounds
+    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 0.24 + 1.5 + 0.48 + 0.3 + 0.1, 5); // + 24 loose rounds, 3 spare-parts charges
   });
   it('cover: half is −5 and can be shot to rubble; full blocks sight', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
@@ -300,5 +383,98 @@ describe('a full session', () => {
     const v = viewFor(g, 'p2');
     expect(v.story.entries.some((e) => e.to && e.to !== 'p2')).toBe(false);
     expect(v.story.scene.hooks.length).toBe(0);
+  });
+});
+
+describe('music (spec: Music)', () => {
+  const songLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1m5s';
+  const room = (traits: string[] = []) => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'music');
+    const act = (a: any, by = 'host') => { g = apply(g, a, by); };
+    act({ type: 'player/join', id: 'p2', name: 'Friend' });
+    act({ type: 'char/add', sheet: { ...sheetFrom('field_medic', 'MPAT'), traits, identity: { song: songLink, songTitle: 'Song A', songArtist: 'Artist A' } } });
+    act({ type: 'char/add', sheet: { ...sheetFrom('field_medic', 'Seven'), identity: { song: 'https://youtu.be/aaaaaaaaaaa', songTitle: 'Song B' } } }, 'p2');
+    act({ type: 'session/start' });
+    act({ type: 'narrator/turn', turn: { narration: 'Begin.', sceneTitle: 'Shield line' } });
+    const [a, b] = Object.values(g.characters);
+    return { get g() { return g; }, set g(x) { g = x; }, act, a, b };
+  };
+  it('reads YouTube links: id and start time', () => {
+    expect(ytId(songLink)).toBe('dQw4w9WgXcQ'); expect(ytId('https://youtu.be/dQw4w9WgXcQ?si=x')).toBe('dQw4w9WgXcQ'); expect(ytId('not a link')).toBeNull();
+    expect(ytStart(songLink)).toBe(65); expect(songOf({ identity: { song: songLink } } as any)!.start).toBe(65);
+  });
+  it('area music comes from the zone, else the campaign; a fight switches to fight music', () => {
+    const r = room();
+    for (const z of r.g.campaign!.zones) delete z.music;
+    r.g.campaign!.music = { ambient: { yt: 'aaaaaaaaaaa', title: 'Camp' }, combat: { yt: 'bbbbbbbbbbb', title: 'Fight' } } as any;
+    expect(musicFor(r.g).track!.title).toBe('Camp');
+    r.g.campaign!.zones.find((z) => z.id === r.g.story.zone)!.music = { ambient: { yt: 'ccccccccccc', title: 'Zone', artist: '' } };
+    expect(musicFor(r.g).track!.title).toBe('Zone'); expect(musicFor(r.g).layer).toBe('ambient');
+    r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Odd fight', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
+    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Fight' } });
+  });
+  it('a spotlight: once per scene, never cuts off a playing song, ends after one play (host says so)', () => {
+    const r = room(), log: string[] = [], g = r.g;
+    const a = g.characters[r.a.id], b = g.characters[r.b.id];
+    expect(startSong(g, a, 'a critical success', 'spotlight', (t) => log.push(t))).toBe(true);
+    expect(musicFor(g)).toMatchObject({ layer: 'spotlight', charId: a.id });
+    expect(startSong(g, b, 'x', 'spotlight', () => {})).toBe(false);
+    const seq = g.music!.now!.seq; r.g = g; r.act({ type: 'music/end', seq });
+    expect(r.g.music!.now).toBeNull();
+    expect(startSong(r.g, r.g.characters[a.id], 'again', 'spotlight', () => {})).toBe(false);
+    expect(startSong(r.g, r.g.characters[b.id], 'b turn', 'spotlight', () => {})).toBe(true);
+    expect(log[0]).toContain('MPAT');
+    expect(() => r.act({ type: 'music/end', seq: 1 }, 'p2')).toThrow(RuleError);
+  });
+  it('a music trait plays on demand, pins for 2 area changes, and its bonus follows the song', () => {
+    const r = room(['headbanger']);
+    const zones = r.g.campaign!.zones.map((z) => z.id);
+    expect(packOf(r.g.characters[r.a.id]).some((x) => x.id === 'musek_blestor')).toBe(true);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+    expect(() => r.act({ type: 'music/play', charId: r.b.id }, 'p2')).toThrow(RuleError);
+    r.act({ type: 'music/play', charId: r.a.id });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(1);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'analysis')).toBe(0);
+    r.act({ type: 'music/pin', charId: r.a.id });
+    expect(r.g.music!.now!.layer).toBe('pin');
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[1] } });
+    expect(r.g.music!.now!.areasLeft).toBe(1);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[2] } });
+    expect(r.g.music!.now).toBeNull();
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(1);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[0] } });
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[1] } });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[2] } });
+    r.act({ type: 'narrator/turn', turn: { narration: 'Go.', travel: zones[0] } });
+    expect(songMod(r.g, r.g.characters[r.a.id], 'analysis')).toBe(-1);
+    expect(songMod(r.g, r.g.characters[r.a.id], 'raw_power')).toBe(0);
+  });
+  it('in a fight: Play my song costs 2 AP, and a song started in the fight stops when it ends', () => {
+    const r = room(['headbanger']);
+    r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Test', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
+    let u = active(r.g.combat!)!;
+    for (let i = 0; i < 6 && u.charId !== r.a.id; i++) { r.act({ type: 'combat/end-turn', unitId: u.id }, r.g.characters[u.charId!].owner); u = active(r.g.combat!)!; }
+    expect(u.charId).toBe(r.a.id);
+    const ap = u.ap; r.act({ type: 'combat/song', unitId: u.id });
+    expect(active(r.g.combat!)!.ap).toBe(ap - 2);
+    expect(r.g.music!.now).toMatchObject({ inCombat: true, charId: r.a.id });
+    expect(active(r.g.combat!)!.song).toBe(1);
+    r.act({ type: 'music/end', seq: r.g.music!.now!.seq });
+    expect(r.g.music!.now).not.toBeNull();
+  });
+});
+
+describe("the Narrator's wiki (glossary)", () => {
+  it('has an entry for every rule-bearing kind, found by key or by name', () => {
+    const kinds = wikiKinds();
+    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
+    expect(wikiLookup('weapon:service_pistol')!.text).toContain('Snap Shot');
+    expect(wikiLookup('condition:Bleeding')!.key).toBe('condition:bleeding');
+    expect(wikiLookup('item:musek_blestor')!.text).toContain('favourite song');
+    expect(wikiLookup('nope:x')).toBeNull();
+  });
+  it('never lists Ultimate perks (they are a secret)', () => {
+    expect(wikiEntries().some((e) => e.key.startsWith('perk:') && /\(ultimate/.test(e.text))).toBe(false);
   });
 });

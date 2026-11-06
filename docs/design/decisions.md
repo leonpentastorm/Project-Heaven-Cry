@@ -83,3 +83,69 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 69. **Campaigns are packages; hosts can bring their own** (Leon: premade campaigns with their maps, areas and interaction points built, text for the intended beginning, middle and end, and an opening for the Narrator; and you can create your own). Every campaign is one JSON file: pitch, arc (Narrator only; steer, never force), secrets, opening, cast, prepared fights, and zones (maps with notes, objects and pre-written approaches). The Narrator gets the whole package in its cached campaign block, and moves the party between zones with `travel`; each zone keeps its objects as the party left them. M813 is now a four-zone campaign (rear pad, wreck field, Outpost-813, Outpost-1) following the logged incident. The other four starts are one-zone campaigns. A host loads a custom campaign in the Room; the engine validates it and explains any problems. A campaign editor screen is the next step for people who don't want to write JSON.
 70. **M813 is the tutorial, built on Goodsprings** (Leon: make it poignant; every skill represented in POI checks; tutorial format, after Fallout: New Vegas's Goodsprings). A new first zone, the shield line, teaches one system per beat through things the players want to do anyway, with Sergeant Nine-Nine as the teacher, and nothing there can kill a player character. Every one of the 27 skills has an approach in that zone. The ramp standoff becomes the first real test, prepared from nine angles. The names learned on the shield line (Nine-Nine, Seven-Seven, Hum, Lantern) are what the ramp threatens, since the record says nineteen die there. The wreck field merged into the shield line; the outpost gains the record's choice and MPAT's cookbook. Notes in `docs/design/M813-tutorial-campaign.md`.
 71. **The tutorial campaign's art list, and the map tests that came with it** (Leon: a banner per area, profile pictures for every NPC, the maps tested, everything for a high-quality campaign, drawn by GPT to spec). `art/briefs/m813-tutorial-campaign.md` lists 52 images in priority order: 4 zone banners, 16 portraits, 4 top-down map backgrounds, 4 story moments and 24 object sprites. `tools/render_map_guides.py` renders each zone's tile layout from the campaign file as the painter's guide, so the art matches the rules exactly. Backgrounds hold only walls and ground; objects are sprites on top. Rendering the maps exposed two bugs, both fixed: units could squeeze diagonally between two wall tiles, and moving outside a fight ignored walls and closed doors. Now no diagonal step passes a wall corner, and story moves need a real path. The locked security door at Outpost-1 got its ways through.
+72. **Leon's answers to the open questions** (7 Nov 2026):
+    - **Weapons v2:** keep the rarity names and paired-attack penalties; durability wears per attack; one Vision stat governs darkness and fog of war, shaped by Sensory and Vigilant; the machete becomes one-handed; keep every weapon type.
+    - **Overburdened** is a permanent status while over the carry limit.
+    - **Invention:** Claude invents names, patrons and NPCs freely, and Leon flags what feels off.
+    - **Campaigns:** the Room shows M813, Heaven Cry at Astradoel (the 50-hour campaign, coming after the systems) and the host's own; the sketches are hidden.
+    - **Classes:** no second base class (saved for an expansion).
+    - **Enhanced rounds** are rare and bought, and Mind classes and the Spellslinger make them.
+    - **Durability** HP gains are retroactive.
+    - **Actions:** Claude writes the undefined actions, and the combat action panel splits into Movement / Attack & defend / Utility.
+    - **Armour:** Claude drafts items for the other slots.
+    - **Magic:** Sigils and Outbursts get their own branch later.
+    - **Narrator providers:** other providers come after the playtest.
+    - **Coming soon:** the human Narrator screen.
+    - **Campaign editor:** after the human Narrator screen.
+    - **Travel:** players may ask to travel from a way out.
+    - **Enemies** carry Endurance and ammo (thieves will need things to steal).
+    - **Art tools:** ComfyUI waits for Leon's prompt.
+    - **No mid-fight Narrator lines:** screen shake, VFX, loot and sound will carry fights.
+73. **Combat grows its full action set, and Vision is one stat** (Leon: Movement / Attack & defend / Utility; write the undefined actions; vision, fog of war and darkness governed by a vision stat shaped by Sensory and Vigilant).
+    - **Built as the spec already had them:** Sprint, Disengage, drop prone and stand up, opportunity attacks (one reaction per round), Overwatch, Burst, Full auto, and Brace (the LMG's −2 and the Blackpoint's braced-or-prone).
+    - **Written and built:** Shove.
+    - **Written:** Field Repair (built with weapon durability), Break, Improvise Tool, Analyze on NPCs, and wards and rituals (Narrator until the magic branch).
+    - **Vision:** 12 + 2 × (Perception − 1) + Vigilant, halved in darkness except near light sources (fire, lamps, terminals; torches later). The squad shares sight: unseen enemies aren't drawn or targetable. Sensory senses close unseen enemies as a "?". Enemies see by the same rule.
+    - **Darkness:** Outpost-813's hangar is the dark zone, where the tutorial teaches it.
+74. **Weapons v2 is in the rules and the engine** (Leon accepted the proposal with his calls, decision 72). The proposal merged into the spec as "Weapons, version 2" (item 61). Data: 58 weapons with hands, a granted weapon skill, durability, mod slots, prices and lore; a Mana arms mastery family; new calibres with prices; 5 off-hand items; 13 mods; per-charge spare parts; 14 slot armour pieces; prices on everything. Engine:
+    - **Weapon condition and gear:** rarity (accuracy, damage, durability); durability worn per attack (worn guns jam on 1–2, broken guns can't fire, worn or broken blades lose damage); Field Repair.
+    - **Mods:** red dot, scope, suppressor, extended and quick-release magazines, bayonet, serrated and weighted edges.
+    - **Weapon skills:** 16 run as effects or actions. Fan the Hammer, Both Barrels, Volley and Sweep are actions; the rest are passive effects (bonuses, armour piercing, on-hit push, prone, bleeding, armour break, cover damage). The other 42 are labelled "the Narrator rules this one" until they're built.
+    - **Hands and armour:** paired attacks with an off-hand weapon; shields, torches (light radius into Vision) and slot armour bonuses (armour, Defense, Movement, carry, dark sight, toxic immunity, rough ground, unarmed damage).
+    - **Equipping:** equip, take off and fit mods out of combat.
+    - **Loot:** the Narrator's `loot[]` hands out weapons and items with rarity and a name.
+75. **The Gear tab shows hands, body and backpack as separate cards, names only** (Leon: hands get their own panels for weapon art; the body list shows names, hover for details, click to act).
+    - **Hands:** a right-hand and a left-hand card (in the order of the main hand's side), each with a square art frame. The frame border takes the rarity. A two-handed main weapon fills the off hand.
+    - **Names only:** the body slots and backpack rows show the item's name (and kg in the pack). Hovering, or focusing with the keyboard, opens a card with the icon, the stats, the granted skill, the weight and price, and the lore line.
+    - **Click to act:** clicking opens that item's actions in place: Equip, Hold in the off hand, Wear, Take off, Fit mod, Load magazines. In a fight the menu says gear changes after the fight.
+    - **Art hooks:** the frames and cards look up `weapon-<id>` and `item-<id>` in the art catalog. Until those exist they show the weapon type's glyph.
+76. **Music: one room soundtrack through YouTube, spotlight songs, and the music traits wired in** (Leon, 6 Nov 2026: YouTube from channels that give their music away, Suno-made tracks later; spotlight triggers as proposed; pins last two areas; build it now).
+    - **Layers:** pinned song › spotlight › encounter theme › combat › ambient. The engine decides (`musicFor`). Each browser plays the track in YouTube's embedded player, which sits in the ♪ panel.
+    - **Spotlight:** a natural 20 on a Hard or Heroic check, taking down an elite or boss, a revive, a deed, or an Ultimate. Once per character per scene and per fight, and a playing song is never cut off. It lasts one full play, or until the fight ends if it started in one. The host's browser ends a one-play song on the clock (`music/end`).
+    - **Music traits:**
+      - Start with a Musek Blestor.
+      - Play my song: 2 AP in a fight, free once per scene outside one.
+      - Their own triggers (kill, revive, a heal of 30 or more) have no once-per-scene limit.
+      - Keep it playing for 2 area changes.
+      - The trait's +1 and −1 follow the room's song state, never a player's local pause.
+    - **Credits:** every change shows the title and artist. The panel adds the licence and a link to the video.
+    - **Players' songs:** whatever the player links is their choice. Creation checks the link with YouTube's oEmbed: it rejects videos that block embedding and fills in the title and artist. The Narrator only hears whose song is playing, never its title (the Unspoken Name).
+    - **M813 tracks** (verified to embed; CC-BY, credited in the panel):
+
+      | Slot | Track |
+      |---|---|
+      | Shield line | Scott Buckley, "I Walk With Ghosts" |
+      | Rear pad | "Decoherence" |
+      | Outpost | Kevin MacLeod, "Ossuary 6 – Air" |
+      | Outpost-1 | "Machina" |
+      | Default ambient | "Shadows and Dust" |
+      | Default combat | "Volatile Reaction" |
+      | The ramp | "Red" |
+      | Station security | "Pursuit" |
+77. **The Narrator reads only what the moment needs; the rest is a wiki it looks up** (Leon, 6 Nov 2026: cut what doesn't belong in the Narrator's context; split the World Bible into sections, guarded by the campaign file; build a click-to-open dictionary for the AI from the engine).
+    - **Output schema:** no long id enums. Weapon, item, perk and skill ids are plain strings that the engine validates. This fixed Anthropic's 400 "compiled grammar is too large".
+    - **Context per call:** the Earth Sector sends only the party's origins; the EPCCG cast only when the campaign asks for it; the World Bible only the chunks the campaign's `narratorLore` names (design sections never). The map moves into the turn prompt. Plain cover, exits, HP numbers, enemy stats and unearnable combo perks are gone. The cached blocks went from about 72k to 40k characters.
+    - **The wiki:**
+      - The engine's `glossary.ts` builds entries from the data pack: skills, traits, perks (no Ultimates), weapons, items, conditions, classes, patrons, enemy tiers, objects. The web adds the lore chunks.
+      - The Narrator calls `wiki_lookup` (up to 8 keys, 3 rounds) before it answers.
+      - If the API refuses tools alongside structured output, the turn runs without them.

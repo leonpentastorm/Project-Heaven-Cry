@@ -1,6 +1,6 @@
 # Weapons v2: proposal (draft for Leon)
 
-Status: **draft, not yet rules.** Once Leon approves or strikes lines, it goes into the spec (Weapons; Equipment slots), then `data/weapons.json` and friends, then the validator. Every new number here is provisional and will be listed in spec section 14.
+Status: **accepted 7 Nov 2026 and merged into the spec** (Weapons, version 2). Kept as the record of the proposal. Once Leon approves or strikes lines, it goes into the spec (Weapons; Equipment slots), then `data/weapons.json` and friends, then the validator. Every new number here is provisional and will be listed in spec section 14.
 
 Leon's calls (7 Nov 2026):
 

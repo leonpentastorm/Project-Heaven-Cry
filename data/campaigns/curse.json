@@ -113,5 +113,13 @@
         }
       ]
     }
+  ],
+  "listed": false,
+  "narratorLore": [
+    "truth",
+    "worlds",
+    "magic",
+    "mana",
+    "sector-earth"
   ]
 }

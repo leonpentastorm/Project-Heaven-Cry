@@ -22,13 +22,36 @@ export interface Character extends Sheet {
   pack?: PackItem[];
   /** Rounds in the weapon's magazine now; missing means full (old saves). */
   loaded?: number;
+  /** The main-hand weapon's condition (spec: Weapons v2): rarity, durability left, mods fitted, a custom name. */
+  weaponState?: GearState;
+  /** What the off hand holds: a one-handed weapon, a shield, a light or a focus (spec: Hands). */
+  offHand?: ({ id: string } & GearState) | null;
+  /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
+  worn?: Record<string, string>;
 }
+export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
+export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
+/** Rarity (spec: Weapons v2, Rarity): accuracy, damage and durability bonuses; price multiplier. */
+export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = {
+  standard: { acc: 0, dmg: 1, dur: 1, price: 1, marks: 0 }, fine: { acc: 1, dmg: 1, dur: 1.25, price: 3, marks: 1 },
+  masterwork: { acc: 2, dmg: 1.1, dur: 1.5, price: 8, marks: 2 }, relic: { acc: 2, dmg: 1.1, dur: 1.5, price: 25, marks: 3 }, celestial: { acc: 2, dmg: 1.1, dur: 1.5, price: 50, marks: 4 },
+};
+export const maxDurOf = (weaponId: string, rarity: Rarity = 'standard') => Math.round(((WEAPON[weaponId] as any)?.durability || ITEM[weaponId] && (ITEM[weaponId] as any).durability || 0) * RARITY[rarity].dur);
+export const weaponDurOf = (c: Character) => c.weaponState?.dur ?? maxDurOf(c.weapon, c.weaponState?.rarity);
+/** Effects of everything worn and held in the off hand (slot armour, shields, lights). */
+export function gearEffects(c: Character): { op: string; value?: number; hazard?: string }[] {
+  const ids = [...Object.values(c.worn || {}), ...(c.offHand && !WEAPON[c.offHand.id] ? [c.offHand.id] : [])];
+  return ids.flatMap((id) => ((ITEM[id] as any)?.effects || []) as { op: string; value?: number; hazard?: string }[]);
+}
+export const gearBonus = (c: Character, op: string) => gearEffects(c).filter((e) => e.op === op).reduce((t, e) => t + (e.value || 0), 0);
+export const gearHas = (c: Character, op: string) => gearEffects(c).some((e) => e.op === op);
 export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
 export interface Injury { loc: InjuryLoc; side?: 'left' | 'right' }
 export interface PackItem {
   id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string;
   /** Spare magazines for `weapon`: rounds in each. Loose rounds use `calibre` and qty = rounds. `item` names the items.json entry for weight. */
   mags?: number[]; calibre?: string; item?: string;
+  rarity?: Rarity; dur?: number; mods?: string[];
 }
 
 
@@ -89,7 +112,7 @@ export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds
 const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
 export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
-    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set'), gear('spare_parts', 3)] },
   soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, armourName: 'Flak vest', stims: 0,
     pack: [magsOf('hellraiser_service_rifle', 3), roundsOf('rifle', 48), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }, gear('ration_pack')] },
   sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0,
@@ -128,15 +151,17 @@ export function itemKg(it: PackItem): number {
 /** Everything carried: the weapon and its loaded magazine, armour, stims, the Essence and the pack. */
 export function carriedKg(c: Character) {
   const w = WEAPON[c.weapon];
-  const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon), armour: ARMOUR_KG[c.armourClass] || 0,
+  const off = c.offHand ? (WEAPON[c.offHand.id]?.weight_kg ?? (ITEM[c.offHand.id]?.weight_kg || 0)) : 0;
+  const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
+    armour: (ARMOUR_KG[c.armourClass] || 0) + Object.values(c.worn || {}).reduce((t, id) => t + (ITEM[id]?.weight_kg || 0), 0),
     pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
 }
-export const carryLimit = (c: Character) => 20 + 5 * (A(c, 'strength') - 1);
+export const carryLimit = (c: Character) => 20 + 5 * (A(c, 'strength') - 1) + gearBonus(c, 'carry_bonus');
 
 // ---------- injuries (spec: Injuries) ----------
 /** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */
-export const injuryResistPct = (c: Character) => 10 * (A(c, 'endurance') - 1);
+export const injuryResistPct = (c: Character) => 10 * (A(c, 'endurance') - 1) + gearBonus(c, 'injury_resist_bonus');
 /** One-handed weapons; everything else needs both arms, so any arm injury hurts it (spec: Injuries). */
 export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed'];
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
@@ -149,8 +174,12 @@ export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dod
 export const hpPerLevel = (c: Character) => 5 + 2 * P(c, 'durability');
 export const maxHp = (c: Character) => 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c);
 export const initiativeBonus = (c: Character) => (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed'));
-export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1));
-export const defense = (c: Character) => 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0));
+/** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
+export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
+export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
+export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus'));
+export const defense = (c: Character) => 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
+  + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0);
 export const physicalMult = (c: Character) => 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power');
 export const critMult = (c: Character) => 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics');
 export const healingMult = (c: Character) => 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie');
@@ -258,3 +287,47 @@ export function comboEligible(c: Character, perkId: string): string | null {
   const short = p.requires.filter((r: any) => r.skill && P(c, r.skill) < r.min).map((r: any) => SKILL[r.skill].name + ' ' + r.min);
   return short.length ? 'Needs ' + short.join(' and ') + '.' : null;
 }
+
+// ---------- equipping (spec: Hands; Slot armour) ----------
+/** Move a pack item into the main hand, the off hand, or its armour slot; what was there goes back to the pack. Returns an error or null. */
+export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
+  const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
+  const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
+  const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
+  const putBack = (id: string, st: GearState | undefined) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };
+  if (to === 'main') {
+    if (!wid) return 'Only weapons go in the main hand.';
+    const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
+    take(); putBack(c.weapon, c.weaponState);
+    if ((WEAPON[wid] as any).hands === '2H' && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
+    c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = 0;
+  } else if (to === 'off') {
+    if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
+    if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
+    take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
+    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods };
+  } else {
+    const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
+    take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
+  }
+  c.pack = pack; return null;
+}
+export function unequip(c: Character, slot: string): string | null {
+  const pack = packOf(c).map((x) => ({ ...x }));
+  if (slot === 'off') { if (!c.offHand) return 'Nothing there.'; const o = c.offHand; pack.push(WEAPON[o.id] ? { id: o.id, name: WEAPON[o.id].name, qty: 1, kind: 'weapon', weapon: o.id, rarity: o.rarity, dur: o.dur, mods: o.mods } : { id: o.id, item: o.id, name: ITEM[o.id]?.name || o.id, qty: 1, kind: 'tool' }); c.offHand = null; }
+  else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'tool' }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
+  c.pack = pack; return null;
+}
+/** Fit a mod from the pack onto the main-hand weapon, if it has that slot free. */
+export function fitMod(c: Character, idx: number): string | null {
+  const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
+  if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
+  const slots: string[] = (WEAPON[c.weapon] as any)?.mod_slots || [], mods = [...(c.weaponState?.mods || [])];
+  if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot.';
+  const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
+  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: 'tool' }); }
+  mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
+  c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
+}
+export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
+export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };

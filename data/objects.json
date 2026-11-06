@@ -107,7 +107,8 @@
       },
       "text": "Burning ground: 10 damage to anyone who starts a turn in it.",
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "light": 2
     },
     {
       "id": "toxic",
@@ -175,6 +176,20 @@
       "hp": 30,
       "text": "A console or machine. Using it is a check, usually Proficiency.",
       "adjudication": "hybrid",
+      "provisional": true,
+      "light": 1
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp",
+      "glyph": "✦",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": 10,
+      "light": 3,
+      "text": "A work lamp, flare or brazier: lights 3 tiles around it, so darkness doesn't halve sight there. Shoot it out to make the dark.",
+      "adjudication": "engine",
       "provisional": true
     },
     {

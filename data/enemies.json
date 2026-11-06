@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "enemies",
-  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52)",
+  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional)",
   "items": [
     {
       "id": "minion",
@@ -13,7 +13,9 @@
       "movement": 1.5,
       "ap": 6,
       "kills": 1,
-      "provisional": true
+      "provisional": true,
+      "endurance": 1,
+      "spare_mags": 1
     },
     {
       "id": "soldier",
@@ -25,7 +27,9 @@
       "movement": 1.5,
       "ap": 6,
       "kills": 1,
-      "provisional": true
+      "provisional": true,
+      "endurance": 3,
+      "spare_mags": 2
     },
     {
       "id": "elite",
@@ -37,7 +41,9 @@
       "movement": 2,
       "ap": 6,
       "kills": 1,
-      "provisional": true
+      "provisional": true,
+      "endurance": 5,
+      "spare_mags": 3
     },
     {
       "id": "boss",
@@ -49,7 +55,9 @@
       "movement": 2,
       "ap": 6,
       "kills": 3,
-      "provisional": true
+      "provisional": true,
+      "endurance": 7,
+      "spare_mags": 4
     }
   ]
 }

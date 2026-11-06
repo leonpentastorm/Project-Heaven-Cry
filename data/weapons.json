@@ -2,7 +2,7 @@
   "$schema_version": "1.0",
   "kind": "weapons",
   "source": "PHC Core Rules v1.0 (Game Spec)",
-  "notes": "Damage before multipliers. Range in tiles (effective range; up to 2 further bands at -2 each). accuracy and price_credits are null: the spec has no column for them. accuracy=0 is provisional (spec open item 1); price_credits=null pending open item 2.",
+  "notes": "Damage before multipliers. Range in tiles (effective range; up to 2 further bands at -2 each). accuracy and price_credits are null: the spec has no column for them. accuracy=0 is provisional (spec open item 1); price_credits=null pending open item 2. Weapons v2 (7 Nov 2026): 58 types with hands, granted weapon skills (grants.effect; \"narrator\" = ruled from the text until the engine runs it), durability, mod slots, prices and lore.",
   "items": [
     {
       "id": "service_pistol",
@@ -24,13 +24,29 @@
       "skill": "dexterity",
       "weight_kg": 1,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 250,
       "properties": [],
       "text": "",
       "mastery_family": "sidearms",
       "reload": "magazine",
       "magazine_kg": 0.1,
-      "reload_unit": "magazine"
+      "reload_unit": "magazine",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Snap Shot",
+        "text": "Swap to it and fire in one action for 2 AP.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Issued to everyone, trusted by no one, carried by all of them.",
+      "type": "service_pistol"
     },
     {
       "id": "drifter_revolver",
@@ -52,13 +68,30 @@
       "skill": "dexterity",
       "weight_kg": 1.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 350,
       "properties": [],
       "text": "",
       "mastery_family": "sidearms",
       "reload": "magazine",
       "magazine_kg": 0.05,
-      "reload_unit": "speedloader"
+      "reload_unit": "speedloader",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Fan the Hammer",
+        "text": "3 AP: up to 3 shots at one target at −2 each.",
+        "effect": {
+          "op": "multi_shot",
+          "ap": 3,
+          "shots": 3,
+          "extra": -2
+        }
+      },
+      "lore": "Six chances, and frontier folk count every one.",
+      "type": "drifter_revolver"
     },
     {
       "id": "decrkm_smg",
@@ -84,13 +117,31 @@
       "skill": "dexterity",
       "weight_kg": 3,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 600,
       "properties": [],
       "text": "",
       "mastery_family": "smgs",
       "reload": "magazine",
       "magazine_kg": 0.2,
-      "reload_unit": "magazine"
+      "reload_unit": "magazine",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Spray and Pray",
+        "text": "Full auto costs 3 AP instead of 4.",
+        "effect": {
+          "op": "auto_ap",
+          "value": 3
+        }
+      },
+      "lore": "Thirty rounds of opinion.",
+      "type": "decrkm_smg"
     },
     {
       "id": "hellraiser_service_rifle",
@@ -116,13 +167,30 @@
       "skill": "dexterity",
       "weight_kg": 4,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 900,
       "properties": [],
       "text": "",
       "mastery_family": "rifles",
       "reload": "magazine",
       "magazine_kg": 0.15,
-      "reload_unit": "magazine"
+      "reload_unit": "magazine",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Suppressing Fire",
+        "text": "3 AP: mark a 3-tile line until your next turn; enemies shooting from it or moving through it are at −2, and the first to move through it takes a shot.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Hellraisers' answer to every frontier.",
+      "type": "hellraiser_service_rifle"
     },
     {
       "id": "lever_carbine",
@@ -144,11 +212,26 @@
       "skill": "dexterity",
       "weight_kg": 3.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 700,
       "properties": [],
       "text": "",
       "mastery_family": "rifles",
-      "reload": "loose"
+      "reload": "loose",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle"
+      ],
+      "grants": {
+        "name": "Work the Lever",
+        "text": "After a hit, your next shot this turn costs 1 AP less.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Old, honest, and never needs a battery.",
+      "type": "lever_carbine"
     },
     {
       "id": "lumeri_scattergun",
@@ -173,13 +256,29 @@
       "skill": "dexterity",
       "weight_kg": 4,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 650,
       "properties": [
         "damage_falloff"
       ],
       "text": "",
       "mastery_family": "shotguns",
-      "reload": "loose"
+      "reload": "loose",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Door Key",
+        "text": "Double damage to doors and cover.",
+        "effect": {
+          "op": "cover_damage_mult",
+          "value": 2
+        }
+      },
+      "lore": "The Church calls it a key.",
+      "type": "lumeri_scattergun"
     },
     {
       "id": "long_rifle",
@@ -201,11 +300,27 @@
       "skill": "dexterity",
       "weight_kg": 6,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 1400,
       "properties": [],
       "text": "",
       "mastery_family": "rifles",
-      "reload": "loose"
+      "reload": "loose",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle"
+      ],
+      "grants": {
+        "name": "One Breath",
+        "text": "Aimed shots get +3 instead of +2 if you haven't moved this turn.",
+        "effect": {
+          "op": "aimed_still_bonus",
+          "value": 1
+        }
+      },
+      "lore": "Fired from the next valley over.",
+      "type": "long_rifle"
     },
     {
       "id": "blackpoint_700",
@@ -227,7 +342,7 @@
       "skill": "dexterity",
       "weight_kg": 15,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 4000,
       "properties": [
         "armor_ignore_10",
         "requires_braced_or_prone"
@@ -236,7 +351,21 @@
       "mastery_family": "heavy",
       "reload": "magazine",
       "magazine_kg": 0.3,
-      "reload_unit": "magazine"
+      "reload_unit": "magazine",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Through and Through",
+        "text": "A hit carries on to the next target in line at half damage, breaking half cover it passes.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Anti-materiel. Everyone else is materiel.",
+      "type": "blackpoint_700"
     },
     {
       "id": "hellraiser_lmg",
@@ -259,7 +388,7 @@
       "skill": "dexterity",
       "weight_kg": 10,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 2500,
       "properties": [
         "minus2_to_hit_unless_emplaced"
       ],
@@ -267,7 +396,22 @@
       "mastery_family": "heavy",
       "reload": "magazine",
       "magazine_kg": 0.8,
-      "reload_unit": "magazine"
+      "reload_unit": "magazine",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Emplace",
+        "text": "Brace (1 AP) also gives +1 to hit.",
+        "effect": {
+          "op": "braced_bonus",
+          "value": 1
+        }
+      },
+      "lore": "The Hellraisers' favourite sentence: \"hold here.\"",
+      "type": "hellraiser_lmg"
     },
     {
       "id": "recurve_bow",
@@ -289,7 +433,7 @@
       "skill": "dexterity",
       "weight_kg": 1.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 300,
       "properties": [
         "silent",
         "no_heat",
@@ -298,7 +442,21 @@
       ],
       "text": "",
       "mastery_family": "bows",
-      "reload": "loose"
+      "reload": "loose",
+      "hands": "2H",
+      "durability": 200,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Nock and Loose",
+        "text": "If you haven't moved this turn, your second arrow costs 1 AP.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Quiet, cheap, and it never jams.",
+      "type": "recurve_bow"
     },
     {
       "id": "crossbow",
@@ -320,7 +478,7 @@
       "skill": "dexterity",
       "weight_kg": 4,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 500,
       "properties": [
         "silent",
         "no_heat",
@@ -328,7 +486,22 @@
       ],
       "text": "",
       "mastery_family": "bows",
-      "reload": "loose"
+      "reload": "loose",
+      "hands": "2H",
+      "durability": 200,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Bolt Rest",
+        "text": "Aimed shots cost 2 AP.",
+        "effect": {
+          "op": "aimed_ap",
+          "value": 2
+        }
+      },
+      "lore": "Patience, cranked.",
+      "type": "crossbow"
     },
     {
       "id": "combat_knife",
@@ -348,13 +521,34 @@
       "skill": "athletics",
       "weight_kg": 0.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 60,
       "properties": [
         "throwable_6_tiles"
       ],
       "text": "",
       "thrown_range_tiles": 6,
-      "mastery_family": "light_blades"
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Finish It",
+        "text": "+50% damage against a target that is Dazed, Bleeding or Downed.",
+        "effect": {
+          "op": "vs_status_damage",
+          "statuses": [
+            "dazed",
+            "bleeding",
+            "downed"
+          ],
+          "mult": 1.5
+        }
+      },
+      "lore": "Every kit has one. Every story ends with one.",
+      "type": "combat_knife"
     },
     {
       "id": "sabre",
@@ -373,10 +567,25 @@
       "skill": "athletics",
       "weight_kg": 1.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 400,
       "properties": [],
       "text": "",
-      "mastery_family": "light_blades"
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Riposte",
+        "text": "Reaction: when a melee attack misses you, strike back.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "An officer's argument.",
+      "type": "sabre"
     },
     {
       "id": "ork_machete",
@@ -395,10 +604,25 @@
       "skill": "raw_power",
       "weight_kg": 3,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 250,
       "properties": [],
       "text": "",
-      "mastery_family": "heavy_melee"
+      "mastery_family": "heavy_melee",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Chop Through",
+        "text": "After a kill, a free strike at another adjacent enemy.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Orks don't make tools. They make machetes.",
+      "type": "ork_machete"
     },
     {
       "id": "maul",
@@ -417,10 +641,26 @@
       "skill": "raw_power",
       "weight_kg": 7,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 450,
       "properties": [],
       "text": "",
-      "mastery_family": "heavy_melee"
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Knockdown",
+        "text": "A hit knocks the target prone.",
+        "effect": {
+          "op": "on_hit",
+          "apply": "prone"
+        }
+      },
+      "lore": "It doesn't cut. It explains.",
+      "type": "maul"
     },
     {
       "id": "lance",
@@ -439,12 +679,27 @@
       "skill": "raw_power",
       "weight_kg": 3,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 500,
       "properties": [
         "polearm"
       ],
       "text": "",
-      "mastery_family": "heavy_melee"
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Charge",
+        "text": "After 3+ tiles of movement this turn, +50% damage.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Adamantile knights don't stop. They arrive.",
+      "type": "lance"
     },
     {
       "id": "fists",
@@ -463,10 +718,24 @@
       "skill": "raw_power",
       "weight_kg": 0,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 40,
       "properties": [],
       "text": "",
-      "mastery_family": "unarmed"
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [
+        "grip"
+      ],
+      "grants": {
+        "name": "Grapple",
+        "text": "2 AP: the target can't move until it breaks free.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Everyone's first weapon.",
+      "type": "fists"
     },
     {
       "id": "frag_grenade",
@@ -485,13 +754,25 @@
       "skill": "dexterity",
       "weight_kg": 0.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 120,
       "properties": [
         "area_radius_2",
         "consumable"
       ],
       "text": "40 to everyone within 2 tiles.",
-      "mastery_family": "thrown"
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Cook It",
+        "text": "Spend 1 AP more; the blast radius is 3.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Pull, count, apologise.",
+      "type": "frag_grenade"
     },
     {
       "id": "smoke_grenade",
@@ -510,14 +791,26 @@
       "skill": "dexterity",
       "weight_kg": 0.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 60,
       "properties": [
         "area_radius_3",
         "blocks_sight_2_rounds",
         "consumable"
       ],
       "text": "Blocks sight within 3 tiles for 2 rounds.",
-      "mastery_family": "thrown"
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Cover Me",
+        "text": "Allies who start a turn inside the smoke move +1 tile.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Not a weapon. A permission slip.",
+      "type": "smoke_grenade"
     },
     {
       "id": "flashbang",
@@ -536,7 +829,7 @@
       "skill": "dexterity",
       "weight_kg": 0.5,
       "accuracy": 0,
-      "price_credits": null,
+      "price_credits": 90,
       "properties": [
         "area_radius_2",
         "consumable"
@@ -546,7 +839,1696 @@
         "condition": "blinded",
         "save": "body"
       },
-      "mastery_family": "thrown"
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Sudden Dark",
+        "text": "Blinded targets also lose their reaction.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Lumeri riot police swear by them.",
+      "type": "flashbang"
+    },
+    {
+      "id": "decrkm_autopistol",
+      "name": "Decrkm auto-pistol",
+      "category": "pistol",
+      "damage": 14,
+      "damage_type": "physical",
+      "range_tiles": 6,
+      "magazine": 20,
+      "heat_limit": 8,
+      "modes": [
+        "single",
+        "burst"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 1.2,
+      "accuracy": 0,
+      "price_credits": 500,
+      "properties": [],
+      "text": "+2 to hit within 2 tiles.",
+      "mastery_family": "sidearms",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Point Blank",
+        "text": "+2 to hit within 2 tiles.",
+        "effect": {
+          "op": "hit_bonus",
+          "within": 2,
+          "value": 2
+        }
+      },
+      "lore": "For the kind of conversation that happens across a table.",
+      "type": "decrkm_autopistol",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.12
+    },
+    {
+      "id": "parlour_pistol",
+      "name": "Parlour pistol",
+      "category": "pistol",
+      "damage": 16,
+      "damage_type": "physical",
+      "range_tiles": 4,
+      "magazine": 2,
+      "heat_limit": 4,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 0.4,
+      "accuracy": 0,
+      "price_credits": 150,
+      "properties": [],
+      "text": "+2 to the first shot of a fight.",
+      "mastery_family": "sidearms",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [],
+      "grants": {
+        "name": "Ace in the Sleeve",
+        "text": "+2 to the first shot of a fight.",
+        "effect": {
+          "op": "first_shot_bonus",
+          "value": 2
+        }
+      },
+      "lore": "Two rounds. That's usually one more than it takes.",
+      "type": "parlour_pistol",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "magistrate_pistol",
+      "name": "Magistrate heavy pistol",
+      "category": "pistol",
+      "damage": 26,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 7,
+      "heat_limit": 5,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "revolver",
+      "skill": "dexterity",
+      "weight_kg": 1.4,
+      "accuracy": 0,
+      "price_credits": 450,
+      "properties": [],
+      "text": "A hit costs the target 1 AP on its next turn.",
+      "mastery_family": "sidearms",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Stopping Power",
+        "text": "A hit costs the target 1 AP on its next turn.",
+        "effect": {
+          "op": "on_hit",
+          "apply": "ap_loss",
+          "value": 1
+        }
+      },
+      "lore": "Central City's courts went armed for a reason.",
+      "type": "magistrate_pistol",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.1
+    },
+    {
+      "id": "frontier_hand_cannon",
+      "name": "Frontier hand cannon",
+      "category": "revolver",
+      "damage": 40,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 5,
+      "heat_limit": 4,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": ".50 frontier",
+      "skill": "dexterity",
+      "weight_kg": 2.2,
+      "accuracy": 0,
+      "price_credits": 800,
+      "properties": [],
+      "text": "A hit pushes the target 1 tile away from you.",
+      "mastery_family": "sidearms",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Knockback",
+        "text": "A hit pushes the target 1 tile away from you.",
+        "effect": {
+          "op": "on_hit",
+          "apply": "push",
+          "value": 1
+        }
+      },
+      "lore": "You don't fire it so much as negotiate with it.",
+      "type": "frontier_hand_cannon",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.06,
+      "reload_unit": "speedloader"
+    },
+    {
+      "id": "legion_pdw",
+      "name": "Legion PDW",
+      "category": "smg",
+      "damage": 16,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 25,
+      "heat_limit": 9,
+      "modes": [
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 2.2,
+      "accuracy": 0,
+      "price_credits": 750,
+      "properties": [],
+      "text": "+2 to hit within 3 tiles.",
+      "mastery_family": "smgs",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Clear the Room",
+        "text": "+2 to hit within 3 tiles.",
+        "effect": {
+          "op": "hit_bonus",
+          "within": 3,
+          "value": 2
+        }
+      },
+      "lore": "The Thousand World Legion's door-kicker.",
+      "type": "legion_pdw",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.18
+    },
+    {
+      "id": "whisper_smg",
+      "name": "Whisper SMG",
+      "category": "smg",
+      "damage": 13,
+      "damage_type": "physical",
+      "range_tiles": 7,
+      "magazine": 30,
+      "heat_limit": 12,
+      "modes": [
+        "single",
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 3.2,
+      "accuracy": 0,
+      "price_credits": 900,
+      "properties": [
+        "silent"
+      ],
+      "text": "Firing never reveals you while Hidden.",
+      "mastery_family": "smgs",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Quiet Work",
+        "text": "Firing never reveals you while Hidden.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Bought by people who don't want receipts.",
+      "type": "whisper_smg",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.2
+    },
+    {
+      "id": "mandestra_drum_gun",
+      "name": "Mandestra drum-gun",
+      "category": "smg",
+      "damage": 15,
+      "damage_type": "physical",
+      "range_tiles": 7,
+      "magazine": 70,
+      "heat_limit": 10,
+      "modes": [
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "auto": 4
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 4.5,
+      "accuracy": 0,
+      "price_credits": 1100,
+      "properties": [],
+      "text": "Full auto also catches enemies up to 2 tiles from the line.",
+      "mastery_family": "smgs",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Wide Spray",
+        "text": "Full auto also catches enemies up to 2 tiles from the line.",
+        "effect": {
+          "op": "auto_width",
+          "value": 2
+        }
+      },
+      "lore": "A merchant's answer to a negotiation gone wrong.",
+      "type": "mandestra_drum_gun",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.6,
+      "reload_unit": "drum"
+    },
+    {
+      "id": "adamantile_battle_rifle",
+      "name": "Adamantile battle rifle",
+      "category": "rifle",
+      "damage": 38,
+      "damage_type": "physical",
+      "range_tiles": 18,
+      "magazine": 15,
+      "heat_limit": 6,
+      "modes": [
+        "single",
+        "burst"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 5,
+      "accuracy": 0,
+      "price_credits": 1300,
+      "properties": [],
+      "text": "Shots ignore 5 armour.",
+      "mastery_family": "rifles",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Armour-Breaker",
+        "text": "Shots ignore 5 armour.",
+        "effect": {
+          "op": "ignore_armour",
+          "value": 5
+        }
+      },
+      "lore": "The Brigade wanted a rifle that argued with plate.",
+      "type": "adamantile_battle_rifle",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.2
+    },
+    {
+      "id": "ccec_marksman_rifle",
+      "name": "CCEC marksman rifle",
+      "category": "rifle",
+      "damage": 40,
+      "damage_type": "physical",
+      "range_tiles": 22,
+      "magazine": 10,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 4.5,
+      "accuracy": 0,
+      "price_credits": 1600,
+      "properties": [],
+      "text": "Aimed shots crit on 18–20.",
+      "mastery_family": "rifles",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Dead Steady",
+        "text": "Aimed shots crit on 18–20.",
+        "effect": {
+          "op": "aimed_crit_min",
+          "value": 18
+        }
+      },
+      "lore": "CCEC evidence: one round, one report.",
+      "type": "ccec_marksman_rifle",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.15
+    },
+    {
+      "id": "legion_bullpup",
+      "name": "Legion bullpup",
+      "category": "rifle",
+      "damage": 28,
+      "damage_type": "physical",
+      "range_tiles": 14,
+      "magazine": 30,
+      "heat_limit": 8,
+      "modes": [
+        "single",
+        "burst",
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3,
+        "auto": 4
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 3.4,
+      "accuracy": 0,
+      "price_credits": 1100,
+      "properties": [],
+      "text": "After a shot, move 1 tile for free.",
+      "mastery_family": "rifles",
+      "hands": "2H",
+      "durability": 400,
+      "mod_slots": [
+        "optic",
+        "muzzle",
+        "magazine"
+      ],
+      "grants": {
+        "name": "Shoot and Scoot",
+        "text": "After a shot, move 1 tile for free.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Short enough for a dropship aisle.",
+      "type": "legion_bullpup",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.18
+    },
+    {
+      "id": "coach_gun",
+      "name": "Coach gun",
+      "category": "shotgun",
+      "damage": {
+        "within_4": 45,
+        "within_8": 25
+      },
+      "damage_type": "physical",
+      "range_tiles": 6,
+      "magazine": 2,
+      "heat_limit": 4,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "shell",
+      "skill": "dexterity",
+      "weight_kg": 3.5,
+      "accuracy": 0,
+      "price_credits": 400,
+      "properties": [
+        "damage_falloff"
+      ],
+      "text": "3 AP: both shells in one attack, +50% damage.",
+      "mastery_family": "shotguns",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [],
+      "grants": {
+        "name": "Both Barrels",
+        "text": "3 AP: both shells in one attack, +50% damage.",
+        "effect": {
+          "op": "multi_shot",
+          "ap": 3,
+          "shots": 1,
+          "extra": 0,
+          "dmg_mult": 1.5,
+          "rounds": 2
+        }
+      },
+      "lore": "Two arguments, one conclusion.",
+      "type": "coach_gun",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "sawn_off",
+      "name": "Sawn-off",
+      "category": "shotgun",
+      "damage": {
+        "within_4": 42,
+        "within_8": 15
+      },
+      "damage_type": "physical",
+      "range_tiles": 6,
+      "magazine": 2,
+      "heat_limit": 4,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "shell",
+      "skill": "dexterity",
+      "weight_kg": 2,
+      "accuracy": 0,
+      "price_credits": 300,
+      "properties": [
+        "damage_falloff"
+      ],
+      "text": "Firing at an adjacent enemy doesn't provoke.",
+      "mastery_family": "shotguns",
+      "hands": "1H",
+      "durability": 300,
+      "mod_slots": [],
+      "grants": {
+        "name": "Close Quarters",
+        "text": "Firing at an adjacent enemy doesn't provoke.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Illegal in Central City, which is how you know it works.",
+      "type": "sawn_off",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "brigade_auto_shotgun",
+      "name": "Brigade auto-shotgun",
+      "category": "shotgun",
+      "damage": {
+        "within_4": 35,
+        "within_8": 20
+      },
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 12,
+      "heat_limit": 9,
+      "modes": [
+        "single",
+        "burst"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "burst": 3
+      },
+      "ammo": "shell",
+      "skill": "dexterity",
+      "weight_kg": 5,
+      "accuracy": 0,
+      "price_credits": 1500,
+      "properties": [
+        "damage_falloff"
+      ],
+      "text": "A burst can split between two adjacent targets.",
+      "mastery_family": "shotguns",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "optic",
+        "magazine",
+        "underbarrel"
+      ],
+      "grants": {
+        "name": "Room Sweeper",
+        "text": "A burst can split between two adjacent targets.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Brigade's corridor-clearer.",
+      "type": "brigade_auto_shotgun",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.3
+    },
+    {
+      "id": "hellraiser_rotary",
+      "name": "Hellraiser rotary",
+      "category": "heavy",
+      "damage": 22,
+      "damage_type": "physical",
+      "range_tiles": 16,
+      "magazine": 200,
+      "heat_limit": 20,
+      "modes": [
+        "auto"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3,
+        "auto": 4
+      },
+      "ammo": "rifle",
+      "skill": "dexterity",
+      "weight_kg": 18,
+      "accuracy": 0,
+      "price_credits": 4500,
+      "properties": [
+        "minus2_to_hit_unless_emplaced"
+      ],
+      "text": "The first full auto each fight costs +1 AP; after that, full auto costs 3.",
+      "mastery_family": "heavy",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Spin Up",
+        "text": "The first full auto each fight costs +1 AP; after that, full auto costs 3.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Ground near it stops being ground.",
+      "type": "hellraiser_rotary",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 1.2,
+      "reload_unit": "belt"
+    },
+    {
+      "id": "smetanita_thumper",
+      "name": "Smetanita thumper",
+      "category": "heavy",
+      "damage": 40,
+      "damage_type": "physical",
+      "range_tiles": 14,
+      "magazine": 6,
+      "heat_limit": 4,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "40 mm grenade",
+      "skill": "dexterity",
+      "weight_kg": 4.5,
+      "accuracy": 0,
+      "price_credits": 1800,
+      "properties": [
+        "area_radius_2"
+      ],
+      "text": "Indirect fire: no line of sight needed if an ally sees the tile, at −2.",
+      "mastery_family": "heavy",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Lob",
+        "text": "Indirect fire: no line of sight needed if an ally sees the tile, at −2.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Smetanita property. Return it or else.",
+      "type": "smetanita_thumper",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "breacher_tube",
+      "name": "Breacher tube",
+      "category": "heavy",
+      "damage": 110,
+      "damage_type": "physical",
+      "range_tiles": 16,
+      "magazine": 1,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "rocket",
+      "skill": "dexterity",
+      "weight_kg": 8,
+      "accuracy": 0,
+      "price_credits": 3000,
+      "properties": [
+        "area_radius_1"
+      ],
+      "text": "Rockets deal triple damage to cover.",
+      "mastery_family": "heavy",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Bunker Buster",
+        "text": "Rockets deal triple damage to cover.",
+        "effect": {
+          "op": "cover_damage_mult",
+          "value": 3
+        }
+      },
+      "lore": "The Legion's door, and the wall it was in.",
+      "type": "breacher_tube",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "purifier_flamer",
+      "name": "Purifier flamer",
+      "category": "heavy",
+      "damage": 20,
+      "damage_type": "elemental",
+      "range_tiles": 3,
+      "magazine": 10,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "fuel canister",
+      "skill": "dexterity",
+      "weight_kg": 12,
+      "accuracy": 0,
+      "price_credits": 2200,
+      "properties": [
+        "cone_3",
+        "applies_burning",
+        "ignores_half_cover"
+      ],
+      "text": "3 AP: a 3-tile line burns for 2 rounds.",
+      "mastery_family": "heavy",
+      "hands": "2H",
+      "durability": 500,
+      "mod_slots": [],
+      "grants": {
+        "name": "Wall of Fire",
+        "text": "3 AP: a 3-tile line burns for 2 rounds.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Lumeri insist it's a sacrament.",
+      "type": "purifier_flamer",
+      "provisional": true,
+      "reload": "loose"
+    },
+    {
+      "id": "satchel_charge",
+      "name": "Satchel charge",
+      "category": "thrown",
+      "damage": 120,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 3,
+      "accuracy": 0,
+      "price_credits": 600,
+      "properties": [
+        "area_radius_2",
+        "consumable",
+        "placed"
+      ],
+      "text": "Placed against cover, it destroys it outright.",
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Shaped Charge",
+        "text": "Placed against cover, it destroys it outright.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Some problems are best solved from the next room.",
+      "type": "satchel_charge",
+      "provisional": true
+    },
+    {
+      "id": "longbow",
+      "name": "Longbow",
+      "category": "bow",
+      "damage": "25 + 6*raw_power",
+      "damage_type": "physical",
+      "range_tiles": 20,
+      "magazine": 20,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "arrow",
+      "skill": "dexterity",
+      "weight_kg": 2,
+      "accuracy": 0,
+      "price_credits": 450,
+      "properties": [
+        "silent",
+        "no_heat",
+        "no_recoil",
+        "quiver"
+      ],
+      "text": "Indirect shot at −2, like Lob.",
+      "mastery_family": "bows",
+      "hands": "2H",
+      "durability": 200,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Arc",
+        "text": "Indirect shot at −2, like Lob.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Over the wall and through the roof.",
+      "type": "longbow",
+      "provisional": true,
+      "reload": "loose",
+      "requires": {
+        "raw_power": 3
+      }
+    },
+    {
+      "id": "repeating_crossbow",
+      "name": "Repeating crossbow",
+      "category": "bow",
+      "damage": 22,
+      "damage_type": "physical",
+      "range_tiles": 10,
+      "magazine": 6,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "bolt",
+      "skill": "dexterity",
+      "weight_kg": 3.5,
+      "accuracy": 0,
+      "price_credits": 700,
+      "properties": [
+        "silent",
+        "no_heat",
+        "no_recoil"
+      ],
+      "text": "3 AP: two bolts, each with its own roll.",
+      "mastery_family": "bows",
+      "hands": "2H",
+      "durability": 200,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Volley",
+        "text": "3 AP: two bolts, each with its own roll.",
+        "effect": {
+          "op": "multi_shot",
+          "ap": 3,
+          "shots": 2,
+          "extra": 0
+        }
+      },
+      "lore": "An Arkvelton toy that got out of hand.",
+      "type": "repeating_crossbow",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.2
+    },
+    {
+      "id": "throwing_knives",
+      "name": "Throwing knives",
+      "category": "light_melee",
+      "damage": 12,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 0.8,
+      "accuracy": 0,
+      "price_credits": 80,
+      "properties": [
+        "throwable_6_tiles"
+      ],
+      "text": "3 AP: one throw each at up to two targets.",
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge"
+      ],
+      "grants": {
+        "name": "Fan of Knives",
+        "text": "3 AP: one throw each at up to two targets.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Four problems, four solutions.",
+      "type": "throwing_knives",
+      "provisional": true
+    },
+    {
+      "id": "hatchet",
+      "name": "Hatchet",
+      "category": "light_melee",
+      "damage": 22,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 1,
+      "accuracy": 0,
+      "price_credits": 120,
+      "properties": [
+        "throwable_5_tiles"
+      ],
+      "text": "Double damage to shields and cover.",
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Splitter",
+        "text": "Double damage to shields and cover.",
+        "effect": {
+          "op": "cover_damage_mult",
+          "value": 2
+        }
+      },
+      "lore": "Frontier tool first, weapon whenever needed.",
+      "type": "hatchet",
+      "provisional": true
+    },
+    {
+      "id": "legion_gladius",
+      "name": "Legion gladius",
+      "category": "light_melee",
+      "damage": 26,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 1.3,
+      "accuracy": 0,
+      "price_credits": 300,
+      "properties": [],
+      "text": "+1 Defense while your off hand holds a shield.",
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Shield Partner",
+        "text": "+1 Defense while your off hand holds a shield.",
+        "effect": {
+          "op": "defense_with_shield",
+          "value": 1
+        }
+      },
+      "lore": "Made for the second rank of a shield wall.",
+      "type": "legion_gladius",
+      "provisional": true
+    },
+    {
+      "id": "kemizuchi_duelling_blade",
+      "name": "Kemizuchi duelling blade",
+      "category": "light_melee",
+      "damage": 24,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 1.2,
+      "accuracy": 1,
+      "price_credits": 550,
+      "properties": [],
+      "text": "Strike a target 2 tiles away.",
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Lunge",
+        "text": "Strike a target 2 tiles away.",
+        "effect": {
+          "op": "reach",
+          "value": 2
+        }
+      },
+      "lore": "The school across town settles things with this.",
+      "type": "kemizuchi_duelling_blade",
+      "provisional": true
+    },
+    {
+      "id": "war_axe",
+      "name": "War axe",
+      "category": "heavy_melee",
+      "damage": 40,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 3.5,
+      "accuracy": 0,
+      "price_credits": 500,
+      "properties": [],
+      "text": "A hit lowers the target's armour by 5 for the fight (to −10 at most).",
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Bite the Plate",
+        "text": "A hit lowers the target's armour by 5 for the fight (to −10 at most).",
+        "effect": {
+          "op": "on_hit",
+          "apply": "armour_break",
+          "value": 5
+        }
+      },
+      "lore": "Plate is just a slower kind of skin.",
+      "type": "war_axe",
+      "provisional": true
+    },
+    {
+      "id": "adamantile_greatsword",
+      "name": "Adamantile greatsword",
+      "category": "heavy_melee",
+      "damage": 42,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 4,
+      "accuracy": 0,
+      "price_credits": 900,
+      "properties": [],
+      "text": "4 AP: strike every adjacent enemy.",
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Sweep",
+        "text": "4 AP: strike every adjacent enemy.",
+        "effect": {
+          "op": "sweep",
+          "ap": 4
+        }
+      },
+      "lore": "The Brigade's way of saying \"stand back.\"",
+      "type": "adamantile_greatsword",
+      "provisional": true
+    },
+    {
+      "id": "glaive",
+      "name": "Glaive",
+      "category": "heavy_melee",
+      "damage": 36,
+      "damage_type": "physical",
+      "range_tiles": 2,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 3.5,
+      "accuracy": 0,
+      "price_credits": 650,
+      "properties": [
+        "polearm",
+        "reach_2"
+      ],
+      "text": "Reaction: strike an enemy that steps into your reach.",
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Keep Back",
+        "text": "Reaction: strike an enemy that steps into your reach.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The space around you is yours.",
+      "type": "glaive",
+      "provisional": true
+    },
+    {
+      "id": "ork_rip_saw",
+      "name": "Ork rip-saw",
+      "category": "heavy_melee",
+      "damage": 38,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 6,
+      "accuracy": 0,
+      "price_credits": 1400,
+      "properties": [
+        "armor_ignore_5"
+      ],
+      "text": "A hit causes Bleeding.",
+      "mastery_family": "heavy_melee",
+      "hands": "2H",
+      "durability": 300,
+      "mod_slots": [
+        "grip"
+      ],
+      "grants": {
+        "name": "Rip",
+        "text": "A hit causes Bleeding.",
+        "effect": {
+          "op": "on_hit",
+          "apply": "bleed"
+        }
+      },
+      "lore": "Ork engineering: loud, sharp, and on fire.",
+      "type": "ork_rip_saw",
+      "provisional": true
+    },
+    {
+      "id": "knuckledusters",
+      "name": "Knuckledusters",
+      "category": "unarmed",
+      "damage": 16,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0.3,
+      "accuracy": 0,
+      "price_credits": 60,
+      "properties": [],
+      "text": "1 AP: a jab for half damage.",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "grants": {
+        "name": "Rabbit Punch",
+        "text": "1 AP: a jab for half damage.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "A bar argument that brought friends.",
+      "type": "knuckledusters",
+      "provisional": true
+    },
+    {
+      "id": "hellraiser_servo_fist",
+      "name": "Hellraiser servo-fist",
+      "category": "unarmed",
+      "damage": 30,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 2.5,
+      "accuracy": 0,
+      "price_credits": 1200,
+      "properties": [],
+      "text": "A hit pushes the target 2 tiles.",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "grants": {
+        "name": "Haymaker",
+        "text": "A hit pushes the target 2 tiles.",
+        "effect": {
+          "op": "on_hit",
+          "apply": "push",
+          "value": 2
+        }
+      },
+      "lore": "A mining tool the Hellraisers misread.",
+      "type": "hellraiser_servo_fist",
+      "provisional": true,
+      "requires": {
+        "proficiency": 3
+      }
+    },
+    {
+      "id": "incendiary_grenade",
+      "name": "Incendiary grenade",
+      "category": "thrown",
+      "damage": 15,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.6,
+      "accuracy": 0,
+      "price_credits": 150,
+      "properties": [
+        "area_radius_2",
+        "consumable",
+        "applies_burning"
+      ],
+      "text": "You choose which tiles in the radius burn.",
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Firebreak",
+        "text": "You choose which tiles in the radius burn.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The frontier's least favourite smell.",
+      "type": "incendiary_grenade",
+      "provisional": true
+    },
+    {
+      "id": "bot_scrambler",
+      "name": "Bot-scrambler",
+      "category": "thrown",
+      "damage": 0,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.5,
+      "accuracy": 0,
+      "price_credits": 200,
+      "properties": [
+        "area_radius_2",
+        "consumable"
+      ],
+      "text": "Mana arms in the radius stay jammed until cleared (2 AP).",
+      "mastery_family": "thrown",
+      "hands": "1H",
+      "durability": null,
+      "mod_slots": [],
+      "grants": {
+        "name": "Static",
+        "text": "Mana arms in the radius stay jammed until cleared (2 AP).",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Science Team surplus, sold out the back door.",
+      "type": "bot_scrambler",
+      "provisional": true
+    },
+    {
+      "id": "core_rifle",
+      "name": "Science Team core rifle",
+      "category": "mana",
+      "damage": 32,
+      "damage_type": "elemental",
+      "range_tiles": 16,
+      "magazine": 10,
+      "heat_limit": null,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "core charge",
+      "skill": "dexterity",
+      "weight_kg": 5,
+      "accuracy": 0,
+      "price_credits": 2600,
+      "properties": [
+        "ignores_armour",
+        "mana_meter_on_hit"
+      ],
+      "text": "Spend 3 charge on one shot: 80 Elemental damage.",
+      "mastery_family": "mana_arms",
+      "hands": "2H",
+      "durability": 250,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Overcharge",
+        "text": "Spend 3 charge on one shot: 80 Elemental damage.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Science Team's proof that mana is a munition.",
+      "type": "core_rifle",
+      "provisional": true,
+      "reload": "loose",
+      "requires": {
+        "proficiency": 3
+      }
+    },
+    {
+      "id": "spellslinger_pistol",
+      "name": "Spellslinger's pistol",
+      "category": "mana",
+      "damage": 22,
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 12,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": ".32 decrkm",
+      "skill": "dexterity",
+      "weight_kg": 1.1,
+      "accuracy": 0,
+      "price_credits": 1500,
+      "properties": [],
+      "text": "Each sigil-etched magazine holds one Sigil, released by its first hit (with the magic pass).",
+      "mastery_family": "mana_arms",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "optic",
+        "magazine",
+        "inscription"
+      ],
+      "grants": {
+        "name": "Stored Spell",
+        "text": "Each sigil-etched magazine holds one Sigil, released by its first hit (with the magic pass).",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Every magazine is a letter. Some are threats.",
+      "type": "spellslinger_pistol",
+      "provisional": true,
+      "reload": "magazine",
+      "magazine_kg": 0.1,
+      "requires": {
+        "brain_power": 3
+      }
+    },
+    {
+      "id": "evoker_blade",
+      "name": "Evoker blade",
+      "category": "mana",
+      "damage": 26,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 1.8,
+      "accuracy": 0,
+      "price_credits": 2400,
+      "properties": [
+        "counts_as_evoker"
+      ],
+      "text": "After a hit, draw one Sigil word for 0 AP (with the magic pass). Counts as an Evoker.",
+      "mastery_family": "mana_arms",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "grants": {
+        "name": "Edge Word",
+        "text": "After a hit, draw one Sigil word for 0 AP (with the magic pass). Counts as an Evoker.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Blade Scribes write with the edge.",
+      "type": "evoker_blade",
+      "provisional": true,
+      "requires": {
+        "brain_power": 3
+      }
+    },
+    {
+      "id": "emanator_gauntlet",
+      "name": "Emanator gauntlet",
+      "category": "mana",
+      "damage": 18,
+      "damage_type": "elemental",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 1.5,
+      "accuracy": 0,
+      "price_credits": 2200,
+      "properties": [
+        "counts_as_emanator"
+      ],
+      "text": "Kills charge it (up to 3); spend all charge on a hit for +15 damage per charge. Counts as an Emanator.",
+      "mastery_family": "mana_arms",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "grip"
+      ],
+      "grants": {
+        "name": "Charged Strike",
+        "text": "Kills charge it (up to 3); spend all charge on a hit for +15 damage per charge. Counts as an Emanator.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Storm Hand's heart goes into the fist.",
+      "type": "emanator_gauntlet",
+      "provisional": true,
+      "requires": {
+        "will_power": 3
+      }
+    },
+    {
+      "id": "lumeri_censer_gun",
+      "name": "Lumeri censer gun",
+      "category": "mana",
+      "damage": {
+        "within_4": 30,
+        "within_8": 18
+      },
+      "damage_type": "physical",
+      "range_tiles": 8,
+      "magazine": 6,
+      "heat_limit": 6,
+      "modes": [
+        "single"
+      ],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": "shell",
+      "skill": "dexterity",
+      "weight_kg": 4.5,
+      "accuracy": 0,
+      "price_credits": 2000,
+      "properties": [
+        "damage_falloff"
+      ],
+      "text": "A blessed shell lands a held Blessing on the target tile, radius 1 (with the magic pass).",
+      "mastery_family": "mana_arms",
+      "hands": "2H",
+      "durability": 250,
+      "mod_slots": [
+        "optic"
+      ],
+      "grants": {
+        "name": "Blessed Shell",
+        "text": "A blessed shell lands a held Blessing on the target tile, radius 1 (with the magic pass).",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "The Church fires its prayers at range.",
+      "type": "lumeri_censer_gun",
+      "provisional": true,
+      "reload": "loose",
+      "requires": {
+        "faith": 3
+      }
+    },
+    {
+      "id": "bot_thread_banner",
+      "name": "Bot-thread banner",
+      "category": "mana",
+      "damage": 24,
+      "damage_type": "physical",
+      "range_tiles": 2,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 3,
+      "accuracy": 0,
+      "price_credits": 1800,
+      "properties": [
+        "reach_2"
+      ],
+      "text": "2 AP, once per fight: allies within 3 tiles get a shield of 15 × your Healing given.",
+      "mastery_family": "mana_arms",
+      "hands": "2H",
+      "durability": 250,
+      "mod_slots": [
+        "grip"
+      ],
+      "grants": {
+        "name": "Rally",
+        "text": "2 AP, once per fight: allies within 3 tiles get a shield of 15 × your Healing given.",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "lore": "Banner Dancers fight armourless. The banner is the armour.",
+      "type": "bot_thread_banner",
+      "provisional": true,
+      "requires": {
+        "camaraderie": 3
+      }
     }
   ]
 }
