@@ -1718,6 +1718,31 @@
       "source_sha256": "c67f638df649312b6ab4fa43a37136c46cbb949ac245e9ae2464764023e1a1c2",
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    {
+      "id": "twin-discipline",
+      "data_id": "twin_discipline",
+      "name": "Twin Discipline",
+      "family": "perks",
+      "order": 75,
+      "mood": "Heroic, Eerie",
+      "action": "Wick leaps and claps both mittens overhead: hard geometric sigil lines trail one arm, flowing soul ribbons the other, fusing into one burst.",
+      "screen": "Fierce delight",
+      "prop": "Fused burst",
+      "path": "art/perks/wick/production-v1/twin-discipline.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/twin-discipline.png",
+        "128": "art/perks/wick/production-v1/exports/128/twin-discipline.png",
+        "64": "art/perks/wick/production-v1/exports/64/twin-discipline.png",
+        "56": "art/perks/wick/production-v1/exports/56/twin-discipline.png",
+        "48": "art/perks/wick/production-v1/exports/48/twin-discipline.png",
+        "44": "art/perks/wick/production-v1/exports/44/twin-discipline.png",
+        "40": "art/perks/wick/production-v1/exports/40/twin-discipline.png"
+      },
+      "batch": "F",
+      "source_sha256": "a94f97c0122828ee4ae9d9a15503d89268fde74a3d77dedf597ba110e139a98f",
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   ]
 }

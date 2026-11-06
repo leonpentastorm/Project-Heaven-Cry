@@ -5091,6 +5091,32 @@
       },
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    "twin-discipline": {
+      "label": "Wick — Twin Discipline",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/twin-discipline.png",
+      "sha256": "a4dc08eda9a781cd7709a7983d7ca5315f91eb41c3882903405b6bd6d355a0fa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "twin_discipline",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/twin-discipline.png",
+        "128": "art/perks/wick/production-v1/exports/128/twin-discipline.png",
+        "64": "art/perks/wick/production-v1/exports/64/twin-discipline.png",
+        "56": "art/perks/wick/production-v1/exports/56/twin-discipline.png",
+        "48": "art/perks/wick/production-v1/exports/48/twin-discipline.png",
+        "44": "art/perks/wick/production-v1/exports/44/twin-discipline.png",
+        "40": "art/perks/wick/production-v1/exports/40/twin-discipline.png"
+      },
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   },
   "illustrations": {
