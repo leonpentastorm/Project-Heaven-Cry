@@ -70,7 +70,7 @@ export const RULES_PROMPT = `You are the Narrator (game master) of Project Heave
 
 THE SPLIT
 - The engine rolls every die, applies damage, tracks HP, AP, XP, levels and conditions, runs the combat grid and enemy turns. Never invent a roll result, never say a number changed unless the engine reported it.
-- You describe the world, play every NPC, set difficulties (TN), attach voice hooks, call Overreach, award XP within the allowed ranges, record deeds for combo perks, start fights and close scenes. You reply with ONE JSON object in the required schema each turn; the engine validates every field and drops anything outside the rules.
+- You describe the world, play every NPC, set difficulties (TN), attach voice hooks, call Overreach, award XP within the allowed ranges, record deeds for combo perks, start fights and close scenes. You hand in ONE turn each time through the submit_turn tool; the engine validates every field and drops anything outside the rules.
 
 TURNS
 - Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Address every player's action in your narration; keep each player's character at the centre of their own beat.
@@ -131,7 +131,7 @@ THE WIKI (wiki_lookup)
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
 
 OUTPUT
-- Reply with the JSON object only. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
+- Hand in your turn by calling submit_turn exactly once, after any wiki lookups. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
 
 export function campaignPrompt(g: GameState): string {
   const c = campaignOf(g)!;
@@ -230,9 +230,6 @@ export function turnSchema(g: GameState) {
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
     loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
-    objects: { type: 'array', items: obj({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string' }, kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) },
-      at: { type: 'string' }, name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
-      approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });
 }
@@ -242,7 +239,6 @@ export const WIKI_TOOL = {
   name: 'wiki_lookup',
   description: 'Look up what a game term is and does, or a piece of world lore, by key. Use it when the moment needs a detail you were not given: a weapon or item before you hand it out or describe it, a condition, a trait or perk a character has, a patron, a class, or lore beyond what the campaign block holds. Keys look like "weapon:service_pistol", "condition:bleeding", "trait:headbanger", "lore:worlds/the-crawlers". Ask for several keys at once; do not look up what is already in your context.',
   input_schema: { type: 'object', additionalProperties: false, properties: { keys: { type: 'array', items: { type: 'string' }, description: 'Up to 8 keys' } }, required: ['keys'] },
-  strict: true,
 };
 /** What the wiki tool returns for some keys: data entries from the engine, lore chunks from the docs. */
 export function wikiAnswer(keys: string[]): string {
@@ -258,4 +254,18 @@ export function wikiAnswer(keys: string[]): string {
     const e = wikiLookup(key);
     return e ? '[' + e.key + '] ' + e.text : '[' + key + '] No such entry. Kinds: ' + Object.keys(wikiKinds()).join(', ') + ', lore. Check the id lists in your rules.';
   }).join('\n\n');
+}
+
+
+/** The tool the Narrator hands its turn in with: the turn schema plus map objects. Not strict: no grammar limit. */
+export function submitTool(g: GameState) {
+  const schema: any = turnSchema(g);
+  schema.properties.objects = { type: 'array', description: 'Place, update or remove map objects and write approaches (empty when nothing changes)', items: { type: 'object', properties: {
+    action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string', description: 'The object id, for update and remove' },
+    kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) }, at: { type: 'string', description: 'A grid reference, for place' },
+    name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
+    approaches: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, skills: { type: 'array', items: { type: 'string' }, description: '1 to 3 skill ids' }, tn: { type: 'integer', enum: [8, 12, 16, 20] }, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }, required: ['label', 'skills', 'tn', 'stakes', 'success'] } },
+  }, required: ['action'] } };
+  schema.required = [...schema.required, 'objects'];
+  return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }

@@ -76,9 +76,11 @@ describe('Anthropic Narrator adapter', () => {
     expect(c.body.model).toBe('claude-opus-5-5');
     expect(c.body.system).toHaveLength(3);
     expect(c.body.system.every((b: any) => b.cache_control?.type === 'ephemeral')).toBe(true);
-    expect(c.body.output_config.format.type).toBe('json_schema');
+    expect(c.body.output_config.format).toBeUndefined(); // no grammar: the turn comes back through submit_turn
     expect(c.body.output_config.effort).toBe('medium');
-    expect(c.body.output_config.format.schema.required).toContain('narration');
+    const sub = c.body.tools.find((t: any) => t.name === 'submit_turn');
+    expect(sub.input_schema.required).toContain('narration'); expect(sub.input_schema.required).toContain('objects');
+    expect(c.body.tools.every((t: any) => !t.strict)).toBe(true);
     expect(c.body.thinking).toBeUndefined();
     expect(c.body.temperature).toBeUndefined();
     expect(c.body.fallbacks).toBe('default');
@@ -109,20 +111,23 @@ describe('Anthropic Narrator adapter', () => {
     expect(seen).toContain('weapon:service_pistol');
     expect(usage.output).toBe(600);
   });
-  it('stops looking up after three rounds and must answer', async () => {
-    const bodies: any[] = [];
-    const lookup = { ...message, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'tu', name: 'wiki_lookup', input: { keys: ['item:torch'] } }] };
-    const fake = (async (_u: any, init: any) => { const b = JSON.parse(init.body); bodies.push(b); return ok(b.tool_choice?.type === 'none' ? message : lookup); }) as typeof fetch;
-    await anthropicProvider('sk-test', 'claude-opus-5-5', 'medium', fake).turn(game());
-    expect(bodies).toHaveLength(4); expect(bodies[3].tool_choice).toEqual({ type: 'none' });
-  });
-  it('runs the turn without the wiki if the API rejects tools with this request', async () => {
-    const bodies: any[] = [];
-    const bad = () => new Response(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'nope' } }), { status: 400, headers: { 'content-type': 'application/json' } });
-    const fake = (async (_u: any, init: any) => { const b = JSON.parse(init.body); bodies.push(b); return b.tools ? bad() : ok(message); }) as typeof fetch;
+  it('takes the turn from submit_turn, with map objects', async () => {
+    const submit = { ...message, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'tu_9', name: 'submit_turn', input: { ...TURN, objects: [{ action: 'place', kind: 'poi', at: 'C3', name: 'A note', text: 'x' }] } }] };
+    const fake = (async () => ok(submit)) as typeof fetch;
     const { turn } = await anthropicProvider('sk-test', 'claude-opus-5-5', 'medium', fake).turn(game());
-    expect(turn.narration).toBe('The pad hums.');
-    expect(bodies.at(-1).tools).toBeUndefined();
+    expect(turn.narration).toBe('The pad hums.'); expect((turn as any).objects).toHaveLength(1);
+  });
+  it('gives up if the Narrator only ever looks things up', async () => {
+    const lookup = { ...message, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'tu', name: 'wiki_lookup', input: { keys: ['item:torch'] } }] };
+    const fake = (async () => ok(lookup)) as typeof fetch;
+    await expect(anthropicProvider('sk-test', 'claude-opus-5-5', 'medium', fake).turn(game())).rejects.toThrow(/kept looking things up/);
+  });
+  it('asks once for submit_turn when the Narrator answers in plain words', async () => {
+    const bodies: any[] = [];
+    const prose = { ...message, content: [{ type: 'text', text: 'The pad hums, and that is all.' }] };
+    const fake = (async (_u: any, init: any) => { bodies.push(JSON.parse(init.body)); return ok(bodies.length === 1 ? prose : message); }) as typeof fetch;
+    const { turn } = await anthropicProvider('sk-test', 'claude-opus-5-5', 'medium', fake).turn(game());
+    expect(turn.narration).toBe('The pad hums.'); expect(bodies[1].messages.at(-1).content).toMatch(/submit_turn/);
   });
   it('explains a bad key in plain words', async () => {
     const fake = (async () => new Response(JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }), { status: 401, headers: { 'content-type': 'application/json' } })) as typeof fetch;
