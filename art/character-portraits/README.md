@@ -16,6 +16,8 @@ All three sets were first painted to be the skill icons on the skill page: one c
 | **M813, version 1** | [`m813/`](m813/) | MPAT and its unnamed comrade | One-shot cast, `pool: m813-cast`; review candidates. |
 | **M813 tutorial, version 2** | [`m813/v2/`](m813/v2/) | Sixteen infantry, medic, human and enemy portraits | Tutorial cast and map tokens, `pool: m813-cast`; [complete campaign handoff](../campaigns/m813/tutorial-v1/README.md). |
 
+**Commissioned 6 Nov 2026: Archetypes**, 46 player cards, one per archetype, folder `archetypes/` (`pool: player-card`). Brief: [`../briefs/archetype-portraits.md`](../briefs/archetype-portraits.md).
+
 In [`art/catalog.json`](../catalog.json), filter `characters` by `pool`: `epccg-cast` or `world-npc`. A character's `historical_skill_id` is a casting hint ("someone who has far too much Composure"), useful for picking an NPC who fits a scene.
 
 New character art goes in a new folder here (for example `m813/` for the M813 one-shot; see [`../briefs/m813-mpat.md`](../briefs/m813-mpat.md)) and gets catalog entries. The style rules are in [`../style-guide/v1.3/`](../style-guide/v1.3/).
