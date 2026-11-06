@@ -27,6 +27,9 @@ import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
 import { Tips } from './game/tips';
 import { StoryScroll } from './game/storyScroll';
+import { FxLayer } from './game/fx/FxLayer';
+import { TurnIntro } from './game/turnIntro';
+import { SandboxPanel } from './game/sandbox';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -48,6 +51,7 @@ export function App() {
   const prev = React.useRef(st.screen), slideFor = React.useRef<string | null>(null);
   if (prev.current !== st.screen) { slideFor.current = prev.current === 'home' && !reducedMotion() ? st.screen : null; prev.current = st.screen; }
   const slideIn = slideFor.current === st.screen;
+  // --- SOUNDS FROM LOG LINES (owned by the FX pass) ---
   // Combat and area-map actions make a sound as their lines arrive, for everyone in the room. Keyed on the last line's
   // id (the story is capped at 400 lines, so its length stops growing); a new fight is heard from its first line; a
   // newly loaded or joined game is synced silently.
@@ -64,6 +68,7 @@ export function App() {
       add.filter((e) => e.act && hasSfx(e.text)).slice(-3).forEach((e, k) => setTimeout(() => sfxForLine(e.text), k * 140)); }
     heard.current = now;
   }, [cbN, lastId, st.game?.code, st.game?.combat?.name]);
+  // --- END SOUNDS FROM LOG LINES ---
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
   React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
@@ -78,6 +83,9 @@ export function App() {
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
       {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
+      {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
+      {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
+      {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
       <PlaytestTools />
       <Tips />
       {bar && <div role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{bar}</div>}
