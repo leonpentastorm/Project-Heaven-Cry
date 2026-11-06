@@ -96,6 +96,17 @@ describe('campaigns', () => {
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
     expect(storyObjects(g).some((o) => o.name === 'The loading ramp')).toBe(false); // still gone
   });
+  it('no walking through walls or closed doors: wall corners and story moves', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'outpost_1' } as any }, 'host');
+    const id = Object.keys(g.characters)[0];
+    expect(() => apply(g, { type: 'story/move', charId: id, to: 'P2' }, 'host')).toThrow(/no way through/); // behind the locked security door
+    g = apply(g, { type: 'story/move', charId: id, to: 'D7' }, 'host');
+    const map = zoneMap(g), cb = startCombat('t', map, [{ c: g.characters[id], pos: '4,3' }], [], 'easy', { state: 1 }, storyObjects(g));
+    expect(paths(cb, '4,3', cb.units[0].id).dist['5,4']).toBeUndefined(); // E4 to F5 squeezes between the office walls
+  });
   it('a host can load their own campaign file in the lobby', () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
     const mine = { ...JSON.parse(JSON.stringify(BUILT_IN_CAMPAIGNS[4])), id: 'mine', title: 'My Campaign' };

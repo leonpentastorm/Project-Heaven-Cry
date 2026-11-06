@@ -17,3 +17,5 @@
 Each collection's `previews/` is for review. Use individual PNG files in gameplay. Collection manifests retain the art briefs; the central catalog provides consistent implementation keys. Do not pick an asset by whichever filename contains "final", by a directory glob, or by a historical set number.
 
 Future revisions should use a new versioned folder and update the central catalog, guide and validation checks together. Keep existing approved files intact. File integrity for the published handoff is recorded in [checksums.sha256](checksums.sha256).
+
+**Open brief:** [`briefs/m813-tutorial-campaign.md`](briefs/m813-tutorial-campaign.md): 52 images for the M813 tutorial campaign (zone banners, portraits, map backgrounds painted to the layout guides in `briefs/m813-tutorial/maps/`, story moments, object sprites).

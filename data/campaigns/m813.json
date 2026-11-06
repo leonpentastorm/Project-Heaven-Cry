@@ -1151,7 +1151,40 @@
           "kind": "door",
           "at": "N4",
           "name": "Security door",
-          "locked": true
+          "locked": true,
+          "text": "Locked. Behind it: the camera screens, and the station's weapons locker.",
+          "approaches": [
+            {
+              "label": "Pick the lock",
+              "skills": [
+                "ingenuity",
+                "dexterity"
+              ],
+              "tn": 16,
+              "stakes": "Quietly, before a patrol comes round.",
+              "success": "open"
+            },
+            {
+              "label": "Talk your way in",
+              "skills": [
+                "charisma",
+                "composure"
+              ],
+              "tn": 12,
+              "stakes": "You were sent to service the cameras. Of course you were.",
+              "success": "open"
+            },
+            {
+              "label": "Force it",
+              "skills": [
+                "raw_power",
+                "guts"
+              ],
+              "tn": 16,
+              "stakes": "Loud, fast, and everyone on the floor will know.",
+              "success": "open"
+            }
+          ]
         },
         {
           "kind": "door",

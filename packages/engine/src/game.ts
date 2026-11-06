@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, type MapDef, MAPS, keyOf, refOf, standable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, type MapDef, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
@@ -272,6 +272,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (!k || !standable(map, k)) fail('Nobody can stand there.');
       if (storyObjects(g).some((o) => o.pos === k && blocksMove(o))) fail('Something is in the way there.');
       const pos = positionsOf(g); if (Object.entries(pos).some(([id, p]) => id !== c!.id && p === k)) fail('Someone is already standing there.');
+      if (!walkable(map, storyObjects(g), pos[c!.id], k!)) fail('There\'s no way through to there: a wall or a closed door is in the way.');
       pos[c!.id] = k!;
       arrive(g, c!, k!);
       return;

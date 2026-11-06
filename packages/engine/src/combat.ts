@@ -97,6 +97,24 @@ export function notesAt(map: MapDef, k: string): string[] {
   }
   return hits.sort((p, q) => p.area - q.area).map((h) => h.text);
 }
+/** Outside a fight: can someone walk from one tile to another (walls, closed doors and blocking objects in the way; no wall-corner squeezing)? */
+export function walkable(map: MapDef, objs: MapObject[], from: string, to: string): boolean {
+  const solid = new Set([...map.solid, ...objs.filter(blocksMove).map((o) => o.pos)]);
+  if (solid.has(to)) return false;
+  const seen = new Set([from]), q = [from];
+  while (q.length) {
+    const k = q.shift()!; if (k === to) return true;
+    const [x, y] = xy(k);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      if (!dx && !dy) continue;
+      const nx = x + dx, ny = y + dy, n = key(nx, ny);
+      if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h || seen.has(n) || solid.has(n)) continue;
+      if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue;
+      seen.add(n); q.push(n);
+    }
+  }
+  return false;
+}
 /** Tiles a character may stand on outside a fight. */
 export const standable = (map: MapDef, k: string) => { const [x, y] = k.split(',').map(Number); return x >= 0 && y >= 0 && x < map.w && y < map.h && !map.solid.includes(k) && !map.cover.includes(k) && !(map.full || []).includes(k); };
 
@@ -223,6 +241,7 @@ export function paths(cb: Combat, from: string, self: string) {
       if (!dx && !dy) continue;
       const nx = x + dx, ny = y + dy, n = key(nx, ny);
       if (nx < 0 || ny < 0 || nx >= w || ny >= h || solid.has(n) || blocked.has(n)) continue;
+      if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue; // no squeezing diagonally between two walls
       const nd = d[k] + (diff.has(n) ? 2 : 1) + (dx && dy ? 0.001 : 0);
       if (d[n] === undefined || nd < d[n] - 1e-9) { d[n] = nd; prev[n] = k; open.push(n); }
     }
