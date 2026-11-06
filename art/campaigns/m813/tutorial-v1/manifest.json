@@ -881,7 +881,7 @@
       "order": 2,
       "name": "The Ramp",
       "family": "illustrations",
-      "path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "path": "art/illustrations/m813/v2/revisions/v2/m813-the-ramp.png",
       "dimensions": [
         1600,
         900
@@ -893,21 +893,24 @@
       "proposal": true,
       "width": 1600,
       "height": 900,
-      "sha256": "4b49abc62d4779da91f8f0c434745df8a4d0b3521fe8b886e5033bc92291e254",
-      "source_path": "art/illustrations/m813/v2/sources/m813-the-ramp.png",
-      "source_sha256": "7ee44cbf705a54acc859b8419b8e573cd599a40f24f312e44c89b3b4b79cea46",
+      "sha256": "66919a754e9b59806549b991eff6955d25cba26e30cabd3db1d06911c0d2d1c7",
+      "source_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-the-ramp.png",
+      "source_sha256": "6a45dadf65ce8d31801bc908eec99875ce29e29ee1f9f072c3e443101221e265",
       "source_dimensions": [
         1672,
         941
       ],
       "previews": {
-        "320": "art/illustrations/m813/v2/previews/m813-the-ramp-320px.png"
+        "320": "art/illustrations/m813/v2/revisions/v2/previews/m813-the-ramp-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/illustrations/m813/v2/sources/m813-the-ramp.prompt.txt"
+      "previous_path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "previous_revision_path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "revision": 2,
+      "prompt_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-the-ramp.prompt.txt"
     },
     {
       "id": "m813-the-choice",
