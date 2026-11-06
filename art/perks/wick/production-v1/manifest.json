@@ -1474,6 +1474,30 @@
       "batch": "F",
       "source_sha256": "6d2adbbff75446a1bfd6c397ed9158645fb270870acf101e572083199e07954c",
       "tier": "achieved"
+    },
+    {
+      "id": "verse-of-war",
+      "data_id": "verse_of_war",
+      "name": "Verse of War",
+      "family": "perks",
+      "order": 65,
+      "mood": "Heroic, Comic",
+      "action": "Wick strikes a poet's pose, one mitten over its lantern heart, the other flung out as a long soul ribbon unspools in one flowing curve.",
+      "screen": "Closed eyes, declaiming mouth",
+      "prop": "Soul ribbon",
+      "path": "art/perks/wick/production-v1/verse-of-war.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/verse-of-war.png",
+        "128": "art/perks/wick/production-v1/exports/128/verse-of-war.png",
+        "64": "art/perks/wick/production-v1/exports/64/verse-of-war.png",
+        "56": "art/perks/wick/production-v1/exports/56/verse-of-war.png",
+        "48": "art/perks/wick/production-v1/exports/48/verse-of-war.png",
+        "44": "art/perks/wick/production-v1/exports/44/verse-of-war.png",
+        "40": "art/perks/wick/production-v1/exports/40/verse-of-war.png"
+      },
+      "batch": "F",
+      "source_sha256": "305aa882fc4398f9304fef24452cca8e80b6b817dc9b10a262a3d079973e5b9a",
+      "tier": "achieved"
     }
   ]
 }

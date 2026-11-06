@@ -4837,6 +4837,31 @@
         "40": "art/perks/wick/production-v1/exports/40/silent-partner.png"
       },
       "tier": "achieved"
+    },
+    "verse-of-war": {
+      "label": "Wick — Verse of War",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/verse-of-war.png",
+      "sha256": "ae09863e7ae14c7f19d23d21480be66c19f051d4fc1e7d240687222d65048cbb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "verse_of_war",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/verse-of-war.png",
+        "128": "art/perks/wick/production-v1/exports/128/verse-of-war.png",
+        "64": "art/perks/wick/production-v1/exports/64/verse-of-war.png",
+        "56": "art/perks/wick/production-v1/exports/56/verse-of-war.png",
+        "48": "art/perks/wick/production-v1/exports/48/verse-of-war.png",
+        "44": "art/perks/wick/production-v1/exports/44/verse-of-war.png",
+        "40": "art/perks/wick/production-v1/exports/40/verse-of-war.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
