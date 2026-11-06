@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-40 of 52 new images delivered. All are review candidates pending Leon.
+41 of 52 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -52,3 +52,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `obj-coolant` | E | [PNG](../../../sprites/objects/v1/obj-coolant.png) | opening-safe |
 | `obj-fire` | E | [PNG](../../../sprites/objects/v1/obj-fire.png) | opening-safe |
 | `obj-fuel-drum` | E | [PNG](../../../sprites/objects/v1/obj-fuel-drum.png) | opening-safe |
+| `obj-rubble` | E | [PNG](../../../sprites/objects/v1/obj-rubble.png) | opening-safe |

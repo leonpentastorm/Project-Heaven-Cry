@@ -41,10 +41,10 @@
     "obj-mine",
     "obj-coolant",
     "obj-fire",
-    "obj-fuel-drum"
+    "obj-fuel-drum",
+    "obj-rubble"
   ],
   "remaining": [
-    "obj-rubble",
     "obj-fallen-squad",
     "obj-triage-line",
     "obj-footlockers",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:45:24.566279+00:00",
+  "updated_utc": "2026-11-06T04:46:40.148958+00:00",
   "status": "in-progress",
   "production_approved": false
 }

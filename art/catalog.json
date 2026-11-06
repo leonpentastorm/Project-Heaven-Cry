@@ -7427,6 +7427,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-fuel-drum.prompt.txt"
+    },
+    "obj-rubble": {
+      "id": "obj-rubble",
+      "group": "E",
+      "order": 13,
+      "name": "Rubble",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-rubble.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E13 | `obj-rubble` | Broken cover: scattered rubble (rubble) | Anywhere cover breaks |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "9817ce4c73ca855c685f6f0b6d51e281315ce85433e39e90525ee902a5d8cbea",
+      "source_path": "art/sprites/objects/v1/sources/obj-rubble.png",
+      "source_sha256": "0555a81700343b33ffd103633c9ebb644254e0a47d02d3f25bb755da7a3ddaf9",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-rubble-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-rubble-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-rubble-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-rubble.prompt.txt"
     }
   }
 }

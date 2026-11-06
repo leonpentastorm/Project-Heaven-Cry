@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-55186157fb8a981f078e12c4397f62d459cd6f5859272608bce740ff0b2cdcc0  art/campaigns/m813/tutorial-v1/README.md
-bd7b91b758c94e7f7cc71a609253fca1f57a057dc232970e0bec48e66cea309c  art/campaigns/m813/tutorial-v1/manifest.json
-314197632978a1c5e814f71f227a64a0a6a21f87c9a1d922ce4b3f5ab91edeaa  art/campaigns/m813/tutorial-v1/production-progress.json
-197f2606c5fc70befd411315c9287c9cedae46debbcdb5068a2a502c4e732c4e  art/catalog.json
+24034b1012b98acab111dde608d7eb85fc80fe2ce17d7eb091c078e338b22908  art/campaigns/m813/tutorial-v1/README.md
+581f9142f8fc5d26354e7d71e5cdd237875c9c86602f02264248a9334b32eb48  art/campaigns/m813/tutorial-v1/manifest.json
+143c7211796610733f9dddfcb607b152e91c88543e8c8372242b35c7beff3387  art/campaigns/m813/tutorial-v1/production-progress.json
+4064418cc08d35cfbaa8d23d812b5879f01e2bf5a98352da4b20e6fd0386075b  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1239,6 +1239,7 @@ c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3  art/sprites/ob
 c4857262c60724c1279f4a9a223f3e983a54267c33161584c439897f65fc11d3  art/sprites/objects/v1/obj-fuel-drum.png
 22b07c207c7fa1869850d18be42848ea08407c21ec4a28e40825f92fd768d653  art/sprites/objects/v1/obj-mine.png
 cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/objects/v1/obj-platinum-crates.png
+9817ce4c73ca855c685f6f0b6d51e281315ce85433e39e90525ee902a5d8cbea  art/sprites/objects/v1/obj-rubble.png
 64f39d65b7554e44d73cf29c3da1d74279cbd81555ef5dc804380e99cba206ed  art/sprites/objects/v1/obj-tool-rack.png
 5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3  art/sprites/objects/v1/obj-toppled-pylon.png
 a4ae26aceebf5ed1a2a2744fca8655281496eaae7b2bcef007a1d97116c2b0e8  art/sprites/objects/v1/previews/obj-barrier-stakes-128px.png
@@ -1271,6 +1272,9 @@ f99c7f37c010aeec725289d9069f0030b096c76929c7f6f4a7272c06757313eb  art/sprites/ob
 80b8ba5c2c508db13dbd6a381404755167cb9ca9086e57ec78d9345f9a5d9430  art/sprites/objects/v1/previews/obj-platinum-crates-128px.png
 59eaf1185397eaeecaa08e9ee9ad14fbf3c8549aaa6ea63bc6b335c50e97fafa  art/sprites/objects/v1/previews/obj-platinum-crates-46px.png
 e5fed85fb07cba43c71e3de07bbb31fbea43f2be943ec3553ba75d7d847ecb05  art/sprites/objects/v1/previews/obj-platinum-crates-64px.png
+00ee6ef0a9c2cc628a74b59e61b1943ae8964578fb9df6e5838ec49c0cc7dea0  art/sprites/objects/v1/previews/obj-rubble-128px.png
+47eaa13160d5b87d4f80f7bb1f6c49eff330fbbb6be7c33a10605389b76fea7d  art/sprites/objects/v1/previews/obj-rubble-46px.png
+8bc27ac2413f43940a55d3d00bf113cb73266a2c8a907bfdfa836ef650d3fdc8  art/sprites/objects/v1/previews/obj-rubble-64px.png
 502edbada28a94fb9593124f27c958051aa111c8e25555e030f35bc7d6196b79  art/sprites/objects/v1/previews/obj-tool-rack-128px.png
 8c5ac3fdfc1c3d922381e976d64b353d989ef765205e8a75447dfa07509344fd  art/sprites/objects/v1/previews/obj-tool-rack-46px.png
 0fd6cd5d211493b33b0fe4255608494ff77611314974afbe1f7f3c92902765b4  art/sprites/objects/v1/previews/obj-tool-rack-64px.png
@@ -1320,6 +1324,8 @@ e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e  art/sprites/ob
 7ba64dcd79802c8dfbdda707a7713a532df3a179da97791385e2aff74fc6571a  art/sprites/objects/v1/sources/obj-mine.prompt.txt
 4cada19a280d39ad7922dd0bb2f98669e2dd7dd2315fedc3e5237b617576b4c8  art/sprites/objects/v1/sources/obj-platinum-crates.png
 3f69a2052c5bed30cc2e6687ed24c751e27242eda32f2c59eee2a1140939a952  art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt
+0555a81700343b33ffd103633c9ebb644254e0a47d02d3f25bb755da7a3ddaf9  art/sprites/objects/v1/sources/obj-rubble.png
+3433250d7e4c137b5ca906e8213f96ca838ce1818e32c6f71921530f29440010  art/sprites/objects/v1/sources/obj-rubble.prompt.txt
 0f1f9403d5b40d5cdf1b3f73a4910dd796086f4b56529664ed36233d34b6a36b  art/sprites/objects/v1/sources/obj-tool-rack.png
 e4feb89b9f83233384e57a3ff11ce99a8965847a5ee05c133cbd6394f1dd6156  art/sprites/objects/v1/sources/obj-tool-rack.prompt.txt
 b7a56d7b5286a1b8045ec5dce848053f7d47cb61a5a3547255a65468c3280c51  art/sprites/objects/v1/sources/obj-toppled-pylon.png
