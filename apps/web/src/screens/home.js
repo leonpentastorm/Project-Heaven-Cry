@@ -9,7 +9,6 @@ export class HomeLogic extends DCLogic {
   constructor(props) { super(props); this.state = { code: (new URLSearchParams(location.search).get('room') || '').toUpperCase().slice(0, 6) }; }
   renderVals() {
     const st = getState(), last = lastRoom();
-    const kitName = (k) => (D.kits.find((x) => x.id === k) || {}).name || 'no kit';
     return {
       mark: IMG['wick-welcome'], seal: IMG['emblem-ahoc-seal'],
       name: st.me.name, onName: (e) => setName(e.target.value),
@@ -24,7 +23,7 @@ export class HomeLogic extends DCLogic {
       noSessions: !listSessions().length,
       create: () => go('create', { draft: null }),
       libCount: st.library.length, noLib: !st.library.length,
-      lib: st.library.map((c) => ({ key: c.name, name: c.name + (c.draft ? ' (draft)' : ''), img: c.portrait, line: [c.origin || 'no origin', kitName(c.kit)].join(' · '),
+      lib: st.library.map((c) => ({ key: c.name, name: c.name + (c.draft ? ' (draft)' : ''), img: c.portrait, line: [c.origin || 'no origin', 'Classless'].join(' · '),
         edit: () => go('create', { draft: c }), del: () => { if (confirm('Delete ' + c.name + ' from this browser?')) removeFromLibrary(c.name); } })),
     };
   }

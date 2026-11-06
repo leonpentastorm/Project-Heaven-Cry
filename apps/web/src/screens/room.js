@@ -6,7 +6,7 @@ import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
 import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
-import { validateSheet } from '@engine';
+import { validateSheet, CLASS } from '@engine';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
@@ -26,7 +26,8 @@ export class RoomLogic extends DCLogic {
     });
     const squad = Object.values(g.characters).map((c) => {
       const p = g.players.find((x) => x.id === c.owner) || { name: '?', initials: '?', color: '#A3AEC2' };
-      const kit = (D.kits.find((k) => k.id === c.kit) || {}).name || '';
+      // The class, not the starting kit: classes are earned at level 3 (a kit is only gear).
+      const kit = c.classId && CLASS[c.classId] ? CLASS[c.classId].name : 'Classless';
       return { key: c.id, name: c.name, img: c.portrait, hasImg: !!c.portrait, noImg: !c.portrait, zoom: zoomer(this, c.portrait, c.name, 'portrait'),
         line: [c.origin, kit, 'Level ' + c.level].filter(Boolean).join(' · '), owner: p.initials + ' · ' + p.name.toUpperCase(),
         ownerStyle: 'align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; background: ' + p.color + '; color: #0A0D13',
