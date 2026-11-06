@@ -5309,6 +5309,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "nothing-left-to-fear": {
+      "label": "Wick — Nothing Left to Fear",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/nothing-left-to-fear.png",
+      "sha256": "7423f320ddaa42bbd9963ccfefd6abb635ee7b1ed29f28681ffe36a5c46f4dd3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "nothing_left_to_fear",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/nothing-left-to-fear.png",
+        "128": "art/perks/wick/production-v1/exports/128/nothing-left-to-fear.png",
+        "64": "art/perks/wick/production-v1/exports/64/nothing-left-to-fear.png",
+        "56": "art/perks/wick/production-v1/exports/56/nothing-left-to-fear.png",
+        "48": "art/perks/wick/production-v1/exports/48/nothing-left-to-fear.png",
+        "44": "art/perks/wick/production-v1/exports/44/nothing-left-to-fear.png",
+        "40": "art/perks/wick/production-v1/exports/40/nothing-left-to-fear.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

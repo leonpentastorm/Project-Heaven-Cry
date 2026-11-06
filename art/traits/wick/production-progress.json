@@ -162,11 +162,12 @@
     "last-wall",
     "walking-wounded",
     "skin-map",
-    "earthbreaker"
+    "earthbreaker",
+    "nothing-left-to-fear"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 83
+    "perks": 84
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -192,7 +193,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "nothing-left-to-fear",
     "the-name-they-whisper",
     "never-there",
     "trick-shot",

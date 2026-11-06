@@ -1858,6 +1858,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "nothing-left-to-fear",
+      "data_id": "nothing_left_to_fear",
+      "name": "Nothing Left to Fear",
+      "family": "perks",
+      "order": 80,
+      "mood": "Comic, Eerie",
+      "action": "Wick sits cross-legged on top of a giant sleeping monster's horned head (only the head top shows, filling the bottom of the frame), calmly sipping from a teacup.",
+      "screen": "Content, half-lidded",
+      "prop": "Teacup",
+      "path": "art/perks/wick/production-v1/nothing-left-to-fear.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/nothing-left-to-fear.png",
+        "128": "art/perks/wick/production-v1/exports/128/nothing-left-to-fear.png",
+        "64": "art/perks/wick/production-v1/exports/64/nothing-left-to-fear.png",
+        "56": "art/perks/wick/production-v1/exports/56/nothing-left-to-fear.png",
+        "48": "art/perks/wick/production-v1/exports/48/nothing-left-to-fear.png",
+        "44": "art/perks/wick/production-v1/exports/44/nothing-left-to-fear.png",
+        "40": "art/perks/wick/production-v1/exports/40/nothing-left-to-fear.png"
+      },
+      "batch": "G",
+      "source_sha256": "4d0d6c7884e2d79d304dd9ae0c0a9009cf4318c50c7a0fd38f77ff8abb0d6df0",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
