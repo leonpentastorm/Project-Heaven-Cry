@@ -4,14 +4,12 @@ import React from 'react';
 import { makeScreen } from './dc/runtime';
 import { expand } from './screens/shared';
 import { getState, subscribe, type Screen } from './game/store';
-import homeT from './templates/home.template.html?raw';
 import createT from './templates/create.template.html?raw';
 import roomT from './templates/room.template.html?raw';
 import mainT from './templates/main.template.html?raw';
 import combatT from './templates/combat.template.html?raw';
 import levelupT from './templates/levelup.template.html?raw';
 import ultimateT from './templates/ultimate.template.html?raw';
-import { HomeLogic } from './screens/home';
 import { CreateLogic } from './screens/create';
 import { RoomLogic } from './screens/room';
 import { MainLogic } from './screens/main';
@@ -19,6 +17,8 @@ import { CombatLogic } from './screens/combat';
 import { LevelUpLogic } from './screens/levelup';
 import { UltimateLogic } from './screens/ultimate';
 import { Music } from './game/music';
+import { Title } from './title/Title';
+import { installButtonSounds, sfx, reducedMotion } from './game/sfx';
 import { MemoryPanel } from './game/memory';
 import { VotePanel } from './game/vote';
 import { NarratorVoice } from './game/narratorVoice';
@@ -28,7 +28,7 @@ import { PlaytestTools } from './game/report';
 import { Tips } from './game/tips';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
-  home: makeScreen(expand(homeT), HomeLogic as any),
+  home: Title as any,
   create: makeScreen(expand(createT), CreateLogic as any),
   room: makeScreen(expand(roomT), RoomLogic as any),
   main: makeScreen(expand(mainT), MainLogic as any),
@@ -38,9 +38,15 @@ const SCREENS: Record<Screen, React.ComponentType<any>> = {
 };
 
 onVoice(poke);
+installButtonSounds();
 export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
   const Screen = SCREENS[st.screen];
+  // Leaving the title screen, the next screen slides in from the right (spec: title screen §4).
+  const prev = React.useRef(st.screen); const slideIn = prev.current === 'home' && st.screen !== 'home' && !reducedMotion();
+  React.useEffect(() => { prev.current = st.screen; }, [st.screen]);
+  // A refused action gets the error sound.
+  React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
   React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
   // Keep the newest story lines in view when the player is already near the bottom.
   const n = st.game?.story.entries.length || 0;
@@ -53,7 +59,7 @@ export function App() {
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
-      <Screen key={st.screen + (st.levelupChar || '')} tick={st} />
+      <div key={'w' + st.screen} className={slideIn ? 'phc-screen-in' : undefined}><Screen key={st.screen + (st.levelupChar || '')} tick={st} /></div>
       {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}

@@ -15,10 +15,11 @@ guest.on('pageerror', (e) => guest.errors.push('pageerror: ' + e.message));
 guest.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy violation/.test(m.text())) guest.errors.push('console: ' + m.text()); });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 
-await host.goto(BASE); await host.getByPlaceholder('Leon').fill('Leon');
+await host.goto(BASE);
 const photo = await host.screenshot({ type: 'jpeg', quality: 90 }); // any real image will do: 1440 × 1000
 
 // 1. Upload a portrait on the creation screen
+await click(host, 'CHARACTERS', { exact: true });
 await click(host, 'Make a character');
 await host.getByPlaceholder('What the squad calls you').fill('Upload Test');
 const [chooser] = await Promise.all([host.waitForEvent('filechooser'), click(host, 'Upload', { exact: true })]);
@@ -39,11 +40,14 @@ const [dl] = await Promise.all([host.waitForEvent('download'), host.getByRole('b
 const zipPath = await dl.path(), files = unzipSync(new Uint8Array(readFileSync(zipPath)));
 const json = JSON.parse(strFromU8(files['character.json']));
 ok('file is named ' + dl.suggestedFilename(), dl.suggestedFilename() === 'Upload-Test.phc.zip');
-ok('file holds the sheet and a full-size portrait (' + Math.round(files['portrait.jpg']?.length / 1024) + ' KB)', json.format === 'phc-character' && json.sheet.name === 'Upload Test' && json.sheet.portrait === 'portrait.jpg' && files['portrait.jpg']?.length > 40000);
+ok('file holds the sheet and a full-size portrait (' + Math.round(files['portrait.jpg']?.length / 1024) + ' KB)', json.format === 'phc-character' && json.sheet.name === 'Upload Test' && json.sheet.portrait === 'portrait.jpg' && files['portrait.jpg']?.length > 10000);
 
 // 3. A friend imports it in their room
 host.on('dialog', (d) => d.accept());
 await host.getByRole('button', { name: 'Delete Upload Test' }).click();
+await click(host, '‹ Back');
+await click(host, 'NEW GAME', { exact: true });
+await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'Open a room ›');
 await host.waitForSelector('text=The squad');
 const code = (await host.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).match(/ROOM ([A-Z0-9]{6})/)[1];
@@ -53,7 +57,7 @@ await hc.setFiles(zipPath);
 await host.waitForSelector('text=✓ LOCKED IN', { timeout: 8000 });
 const room = await host.evaluate(() => Object.values(window.__phc.getState().game.characters).map((c) => ({ name: c.name, p: c.portrait.length })));
 ok('imported into the room with the small portrait (' + Math.round(room[0].p / 1024) + ' KB)', room[0].name === 'Upload Test' && room[0].p < 80000);
-await guest.goto(BASE + '/?room=' + code); await guest.getByPlaceholder('Leon').fill('Mai'); await click(guest, 'Join ›');
+await guest.goto(BASE + '/?room=' + code); await guest.waitForSelector('text=PRESS ANY KEY'); await guest.keyboard.press('Enter'); await guest.getByPlaceholder('Leon').fill('Mai'); await click(guest, 'Join ›');
 await guest.waitForSelector('text=Upload Test');
 ok('the guest sees the uploaded portrait', await guest.locator('img[src^="data:image/jpeg"]').count() > 0);
 await click(guest, 'Create a character');

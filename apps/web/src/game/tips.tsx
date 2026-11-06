@@ -6,6 +6,8 @@ import { getState, subscribe } from './store';
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
 const save = () => { try { localStorage.setItem(LS, JSON.stringify([...seen])); } catch { /* */ } };
+/** Settings: show every tip again. */
+export function resetTips() { seen.clear(); save(); }
 
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);

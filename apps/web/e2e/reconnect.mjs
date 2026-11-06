@@ -1,4 +1,4 @@
-import { chromium, player, click, shot, BASE } from './lib.mjs';
+import { chromium, player, click, shot, BASE, hostAs } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 async function create(page, name, family, kit) {
@@ -13,7 +13,7 @@ async function create(page, name, family, kit) {
   await click(page, 'Next ›'); await click(page, 'Lock in and bring to the room');
   await page.waitForSelector('text=✓ LOCKED IN');
 }
-await host.goto(BASE); await host.getByPlaceholder('Leon').fill('Leon'); await click(host, 'Open a room ›');
+await hostAs(host, 'Leon');
 await host.waitForSelector('text=The squad');
 const code = (await host.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).match(/ROOM ([A-Z0-9]{6})/)[1];
 await create(host, 'MPAT', null, 'Field medic');
