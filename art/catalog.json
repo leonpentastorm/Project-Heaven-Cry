@@ -5390,6 +5390,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "trick-shot": {
+      "label": "Wick — Trick Shot",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/trick-shot.png",
+      "sha256": "362a1afe137652ad96fd92c64725da5c990bd560b1ef4c1afb200415713f52f3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "trick_shot",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/trick-shot.png",
+        "128": "art/perks/wick/production-v1/exports/128/trick-shot.png",
+        "64": "art/perks/wick/production-v1/exports/64/trick-shot.png",
+        "56": "art/perks/wick/production-v1/exports/56/trick-shot.png",
+        "48": "art/perks/wick/production-v1/exports/48/trick-shot.png",
+        "44": "art/perks/wick/production-v1/exports/44/trick-shot.png",
+        "40": "art/perks/wick/production-v1/exports/40/trick-shot.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

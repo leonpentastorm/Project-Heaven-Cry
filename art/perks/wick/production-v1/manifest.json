@@ -1936,6 +1936,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "trick-shot",
+      "data_id": "trick_shot",
+      "name": "Trick Shot",
+      "family": "perks",
+      "order": 83,
+      "mood": "Proud, Comic",
+      "action": "Wick fires a revolver backwards over its own shoulder without looking; a dotted line bounces off a tin can and curves out of frame.",
+      "screen": "Bored, eyes closed",
+      "prop": "Revolver",
+      "path": "art/perks/wick/production-v1/trick-shot.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/trick-shot.png",
+        "128": "art/perks/wick/production-v1/exports/128/trick-shot.png",
+        "64": "art/perks/wick/production-v1/exports/64/trick-shot.png",
+        "56": "art/perks/wick/production-v1/exports/56/trick-shot.png",
+        "48": "art/perks/wick/production-v1/exports/48/trick-shot.png",
+        "44": "art/perks/wick/production-v1/exports/44/trick-shot.png",
+        "40": "art/perks/wick/production-v1/exports/40/trick-shot.png"
+      },
+      "batch": "G",
+      "source_sha256": "2a1c7417de8cbb3d4d26e5a4dc7f0a9ffd3c25d3ca48f5a86697f9f3e4969790",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
