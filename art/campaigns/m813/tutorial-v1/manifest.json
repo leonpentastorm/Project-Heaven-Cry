@@ -1128,6 +1128,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-cargo-pylon.prompt.txt"
+    },
+    {
+      "id": "obj-toppled-pylon",
+      "group": "E",
+      "order": 5,
+      "name": "Toppled Pylon",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-toppled-pylon.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E5 | `obj-toppled-pylon` | Toppled pylon on its side (pillar) | Shield line E8 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3",
+      "source_path": "art/sprites/objects/v1/sources/obj-toppled-pylon.png",
+      "source_sha256": "b7a56d7b5286a1b8045ec5dce848053f7d47cb61a5a3547255a65468c3280c51",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-toppled-pylon-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-toppled-pylon-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-toppled-pylon-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-toppled-pylon.prompt.txt"
     }
   ]
 }

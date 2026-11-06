@@ -33,10 +33,10 @@
     "obj-barrier-stakes",
     "obj-platinum-crates",
     "obj-tool-rack",
-    "obj-cargo-pylon"
+    "obj-cargo-pylon",
+    "obj-toppled-pylon"
   ],
   "remaining": [
-    "obj-toppled-pylon",
     "obj-door-closed",
     "obj-door-open",
     "obj-crater",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:28:21.601516+00:00",
+  "updated_utc": "2026-11-06T04:29:25.962371+00:00",
   "status": "in-progress",
   "production_approved": false
 }
