@@ -34,8 +34,8 @@
 </div>
 </sc-for>
 </div>
-<div role="tablist" aria-label="Sheet" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
-<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+<div role="tablist" aria-label="Sheet" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
 </div>
 
 <sc-if value="{{tabSkills}}" hint-placeholder-val="{{true}}">
@@ -162,6 +162,76 @@
 </div>
 </sc-if>
 
+<sc-if value="{{tabMagic}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{mg.empty}}"><div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px dashed #2E3A50"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">MAGIC</span><span style="font-size: 13px; line-height: 1.5; color: #C9D3E3">{{mg.emptyText}}</span></div></sc-if>
+
+<sc-if value="{{mg.showSigil}}">
+<section aria-label="Sigils" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid #4FC8DF">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #4FC8DF">✧ {{mg.sig.head}}</span>
+<sc-if value="{{mg.noEvoker}}"><span role="note" style="font-size: 12px; font-weight: 700; line-height: 1.4; color: #F65157">{{mg.noEvokerText}}</span></sc-if>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px">
+<sc-for list="{{mg.sig.stats}}" as="r"><div style="display: flex; justify-content: space-between; gap: 6px; font-size: 12px; border-bottom: 1px solid #1C2536; padding: 4px 0"><span style="color: #A3AEC2">{{r.k}}</span><span style="text-align: right">{{r.v}}</span></div></sc-for>
+</div>
+<sc-if value="{{mg.sig.noWords}}"><span style="font-size: 12px; color: #A3AEC2">No words known yet: a teacher or a Sigil plate gives one.</span></sc-if>
+<sc-for list="{{mg.sig.words}}" as="w"><button type="button" onClick="{{w.toggle}}" aria-expanded="{{w.open}}" title="{{w.title}}" style="{{w.style}}">
+<img src="{{w.img}}" alt="" style="grid-row: span 2; width: 40px; height: 40px; border-radius: 6px; background: #05070B; box-shadow: inset 0 0 0 1px #1C2536">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #8BDEEE">{{w.word}}</span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2">{{w.cls}} · {{w.charge}}</span><span style="margin-left: auto; font-size: 11px; color: #7F8BA1">{{w.hint}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{w.text}}</span><sc-if value="{{w.hasGrand}}"><span style="font-size: 12px; line-height: 1.4; color: #7F8BA1"><b style="letter-spacing: 0.08em">GRAND FORM (GRAND SIGILIST):</b> {{w.grand}}</span></sc-if></span>
+</button></sc-for>
+</section>
+</sc-if>
+
+<sc-if value="{{mg.showSoul}}">
+<section aria-label="Outbursts" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid #AE9BFF">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #AE9BFF">♥ {{mg.soul.head}}</span>
+<sc-if value="{{mg.soul.ema}}"><div style="display: grid; grid-template-columns: 30px minmax(0, 1fr) 96px; gap: 8px; align-items: center"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #5C9EFF">MP</span><div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{mg.soul.mpFill}}"></div></div><span style="font-size: 12px; text-align: right; color: #C9D3E3">{{mg.soul.mpText}}</span></div></sc-if>
+<sc-if value="{{mg.soul.noEma}}"><span role="note" style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{mg.soul.noEmaText}}</span></sc-if>
+<sc-if value="{{mg.soul.held}}"><div style="display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 8px; border: 1px solid #AE9BFF; background: rgba(174, 155, 255, 0.08)"><img src="{{mg.soul.heldImg}}" alt="Held heart" style="width: 24px; height: 24px; flex: none"><span style="font-size: 12px; font-weight: 700; line-height: 1.4; color: #E7EBF3">{{mg.soul.heldText}}</span></div></sc-if>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px">
+<sc-for list="{{mg.soul.stats}}" as="r"><div style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px; border-bottom: 1px solid #1C2536; padding: 4px 0"><span style="color: #A3AEC2">{{r.k}}</span><span style="text-align: right">{{r.v}}</span></div></sc-for>
+</div>
+<span style="font-size: 11px; line-height: 1.4; color: #7F8BA1">{{mg.soul.knownText}}</span>
+<sc-if value="{{mg.soul.noDesigns}}"><span style="font-size: 12px; color: #A3AEC2">No designs ready yet.</span></sc-if>
+<sc-for list="{{mg.soul.designs}}" as="d"><div style="{{d.style}}">
+<div style="display: flex; align-items: center; gap: 8px"><img src="{{d.heart}}" alt="" style="width: 20px; height: 20px; flex: none"><span style="font-size: 14px; font-weight: 700">{{d.name}}</span><sc-if value="{{d.held}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #F2C46A">{{d.heldText}}</span></sc-if></div>
+<span style="font-size: 12px; color: #AE9BFF">{{d.schools}}</span>
+<sc-if value="{{d.hasMods}}"><div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{d.mods}}" as="x"><span title="{{x.title}}" style="{{x.style}}">{{x.label}}</span></sc-for></div></sc-if>
+<span style="font-size: 12px; font-weight: 700; color: #C9D3E3">{{d.line}}</span>
+<div style="display: flex; gap: 6px"><button type="button" onClick="{{d.edit}}" disabled="{{d.locked}}" style="min-height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid #AE9BFF; background: transparent; color: #AE9BFF; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Edit</button><button type="button" onClick="{{d.forget}}" disabled="{{d.noForget}}" title="{{d.forgetTitle}}" style="min-height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Forget</button></div>
+</div></sc-for>
+<sc-if value="{{mg.soul.canNew}}"><button type="button" onClick="{{mg.soul.newDesign}}" style="min-height: 36px; border-radius: 8px; border: 1px dashed #AE9BFF; background: transparent; color: #AE9BFF; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer">+ NEW DESIGN</button></sc-if>
+<sc-if value="{{mg.soul.newWhy}}"><span style="font-size: 11px; color: #7F8BA1">{{mg.soul.newWhy}}</span></sc-if>
+
+<sc-if value="{{mg.b.open}}">
+<div aria-label="Outburst workshop" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #AE9BFF">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #AE9BFF">{{mg.b.title}}</span>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">NAME<input value="{{mg.b.name}}" onChange="{{mg.b.onName}}" maxlength="40" placeholder="What you call it" style="min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #0D1119; color: #E7EBF3; font-family: inherit; font-size: 13px; letter-spacing: 0"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">SCHOOL<select value="{{mg.b.school}}" onChange="{{mg.b.onSchool}}" style="min-height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #0D1119; color: #E7EBF3; font-family: inherit; font-size: 13px; letter-spacing: 0"><sc-for list="{{mg.b.schools}}" as="o"><option value="{{o.value}}">{{o.label}}</option></sc-for></select></label>
+<span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{mg.b.schoolText}}</span>
+<sc-if value="{{mg.b.two}}"><label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">SECOND SCHOOL (WILL POWER 5, +20 MP)<select value="{{mg.b.school2}}" onChange="{{mg.b.onSchool2}}" style="min-height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #0D1119; color: #E7EBF3; font-family: inherit; font-size: 13px; letter-spacing: 0"><sc-for list="{{mg.b.schools2}}" as="o"><option value="{{o.value}}">{{o.label}}</option></sc-for></select></label></sc-if>
+<sc-if value="{{mg.b.hasOptions}}"><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">EFFECT</span><div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{mg.b.options}}" as="o"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.label}}</button></sc-for></div></sc-if>
+<span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{mg.b.slotsText}}</span>
+<sc-if value="{{mg.b.noModules}}"><span style="font-size: 12px; color: #7F8BA1">No modules learned yet.</span></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{mg.b.modules}}" as="o"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" title="{{o.title}}" style="{{o.style}}">{{o.label}}</button></sc-for></div>
+<span aria-live="polite" style="font-size: 12px; font-weight: 700; color: #E7EBF3">{{mg.b.cost}}</span>
+<div style="display: flex; gap: 6px"><button type="button" onClick="{{mg.b.save}}" disabled="{{mg.b.cantSave}}" style="flex: 1; min-height: 36px; border-radius: 8px; border: 0; background: #AE9BFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{mg.b.saveLabel}}</button><button type="button" onClick="{{mg.b.cancel}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Cancel</button></div>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{mg.learn.any}}">
+<section aria-label="Learn magic" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">LEARN</span>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{mg.learn.why}}</span>
+<sc-if value="{{mg.learn.hasAlly}}"><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">FROM AN ALLY</span><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{mg.learn.ally}}" as="t"><button type="button" onClick="{{t.go}}" disabled="{{t.locked}}" title="{{t.title}}" style="{{t.style}}"><img src="{{t.img}}" alt="" style="width: 20px; height: 20px"><span style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2"><span>{{t.label}}</span><span style="font-size: 10px; font-weight: 600; color: #A3AEC2">{{t.sub}}</span></span></button></sc-for></div></sc-if>
+<sc-if value="{{mg.learn.hasPlates}}"><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">READ A SIGIL PLATE</span><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{mg.learn.plates}}" as="t"><button type="button" onClick="{{t.go}}" disabled="{{t.locked}}" style="{{t.style}}"><img src="{{t.img}}" alt="" style="width: 20px; height: 20px"><span style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2"><span>{{t.label}}</span><span style="font-size: 10px; font-weight: 600; color: #A3AEC2">{{t.sub}}</span></span></button></sc-for></div></sc-if>
+</section>
+</sc-if>
+</div>
+</sc-if>
+
 
 </aside>
 
@@ -266,12 +336,14 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <div style="flex: 1 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
 <div style="padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F">
 <div style="{{areaGrid}}">
-<sc-for list="{{areaCells}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.hasSprite}}"><img src="{{m.sprite}}" alt="" style="{{m.spriteStyle}}"></sc-if><sc-if value="{{m.hasTrail}}"><span aria-hidden="true" style="{{m.trailStyle}}"></span></sc-if><sc-if value="{{m.hasGlyph}}"><span aria-hidden="true" style="{{m.glyphStyle}}">{{m.glyph}}</span></sc-if><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
+<sc-for list="{{areaCells}}" as="m"><sc-if value="{{m.isLabel}}"><span aria-hidden="true" style="{{m.style}}">{{m.text}}</span></sc-if><sc-if value="{{m.isTile}}"><button type="button" class="phc-tok" onClick="{{m.click}}" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.label}}" title="{{m.title}}" style="{{m.style}}"><sc-if value="{{m.hasSprite}}"><img src="{{m.sprite}}" alt="" style="{{m.spriteStyle}}"></sc-if><sc-if value="{{m.hasZone}}"><span aria-hidden="true" style="{{m.zoneStyle}}"></span></sc-if><sc-for list="{{m.glyphs}}" as="gl"><img src="{{gl.src}}" alt="" style="{{gl.style}}"></sc-for><sc-if value="{{m.hasTrail}}"><span aria-hidden="true" style="{{m.trailStyle}}"></span></sc-if><sc-if value="{{m.hasGlyph}}"><span aria-hidden="true" style="{{m.glyphStyle}}">{{m.glyph}}</span></sc-if><sc-if value="{{m.has}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
+<sc-if value="{{m.hasHeart}}"><img src="{{m.heart}}" alt="" style="{{m.heartStyle}}"></sc-if>
 <!--TOKPOP:m.t-->
 </sc-if></button></sc-if></sc-for>
 </div>
 </div>
 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2">
+<sc-if value="{{areaMagic.has}}"><sc-for list="{{areaMagic.legend}}" as="lg"><span style="display: flex; align-items: center; gap: 6px"><sc-if value="{{lg.img}}"><img src="{{lg.img}}" alt="" style="width: 14px; height: 14px"></sc-if><sc-if value="{{lg.swatch}}"><span style="{{lg.swatch}}"></span></sc-if>{{lg.text}}</span></sc-for></sc-if>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #4A3A20"></span>Half cover (−5 to hit)</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #6B5430"></span>Full cover (blocks sight)</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #232D3F"></span>Wreckage (2 tiles to cross)</span>
@@ -292,11 +364,14 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-if value="{{hud.has}}"><div aria-label="Your status" style="display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F">
 <sc-for list="{{hud.bars}}" as="b"><div style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 64px; gap: 6px; align-items: center"><span style="{{b.labelStyle}}">{{b.label}}</span><div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div><span style="font-size: 11px; text-align: right; color: #C9D3E3">{{b.text}}</span></div></sc-for>
 <span style="{{hud.ammoStyle}}">{{hud.ammo}}</span>
+<sc-for list="{{hud.magic}}" as="ml"><span style="{{ml.style}}">{{ml.text}}</span></sc-for>
 </div></sc-if>
 <div style="display: flex; gap: 4px"><sc-for list="{{wPips}}" as="p"><span style="{{p.style}}"></span></sc-for></div>
 <span style="{{wStatusStyle}}">{{wStatus}}</span>
-<sc-for list="{{wGroups}}" as="grp"><span style="margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">{{grp.name}}</span>
+<sc-for list="{{wGroups}}" as="grp"><span style="{{grp.style}}">{{grp.name}}</span>
 <sc-for list="{{grp.items}}" as="i"><button type="button" onClick="{{i.pick}}" aria-pressed="{{i.pressed}}" disabled="{{i.locked}}" style="{{i.style}}"><span>{{i.name}}</span><span style="font-size: 11px; font-weight: 700; color: #A3AEC2">{{i.cost}}</span></button></sc-for></sc-for>
+<sc-if value="{{wMagic.showWords}}"><div role="group" aria-label="Words you know" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 4px; padding: 6px; border-radius: 8px; border: 1px solid #232D3F; background: #05070B"><sc-for list="{{wMagic.words}}" as="w"><button type="button" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.img}}" alt="" style="width: 24px; height: 24px"><span>{{w.word}}</span><span style="color: #A3AEC2">{{w.charge}} charge</span></button></sc-for></div></sc-if>
+<sc-if value="{{wMagic.showDesigns}}"><div role="group" aria-label="Your Outburst designs" style="display: flex; flex-direction: column; gap: 4px"><sc-for list="{{wMagic.designs}}" as="d"><button type="button" onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" style="{{d.style}}"><span>♥ {{d.name}}</span><span style="font-size: 10px; font-weight: 600; color: #AE9BFF">{{d.sub}}</span></button></sc-for><button type="button" onClick="{{wMagic.toggleHold}}" aria-pressed="{{wMagic.holdPressed}}" style="{{wMagic.holdStyle}}">{{wMagic.holdLabel}}</button></div></sc-if>
 <span aria-live="polite" style="font-size: 12px; line-height: 1.45; color: #C9D3E3">{{wHint}}</span>
 <sc-if value="{{wHasConfirm}}"><button type="button" onClick="{{wConfirm}}" style="min-height: 42px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{wConfirmLabel}}</button></sc-if>
 <button type="button" onClick="{{endTurn}}" disabled="{{cantEnd}}" style="min-height: 42px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>

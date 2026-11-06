@@ -2,7 +2,7 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle } from './shared';
+import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, CORE_VOICE } from '../game/voice';
@@ -10,6 +10,10 @@ import { portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, is
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
+import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
+  magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
+  vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
+import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 
@@ -32,6 +36,121 @@ const side0 = (c) => (c ? mainHandSide(c) : 'right');
 const pref = (k, d) => { try { return localStorage.getItem('phc.' + k) || d; } catch { return d; } };
 const savePref = (k, v) => { try { localStorage.setItem('phc.' + k, v); } catch { /* */ } };
 
+// ---------- magic (spec: Mana, rules 1.2): the MAGIC tab ----------
+// Sigils are Mind cyan and square; Outbursts are Soul violet warming to gold (docs/design/magic-presentation.md). Never mixed.
+const SIG_CYAN = '#4FC8DF', SOUL_VIOLET = '#AE9BFF', MP_BLUE = '#5C9EFF';
+const WORD_CLASS = { subject_element: 'SUBJECT · ELEMENT', subject_effect: 'SUBJECT · EFFECT', form: 'FORM', motion: 'MOTION', modifier: 'MODIFIER' };
+const OPT_LABEL = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal 30', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
+  fear: 'Afraid', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
+/** The option value the engine reads on release (data 'push_3' → 'push', 'to_hit_2' → 'hit'). */
+const optValue = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
+const optLabel = (school, v) => { const o = (SCHOOL[school]?.options || []).find((x) => optValue(x) === v); return o ? OPT_LABEL[o] || o : v; };
+const signed = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0');
+const chipStyle = (ink, on) => 'display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid ' + ink + '; '
+  + (on ? 'background: ' + epRgba(ink, 0.2) + '; color: #E7EBF3' : 'background: transparent; color: ' + ink);
+/** What the character's magic is doing now: in a fight, its unit; on the story map, the story's magic state. */
+function magicNow(g, c) {
+  const inFight = g.phase === 'combat' && !!g.combat, cu = inFight && c ? g.combat.units.find((u) => u.charId === c.id) : null, SM = (c && (g.story.magic || {})[c.id]) || {};
+  const mana = inFight ? g.combat.mana ?? MANA_START : g.story.mana ?? MANA_START;
+  return { inFight, cu, mana, band: manaBand(mana), flux: cu?.mg ? cu.mg.flux : SM.flux || 0, strain: cu?.mg ? cu.mg.strain : SM.strain || 0, held: (cu?.mg ? cu.mg.held : SM.held) || null,
+    conds: (cu ? cu.conds : SM.conds) || {}, shield: (cu ? cu.shield : SM.shield) || 0,
+    charge: cu?.mg ? cu.mg.charge : c ? evoChargeNow(c) : 0, cores: cu?.mg ? cu.mg.cores + (cu.mg.coresMade || 0) : c ? coresCarried(c) : 0, mp: cu?.mg ? Math.round(cu.mg.mp) : c ? mpNow(c) : 0 };
+}
+/** Try an engine magic action on a throwaway copy of the story map's fight: the engine's refusal (or null) and the
+ *  unit afterwards. The UI learns reasons and costs from the engine without computing a rule itself. */
+function dryMagic(cbx, uid, fn) {
+  const units = cbx.units.map((x) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
+  const c = { ...cbx, units, log: [], notes: [], glyphs: [...(cbx.glyphs || [])], zones: (cbx.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })) };
+  const u = units.find((x) => x.id === uid);
+  let err = null;
+  try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
+  return { err, u };
+}
+/** Story and log lines about magic take their family's ink (paired with a ✧ or ♥ mark in the stream). */
+const SIG_LINE = /draws [A-Z]+ at|evokes [A-Z]|scuffs out|vents \d+ Flux|loads a fresh core|OVERLOAD|Sigil word|fades? at /, SOUL_LINE = /Outburst|releases [^:]+:|lets .+ go \(|syphons \d+ MP|crystallises a mana core|MANA SHORT|holds the Strain/;
+const magicInk = (t) => (SIG_LINE.test(t || '') ? SIGIL_INK : SOUL_LINE.test(t || '') ? SOUL_INK : '');
+const bandName = (b) => b.id.charAt(0).toUpperCase() + b.id.slice(1);
+const soulM = (c) => magicOf(c) || { costSave: soulCostSaving(c), soulAp: soulCastAp(c), soulRange: soulRangeBonus(c) };
+function magicVals(self, g, c) {
+  const S = self.state, set = (p) => self.setState({ mgDraft: { ...self.state.mgDraft, ...p } });
+  const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, sig: { words: [], stats: [] }, soul: { designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
+  if (!c) return { ...none, emptyText: 'You have no character in this session.' };
+  const words = c.sigils || [], designs = c.outbursts || [], known = c.soulKnown || { schools: [], modules: [] }, evo = hasEvoker(c), ema = hasEmanator(c);
+  const N = magicNow(g, c), fight = N.inFight, mana = N.mana, m = soulM(c);
+  const showSigil = words.length > 0 || evo, showSoul = designs.length > 0 || known.schools.length > 0 || known.modules.length > 0 || ema || !!N.held;
+  // Sigils: the words known, as glyph cards (click for the Grand form).
+  const wordCards = words.filter((id) => SIGIL[id]).map((id) => { const w = SIGIL[id], open = S.mgWord === id;
+    return { key: id, img: glyphUri(id, SIGIL_INK, { glow: true }), word: w.word, cls: WORD_CLASS[w.class] || '', charge: 'CHARGE ' + w.charge, text: w.text, title: w.grand ? 'Grand form (Grand Sigilist): ' + w.grand : '',
+      open: open ? 'true' : 'false', toggle: () => self.setState({ mgWord: open ? null : id }), hasGrand: open && !!w.grand, grand: w.grand || '', hint: w.grand ? (open ? '▾' : '▸') : '',
+      style: 'display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 10px; align-items: start; width: 100%; padding: 8px 10px; border-radius: 10px; text-align: left; font-family: inherit; color: inherit; cursor: pointer; background: #10151F; border: 1px solid ' + (open ? SIG_CYAN : '#232D3F') + '; border-left: 3px solid ' + SIG_CYAN }; });
+  const sigStats = [['Words on the ground at once', String(maxSigilWords(c))], ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker charge', evo ? N.charge + ' / ' + CORE_CHARGE : '—'],
+    ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
+  // Outbursts: MP, Strain, the designs ready, and the heart workshop.
+  const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
+  const designCards = designs.map((d) => { const cost = designCost(m, d, mana), held = !!(N.held && N.held.design === d.id);
+    return { key: d.id, name: d.name, schools: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.option ? ' · ' + optLabel(d.school, d.option) : ''),
+      mods: d.modules.map((x) => ({ key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + epRgba(SOUL_VIOLET, 0.6) + '; color: ' + SOUL_VIOLET })),
+      hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · reach ' + designRange(m, d) + ' tiles', held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
+      edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '' }, mgSaved: null }),
+      forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
+      locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
+      style: 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (held ? SOUL_VIOLET : '#232D3F') + '; border-left: 3px solid ' + SOUL_VIOLET }; });
+  const soulStats = [['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
+    ['Air', 'MANA ' + mana + ' · ' + bandName(N.band) + (N.band.soul_cost_mult !== 1 ? ' (costs ×' + N.band.soul_cost_mult + ')' : '')]].map(([k, v]) => ({ k, v }));
+  // The builder: a school, its option, modules up to the slots, a name. The engine checks everything again on Save.
+  const B = S.mgDraft, slots = moduleSlots(c), two = (c.skills.will_power || 0) >= 5;
+  // Close once the save lands: the designs changed, or the game moved on with no refusal since Save (an unchanged
+  // design saves to the same thing, so a content diff alone would leave the builder open).
+  const stNow = getState(), refused = !!(stNow.toast && !stNow.toast.ok && stNow.toast.at >= (S.mgSavedAt || 0));
+  if (B && S.mgSaved != null && (JSON.stringify(c.outbursts || []) !== S.mgSaved || (stNow.game !== S.mgSavedGame && !refused))) queueMicrotask(() => self.setState({ mgDraft: null, mgSaved: null, mgSavedGame: null }));
+  const opts = B ? (SCHOOL[B.school]?.options || []) : [];
+  const draftD = B && B.school ? { id: B.id || '', name: B.name, school: B.school, ...(B.school2 ? { school2: B.school2 } : {}), modules: B.modules, ...(B.option ? { option: B.option } : {}) } : null;
+  const b = B ? {
+    open: true, title: B.id ? 'EDIT ' + (B.name || 'DESIGN').toUpperCase() : 'NEW OUTBURST DESIGN', name: B.name, onName: (e) => set({ name: e.target.value.slice(0, 40) }),
+    school: B.school, onSchool: (e) => { const sc = e.target.value, o = SCHOOL[sc]?.options || []; set({ school: sc, option: o.length ? optValue(o[0]) : '' }); },
+    schools: known.schools.map((x) => ({ key: x, value: x, label: SCHOOL[x]?.name || x })), schoolText: SCHOOL[B.school]?.text || '',
+    two: two && known.schools.length > 1, school2: B.school2 || '', onSchool2: (e) => set({ school2: e.target.value }),
+    schools2: [{ key: '-', value: '', label: 'None' }, ...known.schools.filter((x) => x !== B.school).map((x) => ({ key: x, value: x, label: SCHOOL[x]?.name || x }))],
+    hasOptions: opts.length > 0, options: opts.map((o) => { const v = optValue(o), on = B.option === v; return { key: o, label: OPT_LABEL[o] || o, pressed: on ? 'true' : 'false', pick: () => set({ option: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
+    slotsText: 'MODULES · ' + B.modules.length + ' / ' + slots + ' (Will Power)', noModules: !known.modules.length,
+    modules: known.modules.map((x) => { const on = B.modules.includes(x), full = !on && B.modules.length >= slots;
+      return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', pressed: on ? 'true' : 'false', locked: full,
+        pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (full ? '; opacity: 0.45; cursor: default' : '') }; }),
+    cost: draftD ? designCost(m, draftD, mana) + ' MP · ' + designAp(m, draftD) + ' AP · reach ' + designRange(m, draftD) + ' tiles (in ' + bandName(N.band) + ' air)' : 'Pick a school.',
+    cantSave: !draftD || fight, save: () => { if (!draftD) return; self.setState({ mgSaved: JSON.stringify(c.outbursts || []), mgSavedGame: getState().game, mgSavedAt: Date.now() }); act({ type: 'magic/design', charId: c.id, design: draftD }); },
+    cancel: () => self.setState({ mgDraft: null, mgSaved: null }), saveLabel: B.id ? 'Save changes' : 'Save design',
+  } : none.b;
+  const canNew = !fight && known.schools.length > 0 && designs.length < readyDesigns(c);
+  // Learning: from an ally who knows it, or from a Sigil plate in the pack. One new thing a scene.
+  const learnedNow = c.learnedScene === g.story.scene.n, learnLocked = fight || learnedNow;
+  const teach = new Map(), addT = (kind, id, label, who) => { const k = kind + ':' + id; if (!teach.has(k)) teach.set(k, { kind, id, label, who: [] }); teach.get(k).who.push(who); };
+  for (const x of Object.values(g.characters)) { if (x.id === c.id || x.dead) continue;
+    (x.sigils || []).forEach((w) => { if (!words.includes(w) && SIGIL[w]) addT('word', w, SIGIL[w].word, x.name); });
+    (x.soulKnown?.schools || []).forEach((s) => { if (!known.schools.includes(s) && SCHOOL[s]) addT('school', s, SCHOOL[s].name + ' school', x.name); });
+    (x.soulKnown?.modules || []).forEach((s) => { if (!known.modules.includes(s) && MODULE[s]) addT('module', s, MODULE[s].name + ' module', x.name); }); }
+  const ally = [...teach.values()].map((t) => ({ key: t.kind + t.id, label: t.label, sub: 'from ' + t.who.join(' or '), isWord: t.kind === 'word', img: t.kind === 'word' ? glyphUri(t.id, SIGIL_INK) : heartUri(1), locked: learnLocked,
+    title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : MODULE[t.id].text,
+    go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
+    style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
+  const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate').map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
+    return { key: 'p' + i + w, label: 'Read the plate: ' + (def ? def.word : (x.note || 'an unknown word')), sub: '×' + x.qty + (def && words.includes(w) ? ' · known already' : ''), img: def ? glyphUri(w, SIGIL_INK) : scratchUri(), locked: learnLocked || !def,
+      go: () => act({ type: 'magic/learn', charId: c.id, word: w, from: 'plate' }), style: chipStyle(SIG_CYAN, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked || !def ? '; opacity: 0.5; cursor: default' : '') }; });
+  const anyMagic = showSigil || showSoul;
+  return {
+    has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
+    showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
+    sig: { words: wordCards, stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
+    soul: { designs: designCards, noDesigns: !designs.length, stats: soulStats, ema, noEma: !ema, noEmaText: 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
+      mpText: N.mp + ' / ' + mpMax + ' MP', mpFill: 'height: 100%; width: ' + Math.max(0, Math.min(100, mpPct)) + '%; background: ' + MP_BLUE,
+      held: !!N.held, heldText: N.held ? 'HOLDING ' + ((designs.find((d) => d.id === N.held.design) || {}).name || 'an Outburst').toUpperCase() + ' · STAGE ' + N.held.stage + ' · it grows each round, and strains the heart, until you release it' : '', heldImg: heartUri(N.held ? N.held.stage : 1),
+      head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
+      newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (Empathy): forget one to make room.' : '',
+      knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
+    b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
+      why: fight ? 'Learn after the fight.' : learnedNow ? 'One new thing a scene: it takes a rest to sink in.' : 'One new thing a scene. Words: ' + words.length + ' / ' + wordsKnownCap(c) + ' known.' },
+  };
+}
+
 export class MainLogic extends DCLogic {
   constructor(props) {
     super(props);
@@ -50,12 +169,12 @@ export class MainLogic extends DCLogic {
     // ---------- the sheet ----------
     const echo = c ? c.echo : 0;
     const echoPips = [0, 1, 2].map((i) => ({ style: 'width: 12px; height: 12px; transform: rotate(45deg); box-sizing: border-box; ' + (i < echo ? 'background: #FFFFFF' : 'border: 1px solid #FFFFFF') }));
-    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
-    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', 100, mpMax + ' / ' + mpMax],
+    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && hasEmanator(c), next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
+    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax : 'no Emanator'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
-    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR']].map(([id, label]) => ({ label, pick: () => this.setState({ tab: id }), selected: S.tab === id ? 'true' : 'false',
-      style: 'min-height: 38px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
+    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['magic', 'MAGIC']].map(([id, label]) => ({ label, pick: () => this.setState({ tab: id }), selected: S.tab === id ? 'true' : 'false',
+      style: 'flex: 1 1 auto; min-height: 38px; padding: 0 8px; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
     const coreTabs = ['body', 'mind', 'soul'].map((k) => ({ label: k.toUpperCase(), pick: () => this.setState({ core: k }), pressed: S.core === k ? 'true' : 'false',
       style: 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; color: ' + D.core[k] + '; ' + (S.core === k ? 'border: 1px solid ' + D.core[k] + '; background: #1C2536' : 'border: 1px solid #232D3F; background: transparent') }));
     const asked = (c && g.story.scene.asked[c.id]) || [];
@@ -246,8 +365,8 @@ export class MainLogic extends DCLogic {
       }
       if (e.kind === 'check') return { ...base, isCheck: true, headStyle: 'font-weight: 700; letter-spacing: 0.06em; color: ' + (e.ok ? '#6FEA77' : '#A3AEC2') };
       // An action on the area map reads as an action, not a footnote: a shot is red-edged.
-      if (e.act) { const hit = /\b(fires|shoots|aimed shot|strikes|smashes|attacks|hits|misses)\b/.test(e.text);
-        return { ...base, isNote: true, text: (hit ? '⚔ ' : '› ') + e.text, noteStyle: 'margin: 0; padding: 6px 10px; border-radius: 6px; background: #10151F; border-left: 3px solid ' + (hit ? '#F65157' : '#E7EBF3') + '; font-size: 14px; line-height: 1.5; color: #E7EBF3' }; }
+      if (e.act) { const mk = magicInk(e.text), hit = !mk && /\b(fires|shoots|aimed shot|strikes|smashes|attacks|hits|misses)\b/.test(e.text); // a spell that hits is still a spell
+        return { ...base, isNote: true, text: (hit ? '⚔ ' : mk === SIGIL_INK ? '✧ ' : mk === SOUL_INK ? '♥ ' : '› ') + e.text, noteStyle: 'margin: 0; padding: 6px 10px; border-radius: 6px; background: #10151F; border-left: 3px solid ' + (hit ? '#F65157' : mk || '#E7EBF3') + '; font-size: 14px; line-height: 1.5; color: #E7EBF3' }; }
       return { ...base, isNote: true, noteStyle: 'margin: 0; font-size: 13px; line-height: 1.5; color: ' + (e.kind === 'xp' ? '#FFFFFF' : e.kind === 'combat' ? '#F65157' : '#A3AEC2') };
     }), ...(heldAt >= 0 ? [{ key: 'gathering', text: 'The Narrator gathers their voice…' + (VS.status === 'loading' && VS.progress < 100 ? ' (preparing the voice on this device, once: ' + VS.progress + '%)' : ''), isGathering: true, paras: [] }] : [])];
     const busy = g.narrator.busy, err = g.narrator.error;
@@ -328,6 +447,115 @@ export class MainLogic extends DCLogic {
     // This round's paths, in each player's colour (spec: Overworld rounds): everyone sees where everyone went.
     const trailAt = {}; if (!inFight) for (const [cid, ks] of Object.entries(g.story.trail || {})) { const col = playerOf(charOf(cid)?.owner)?.color || '#FFFFFF'; ks.forEach((k) => { trailAt[k] = col; }); }
     const moveTo = (k) => () => { if (!mover) return toast(inFight ? 'A fight is on: move on the combat grid.' : 'You have no character to move.'); act({ type: 'story/move', charId: mover.id, to: k }); };
+    // ---------- magic on the area map (spec: Mana, rules 1.2): glyphs, standing zones, held hearts, and the spell actions ----------
+    const MN = magicNow(g, c), myWords = c ? (c.sigils || []).filter((w) => SIGIL[w]) : [], myDesigns = c ? c.outbursts || [] : [];
+    const evoW = !!c && hasEvoker(c), emaW = !!c && hasEmanator(c), hasMagic = !!c && (myWords.length > 0 || myDesigns.length > 0 || !!MN.held || evoW || emaW);
+    const MAGIC_W = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'], M_INSTANT = ['scuff', 'vent', 'core', 'syphon', 'crystallise'], isMagicW = MAGIC_W.includes(W);
+    const sameMap = !g.story.glyphMap || g.story.glyphMap === map.id;
+    const GLY = inFight ? g.combat?.glyphs || [] : sameMap ? g.story.glyphs || [] : [], ZON = inFight ? g.combat?.zones || [] : sameMap ? g.story.zones || [] : [];
+    const glAt = {}; GLY.forEach((x) => { (glAt[x.pos] ||= []).push(x); });
+    const znAt = {}; ZON.forEach((z) => z.tiles.forEach((k) => { if (!znAt[k] || z.kind === 'wall') znAt[k] = z; }));
+    const ZONE_STYLE = { wall: 'background: ' + epRgba(SIG_CYAN, 0.16) + '; border: 1px dashed ' + SIG_CYAN, veil: 'background: rgba(120, 128, 142, 0.42)', light: 'background: rgba(255, 246, 220, 0.13)' };
+    const ZONE_WORD = { wall: 'standing wall', veil: 'smoke', light: 'light' };
+    const heldOf = (u) => (u.side !== 'pc' ? null : inFight ? (g.combat?.units.find((x) => x.id === u.id)?.mg?.held || null) : (g.story.magic || {})[u.charId]?.held || null);
+    // The story map as a throwaway fight, for the engine's previews (built only when a spell is being lined up).
+    let scbMemo; const scb = () => { if (scbMemo === undefined) { try { scbMemo = storyCb({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } }); } catch { scbMemo = null; } } return scbMemo; };
+    const sU = (x) => (x && c ? x.units.find((u) => u.charId === c.id) || null : null);
+    const mHi = { pattern: new Set(), aim: null, reach: new Set(), reachCol: '' };
+    let mHint = '', mReady = false, mLabel = 'Confirm';
+    const myAt = c ? pos[c.id] : null, mOpen = !!(S.area && mover && isMagicW && !inFight);
+    const wordSel = S.wWord && myWords.includes(S.wWord) ? S.wWord : myWords[0] || null, designSel = myDesigns.find((d) => d.id === S.wDesign) || myDesigns[0] || null;
+    const touches = (cbx, ids) => { const ns = ids.map((id) => cbx.units.find((x) => x.id === id)).filter(Boolean), foe = ns.find((x) => x.side === 'foe');
+      return (ns.length ? ' Touches ' + ns.map((x) => x.name).join(', ') + '.' : '') + (foe ? ' ' + foe.name + ' is a person on the map: this starts a fight.' : ''); };
+    const reachAround = (r, col, from = myAt) => { if (!from) return; mHi.reachCol = col; for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y; if (dist(from, k) <= r && standable(map, k)) mHi.reach.add(k); } };
+    // Words of a hostile pattern show only if this character can read them (as on the tiles).
+    const readW = (x) => x.side === 'pc' || !!(c && (c.sigils || []).includes(x.word));
+    if (mOpen) {
+      const cbx = scb(), u = sU(cbx);
+      if (!cbx || !u) mHint = 'Magic can\'t be lined up here right now.';
+      else if (W === 'draw') {
+        reachAround(1, SIG_CYAN);
+        const w = wordSel && SIGIL[wordSel];
+        // The engine's own answer: try the word on your tile and each one next to you (a full tile isn't the reason).
+        let okAt = null, why = null;
+        if (w) for (let dy = -1; dy <= 1 && !okAt && !why; dy++) for (let dx = -1; dx <= 1 && !okAt && !why; dx++) { const [mx, my] = myAt.split(',').map(Number), k = (mx + dx) + ',' + (my + dy);
+          const r = dryMagic(cbx, u.id, (cc, uu, rng) => drawGlyph(cc, rng, uu, wordSel, k)).err; if (!r) okAt = k; else if (!/own tile or one next to you|Nothing can be drawn|at most 2 glyphs/.test(r)) why = r; }
+        mHint = !w ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : why ? 'Draw ' + w.word + ': ' + why : !okAt ? 'No free tile next to you: a tile holds at most 2 glyphs.'
+          : 'Click your tile or one next to it to draw ' + w.word + ' (' + w.charge + ' charge, ' + glyphApOf(u) + ' AP). The Evoker holds ' + MN.charge + ' charge.'
+            + ' Two glyphs on a tile make a Stack; a straight row makes a Line; three or four around one tile make a Ring.';
+      } else if (W === 'evoke') {
+        if (!S.wTile) mHint = 'Click a glyph of a pattern you stand on or next to.';
+        else {
+          const pv = previewEvoke(cbx, u, S.wTile, S.wAim || undefined);
+          if (pv.pattern) pv.pattern.tiles.forEach((k) => mHi.pattern.add(k)); if (S.wAim) mHi.aim = S.wAim;
+          // An aimed preview drops its range: read it from the unaimed one.
+          // A Stack's reach is measured from the stack, not from you (you may stand next to it).
+          if (pv.pattern && pv.needsAim) reachAround(pv.range || (S.wAim ? previewEvoke(cbx, u, S.wTile).range : 0) || 1, SIG_CYAN, pv.pattern.tiles[0]);
+          const name = pv.pattern ? pv.pattern.glyphs.map((x) => (readW(x) ? x.word.toUpperCase() : 'an unreadable glyph')).join(' · ') + ' (' + pv.pattern.shape + ')' : '';
+          if (pv.ok) { mReady = true; mLabel = 'Evoke · ' + pv.ap + ' AP · ' + pv.charge + ' charge';
+            mHint = 'Evoke ' + name + (pv.impact ? ' at ' + refOf(pv.impact) : '') + '.' + (pv.range ? ' Range ' + pv.range + ' tiles.' : '') + touches(cbx, pv.targets) + (pv.needsAim ? ' Click another tile to aim elsewhere.' : ''); }
+          else mHint = (name ? name + ': ' : '') + (pv.why || 'It can\'t fire.');
+        }
+      } else if (W === 'outburst') {
+        if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
+        else {
+          const hold = !!S.wHold, pv = previewOutburst(cbx, u, designSel.id, S.wAim || undefined, !hold);
+          if (!hold) { reachAround(pv.range || designRange(u.mg || soulM(c), designSel), SOUL_VIOLET); if (S.wAim) mHi.aim = S.wAim; }
+          const costs = pv.ok || pv.cost || pv.ap ? pv.cost + ' MP · ' + pv.ap + ' AP · +' + pv.strain + ' Strain' : ''; // an early refusal comes back with no costs
+          if (pv.ok) { mReady = true; mLabel = (hold ? 'Begin and hold · ' : 'Let it go · ') + pv.ap + ' AP';
+            mHint = (hold ? 'Begin ' + designSel.name + ' and hold it: it grows each round (and strains the heart) until you Release it for 1 AP. ' : designSel.name + ' at ' + refOf(S.wAim) + '. ') + costs + '.'
+              + (hold ? '' : touches(cbx, spellTargets(cbx, u, 'outburst', undefined, S.wAim, designSel.id))); }
+          else mHint = designSel.name + (costs ? ' (' + costs + ')' : '') + ': ' + (pv.why === 'Pick a target tile.' ? 'click a tile within ' + pv.range + ' tiles to aim, or switch to Hold.' : pv.why || 'not now.');
+        }
+      } else if (W === 'release') {
+        const d = MN.held && myDesigns.find((x) => x.id === MN.held.design), r = d ? designRange(u.mg || soulM(c), d) : 0;
+        if (!d) mHint = 'Nothing held.';
+        else { reachAround(r, SOUL_VIOLET); if (S.wAim) mHi.aim = S.wAim;
+          const why = dryMagic(cbx, u.id, (cc, uu, rng) => releaseOutburst(cc, rng, uu, S.wAim || undefined)).err;
+          if (!S.wAim && (!why || why === 'Pick a target tile.')) mHint = 'Click a tile within ' + r + ' tiles to release ' + d.name + ' (stage ' + MN.held.stage + ', 1 AP).';
+          else if (why) mHint = 'Release ' + d.name + ': ' + why;
+          else { mReady = true; mLabel = 'Release · 1 AP'; mHint = 'Release ' + d.name + ' at ' + refOf(S.wAim) + ' (stage ' + MN.held.stage + ').' + touches(cbx, spellTargets(cbx, u, 'release', undefined, S.wAim)); } }
+      } else if (M_INSTANT.includes(W)) {
+        const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(cbx, u.id, (cc, uu) => run(cc, uu)).err;
+        const say = { scuff: 'Wipe out the glyphs on your own tile (1 AP).', vent: 'Let ' + MN.flux + ' Flux out of the Evoker into the air (1 AP): it thickens the mana.', core: 'Load a fresh core: charge back to ' + CORE_CHARGE + ' (2 AP, ' + MN.cores + ' spare).',
+          syphon: 'Pull MP from the air (1 AP): about ' + Math.round(MN.band.syphon_mp * (u.mg?.syphon || 1)) + ' MP in ' + bandName(MN.band) + ' air; the air thins by 2.', crystallise: 'Crystallise a mana core out of the air (3 AP): needs mana 10 or more, and drops it by 10.' }[W];
+        mHint = say + (why ? ' Not now: ' + why : ''); mReady = !why; mLabel = { scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', syphon: 'Syphon', crystallise: 'Crystallise' }[W] + ' · ' + { scuff: 1, vent: 1, core: 2, syphon: 1, crystallise: 3 }[W] + ' AP';
+      }
+    }
+    const wMagic = {
+      showWords: !!(mOpen && W === 'draw' && myWords.length), showDesigns: !!(mOpen && W === 'outburst' && myDesigns.length),
+      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w]; return { key: w, img: glyphUri(w, SIGIL_INK, { glow: on }), word: def.word, charge: String(def.charge), title: def.word + ' · ' + def.text, pressed: on ? 'true' : 'false',
+        pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px solid ' + (on ? SIG_CYAN : '#232D3F') + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') }; }),
+      designs: myDesigns.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.modules.length ? ' · ' + d.modules.map((x) => MODULE[x]?.name || x).join(', ') : ''),
+        pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? SOUL_VIOLET : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') }; }),
+      holdLabel: S.wHold ? 'Hold it (release later)' : 'Let it go now', holdPressed: S.wHold ? 'true' : 'false', toggleHold: () => this.setState({ wHold: !this.state.wHold, wAim: null }),
+      holdStyle: 'min-height: 32px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: ' + SOUL_VIOLET + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (S.wHold ? epRgba(SOUL_VIOLET, 0.16) : 'transparent'),
+    };
+    const magicClick = (k) => {
+      if (W === 'draw') { if (!wordSel) return toast('You know no words.'); act({ type: 'world/act', charId: mover.id, act: 'draw', word: wordSel, tile: k }); return; }
+      if (W === 'evoke') {
+        // A glyph of ours outside the chosen pattern picks that pattern; otherwise a Stack takes the click as its aim.
+        const ownHere = (glAt[k] || []).some((x) => x.side === 'pc');
+        if (ownHere && !mHi.pattern.has(k)) return this.setState({ wTile: k, wAim: null });
+        if (S.wTile) { const cbx = scb(), u = sU(cbx), pv = cbx && u ? previewEvoke(cbx, u, S.wTile) : null;
+          if (pv && pv.pattern && pv.needsAim) return this.setState({ wAim: k });
+          return toast(pv && pv.pattern ? 'A ' + pv.pattern.shape + ' fires on its own: Confirm.' : 'Click a glyph of the pattern.'); }
+        if ((glAt[k] || []).length) return this.setState({ wTile: k, wAim: null });
+        return toast('Click a glyph of the pattern.');
+      }
+      if (W === 'outburst') { if (S.wHold) return toast('Holding needs no target: Confirm to begin.'); return this.setState({ wAim: k }); }
+      if (W === 'release') return this.setState({ wAim: k });
+      return toast('No tile needed: Confirm.');
+    };
+    const magicConfirm = () => {
+      const base = { type: 'world/act', charId: c.id, act: W };
+      if (W === 'evoke') act({ ...base, tile: S.wTile, ...(S.wAim ? { aim: S.wAim } : {}) });
+      else if (W === 'outburst') act({ ...base, design: designSel.id, hold: !!S.wHold, ...(!S.wHold && S.wAim ? { aim: S.wAim } : {}) });
+      else if (W === 'release') act({ ...base, aim: S.wAim });
+      else act(base);
+      this.setState({ wTile: null, wAim: null });
+      if (getState().game?.phase === 'combat') { this.setState({ area: false }); go('combat'); }
+    };
     const cellsFor = (labels, onClick) => {
       const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
       if (labels) { out.push(lab('h-', '')); for (let x = 0; x < map.w; x++) out.push(lab('h' + x, refOf(x + ',0').replace(/\d+$/, ''))); }
@@ -336,14 +564,23 @@ export class MainLogic extends DCLogic {
         for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k], p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null, ref = refOf(k), note = notesAt(map, k)[0] || '', o = objAt[k];
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
           const spr = o ? spriteOf(g, o) : '';
+          const gl = glAt[k] || [], zn = znAt[k], held = u ? heldOf(u) : null;
+          const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => (x.side === 'pc' || (c && (c.sigils || []).includes(x.word)) ? x.word.toUpperCase() : 'unread scratches') + ' (' + x.who + ', ' + x.left + ' rd)').join(', ') : '')
+            + (zn ? ' · ' + ZONE_WORD[zn.kind] + (zn.words.length ? ' of ' + zn.words.map((x) => x.toUpperCase()).join('+') : '') + (zn.left < 90 ? ' (' + zn.left + ' rd)' : '') : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
+          const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');
           const glyph = o && !u && !spr && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
           out.push({ key: k, isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
             click: interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
             t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
-            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : ''), title: u ? '' : ref + ' · ' + what + (note ? '\n' + note : ''),
-            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') });
+            glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc', read = ours || !!(c && (c.sigils || []).includes(x.word));
+              return { key: x.id, src: read ? glyphUri(x.word, ours ? SIGIL_INK : '#F65157', { glow: ours }) : scratchUri('#F65157'),
+                style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; }),
+            hasZone: !!zn, zoneStyle: zn ? 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + ZONE_STYLE[zn.kind] : '',
+            hasHeart: !!held, heart: held ? heartUri(held.stage) : '', heartStyle: 'position: absolute; z-index: 4; right: -6%; top: -6%; width: 40%; height: 40%; pointer-events: none; filter: drop-shadow(0 0 3px ' + SOUL_VIOLET + ')',
+            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat, title: u ? '' : ref + ' · ' + what + mWhat + (note ? '\n' + note : ''),
+            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle });
         }
       }
       return out;
@@ -394,6 +631,7 @@ export class MainLogic extends DCLogic {
     const worldClick = (k) => () => {
       if (!mover) return toast(inFight ? 'A fight is on: act on the combat grid.' : 'You have no character to act with.');
       const u = tok[k];
+      if (isMagicW) return magicClick(k);
       if (TARGETED.includes(W)) {
         // Anyone and anything is a target (spec: Anyone is a target): people, allies, points of interest, objects.
         const attacking = ['shot', 'aimed', 'melee'].includes(W), o = objAt[k];
@@ -425,6 +663,12 @@ export class MainLogic extends DCLogic {
         if (ow > 0) add('OVERBURDENED', ow + ' kg over your carry limit: −' + Math.ceil(ow / 5) + ' Movement and no Sprint until you drop something.', true);
       }
       if ((g.story.sneak || {})[c.id] && !inFight) add((g.story.hidden || {})[c.id] ? 'HIDDEN' : 'SNEAKING · SEEN', (g.story.hidden || {})[c.id] ? 'Sneaking and unseen: an attack from here is an ambush.' : 'Sneaking, but a hostile has seen you. Move normally and sneak again to hide.', !(g.story.hidden || {})[c.id]);
+      // Magic: conditions with rounds left, a shield, a held Outburst (spec: Conditions and saves).
+      const MN = magicNow(g, c);
+      for (const [id, n] of Object.entries(MN.conds)) if (n > 0) add(condName(id).toUpperCase(), n + (n === 1 ? ' round' : ' rounds') + ' left.', !['guarded', 'inspired'].includes(id));
+      if (MN.shield > 0) add('SHIELD ' + MN.shield, 'Soaks up the next ' + MN.shield + ' damage.', false);
+      if (MN.held) add('HOLDING AN OUTBURST', 'Stage ' + MN.held.stage + ': it grows each round (and adds Strain) until you release it.', false);
+      if (MN.strain > 0) add('STRAIN ' + MN.strain + ' / ' + strainLimit(c), 'Past the limit, the heart shorts out. It eases by 1 after a round without casting and resets after a fight.', MN.strain >= strainLimit(c));
       const ss = songStateOf(g, c), mt = musicTraitOf(c);
       if (ss === 'on') add('SONG · ' + mt.name.toUpperCase(), String((mt.upsides || [])[0] || '+1 while your song plays.'), false);
       if (ss === 'off') add('SILENCE · ' + mt.name.toUpperCase(), String((mt.downsides || [])[0] || '−1: silent too long.'), true);
@@ -442,17 +686,22 @@ export class MainLogic extends DCLogic {
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile']]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
       ['UTILITY', [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
+      // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
+      ...(hasMagic && (myWords.length || evoW) ? [['MAGIC · SIGILS', [['draw', 'Draw a glyph', glyphAp(c) + ' AP'], ['evoke', 'Evoke', '1 AP'], ['scuff', 'Scuff', '1 AP'], ['vent', 'Vent Flux', '1 AP'], ['core', 'Swap core', '2 AP']], SIG_CYAN]] : []),
+      ...(hasMagic && (myDesigns.length || MN.held || emaW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length ? [['outburst', 'Outburst', (() => { const mm = soulM(c), aps = myDesigns.map((d) => designAp(mm, d)), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi) + ' AP'; })()]] : []),
+        ...(MN.held ? [['release', 'Release', '1 AP']] : []), ...(emaW ? [['syphon', 'Syphon', '1 AP'], ['crystallise', 'Crystallise', '3 AP']] : [])], SOUL_VIOLET]] : []),
     ];
     const canAct = !!mover && mover.hp > 0 && g.story.await === 'players' && !(g.story.ended || {})[c.id];
-    const wGroups = W_ITEMS.map(([name, items]) => ({ name, items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
-      pick: () => this.setState({ wAct: id, wTarget: null }),
+    const wGroups = W_ITEMS.map(([name, items, ink]) => ({ name, style: 'margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (ink || '#A3AEC2'), items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
+      pick: () => this.setState({ wAct: id, wTarget: null, wTile: null, wAim: null }),
       style: 'display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: 13px; cursor: pointer; color: #E7EBF3; ' + (W === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') })) }));
     const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W);
     const wHint = !mover ? 'You have no character to act with.' : mover.hp <= 0 ? mover.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up. End turn when ready.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
+      : isMagicW ? mHint
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
-    const wConfirm = () => { if (!c) return; if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
+    const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm(); if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
@@ -464,7 +713,7 @@ export class MainLogic extends DCLogic {
       narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
-      echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
+      echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c),
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => this.setState({ card: false }), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !rig.length, backpackImg: '',
@@ -503,22 +752,33 @@ export class MainLogic extends DCLogic {
       zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
       miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
       objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby, hasNearby: nearby.length > 0,
-      wGroups, wHint, wHasConfirm: canAct && (instant || (TARGETED.includes(W) && !!tgt)), wConfirm, wConfirmLabel: isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
+      areaMagic: { has: GLY.length + ZON.length > 0 || Object.values(g.story.magic || {}).some((x) => x && x.held), legend: [
+        ...(GLY.some((x) => x.side === 'pc') ? [{ key: 'g', img: glyphUri('fire', SIGIL_INK), swatch: '', text: 'Squad glyph' }] : []), ...(GLY.some((x) => x.side !== 'pc') ? [{ key: 'f', img: scratchUri('#F65157'), swatch: '', text: 'Enemy glyph' }] : []),
+        ...(ZON.some((z) => z.kind === 'wall') ? [{ key: 'w', img: '', swatch: 'width: 12px; height: 12px; box-sizing: border-box; ' + ZONE_STYLE.wall, text: 'Standing wall' }] : []),
+        ...(ZON.some((z) => z.kind === 'veil') ? [{ key: 'v', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; ' + ZONE_STYLE.veil, text: 'Smoke (blocks sight)' }] : []),
+        ...(ZON.some((z) => z.kind === 'light') ? [{ key: 'l', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; background: rgba(255, 246, 220, 0.4)', text: 'Light' }] : []),
+        ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
+      wGroups, wHint, wHasConfirm: canAct && (isMagicW ? mReady : instant || (TARGETED.includes(W) && !!tgt)), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       wPips: Array.from({ length: ROUND_AP }, (_, i) => ({ key: i, style: 'flex: 1; height: 8px; border-radius: 3px; background: ' + (i < apNow ? '#FFFFFF' : '#232D3F') })),
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
-        const cell = areaCells.find((c) => c.key === k); return cell.label; })(), areaHint: mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
+        const cell = areaCells.find((c) => c.key === k); return cell.label; })(), areaHint: mOpen && mHint ? mHint : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + st0.short.toUpperCase() + ' · ' + map.name.toUpperCase(), inFight,
-      hud: (() => { if (!c) return { has: false, bars: [], ammo: '', ammoStyle: '' };
+      hud: (() => { if (!c) return { has: false, bars: [], ammo: '', ammoStyle: '', magic: [] };
         const w = WEAPON[c.weapon], ap = inFight ? 0 : apLeft(g, c), spare = (packOf(c).find((it) => it.weapon === c.weapon && it.mags) || { mags: [] }).mags.length, loaded = loadedOf(c);
         const hb = bars.filter((b) => b.label !== 'XP').concat(inFight ? [] : [{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
         const ammo = !w ? 'No weapon' : w.magazine ? (w.name || c.weapon) + ' · ' + loaded + ' / ' + w.magazine + ' loaded · ' + spare + ' spare' + (loaded <= 0 ? ' · EMPTY: reload (2 AP)' : '') : (w.name || c.weapon);
-        return { has: true, bars: hb, ammo, ammoStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: ' + (w && w.magazine && loaded <= 0 ? '#F65157' : '#E7EBF3') }; })(),
+        // Magic: Evoker charge and Flux (cyan), Strain and a held Outburst (violet), when there's anything to say; the air's mana always.
+        const ml = [];
+        if (myWords.length || hasEvoker(c)) ml.push({ key: 'sig', text: 'EVOKER ' + (hasEvoker(c) ? MN.charge + ' / ' + CORE_CHARGE + ' charge · ' + MN.cores + ' spare' : 'not carried') + (MN.flux ? ' · FLUX ' + MN.flux + ' / ' + FLUX_MAX : ''), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: ' + (MN.flux >= FLUX_MAX - 1 ? '#F65157' : SIG_CYAN) });
+        if (MN.strain || MN.held) ml.push({ key: 'soul', text: (MN.strain ? 'STRAIN ' + MN.strain + ' / ' + strainLimit(c) : '') + (MN.strain && MN.held ? ' · ' : '') + (MN.held ? '♥ HOLDING · STAGE ' + MN.held.stage : ''), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: ' + (MN.strain >= strainLimit(c) ? '#F65157' : SOUL_VIOLET) });
+        ml.push({ key: 'mana', text: 'MANA ' + MN.mana + ' · ' + bandName(MN.band), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' });
+        return { has: true, bars: hb, ammo, ammoStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: ' + (w && w.magazine && loaded <= 0 ? '#F65157' : '#E7EBF3'), magic: ml }; })(),
       ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
-        const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
-          style: 'font-size: 12px; line-height: 1.4; color: ' + (e.act && /\b(fires|shoots|aimed shot|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3') }));
+        const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim|learns the|Outburst module|school of Outbursts/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
+          style: 'font-size: 12px; line-height: 1.4; color: ' + (magicInk(e.text) || (e.act && /\b(fires|shoots|aimed shot|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3')) }));
         return { areaLog: L, noAreaLog: !L.length }; })(),
       areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + '. Tell the Narrator "I move to C7", or click a tile.',
       zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',

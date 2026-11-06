@@ -4,7 +4,9 @@
 import { voiceState } from './voice';
 
 export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' | 'error' | 'toggle' | 'tab' | 'wick_hello' | 'wick_steps'
-  | 'shot' | 'hit' | 'miss' | 'reload' | 'melee' | 'down';
+  | 'shot' | 'hit' | 'miss' | 'reload' | 'melee' | 'down'
+  // Magic (docs/design/magic-presentation.md): Sigils are synthetic and snap; Outbursts are organic and swell.
+  | 'draw' | 'evoke' | 'overload' | 'outburst' | 'release' | 'short';
 
 /** The chosen files (public/sfx/…, CC0; credits in game/sfxCredits.ts). A list plays one at random. Missing means the
  *  synthesised stand-in (Wick's footsteps are synthesised on purpose: tiny metal taps). */
@@ -14,7 +16,7 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   toggle: ['/sfx/toggle_001.ogg', '/sfx/toggle_002.ogg'], tab: '/sfx/pluck_001.ogg', wick_hello: '/sfx/wick_hello.ogg',
 };
 /** The mix: how loud each event sits under the master UI volume. */
-const MIX: Partial<Record<Sfx, number>> = { shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
+const MIX: Partial<Record<Sfx, number>> = { draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
 // ---------- settings (shared with the title screen's Settings) ----------
@@ -87,7 +89,24 @@ function synth(ac: AudioContext, dest: GainNode, name: Sfx) {
     const s = ac.createBufferSource(), bp = ac.createBiquadFilter(), e = ac.createGain(); s.buffer = n; bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 0.8;
     e.gain.value = vol; s.connect(bp); bp.connect(e); e.connect(dest); s.start(t + at);
   };
+  /** A soft swell: slow attack and release (Soul sounds never click in). */
+  const swell = (f0: number, f1: number, dur: number, type: OscillatorType = 'sine', vol = 0.15, at = 0) => {
+    const o = ac.createOscillator(), e = ac.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f0, t + at); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + at + dur);
+    e.gain.setValueAtTime(0.0001, t + at); e.gain.linearRampToValueAtTime(vol, t + at + dur * 0.45); e.gain.linearRampToValueAtTime(0.0001, t + at + dur);
+    o.connect(e); e.connect(dest); o.start(t + at); o.stop(t + at + dur + 0.02);
+  };
+  /** A heartbeat: lub-dub, two low thumps. */
+  const beat = (at = 0, vol = 0.3) => { tone(70, 42, 0.13, 'sine', vol, at); tone(62, 38, 0.11, 'sine', vol * 0.7, at + 0.17); };
   switch (name) {
+    // Sigils: a tone per word that locks with a click.
+    case 'draw': tone(660, 660, 0.09, 'triangle', 0.1); tone(990, 990, 0.05, 'square', 0.035, 0.03); tone(2400, 1800, 0.015, 'square', 0.06, 0.1); break;
+    case 'evoke': [523, 659, 784].forEach((f, i) => tone(f, f, 0.07, 'square', 0.05, i * 0.055)); tone(1568, 392, 0.16, 'sawtooth', 0.07, 0.17); noise(0.08, 5200, 0.12, 0.17); break;
+    case 'overload': for (let i = 0; i < 7; i++) tone(200 + Math.random() * 1800, 80 + Math.random() * 400, 0.03, 'square', 0.06, i * 0.028); noise(0.2, 900, 0.18, 0.05); break;
+    // Soul: a held breath and a heartbeat; a release rushes out; a Mana Short drops to silence.
+    case 'outburst': swell(196, 294, 0.7, 'sine', 0.12); swell(392, 588, 0.7, 'triangle', 0.04, 0.05); beat(0.08, 0.28); break;
+    case 'release': swell(294, 784, 0.45, 'sine', 0.14); noise(0.5, 700, 0.1, 0.02); beat(0, 0.22); break;
+    case 'short': tone(58, 28, 0.6, 'sine', 0.4); break;
     case 'hover': tone(1800, 1600, 0.03, 'sine', 0.05); break;
     case 'click': tone(900, 500, 0.06, 'triangle', 0.16); break;
     case 'start': tone(220, 440, 0.18, 'triangle', 0.18); tone(330, 660, 0.25, 'sine', 0.1, 0.06); break;
@@ -125,11 +144,28 @@ const RE_RELOAD = /\breload|\bloads? (a|the|loose|\d+)\b|speedloader|clears? the
 const RE_SHOT = /\b(fires|shoots|opens fire|aimed shot|burst|full auto)\b/;
 const RE_MELEE = /\b(strikes|smashes|punches|slashes|stabs|swings)\b/;
 const RE_DOWN = /\b(is downed|goes down|drops to 0|is dead|dies)\b/;
+// Magic lines (engine: packages/engine/src/magic.ts). Checked before the guns: a spell's line can mention damage too.
+const RE_SHORT = /mana short:/;
+const RE_OVERLOAD = /\boverload:/;
+const RE_EVOKE = /\bevokes\b/;
+const RE_DRAW = /\bdraws [a-z]+ at [a-z]+\d+|\bscuffs out\b|\bvents \d+ flux\b/;
+const RE_HOLD = /\bbegins .+ and holds it\b|\blets .+ go\b|outburst grows to stage|\bsyphons \d+ mp\b|\bcrystallises a mana core\b/;
+const RE_RELEASE = /\breleases\b|outburst bursts into the air/;
+const RE_WALL = /\bcrosses the .+ wall\b/;
+const RE_HURT = /\d+ damage|critical/;
+const isMagicLine = (t: string) => RE_SHORT.test(t) || RE_OVERLOAD.test(t) || RE_EVOKE.test(t) || RE_DRAW.test(t) || RE_HOLD.test(t) || RE_RELEASE.test(t) || RE_WALL.test(t);
 /** Whether a log line makes any sound (so a burst of quiet lines never crowds out the shot). */
-export const hasSfx = (text: string) => { const t = text.toLowerCase(); return !/death save/.test(t) && (RE_RELOAD.test(t) || RE_SHOT.test(t) || RE_MELEE.test(t) || /\bmiss/.test(t) || RE_DOWN.test(t)); };
+export const hasSfx = (text: string) => { const t = text.toLowerCase(); return !/death save/.test(t) && (isMagicLine(t) || RE_RELOAD.test(t) || RE_SHOT.test(t) || RE_MELEE.test(t) || /\bmiss/.test(t) || RE_DOWN.test(t)); };
 export function sfxForLine(text: string) {
   const t = text.toLowerCase();
   if (/death save/.test(t)) return; // every turn while Downed: no sound
+  if (RE_SHORT.test(t)) return sfx('short');
+  if (RE_OVERLOAD.test(t)) { if (RE_DRAW.test(t)) sfx('draw'); setTimeout(() => sfx('overload'), 90); return; }
+  if (RE_EVOKE.test(t)) { sfx('evoke'); if (/\bmiss/.test(t) && !RE_HURT.test(t)) setTimeout(() => sfx('miss'), 220); else if (RE_HURT.test(t)) setTimeout(() => sfx('hit'), 220); return; }
+  if (RE_DRAW.test(t)) return sfx('draw');
+  if (RE_RELEASE.test(t)) { sfx('release'); if (RE_HURT.test(t)) setTimeout(() => sfx('hit'), 260); return; }
+  if (RE_HOLD.test(t)) return sfx('outburst');
+  if (RE_WALL.test(t)) return sfx('hit');
   if (RE_RELOAD.test(t)) return sfx('reload');
   if (RE_SHOT.test(t)) { sfx('shot'); if (/\bmiss|jams/.test(t)) setTimeout(() => sfx('miss'), 90); else if (/· (critical|hit)\b|\d+ damage|\d+ dmg|−\d+ hp/.test(t)) setTimeout(() => sfx('hit'), 90); return; }
   if (RE_MELEE.test(t)) return sfx('melee');

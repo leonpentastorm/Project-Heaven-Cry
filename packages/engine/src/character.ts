@@ -103,8 +103,8 @@ export function validateSheet(s: Sheet): string | null {
   return startingMagicError(s, d);
 }
 /** Starting magic (spec: The Magic panel): 2 Sigil words making a Stack (a Subject and a Form or Motion); 1 Outburst
- * design from one school and up to the module slots. Both optional: a caster without a choice gets the defaults. */
-function startingMagicError(s: Sheet, d: any): string | null {
+ * design from one school and one module. Both optional: a caster without a choice gets the defaults. */
+export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skills'>, d?: unknown): string | null {
   if (s.sigils && s.sigils.length) {
     if (s.sigils.length !== 2 || new Set(s.sigils).size !== 2) return 'Pick exactly 2 different Sigil words.';
     const w = s.sigils.map((x) => SIGIL[x]); if (w.some((x) => !x)) return 'Unknown Sigil word.';
@@ -112,9 +112,9 @@ function startingMagicError(s: Sheet, d: any): string | null {
   }
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
-    const slots = 1 + Math.floor(((s.skills || {}).will_power || 0) / 3);
     if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
-    if ((s.outburst.modules || []).length > slots) return 'Your Outburst has more modules than your ' + slots + ' slot' + (slots === 1 ? '' : 's') + '.';
+    // One school and exactly one module; the Will Power module slots are for designs made in play.
+    if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
   }
   return null;
 }

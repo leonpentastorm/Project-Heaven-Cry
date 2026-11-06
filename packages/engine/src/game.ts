@@ -428,7 +428,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) fail('Use only modules you know.');
       if (mods.length > moduleSlots(c!)) fail('At most ' + moduleSlots(c!) + ' module' + (moduleSlots(c!) === 1 ? '' : 's') + ' (Will Power).');
       const opts = (SCHOOL[d.school] as any).options as string[] | undefined;
-      const option = d.option && opts && opts.some((o) => o.startsWith(d.option!)) ? d.option : undefined;
+      const option = d.option && opts && opts.some((o) => o.replace(/^to_/, '').startsWith(d.option!)) ? d.option : undefined;
       const list = (c!.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
       const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}) };
       if (at >= 0) list[at] = clean; else { if (list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.'); list.push(clean); }
@@ -437,6 +437,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'magic/forget': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('After the fight.');
+      if (g.story.magic?.[c!.id]?.held?.design === a.designId) fail('You are holding that Outburst: release it first.'); // or it could never be let go
       c!.outbursts = (c!.outbursts || []).filter((x) => x.id !== a.designId); return;
     }
     case 'story/move': { worldAct(g, { type: 'world/act', charId: a.charId, act: 'move', to: a.to, how: 'move' }, by); return; }
@@ -709,6 +710,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     default: fail('Unknown action.');
   }
   if (err) fail(err);
+  for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
   noteDeaths(cb!);
   checkOver(cb!);
@@ -908,7 +910,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
-function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, apLeft(g, c) - n); }
+function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths
 /** A new overworld round: full AP, a fresh Say, no trails. */
 export function newRound(g: GameState) {
   g.story.round++; g.story.spoken = {}; g.story.await = 'players';
@@ -1023,7 +1025,7 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
 
 /** The overworld as a throwaway fight state, so every combat rule (paths, sight, actions) runs unchanged. Units carry
  * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
-function storyCb(g: GameState): Combat {
+export function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
   const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }

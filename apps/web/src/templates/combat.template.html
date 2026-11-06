@@ -4,6 +4,7 @@
 <span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
 <nav aria-label="Mode" style="display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F"><button type="button" onClick="{{toStory}}" style="padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px; cursor: pointer">STORY</button><button type="button" aria-current="page" style="padding: 8px 16px; border-radius: 7px; border: 0; background: #3A1E1E; color: #F65157; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">COMBAT</button></nav>
 <span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">{{roundText}}</span>
+<sc-if value="{{showMana}}"><span role="status" aria-label="{{manaText}}" title="{{manaTitle}}" style="{{manaStyle}}">{{manaText}}</span></sc-if>
 <div style="margin-left: auto; display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{report}}" title="Something broke? Download a report to send to Leon." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">⚑ Report</button><span style="{{turnChipStyle}}">{{turnChip}}</span></div>
 </header>
 
@@ -21,7 +22,9 @@
 <section aria-label="Tactical grid" style="flex: 999 1 760px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
 <div style="overflow-x: auto"><div style="{{gridStyle}}">
 <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
-<sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" style="{{t.style}}">
+<sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
+<sc-if value="{{t.hasZone}}"><span aria-hidden="true" style="{{t.zoneStyle}}"></span></sc-if>
+<sc-if value="{{t.hasMark}}"><span aria-hidden="true" style="{{t.markStyle}}"></span></sc-if>
 <sc-if value="{{t.hasSprite}}" hint-placeholder-val="{{false}}"><img src="{{t.sprite}}" alt="" style="{{t.spriteStyle}}"></sc-if>
 <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
@@ -31,6 +34,8 @@
 <sc-if value="{{t.hasObj}}"><span aria-hidden="true" style="{{t.objStyle}}">{{t.objGlyph}}</span></sc-if>
 <sc-if value="{{t.hasFloor}}"><span aria-hidden="true" style="position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 700; color: #A3AEC2">{{t.floor}}</span></sc-if>
 <sc-if value="{{t.hasTok}}"><!--TOKPOP:t.t--></sc-if>
+<sc-if value="{{t.hasGlyphs}}"><span aria-hidden="true" style="position: absolute; left: 1px; top: 1px; z-index: 3; display: flex; gap: 1px; pointer-events: none"><sc-for list="{{t.glyphs}}" as="gl"><img src="{{gl.src}}" alt="" title="{{gl.title}}" style="{{gl.style}}"></sc-for></span></sc-if>
+<sc-if value="{{t.hasHeart}}"><img src="{{t.heart}}" alt="" title="{{t.heartTitle}}" style="position: absolute; right: 0; top: 0; z-index: 4; width: 18px; height: 18px; pointer-events: none; filter: drop-shadow(0 0 4px rgba(174, 155, 255, 0.9))"></sc-if>
 <sc-if value="{{t.hasCost}}" hint-placeholder-val="{{false}}"><span style="position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 2; padding: 2px 6px; border-radius: 6px; background: #FFFFFF; color: #0A0D13; font-size: 11px; font-weight: 700; white-space: nowrap">{{t.cost}}</span></sc-if>
 </button></sc-if>
 </sc-for>
@@ -40,6 +45,7 @@
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border-radius: 3px; border: 2px solid #F65157"></span>Hostile</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3"></span>Move range</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #2A2113; border: 1px solid #4A3A20"></span>Half cover (−5 to shots behind it; 30 HP)</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #4A3A20; border: 2px solid #8C6F3A"></span>Full cover (blocks sight; 80 HP)</span><span style="display: flex; align-items: center; gap: 6px"><span style="font-weight: 700">▪</span>Dropped magazines</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #05070B; border: 1px solid #232D3F"></span>Out of sight (fog of war; darker when dark)</span><span style="display: flex; align-items: center; gap: 6px"><span style="color: #F65157; font-weight: 700">?</span>Sensed, not seen</span>
+<sc-for list="{{magicLegend}}" as="l"><span style="display: flex; align-items: center; gap: 6px"><sc-if value="{{l.img}}"><img src="{{l.img}}" alt="" style="width: 14px; height: 14px"></sc-if><sc-if value="{{l.box}}"><span style="{{l.box}}"></span></sc-if>{{l.name}}</span></sc-for>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #1C2536"></span>Solid (blocks sight)</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #232D3F"></span>Difficult (2 per tile)</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
@@ -58,11 +64,21 @@
 <span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #F65157">HP</span><span style="display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{me.hpFill}}"></span></span><span style="text-align: right">{{me.hp}}</span></span>
 <span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #5C9EFF">MP</span><span style="display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{me.mpFill}}"></span></span><span style="text-align: right">{{me.mp}}</span></span>
 <span style="font-size: 11px; color: #A3AEC2">{{me.line}}</span>
+<sc-if value="{{me.hasMagic}}">
+<div aria-label="Your magic" style="display: flex; flex-direction: column; gap: 5px; margin-top: 2px; padding-top: 6px; border-top: 1px solid #232D3F">
+<sc-if value="{{me.hasEvoker}}">
+<span title="{{me.fluxTitle}}" style="display: grid; grid-template-columns: 34px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #8BDEEE">FLUX</span><span style="display: block; height: 7px; border-radius: 2px; background: #1C2536; overflow: hidden"><span style="{{me.fluxFill}}"></span></span><span style="{{me.fluxStyle}}">{{me.flux}}</span></span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #8BDEEE"><img src="{{me.chargeIcon}}" alt="" style="width: 14px; height: 14px">{{me.charge}}</span>
+</sc-if>
+<sc-if value="{{me.hasHeart}}"><span style="{{me.strainStyle}}"><img src="{{me.strainIcon}}" alt="" style="width: 14px; height: 14px">{{me.strain}}</span></sc-if>
+<sc-if value="{{me.hasHeld}}"><span role="status" style="{{me.heldStyle}}"><img src="{{me.heldIcon}}" alt="" style="width: 18px; height: 18px">{{me.held}}</span></sc-if>
+</div>
+</sc-if>
 </div>
 <svg viewBox="-4 -4 128 248" width="40" height="78" role="img" aria-label="Your injuries" style="flex: none"><sc-for list="{{me.fig.parts}}" as="p"><path d="{{p.d}}" fill="{{p.fill}}" stroke="{{p.stroke}}" stroke-width="{{p.sw}}" stroke-linejoin="round"></path></sc-for></svg>
 </div>
 <sc-if value="{{me.noFx}}"><span style="font-size: 11px; color: #A3AEC2">No status effects.</span></sc-if>
-<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{me.fx}}" as="f"><span title="{{f.t}}" style="padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">{{f.k}}</span></sc-for></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{me.fx}}" as="f"><span title="{{f.t}}" style="{{f.style}}">{{f.k}}</span></sc-for></div>
 </div>
 </sc-if>
 <sc-if value="{{say.can}}">
@@ -94,13 +110,38 @@
 <div style="display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px">
 <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
 <div style="display: flex; flex-direction: column; gap: 6px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{g.name}}</span>
+<span style="{{g.nameStyle}}">{{g.name}}</span>
 <sc-for list="{{g.items}}" as="a" hint-placeholder-count="4">
 <button type="button" onClick="{{a.pick}}" disabled="{{a.locked}}" aria-pressed="{{a.pressed}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
 </sc-for>
 </div>
 </sc-for>
 </div>
+<sc-if value="{{pad.words}}">
+<div aria-label="Glyph keyboard" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">GLYPH KEYBOARD · PICK A WORD, THEN A TILE</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{pad.wordList}}" as="w"><button type="button" data-sfx="toggle" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="width: 26px; height: 26px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em">{{w.word}}</span><span style="{{w.subStyle}}">{{w.sub}}</span></button></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{pad.repick}}"><button type="button" onClick="{{pad.repickFn}}" style="min-height: 34px; border-radius: 8px; border: 1px solid #1F4A55; background: transparent; color: #8BDEEE; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">‹ Pick another pattern</button></sc-if>
+<sc-if value="{{pad.designs}}">
+<div aria-label="Your Outbursts" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #120E1E; border: 1px solid #3A2E5C">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #AE9BFF">YOUR OUTBURSTS</span>
+<sc-for list="{{pad.designList}}" as="d"><button type="button" data-sfx="toggle" onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" style="{{d.style}}">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 700">{{d.name}}</span><span style="font-size: 12px; font-weight: 700; color: #5C9EFF">{{d.mp}}</span></span>
+<span style="font-size: 11px; color: #C9D3E3">{{d.school}}</span>
+<span style="font-size: 11px; color: #A3AEC2">{{d.modules}}</span>
+<span style="font-size: 11px; font-weight: 700; color: #E7EBF3">{{d.stats}}</span>
+<sc-if value="{{d.hasWhy}}"><span style="font-size: 11px; color: #A3AEC2">✕ {{d.why}}</span></sc-if>
+</button></sc-for>
+<div role="group" aria-label="Release now or hold" style="display: flex; gap: 6px">
+<button type="button" data-sfx="toggle" onClick="{{pad.now}}" aria-pressed="{{pad.nowPressed}}" title="Let it go at once: pick a target tile." style="{{pad.nowStyle}}">Release now</button>
+<button type="button" data-sfx="toggle" onClick="{{pad.hold}}" aria-pressed="{{pad.holdPressed}}" title="Hold it in your heart: it grows each turn, and so does the Strain." style="{{pad.holdStyle}}">♥ Hold</button>
+</div>
+</div>
+</sc-if>
 <div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 15px; font-weight: 700">{{sel.name}}</span>
 <span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">{{sel.text}}</span>
@@ -119,7 +160,7 @@
 </div>
 </sc-if>
 <div style="display: flex; gap: 10px">
-<button type="button" onClick="{{confirm}}" disabled="{{cantConfirm}}" style="flex: 1; min-height: 46px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Confirm</button>
+<button type="button" onClick="{{confirm}}" disabled="{{cantConfirm}}" data-sfx="{{confirmSfx}}" style="flex: 1; min-height: 46px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{confirmText}}</button>
 <button type="button" onClick="{{endTurn}}" disabled="{{notMine}}" style="flex: 1; min-height: 46px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
 </div>
 </aside>

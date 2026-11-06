@@ -2,9 +2,10 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet, ytId, ytStart } from '@engine';
+import { validateSheet, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
+import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
@@ -66,6 +67,41 @@ const STAND_IN = (() => {
 const cardFor = (arch) => (arch && STAND_IN[arch.id]) || '';
 const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
 
+// Starting magic (spec: The Magic panel and learning): Brain Power 1+ or the Sigil student kit picks 2 Sigil words that
+// make a Stack; Will Power 1+ or the Soul initiate kit makes 1 Outburst design. The engine's defaults are preselected
+// (SPARK + CONDENSE; Damage + Move) so a player who skips this is still legal. The engine decides what's legal.
+const DEFAULT_SIGILS = ['spark', 'condense'], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '' };
+const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1 || S.kit === 'sigil';
+const canSoulOf = (S) => (S.skills.will_power || 0) >= 1 || S.kit === 'soul';
+const slotsOf = (S) => moduleSlots({ skills: S.skills });
+const WORD_CLASS = [['subject_element', 'ELEMENTS · SUBJECT'], ['subject_effect', 'EFFECTS · SUBJECT'], ['form', 'FORMS'], ['motion', 'MOTIONS'], ['modifier', 'MODIFIER']];
+const isSubject = (w) => /^subject/.test(SIGIL[w]?.class || ''), isShape = (w) => ['form', 'motion'].includes(SIGIL[w]?.class || '');
+// Each Subject as a phrase, for the Stack summary.
+const STACK_SUBJ = { fire: 'a bolt of fire', freeze: 'a bolt of frost', shock: 'a bolt of lightning', stone: 'a bolt of stone', gale: 'a gust of wind', spark: 'a bolt of sparks',
+  ward: 'a shield', mend: 'healing', bind: 'a binding', blind: 'blinding light', slow: 'a slowing', muddle: 'a muddling', dread: 'dread', veil: 'smoke', light: 'light', silence: 'silence' };
+const STACK_SHAPE = { condense: '{s} at one target next to the stack', spread: '{s} bursting over radius 2, next to the stack', push: '{s} sent out up to {push} tiles from the stack',
+  seek: '{s} that curves round cover (it reaches past the next tile only once you learn PUSH)',
+  return: '{s} on yourself or an ally you touch', pull: '{s} that drags its target 3 tiles toward the stack' };
+// STAY stands on the stack's own tile (smoke spreads 1 tile round it, light 4) for as long as its glyphs last, at half strength.
+const STAY_LINE = { veil: 'Smoke over the stack and every tile next to it', light: 'Light over the stack and 4 tiles round it' };
+/** What a 2-word Stack does, in a line. The numbers come from the engine: PUSH reach and glyph life, with this build's bonuses. */
+function stackLine(words, skills = {}) {
+  const subj = words.find(isSubject), shape = words.find(isShape);
+  const head = words.map((w) => SIGIL[w]?.word || w).join(' + ');
+  if (!subj || !shape) return head;
+  const c = { skills }, sName = STACK_SUBJ[subj] || SIGIL[subj].word.toLowerCase();
+  if (shape === 'stay') { const n = 2 + sigilDurationBonus(c);
+    return head + ': ' + (STAY_LINE[subj] || sName.charAt(0).toUpperCase() + sName.slice(1) + ' standing on the stack\'s own tile, at half strength to whoever enters,') + ' for up to ' + n + ' rounds (as long as its glyphs last), ready to fire.'; }
+  const t = (STACK_SHAPE[shape] || '{s}').replace('{s}', sName).replace('{push}', String(PUSH_RANGE + sigilRangeBonus(c)));
+  return head + ': ' + t.charAt(0).toUpperCase() + t.slice(1) + ', ready to fire.';
+}
+// A school's options as the engine stores them (buff to_hit_2 → hit, control push_3 → push, status as they are).
+const optId = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
+const OPT_NAME = { hit: '+2 to hit', defense: '+2 Defense', heal: 'Heal 30', push: 'Push 3 tiles', pull: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed', fear: 'Fear', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
+const ENGINE_OPT = { buff: 'heal', control: 'push', status: 'shaken' }; // what the engine uses when no option is set
+const obOf = (S) => { const o = S.ob || DEFAULT_OB, opts = (SCHOOL[o.school]?.options || []).map(optId);
+  return { ...o, modules: (o.modules || []).filter((m) => MODULE[m]).slice(0, 1), option: opts.length ? (opts.includes(o.option) ? o.option : ENGINE_OPT[o.school] || opts[0]) : '' }; };
+
 export class CreateLogic extends DCLogic {
   setState(x) { const before = this.state.step; super.setState(x); if (this.state.step !== before) window.scrollTo(0, 0); }
   constructor(props) {
@@ -76,12 +112,15 @@ export class CreateLogic extends DCLogic {
       fam: 'all', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
       idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', songTitle: '', songArtist: '', dream: '', history: '' },
+      sigils: [...DEFAULT_SIGILS], ob: { ...DEFAULT_OB },
     };
     const d = getState().draft;
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
-        traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) } });
+        traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
+        sigils: Array.isArray(d.sigils) && d.sigils.length ? [...d.sigils] : [...DEFAULT_SIGILS],
+        ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '' } : { ...DEFAULT_OB } });
     }
   }
 
@@ -225,12 +264,55 @@ export class CreateLogic extends DCLogic {
     const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
       style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
 
+    // kit: starting magic (only for a build that can cast)
+    const canSigil = canSigilOf(S), canSoul = canSoulOf(S), hasMagic = canSigil || canSoul;
+    const sig = S.sigils || [], sigErr = sig.length < 2 ? 'Pick ' + (2 - sig.length) + ' more word' + (sig.length === 1 ? '' : 's') + ': one Subject and one Form or Motion.' : startingMagicError({ sigils: sig, skills: S.skills });
+    const pickWord = (w) => () => {
+      const cur = this.state.sigils || [];
+      if (cur.includes(w)) return this.setState({ sigils: cur.filter((x) => x !== w) });
+      if (cur.length < 2) return this.setState({ sigils: [...cur, w] });
+      // Two picked: the new word takes the place of the one doing the same job, so the Stack stays whole.
+      const same = cur.findIndex((x) => (isSubject(w) && isSubject(x)) || (isShape(w) && isShape(x)));
+      this.setState({ sigils: same >= 0 ? cur.map((x, i) => (i === same ? w : x)) : [cur[1], w] });
+    };
+    const sigilGroups = WORD_CLASS.map(([cls, label]) => ({ label, words: SIGILS.filter((w) => w.class === cls).map((w) => {
+      const on = sig.includes(w.id), isMod = w.class === 'modifier';
+      return { id: w.id, word: w.word, img: glyphUri(w.id, on ? SIGIL_GLOW : SIGIL_INK, { glow: on }), charge: 'CHARGE ' + w.charge, text: w.text,
+        pick: pickWord(w.id), pressed: on ? 'true' : 'false', disabled: isMod && !on, title: isMod ? 'TWICE repeats a whole spell, so it can\'t be one of your 2 starting words.' : w.word + ': ' + w.text,
+        style: 'display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 10px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: ' + (isMod ? 'not-allowed' : 'pointer') + '; ' +
+          (on ? 'background: #1C2536; border: 1px solid ' + SIGIL_GLOW : 'background: #10151F; border: 1px solid #232D3F') + (isMod ? '; opacity: 0.55' : '') };
+    }) }));
+    const sigilVerdict = sigErr ? '◆ ' + sigErr : '✓ ' + stackLine(sig, S.skills);
+    const sigilVerdictStyle = 'font-size: 14px; line-height: 1.45; font-weight: 600; color: ' + (sigErr ? '#FFFFFF' : '#6FEA77');
+    const ob = obOf(S), slots = slotsOf(S), obErr = startingMagicError({ outburst: ob, skills: S.skills });
+    const setOb = (patch) => () => this.setState({ ob: { ...obOf(this.state), ...patch } });
+    const schoolCards = SCHOOLS.map((x) => ({ name: x.name.toUpperCase(), cost: x.base_cost + ' MP BASE', text: x.text, pick: setOb({ school: x.id, option: '' }), pressed: ob.school === x.id ? 'true' : 'false',
+      style: 'display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 10px 12px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (ob.school === x.id ? 'background: #1C2536; border: 1px solid ' + SOUL_INK : 'background: #10151F; border: 1px solid #232D3F') }));
+    const obOpts = (SCHOOL[ob.school]?.options || []).map(optId).map((id) => ({ name: OPT_NAME[id] || id, pick: setOb({ option: id }), pressed: ob.option === id ? 'true' : 'false', style: btn(ob.option === id, SOUL_INK) }));
+    const toggleMod = (id) => () => {
+      // The starting design is one school and exactly one module (spec: The Magic panel): a pick replaces the module.
+      const cur = obOf(this.state);
+      this.setState({ ob: { ...cur, modules: [id] } });
+    };
+    const FAM = { behaviour: 'BEHAVIOUR', augment: 'AUGMENT', trigger: 'TRIGGER' };
+    const modGroups = Object.keys(FAM).map((f) => ({ label: FAM[f], mods: MODULES.filter((m) => m.family === f).map((m) => { const on = ob.modules.includes(m.id);
+      return { name: m.name, cost: (m.cost > 0 ? '+' : m.cost < 0 ? '−' : '') + Math.abs(m.cost) + ' MP', text: m.text, pick: toggleMod(m.id), pressed: on ? 'true' : 'false', mark: on ? '✓' : '',
+        style: 'display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 8px 10px; border-radius: 9px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (on ? 'background: #1C2536; border: 1px solid ' + SOUL_INK : 'background: #10151F; border: 1px solid #232D3F') }; }) }));
+    const obName = ob.name.trim() || (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst';
+    const normal = (MANA_BANDS.find((b) => b.id === 'normal') || MANA_BANDS[1]).min;
+    const obCost = designCost({ costSave: soulCostSaving({ attrs: der.attr, skills: S.skills }) }, { school: ob.school, modules: ob.modules }, normal);
+    const obParts = [SCHOOL[ob.school]?.name, ob.option ? OPT_NAME[ob.option] || ob.option : '', ...ob.modules.map((m) => MODULE[m]?.name)].filter(Boolean).join(' · ');
+    const obVerdict = obErr ? '◆ ' + obErr : '✓ ' + obName + ': ' + obParts + '. Costs ' + obCost + ' MP in Normal mana.';
+    const obVerdictStyle = 'font-size: 14px; line-height: 1.45; font-weight: 600; color: ' + (obErr ? '#FFFFFF' : '#6FEA77');
+    const slotChip = 'ONE MODULE TO START · ' + slots + ' SLOT' + (slots === 1 ? '' : 'S') + ' FOR DESIGNS IN PLAY';
+
     // lock in
     const trainedSkills = D.skills.filter((s) => S.skills[s.id]).map((s) => ({ label: s.name + ' ' + S.skills[s.id], style: 'font-size: 14px; font-weight: 600; color: ' + ATTR[s.attr].ink }));
     const traitNames = picked.length ? picked.map((id) => (D.traits.find((t) => t.id === id) || {}).name).join(' · ') : 'None';
     const budgets = [[left, 'SKILL'], [der.attrLeft, 'ATTRIBUTE'], [der.coreLeft, 'CORE']].map(([n, k]) => ({ text: n + ' ' + k + ' LEFT', style: chip(n === 0 ? '#6FEA77' : '#FFFFFF') }));
     const statsPlaced = der.attrLeft === 0 && der.coreLeft === 0;
-    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 Skill points spent', left === 0], ['All Attribute and Core points placed', statsPlaced], ['Starting kit', !!S.kit]].map(([label, ok]) => ({
+    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 Skill points spent', left === 0], ['All Attribute and Core points placed', statsPlaced], ['Starting kit', !!S.kit],
+      ...(canSigil ? [['Sigil words: ' + sig.map((w) => SIGIL[w]?.word || w).join(' + '), !sigErr]] : []), ...(canSoul ? [['Outburst: ' + obName, !obErr]] : [])].map(([label, ok]) => ({
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
 
@@ -260,6 +342,9 @@ export class CreateLogic extends DCLogic {
     const kitItems = [...(kit ? kit.items : []), 'Essence of Experience ×1'].map((text) => ({ text }));
     const voiceList = D.skills.filter((sk) => PT(sk.id) > 0).sort((a, b) => PT(b.id) - PT(a.id)).slice(0, 4).map((sk) => ({ name: sk.name.toUpperCase(), line: sk.quiet,
       nameStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
+    const magicSigils = canSigil ? sig.map((w) => ({ word: SIGIL[w]?.word || w, img: glyphUri(w, SIGIL_INK), text: SIGIL[w]?.text || '' })) : [];
+    const magicLine = canSigil && !sigErr ? stackLine(sig, S.skills) : '';
+    const magicOb = { name: obName, school: (SCHOOL[ob.school]?.name || '').toUpperCase() + ' SCHOOL', parts: obParts, cost: 'Costs ' + obCost + ' MP in Normal mana', heart: heartUri(1) };
     const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id);
       return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
 
@@ -270,7 +355,11 @@ export class CreateLogic extends DCLogic {
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
-      kitCards,
+      kitCards, hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
+      schoolCards, obOpts, hasOpts: obOpts.length > 0, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
+      onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
+      resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetOb: set({ ob: { ...DEFAULT_OB } }),
+      magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
       summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),
       trainedSkills, traitNames, leanText: der.leans.length ? der.leans.map((l) => l.name).join(' or ') : 'Place some points first',
       record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, kitItems, kitName: kit ? kit.name : 'No kit yet', voiceList, hasVoices: voiceList.length > 0, leanCards,
@@ -298,7 +387,10 @@ export class CreateLogic extends DCLogic {
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
     return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
-      skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null };
+      skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null,
+      // Starting magic goes on the sheet only for a build that can cast; the engine fills in the defaults otherwise.
+      ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
+      ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}) }; })() } : {}) };
   }
   lockIn() {
     CORE_PTS = BASE_CORE_PTS + (this.state.traits.includes('mind_without_fog') ? 2 : 0);

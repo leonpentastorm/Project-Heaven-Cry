@@ -2,7 +2,7 @@
 // character.json (the sheet) plus portrait.jpg at full size when the portrait is your own upload. The room only
 // ever carries a small copy of an uploaded portrait (320 × 400), so rooms stay light whatever people upload.
 import { zipSync, unzipSync, strToU8, strFromU8 } from 'fflate';
-import { validateSheet, ARCHETYPES, type Sheet } from '@engine';
+import { validateSheet, ARCHETYPES, SIGIL, SCHOOL, MODULE, type Sheet } from '@engine';
 import { getState, saveToLibrary, toast } from './store';
 import PD from './protodata.json';
 
@@ -87,6 +87,15 @@ export async function readCharacterFile(f: Blob): Promise<Sheet & { draft?: bool
     skills: nums(s.skills), attrs: nums(s.attrs), cores: nums(s.cores),
     identity: Object.fromEntries(ID_KEYS.filter((k) => typeof idIn[k] === 'string').map((k) => [k, idIn[k].slice(0, ID_LEN[k] || 300)])),
     archetype: typeof s.archetype === 'string' && ARCHETYPES.some((a: any) => a.id === s.archetype) ? s.archetype : null };
+  // Starting magic picks (spec: The Magic panel): known word, school and module ids only.
+  // Only for a build that can cast, as on the Create screen: Brain Power 1+ or the Sigil student kit for words,
+  // Will Power 1+ or the Soul initiate kit for an Outburst. An edited or older file can't hand magic to anyone else.
+  const canSigil = (sheet.skills.brain_power || 0) >= 1 || sheet.kit === 'sigil', canSoul = (sheet.skills.will_power || 0) >= 1 || sheet.kit === 'soul';
+  if (canSigil && Array.isArray(s.sigils)) sheet.sigils = s.sigils.filter((w: unknown) => typeof w === 'string' && SIGIL[w]).slice(0, 2);
+  const ob = s.outburst;
+  if (canSoul && ob && typeof ob === 'object' && typeof ob.school === 'string' && SCHOOL[ob.school]) sheet.outburst = { school: ob.school,
+    modules: Array.isArray(ob.modules) ? ob.modules.filter((m: unknown) => typeof m === 'string' && MODULE[m]).slice(0, 8) : [],
+    ...(typeof ob.name === 'string' && ob.name.trim() ? { name: ob.name.slice(0, 40) } : {}), ...(typeof ob.option === 'string' ? { option: ob.option.slice(0, 40) } : {}) };
   if (portrait) sheet.portrait = await portraitFrom(new Blob([portrait as BlobPart]));
   else if (typeof s.portrait === 'string' && BUILT_IN.has(s.portrait)) sheet.portrait = s.portrait; // a built-in portrait, never an outside link
   if (s.draft || validateSheet(sheet)) sheet.draft = true;
