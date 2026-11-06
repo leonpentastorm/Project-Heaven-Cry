@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-15 of 52 new images delivered. All are review candidates pending Leon.
+16 of 52 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -27,3 +27,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-ilse-varga` | B | [PNG](../../../character-portraits/m813/v2/m813-ilse-varga.png) | opening-safe |
 | `m813-engineer-a` | B | [PNG](../../../character-portraits/m813/v2/m813-engineer-a.png) | opening-safe |
 | `m813-engineer-b` | B | [PNG](../../../character-portraits/m813/v2/m813-engineer-b.png) | opening-safe |
+| `m813-novikov` | B | [PNG](../../../character-portraits/m813/v2/m813-novikov.png) | opening-safe |

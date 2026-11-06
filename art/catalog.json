@@ -1796,6 +1796,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.prompt.txt"
+    },
+    "m813-novikov": {
+      "id": "m813-novikov",
+      "group": "B",
+      "order": 12,
+      "name": "Novikov",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B12 | `m813-novikov` | **Colonel Alexei Novikov**: sixties, immaculate Thousand World Legion dress uniform, regimental \"093\" on the collar, reading glasses. | Seated at a desk, hands folded, looking up as if he expected you. Polite. Never raises his voice. The calm is the menace. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "69a154b7d1dd234b5df1fbf022778dbc66c32a960f7201f0e07de4a14eaa3490",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-novikov.png",
+      "source_sha256": "56591e378b8f1204553ab08134338ae55c33bdf4c93202d5db692afb31190b99",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-novikov-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-novikov.prompt.txt"
     }
   },
   "traits": {

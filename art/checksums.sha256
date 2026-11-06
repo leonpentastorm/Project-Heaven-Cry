@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-ad331a2ce111abc1037ef9f4bd859d9ca07c21369c2277edff7d0481706fc807  art/campaigns/m813/tutorial-v1/README.md
-d3a0a9c1e7f9f198d85c8c1ed3c9041db6f1afa6e98d5ada0c8061e85cb3b86c  art/campaigns/m813/tutorial-v1/manifest.json
-c5931ede49ff5c725e0944277e70c926886c36a390978aaf981f1c7419757fcf  art/campaigns/m813/tutorial-v1/production-progress.json
-214a99bc6d8d61c0cbafd769d2b6d2579d795734e4f003e81786ed9c5b101cbb  art/catalog.json
+41a97f120a8a7fceed5a899b428179b914608790529827cbc29da90cfa7c4e74  art/campaigns/m813/tutorial-v1/README.md
+729e748f98813932a2c1d83e321d244688c38a76c71f3f5b35b93d9080b40508  art/campaigns/m813/tutorial-v1/manifest.json
+8da1b92b74ca959c11f1e6c428b2f40942127d4fa4eeb5d3de84c51a63ea9567  art/campaigns/m813/tutorial-v1/production-progress.json
+b66cd89c23c64f13eb9412f85cfa7082aa81028827cca6efaa3cbf3d767bf65e  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -98,6 +98,7 @@ dbc2c1767f717293a5896d110070ff3bad5a4ec0cea63a3e1d256a6f81faae15  art/character-
 dec08550aaa238cca1b98d33140a9356a32414b19b9041d8af3dde57970f2239  art/character-portraits/m813/v2/m813-keel.png
 e819096722ed78e348196abe89bace77f45c54517f75f7afb6a05207ce4fc452  art/character-portraits/m813/v2/m813-lantern.png
 ffcff8b865a985a6ef28732b20917967d76a41673544f8409ca3b7e07fc2d42f  art/character-portraits/m813/v2/m813-nine-nine.png
+69a154b7d1dd234b5df1fbf022778dbc66c32a960f7201f0e07de4a14eaa3490  art/character-portraits/m813/v2/m813-novikov.png
 c9a2cb5830378ed8d6a561f810c310b8b787ca6c8b03ba3aae371b9dd1cff53b  art/character-portraits/m813/v2/m813-penny.png
 d9545bd041a2b429605b14a83b8846f231d27497aaa9ab705a4709ae6acff054  art/character-portraits/m813/v2/m813-rook.png
 3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227  art/character-portraits/m813/v2/m813-seven-seven.png
@@ -109,6 +110,7 @@ f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc  art/character-
 d46bc9ed768cf789fd450a1a413c176354df2355e0e2eace0449ce768435b854  art/character-portraits/m813/v2/previews/m813-keel-320px.png
 a54d49c0e339d95d86ff6b28b6e1a5f89d3a75070ddae5b116f0576f5f0a9e3f  art/character-portraits/m813/v2/previews/m813-lantern-320px.png
 45e86e5f10e71fc0678494244fbe0d3fcb991cddff7ddfdcebc1ba5a21933619  art/character-portraits/m813/v2/previews/m813-nine-nine-320px.png
+875a2f840355ecdc2fd005b94d1186af08ec2567d316397e98d80d89f2a4bf4f  art/character-portraits/m813/v2/previews/m813-novikov-320px.png
 8674f3d64d570e57b9154ee367fe617705a30d416923377fe857444ed2f3964c  art/character-portraits/m813/v2/previews/m813-penny-320px.png
 ccd804fb6e208d7921124b3eeb42bf2df656591d1039be6f32b5e9bd96585d6e  art/character-portraits/m813/v2/previews/m813-rook-320px.png
 d5c6d3e3e4e78c707878f735b3f3a9694fede1001d544a585afd2af974e5bff0  art/character-portraits/m813/v2/previews/m813-seven-seven-320px.png
@@ -127,6 +129,8 @@ ca82ea13a03d1b563d04111ae64358b3ae91df0d75ae4571e36acd98670fac34  art/character-
 7b8c4116ecace9452657f627fbfdeb41599e59d4c13ec6bae3157bb4e29c9fd2  art/character-portraits/m813/v2/sources/m813-lantern.prompt.txt
 9173b791d83694f913033f0accf925054e821465b668d2792d205406b30a09e0  art/character-portraits/m813/v2/sources/m813-nine-nine.png
 d4cec97230fb2b2e94b8ae21454f80286ae440247c74c9d8106c7acd00f14f27  art/character-portraits/m813/v2/sources/m813-nine-nine.prompt.txt
+56591e378b8f1204553ab08134338ae55c33bdf4c93202d5db692afb31190b99  art/character-portraits/m813/v2/sources/m813-novikov.png
+14612471a00444539414b0ed190152e98dadb6186a7ac56dd15800b202a98cd9  art/character-portraits/m813/v2/sources/m813-novikov.prompt.txt
 9c9b6b287d8234382a1ef2df74edd71dcd366a6c6ae356492309b0aefdc85cb6  art/character-portraits/m813/v2/sources/m813-penny.png
 50af69ea5211d220c56e92dea1cf73c8aa6a266748d830d3d89b4d80f95977fe  art/character-portraits/m813/v2/sources/m813-penny.prompt.txt
 8b05f841d54cf2949f2b8c6504bcc86ea12771cb61b36dcbfc3667eb822ae388  art/character-portraits/m813/v2/sources/m813-rook.png

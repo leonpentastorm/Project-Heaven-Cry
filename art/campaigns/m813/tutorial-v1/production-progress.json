@@ -16,10 +16,10 @@
     "m813-keel",
     "m813-ilse-varga",
     "m813-engineer-a",
-    "m813-engineer-b"
+    "m813-engineer-b",
+    "m813-novikov"
   ],
   "remaining": [
-    "m813-novikov",
     "m813-security-guard",
     "m813-guard-captain",
     "m813-scavenger-drone",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:35:18.864499+00:00",
+  "updated_utc": "2026-11-06T03:36:41.570138+00:00",
   "status": "in-progress",
   "production_approved": false
 }
