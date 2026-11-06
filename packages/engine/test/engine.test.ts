@@ -493,7 +493,7 @@ describe('music (spec: Music)', () => {
 describe("the Narrator's wiki (glossary)", () => {
   it('has an entry for every rule-bearing kind, found by key or by name', () => {
     const kinds = wikiKinds();
-    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
+    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object', 'sigil', 'school', 'module']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
     expect(wikiLookup('weapon:service_pistol')!.text).toContain('Snap Shot');
     expect(wikiLookup('condition:Bleeding')!.key).toBe('condition:bleeding');
     expect(wikiLookup('item:musek_blestor')!.text).toContain('favourite song');
