@@ -170,11 +170,12 @@
     "before-the-blink",
     "vanishing-act",
     "overhaul",
-    "nothing-gets-past"
+    "nothing-gets-past",
+    "clean-draw"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 91
+    "perks": 92
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -200,7 +201,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "clean-draw",
     "established-fact",
     "closing-argument",
     "solid-image",

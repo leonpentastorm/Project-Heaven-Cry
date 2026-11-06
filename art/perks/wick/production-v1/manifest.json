@@ -2066,6 +2066,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "clean-draw",
+      "data_id": "clean_draw",
+      "name": "Clean Draw",
+      "family": "perks",
+      "order": 88,
+      "mood": "Calm, Eerie",
+      "action": "Wick stands on one foot, one finger tracing a single perfect geometric sigil in the air in one unbroken line; no sparks, no smoke anywhere.",
+      "screen": "Serene",
+      "prop": "One-line sigil",
+      "path": "art/perks/wick/production-v1/clean-draw.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/clean-draw.png",
+        "128": "art/perks/wick/production-v1/exports/128/clean-draw.png",
+        "64": "art/perks/wick/production-v1/exports/64/clean-draw.png",
+        "56": "art/perks/wick/production-v1/exports/56/clean-draw.png",
+        "48": "art/perks/wick/production-v1/exports/48/clean-draw.png",
+        "44": "art/perks/wick/production-v1/exports/44/clean-draw.png",
+        "40": "art/perks/wick/production-v1/exports/40/clean-draw.png"
+      },
+      "batch": "G",
+      "source_sha256": "38ccea71fef96bcdf4371a853ef8690c929c5151ecacdaa60aa725cdae7e9258",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
