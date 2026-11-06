@@ -1806,7 +1806,7 @@
       "order": 12,
       "name": "Novikov",
       "family": "characters",
-      "path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "path": "art/character-portraits/m813/v2/revisions/v2/m813-novikov.png",
       "dimensions": [
         800,
         1000
@@ -1818,21 +1818,24 @@
       "proposal": true,
       "width": 800,
       "height": 1000,
-      "sha256": "69a154b7d1dd234b5df1fbf022778dbc66c32a960f7201f0e07de4a14eaa3490",
-      "source_path": "art/character-portraits/m813/v2/sources/m813-novikov.png",
-      "source_sha256": "56591e378b8f1204553ab08134338ae55c33bdf4c93202d5db692afb31190b99",
+      "sha256": "7d47cde231d6e322cdac57cb2e9242e6ebd828e51b2aef4fc28ac9bccbd1a7a2",
+      "source_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-novikov.png",
+      "source_sha256": "db73a307c3d7ab53f2d083ba6a11078d36bbf1f88251eeecea30ef982abf03cd",
       "source_dimensions": [
         1122,
         1402
       ],
       "previews": {
-        "320": "art/character-portraits/m813/v2/previews/m813-novikov-320px.png"
+        "320": "art/character-portraits/m813/v2/revisions/v2/previews/m813-novikov-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/character-portraits/m813/v2/sources/m813-novikov.prompt.txt"
+      "previous_path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "previous_revision_path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "revision": 2,
+      "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-novikov.prompt.txt"
     },
     "m813-security-guard": {
       "id": "m813-security-guard",
