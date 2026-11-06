@@ -2459,24 +2459,27 @@
       "family": "perks",
       "order": 100,
       "mood": "Grim, Heroic",
-      "action": "Wick raises a tall crozier staff overhead and a single shaft of light spears down from above onto the ground in front of it.",
+      "action": "Keep the existing crozier-raising gesture, upper-left Mastered mark and single descending light shaft. The crozier has a PLAIN rounded spiral head, no star-shaped finial or sparkle.",
       "screen": "Stern glare",
       "prop": "Crozier staff",
-      "path": "art/perks/wick/production-v1/judgement-day.png",
+      "path": "art/perks/wick/production-v1/revisions/v2/judgement-day.png",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/judgement-day.png",
-        "128": "art/perks/wick/production-v1/exports/128/judgement-day.png",
-        "64": "art/perks/wick/production-v1/exports/64/judgement-day.png",
-        "56": "art/perks/wick/production-v1/exports/56/judgement-day.png",
-        "48": "art/perks/wick/production-v1/exports/48/judgement-day.png",
-        "44": "art/perks/wick/production-v1/exports/44/judgement-day.png",
-        "40": "art/perks/wick/production-v1/exports/40/judgement-day.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/judgement-day.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/judgement-day.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/judgement-day.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/judgement-day.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/judgement-day.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/judgement-day.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/judgement-day.png"
       },
       "batch": "G",
-      "source_sha256": "c6029225920e0aee12a15e1c450554efaea4db7bd332cc76190334683a0ec985",
+      "source_sha256": "16284ff444907b4def022a3440c1365b41dc7ed8172d6512fefad97858b92158",
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
-      "medallion_safe_circle": 0.9
+      "medallion_safe_circle": 0.9,
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/judgement-day.png",
+      "previous_revision_path": "art/perks/wick/production-v1/judgement-day.png"
     },
     {
       "id": "foreseen",
