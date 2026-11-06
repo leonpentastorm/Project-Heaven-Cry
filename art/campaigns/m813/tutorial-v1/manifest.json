@@ -69,6 +69,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt"
+    },
+    {
+      "id": "m813-outpost-hangar",
+      "group": "A",
+      "order": 3,
+      "name": "Outpost Hangar",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A3 | `m813-outpost-hangar` · `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |",
+      "spoiler": false,
+      "visibility": "zone-entry",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "8b928714567ecef0a93b001012a737c1088270fe1b2af17a50bf26bb5f41536d",
+      "source_path": "art/illustrations/m813/v2/sources/m813-outpost-hangar.png",
+      "source_sha256": "199972f5f379256ad4add73a3f08cfe8bad89b20f0fce0773ce3bee629c2604b",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-outpost-hangar-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-hangar.prompt.txt"
     }
   ]
 }
