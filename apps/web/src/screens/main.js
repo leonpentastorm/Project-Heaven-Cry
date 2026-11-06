@@ -3,7 +3,7 @@
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM } from '@engine';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, coverOf, difficultOf, magsOf, WEAPONS } from '@engine';
 import { STARTS } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
@@ -92,8 +92,15 @@ export class MainLogic extends DCLogic {
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; padding: 4px 6px; border-radius: 6px; font-size: 12px; ' + (S.hotSlot === id ? 'background: #1C2536' : '') ,
         nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') }; });
     const kg = (x) => (Math.round(x * 1000) / 1000) + ' kg';
-    const rig = pack.map((it) => ({ key: it.id, tag: KIND[it.kind] || 'ITEM', name: it.name, qty: '×' + it.qty, kg: kg(itemKg(it)),
-      note: it.mags ? it.mags.map((n) => n + ' rounds').join(' · ') : it.note || (ITEM[it.item || it.id] || {}).text || '' }));
+    // Magazines show as separate lines: full, part-loaded (each count) and empty (spec: Magazines and rounds are inventory).
+    const rig = pack.flatMap((it) => {
+      if (!it.mags) return [{ key: it.id, tag: KIND[it.kind] || 'ITEM', name: it.name, qty: '×' + it.qty, kg: kg(itemKg(it)), note: it.note || (ITEM[it.item || it.id] || {}).text || '' }];
+      const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
+      it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
+      return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
+        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds' }));
+    });
+    const canLoad = !!c && packOf(c).some((m) => m.mags && m.mags.some((n) => n < (WEAPON[m.weapon]?.magazine || 0)) && packOf(c).some((r) => r.calibre && r.calibre === WEAPON[m.weapon]?.ammo && r.qty > 0));
     const KG = c ? carriedKg(c) : { total: 0, weapon: 0, armour: 0, pack: 0 }, lim = c ? carryLimit(c) : 0, over = KG.total > lim;
     const gear = [];
     const lvlOf = (k) => { let l = D.wm.levels[0]; D.wm.levels.forEach((x) => { if (k >= x.kills) l = x; }); return l; };
@@ -193,8 +200,9 @@ export class MainLogic extends DCLogic {
       : Object.values(g.characters).filter((x) => !x.dead).map((x, i) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: map.pcStart[i % map.pcStart.length], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }));
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
-    const solid = new Set(map.solid), cover = new Set(map.cover), diff = new Set(map.difficult);
-    const cellBg = (k) => (solid.has(k) ? '#1C2536' : cover.has(k) ? '#4A3A20' : diff.has(k) ? '#232D3F' : '#0D1119');
+    const cov = cb ? coverOf(cb) : Object.fromEntries([...map.cover.map((k) => [k, { kind: 'half' }]), ...(map.full || []).map((k) => [k, { kind: 'full' }])]);
+    const solid = new Set(map.solid), diff = cb ? difficultOf(cb) : new Set(map.difficult);
+    const cellBg = (k) => (solid.has(k) ? '#1C2536' : cov[k] ? (cov[k].kind === 'full' ? '#6B5430' : '#4A3A20') : diff.has(k) ? '#232D3F' : '#0D1119');
     const mini = []; for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k];
       const p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null;
       mini.push({ key: k, has: !!u, t: u ? tokenVals(u, { ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
@@ -212,6 +220,7 @@ export class MainLogic extends DCLogic {
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
       zoomPc: zoomer(this, pc.img, pc.name, 'portrait'), canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
       status, rep, statusFig, injuries, noInjuries: !inj.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, noRig: !rig.length, backpackImg: '',
+      canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
       hero, stream, pushes,
       hasChecks: actions.length > 0, actions,

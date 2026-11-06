@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -60,7 +60,7 @@ describe('combat', () => {
     const cb = startCombat('t', 'rear_pad', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 1 });
     const u = cb.units[0]; u.pos = '1,8';
     expect(paths(cb, u.pos, u.id).dist['1,9']).toBe(2);
-    expect(MAPS.rear_pad.cover.length).toBe(4);
+    expect(MAPS.rear_pad.cover.length).toBe(3); expect(MAPS.rear_pad.full).toEqual(['10,6']);
   });
   it('injuries: the d6 table, arm penalties by hand, half Movement once, bleeding', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
@@ -95,13 +95,38 @@ describe('combat', () => {
     u.ammo = 5; expect(reload(cb, u)).toBeNull();
     expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(cb.floor![0].text).toBe('magazine with 5 rounds');
     u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(cb.floor![1].text).toBe('empty magazine'); expect(u.mags).toEqual([]);
-    u.ammo = 3; expect(reload(cb, u)).toMatch(/No spare magazines/);
+    u.ammo = 3; expect(reload(cb, u)).toMatch(/No loaded spare magazines/);
   });
   it('weights: everything counts, down to the round', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     const k = carriedKg(c);
     // pistol 1 + empty magazine 0.1 + 12 rounds × 0.01; Medium armour 8; 2 magazines (0.2 + 24 × 0.01), field kit 1.5, 3 stims 0.3, Essence 0.1
-    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 1.5 + 0.3 + 0.1, 5);
+    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 0.24 + 1.5 + 0.3 + 0.1, 5); // + 24 loose rounds
+  });
+  it('cover: half is −5 and can be shot to rubble; full blocks sight', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 3 });
+    const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
+    u.ap = 9; u.pos = '1,3'; e.pos = '6,3'; // half cover at 5,3 sits between them
+    const open = previewAttack(cb, u, { ...e, pos: '6,1' } as any, 'shot'), behind = previewAttack(cb, u, e, 'shot');
+    expect(behind.cover).toBe(5); expect(behind.toHit).toBe(open.toHit - 5);
+    expect(lineOfSight(cb, '9,6', '11,6')).toBe(false); // full cover at 10,6
+    expect(lineOfSight(cb, '4,3', '6,3')).toBe(true);  // half cover doesn't block sight
+    while (coverOf(cb)['5,3']) { u.ap = 9; expect(shootCover(cb, u, '5,3', c)).toBeNull(); }
+    expect(shootCover(cb, u, '5,3', c)).toMatch(/isn't cover/);
+    expect(coverOf(cb)['5,3']).toBeUndefined(); expect(cb.rubble).toContain('5,3');
+    expect(previewAttack(cb, u, e, 'shot').coverTile).toBe('5,4'); // the crate beside it still protects
+  });
+  it('picking up and loading magazines', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const u = cb.units[0]; u.ap = 6; u.ammo = 0;
+    reload(cb, u); expect(u.mags).toEqual([12]);
+    u.ap = 6; expect(pickUp(cb, u, u.pos)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
+    expect(loadMagazine(cb, u)).toBeNull(); // 12 rounds at 5 a point: 3 AP
+    expect(u.mags).toEqual([12, 12]); expect(u.loose).toBe(12); expect(u.ap).toBe(2);
+    c.pack = packOf(c).map((x) => (x.mags ? { ...x, mags: [0, 5] } : x));
+    expect(loadAll(c)).toBe(19); expect(spareMags(c)).toEqual([12, 12]);
   });
   it('Analyze: 2 AP, range 4 + Analysis, line of sight, shared with the squad', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));

@@ -9,7 +9,7 @@ This file is the hand-off from the design sessions in claude.ai. Read it first, 
 1. **`docs/rules/PHC-Core-Rules-v1.0.md`** — the rules spec, every number. Exported from the living Claude Doc (links below). If the spec and the data disagree, **the spec wins and the data is the bug**.
 2. **`data/*.json`** — machine-readable rules the engine loads. Conventions in `data/CONVENTIONS.md`. Run `python3 tools/validate.py data` after any change; it must print `0 errors`.
 3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI. **Lore is layered:** the **EPCCG** (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) is the base for the world's people, factions and voice; the **World Bible** layers the hidden simulation truth on top; MPAT/M813 and Wick build on both. Index: `docs/lore/README.md`.
-4. **`design/canvas/`** — UI prototypes (Design Component `.dc.html` files from the claude.ai design canvas). Reference for layout and interaction, not production code.
+4. **`design/canvas/`** — UI prototypes (Design Component `.dc.html` files from the claude.ai design canvas). Reference for layout and interaction, not production code. **Paused until v1.0** (Leon, 6 Nov 2026): the live web game is the reference now; Leon sends screenshots of it, and the canvas is brought back in line from the game when v1.0 is done. Don't update the canvas until then.
 
 Living versions (edit there, then re-export here):
 
@@ -126,4 +126,4 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 2. Starter mode: character creation → story scene → one combat, single player with the AI Narrator.
 3. The **M813 one-shot** (Outpost-813 on the rim of a black hole; MPAT's story; see `docs/lore/MPAT-and-M813.md`).
 4. Settle the 52 open items in spec section 14 through playtests.
-5. Lock the UI on the canvas (prototype v2, branch `ui-prototype-v2`; Leon comments, Claude fixes), then implement the real client from it.
+5. ~~Lock the UI on the canvas~~ Paused: the web game is the UI reference until v1.0; then copy it back into the canvas.

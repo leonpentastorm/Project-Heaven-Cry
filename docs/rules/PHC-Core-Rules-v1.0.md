@@ -264,7 +264,7 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 **Analyze.** 2 AP (1 with Analysis's Quick Read), at an enemy you can see within 4 + Analysis tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has Weak Point (Analysis 5), the squad deals +15% damage to that enemy. Details are provisional (item 56).
 
-**Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge + cover).
+**Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge).
 
 | Attack | Skill |
 |---|---|
@@ -287,9 +287,11 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | Beyond effective range | −2 per range band past it, out to 2 bands |
 | Target prone: melee / ranged | +2 / −2 |
 | Attacker Blinded | −4 |
-| Target in half / full cover | +2 / +5 to their Defense |
+| Target behind half cover | −5 (full cover blocks the shot) |
 
 **Flanking.** If the line from attacker to target doesn't pass through the side of the tile the cover protects, the cover doesn't count.
+
+**Cover** comes in two kinds. **Half cover** (crates, low walls, wreckage) gives −5 to shots at a target next to it when the cover lies between the shooter and the target. **Full cover** (pillars, hull plates, high walls) blocks sight, so it blocks shots and Analyze through it. Melee ignores cover. All cover has HP: half 30, full 80. Shoot it on purpose (the weapon's attack AP and ammo, no roll, the weapon's damage), and a shot that misses only because of the −5 hits the half cover instead. At 0 HP the cover breaks and leaves rubble: difficult terrain, no cover. Provisional (item 57).
 
 **Damage.** On a hit: the weapon's damage × the matching multiplier (Physical, Elemental, Sigil, Soul) × any other multipliers, then subtract armour. Minimum 1.
 
@@ -357,6 +359,8 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Enhanced | a sliver of mana core in every round. Ignores armour, deals Elemental damage, and each hit releases bots (+1 on the ambient mana meter). One core makes 10 rounds. Rare, and expensive to buy. |
 
 **Reloading** (2 AP) uses up ammo you carry. Magazine weapons (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) swap in your fullest spare magazine, and the one in the gun drops on the floor: empty, or with whatever rounds were left in it, which are lost with it. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry unlimited spares until their stat blocks list ammo. Provisional (item 55).
+
+**Magazines and rounds are inventory.** The backpack lists loaded, part-loaded and empty magazines, and loose rounds, separately, each with its weight. Reload only takes a magazine with rounds in it. **Picking up** (1 AP) takes everything on your tile or one adjacent tile: dropped magazines, empty or not, go back in the pack. **Loading** a magazine from loose rounds costs 1 AP per 5 rounds in combat (load part of one if you're short of AP), and nothing out of combat. Starting kits also carry loose rounds: 24 for the pistols, 48 rifle rounds for the line soldier, 12 for the revolver. Provisional (item 58).
 
 **Starter weapons** (damage before multipliers; range in tiles)
 
@@ -677,3 +681,5 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 54. **Item weights** (Leon: everything has weight, down to the single bullet): the armour, round, magazine and gear weights under Item weights were set for the first playable build. The effect of going over Carry weight is still open.
 55. **Ammo and reloading** (Leon: reloading uses ammo up; reloading early drops the magazine and its rounds): the round-by-round list, the kits' spare magazines, and enemies' unlimited spares.
 56. **Analyze details:** no roll, line of sight needed, shared with the whole squad for the rest of the fight, and what the squad sees before it.
+57. **Two kinds of cover with HP** (Leon): half cover −5 to hit, full cover blocks sight; HP 30 / 80; misses caused by the −5 hit the cover; broken cover becomes rubble. Replaces +2 / +5 Defense.
+58. **Picking up and loading** (Leon: dropped magazines can be picked up; empty magazines can be loaded for AP by the rounds needed): pick-up 1 AP per tile, loading 1 AP per 5 rounds, the kits' loose rounds.

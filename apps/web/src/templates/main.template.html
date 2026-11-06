@@ -113,7 +113,7 @@
 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="display: flex; align-items: center; gap: 10px">
 <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex: none"><g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M14,12 v-3 a4,4 0 0 1 8,0 v3"></path><path d="M9,12 h18 a3,3 0 0 1 3,3 v15 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-15 a3,3 0 0 1 3,-3 z"></path><path d="M6,19 h24"></path><path d="M12,24 h12 v5 h-12 z"></path></g></svg>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span><sc-if value="{{canLoad}}"><button type="button" onClick="{{loadMags}}" disabled="{{cantLoad}}" title="Fill empty and part-empty magazines from your loose rounds. Free out of combat." style="flex: none; min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Load mags</button></sc-if>
 </div>
 <div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
 <sc-if value="{{noRig}}"><span style="font-size: 12px; color: #A3AEC2">Empty.</span></sc-if>
@@ -237,7 +237,8 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 </div>
 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2">
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #4A3A20"></span>Cover (+2 Defense)</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #4A3A20"></span>Half cover (−5 to hit)</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #6B5430"></span>Full cover (blocks sight)</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #232D3F"></span>Wreckage (2 tiles to cross)</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 2px; background: #1C2536; border: 1px solid #3B475D"></span>Blocked</span>
 <span style="margin-left: auto">Hover or tap a token for details.</span>

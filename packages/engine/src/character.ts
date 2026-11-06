@@ -1,6 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME } from './data';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
@@ -84,17 +84,18 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
 }
 
 /** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */
-const magsOf = (weapon: string, n: number, unit = 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
+export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
+export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
 const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
 export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
-    pack: [magsOf('service_pistol', 2), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
   soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, armourName: 'Flak vest', stims: 0,
-    pack: [magsOf('hellraiser_service_rifle', 3), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }, gear('ration_pack')] },
+    pack: [magsOf('hellraiser_service_rifle', 3), roundsOf('rifle', 48), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }, gear('ration_pack')] },
   sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [magsOf('service_pistol', 2), gear('evoker', 1, 'Holds one core; Sigil magic'), gear('standard_core', 4), gear('chalk_and_wax')] },
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('evoker', 1, 'Holds one core; Sigil magic'), gear('standard_core', 4), gear('chalk_and_wax')] },
   soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [magsOf('drifter_revolver', 2, 'speedloader'), gear('emanator', 1, 'The heart link; Soul magic'), gear('prayer_beads')] },
+    pack: [magsOf('drifter_revolver', 2), roundsOf('revolver', 12), gear('emanator', 1, 'The heart link; Soul magic'), gear('prayer_beads')] },
 };
 /** The pack, with saves from before magazines were tracked brought up to date. */
 export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || KITS.medic).pack).map((it) => {
@@ -102,6 +103,17 @@ export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || K
   if (!it.item && ITEM[it.id]) return { ...it, item: it.id };
   return it;
 });
+/** Out of combat, loading is free (spec: Loading): fill every part-empty magazine from matching loose rounds. Returns rounds loaded. */
+export function loadAll(c: Character): number {
+  const pack = packOf(c).map((it) => ({ ...it, ...(it.mags ? { mags: [...it.mags] } : {}) }));
+  let moved = 0;
+  for (const m of pack) if (m.mags && m.weapon) {
+    const cap = WEAPON[m.weapon]?.magazine || 0, cal = WEAPON[m.weapon]?.ammo;
+    for (const r of pack) if (r.calibre && r.calibre === cal) for (let i = 0; i < m.mags.length && r.qty > 0; i++) { const take = Math.min(cap - m.mags[i], r.qty); m.mags[i] += take; r.qty -= take; moved += take; }
+  }
+  c.pack = pack.filter((it) => it.qty > 0 || it.mags);
+  return moved;
+}
 export const loadedOf = (c: Character) => c.loaded ?? (WEAPON[c.weapon]?.magazine || 0);
 export const spareMags = (c: Character) => packOf(c).find((x) => x.weapon === c.weapon && x.mags)?.mags || [];
 

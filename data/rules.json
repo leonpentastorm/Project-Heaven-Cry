@@ -603,10 +603,25 @@
         "target_prone_melee": 2,
         "target_prone_ranged": -2,
         "attacker_blinded": -4,
-        "half_cover_defense": 2,
-        "full_cover_defense": 5
+        "half_cover_to_hit": -5
       },
-      "flanking": "cover only counts if the attack line passes through the side of the tile the cover protects"
+      "flanking": "cover only counts if the attack line passes through the side of the tile the cover protects",
+      "cover": {
+        "half": {
+          "to_hit": -5,
+          "hp": 30,
+          "blocks_sight": false
+        },
+        "full": {
+          "hp": 80,
+          "blocks_sight": true
+        },
+        "melee_ignores": true,
+        "stray_shots": "a shot that misses only because of half cover's -5 hits the cover",
+        "shoot_cover": "weapon attack AP and ammo, no roll, weapon damage",
+        "broken": "rubble: difficult terrain, no cover",
+        "provisional": true
+      }
     },
     "damage": {
       "formula": "weapon_damage * type_multiplier * other_multipliers - armor",
@@ -860,7 +875,12 @@
       "magazine": "swap in the fullest spare magazine; the one in the gun drops on the floor with any rounds left in it",
       "loose": "top up from loose rounds; nothing drops",
       "enemies": "carry unlimited spares (until stat blocks list ammo)",
-      "provisional": true
+      "provisional": true,
+      "only_loaded": true,
+      "pickup_ap": 1,
+      "pickup": "everything on your tile or one adjacent tile",
+      "load_rounds_per_ap": 5,
+      "load_out_of_combat_ap": 0
     }
   },
   "conditions_rules": {

@@ -3,20 +3,21 @@ import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
 
-export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
+/** cover = half cover tiles, full = full cover tiles (spec: Cover). */
+export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
   rear_pad: {
     id: 'rear_pad', name: 'Outpost-813 rear landing pad', w: 16, h: 11,
     solid: (() => { const s: string[] = []; for (let x = 13; x < 16; x++) for (let y = 0; y < 6; y++) s.push(x + ',' + y); return s; })(),
-    cover: ['11,2', '11,3', '11,4', '10,6'],
+    cover: ['11,2', '11,3', '11,4'], full: ['10,6'], // platinum crates (half); a cargo pylon (full)
     difficult: ['1,9', '2,9', '3,9', '4,9', '6,9', '7,9', '1,10', '3,10', '5,10', '8,10'],
     pcStart: ['3,6', '2,8', '5,8', '2,5', '4,7', '3,4'], foeStart: ['12,3', '12,6', '12,1', '11,7', '12,8', '10,1', '9,4'],
   },
   yard: {
     id: 'yard', name: 'Open ground', w: 16, h: 11, solid: [],
-    cover: ['5,3', '5,4', '10,6', '10,7', '7,1', '8,9'], difficult: ['7,5', '8,5', '7,6'],
+    cover: ['5,3', '5,4', '7,1', '8,9'], full: ['10,6', '10,7'], difficult: ['7,5', '8,5', '7,6'],
     pcStart: ['1,4', '1,6', '2,5', '1,8', '2,2', '1,2'], foeStart: ['14,5', '14,3', '14,7', '13,4', '13,6', '15,5', '13,9'],
   },
 };
@@ -30,12 +31,16 @@ export interface Unit {
   injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
   /** PCs: spare magazines (rounds in each) and loose rounds for the weapon. Enemies leave these out: unlimited spares. */
   mags?: number[]; loose?: number;
+  /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
+  extra?: { weapon: string; rounds: number }[];
   /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
   analyzedBy?: string; weakPoint?: boolean; analysis?: number;
 }
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
-  floor?: { pos: string; text: string }[] }
+  floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
+  /** Cover still standing, with its HP; broken cover becomes rubble (spec: Cover). Old saves fall back to the map. */
+  cover?: Record<string, { kind: 'half' | 'full'; hp: number; max: number }>; rubble?: string[] }
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
@@ -70,9 +75,30 @@ export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i
 export const alive = (u: Unit) => !u.dead && !u.downed;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === cb.order[cb.turn]);
 
+// ---------- cover (spec: Cover) ----------
+export const COVER_HP = { half: 30, full: 80 };
+export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number }> {
+  if (!cb.cover) {
+    cb.cover = {};
+    for (const k of cb.map.cover) cb.cover[k] = { kind: 'half', hp: COVER_HP.half, max: COVER_HP.half };
+    for (const k of cb.map.full || []) cb.cover[k] = { kind: 'full', hp: COVER_HP.full, max: COVER_HP.full };
+  }
+  return cb.cover;
+}
+const coverKeys = (cb: Combat, kind?: 'half' | 'full') => Object.entries(coverOf(cb)).filter(([, c]) => !kind || c.kind === kind).map(([k]) => k);
+export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...(cb.rubble || [])]);
+/** Damage a cover tile; at 0 HP it breaks into rubble. Returns a log suffix. */
+export function damageCover(cb: Combat, k: string, dmg: number): string {
+  const c = coverOf(cb)[k]; if (!c) return '';
+  c.hp = Math.max(0, c.hp - Math.max(1, Math.floor(dmg)));
+  if (c.hp > 0) return ' · the ' + (c.kind === 'half' ? 'half' : 'full') + ' cover takes ' + Math.floor(dmg) + ' (' + c.hp + '/' + c.max + ')';
+  delete cb.cover![k]; (cb.rubble ||= []).push(k);
+  return ' · the ' + c.kind + ' cover breaks into rubble';
+}
+
 // ---------- movement (spec: Moving; port of the prototype's paths()) ----------
 export function paths(cb: Combat, from: string, self: string) {
-  const { w, h } = cb.map, solid = new Set([...cb.map.solid, ...cb.map.cover]), diff = new Set(cb.map.difficult);
+  const { w, h } = cb.map, solid = new Set([...cb.map.solid, ...coverKeys(cb)]), diff = difficultOf(cb);
   const blocked = new Set(cb.units.filter((u) => u.id !== self && !u.dead).map((u) => u.pos));
   const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
   while (open.length) {
@@ -94,7 +120,7 @@ export const apForTiles = (tiles: number, bank: number, mov: number) => Math.cei
 
 // ---------- line of sight and cover ----------
 export function lineOfSight(cb: Combat, a: string, b: string): boolean {
-  const solid = new Set([...cb.map.solid, ...cb.map.cover]);
+  const solid = new Set([...cb.map.solid, ...coverKeys(cb, 'full')]); // half cover doesn't block sight
   let [x0, y0] = xy(a); const [x1, y1] = xy(b);
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy;
@@ -107,15 +133,16 @@ export function lineOfSight(cb: Combat, a: string, b: string): boolean {
   }
   return true;
 }
-/** Half cover (+2 Defense) when a cover tile next to the target sits between it and the attacker. */
-export function coverBonus(cb: Combat, from: string, to: string): number {
+/** The half-cover tile protecting a target: next to it and between it and the attacker (spec: Cover). */
+export function coverTileFor(cb: Combat, from: string, to: string): string | null {
   const [tx, ty] = xy(to);
-  for (const c of cb.map.cover) {
+  for (const c of coverKeys(cb, 'half')) {
     const [cx, cy] = xy(c);
-    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return 2;
+    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return c;
   }
-  return 0;
+  return null;
 }
+export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);
 
 // ---------- attacks ----------
 export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
@@ -124,7 +151,7 @@ export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
 export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
-export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; rangePenalty: number }
+export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; coverTile?: string | null; rangePenalty: number }
 export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | 'aimed' | 'melee'): AttackPreview {
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
   const ap = attackApCost(useW, mode);
@@ -138,13 +165,12 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: 'shot' | '
   if (!melee && !lineOfSight(cb, att.pos, tgt.pos)) return fail('No line of sight.');
   const eff = effectiveRange(useW), bands = melee ? 0 : Math.max(0, Math.ceil(r / eff) - 1);
   if (bands > 2) return fail('Out of range.');
-  const cover = melee ? 0 : coverBonus(cb, att.pos, tgt.pos);
+  const coverTile = melee ? null : coverTileFor(cb, att.pos, tgt.pos), cover = coverTile ? 5 : 0;
   const rangePenalty = -2 * bands;
   const heat = melee ? 0 : -Math.floor(att.heat / 2);
-  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0);
-  const need = tgt.def + cover - toHit;
-  const pct = Math.max(5, Math.min(95, (21 - need) * 5));
-  return { ok: true, ap, toHit, need: tgt.def + cover, pct, cover, rangePenalty };
+  const toHit = att.attack + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0) - cover;
+  const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
+  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty };
 }
 
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean }
@@ -175,9 +201,11 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
     if (killed) att.kills += tgt.tier === 'boss' ? 3 : 1;
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt);
   }
+  // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
+  if (!hit && !fumble && pv.coverTile && total + pv.cover >= pv.need) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1));
   const verb = melee ? 'strikes' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
-  const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + ' = ' + total + ' vs ' + pv.need +
-    (fumble ? (melee ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss');
+  const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −5 cover)' : '') + ' = ' + total + ' vs ' + pv.need +
+    (fumble ? (melee ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
   cb.log.push(line);
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
 }
@@ -204,6 +232,7 @@ export function startCombat(name: string, mapId: string, pcs: { c: Character }[]
   foes.slice(0, map.foeStart.length).forEach((f, i) => units.push(unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, map.foeStart[i], rng)));
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null };
+  coverOf(cb);
   beginTurn(cb, rng);
   return cb;
 }
@@ -278,12 +307,56 @@ export function reload(cb: Combat, u: Unit): string | null {
     cb.log.push(u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
     return null;
   }
-  if (!u.mags.length) return 'No spare ' + (w.reload_unit || 'magazine') + 's left.';
+  if (!u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
   const i = u.mags.indexOf(Math.max(...u.mags)), fresh = u.mags.splice(i, 1)[0];
   const left = u.ammo, unit = w.reload_unit || 'magazine';
-  (cb.floor ||= []).push({ pos: u.pos, text: (left ? unit + ' with ' + left + (left === 1 ? ' round' : ' rounds') : 'empty ' + unit) });
+  (cb.floor ||= []).push({ pos: u.pos, weapon: u.weapon, rounds: left, text: (left ? unit + ' with ' + left + (left === 1 ? ' round' : ' rounds') : 'empty ' + unit) });
   u.ap -= 2; u.ammo = fresh; u.jammed = false;
   cb.log.push(u.name + ' reloads and drops the ' + (left ? unit + ' on the floor with ' + left + (left === 1 ? ' round' : ' rounds') + ' still in it' : 'empty ' + unit) + ' (' + u.mags.length + ' spare left).');
+  return null;
+}
+/** Pick up (spec: Magazines and rounds are inventory): 1 AP, everything on your tile or one adjacent tile. */
+export function pickUp(cb: Combat, u: Unit, tile: string): string | null {
+  if (dist(u.pos, tile) > 1) return 'Stand on it or next to it.';
+  const here = (cb.floor || []).filter((f) => f.pos === tile && f.weapon);
+  if (!here.length) return 'Nothing to pick up there.';
+  if (u.ap < 1) return 'Needs 1 AP.';
+  u.ap -= 1;
+  for (const f of here) { if (f.weapon === u.weapon && u.mags) u.mags.push(f.rounds || 0); else (u.extra ||= []).push({ weapon: f.weapon!, rounds: f.rounds || 0 }); }
+  cb.floor = (cb.floor || []).filter((f) => !here.includes(f));
+  cb.log.push(u.name + ' picks up ' + here.map((f) => f.text).join(', ') + '.');
+  return null;
+}
+/** Load a spare magazine from loose rounds (spec: Loading): 1 AP per 5 rounds; part-loads when AP runs short. */
+export const ROUNDS_PER_AP = 5;
+export function loadMagazine(cb: Combat, u: Unit): string | null {
+  const w = WEAPON[u.weapon];
+  if (!w || w.reload !== 'magazine' || !u.mags) return 'Nothing to load.';
+  const cap = w.magazine || 0, open = u.mags.map((n, i) => [n, i]).filter(([n]) => n < cap).sort((a, b) => b[0] - a[0]);
+  if (!open.length) return 'Every spare ' + (w.reload_unit || 'magazine') + ' is full.';
+  if (!u.loose) return 'No loose rounds to load.';
+  if (u.ap < 1) return 'Needs 1 AP.';
+  const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, u.ap * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP);
+  u.mags[i] = n + rounds; u.loose -= rounds; u.ap -= cost;
+  cb.log.push(u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
+  return null;
+}
+/** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
+export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
+  const c = coverOf(cb)[tile]; if (!c) return 'That isn\'t cover.';
+  const w = WEAPON[u.weapon], melee = isMelee(w), ap = attackApCost(w, melee ? 'melee' : 'shot');
+  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const r = dist(u.pos, tile);
+  if (melee) { if (r > 1) return 'Out of melee reach.'; }
+  else {
+    if (u.jammed) return 'Weapon jammed: clear it (2 AP).';
+    if (w.magazine != null && u.ammo <= 0) return 'Empty: reload (2 AP).';
+    if (!lineOfSight(cb, u.pos, tile)) return 'No line of sight.';
+    if (Math.ceil(r / effectiveRange(w)) - 1 > 2) return 'Out of range.';
+    if (w.magazine != null) u.ammo--; u.heat += 1;
+  }
+  u.ap -= ap;
+  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the cover' + damageCover(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1)) + '.');
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */

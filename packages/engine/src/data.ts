@@ -49,5 +49,6 @@ export const COMBAT_XP: Record<string, number> = { easy: 25, standard: 50, hard:
 // ---------- weights (spec: Item weights; provisional) ----------
 export const ITEM: Record<string, { id: string; name: string; weight_kg: number; text?: string }> = Object.fromEntries((itemsJ as any).items.map((x: any) => [x.id, x]));
 const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') return null; if (k in o) return o; for (const v of Object.values(o)) { const r = findKey(v, k); if (r) return r; } return null; };
+export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));
 export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || []).map((c: any) => c.weight_kg || 0);

@@ -3,9 +3,9 @@
 import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES } from './data';
 import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, passive, pendingPerkSteps, validateSheet,
+  packOf, magsOf, loadAll, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, active, analyze, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -81,6 +81,8 @@ export type Action =
   | { type: 'combat/move'; unitId: string; to: string } | { type: 'combat/attack'; unitId: string; targetId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
+  | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
+  | { type: 'gear/load'; charId: string }
   | { type: 'award/ack'; charId: string; perkId: string };
 
 export class RuleError extends Error {}
@@ -231,6 +233,12 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'award/ack': { g.awards = g.awards.filter((x) => !(x.charId === a.charId && x.perkId === a.perkId)); return; }
+    case 'gear/load': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('In a fight, load magazines from the combat screen (1 AP per 5 rounds).');
+      const n = loadAll(c!); if (!n) fail('Nothing to load: no part-empty magazines with matching loose rounds.');
+      return;
+    }
     default: combatAction(g, a, by);
   }
 }
@@ -361,6 +369,9 @@ function combatAction(g: GameState, a: Action, by: string) {
       resolveAttack(cb!, g.rng, u, t!, a.mode, c); break;
     }
     case 'combat/reload': err = reload(cb!, u); break;
+    case 'combat/pickup': err = pickUp(cb!, u, a.tile); break;
+    case 'combat/load': err = loadMagazine(cb!, u); break;
+    case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, c!.classId === 'medic'); break; }
@@ -397,6 +408,7 @@ function finishCombat(g: GameState) {
     if (mi >= 0 && u.mags) { pack[mi].mags = [...u.mags]; pack[mi].qty = u.mags.length; }
     const w = WEAPON[c.weapon];
     if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    for (const x of u.extra || []) { let it = pack.find((p) => p.weapon === x.weapon && p.mags); if (!it) { it = { ...magsOf(x.weapon, 0), mags: [] }; pack.push(it); } it.mags!.push(x.rounds); it.qty = it.mags!.length; }
     c.pack = pack.filter((it) => it.qty > 0 || it.mags);
     const fam = WEAPON[u.weapon]?.mastery_family; if (fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
   }
