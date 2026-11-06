@@ -39,4 +39,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-how-many` | D | [PNG](../../../illustrations/m813/v2/m813-how-many.png) | opening-safe |
 | `m813-the-ramp` | D | [PNG](../../../illustrations/m813/v2/revisions/v2/m813-the-ramp.png) | mid-campaign |
 | `m813-the-choice` | D | [PNG](../../../illustrations/m813/v2/m813-the-choice.png) | mid-campaign |
-| `m813-the-demand` | D | [PNG](../../../illustrations/m813/v2/spoilers/m813-the-demand.png) | outpost-1-only |
+| `m813-the-demand` | D | [PNG](../../../illustrations/m813/v2/spoilers/revisions/v2/m813-the-demand.png) | outpost-1-only |

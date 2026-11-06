@@ -6768,7 +6768,7 @@
       "order": 4,
       "name": "The Demand",
       "family": "illustrations",
-      "path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "path": "art/illustrations/m813/v2/spoilers/revisions/v2/m813-the-demand.png",
       "dimensions": [
         1600,
         900
@@ -6780,21 +6780,24 @@
       "proposal": true,
       "width": 1600,
       "height": 900,
-      "sha256": "055c63fb9e06f90ba7427248a7eec8e6f4309de6d94a5c30c304db335fccb40e",
-      "source_path": "art/illustrations/m813/v2/spoilers/sources/m813-the-demand.png",
-      "source_sha256": "6c70fec733c287c79228341cc6380edd3ccf87d36564221426a9fcec86559307",
+      "sha256": "ab05805aabab6d3823d6f149270461bb53f15e777f64731a1d308c571b28c606",
+      "source_path": "art/illustrations/m813/v2/spoilers/revisions/v2/sources/m813-the-demand.png",
+      "source_sha256": "6bf4d0e460e6a6646fbd46c3e78b1aaa11256c1b2bbfcba70fa416575cda9710",
       "source_dimensions": [
         1672,
         941
       ],
       "previews": {
-        "320": "art/illustrations/m813/v2/spoilers/previews/m813-the-demand-320px.png"
+        "320": "art/illustrations/m813/v2/spoilers/revisions/v2/previews/m813-the-demand-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/illustrations/m813/v2/spoilers/sources/m813-the-demand.prompt.txt"
+      "previous_path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "previous_revision_path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "revision": 2,
+      "prompt_path": "art/illustrations/m813/v2/spoilers/revisions/v2/sources/m813-the-demand.prompt.txt"
     }
   },
   "mascot": {
