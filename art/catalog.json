@@ -1592,6 +1592,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.prompt.txt"
+    },
+    "m813-rook": {
+      "id": "m813-rook",
+      "group": "B",
+      "order": 6,
+      "name": "Rook",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-rook.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B6 | `m813-rook` | **Rook**, medic robot: heavier, a stretcher harness on its back, one replacement arm from an infantry robot. | Bracing to lift; stubborn. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "d9545bd041a2b429605b14a83b8846f231d27497aaa9ab705a4709ae6acff054",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-rook.png",
+      "source_sha256": "8b05f841d54cf2949f2b8c6504bcc86ea12771cb61b36dcbfc3667eb822ae388",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-rook-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-rook.prompt.txt"
     }
   },
   "traits": {
