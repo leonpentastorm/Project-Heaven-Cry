@@ -5,8 +5,9 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, MAPS, keyOf, refOf, standable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, type MapDef, MAPS, keyOf, refOf, standable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
+import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -40,10 +41,14 @@ export interface GameState {
     zone?: string; positions?: Record<string, string>;
     /** Objects on the story's map: cover, barricades, doors, traps, POIs (spec: Map objects). */
     objects?: MapObject[];
+    /** Objects of zones the party has left, so a zone is as they left it when they return. */
+    zoneObjects?: Record<string, MapObject[]>;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
   narrator: { busy: boolean; error: string | null; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number } };
+  /** The campaign being played (spec: Campaigns): copied in at session start, or loaded from a file by the host. */
+  campaign?: Campaign | null;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -71,6 +76,8 @@ export type NarratorTurn = {
   combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
+  /** Move the whole party to another zone of the campaign (its id), or "". */
+  travel?: string;
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: { label: string; skills: string[]; tn: number; stakes: string; success: Approach['success'] }[] }[];
@@ -94,7 +101,7 @@ export type Action =
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
-  | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string }
+  | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string };
 
 export class RuleError extends Error {}
@@ -147,7 +154,8 @@ function reduce(g: GameState, a: Action, by: string) {
       g.phase = 'story';
       for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); }
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
-      g.story.zone = g.settings.start === 'm813' ? 'rear_pad' : 'yard'; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
+      if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
+      g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
       push(g, { kind: 'system', text: 'Session 1 begins.' });
       return;
     }
@@ -248,6 +256,14 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'award/ack': { g.awards = g.awards.filter((x) => !(x.charId === a.charId && x.perkId === a.perkId)); return; }
+    case 'campaign/load': {
+      if (!isHost(g, by)) fail('Only the host loads a campaign.');
+      if (g.phase !== 'lobby') fail('Load a campaign before the session starts.');
+      const errs = validateCampaign(a.campaign); if (errs.length) fail('That campaign file has problems: ' + errs.slice(0, 4).join(' '));
+      g.campaign = JSON.parse(JSON.stringify(a.campaign)); g.settings.start = g.campaign!.id;
+      if (g.campaign!.tone) g.settings.tone = g.campaign!.tone;
+      return;
+    }
     case 'story/move': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase !== 'story') fail(g.phase === 'combat' ? 'A fight is on: move on the combat grid.' : 'The session hasn\'t started.');
@@ -404,13 +420,18 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     if (!c || c.dead || !k || !standable(map, k) || Object.entries(pos).some(([id, p]) => id !== c.id && p === k)) continue;
     pos[c.id] = k; push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' });
   }
+  if (t.travel && t.travel !== zoneMap(g).id && campaignOf(g)?.zones.some((z) => z.id === t.travel)) {
+    const zo = (g.story.zoneObjects ||= {}); zo[zoneMap(g).id] = storyObjects(g);
+    g.story.zone = t.travel; g.story.positions = {}; g.story.objects = zo[t.travel] || defaultObjects(zoneMap(g)); positionsOf(g);
+    push(g, { kind: 'system', text: 'The party travels to ' + zoneMap(g).name + '.' });
+  }
   for (const op of t.objects || []) applyObjectOp(g, op);
   if (t.endScene?.summary) g.story.journal.push(t.endScene.summary);
   if (t.combat && t.combat.enemies?.length) {
-    const mapId = t.combat.map && MAPS[t.combat.map] ? t.combat.map : zoneMap(g).id, same = mapId === zoneMap(g).id, pos = positionsOf(g);
+    const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
     const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
-    g.combat = startCombat(t.combat.name || 'Fight', mapId, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
+    g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
     g.phase = 'combat'; g.story.await = 'none';
     push(g, { kind: 'combat', text: 'Combat: ' + g.combat.name });
     runEnemies(g);
@@ -555,7 +576,16 @@ function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[nu
 }
 
 /** The story's map, and where everyone stands on it (filled in from the map's start tiles). */
-export const zoneMap = (g: GameState) => MAPS[g.story.zone || (g.settings.start === 'm813' ? 'rear_pad' : 'yard')] || MAPS.yard;
+/** The campaign in play (old saves without one fall back to the built-in campaign for their start). */
+export const campaignOf = (g: GameState): Campaign | null => g.campaign || builtInCampaign(g.settings.start);
+const mapCache = new WeakMap<object, Record<string, MapDef>>();
+/** A zone of the campaign as a map, or a built-in map by id. */
+export function mapFor(g: GameState, id: string): MapDef | null {
+  const c = campaignOf(g), z = c?.zones.find((x) => x.id === id);
+  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } return (cache[id] ||= zoneToMap(z)); }
+  return MAPS[id] || null;
+}
+export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard;
 export function positionsOf(g: GameState): Record<string, string> {
   const map = zoneMap(g), pos = (g.story.positions ||= {}), taken = new Set(Object.values(pos));
   for (const c of Object.values(g.characters)) if (!pos[c.id] && !c.dead) { const k = map.pcStart.find((t) => !taken.has(t)) || map.pcStart[0]; pos[c.id] = k; taken.add(k); }

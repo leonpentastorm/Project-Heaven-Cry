@@ -41,7 +41,7 @@
 <div style="display: flex; flex-direction: column; gap: 10px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHERE IT STARTS · THE EARTH SECTOR</span>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
-<sc-for list="{{starts}}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.short}}</button></sc-for>
+<sc-for list="{{starts}}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.short}}</button></sc-for><sc-if value="{{canLoad}}"><label title="A campaign file in the PHC campaign format (JSON): zones, objects, the arc and the opening" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 10px; border: 1px dashed #3B475D; color: #A3AEC2; font-weight: 600; cursor: pointer">Load a campaign file…<input type="file" accept=".json,application/json" onChange="{{loadCampaign}}" style="display: none"></label></sc-if>
 </div>
 <div style="display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #10151F; border: 1px solid #232D3F">
 <div style="position: relative">

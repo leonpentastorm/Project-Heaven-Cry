@@ -1,0 +1,113 @@
+{
+  "id": "godplot",
+  "title": "A God-Plot on a Mining World",
+  "short": "A god-plot",
+  "kicker": "EARTH SECTOR · CAMPAIGN START",
+  "art": "world-pilot",
+  "artNote": "Placeholder art",
+  "focus": "center",
+  "pitch": [
+    "A Celestial once played god on a Thousand-Planet extraction world, then got bored and left. The plot didn't. The shrine still demands worship at every shift change, and the miners have started to give it.",
+    "The quota is due in nine days. The local Anti-Heaven chapter wants the shrine quiet before anyone counts the missing."
+  ],
+  "meta": "Centre vs frontier, saints vs demons. The AI Narrator improvises the rest.",
+  "arc": {
+    "beginning": "The party arrives at the camp; the shrine and its worshippers; the first missing miner.",
+    "middle": "What the shrine is (a Celestial's abandoned plot), who benefits from it, and the chapter's pressure to end it quietly.",
+    "end": "Silence the shrine, expose it, or make a deal; nine days to the quota."
+  },
+  "opening": "Open at a shift change in the mining camp as the shrine's bell rings and every miner stops to kneel. The party is newly arrived for the local Anti-Heaven chapter.",
+  "startZone": "shrine_camp",
+  "zones": [
+    {
+      "id": "shrine_camp",
+      "name": "The mining camp",
+      "summary": "An extraction camp on a Thousand-Planet world; the shrine at its centre.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "A1–C2",
+        "N1–P2"
+      ],
+      "difficult": [
+        "E9–K11"
+      ],
+      "start": [
+        "B6",
+        "B7",
+        "C6",
+        "C7",
+        "B8",
+        "C8"
+      ],
+      "enemyStart": [
+        "O6",
+        "O7",
+        "N6",
+        "N7",
+        "O8",
+        "N8"
+      ],
+      "notes": [
+        {
+          "at": "E9–K11",
+          "text": "Spoil heaps from the mine."
+        },
+        {
+          "at": "H5",
+          "text": "The shrine."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "poi",
+          "at": "H5",
+          "name": "The shrine",
+          "text": "A Celestial's leftover: a shrine that still demands worship at every shift change, and gets it.",
+          "approaches": [
+            {
+              "label": "Read the inscriptions",
+              "skills": [
+                "lore_master",
+                "rumination"
+              ],
+              "tn": 12,
+              "stakes": "What it wants, and who left it.",
+              "success": ""
+            },
+            {
+              "label": "Talk to the worshippers",
+              "skills": [
+                "empathy",
+                "charisma"
+              ],
+              "tn": 12,
+              "stakes": "Why miners kneel to it now.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "crate",
+          "at": "F3",
+          "name": "Ore carts"
+        },
+        {
+          "kind": "crate",
+          "at": "J3",
+          "name": "Ore carts"
+        },
+        {
+          "kind": "low_wall",
+          "at": "E7",
+          "name": "Camp fence"
+        },
+        {
+          "kind": "low_wall",
+          "at": "K7",
+          "name": "Camp fence"
+        }
+      ]
+    }
+  ]
+}

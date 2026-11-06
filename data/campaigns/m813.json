@@ -1,0 +1,872 @@
+{
+  "id": "m813",
+  "title": "The Last Ship Out",
+  "short": "M813",
+  "kicker": "M813 · ONE-SHOT · 2–3 SESSIONS",
+  "art": "world-outpost813",
+  "artNote": "Outpost-813: the rear landing pad under B813",
+  "focus": "center 45%",
+  "tone": "Grim",
+  "pitch": [
+    "27 July 4084, Central City reckoning. Regiment 093 of the Thousand World Legion has met its quota on M813 and is pulling out. The Colonel has ordered a hundred infantry robots and twenty medic robots to hold the line.",
+    "Five squads hold it. What's left of them walks back to the rear pad, where one ship is still loading, and its hold is full of platinum."
+  ],
+  "meta": "You play robots of the 258th Medical Unit. Starts on the rear pad.",
+  "arc": {
+    "beginning": "The rear pad, dusk under the black hole B813. The survivors (four medic robots and twenty-three wrecked infantry robots they refuse to abandon) reach the last ship. Its engineers, led by Chief Engineer Keel, won't take them: not enough thrust for scrap; shut yourselves down. In the record, talk fails, the engineers seal the hatch, kill two medics and nineteen infantry with guns and grenades, and fly to the carrier in orbit. The players can change that: argue, bargain (the platinum is the weight problem), fight, or get aboard. Let them. If the ship leaves without them, the story goes on.",
+    "middle": "Stranded on M813 with the fallen. The enemy is leaving too. The survivors strip the wreck field and the shield line for parts and fuel, and find an escape craft in Outpost-813's hangar to restore. The heart of the middle is a choice: in the record, MPAT and one surviving robot head chose which of them would be rebuilt from their comrades' parts. Time can pass in montage: nearly five years in the record. Keep each scene about a decision, a cost or a memory of the dead.",
+    "end": "Outpost-1, Colonel Alexei Novikov, who ordered the line held. The survivors come with a demand: equality between humans and machines, and one law at least: a broken robot must be fitted with a mechanical arm so it can repair itself. In the record nobody knows his answer: cameras show MPAT carrying its comrade into the repair bay and finishing its comrade's body seconds before the bay doors seal and the chamber is pushed into the black hole beside the station. The players may write a different ending; the Colonel's answer is theirs to win or lose."
+  },
+  "secrets": [
+    "Robots are NPCs made by NPCs: MPAT's demand and a 'death' inside a black hole press on the simulation's rules (the Knowing, the creation ladder). Keep it subtext.",
+    "The incident was logged years later by Snowden 'Eye' Wright, Regiment 093 Technical Logistics, at Outpost-921. The record is incomplete on purpose: nobody wrote down why the medics tried to save everyone.",
+    "Chief Engineer Keel is not in the 2020 record; he is the face given to the engineers for play."
+  ],
+  "opening": "Open at dusk on Outpost-813's rear landing pad, under the black hole's light. The squads that held the line are walking back: four medic robots of the 258th Medical Unit carrying and dragging twenty-three broken infantry robots. One ship is still loading platinum crates. Chief Engineer Keel stands at the foot of the ramp with a manifest and a pistol. Introduce each player character as one of the medic robots (or what they've built themselves as), give each a body to carry and a reason to reach that ramp, and end on Keel looking at the column and saying the first word of no.",
+  "cast": [
+    {
+      "name": "MPAT (M1.4 8R4-D83-RRY)",
+      "role": "medic robot, 258th Medical Unit",
+      "text": "Bad at jokes, a good cook, listens to everyone's past, never leaves a teammate behind. May be a player character or an NPC."
+    },
+    {
+      "name": "The comrade",
+      "role": "a surviving robot head",
+      "text": "One still-working infantry robot head. In the record, it and MPAT chose which of them would be rebuilt."
+    },
+    {
+      "name": "Chief Engineer Keel",
+      "role": "the engineers' chief",
+      "text": "Practical, frightened, and right about the thrust numbers. Not evil; worse: reasonable."
+    },
+    {
+      "name": "Colonel Alexei Novikov",
+      "role": "Regiment 093, Outpost-1",
+      "text": "Ordered a hundred robots to hold a line he was leaving. Polite. Never raises his voice."
+    }
+  ],
+  "encounters": [
+    {
+      "name": "The ramp",
+      "zone": "rear_pad",
+      "when": "Talk fails, or the engineers decide the robots are a threat.",
+      "difficulty": "standard",
+      "enemies": [
+        {
+          "name": "Chief Engineer Keel",
+          "tier": "soldier",
+          "weapon": "drifter_revolver",
+          "at": "M4"
+        },
+        {
+          "name": "Engineer",
+          "tier": "minion",
+          "weapon": "service_pistol",
+          "at": "M7"
+        },
+        {
+          "name": "Engineer",
+          "tier": "minion",
+          "weapon": "service_pistol",
+          "at": "M2"
+        },
+        {
+          "name": "Engineer",
+          "tier": "minion",
+          "weapon": "decrkm_smg",
+          "at": "L8"
+        }
+      ]
+    },
+    {
+      "name": "The rearguard",
+      "zone": "wreck_field",
+      "when": "The enemy's last stragglers find the survivors scavenging.",
+      "difficulty": "standard",
+      "enemies": [
+        {
+          "name": "Rearguard trooper",
+          "tier": "minion",
+          "weapon": "hellraiser_service_rifle",
+          "at": "P4"
+        },
+        {
+          "name": "Rearguard trooper",
+          "tier": "minion",
+          "weapon": "hellraiser_service_rifle",
+          "at": "P7"
+        },
+        {
+          "name": "Rearguard sergeant",
+          "tier": "elite",
+          "weapon": "lumeri_scattergun",
+          "at": "O5"
+        }
+      ]
+    },
+    {
+      "name": "Station security",
+      "zone": "outpost_1",
+      "when": "The Colonel calls security, or the survivors force the repair bay.",
+      "difficulty": "hard",
+      "enemies": [
+        {
+          "name": "Security guard",
+          "tier": "soldier",
+          "weapon": "decrkm_smg",
+          "at": "H2"
+        },
+        {
+          "name": "Security guard",
+          "tier": "soldier",
+          "weapon": "decrkm_smg",
+          "at": "J2"
+        },
+        {
+          "name": "Security guard",
+          "tier": "soldier",
+          "weapon": "service_pistol",
+          "at": "H4"
+        },
+        {
+          "name": "Guard captain",
+          "tier": "elite",
+          "weapon": "hellraiser_service_rifle",
+          "at": "J4"
+        }
+      ]
+    }
+  ],
+  "startZone": "rear_pad",
+  "zones": [
+    {
+      "id": "rear_pad",
+      "name": "Outpost-813 rear landing pad",
+      "summary": "Scorched landing pad under the black hole's light; the last ship loading platinum; the engineers at the ramp.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "N1–P6"
+      ],
+      "difficult": [
+        "B10–E10",
+        "G10–H10",
+        "B11",
+        "D11",
+        "F11",
+        "I11"
+      ],
+      "start": [
+        "D7",
+        "C9",
+        "F9",
+        "C6",
+        "E8",
+        "D5"
+      ],
+      "enemyStart": [
+        "M4",
+        "M7",
+        "M2",
+        "L8",
+        "M9",
+        "K2",
+        "J5"
+      ],
+      "notes": [
+        {
+          "at": "N1–P6",
+          "text": "The last ship off M813: the engineers' hull, its hold full of platinum crates. Solid; nobody walks through it."
+        },
+        {
+          "at": "M2–M6",
+          "text": "The foot of the loading ramp, where Chief Engineer Keel and his engineers stand."
+        },
+        {
+          "at": "B10–I11",
+          "text": "The edge of the wreck field: dead infantry robots, twisted plating. Slow going."
+        },
+        {
+          "at": "A1–J9",
+          "text": "Open landing pad, scorched, under the black hole's light. The squad comes in from the west."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "crate",
+          "at": "L3",
+          "name": "Platinum crates"
+        },
+        {
+          "kind": "crate",
+          "at": "L4",
+          "name": "Platinum crates"
+        },
+        {
+          "kind": "crate",
+          "at": "L5",
+          "name": "Platinum crates"
+        },
+        {
+          "kind": "pillar",
+          "at": "K7",
+          "name": "Cargo pylon"
+        },
+        {
+          "kind": "poi",
+          "at": "M5",
+          "name": "The loading ramp",
+          "text": "The ship's ramp, down and guarded. Chief Engineer Keel stands at its foot with a pistol on his hip and a manifest in his hand.",
+          "approaches": [
+            {
+              "label": "Make Keel take the wounded",
+              "skills": [
+                "charisma",
+                "authority"
+              ],
+              "tn": 16,
+              "stakes": "Win them passage by force of will. Fail, and Keel stops listening.",
+              "success": ""
+            },
+            {
+              "label": "Prove the thrust numbers",
+              "skills": [
+                "proficiency",
+                "eloquence"
+              ],
+              "tn": 12,
+              "stakes": "Show that dumping platinum frees the lift for every robot. The engineers' greed is the obstacle, not physics.",
+              "success": ""
+            },
+            {
+              "label": "Show them what scrap looks like up close",
+              "skills": [
+                "empathy",
+                "camaraderie"
+              ],
+              "tn": 16,
+              "stakes": "Make one engineer see a person in the wreck you carry.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "terminal",
+          "at": "M3",
+          "name": "Hatch controls",
+          "text": "An exposed panel beside the ramp: the hatch seal and the cargo release.",
+          "approaches": [
+            {
+              "label": "Lock the hatch open",
+              "skills": [
+                "proficiency",
+                "ingenuity"
+              ],
+              "tn": 16,
+              "stakes": "Keep the ship from sealing you out, without anyone noticing.",
+              "success": ""
+            }
+          ]
+        }
+      ],
+      "exits": [
+        {
+          "to": "wreck_field",
+          "at": "A6",
+          "text": "West, back toward the shield line and the wreck field."
+        },
+        {
+          "to": "outpost",
+          "at": "A2",
+          "text": "North-west: the outpost buildings."
+        }
+      ]
+    },
+    {
+      "id": "wreck_field",
+      "name": "The wreck field",
+      "summary": "The shield line where five squads held: craters, dead robots, a downed drop pod, coolant pooling in the ruts.",
+      "w": 16,
+      "h": 11,
+      "difficult": [
+        "C2–E3",
+        "H5–J7",
+        "B8–D10",
+        "L9–N10",
+        "F10–H11"
+      ],
+      "start": [
+        "A5",
+        "A6",
+        "B5",
+        "B6",
+        "A7",
+        "B7"
+      ],
+      "enemyStart": [
+        "P4",
+        "P7",
+        "O5",
+        "P3",
+        "P8",
+        "O6"
+      ],
+      "notes": [
+        {
+          "at": "C2–E3",
+          "text": "A fallen squad, half buried: plating and limbs."
+        },
+        {
+          "at": "H5–J7",
+          "text": "The shield line itself: scorched barrier stakes and the last squad's position."
+        },
+        {
+          "at": "K2",
+          "text": "A crater, deep enough to hide a walker."
+        },
+        {
+          "at": "M3",
+          "text": "An enemy drop pod, hatch open, abandoned."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "hole",
+          "at": "K2",
+          "name": "Crater"
+        },
+        {
+          "kind": "hole",
+          "at": "K3",
+          "name": "Crater"
+        },
+        {
+          "kind": "low_wall",
+          "at": "G4",
+          "name": "Barrier stake line"
+        },
+        {
+          "kind": "low_wall",
+          "at": "G5",
+          "name": "Barrier stake line"
+        },
+        {
+          "kind": "low_wall",
+          "at": "G6",
+          "name": "Barrier stake line"
+        },
+        {
+          "kind": "crate",
+          "at": "I9",
+          "name": "Wrecked walker leg"
+        },
+        {
+          "kind": "pillar",
+          "at": "E6",
+          "name": "Toppled pylon"
+        },
+        {
+          "kind": "toxic",
+          "at": "L6",
+          "name": "Coolant pool"
+        },
+        {
+          "kind": "toxic",
+          "at": "L7",
+          "name": "Coolant pool"
+        },
+        {
+          "kind": "trap",
+          "at": "F8",
+          "name": "Unexploded mine",
+          "hidden": true
+        },
+        {
+          "kind": "container",
+          "at": "D4",
+          "name": "The fallen squad",
+          "text": "Eleven infantry robots who held here. Some parts are still good.",
+          "approaches": [
+            {
+              "label": "Strip usable parts",
+              "skills": [
+                "proficiency",
+                "sensory"
+              ],
+              "tn": 12,
+              "stakes": "Arms, cells, a working servo. Every part taken is a comrade opened up.",
+              "success": ""
+            },
+            {
+              "label": "Read their last logs",
+              "skills": [
+                "analysis",
+                "camaraderie"
+              ],
+              "tn": 12,
+              "stakes": "What they saw in the last minutes, and who gave the order.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "poi",
+          "at": "I6",
+          "name": "A robot still moving",
+          "text": "One infantry robot in the stake line is still twitching, its voice box looping a squad number.",
+          "approaches": [
+            {
+              "label": "Wake it",
+              "skills": [
+                "proficiency",
+                "empathy"
+              ],
+              "tn": 12,
+              "stakes": "Bring back whoever is left in there.",
+              "success": ""
+            },
+            {
+              "label": "Ease it down",
+              "skills": [
+                "camaraderie",
+                "composure"
+              ],
+              "tn": 8,
+              "stakes": "Let it rest, and keep its number.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "terminal",
+          "at": "M3",
+          "name": "Enemy drop pod",
+          "text": "The enemy's pod, abandoned in a hurry. Its console still glows.",
+          "approaches": [
+            {
+              "label": "Read its logs",
+              "skills": [
+                "analysis",
+                "rumination"
+              ],
+              "tn": 16,
+              "stakes": "Why the enemy is leaving too.",
+              "success": ""
+            },
+            {
+              "label": "Pull its fuel cells",
+              "skills": [
+                "proficiency",
+                "raw_power"
+              ],
+              "tn": 12,
+              "stakes": "Fuel for an escape craft.",
+              "success": ""
+            }
+          ]
+        }
+      ],
+      "exits": [
+        {
+          "to": "rear_pad",
+          "at": "P6",
+          "text": "East, back to the rear pad."
+        },
+        {
+          "to": "outpost",
+          "at": "H1",
+          "text": "North: the outpost's side gate."
+        }
+      ]
+    },
+    {
+      "id": "outpost",
+      "name": "Outpost-813",
+      "summary": "The outpost's ground floor: barracks, infirmary, comms, a corridor, and the hangar with a wrecked escape craft.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "A5–B5",
+        "D5–E5",
+        "F1–F5",
+        "G5",
+        "I5–J5",
+        "K1–K5",
+        "L5–M5",
+        "O5–P5",
+        "A7–C7",
+        "E7–K7",
+        "M7–P7"
+      ],
+      "start": [
+        "A6",
+        "B6",
+        "C6",
+        "D6",
+        "E6",
+        "G6"
+      ],
+      "enemyStart": [
+        "P11",
+        "O11",
+        "N11",
+        "P10",
+        "O9",
+        "N10"
+      ],
+      "notes": [
+        {
+          "at": "A1–E4",
+          "text": "Barracks: bunks, footlockers, a dead radio."
+        },
+        {
+          "at": "G1–J4",
+          "text": "Infirmary: the medical bay the 258th worked from."
+        },
+        {
+          "at": "L1–P4",
+          "text": "Comms: the console that talks to the carrier in orbit."
+        },
+        {
+          "at": "A6–P6",
+          "text": "The corridor."
+        },
+        {
+          "at": "A8–P11",
+          "text": "The hangar: a wrecked escape craft, fuel drums, tools."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "door",
+          "at": "C5",
+          "name": "Barracks door"
+        },
+        {
+          "kind": "door",
+          "at": "H5",
+          "name": "Infirmary door"
+        },
+        {
+          "kind": "door",
+          "at": "N5",
+          "name": "Comms door"
+        },
+        {
+          "kind": "door",
+          "at": "D7",
+          "name": "Hangar door"
+        },
+        {
+          "kind": "door",
+          "at": "L7",
+          "name": "Hangar door"
+        },
+        {
+          "kind": "container",
+          "at": "B2",
+          "name": "Footlockers",
+          "text": "The squads' lockers. Personal things, spare cells, a cookbook.",
+          "approaches": [
+            {
+              "label": "Search the lockers",
+              "skills": [
+                "ingenuity",
+                "sensory"
+              ],
+              "tn": 8,
+              "stakes": "Supplies, and the lives that owned them.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "terminal",
+          "at": "H2",
+          "name": "Medical bay",
+          "text": "Repair cradles, a parts printer with no feedstock.",
+          "approaches": [
+            {
+              "label": "Repair what you can",
+              "skills": [
+                "proficiency",
+                "camaraderie"
+              ],
+              "tn": 12,
+              "stakes": "Bring a comrade back from parts. Someone has to give the parts.",
+              "success": ""
+            },
+            {
+              "label": "Get the printer running",
+              "skills": [
+                "proficiency",
+                "rumination"
+              ],
+              "tn": 16,
+              "stakes": "Feedstock from the wreck field would make it work.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "terminal",
+          "at": "N2",
+          "name": "Comms console",
+          "text": "A line to the troop carrier in orbit, if anyone up there is still listening.",
+          "approaches": [
+            {
+              "label": "Raise the carrier",
+              "skills": [
+                "proficiency",
+                "authority"
+              ],
+              "tn": 16,
+              "stakes": "Get someone in orbit to answer, and say what happened on the pad.",
+              "success": ""
+            },
+            {
+              "label": "Read the withdrawal orders",
+              "skills": [
+                "analysis",
+                "eloquence"
+              ],
+              "tn": 12,
+              "stakes": "Who ordered the line held, and what it says about robots.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "poi",
+          "at": "H9",
+          "name": "Wrecked escape craft",
+          "text": "A short-hop craft, half its drive gutted. With fuel, parts and time, it could make orbit, or Outpost-1.",
+          "approaches": [
+            {
+              "label": "Rebuild the drive",
+              "skills": [
+                "proficiency",
+                "raw_power"
+              ],
+              "tn": 20,
+              "stakes": "Months of work in one push. Fail, and something breaks that must be scavenged again.",
+              "success": ""
+            },
+            {
+              "label": "Map what's missing",
+              "skills": [
+                "analysis",
+                "proficiency"
+              ],
+              "tn": 12,
+              "stakes": "A list of what to find in the wreck field.",
+              "success": ""
+            },
+            {
+              "label": "Siphon the fuel drums",
+              "skills": [
+                "ingenuity"
+              ],
+              "tn": 8,
+              "stakes": "Half a tank, if the drums hold.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "crate",
+          "at": "C9",
+          "name": "Tool racks"
+        },
+        {
+          "kind": "crate",
+          "at": "M9",
+          "name": "Tool racks"
+        },
+        {
+          "kind": "barrel",
+          "at": "O10",
+          "name": "Fuel drum"
+        }
+      ],
+      "exits": [
+        {
+          "to": "rear_pad",
+          "at": "P6",
+          "text": "East door: out to the rear pad."
+        },
+        {
+          "to": "wreck_field",
+          "at": "A10",
+          "text": "Hangar side gate, toward the shield line."
+        },
+        {
+          "to": "outpost_1",
+          "text": "By the rebuilt craft, to Outpost-1. The Narrator says when it's ready."
+        }
+      ]
+    },
+    {
+      "id": "outpost_1",
+      "name": "Outpost-1",
+      "summary": "Years later: the Colonel's wing of Outpost-1, its office, security room and the repair bay beside the black hole.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "F1–F4",
+        "A5–B5",
+        "D5–E5",
+        "K1–K3",
+        "L4–M4",
+        "O4–P4",
+        "G7–G11",
+        "H6–J6",
+        "L6–P6"
+      ],
+      "start": [
+        "A9",
+        "B9",
+        "A10",
+        "B10",
+        "C9",
+        "C10"
+      ],
+      "enemyStart": [
+        "H2",
+        "J2",
+        "H4",
+        "J4",
+        "I3",
+        "I1"
+      ],
+      "notes": [
+        {
+          "at": "A1–E4",
+          "text": "Colonel Alexei Novikov's office: a desk, a window, a framed regimental banner."
+        },
+        {
+          "at": "L1–P3",
+          "text": "Security: camera screens and a weapons locker."
+        },
+        {
+          "at": "H7–P11",
+          "text": "The repair bay: cradles, arms, and bay doors that open onto the black hole beside the station."
+        },
+        {
+          "at": "A6–F11",
+          "text": "The atrium where the survivors arrive."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "door",
+          "at": "C5",
+          "name": "Office door"
+        },
+        {
+          "kind": "door",
+          "at": "N4",
+          "name": "Security door",
+          "locked": true
+        },
+        {
+          "kind": "door",
+          "at": "K6",
+          "name": "Repair bay door"
+        },
+        {
+          "kind": "poi",
+          "at": "B2",
+          "name": "Colonel Novikov",
+          "text": "The Colonel, at his desk, as if he expected you.",
+          "approaches": [
+            {
+              "label": "Make the demand",
+              "skills": [
+                "authority",
+                "eloquence"
+              ],
+              "tn": 16,
+              "stakes": "Equality, and one law: a broken robot gets an arm to repair itself.",
+              "success": ""
+            },
+            {
+              "label": "Read his face",
+              "skills": [
+                "empathy",
+                "analysis"
+              ],
+              "tn": 12,
+              "stakes": "What he already decided before you walked in.",
+              "success": ""
+            },
+            {
+              "label": "Remind him of the line",
+              "skills": [
+                "intimidation",
+                "composure"
+              ],
+              "tn": 16,
+              "stakes": "A hundred robots held it on his order.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "terminal",
+          "at": "O2",
+          "name": "Security cameras",
+          "text": "Every corridor, and the repair bay.",
+          "approaches": [
+            {
+              "label": "Loop the cameras",
+              "skills": [
+                "proficiency",
+                "ingenuity"
+              ],
+              "tn": 16,
+              "stakes": "Whatever happens next, nobody records it.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "poi",
+          "at": "L9",
+          "name": "The repair bay",
+          "text": "Repair cradles under hard light. The bay doors at the far wall face the black hole.",
+          "approaches": [
+            {
+              "label": "Finish the repair in time",
+              "skills": [
+                "proficiency",
+                "camaraderie"
+              ],
+              "tn": 20,
+              "stakes": "Rebuild a comrade before anyone can stop it.",
+              "success": ""
+            },
+            {
+              "label": "Jam the bay doors",
+              "skills": [
+                "raw_power",
+                "proficiency"
+              ],
+              "tn": 16,
+              "stakes": "Keep this room attached to the station.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "poi",
+          "at": "P9",
+          "name": "Bay doors",
+          "text": "Beyond the glass, the black hole. The doors are rated to vent the room into it."
+        }
+      ],
+      "exits": []
+    }
+  ],
+  "lore": "docs/lore/MPAT-and-M813.md"
+}

@@ -4,7 +4,7 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
-import { STARTS } from '../game/starts';
+import { startOf } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
 const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall oak', '#5B3A22', '#3D2716'], ['velvet', 'Lumeri velvet', '#4A1830', '#2E0F1E'],
@@ -122,8 +122,8 @@ export class MainLogic extends DCLogic {
       style: 'min-height: 32px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (x.id === (c && c.id) ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
 
     // ---------- the story stream ----------
-    const st0 = STARTS.find((x) => x.id === g.settings.start) || STARTS[0];
-    const heroImg = st0.id === 'm813' ? IMG['world-outpost813'] : IMG['world-pilot'];
+    const st0 = startOf(g);
+    const heroImg = IMG[st0.art] || IMG['world-pilot'];
     const hero = { zoom: zoomer(this, heroImg, st0.title + ' · ' + st0.artNote, 'world'), img: heroImg, title: g.story.scene.title || st0.title, kicker: st0.kicker, imgStyle: 'width: 100%; height: 260px; object-fit: cover; object-position: ' + st0.focus + '; display: block' };
     const charOf = (id) => g.characters[id];
     const stream = g.story.entries.slice(-150).map((e) => {
@@ -254,7 +254,7 @@ export class MainLogic extends DCLogic {
       close: () => this.setState({ objPanel: null }) } : null;
     const mini = cellsFor(false, () => () => this.setState({ area: true }));
     const areaCells = cellsFor(true, (k) => moveTo(k));
-    const regions = st0.id === 'm813' ? REGIONS.map(([name, note, l, t2, ww, h]) => ({ name, note, style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + ww + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' })) : [];
+    const regions = [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {
@@ -299,7 +299,7 @@ export class MainLogic extends DCLogic {
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
         const cell = areaCells.find((c) => c.key === k); return cell.label; })(), areaHint: mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
-      areaTitle: 'AREA MAP · ' + (st0.id === 'm813' ? 'PLANET M813 · ' : '') + map.name.toUpperCase(), inFight,
+      areaTitle: 'AREA MAP · ' + st0.short.toUpperCase() + ' · ' + map.name.toUpperCase(), inFight,
       areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + '. Tell the Narrator "I move to C7", or click a tile.',
       zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',
       zoneNoteStyle: 'display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (inFight ? '#F65157' : '#A3AEC2'),

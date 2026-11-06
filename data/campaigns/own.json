@@ -1,0 +1,85 @@
+{
+  "id": "own",
+  "title": "The Narrator's Own Start",
+  "short": "Narrator's own",
+  "kicker": "EARTH SECTOR · CUSTOM",
+  "art": "world-pilot",
+  "artNote": "Placeholder art",
+  "focus": "center",
+  "pitch": [
+    "The Narrator writes the first scene. Start from a Celestial's mess, let a local Anti-Heaven chapter answer it, and see which tension it lands on."
+  ],
+  "meta": "Uses the Sector sheet and chapter template.",
+  "arc": {
+    "beginning": "A Celestial's mess and a local chapter's answer: the Narrator decides.",
+    "middle": "Escalate toward one of the Sector's tensions.",
+    "end": "Resolve the mess, or make it worse."
+  },
+  "opening": "Invent the first scene: a Celestial's mess in the Earth Sector, the local Anti-Heaven chapter calling the party in, and a clear first problem.",
+  "startZone": "open_ground",
+  "zones": [
+    {
+      "id": "open_ground",
+      "name": "Open ground",
+      "summary": "Whatever the Narrator says this place is.",
+      "w": 16,
+      "h": 11,
+      "difficult": [
+        "H6–I6",
+        "H7"
+      ],
+      "start": [
+        "B5",
+        "B7",
+        "C6",
+        "B9",
+        "C3",
+        "B3"
+      ],
+      "enemyStart": [
+        "O6",
+        "O4",
+        "O8",
+        "N5",
+        "N7",
+        "P6"
+      ],
+      "notes": [
+        {
+          "at": "A1–P11",
+          "text": "Open ground. Whatever the Narrator says this place is."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "crate",
+          "at": "F4",
+          "name": "Debris"
+        },
+        {
+          "kind": "crate",
+          "at": "F5",
+          "name": "Debris"
+        },
+        {
+          "kind": "crate",
+          "at": "H2",
+          "name": "Debris"
+        },
+        {
+          "kind": "crate",
+          "at": "I10",
+          "name": "Debris"
+        },
+        {
+          "kind": "pillar",
+          "at": "K7"
+        },
+        {
+          "kind": "pillar",
+          "at": "K8"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -71,6 +71,36 @@ describe('grid references and the story map', () => {
     const u = g.combat!.units.find((x) => x.charId === id)!, k = g.combat!.units.find((x) => x.side === 'foe')!;
     expect(refOf(u.pos)).toBe('E5'); expect(refOf(k.pos)).toBe('J5');
     expect(combatReport(g.combat!)).toContain('MPAT: ' + u.hp + '/' + u.maxHp + ' HP at E5');
+  });
+});
+
+describe('campaigns', () => {
+  it('every built-in campaign is valid', () => {
+    for (const c of BUILT_IN_CAMPAIGNS) expect(validateCampaign(c), c.id).toEqual([]);
+    expect(validateCampaign({ id: 'x' })).not.toEqual([]);
+  });
+  it('M813 starts on the rear pad with its pre-written ramp; travel keeps each zone as it was left', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    expect(g.campaign!.id).toBe('m813'); expect(zoneMap(g).id).toBe('rear_pad');
+    const ramp = storyObjects(g).find((o) => o.name === 'The loading ramp')!;
+    expect(ramp.approaches.length).toBe(3); expect(refOf(ramp.pos)).toBe('M5');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', objects: [{ action: 'remove', id: ramp.id }] } as any }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'wreck_field' } as any }, 'host');
+    expect(zoneMap(g).id).toBe('wreck_field'); expect(storyObjects(g).some((o) => o.name === 'The fallen squad')).toBe(true);
+    expect(storyObjects(g).find((o) => o.kind === 'trap')!.hidden).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
+    expect(storyObjects(g).some((o) => o.name === 'The loading ramp')).toBe(false); // still gone
+  });
+  it('a host can load their own campaign file in the lobby', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    const mine = { ...JSON.parse(JSON.stringify(BUILT_IN_CAMPAIGNS[4])), id: 'mine', title: 'My Campaign' };
+    g = apply(g, { type: 'campaign/load', campaign: mine } as any, 'host');
+    expect(g.settings.start).toBe('mine');
+    expect(() => apply(g, { type: 'campaign/load', campaign: { id: 'bad' } } as any, 'host')).toThrow(/problems/);
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id) }, 'host'); g = apply(g, { type: 'session/start' }, 'host');
+    expect(g.campaign!.title).toBe('My Campaign');
   });
 });
 

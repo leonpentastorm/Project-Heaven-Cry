@@ -232,6 +232,15 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 **Moving outside a fight.** Between fights each character stands on a tile of the story's map. Players move their own characters freely (no AP), and the Narrator moves characters when the story moves them ("Leon moves to A15"). A fight on the same map starts with everyone where they stand; the Narrator places enemies by grid reference. When a fight ends, everyone stays where they ended up.
 
+**Campaigns.** A campaign is a package (`data/campaigns/`, format in `docs/design/campaign-format.md`):
+- a pitch the players read;
+- an arc only the Narrator sees (beginning, middle, end, plus secrets): the intended shape, which the Narrator steers by but never forces;
+- an opening for the Narrator's first turn;
+- a cast and prepared fights;
+- zones: maps with notes, objects and points of interest, approaches included, already built.
+
+The party moves between zones when the Narrator says it travels, and each zone keeps its objects as the party left them. A host can load their own campaign file in the Room before the session starts.
+
 **Map objects.** Everything that matters on a map is an object on a tile; the background image is only for looks. The kinds (`objects.json`):
 
 | Kind | Blocks | Cover | HP | What it does |

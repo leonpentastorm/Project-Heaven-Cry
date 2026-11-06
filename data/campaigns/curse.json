@@ -1,0 +1,117 @@
+{
+  "id": "curse",
+  "title": "The Town Where the Curse Is Lifted",
+  "short": "The lifted town",
+  "kicker": "EARTH SECTOR · CAMPAIGN START",
+  "art": "world-pilot",
+  "artNote": "Placeholder art",
+  "focus": "center",
+  "pitch": [
+    "Inside one Crawler town's walls, every human sees the Crawlers as people: children, grandmothers, a baker with too many hands to be anything but kind. Nobody knows which Celestial did it, or why.",
+    "Outside the walls, the Hellraisers are coming, and they still see monsters."
+  ],
+  "meta": "Curse vs love. The AI Narrator improvises the rest.",
+  "arc": {
+    "beginning": "The party inside the town; its people; word of the Hellraisers' approach.",
+    "middle": "Why the curse lifted here (true love, somewhere in town), and what the Hellraisers will see.",
+    "end": "Defend the town, turn the Hellraisers, or bring them inside the walls to see."
+  },
+  "opening": "Open in the town square on market day, the party among Crawlers who look entirely human to them, as a rider comes through the gate with news of Hellraisers on the road.",
+  "startZone": "lifted_town",
+  "zones": [
+    {
+      "id": "lifted_town",
+      "name": "The lifted town",
+      "summary": "A Crawler town inside walls where the curse is lifted; the Hellraisers outside.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "A1–P1"
+      ],
+      "start": [
+        "H8",
+        "G8",
+        "I8",
+        "H9",
+        "G9",
+        "I9"
+      ],
+      "enemyStart": [
+        "A5",
+        "A6",
+        "A7",
+        "B5",
+        "B6",
+        "B7"
+      ],
+      "notes": [
+        {
+          "at": "A2–C11",
+          "text": "Outside the west wall: the road the Hellraisers will come down."
+        },
+        {
+          "at": "D2–D11",
+          "text": "The town wall."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "low_wall",
+          "at": "D3",
+          "name": "Town wall"
+        },
+        {
+          "kind": "low_wall",
+          "at": "D4",
+          "name": "Town wall"
+        },
+        {
+          "kind": "barricade",
+          "at": "D6",
+          "name": "The town gate",
+          "text": "Oak and scrap. The townsfolk built it themselves.",
+          "approaches": [
+            {
+              "label": "Reinforce the gate",
+              "skills": [
+                "proficiency",
+                "raw_power"
+              ],
+              "tn": 12,
+              "stakes": "Hold it when the Hellraisers come.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "low_wall",
+          "at": "D8",
+          "name": "Town wall"
+        },
+        {
+          "kind": "low_wall",
+          "at": "D9",
+          "name": "Town wall"
+        },
+        {
+          "kind": "poi",
+          "at": "K5",
+          "name": "The baker's",
+          "text": "A baker with too many hands to be anything but kind. Everyone here loves him.",
+          "approaches": [
+            {
+              "label": "Ask about the curse",
+              "skills": [
+                "empathy",
+                "implication"
+              ],
+              "tn": 12,
+              "stakes": "When it lifted, and what changed that day.",
+              "success": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

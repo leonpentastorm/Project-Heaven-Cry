@@ -1,12 +1,11 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf } from '@engine';
+import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
 import m813 from '../../../../docs/lore/MPAT-and-M813.md?raw';
-import { STARTS } from '../game/starts';
 
 /** Lore docs carry design notes (bylines, "a proposal for Leon"). The Narrator must not learn a real person's name from them. */
 const clean = (t: string) => t.replace(/^.*\bLeon PT\b.*$/gm, '').replace(/a proposal for Leon/g, 'a proposal, not yet canon').replace(/\bLeon\b/g, 'the designer');
@@ -39,12 +38,13 @@ COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
 
 FIGHTS
-- When violence breaks out, start a fight with combat: give it a name, a map (rear_pad for the Outpost-813 rear landing pad, yard for anything else), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
+- When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
 - Enemy tiers: ${ENEMIES.map((e: any) => `${e.id} (HP ${e.hp}, Defense ${e.defense}, attack +${e.attack_bonus}, armour ${e.armour})`).join('; ')}.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
 THE MAP (grid references)
 - Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. The current map and what is where is in the campaign block; each turn tells you where everyone stands.
+- The party moves between the campaign's zones with travel (a zone id, or "" to stay). Travel when the story does: a walk, a flight, years passing. Each zone keeps its objects as the party left them.
 - Players may say "I move to A15"; they can also move themselves on the map between your turns. You may move characters when the story moves them: add moves[] with charId and a grid reference (an empty array otherwise). Keep descriptions consistent with the map's notes.
 - When a fight starts on the current map, characters start where they stand. Give each enemy an "at" grid reference to place it (an empty string lets the engine choose). Place enemies on open tiles, not on hulls or cover.
 - A fight costs you one call: when it ends you get a report of key moments, where everyone ended up, and anything players said or attempted mid-fight that needs your judgement. Rule on those in your aftermath.
@@ -70,16 +70,23 @@ OUTPUT
 - Reply with the JSON object only. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
 
 export function campaignPrompt(g: GameState): string {
-  const st = STARTS.find((s) => s.id === g.settings.start) || STARTS[0];
+  const c = campaignOf(g)!;
+  const zones = c.zones.map((z) => `- ${z.id}: ${z.name}. ${z.summary}${(z.exits || []).length ? ' Exits: ' + z.exits!.map((e) => e.to + (e.at ? ' at ' + e.at : '') + ' (' + e.text + ')').join('; ') : ''}`).join('\n');
   return [
-    `CAMPAIGN START: ${st.title} (${st.kicker})`, st.lore.join('\n'), st.meta,
+    `CAMPAIGN: ${c.title} (${c.kicker})`, 'What the players were told:\n' + c.pitch.join('\n'), c.meta,
     `TONE CHOSEN BY THE HOST: ${g.settings.tone}.`,
-    st.id === 'm813' ? '\nM813 SOURCE (the canon behind this one-shot; the incident is history the players are about to live):\n' + clean(m813) : '',
+    '\nTHE ARC (Narrator only). It is the intended shape, not a script: players can change any of it. Steer by it, never force it.',
+    'Beginning: ' + c.arc.beginning, 'Middle: ' + c.arc.middle, 'End: ' + c.arc.end,
+    c.secrets?.length ? '\nSECRETS (never state outright):\n' + c.secrets.map((x) => '- ' + x).join('\n') : '',
+    c.cast?.length ? '\nCAST:\n' + c.cast.map((x) => `- ${x.name} (${x.role}): ${x.text}`).join('\n') : '',
+    '\nZONES (move the party between them with travel):\n' + zones,
+    c.encounters?.length ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
+    c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(m813) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
     '\nTHE MAP WHERE THE STORY IS NOW:\n' + mapBrief(zoneMap(g)),
     '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(worldBible),
     '\nTHE EARTH SECTOR AND ORIGINS:\n' + clean(sectorEarth),
     '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
@@ -117,7 +124,7 @@ export function turnPrompt(g: GameState): string {
   }).join('\n');
   const choices = g.overreach.filter((o) => o.choice).map((o) => `${g.characters[o.charId]?.name} ${o.choice === 'resist' ? 'resisted' : 'indulged'} ${SKILL[o.skill].name}'s push: "${o.push}"`).join('\n');
   const job = w.kind === 'opening'
-    ? 'This is the OPENING of session 1. Set the first scene (give a sceneTitle), introduce the situation from the campaign start, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
+    ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
     : w.kind === 'round' ? `Round ${g.story.round}: every player has acted (see the transcript's last [Player] lines). Answer all of them together. Request checks where outcomes are uncertain.`
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
@@ -148,11 +155,12 @@ export function turnSchema(g: GameState) {
     xp: { type: 'array', items: obj({ charId: { type: 'string', enum: [...charIds, 'all'] }, source: { type: 'string', enum: ['dialogue', 'discovery', 'quest'] }, amount: { type: 'integer' }, reason: { type: 'string' } }) },
     deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string', enum: combos }, deed: { type: 'string' } }) },
     combat: { anyOf: [{ type: 'null' }, obj({
-      name: { type: 'string' }, map: { type: 'string', enum: ['rear_pad', 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
+      name: { type: 'string' }, map: { type: 'string', enum: [...(campaignOf(g)?.zones.map((z) => z.id) || []), 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
       enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string', enum: WEAPONS.map((w: any) => w.id) }, at: { type: 'string' } }) },
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
+    travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     objects: { type: 'array', items: obj({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string' }, kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) },
       at: { type: 'string' }, name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
       approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: { type: 'string', enum: skillIds } }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },

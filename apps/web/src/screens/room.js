@@ -2,7 +2,7 @@
 // now reading the real room (players online, characters locked in) and the host's Narrator settings.
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, lightboxVals, zoomer } from './shared';
-import { STARTS } from '../game/starts';
+import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
 import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
 import { validateSheet } from '@engine';
@@ -33,11 +33,11 @@ export class RoomLogic extends DCLogic {
         canRemove: g.phase === 'lobby' && (c.owner === me || isHost), remove: () => act({ type: 'char/remove', charId: c.id }),
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + p.color };
     });
-    const st0 = STARTS.find((x) => x.id === S.start) || STARTS[0];
+    const st0 = startOf(g);
     const hostPick = (patch) => () => (isHost ? act({ type: 'settings', patch }) : toast('Only the host picks this.'));
-    const starts = STARTS.map((x) => ({ short: x.short, pick: hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
-    const startImg = st0.id === 'm813' ? IMG['world-outpost813'] : IMG['world-pilot'];
-    const start = { zoom: zoomer(this, startImg, st0.title + ' · ' + st0.artNote, 'world'), kicker: st0.kicker, title: st0.title, img: startImg, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st0.focus, artNote: st0.artNote, lore: st0.lore.map((text) => ({ text })), meta: st0.meta + (st0.id !== 'm813' ? ' The AI Narrator improvises the rest.' : '') };
+    const starts = startsFor(g).map((x) => ({ short: x.short, pick: hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
+    const startImg = IMG[st0.art] || IMG['world-pilot'];
+    const start = { zoom: zoomer(this, startImg, st0.title + ' · ' + st0.artNote, 'world'), kicker: st0.kicker, title: st0.title, img: startImg, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st0.focus, artNote: st0.artNote, lore: st0.lore.map((text) => ({ text })), meta: st0.meta };
     const modes = [['ai', 'AI Narrator', 'Your own Anthropic key. Plays every start.'], ['human', "I'll narrate", 'Coming soon: a private Narrator screen.']].map(([id, name, desc]) => ({ name, desc, pick: id === 'human' ? () => toast('Human Narrator mode is coming soon. Use the AI Narrator for now.') : hostPick({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
       style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F' + (id === 'human' ? '; opacity: 0.6' : '')) }));
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: hostPick({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
@@ -54,6 +54,8 @@ export class RoomLogic extends DCLogic {
       connStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url)); },
+      canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
+        f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
       leave: () => leaveRoom(), leaveLabel: isHost ? 'Save and leave' : 'Leave', leaveTitle: 'Back to the title screen. Resume this room any time from Saved sessions.',
       isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save',
       saveTitle: 'The game also saves itself after every action, in this browser and on the room server.',

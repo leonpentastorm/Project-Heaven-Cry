@@ -1,0 +1,103 @@
+{
+  "id": "summoning",
+  "title": "A Summoning in Central City",
+  "short": "A summoning",
+  "kicker": "EARTH SECTOR · CAMPAIGN START",
+  "art": "world-pilot",
+  "artNote": "Placeholder art",
+  "focus": "center",
+  "pitch": [
+    "Someone in Central City's inner ring summoned a Celestial on purpose. It came. It is still here, in a penthouse, ordering room service and asking questions about the Progenitors.",
+    "The headquarters chapter wants it buried before anyone learns what it is, or what it already knows."
+  ],
+  "meta": "Every tension at once. The AI Narrator improvises the rest.",
+  "arc": {
+    "beginning": "The party reaches the penthouse; the Celestial is charming.",
+    "middle": "Who summoned it and why; what it knows; who else is coming for it.",
+    "end": "Bury it, bargain with it, or let it out."
+  },
+  "opening": "Open in the penthouse lift as it climbs the inner ring, the chapter's briefing still on the party's screens, and the doors opening on a Celestial in a bathrobe saying it has been expecting them.",
+  "startZone": "penthouse",
+  "zones": [
+    {
+      "id": "penthouse",
+      "name": "The penthouse",
+      "summary": "A Central City inner-ring penthouse where a summoned Celestial orders room service.",
+      "w": 16,
+      "h": 11,
+      "solid": [
+        "A1–P1",
+        "A11–P11",
+        "H2–H4",
+        "H8–H10"
+      ],
+      "start": [
+        "B5",
+        "B6",
+        "B7",
+        "C5",
+        "C6",
+        "C7"
+      ],
+      "enemyStart": [
+        "O5",
+        "O6",
+        "O7",
+        "N5",
+        "N6",
+        "N7"
+      ],
+      "notes": [
+        {
+          "at": "I2–P10",
+          "text": "The suite: a city view, a piano nobody plays, the Celestial."
+        }
+      ],
+      "objects": [
+        {
+          "kind": "door",
+          "at": "H5",
+          "name": "Suite door"
+        },
+        {
+          "kind": "door",
+          "at": "H7",
+          "name": "Service door"
+        },
+        {
+          "kind": "poi",
+          "at": "M6",
+          "name": "The Celestial",
+          "text": "Polite, curious, wearing a costume it will never take off, and asking about the Progenitors.",
+          "approaches": [
+            {
+              "label": "Find out what it knows",
+              "skills": [
+                "eloquence",
+                "analysis"
+              ],
+              "tn": 16,
+              "stakes": "How much it already knows about the Progenitors.",
+              "success": ""
+            },
+            {
+              "label": "Flatter it",
+              "skills": [
+                "charisma",
+                "implication"
+              ],
+              "tn": 12,
+              "stakes": "Celestials like being liked.",
+              "success": ""
+            }
+          ]
+        },
+        {
+          "kind": "container",
+          "at": "K3",
+          "name": "Room-service trolley"
+        }
+      ]
+    }
+  ]
+}

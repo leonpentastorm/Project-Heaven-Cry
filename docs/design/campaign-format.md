@@ -1,0 +1,81 @@
+# Campaign format
+
+A PHC campaign is one JSON file. The game ships five (`data/campaigns/`); a host can load their own in the Room before the session starts ("Load a campaign file…"). The engine checks the file (`validateCampaign`) and says in plain words what's wrong.
+
+The Narrator reads everything in the file. Players see only the title, the pitch, the meta line, the art, and the maps as they explore them.
+
+## Top level
+
+| Field | Required | What it is |
+|---|---|---|
+| `id` | yes | Short id, letters and underscores (`m813`). |
+| `title` · `short` · `kicker` | title yes | The Room's card: "The Last Ship Out", "M813", "M813 · ONE-SHOT · 2–3 SESSIONS". |
+| `art` · `artNote` · `focus` | no | An art id from `art/catalog.json` (as built for the web), its caption, and the CSS object-position for the crop. |
+| `pitch` | yes | Paragraphs the players read before they start. |
+| `meta` | yes | One line: who they play, where it starts. |
+| `tone` | no | Grim, Pulp or Literary. Sets the Room's default. |
+| `arc` | yes | `beginning`, `middle`, `end`: the intended shape of the story. **Narrator only.** It steers by the arc and never forces it; players can change anything. |
+| `secrets` | no | Truths the Narrator never states outright. |
+| `opening` | yes | What the Narrator's first turn should do: where to open, who's there, the first problem, the last line. |
+| `cast` | no | `{ name, role, text }` for each important NPC. |
+| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. |
+| `startZone` | yes | The zone the party starts in. |
+| `zones` | yes | The maps (below). |
+| `lore` | no | Extra lore for the Narrator, as text. |
+
+## Zones
+
+Each zone is a map. Grid references: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). A range like `N1–P6` is a rectangle; commas separate parts (`F4–F5, H2`).
+
+| Field | Required | What it is |
+|---|---|---|
+| `id` · `name` · `summary` | yes | `outpost`, "Outpost-813", one line the Narrator sees for every zone. |
+| `w` · `h` | yes | Size in tiles, 6–40 each (16 × 11 fits the screen best). Tiles are 1.5 m. |
+| `solid` | no | Walls, hulls, cliffs: nothing walks or sees through them. |
+| `difficult` | no | Slow ground (2 per tile). |
+| `start` | yes | Where the party stands on arrival (and at the start of a fight here). |
+| `enemyStart` | no | Default enemy tiles for fights here. |
+| `notes` | no | `{ at, text }`: what is where. Players see it when they hover a tile; the Narrator reads all of it. |
+| `objects` | no | Things on tiles (below). |
+| `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
+
+## Objects and points of interest
+
+`{ kind, at, name, text, hidden, locked, approaches }`. Kinds are in `data/objects.json`:
+- cover: `crate`, `low_wall`, `pillar`, `barricade`;
+- `door` (can be `locked`), `hole`, `trap` (`hidden` until spotted);
+- hazards: `fire`, `toxic`; `barrel`, `rubble`;
+- `container`, `terminal`, `poi`, `exit`.
+
+**Approaches** are the ways to deal with an object, written ahead so players can try them without the Narrator setting anything up:
+
+```json
+{ "label": "Break it down", "skills": ["raw_power", "durability"], "tn": 16,
+  "stakes": "Tear through before anyone hears.", "success": "remove" }
+```
+
+- `skills`: one to three skill ids from `data/skills.json`. Two or three skills make a combined check.
+- `tn`: 8, 12, 16 or 20.
+- `success`: what the engine does by itself on a success: `remove` (it's gone, leaving rubble if it was cover), `open`, `reveal`, `disarm`, or `""` (the Narrator narrates the result).
+
+Mix Body, Mind and Soul skills, so every kind of character has a way in. Objects without approaches get theirs from the Narrator when a player examines them.
+
+## A minimal campaign
+
+```json
+{
+  "id": "the_vault", "title": "The Vault Under Mandestra", "short": "The vault", "kicker": "CUSTOM · ONE-SHOT",
+  "pitch": ["A merchant's vault, sealed for a century, has started knocking from the inside."], "meta": "Starts at the vault door.",
+  "arc": { "beginning": "The door, and the knocking.", "middle": "What the merchant sealed in, and why.", "end": "Let it out, or seal it for good." },
+  "opening": "Open at the vault door at midnight, the knocking in rhythm with a heartbeat.",
+  "startZone": "vault_door",
+  "zones": [{
+    "id": "vault_door", "name": "The vault door", "summary": "A stone antechamber and a steel door.", "w": 16, "h": 11,
+    "solid": ["A1–P1", "A11–P11"], "start": ["B5", "B6", "B7"],
+    "notes": [{ "at": "O6", "text": "The vault door: steel, a century old, warm to the touch." }],
+    "objects": [{ "kind": "door", "at": "O6", "name": "Vault door", "locked": true,
+      "approaches": [{ "label": "Crack the lock", "skills": ["ingenuity", "proficiency"], "tn": 16, "stakes": "Quietly.", "success": "open" },
+                     { "label": "Answer the knocking", "skills": ["empathy", "implication"], "tn": 12, "stakes": "Whatever is inside, ask it.", "success": "" }] }]
+  }]
+}
+```

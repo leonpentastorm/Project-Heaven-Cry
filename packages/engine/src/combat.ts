@@ -9,7 +9,7 @@ export interface MapDef { id: string; name: string; w: number; h: number; solid:
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
   notes?: { at: string; text: string }[];
   /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
-  objects?: { kind: string; at: string; name?: string; text?: string }[] }
+  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
@@ -137,7 +137,9 @@ export const COVER_HP = { half: OBJ.crate?.hp || 30, full: OBJ.pillar?.hp || 80 
 export function defaultObjects(map: MapDef): MapObject[] {
   let n = 0; const id = () => 'm' + (++n);
   return [...map.cover.map((k) => makeObject(id(), 'crate', k)), ...(map.full || []).map((k) => makeObject(id(), 'pillar', k)),
-    ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); return k ? makeObject(id(), o.kind, k, { name: o.name, text: o.text }) : null; }).filter(Boolean) as MapObject[]];
+    ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); if (!k) return null;
+      const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })) });
+      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; return ob; }).filter(Boolean) as MapObject[]];
 }
 /** The fight's objects; saves from before objects existed are rebuilt from their cover state. */
 export function objectsOf(cb: Combat): MapObject[] {
@@ -339,8 +341,8 @@ export function rollInjury(rng: Rng, t: Unit): string {
 
 // ---------- turns ----------
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
-export function startCombat(name: string, mapId: string, pcs: { c: Character; pos?: string }[], foes: { name: string; tier: string; weapon: string; at?: string }[], difficulty: string, rng: Rng, objects?: MapObject[]): Combat {
-  const map = MAPS[mapId] || MAPS.rear_pad;
+export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string }[], foes: { name: string; tier: string; weapon: string; at?: string }[], difficulty: string, rng: Rng, objects?: MapObject[]): Combat {
+  const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
   const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
   const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || fallback[0]; taken.add(k); return k; };
