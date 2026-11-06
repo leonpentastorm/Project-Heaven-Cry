@@ -43,10 +43,10 @@
     "obj-fire",
     "obj-fuel-drum",
     "obj-rubble",
-    "obj-fallen-squad"
+    "obj-fallen-squad",
+    "obj-triage-line"
   ],
   "remaining": [
-    "obj-triage-line",
     "obj-footlockers",
     "obj-cookbook",
     "obj-platinum-net",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:49:51.585158+00:00",
+  "updated_utc": "2026-11-06T04:51:17.705425+00:00",
   "status": "in-progress",
   "production_approved": false
 }

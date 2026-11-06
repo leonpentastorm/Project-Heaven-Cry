@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-59c7868a0a2fa61e9cb758b32a771978c7018bb275525e0b1fe3cc260163c609  art/campaigns/m813/tutorial-v1/README.md
-e24375b45a85158800562d3631c1784385e1d1a13cf8b50ee31d93f94fffbf05  art/campaigns/m813/tutorial-v1/manifest.json
-7e1fb8bebdcd6ffea1f82649edc160bcd11fd551606046cb0f85b7db7f79761f  art/campaigns/m813/tutorial-v1/production-progress.json
-5604574c9a8b6b6d3135a9741c0dfc435ce4ca0b613842b98f66676a6817926e  art/catalog.json
+653ea6e699af8993f36e5f34759bf6da41036c21736901d54258094de22a9bb6  art/campaigns/m813/tutorial-v1/README.md
+04adcc84761490f77679deed24eba36958ca5adcd4057c9d2dbc3cf5dd375954  art/campaigns/m813/tutorial-v1/manifest.json
+09abc3e5f14ece8b5cf1f356fd563fa03b92302e8787751144207551c0331f5b  art/campaigns/m813/tutorial-v1/production-progress.json
+c6e34bec730692a1c65532bff4e221fb50e97d7d9794b77557afddbbd14c4ebf  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1243,6 +1243,7 @@ cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/ob
 9817ce4c73ca855c685f6f0b6d51e281315ce85433e39e90525ee902a5d8cbea  art/sprites/objects/v1/obj-rubble.png
 64f39d65b7554e44d73cf29c3da1d74279cbd81555ef5dc804380e99cba206ed  art/sprites/objects/v1/obj-tool-rack.png
 5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3  art/sprites/objects/v1/obj-toppled-pylon.png
+f444f5edf9efec91f95bf70db343dcb72ac185e086566cb35ed398bf102fae74  art/sprites/objects/v1/obj-triage-line.png
 a4ae26aceebf5ed1a2a2744fca8655281496eaae7b2bcef007a1d97116c2b0e8  art/sprites/objects/v1/previews/obj-barrier-stakes-128px.png
 807ee005cb43466af662c5e3219dbe9d495d9a1063228297174980ce962b8c3c  art/sprites/objects/v1/previews/obj-barrier-stakes-46px.png
 096e4a8a92b0a1901e0956d1d06f35a2cfd395f9780cf739f818c43e6870f143  art/sprites/objects/v1/previews/obj-barrier-stakes-64px.png
@@ -1285,6 +1286,9 @@ e5fed85fb07cba43c71e3de07bbb31fbea43f2be943ec3553ba75d7d847ecb05  art/sprites/ob
 a2cce1bb7da175331b9204f4c15e4d004720e79047c929567d7519174402dace  art/sprites/objects/v1/previews/obj-toppled-pylon-128px.png
 76384e130885e4da9298a8171db2ea421ed15383e10006b5b364c622d6db4931  art/sprites/objects/v1/previews/obj-toppled-pylon-46px.png
 bf0937cce4a4349de3c697bacba5cf8d3217bda13c442c6630df3ffd2bb1326a  art/sprites/objects/v1/previews/obj-toppled-pylon-64px.png
+2b3907ec7fa6bf0ddac73dc8fe7c03a04afe657076dc2d8817fb0f40b738daa5  art/sprites/objects/v1/previews/obj-triage-line-128px.png
+de908d5e0194246007f5001b5f2d846dc9cec34a72ff607674e41a65f694f330  art/sprites/objects/v1/previews/obj-triage-line-46px.png
+6363d31a70bcb5cd8f1d89204b5a6f4050d6998a43249d5408c4331bcfc4ce2b  art/sprites/objects/v1/previews/obj-triage-line-64px.png
 883201e6d597efec634f5a331a02ad02f19d6c719aa206c417c5db1aa89b96d1  art/sprites/objects/v1/revisions/v2/obj-barrier-stakes.png
 7e240db62f35243fba259c44d73e16d21a6d723b747bcb7ab54ba37e24e5b221  art/sprites/objects/v1/revisions/v2/obj-door-closed.png
 3868cb0d3abd4fe40f48115bf43fa4aaed923bc387e5b9dfc2b480b1ac5f9815  art/sprites/objects/v1/revisions/v2/obj-door-open.png
@@ -1336,6 +1340,8 @@ e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e  art/sprites/ob
 e4feb89b9f83233384e57a3ff11ce99a8965847a5ee05c133cbd6394f1dd6156  art/sprites/objects/v1/sources/obj-tool-rack.prompt.txt
 b7a56d7b5286a1b8045ec5dce848053f7d47cb61a5a3547255a65468c3280c51  art/sprites/objects/v1/sources/obj-toppled-pylon.png
 b7530b6c382ddc9ca63db3daba45bf565a6a4a4d1f931dd8e444d259e03e5cf1  art/sprites/objects/v1/sources/obj-toppled-pylon.prompt.txt
+1fd8d6a5bbb9a4e9902e7d7d8b092d127bddc3a0d2666a2f5bec0f72ac38c8ab  art/sprites/objects/v1/sources/obj-triage-line.png
+5e0123840b4aca4f420c7f00b195d770afffd84602a139370ced2175c210a7f9  art/sprites/objects/v1/sources/obj-triage-line.prompt.txt
 9008acaac7adb84e788927f8ae4d981390df28194cbd25944ac048b70d72330f  art/style-guide/v1.2/Abstract-Skills-Style-Bible.md
 5ed44f984a5838ac4cbb140d3ab3d6deb18a4099189bd7b15f28da89d1ff4be2  art/style-guide/v1.2/Approved-Icon-Lock.md
 6ce00bbc3c557fc82d8daa024fdc3a99f26285c536ec40c8ecf531c114e88c31  art/style-guide/v1.2/CHANGELOG.md
