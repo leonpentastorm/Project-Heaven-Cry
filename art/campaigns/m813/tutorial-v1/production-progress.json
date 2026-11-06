@@ -4,10 +4,10 @@
   "delivered": [
     "m813-shield-line",
     "m813-rear-pad-loading",
-    "m813-outpost-hangar"
+    "m813-outpost-hangar",
+    "m813-outpost-1"
   ],
   "remaining": [
-    "m813-outpost-1",
     "m813-nine-nine",
     "m813-seven-seven",
     "m813-hum",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:15:04.875273+00:00",
+  "updated_utc": "2026-11-06T03:16:28.348717+00:00",
   "status": "in-progress",
   "production_approved": false
 }

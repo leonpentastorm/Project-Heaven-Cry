@@ -6067,6 +6067,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-hangar.prompt.txt"
+    },
+    "m813-outpost-1": {
+      "id": "m813-outpost-1",
+      "group": "A",
+      "order": 4,
+      "name": "Outpost 1",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/outpost-1.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A4 | `m813-outpost-1` · `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |",
+      "spoiler": false,
+      "visibility": "zone-entry",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "e4e66398a91991788a7777786c82fc146f24e6b2d7007b7c4fd58b0806d89c64",
+      "source_path": "art/illustrations/m813/v2/sources/m813-outpost-1.png",
+      "source_sha256": "4f60761adbd0e110768363566974247721b668b35097d759e8bea5f9ae541673",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-outpost-1-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-1.prompt.txt"
     }
   },
   "mascot": {
