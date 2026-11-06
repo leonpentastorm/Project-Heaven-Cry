@@ -31,19 +31,35 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def separate_ink(im):
+def separate_ink(im, solid=False):
     """One ink separation: dark marks are cutouts, alpha carries edge coverage."""
     im = im.convert('RGBA')
     mask = im.convert('RGB').convert('L').point(lambda n: 255 if n >= 128 else 0)
     alpha = ImageChops.multiply(im.getchannel('A'), mask)
-    alpha = alpha.point(lambda n: 255 if n >= 250 else (0 if n < 8 else n))
+    # Source art is a flat ink plate: discard translucent background haze.
+    # Resampled export edges retain antialiasing in the non-solid pass.
+    alpha = alpha.point(lambda n: 255 if n >= 128 else 0) if solid else alpha.point(
+        lambda n: 255 if n >= 250 else (0 if n < 8 else n))
     out = Image.new('RGBA', im.size, (255, 255, 255, 0))
     out.putalpha(alpha)
     return out
 
 
-def master(source):
-    im = separate_ink(Image.open(source))
+def master(source, medallion=False):
+    im = separate_ink(Image.open(source), solid=True)
+    if medallion:
+        # Preserve the generated star's canvas-relative position. Scale the
+        # complete drawing only if needed to fit the UI's circular safe area.
+        im = im.resize((1024, 1024), Image.Resampling.LANCZOS)
+        alpha = im.getchannel('A')
+        radius = max((math.hypot(i % 1024 - 511.5, i // 1024 - 511.5)
+                      for i, a in enumerate(alpha.get_flattened_data()) if a >= 16), default=0)
+        if radius > 450:
+            size = max(1, int(1024 * 450 / radius))
+            small = im.resize((size, size), Image.Resampling.LANCZOS)
+            im = Image.new('RGBA', (1024, 1024), (255, 255, 255, 0))
+            im.paste(small, ((1024-size)//2, (1024-size)//2))
+        return separate_ink(im)
     bbox = im.getchannel('A').point(lambda n: 255 if n >= 16 else 0).getbbox()
     if bbox is None:
         raise ValueError('Source has no visible ink')
@@ -113,7 +129,7 @@ def export(args):
     version_folder = folder / f'revisions/v{args.production_revision}' if args.production_revision else folder
     path = version_folder / f'{job["id"]}.png'
     path.parent.mkdir(parents=True, exist_ok=True)
-    im = master(args.source)
+    im = master(args.source, medallion=job.get('tier') == 'mastered')
     im.save(path)
     exports = {}
     for size in SIZES:
@@ -130,6 +146,13 @@ def export(args):
              'background': 'transparent', 'ink': '#FFFFFF', 'usage': 'trait icon' if family == 'traits' else 'perk icon',
              'data_id': job['data_id'], 'status': 'review-candidate', 'production_approved': False,
              'batch': 'revisions' if args.revision else job['batch'], 'exports': exports}
+    if job.get('tier'):
+        asset['tier'] = job['tier']
+        if job['tier'] == 'ultimate':
+            asset['visibility'] = 'awarded-only'
+        if job['tier'] == 'mastered':
+            asset['mastered_mark'] = 'four-point star, upper left'
+            asset['medallion_safe_circle'] = 0.9
     if args.revision:
         asset['revision'] = args.round
         asset['previous_path'] = previous.get('previous_path', previous['path'])
@@ -153,6 +176,11 @@ def export(args):
         'icons': []}
     entry = {k: job[k] for k in ('id', 'data_id', 'name', 'family', 'order', 'mood', 'action', 'screen', 'prop')}
     entry.update(path=relative(path), exports=exports, batch=asset['batch'], source_sha256=sha(args.source))
+    for key in ('tier', 'visibility', 'mastered_mark', 'medallion_safe_circle'):
+        if key in asset:
+            entry[key] = asset[key]
+    if job.get('review_round'):
+        entry['review_round'] = job['review_round']
     if job.get('user_override'):
         asset['user_override'] = entry['user_override'] = job['user_override']
         catalog[family][job['id']] = asset
@@ -189,6 +217,17 @@ def export(args):
     elif args.production_revision:
         progress.setdefault('production_revisions', {})[job['id']] = args.production_revision
     progress['catalog_coverage'] = {family: len(catalog[family]) for family in ('traits', 'perks')}
+    if job.get('review_round') == 4:
+        fixes = progress.setdefault('review_4_fixes_delivered', [])
+        if job['id'] not in fixes:
+            fixes.append(job['id'])
+    progress['target'] = {family: len(json.loads((ROOT / f'data/{family}.json').read_text())['items'])
+                          for family in ('traits', 'perks')}
+    progress['requested_new_icons'] = sum(progress['target'].values()) - 11
+    progress['remaining_new_icons'] = [item['id'].replace('_', '-')
+        for family in ('traits', 'perks')
+        for item in json.loads((ROOT / f'data/{family}.json').read_text())['items']
+        if item['id'] not in {a.get('data_id', key.replace('-', '_')) for key, a in catalog[family].items()}]
     progress.pop('generation_pause', None)
     dump(PROGRESS, progress)
     update_checksums()

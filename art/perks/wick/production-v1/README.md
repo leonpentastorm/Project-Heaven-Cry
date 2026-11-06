@@ -4,7 +4,7 @@ New perk icons are delivered incrementally from [the production brief](../../../
 
 Every new icon has a 1024 × 1024 transparent master, 256/128/64/56/48/44/40 px exports, a catalog entry and source hash in `manifest.json`. Each batch gets actual-size review sheets and a light/dark comparison. See [production progress](../../../traits/wick/production-progress.json) for delivered IDs and counts. Each image is shown in chat and pushed separately. New art remains `review-candidate`, `production_approved: false` pending review.
 
-The [5 November library checkpoint](../../../traits/wick/library-review-v1/README.md) covers 55 of 76 perks. Image generation reached its usage limit on Real Power; that icon and the 20 Batch F perks are retained in the remaining-brief snapshot linked there.
+The [complete library handoff](../../../traits/wick/library-review-v2/README.md) covers all 106 perks, with 72/82/92 px medallion comparisons for the 27 Mastered icons. All six Ultimate catalog entries are `visibility: awarded-only`.
 
 ## Review 4 — 5 November 2026 (55 perks, plus the review-3 trait fixes)
 
@@ -24,3 +24,9 @@ Reviewed by Claude for Leon on 128 px sheets and 48 px actual-size strips, on `#
 | trait 46 | Sworn Sibling | Fix again | It's now two whole Wicks, small and far apart. At 48 px it's two specks, and a second full figure breaks the one-figure rule. One Wick, big, with the cord-tied hand reaching out of frame toward someone we don't see. |
 
 **Still to come (paused at the image limit):** Real Power and the 20 Batch F perks (15 Achieved, 5 Ultimate). The prototype shows a dashed "icon soon" box for Real Power until it lands.
+
+## Review 4 delivery — 6 November 2026
+
+All four requested icons have new selected versions: Into the Dark v2 restores the three-quarter screen at the arch; Holy Ordnance v2 uses the normal Wick head and a blessed shell; Supreme Command round 4 uses one commander and three empty helmets; Sworn Sibling v4 uses Leon’s explicitly requested two-Wick oath toast, closer and larger. His two-person reference overrides the reviewer’s one-figure proposal for that icon. See the [corrections sheet](../../../traits/wick/library-review-v2/review-4/previews/review-4-corrections-128px.png).
+
+Batch F, its three added combo perks, and all 27 Batch G Mastered icons are delivered. Mastered stars use the shared upper-left mark and every master fits the 90% circle; no medal frame is baked into the artwork. Clean Draw and Judgement Day v2 reserve the four-point star for the Mastered mark. Make Way, Verse of War and Last Charge v2 remove translucent source haze without changing the drawing. Earlier versions remain preserved.
