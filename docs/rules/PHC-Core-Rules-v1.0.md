@@ -170,7 +170,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Stat | Formula |
 |---|---|
 | Max Sigil words per spell | 2 + floor((Intelligence − 1) ÷ 2) |
-| Sigil AP cost | 1 per word − 0.5 × (Expression − 1), minimum 1 |
+| Glyph AP cost (draft 1.2) | 1 − 0.1 × (Expression − 1) per glyph, minimum 0.5 (was: Sigil AP cost) |
 | Sigil Core saving | floor(Proficiency ÷ 3) per spell, minimum cost 1 |
 | Sigil range bonus | +0.5 tile × Rumination |
 | Sigil duration bonus | +0.5 round × Brain Power |
@@ -287,7 +287,9 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Use an item, draw or swap a weapon, open a door | 1 |
 | Analyze an enemy (reveals HP, armour, resistances, weak points) | 2 |
 | Overwatch: hold AP for one shot at the first enemy that moves into your line | AP of the shot |
-| Draw a Sigil | 1 per word, see Derived stats |
+| Draw a Sigil glyph | Glyph AP cost, see Derived stats (draft 1.2) |
+| Evoke a Sigil pattern | 1 (draft 1.2) |
+| Begin an Outburst / Release one | Soul cast AP / 1, free on the turn you Begin (draft 1.2) |
 | Cast a Soul spell | Soul cast AP |
 | Syphon (refill MP from the air) | 1 |
 | Vent (dump Flux into the air) | 1 |
@@ -866,30 +868,62 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 **Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
 
-### Sigil magic (Mind, through an Evoker)
+> **Rules revision 1.2, DRAFT (6 Nov 2026), waiting for Leon's numbered feedback.** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). Data and engine follow once Leon accepts it.
 
-An Evoker holds one core. A spell is a string of command words, drawn in order. The engine checks the grammar; the words are in sigils.json.
+### The Magic panel and learning
 
-1. **Grammar:** at least one **Subject** word (an element or an effect), plus whatever Form or Motion it needs. Without PUSH, a spell reaches only an adjacent tile.
-2. **Length:** at most your Max Sigil words.
-3. **Cost:** each word's Core charge, minus your Sigil Core saving. AP: see Derived stats.
-4. **Flux:** each word drawn adds 1 Flux to the Evoker. Above 6 Flux the Evoker overloads: you take 10 damage per Flux over 6, the Evoker locks for 1 turn, and all the Flux bursts into the air.
-5. **Vent** (1 AP): dump all Flux into the air.
-6. **Hitting:** damaging spells roll Brain Power against Defense; condition words call for the target's save against 12 + your debuff strength for that family.
-7. **Damage:** element damage × Form multiplier × Sigil multiplier × Elemental multiplier.
+Magic has its own tab on the character sheet, **MAGIC**. It lists the Sigil words you know and your Outburst designs, and it is where you learn new ones and make designs. It shows for any character with Brain Power 1+, Will Power 1+, an Evoker or an Emanator.
 
-Example: FIRE – CONDENSE – PUSH. Three words, 4 charge, 3 AP at Expression 1: a 30-damage bolt out to 8 tiles, before multipliers.
+- **Starting magic.** A character with Brain Power 1+ picks **2 Sigil words** at creation. They must make a working Stack: one Subject plus one Form or Motion (FIRE + CONDENSE, SPARK + CONDENSE, WARD + RETURN). A character with Will Power 1+ makes **1 Outburst design** from one school and one module. A character with both gets both.
+- **Learning Sigil words is study.** Each new word takes one long rest with a source: a tutor the Narrator places, a **Sigil plate** (loot: a slate with one word cut into it, used up), or an ally who knows the word. You know at most 4 + Brain Power words.
+- **Learning Outbursts is living.** New schools and modules come from tutors, and from experience: after a moment that shakes a character (a death, a vow, a betrayal), the Narrator may grant one module that fits it, like an Achieved perk. Designs are made out of combat; you keep 2 + floor(Empathy ÷ 2) ready.
 
-### Soul magic (Soul, through an Emanator)
+### Sigil magic: words written on the map (Mind, through an Evoker)
 
-An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0, and every cast pays straight from the air at +2 Strain.
+A Sigil is a command word drawn as a glowing glyph **onto a tile**. A spell exists when glyphs on the ground make a valid **pattern**. The shape is part of the spell, and a big shape costs you the walk. The words are in sigils.json.
 
-1. **Design:** out of combat, design spells from one **school** plus **modules** (soul-modules.json). From Will Power 5 a spell may combine two schools. Module slots: 1 + floor(Will Power ÷ 3). You can keep 2 + floor(Empathy ÷ 2) designs ready. Improvising a new design in combat costs +1 AP.
-2. **Cost:** school base + modules (+20 for a second school), × the ambient multiplier, − your Insight saving. Paid from MP.
-3. **Syphon** (1 AP): refill MP from the air (see table), × your Mana Syphon bonus.
-4. **Strain:** each cast adds 1 Strain (2 in Flooded air). If Strain passes your Strain limit, make a **Mana Short check**: d20 + Will Power modifier against 10 + 2 × the excess. Fail: take 15 damage per point of Strain and be Stunned. Natural 1: your heart bursts, and you drop to 0 HP. Strain falls by 1 at the start of any turn after one with no cast, and resets after combat.
-5. **Hitting:** Damage spells roll Will Power against Defense; Control and Status spells call for saves.
-6. **Crystallise** (3 AP, needs the meter at 10 or more): the meter drops 10 and you make one standard core.
+1. **Draw** a glyph on your own tile or an adjacent one. Cost: Glyph AP (Derived stats) and 1 Flux. An Evoker must be in a hand. A tile holds at most 2 glyphs.
+2. **Glyphs last** 2 rounds + your Sigil duration bonus (round down). Out of combat they last the same number of overworld rounds. You can have at most your **Max Sigil words** glyphs on the ground; drawing one more fades your oldest.
+3. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
+4. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
+5. **Patterns.** After every draw the engine looks for patterns among glyphs that are yours or an ally's. A pattern needs at least one **Subject** word and one **Form** or **Motion** word, and holds at most your Max Sigil words.
+
+| Shape | Glyphs | Where the spell goes |
+|---|---|---|
+| **Stack** | 2 on one tile | The cantrip: onto one tile adjacent to the stack. With PUSH: out to 8 tiles + range bonus from the stack. |
+| **Line** | 2–4 on adjacent tiles in a straight row (across or diagonal) | Fires out of the far end along the line's direction, to 8 tiles + range bonus. You Evoke it from behind its near end. |
+| **Ring** | 3–4 on tiles around one centre tile | Bursts in radius 1 around the centre, or (support words) lands on whoever stands on the centre. |
+
+   A tile in a Line or Ring may hold a Stack: both glyphs count as words. **Shape and word change each other:**
+   - **STAY** in a Line turns the line itself into a wall: anyone entering a tile takes the effect, for as long as the glyphs last. In a Ring it fills the centre the same way.
+   - **SPREAD** in a Line fires a 3-tile cone from the far end instead of a bolt.
+   - **TWICE**, **SEEK** and **RETURN** work as written in any shape.
+6. **Evoke** (1 AP): fire a pattern. You must touch it (stand on or next to one of its tiles; behind the near end for a Line), and your Evoker's core must hold the pattern's charge: the sum of its words' charges, minus your Sigil Core saving, minimum 1. Charge is paid when you Evoke, not when you draw. A finished pattern can wait: Evoke it on a later turn while its glyphs last (traps and set-ups). The glyphs fade when the spell fires, unless the pattern holds STAY.
+7. **Co-op.** Two Sigil users can build one pattern together, each drawing their own glyphs. Whoever Evokes pays the charge and rolls. **Enemy Sigil users** can Evoke any pattern they can read, yours included.
+8. **Flux, overload and Vent** work as before: each glyph drawn adds 1 Flux; above 6 the Evoker overloads (10 damage per Flux over 6, it locks for 1 turn, all the Flux bursts into the air); Vent (1 AP) dumps it into the air.
+9. **Hitting and damage:** damaging spells roll Brain Power against Defense; condition words call for the target's save against 12 + your debuff strength. Damage: the Subject's damage × the Form multiplier (CONDENSE ×1, SPREAD ×0.6) × Sigil multiplier × Elemental multiplier.
+
+**Words.** 24, as before, but LINE, WALL and CONE became shapes (above), so three new words take their places: **SPARK** (Subject, element, 1 charge: 15 Elemental damage; the cheapest attack), **PULL** (Motion, 1 charge: drags the target 3 tiles toward the pattern) and **SILENCE** (Subject, effect, 2 charge: no Sigils, Outbursts or prayers for 1 round, Brain save).
+
+Examples:
+- **Starter cantrip:** SPARK + CONDENSE stacked beside you. 2 glyphs, Evoke: 3 AP at Expression 1, 1 charge, 15 damage to one adjacent tile.
+- **Bolt:** FIRE · CONDENSE in a Line of 2, Evoked from behind: 3 AP, 3 charge, 30 damage to the first creature along the line, up to 8 tiles.
+- **Firewall:** FIRE · SPREAD · STAY in a Line of 3 across a corridor: anyone crossing burns (×0.6) until the glyphs fade.
+- **Trap:** BIND · CONDENSE · RETURN in a Ring around a doorway tile, left unevoked; when the guard steps onto the centre, the Sigil user next to it Evokes.
+
+### Soul magic: Outbursts, charged and released (Soul, through an Emanator)
+
+An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0 and every Outburst pays straight from the air at +2 Strain. Designs, schools and modules work as before (rules below); what changed is **how an Outburst leaves you**. Every Soul mage holds it in the heart and chooses when to let go.
+
+1. **Begin** (Soul cast AP): pick a ready design, pay its MP and take 1 Strain (2 in Flooded air). The Outburst is now **held**: your heart glows, and everyone can see it.
+2. **Release** (1 AP; free on the turn you Begin): it fires. Damage rolls Will Power against Defense; Control and Status call for saves.
+3. **Hold and grow.** At the start of each of your turns while you hold it, the Outburst grows one **stage** and you take 1 Strain (2 in Flooded air). Released at stage *n*, its effect is × (1 + 0.5 × (n − 1)), up to stage 4 (×2.5). While holding you can move, shoot or Syphon, but not Begin another Outburst.
+4. **Slipping.** Each time you take damage while holding, make a Will Power check against 10 + damage ÷ 10. Fail and it releases wild at a random creature within its range.
+5. **Strain and the Mana Short** are as before: if Strain passes your Strain limit, make the Mana Short check (d20 + Will Power modifier against 10 + 2 × the excess). Fail: 15 damage per point of Strain and Stunned, and anything held releases wild. **Natural 1: your heart bursts. You drop to 0 HP and are Downed, not dead:** the death-save and stim rules apply (Leon: no unlucky character eats rock). Strain falls by 1 at the start of a turn after one where you neither cast nor held, and resets after combat.
+6. **Design.** Out of combat, design Outbursts from one **school** plus **modules** (soul_modules.json). From Will Power 5 a design may combine two schools. Module slots: 1 + floor(Will Power ÷ 3). Improvising a new design in combat costs +1 AP.
+7. **Cost:** school base + modules (+20 for a second school), × the ambient multiplier, − your Insight saving. Paid from MP when you Begin.
+8. **Syphon** (1 AP): refill MP from the air (see table), × your Mana Syphon bonus.
+9. **Crystallise** (3 AP, needs the meter at 10 or more): the meter drops 10 and you make one standard core.
 
 | School | Base cost | Effect |
 |---|---|---|
@@ -897,6 +931,58 @@ An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0, and
 | Buff | 20 | one ally: +2 to hit, or +2 Defense, or heal 30 × Healing multiplier; 2 rounds |
 | Control | 25 | push or pull 3 tiles, or Pinned, or Slowed (Body save) |
 | Status | 20 | Fear, Shaken, Confused, or a Left or Right Brain Debuff (Heart or Brain save) |
+
+### Magic advanced classes (draft)
+
+Six new advanced classes join the 15 (21 in all). The rules for learning one don't change: 15 in one parent's signature skills, 9 in the other's, and a tutor.
+
+**Glyph Mason** (Mage + Warden; tutor: the scholar halls). *"The old masons cut words that are still burning."* Draws with a mason's chisel that counts as an Evoker.
+- **Keystone** (2 AP + 1 standard core): cut a glyph instead of drawing it. It never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. It stays in that zone until you cut another (one at a time).
+- **Survey:** you and your allies can Evoke a pattern that holds your Keystone from up to 2 tiles away, and it costs 1 charge less.
+- **Foundation** (once per scene): this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.
+
+**Grand Sigilist** (Mage + Defender; tutor: the southern sects). *"Write it big enough and the floor believes it."* Draws with a staff that counts as a two-handed Evoker.
+- **Enlarge** (3 AP + 3 charge, once per combat): plant the staff on a tile and enlarge one word you know into its **Grand form** over radius 2 around the staff for 3 rounds + duration bonus (table below). While the staff is planted you can't draw or Evoke; pulling it out (1 AP, adjacent) ends the Grand form.
+- **Empty Hand:** with empty hands, unarmed strikes deal 20 Physical for 2 AP, and you get +2 Defense.
+- **Earthed:** inside your own Grand form you ignore its harm, and your unarmed strikes carry its element.
+
+| Word | Grand form | Word | Grand form |
+|---|---|---|---|
+| FIRE | Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save | BLIND | Fog: no one inside sees beyond 1 tile |
+| FREEZE | Ice sheet: difficult ground; a Body save each move or fall Prone | SLOW | Mire: Movement halved inside |
+| SHOCK | Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned | MUDDLE | Maze: Brain save at turn start or stagger 1 tile in a random direction |
+| STONE | Earthworks: up to 4 half-cover pillars rise where you choose | DREAD | Haunting: enemies inside are Shaken (Heart save each turn) |
+| GALE | Cyclone: anyone entering is pushed 2 tiles outward; shots through it −5 | VEIL | Smoke field: blocks all sight; everyone inside counts as Hidden |
+| SPARK | Static: attack rolls of 1–3 inside jam the weapon | LIGHT | Noon: Hidden revealed; enemies inside −2 to hit |
+| WARD | Dome: allies inside +2 Defense and a 20 shield at each turn start (doesn't stack) | SILENCE | Dead zone: no Sigils, Outbursts or prayers inside, yours included |
+| MEND | Spring: allies starting a turn inside heal 10 × Healing multiplier | CONDENSE | Gravity well: everything inside is pulled 1 tile toward the staff at turn start |
+| BIND | Tar: Pinned on entering (Body save) | SPREAD | Bloom: any spell landing inside spreads 1 more radius |
+| PUSH | Rampart wind: shots from outside into it −3 | PULL | Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start |
+| STAY | Stasis: conditions inside don't tick down | SEEK | Hunting ground: allies' attacks on enemies inside ignore half cover |
+| RETURN | Sanctuary: an ally inside who would drop to 0 HP stays at 1 instead (once each) | TWICE | Echo field: the first spell each round cast by an ally inside repeats at half effect |
+
+**Heartfed** (Channeler + Hexer; tutor: Arkvelton). *"Every feeling in this room is fuel. Yours too."*
+- **Four hearts:** you carry four gauges, 0 to 5: **Rage** (+1 per 20 damage you take), **Grief** (+2 when an ally is Downed, +5 when one dies), **Fear** (+1 at the start of a fight with an Elite or Boss, +2 when you're Shaken), **Devotion** (+1 when an ally heals or buffs you). Each design you make is keyed to one of them.
+- **Fed:** your Outbursts cost 10% less MP and hit 10% harder per point in their key gauge. Releasing spends that gauge.
+- **Overflow** (once per scene): when a gauge reaches 5, your next Outburst keyed to it Begins at stage 2 with no Strain.
+
+**Heartbinder** (Channeler + Medic; tutor: Bazaim). *"Bazaim knows what love lifts. We just learned to aim it."*
+- **Link** (1 AP): bind your heart to one ally within 6 tiles (two from Will Power 5) for the scene, or until you're Downed.
+- **Through:** your Outbursts can Begin or Release from a linked ally's position; buffs you receive reach them at half.
+- **Share** (your reaction): when a linked ally takes damage, take up to half of it yourself. Heals you send through a link are ×1.25. If a linked ally is Downed, you take 2 Strain.
+
+**Vessel** (Channeler + Defender; tutor: Kemizuchi). *"The heart only knows one spell: me."* Can't design or cast Outbursts. Keeps MP, Syphon and Strain, and charges the body instead.
+- **Inner Charge** (Soul cast AP, 20 MP, 1 Strain): take one body form and hold it like an Outburst (it grows by stage, with Strain each turn). Forms: **Iron** (armour +10), **Surge** (melee and unarmed damage +15), **Swift** (+2 Movement), **Pain to Power** (+1 AP next turn per 20 damage taken, up to +2), **Steady** (can't be knocked Prone or pushed; +2 Body saves), **Heartbeat** (heal 10 at turn start). A stage multiplies the form's number. Hold up to 2 forms (3 from Will Power 5).
+- **Release** (1 AP, or free with a melee hit): end every form at once in one strike: +15 Soul damage per stage held.
+- **Empty Hand:** unarmed strikes deal 20 Physical for 2 AP.
+
+**Twinbound** (Channeler + Trickster; tutor: Arkvelton). *"Everyone has a twin on the other side. Mine got bored of waiting."* The EPCCG's Outbursts pull across the bond between your soul and its twin in the upper realm; the Twinbound's twin leans through.
+- **Manifest** (once, out of combat): design your **Twin**: its look (a portrait card) and three built-in Outbursts from schools and modules you know. They are fixed.
+- **Call** (2 AP): the Twin appears within 3 tiles. It takes its own turn right after yours with 4 AP: move, cast its built-in Outbursts (paid from your MP, Strain to you), or **Guard** you (it takes the next hit aimed at you while within 1 tile). HP 50% of yours, your Defense, Movement 1.5, your Will Power for its rolls. It can't go more than 6 tiles from you.
+- **Bond:** if the Twin drops to 0 HP it vanishes and you take 3 Strain; call it again next scene.
+- In game text it is only ever *the twin*. It never speaks of the upper realm (the Knowing).
+
+**The old classes under the new Sigil rules.** Blade Scribe's Sword Form draws its glyph on the target's tile. Siege Engineer's WALL sigils become a Line with STAY. Spellslinger's stored spell is a whole pattern drawn into the magazine out of combat. Stroke Gambler draws random half-glyphs that complete as a Stack. Mage's Barrage still cuts element words' charge; Overcharge lets one pattern hold a word beyond your Max Sigil words.
 
 ### Patrons and prayer
 
@@ -1253,3 +1339,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 65. **The Narrator's memory:** the $0.50 ceiling, 6 scenes per chapter, the 9,000-character budgets for active memory and transcript, the ledger caps (300 people, 200 threads, 1,500 facts), the forgetting curve (scenes/10).
 66. **Anyone is a target:** a point-of-interest person fights as a minion with fists; attacking something without HP costs 2 AP; Downed outside a fight lasts until a stim or treatment.
 67. **Rerolls and edits:** the last 5 turns can be rerolled; 3 waiting suggestions per player; only online players vote.
+68. **Rules 1.2 draft: Sigils on the map** (Leon). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, charge paid on Evoke, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
+69. **The three new words** (SPARK 15 damage at 1 charge, PULL 3 tiles, SILENCE 1 round) replacing LINE, WALL and CONE.
+70. **Learning magic:** 2 starting words that must make a Stack, 1 starting design, 4 + Brain Power words known, one word per long rest, Sigil plates, Narrator-granted modules.
+71. **Charge and release:** stages up to 4 (×1 to ×2.5), 1 Strain per held turn, the slip check (10 + damage ÷ 10), wild release.
+72. **Heart burst Downs, never kills** (Leon), using the existing death saves.
+73. **Glyph Mason and Grand Sigilist:** the Keystone's cost (2 AP + a core), Survey's 2 tiles, Enlarge (3 AP + 3 charge, once a combat, radius 2) and all 24 Grand forms.
+74. **Heartfed and Heartbinder:** the four gauges and what fills them, 10% per point, Link range 6, Share half, 2 Strain when a link is Downed.
+75. **Vessel:** the six body forms and their numbers, 2 held forms (3 at Will Power 5), +15 per stage on Release.
+76. **Twinbound:** the Twin's HP 50%, 4 AP, 6-tile leash, 3 Strain on its loss, three fixed built-in Outbursts.

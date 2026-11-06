@@ -139,14 +139,14 @@
     },
     {
       "id": "slow",
-      "word": "BLIND",
+      "word": "SLOW",
       "class": "subject_effect",
       "charge": 1,
       "flux": 1,
       "text": "Target is Slowed (Body save). No damage.",
       "provisional": true,
       "applies": {
-        "condition": "blinded",
+        "condition": "slowed",
         "save": "body"
       },
       "name": "Slow",
