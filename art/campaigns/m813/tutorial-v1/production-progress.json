@@ -37,10 +37,10 @@
     "obj-toppled-pylon",
     "obj-door-closed",
     "obj-door-open",
-    "obj-crater"
+    "obj-crater",
+    "obj-mine"
   ],
   "remaining": [
-    "obj-mine",
     "obj-coolant",
     "obj-fire",
     "obj-fuel-drum",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:40:26.212307+00:00",
+  "updated_utc": "2026-11-06T04:41:32.900595+00:00",
   "status": "in-progress",
   "production_approved": false
 }
