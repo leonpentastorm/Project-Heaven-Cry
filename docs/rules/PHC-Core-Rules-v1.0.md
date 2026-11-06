@@ -993,6 +993,19 @@ Notice bonus: minion +0, soldier +2, elite +4, boss +6. Each hostile checks each
 
 **The shared spotlight.** When a player opens a point of interest or rolls a check, the panel or the dice table opens for the whole party by default, with a large "NAME'S TURN" banner. Everyone sees what that player hovers and chooses, live. Anyone can close it and wait for the story to tell them what happened.
 
+## Anyone is a target
+
+It's an RPG: players can attack anyone and anything. The game never refuses an attack; the story plays the consequences.
+
+- **People on the map** (tokens, hostile or neutral): attacking one from the overworld starts a fight, as in Overworld rounds. **If nobody on the map was hostile before the attack, the fight gives no combat XP and no weapon kills.** The victim's attitude to the party drops to −3 in the Narrator's memory, and the dead are recorded there.
+- **People who are points of interest** (a portrait on the map, like Sergeant Nine-Nine): attacking one makes them a token on the spot, neutral, a minion with fists (provisional), and the fight starts.
+- **Allies (friendly fire):**
+  - **On the overworld:** the attack resolves on the map. No fight starts, and the Narrator rules what follows. A character brought to 0 HP outside a fight is **Downed**: they can't act until an ally stims them or the Narrator treats them.
+  - **In a fight:** any unit but yourself is a target, under the normal rules, with a warning on screen. Friendly fire earns no kills.
+- **Objects:** an object with HP takes the weapon's damage (cover breaks into rubble, barrels explode). Attacking anything else costs 2 AP and goes to the Narrator.
+- **The Narrator** puts every person the party can see or reach on the map as a token, maps a declared attack to actions (a target can be named by id or by exact name), and never refuses or softens one.
+- A fight that has no foes can never end as a win.
+
 ## The Narrator's memory
 
 A campaign of 50 hours and four players is far more story than any prompt should carry. Models also get worse as their input grows. So the engine keeps the campaign as data and gives the Narrator only what the moment needs, inside a hard cost ceiling. **The ceiling is $0.50 per Narrator turn**, every round of lookups included. On Sonnet 5.5 at medium effort, a call on a full 50-hour, 4-player save measured **$0.18 with nothing cached and $0.045 warm**.
@@ -1184,3 +1197,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 63. **The Narrator's wiki:** 3 lookups a turn, 8 keys a lookup, and the magic-lore thresholds (3 points).
 64. **Overworld rounds:** the examine, approach and exit costs (1, 2, 1 AP), the notice range (4 + bonus − Dexterity), the notice bonuses by tier, sitting out round 1 after an open attack, and the Narrator's queued actions spending next round's AP.
 65. **The Narrator's memory:** the $0.50 ceiling, 6 scenes per chapter, the 9,000-character budgets for active memory and transcript, the ledger caps (300 people, 200 threads, 1,500 facts), the forgetting curve (scenes/10).
+66. **Anyone is a target:** a point-of-interest person fights as a minion with fists; attacking something without HP costs 2 AP; Downed outside a fight lasts until a stim or treatment.

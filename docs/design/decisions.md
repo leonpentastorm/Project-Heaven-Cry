@@ -181,3 +181,9 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       - Acts so a long campaign carries only the current act.
     - **Measured:** a synthetic 4-player save with 300 scenes, 250 people, 180 threads, about 1,500 facts and 12,000 archived lines. Live on Sonnet 5.5 at medium effort it cost $0.18 cold and $0.045 warm. A test keeps the worst case under half the ceiling.
     - **Not yet:** a host-visible memory panel (to read and fix the ledger), embeddings (only if BM25 misses get measured), and probe-fact recall tests on a real played campaign.
+81. **Anyone is a target** (Leon: "let players shoot anything and everything, it's an RPG").
+    - **Who can be attacked:** neutral people, points-of-interest people (they become tokens), allies (friendly fire: resolved on the map outside a fight; any unit in a fight), and objects.
+    - **No farming:** no XP or weapon kills from a fight on people who weren't hostile, and no kills from friendly fire.
+    - **The Narrator** places a token for everyone present and may target by name. "Doc Michel" had no token, being only in the Narrator's prose, so there was nothing to shoot.
+    - **Old saves:** the missing art came from a session saved before the art pass, since a save keeps the campaign as it was at session start. Leon will start new saves, so the engine's `campaign/refresh` exists but isn't wired into resuming.
+    - **Custom campaigns:** a loaded campaign file is marked `custom` and may not use a built-in id.

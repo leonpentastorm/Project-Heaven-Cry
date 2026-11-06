@@ -363,14 +363,24 @@ export class MainLogic extends DCLogic {
     const worldClick = (k) => () => {
       if (!mover) return toast(inFight ? 'A fight is on: act on the combat grid.' : 'You have no character to act with.');
       const u = tok[k];
-      if (TARGETED.includes(W)) { if (!u || (W === 'stim' ? u.side !== 'pc' : u.side !== 'foe')) return toast(W === 'stim' ? 'Click an ally.' : 'Click a person or enemy on the map.'); return this.setState({ wTarget: u.id }); }
+      if (TARGETED.includes(W)) {
+        // Anyone and anything is a target (spec: Anyone is a target): people, allies, points of interest, objects.
+        const attacking = ['shot', 'aimed', 'melee'].includes(W), o = objAt[k];
+        if (u && u.charId === mover.id) return toast('Pick someone else.');
+        if (W === 'stim') { if (!u || u.side !== 'pc') return toast('Click an ally.'); return this.setState({ wTarget: u.id }); }
+        if (W === 'analyze') { if (!u || u.side !== 'foe') return toast('Click a person or enemy on the map.'); return this.setState({ wTarget: u.id }); }
+        if (attacking && u) return this.setState({ wTarget: u.id });
+        if (attacking && o && !o.hidden) return this.setState({ wTarget: 'obj:' + o.id });
+        return toast('Click a person, an ally or an object.');
+      }
       if (['move', 'sprint', 'sneak'].includes(W)) act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: W });
     };
     const areaCells = cellsFor(true, worldClick);
     // The overworld action panel (spec: Overworld rounds): the combat actions, the same AP, on the story's map.
     const wW = c ? WEAPON[c.weapon] : null, wMelee = wW ? isMelee(wW) : false, apNow = c ? apLeft(g, c) : 0, mv = c ? movement(c) : 1;
     const sneaking = !!(c && (g.story.sneak || {})[c.id]), hiddenNow = sneaking && !!(g.story.hidden || {})[c.id];
-    const tgt = S.wTarget ? units.find((u) => u.id === S.wTarget) : null;
+    const tgtObj = S.wTarget && S.wTarget.startsWith('obj:') ? objs.find((o) => o.id === S.wTarget.slice(4)) : null;
+    const tgt = S.wTarget ? (tgtObj ? { id: S.wTarget, name: tgtObj.name, obj: tgtObj, side: 'obj' } : units.find((u) => u.id === S.wTarget)) : null;
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile']]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
@@ -383,9 +393,10 @@ export class MainLogic extends DCLogic {
     const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W);
     const wHint = !mover ? 'You have no character to act with.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
-      : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.')) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
+      : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : (tgt.obj.portrait ? ': a person; this starts a fight.' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
-    const wConfirm = () => { if (!c) return; if (TARGETED.includes(W)) { if (!tgt) return; act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, targetId: tgt.npc ? tgt.id : tgt.charId }); this.setState({ wTarget: null, ...(isAttack ? { area: false } : {}) }); if (isAttack) go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
+    const wConfirm = () => { if (!c) return; if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && !tgt.obj?.hp && tgt.side !== 'pc' && !(tgt.obj && !tgt.obj.portrait);
+        act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
@@ -434,7 +445,7 @@ export class MainLogic extends DCLogic {
       zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
       miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
       objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby, hasNearby: nearby.length > 0,
-      wGroups, wHint, wHasConfirm: canAct && (instant || (TARGETED.includes(W) && !!tgt)), wConfirm, wConfirmLabel: isAttack ? 'Attack · starts the fight' : 'Confirm',
+      wGroups, wHint, wHasConfirm: canAct && (instant || (TARGETED.includes(W) && !!tgt)), wConfirm, wConfirmLabel: isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.obj.portrait ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       wPips: Array.from({ length: ROUND_AP }, (_, i) => ({ key: i, style: 'flex: 1; height: 8px; border-radius: 3px; background: ' + (i < apNow ? '#FFFFFF' : '#232D3F') })),

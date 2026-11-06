@@ -50,6 +50,8 @@ export interface Unit {
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
   /** A music trait's modifier to the weapon skill while its song state holds (spec: Music). */
   song?: number;
+  /** The overworld token this enemy came from (spec: Overworld rounds): survivors go back on the map. */
+  npcId?: string;
   /** Attacked in the open from the overworld: this unit sits out every round before this one (spec: Overworld rounds). */
   waitRound?: number;
   /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
@@ -66,7 +68,7 @@ export interface Unit {
   dmgMult?: number; dur?: number; maxDur?: number; mods?: string[]; offWeapon?: string | null; offAmmo?: number; light?: number; darkSight?: boolean; hazardImmune?: string[];
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
 }
-export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
+export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -337,7 +339,8 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (!alive(tgt) && !tgt.downed) return fail('Target is out of the fight.');
   if (att.ap < ap) return fail('Needs ' + ap + ' AP.');
   if ((mode === 'burst' || mode === 'auto') && !(w.modes || []).includes(mode)) return fail('This weapon has no ' + (mode === 'auto' ? 'full auto' : 'burst') + '.');
-  if (!sideSees(cb, att.side, tgt)) return fail('You can\'t see it.');
+  // An ally (friendly fire) needs this unit's own sight; the squad's shared sight covers the other side.
+  if (tgt.side === att.side ? !unitSees(cb, att, tgt.pos) : !sideSees(cb, att.side, tgt)) return fail('You can\'t see it.');
   if (!melee && att.maxDur && (att.dur ?? 1) <= 0) return fail('Broken: Field Repair first.');
   if (!melee && (w.properties || []).includes('requires_braced_or_prone') && !att.braced && !att.prone) return fail('Brace it first (1 AP), or go prone.');
   const r = dist(att.pos, tgt.pos);
@@ -392,7 +395,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
       tgt.hp = Math.max(0, tgt.hp - damage);
       if (tgt.hp === 0) { if (tgt.side === 'foe') { tgt.dead = true; } else { tgt.downed = true; } killed = true; }
     }
-    if (killed) att.kills += tgt.tier === 'boss' ? 3 : 1;
+    if (killed && tgt.side !== att.side) att.kills += tgt.tier === 'boss' ? 3 : 1; // friendly fire earns no kills
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated')) { tgt.bleed = 3; injury += ' · Bleeding'; }
     if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);
@@ -462,6 +465,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
 
 export function checkOver(cb: Combat) {
   const foes = cb.units.filter((u) => u.side === 'foe'), pcs = cb.units.filter((u) => u.side === 'pc');
+  if (!foes.length) return cb.over; // a fight with no foes never ends as a win
   if (foes.every((u) => u.dead || u.downed)) cb.over = 'win';
   else if (pcs.every((u) => u.dead || u.downed)) cb.over = 'loss';
   return cb.over;

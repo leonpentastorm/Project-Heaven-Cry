@@ -656,3 +656,76 @@ describe("the Narrator's memory (spec: The Narrator's memory)", () => {
     expect(recall(g, 'Line 3')[0]).toBeTruthy();
   });
 });
+
+describe('anyone is a target (spec: Anyone is a target)', () => {
+  const two = (seed: string) => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, seed);
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'Seven') }, 'p2');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Open.' } as any }, 'host');
+    const [a, b] = Object.keys(g.characters);
+    return { g, a, b };
+  };
+  it('friendly fire on the overworld: the shot resolves on the map, no fight; the Narrator hears of it', () => {
+    let { g, a, b } = two('ff');
+    const hp0 = g.characters[b].hp;
+    g = apply(g, { type: 'world/act', charId: a, act: 'attack', targetId: b, mode: 'melee' }, 'host');
+    expect(g.phase).toBe('story'); expect(g.story.needs).toBe(true);
+    expect(g.story.entries.some((e) => /MPAT .*Seven/.test(e.text))).toBe(true);
+    expect(memoryOf(g).facts.some((f) => f.canon && /attacked Seven \(an ally\)/.test(f.text))).toBe(true);
+    // a Downed ally stays down on the overworld until stimmed or treated
+    g.characters[b].hp = 0;
+    expect(() => apply(g, { type: 'world/act', charId: b, act: 'move', to: 'H4' }, 'p2')).toThrow(/Downed/);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', treat: [{ charId: b, loc: 'all' }] } as any }, 'host');
+    expect(g.characters[b].hp).toBe(1); expect(hp0).toBeGreaterThan(1);
+  });
+  it('a point-of-interest person becomes a token and the fight starts; a bystander fight gives no XP and is remembered', () => {
+    let { g, a } = two('poi');
+    g.story.positions![a] = keyOf('H4')!; // next to Sergeant Nine-Nine at H5
+    const xp0 = g.characters[a].xp;
+    g = apply(g, { type: 'world/act', charId: a, act: 'attack', targetId: 'Sergeant Nine-Nine', mode: 'melee' }, 'host');
+    expect(g.phase).toBe('combat'); expect(g.combat!.noXp).toBe(true);
+    const nine = g.combat!.units.find((u) => u.name === 'Sergeant Nine-Nine')!;
+    expect(nine.img).toBe('char-m813-nine-nine'); expect(nine.npcId).toBeTruthy();
+    expect(memoryOf(g).people.find((p) => p.name === 'Sergeant Nine-Nine')!.attitude).toBe(-3);
+    for (const u of g.combat!.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }
+    const cur = active(g.combat!)!; g = apply(g, { type: 'combat/end-turn', unitId: cur.id }, g.characters[cur.charId!]?.owner || 'host');
+    expect(g.characters[a].xp).toBe(xp0); expect(memoryOf(g).people.find((p) => p.name === 'Sergeant Nine-Nine')!.status).toBe('dead');
+  });
+  it("objects: shoot what has HP; anything else is the Narrator's to rule", () => {
+    let { g, a } = two('obj');
+    const pod = storyObjects(g).find((o) => o.name === 'Enemy drop pod')!; const hp = pod.hp!;
+    g.story.positions![a] = keyOf('D9')!;
+    g = apply(g, { type: 'world/act', charId: a, act: 'attack', objId: pod.id, mode: 'shot' }, 'host');
+    expect(storyObjects(g).find((o) => o.id === pod.id)?.hp ?? 0).toBeLessThan(hp);
+  });
+  it('queued actions find a target by name; mid-fight anyone is a target, and friendly fire earns no kills', () => {
+    let { g, a, b } = two('names');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Doc Michel steps out.', npcs: [{ action: 'place', name: 'Doc Michel', side: 'neutral', tier: 'minion', weapon: 'service_pistol', at: 'J4' }], actions: [{ charId: a, act: 'attack', targetId: 'Doc Michel', mode: 'shot' }] } as any }, 'host');
+    expect(g.phase).toBe('combat'); expect(g.combat!.units.some((u) => u.name === 'Doc Michel')).toBe(true);
+    const cb = g.combat!; const me = cb.units.find((u) => u.charId === a)!, ally = cb.units.find((u) => u.charId === b)!;
+    ally.pos = keyOf('I5')!; me.pos = keyOf('I4')!; me.waitRound = undefined; cb.order = [me.id, ...cb.order.filter((x) => x !== me.id)]; cb.turn = 0; me.ap = 6;
+    g = apply(g, { type: 'combat/attack', unitId: me.id, targetId: ally.id, mode: 'melee' }, 'host');
+    expect(g.combat!.units.find((u) => u.charId === a)!.kills).toBe(0);
+  });
+  it('a resumed save from before the art gets it, without losing what play changed', () => {
+    let { g } = two('old');
+    // make it look like a pre-art save
+    for (const z of g.campaign!.zones) { delete (z as any).art; delete (z as any).npcs; for (const o of z.objects || []) { delete (o as any).sprite; delete (o as any).portrait; } }
+    delete (g.campaign as any).sprites; for (const o of g.story.objects!) { delete o.sprite; delete o.portrait; }
+    const nine = g.story.objects!.find((o) => o.name === 'Sergeant Nine-Nine')!; nine.approaches[0].tries.push({ charId: 'x', name: 'X', ok: true, total: 15, scene: 1 });
+    g = apply(g, { type: 'campaign/refresh' }, 'host');
+    expect(g.campaign!.zones[0].art?.map).toBe('map-m813-shield-line');
+    const n2 = g.story.objects!.find((o) => o.name === 'Sergeant Nine-Nine')!;
+    expect(n2.portrait).toBe('char-m813-nine-nine'); expect(n2.approaches[0].tries).toHaveLength(1);
+    expect(g.story.objects!.find((o) => o.name === 'Enemy drop pod')!.sprite).toBe('sprite-obj-drop-pod');
+    expect(() => apply(g, { type: 'campaign/refresh' }, 'p2')).toThrow(/Host only/);
+  });
+  it("a custom campaign file is marked custom and can't take a built-in id", () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'custom');
+    g = apply(g, { type: 'campaign/load', campaign: { ...BUILT_IN_CAMPAIGNS[0], title: 'Mine' } as any }, 'host');
+    expect(g.campaign!.custom).toBe(true); expect(g.campaign!.id).toBe('m813-custom');
+  });
+});
