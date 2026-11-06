@@ -3500,8 +3500,8 @@
     "into-the-dark": {
       "label": "Wick — Into the Dark",
       "collection": "wick-production-v1",
-      "path": "art/perks/wick/production-v1/into-the-dark.png",
-      "sha256": "88f55b2358e4f5043bf6454d005fd4aebc6f5ac5e760d313e36829395dbb639b",
+      "path": "art/perks/wick/production-v1/revisions/v2/into-the-dark.png",
+      "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -3512,14 +3512,18 @@
       "production_approved": false,
       "batch": "D",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/into-the-dark.png",
-        "128": "art/perks/wick/production-v1/exports/128/into-the-dark.png",
-        "64": "art/perks/wick/production-v1/exports/64/into-the-dark.png",
-        "56": "art/perks/wick/production-v1/exports/56/into-the-dark.png",
-        "48": "art/perks/wick/production-v1/exports/48/into-the-dark.png",
-        "44": "art/perks/wick/production-v1/exports/44/into-the-dark.png",
-        "40": "art/perks/wick/production-v1/exports/40/into-the-dark.png"
-      }
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/into-the-dark.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/into-the-dark.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/into-the-dark.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/into-the-dark.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/into-the-dark.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/into-the-dark.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/into-the-dark.png"
+      },
+      "tier": "acquired",
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/into-the-dark.png",
+      "previous_revision_path": "art/perks/wick/production-v1/into-the-dark.png"
     },
     "iron-stomach": {
       "label": "Wick — Iron Stomach",

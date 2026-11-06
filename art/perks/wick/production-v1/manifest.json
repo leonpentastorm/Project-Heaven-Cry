@@ -197,21 +197,26 @@
       "family": "perks",
       "order": 9,
       "mood": "Tense, Proud",
-      "action": "Seen from behind, cape prominent, Wick strides without pause through a pitch-black doorway that looms over it.",
-      "screen": "Hidden (from behind)",
-      "prop": "Dark doorway",
-      "path": "art/perks/wick/production-v1/into-the-dark.png",
+      "action": "Wick steps through a large stone arch into the dark, body and head turned three-quarter toward the viewer at the threshold; large visible pixel-screen face and cape, darkness beyond the arch.",
+      "screen": "Determined visible pixel eyes and a small confident smile",
+      "prop": "Stone arch doorway",
+      "path": "art/perks/wick/production-v1/revisions/v2/into-the-dark.png",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/into-the-dark.png",
-        "128": "art/perks/wick/production-v1/exports/128/into-the-dark.png",
-        "64": "art/perks/wick/production-v1/exports/64/into-the-dark.png",
-        "56": "art/perks/wick/production-v1/exports/56/into-the-dark.png",
-        "48": "art/perks/wick/production-v1/exports/48/into-the-dark.png",
-        "44": "art/perks/wick/production-v1/exports/44/into-the-dark.png",
-        "40": "art/perks/wick/production-v1/exports/40/into-the-dark.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/into-the-dark.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/into-the-dark.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/into-the-dark.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/into-the-dark.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/into-the-dark.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/into-the-dark.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/into-the-dark.png"
       },
       "batch": "D",
-      "source_sha256": "46ce7da176340a276be57bbe4bcb52a642dfaeeafa4cbc067f228fd70abfe75b"
+      "source_sha256": "cc9d8c818ca38532b277b95ee4f268d6b235ef947faf4cc7e38829296f306623",
+      "tier": "acquired",
+      "review_round": 4,
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/into-the-dark.png",
+      "previous_revision_path": "art/perks/wick/production-v1/into-the-dark.png"
     },
     {
       "id": "iron-stomach",

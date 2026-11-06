@@ -130,6 +130,13 @@ def export(args):
              'background': 'transparent', 'ink': '#FFFFFF', 'usage': 'trait icon' if family == 'traits' else 'perk icon',
              'data_id': job['data_id'], 'status': 'review-candidate', 'production_approved': False,
              'batch': 'revisions' if args.revision else job['batch'], 'exports': exports}
+    if job.get('tier'):
+        asset['tier'] = job['tier']
+        if job['tier'] == 'ultimate':
+            asset['visibility'] = 'awarded-only'
+        if job['tier'] == 'mastered':
+            asset['mastered_mark'] = 'four-point star, upper left'
+            asset['medallion_safe_circle'] = 0.9
     if args.revision:
         asset['revision'] = args.round
         asset['previous_path'] = previous.get('previous_path', previous['path'])
@@ -153,6 +160,11 @@ def export(args):
         'icons': []}
     entry = {k: job[k] for k in ('id', 'data_id', 'name', 'family', 'order', 'mood', 'action', 'screen', 'prop')}
     entry.update(path=relative(path), exports=exports, batch=asset['batch'], source_sha256=sha(args.source))
+    for key in ('tier', 'visibility', 'mastered_mark', 'medallion_safe_circle'):
+        if key in asset:
+            entry[key] = asset[key]
+    if job.get('review_round'):
+        entry['review_round'] = job['review_round']
     if job.get('user_override'):
         asset['user_override'] = entry['user_override'] = job['user_override']
         catalog[family][job['id']] = asset
@@ -189,6 +201,17 @@ def export(args):
     elif args.production_revision:
         progress.setdefault('production_revisions', {})[job['id']] = args.production_revision
     progress['catalog_coverage'] = {family: len(catalog[family]) for family in ('traits', 'perks')}
+    if job.get('review_round') == 4:
+        fixes = progress.setdefault('review_4_fixes_delivered', [])
+        if job['id'] not in fixes:
+            fixes.append(job['id'])
+    progress['target'] = {family: len(json.loads((ROOT / f'data/{family}.json').read_text())['items'])
+                          for family in ('traits', 'perks')}
+    progress['requested_new_icons'] = sum(progress['target'].values()) - 11
+    progress['remaining_new_icons'] = [item['id'].replace('_', '-')
+        for family in ('traits', 'perks')
+        for item in json.loads((ROOT / f'data/{family}.json').read_text())['items']
+        if item['id'] not in {a.get('data_id', key.replace('-', '_')) for key, a in catalog[family].items()}]
     progress.pop('generation_pause', None)
     dump(PROGRESS, progress)
     update_checksums()
