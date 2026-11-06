@@ -6699,7 +6699,7 @@
       "order": 1,
       "name": "Shield Line",
       "family": "maps",
-      "path": "art/maps/m813/v1/shield_line.png",
+      "path": "art/maps/m813/v1/revisions/v2/shield_line.png",
       "dimensions": [
         1600,
         1100
@@ -6712,21 +6712,23 @@
       "layout_guide": "art/briefs/m813-tutorial/maps/shield_line-layout.png",
       "width": 1600,
       "height": 1100,
-      "sha256": "d190837d348e7ed1ef6374f08378fcebb440adb6fef080cc6b06778e95bce54c",
-      "source_path": "art/maps/m813/v1/sources/map-m813-shield-line.png",
-      "source_sha256": "2d0d3fe2a2d011b0204b31934ee2ff303457850da3c07e54d7feb6bade593312",
+      "sha256": "5ea18c35cbe0bcfb51963bd108c21672c26c55dbc99ba537b8db481e088ecceb",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-shield-line.png",
+      "source_sha256": "6cdc33ac9488e1392aa0d3f4b566aa6750ac852e981069984c40b45fcddeba99",
       "source_dimensions": [
-        1513,
-        1039
+        1512,
+        1040
       ],
       "previews": {
-        "320": "art/maps/m813/v1/previews/map-m813-shield-line-320px.png"
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-shield-line-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/maps/m813/v1/sources/map-m813-shield-line.prompt.txt"
+      "previous_path": "art/maps/m813/v1/shield_line.png",
+      "previous_revision_path": "art/maps/m813/v1/shield_line.png",
+      "revision": 2
     }
   }
 }
