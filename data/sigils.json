@@ -7,9 +7,22 @@
       "subject_element",
       "subject_effect"
     ],
+    "and_one_of": [
+      "form",
+      "motion"
+    ],
     "max_words": "sigil_max_words",
-    "reach_without_push": "adjacent",
-    "order": "subject(s) -> form -> motion -> modifier",
+    "shapes": {
+      "stack": "2 glyphs on one tile: lands on an adjacent tile (with PUSH: 8 tiles + range bonus from the stack)",
+      "line": "2-4 tiles in a straight row: fires from the far end along the row; range 4 / 8 / 12 by length + range bonus; hits the first creature",
+      "ring": "3-4 tiles around a centre tile: radius 1 around the centre, or support words on whoever stands on it"
+    },
+    "draw_cost": "each word's charge, Glyph AP, 1 Flux",
+    "evoke_cost": "1 AP; 1 charge per glyph minus Sigil Core saving, min 1",
+    "shape_words": {
+      "stay": "in a Line: the line itself becomes a wall for as long as the glyphs last; in a Ring: the centre",
+      "spread": "in a Line: a 3-tile cone from the far end"
+    },
     "multiple_subjects": "allowed if length permits; damage sums, each element's own rider applies"
   },
   "example": {
@@ -18,13 +31,14 @@
       "condense",
       "push"
     ],
-    "charge": 4,
+    "shape": "line of 3",
+    "draw_charge": 4,
+    "evoke_charge": 3,
     "damage": 30,
     "range_tiles": 8,
-    "ap_at_expression_1": 3,
-    "check": "2+1+1=4 charge; 30x1.0"
+    "ap_at_expression_1": 4
   },
-  "notes": "The spec defers the word list to this file. Every word is provisional: charge, damage and riders are new numbers, calibrated so FIRE-CONDENSE-PUSH matches the spec example.",
+  "notes": "Rules 1.2 (Sigils on the map). LINE, WALL and CONE became shapes; SPARK, PULL and SILENCE replace them. Every number is provisional.",
   "items": [
     {
       "id": "fire",
@@ -36,7 +50,8 @@
       "provisional": true,
       "damage": 30,
       "damage_type": "elemental",
-      "on_crit": "burning"
+      "on_crit": "burning",
+      "grand": "Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save."
     },
     {
       "id": "freeze",
@@ -52,7 +67,8 @@
         "condition": "slowed",
         "save": "body"
       },
-      "name": "Freeze"
+      "name": "Freeze",
+      "grand": "Ice sheet: difficult ground; a Body save each move or fall Prone."
     },
     {
       "id": "shock",
@@ -65,7 +81,8 @@
       "damage": 30,
       "damage_type": "elemental",
       "ignores": "half_cover",
-      "name": "Shock"
+      "name": "Shock",
+      "grand": "Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned."
     },
     {
       "id": "stone",
@@ -76,7 +93,8 @@
       "text": "Earth. Damage 35, Sigil (physical-like, armour applies).",
       "provisional": true,
       "damage": 35,
-      "damage_type": "sigil"
+      "damage_type": "sigil",
+      "grand": "Earthworks: up to 4 half-cover pillars rise where you choose."
     },
     {
       "id": "gale",
@@ -88,7 +106,21 @@
       "provisional": true,
       "damage": 15,
       "damage_type": "sigil",
-      "push_tiles": 2
+      "push_tiles": 2,
+      "grand": "Cyclone: anyone entering is pushed 2 tiles outward; shots through it -5."
+    },
+    {
+      "id": "spark",
+      "word": "SPARK",
+      "class": "subject_element",
+      "charge": 1,
+      "flux": 1,
+      "text": "A snap of current. Damage 15, Elemental. The cheapest attack.",
+      "provisional": true,
+      "damage": 15,
+      "damage_type": "elemental",
+      "name": "Spark",
+      "grand": "Static: attack rolls of 1-3 inside jam the weapon."
     },
     {
       "id": "ward",
@@ -98,7 +130,8 @@
       "flux": 1,
       "text": "A shield of 30 on the target (x Sigil multiplier), until the end of combat.",
       "provisional": true,
-      "shield": 30
+      "shield": 30,
+      "grand": "Dome: allies inside +2 Defense and a 20 shield at each turn start (does not stack)."
     },
     {
       "id": "mend",
@@ -108,7 +141,8 @@
       "flux": 1,
       "text": "Heals 25 (x Sigil multiplier x Healing given).",
       "provisional": true,
-      "heal": 25
+      "heal": 25,
+      "grand": "Spring: allies starting a turn inside heal 10 x Healing multiplier."
     },
     {
       "id": "bind",
@@ -121,7 +155,8 @@
       "applies": {
         "condition": "pinned",
         "save": "body"
-      }
+      },
+      "grand": "Tar: Pinned on entering (Body save)."
     },
     {
       "id": "blind",
@@ -135,7 +170,8 @@
         "condition": "blinded",
         "save": "body"
       },
-      "name": "Blind"
+      "name": "Blind",
+      "grand": "Fog: no one inside sees beyond 1 tile."
     },
     {
       "id": "slow",
@@ -157,7 +193,8 @@
           "target": "target",
           "save": "body"
         }
-      ]
+      ],
+      "grand": "Mire: Movement halved inside."
     },
     {
       "id": "muddle",
@@ -170,7 +207,8 @@
       "applies": {
         "condition": "left_brain_debuff",
         "save": "brain"
-      }
+      },
+      "grand": "Maze: Brain save at turn start or stagger 1 tile in a random direction."
     },
     {
       "id": "dread",
@@ -183,7 +221,8 @@
       "applies": {
         "condition": "shaken",
         "save": "heart"
-      }
+      },
+      "grand": "Haunting: enemies inside are Shaken (Heart save each turn)."
     },
     {
       "id": "veil",
@@ -193,7 +232,8 @@
       "flux": 1,
       "text": "The target tile fills with smoke-bots: blocks sight in radius 1.",
       "provisional": true,
-      "blocks_sight_radius": 1
+      "blocks_sight_radius": 1,
+      "grand": "Smoke field: blocks all sight; everyone inside counts as Hidden."
     },
     {
       "id": "light",
@@ -203,7 +243,24 @@
       "flux": 1,
       "text": "Lights radius 4 for the scene; reveals Hidden within it.",
       "provisional": true,
-      "reveals_hidden_radius": 4
+      "reveals_hidden_radius": 4,
+      "grand": "Noon: Hidden revealed; enemies inside -2 to hit."
+    },
+    {
+      "id": "silence",
+      "word": "SILENCE",
+      "class": "subject_effect",
+      "charge": 2,
+      "flux": 1,
+      "text": "No Sigils, Outbursts or prayers for 1 round (Brain save).",
+      "provisional": true,
+      "applies": {
+        "condition": "silenced",
+        "save": "brain",
+        "rounds": 1
+      },
+      "name": "Silence",
+      "grand": "Dead zone: no Sigils, Outbursts or prayers inside, yours included."
     },
     {
       "id": "condense",
@@ -214,7 +271,8 @@
       "text": "Single target. Damage x1.",
       "provisional": true,
       "form_mult": 1.0,
-      "area": "single"
+      "area": "single",
+      "grand": "Gravity well: everything inside is pulled 1 tile toward the staff at turn start."
     },
     {
       "id": "spread",
@@ -225,41 +283,8 @@
       "text": "Burst of radius 2 at the point of impact. Damage x0.6.",
       "provisional": true,
       "form_mult": 0.6,
-      "area": "radius_2"
-    },
-    {
-      "id": "line",
-      "word": "LINE",
-      "class": "form",
-      "charge": 1,
-      "flux": 1,
-      "text": "A 6-tile line from the caster. Damage x0.7.",
-      "provisional": true,
-      "form_mult": 0.7,
-      "area": "line_6"
-    },
-    {
-      "id": "wall",
-      "word": "WALL",
-      "class": "form",
-      "charge": 2,
-      "flux": 1,
-      "text": "A 4-tile wall that lasts 2 rounds; anyone entering takes the effect. Damage x0.5.",
-      "provisional": true,
-      "form_mult": 0.5,
-      "area": "wall_4",
-      "lasts_rounds": 2
-    },
-    {
-      "id": "cone",
-      "word": "CONE",
-      "class": "form",
-      "charge": 1,
-      "flux": 1,
-      "text": "A 3-tile cone. Damage x0.6.",
-      "provisional": true,
-      "form_mult": 0.6,
-      "area": "cone_3"
+      "area": "radius_2",
+      "grand": "Bloom: any spell landing inside spreads 1 more radius."
     },
     {
       "id": "push",
@@ -269,7 +294,8 @@
       "flux": 1,
       "text": "Sends the spell out to 8 tiles. Without it, a spell reaches only an adjacent tile.",
       "provisional": true,
-      "range_tiles": 8
+      "range_tiles": 8,
+      "grand": "Rampart wind: shots from outside into it -3."
     },
     {
       "id": "stay",
@@ -279,7 +305,8 @@
       "flux": 1,
       "text": "The spell holds its tile for 2 rounds (plus the Sigil duration bonus).",
       "provisional": true,
-      "lasts_rounds": 2
+      "lasts_rounds": 2,
+      "grand": "Stasis: conditions inside do not tick down."
     },
     {
       "id": "seek",
@@ -290,7 +317,8 @@
       "text": "The spell curves around cover: ignores half and full cover against one target. Needs PUSH.",
       "provisional": true,
       "ignores": "cover",
-      "requires_word": "push"
+      "requires_word": "push",
+      "grand": "Hunting ground: allies' attacks on enemies inside ignore half cover."
     },
     {
       "id": "return",
@@ -300,7 +328,20 @@
       "flux": 1,
       "text": "Targets yourself or an ally you touch; replaces PUSH for support words.",
       "provisional": true,
-      "target": "self_or_adjacent_ally"
+      "target": "self_or_adjacent_ally",
+      "grand": "Sanctuary: an ally inside who would drop to 0 HP stays at 1 instead (once each)."
+    },
+    {
+      "id": "pull",
+      "word": "PULL",
+      "class": "motion",
+      "charge": 1,
+      "flux": 1,
+      "text": "Drags the target 3 tiles toward the pattern.",
+      "provisional": true,
+      "pull_tiles": 3,
+      "name": "Pull",
+      "grand": "Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start."
     },
     {
       "id": "twice",
@@ -310,7 +351,8 @@
       "flux": 2,
       "text": "Repeat the spell at a second target within range. Counts as 1 word for length, 1 Flux extra.",
       "provisional": true,
-      "extra_target": 1
+      "extra_target": 1,
+      "grand": "Echo field: the first spell each round cast by an ally inside repeats at half effect."
     }
   ]
 }

@@ -1099,7 +1099,7 @@
       ],
       "example": {
         "op": "unlock_word",
-        "word": "wall",
+        "word": "stay",
         "standalone": true
       }
     },
@@ -3345,6 +3345,150 @@
       "used_by": [
         "items:field_boots"
       ]
+    },
+    {
+      "id": "keystone",
+      "tier": "bespoke",
+      "summary": "Glyph Mason: cut a permanent glyph.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "keystone_reach",
+      "tier": "bespoke",
+      "summary": "Evoke Keystone patterns from range.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "grand_form",
+      "tier": "bespoke",
+      "summary": "Grand Sigilist: enlarge a word into its Grand form.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "grand_immunity",
+      "tier": "bespoke",
+      "summary": "Ignore your own Grand form.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "emotion_gauges",
+      "tier": "bespoke",
+      "summary": "Heartfed: four emotion gauges.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "emotion_fuel",
+      "tier": "bespoke",
+      "summary": "Heartfed: gauges cut cost and raise effect.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "emotion_overflow",
+      "tier": "bespoke",
+      "summary": "Heartfed: a full gauge starts the next Outburst at stage 2.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "heart_link",
+      "tier": "bespoke",
+      "summary": "Heartbinder: link to an ally.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "cast_from_link",
+      "tier": "bespoke",
+      "summary": "Heartbinder: cast from a linked ally.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "share_damage",
+      "tier": "bespoke",
+      "summary": "Heartbinder: take part of a linked ally's damage.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "body_form",
+      "tier": "bespoke",
+      "summary": "Vessel: hold a body form like an Outburst.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "body_release",
+      "tier": "bespoke",
+      "summary": "Vessel: release all forms in one strike.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "manifest_twin",
+      "tier": "bespoke",
+      "summary": "Twinbound: design the Twin.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "summon_twin",
+      "tier": "bespoke",
+      "summary": "Twinbound: call the Twin as a unit.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "twin_bond",
+      "tier": "bespoke",
+      "summary": "Twinbound: Strain when the Twin falls.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
+    },
+    {
+      "id": "forbid_action",
+      "tier": "bespoke",
+      "summary": "Forbid listed actions while the effect lasts.",
+      "count": 1,
+      "params": [],
+      "used_by": [],
+      "provisional": true
     }
   ]
 }

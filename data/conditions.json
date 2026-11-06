@@ -99,6 +99,34 @@
       "adjudication": "engine"
     },
     {
+      "id": "silenced",
+      "name": "Silenced",
+      "kind": "debuff",
+      "family": "brain",
+      "save": true,
+      "text": "No Sigils, Outbursts or prayers.",
+      "effects": [
+        {
+          "op": "forbid_action",
+          "actions": [
+            "draw_sigil",
+            "evoke",
+            "outburst",
+            "pray"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
       "id": "nausea",
       "name": "Nausea",
       "kind": "debuff",

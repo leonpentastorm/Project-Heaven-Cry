@@ -726,11 +726,11 @@
               "name": "Raise Cover",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "You can draw WALL as a one-word spell with no Subject: full cover on up to 2 tiles in range for 2 rounds + your Sigil duration bonus.",
+              "text": "You can Evoke a lone STAY glyph with no Subject as a cover rune: full cover on its tile and one tile next to it for 2 rounds + your Sigil duration bonus.",
               "effects": [
                 {
                   "op": "unlock_word",
-                  "word": "wall",
+                  "word": "stay",
                   "standalone": true
                 },
                 {
@@ -1934,7 +1934,7 @@
         "warden"
       ],
       "tutor": "Central Command Center",
-      "summary": "Deployable cover and turrets reinforced with WALL sigils.",
+      "summary": "Deployable cover and turrets reinforced with STAY cover runes.",
       "requires": [
         {
           "signature_total": {
@@ -1958,7 +1958,7 @@
           "name": "Deploy Cover",
           "ap_cost": 2,
           "uses": "at_will",
-          "text": "Place a portable barricade on an adjacent tile: half cover, 40 HP. Draw WALL on it to make it full cover.",
+          "text": "Place a portable barricade on an adjacent tile: half cover, 40 HP. Draw a STAY glyph on it to make it full cover.",
           "effects": [
             {
               "op": "state",
@@ -2646,6 +2646,467 @@
           "adjudication": "hybrid"
         }
       ]
+    },
+    {
+      "id": "glyph_mason",
+      "name": "Glyph Mason",
+      "parents": [
+        "mage",
+        "warden"
+      ],
+      "tutor": "The scholar halls",
+      "summary": "A mason's-chisel Evoker: one Keystone glyph that never fades, and the fight is planned around it.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "The scholar halls"
+        }
+      ],
+      "moves": [
+        {
+          "id": "keystone",
+          "name": "Keystone",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "Cut a glyph instead of drawing it (2 AP + 1 standard core): it never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. One at a time; it stays in that zone until you cut another.",
+          "effects": [
+            {
+              "op": "keystone",
+              "cost_core": 1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "survey",
+          "name": "Survey",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "You and your allies can Evoke a pattern that holds your Keystone from up to 2 tiles away, and it costs 1 charge less to fire.",
+          "effects": [
+            {
+              "op": "keystone_reach",
+              "value": 2
+            },
+            {
+              "op": "word_cost",
+              "words": [
+                "keystone_pattern"
+              ],
+              "value": -1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "foundation",
+          "name": "Foundation",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "Once per scene: this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.",
+          "effects": [
+            {
+              "op": "action_cost",
+              "action": "draw_sigil_word",
+              "value": "0_near_keystone"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
+    },
+    {
+      "id": "grand_sigilist",
+      "name": "Grand Sigilist",
+      "parents": [
+        "mage",
+        "defender"
+      ],
+      "tutor": "The southern sects",
+      "summary": "A staff Evoker: one word enlarged into a Grand form over the battlefield, and bare hands while the staff stands planted.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "The southern sects"
+        }
+      ],
+      "moves": [
+        {
+          "id": "enlarge",
+          "name": "Enlarge",
+          "ap_cost": 3,
+          "uses": "per_combat",
+          "text": "Once per combat (3 AP + 3 charge): plant the staff and enlarge one word you know into its Grand form (sigils.json, grand) over radius 2 around the staff for 3 rounds + duration bonus. While planted you can't draw or Evoke; pulling it out (1 AP, adjacent) ends it.",
+          "effects": [
+            {
+              "op": "grand_form",
+              "radius": 2,
+              "rounds": 3,
+              "charge": 3
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "empty_hand",
+          "name": "Empty Hand",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "With empty hands, unarmed strikes deal 20 Physical for 2 AP, and you get +2 Defense.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "defense",
+              "value": 2,
+              "when": "hands_empty"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "unarmed_damage",
+              "value": 20
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "earthed",
+          "name": "Earthed",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Inside your own Grand form you ignore its harm, and your unarmed strikes carry its element.",
+          "effects": [
+            {
+              "op": "grand_immunity"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
+    },
+    {
+      "id": "heartfed",
+      "name": "Heartfed",
+      "parents": [
+        "channeler",
+        "hexer"
+      ],
+      "tutor": "Arkvelton",
+      "summary": "Every feeling in the room is fuel: Rage, Grief, Fear and Devotion fill four gauges that feed the Outbursts keyed to them.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Arkvelton"
+        }
+      ],
+      "moves": [
+        {
+          "id": "four_hearts",
+          "name": "Four Hearts",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Four gauges, 0-5: Rage (+1 per 20 damage you take), Grief (+2 when an ally is Downed, +5 when one dies), Fear (+1 when a fight with an Elite or Boss starts, +2 when you're Shaken), Devotion (+1 when an ally heals or buffs you). Each design is keyed to one.",
+          "effects": [
+            {
+              "op": "emotion_gauges",
+              "max": 5
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "fed",
+          "name": "Fed",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Your Outbursts cost 10% less MP and hit 10% harder per point in their key gauge. Releasing spends that gauge.",
+          "effects": [
+            {
+              "op": "emotion_fuel",
+              "per_point": 0.1
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "overflow",
+          "name": "Overflow",
+          "ap_cost": 0,
+          "uses": "per_scene",
+          "text": "Once per scene, when a gauge reaches 5, your next Outburst keyed to it Begins at stage 2 with no Strain.",
+          "effects": [
+            {
+              "op": "emotion_overflow"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
+    },
+    {
+      "id": "heartbinder",
+      "name": "Heartbinder",
+      "parents": [
+        "channeler",
+        "medic"
+      ],
+      "tutor": "Bazaim",
+      "summary": "Heart links: cast from a linked ally's place, share their wounds, heal through the bond.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Bazaim"
+        }
+      ],
+      "moves": [
+        {
+          "id": "link",
+          "name": "Link",
+          "ap_cost": 1,
+          "uses": "at_will",
+          "text": "Bind your heart to one ally within 6 tiles (two from Will Power 5) for the scene, or until you're Downed.",
+          "effects": [
+            {
+              "op": "heart_link",
+              "range": 6
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "through",
+          "name": "Through",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Your Outbursts can Begin or Release from a linked ally's position; buffs you receive reach them at half.",
+          "effects": [
+            {
+              "op": "cast_from_link"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "share",
+          "name": "Share",
+          "ap_cost": 0,
+          "uses": "reaction",
+          "text": "When a linked ally takes damage, take up to half of it yourself. Heals you send through a link are x1.25. If a linked ally is Downed, you take 2 Strain.",
+          "effects": [
+            {
+              "op": "share_damage",
+              "value": 0.5
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
+    },
+    {
+      "id": "vessel",
+      "name": "Vessel",
+      "parents": [
+        "channeler",
+        "defender"
+      ],
+      "tutor": "Kemizuchi",
+      "summary": "No Outbursts: the heart charges the body instead, then lets it all go in one strike.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Kemizuchi"
+        }
+      ],
+      "moves": [
+        {
+          "id": "inner_charge",
+          "name": "Inner Charge",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Soul cast AP, 20 MP, 1 Strain: hold a body form like an Outburst, growing by stage. Iron (armour +10), Surge (melee and unarmed damage +15), Swift (+2 Movement), Pain to Power (+1 AP next turn per 20 damage taken, up to +2), Steady (no Prone or push; +2 Body saves), Heartbeat (heal 10 at turn start). Up to 2 forms (3 from Will Power 5).",
+          "effects": [
+            {
+              "op": "body_form",
+              "mp": 20
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "release_strike",
+          "name": "Release",
+          "ap_cost": 1,
+          "uses": "at_will",
+          "text": "End every form at once in one strike (free with a melee hit): +15 Soul damage per stage held.",
+          "effects": [
+            {
+              "op": "body_release",
+              "per_stage": 15
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "vessel_hands",
+          "name": "Empty Hand",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Unarmed strikes deal 20 Physical for 2 AP. The Vessel can't design or cast Outbursts.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "unarmed_damage",
+              "value": 20
+            },
+            {
+              "op": "forbid_action",
+              "actions": [
+                "outburst"
+              ]
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
+    },
+    {
+      "id": "twinbound",
+      "name": "Twinbound",
+      "parents": [
+        "channeler",
+        "trickster"
+      ],
+      "tutor": "Arkvelton",
+      "summary": "Your soul's twin in the upper realm leans through: a companion with its own turn and three built-in Outbursts.",
+      "requires": [
+        {
+          "signature_total": {
+            "class": "either_parent",
+            "min": 15
+          }
+        },
+        {
+          "signature_total": {
+            "class": "other_parent",
+            "min": 9
+          }
+        },
+        {
+          "tutor": "Arkvelton"
+        }
+      ],
+      "moves": [
+        {
+          "id": "manifest",
+          "name": "Manifest",
+          "ap_cost": 0,
+          "uses": "once",
+          "text": "Out of combat, once: design your Twin, its look (a portrait card) and three built-in Outbursts from schools and modules you know. They are fixed.",
+          "effects": [
+            {
+              "op": "manifest_twin",
+              "outbursts": 3
+            }
+          ],
+          "adjudication": "hybrid"
+        },
+        {
+          "id": "call",
+          "name": "Call",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "The Twin appears within 3 tiles and takes its own turn after yours with 4 AP: move, cast its built-in Outbursts (your MP, your Strain) or Guard you. HP 50% of yours, your Defense, Movement 1.5, your Will Power; at most 6 tiles from you.",
+          "effects": [
+            {
+              "op": "summon_twin",
+              "ap": 4,
+              "hp_mult": 0.5,
+              "leash": 6
+            }
+          ],
+          "adjudication": "engine"
+        },
+        {
+          "id": "bond",
+          "name": "Bond",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "If the Twin drops to 0 HP it vanishes and you take 3 Strain; call it again next scene. In game text it is only ever the twin, and it never speaks of the upper realm.",
+          "effects": [
+            {
+              "op": "twin_bond",
+              "strain": 3
+            }
+          ],
+          "adjudication": "engine"
+        }
+      ],
+      "provisional": true,
+      "rules": "1.2"
     }
   ]
 }
