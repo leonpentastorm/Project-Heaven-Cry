@@ -13,10 +13,10 @@ b10a8762340629b1ac224c15b7afff6e66ac1bad706ed12427f32ee9e7b176e2  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-d44dc6d2d5ce147fbfa87c5505e36980887894805630db0051c3ed2e51960e35  art/campaigns/m813/tutorial-v1/README.md
-d6e09e56bca98e00053a7cb1a73cffe8b4b78b752e0bd2abfb732a9eae718784  art/campaigns/m813/tutorial-v1/manifest.json
-42d847023d93cfe0e1b632a97df12937919e0c06043ac0585918b22752afc747  art/campaigns/m813/tutorial-v1/production-progress.json
-8f432a241b9b03b988cc891e0924eb7066ec0e50a552ea182fdb8df7c24eb50d  art/catalog.json
+cd3e0c9b907c8c72b231be10570db22cbbbb69f08b6fd8e1d3be013e9abefa49  art/campaigns/m813/tutorial-v1/README.md
+7dedf1ea11bf2d9387711be55f62c49bd54d7f667743671b45237258b2f138d3  art/campaigns/m813/tutorial-v1/manifest.json
+db8132564e38ac80a8f5fd1b816a5274adc3397a57a9764849ea9e8eb5b4357c  art/campaigns/m813/tutorial-v1/production-progress.json
+292aecd923623044a12aa12e4981a9f45a9250c43144522a1b016ca2222c4a52  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1240,6 +1240,7 @@ c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3  art/sprites/ob
 0bdfe4016155c93401f27620df67eb565867e21651a21ddb275803d5f2c0edbb  art/sprites/objects/v1/obj-drop-pod.png
 648918a08dc76513d5d15560083c18cb0a559cdb40bb6c94107b531bad3d8ae6  art/sprites/objects/v1/obj-escape-craft.png
 9d8019735f18112158b0f07be48c837527afebb71c5d40f2012196ff35e89105  art/sprites/objects/v1/obj-fallen-squad.png
+8e9b78b6691775e0c914eee24451c9cbc109e13285c18616edd1f8075e42d70a  art/sprites/objects/v1/obj-field-lamp.png
 1529a95e4ce2eec4c01816e42f7391410c56c6094ccdfa3d9643495c673054b0  art/sprites/objects/v1/obj-fire.png
 c6281f0f8aa59a4fed18f2e57a5d738e1e6aafa40591ed343ca4abc1b96d0f16  art/sprites/objects/v1/obj-footlockers.png
 c4857262c60724c1279f4a9a223f3e983a54267c33161584c439897f65fc11d3  art/sprites/objects/v1/obj-fuel-drum.png
@@ -1286,6 +1287,9 @@ eb7ab705dabb5381e4181c2782501bae21e9159d542f277b685f4e9c6df0ceec  art/sprites/ob
 738d31faa249abea28f51edc1d2810d0272b4ae03f6c5094e7b29803331c9ca5  art/sprites/objects/v1/previews/obj-fallen-squad-128px.png
 27fbf33181a58bfd8b40f70fc9ac1031684ea91787483571e3ffb339aa0e6199  art/sprites/objects/v1/previews/obj-fallen-squad-46px.png
 06633612c5349c0c42bec5ba81511438b00f4e87b4a61b188f51c95266e4137f  art/sprites/objects/v1/previews/obj-fallen-squad-64px.png
+c4dc952af3654a460259e6632d40a4ce6e90d8a2821d5afa63f19bbe437e36fe  art/sprites/objects/v1/previews/obj-field-lamp-128px.png
+07ea8073a3d92b84bb23a039c05c8d6d5baf527578ce4d6fad0032ffc774461c  art/sprites/objects/v1/previews/obj-field-lamp-46px.png
+0e181d3792609e2f91eb18bd08fca99eb1c032a3618c4d3105a0cc30766ce5b7  art/sprites/objects/v1/previews/obj-field-lamp-64px.png
 d0ad1c93017316e194ad782c3311ad763a1c1f3d7af86e245c649a8720ccea91  art/sprites/objects/v1/previews/obj-fire-128px.png
 f7b346cdd50e27a87a006ca91558052b9648f6fa2882def3276e8682e31c83b3  art/sprites/objects/v1/previews/obj-fire-46px.png
 06d4b87ab6775ef8808d56159ccc17b154b7786fbce78d341d112c6dee8d9f62  art/sprites/objects/v1/previews/obj-fire-64px.png
@@ -1370,6 +1374,8 @@ b93d7c4bfd46dc947afaef7eac43139d9d7d4ce2db56de130bce7adc2d6acbc6  art/sprites/ob
 186fdd259112736fe2383cc35888446e4c3baf3b335169ec69a1687ae90c267d  art/sprites/objects/v1/sources/obj-escape-craft.prompt.txt
 e7a764e5f8bfc5f096153bb174e8988c3295d1042967735079b03759affb2372  art/sprites/objects/v1/sources/obj-fallen-squad.png
 d3528fe38b4aa7b6b396435cb0c6d6ee4c1a07dd70f44598a0fe40b6c91c3b03  art/sprites/objects/v1/sources/obj-fallen-squad.prompt.txt
+dbee5030e449708ecd4db489831799ec07dd68ca413bda90eac71ed831665e07  art/sprites/objects/v1/sources/obj-field-lamp.png
+d82ddc6982269a0f4cfcdff6bd1e1bb49c992b1d93f2d99976c6eaba51f98562  art/sprites/objects/v1/sources/obj-field-lamp.prompt.txt
 e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e  art/sprites/objects/v1/sources/obj-fire.png
 0845902ff8a2393cb4e58c0dbe480ea157cd396806744e959d744172faa7a39f  art/sprites/objects/v1/sources/obj-fire.prompt.txt
 3202fcc1cddfaed403d51f28ba03d6b6858260e02c4e57e686e4d95cc1a182ba  art/sprites/objects/v1/sources/obj-footlockers.png

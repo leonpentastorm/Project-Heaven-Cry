@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-52 of 52 new images delivered. All are review candidates pending Leon.
+53 of 53 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -64,3 +64,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `obj-escape-craft` | E | [PNG](../../../sprites/objects/v1/obj-escape-craft.png) | opening-safe |
 | `obj-repair-cradles` | E | [PNG](../../../sprites/objects/v1/obj-repair-cradles.png) | opening-safe |
 | `obj-poi-marker` | E | [PNG](../../../sprites/objects/v1/obj-poi-marker.png) | opening-safe |
+| `obj-field-lamp` | E | [PNG](../../../sprites/objects/v1/obj-field-lamp.png) | opening-safe |
