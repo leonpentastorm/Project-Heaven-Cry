@@ -5876,6 +5876,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "foreseen": {
+      "label": "Wick — Foreseen",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/foreseen.png",
+      "sha256": "f5c0caebb5ab4c3e0b4d08ab3cd0120bdcf2e9a0c1fece315ff0adbda8f0c7e2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "foreseen",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/foreseen.png",
+        "128": "art/perks/wick/production-v1/exports/128/foreseen.png",
+        "64": "art/perks/wick/production-v1/exports/64/foreseen.png",
+        "56": "art/perks/wick/production-v1/exports/56/foreseen.png",
+        "48": "art/perks/wick/production-v1/exports/48/foreseen.png",
+        "44": "art/perks/wick/production-v1/exports/44/foreseen.png",
+        "40": "art/perks/wick/production-v1/exports/40/foreseen.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

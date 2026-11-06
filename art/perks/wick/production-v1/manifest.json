@@ -2474,6 +2474,32 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    {
+      "id": "foreseen",
+      "data_id": "foreseen",
+      "name": "Foreseen",
+      "family": "perks",
+      "order": 101,
+      "mood": "Tense, Calm",
+      "action": "Wick stands at a signpost at a fork; one arrow is crossed out, and Wick glances back over its shoulder toward it before taking the other road.",
+      "screen": "Thoughtful",
+      "prop": "Two-arrow signpost (no text)",
+      "path": "art/perks/wick/production-v1/foreseen.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/foreseen.png",
+        "128": "art/perks/wick/production-v1/exports/128/foreseen.png",
+        "64": "art/perks/wick/production-v1/exports/64/foreseen.png",
+        "56": "art/perks/wick/production-v1/exports/56/foreseen.png",
+        "48": "art/perks/wick/production-v1/exports/48/foreseen.png",
+        "44": "art/perks/wick/production-v1/exports/44/foreseen.png",
+        "40": "art/perks/wick/production-v1/exports/40/foreseen.png"
+      },
+      "batch": "G",
+      "source_sha256": "4df03676584b259dcf72aa41ee6e7829534139c1c5d0c8b9f2b271e3a260eed7",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   ]
 }
