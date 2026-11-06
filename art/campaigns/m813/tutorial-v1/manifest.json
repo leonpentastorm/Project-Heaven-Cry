@@ -989,7 +989,7 @@
       "order": 1,
       "name": "Barrier Stakes",
       "family": "sprites",
-      "path": "art/sprites/objects/v1/obj-barrier-stakes.png",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-barrier-stakes.png",
       "dimensions": [
         256,
         256
@@ -1001,23 +1001,25 @@
       "proposal": true,
       "width": 256,
       "height": 256,
-      "sha256": "4f3e85d2eca2a7d3e58683c93ef7197c3f59e10123f8d18a0b59670b52a406f1",
-      "source_path": "art/sprites/objects/v1/sources/obj-barrier-stakes.png",
-      "source_sha256": "4b4b1a84c0105821a6b66606f293c57c8bbce586a383f2c63f5c12eb07f06dc1",
+      "sha256": "883201e6d597efec634f5a331a02ad02f19d6c719aa206c417c5db1aa89b96d1",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-barrier-stakes.png",
+      "source_sha256": "3ecbed6cffe8154e0924076f8350174d3ecb165d348a203bc1e5aba883e51b4a",
       "source_dimensions": [
         1254,
         1254
       ],
       "previews": {
-        "128": "art/sprites/objects/v1/previews/obj-barrier-stakes-128px.png",
-        "64": "art/sprites/objects/v1/previews/obj-barrier-stakes-64px.png",
-        "46": "art/sprites/objects/v1/previews/obj-barrier-stakes-46px.png"
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-barrier-stakes-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-barrier-stakes-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-barrier-stakes-46px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/sprites/objects/v1/sources/obj-barrier-stakes.prompt.txt"
+      "previous_path": "art/sprites/objects/v1/obj-barrier-stakes.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-barrier-stakes.png",
+      "revision": 2
     }
   ]
 }
