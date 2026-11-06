@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-6d62462cd0cefc017cfae96da82d189d23696be82c58aeec0fc2650d2ca0d767  art/campaigns/m813/tutorial-v1/README.md
-57fa62e1788cb046ee10eebb7615804378a7101df5f235269501eb3301d4e5e3  art/campaigns/m813/tutorial-v1/manifest.json
-c127779fdfc457895e468a93c9a375b17a7312eafceffd9e4144093a3f84c318  art/campaigns/m813/tutorial-v1/production-progress.json
-325ae2a9f5b821b75845e45f9f7326d6fe5abcbe5801acecdfee256f3b3b8c2d  art/catalog.json
+5cdb4bc6f9aa9a0742e14b93346df85d437105c1a8ff3f2e17a2fef528cff890  art/campaigns/m813/tutorial-v1/README.md
+a021ca5f4daf0b46d34d7ae017c8fc32b067b3f4dc2c787077d1d28f61e7b459  art/campaigns/m813/tutorial-v1/manifest.json
+08dea1c55dda72b6edb91e26d76de78169ff8b2c5a07b1ee9424dbaa846b5a40  art/campaigns/m813/tutorial-v1/production-progress.json
+825350a39635df22e3c33b19cb711695f3a332c1e76bcb535e31a6189ab868aa  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1238,6 +1238,7 @@ b37313bde9dfd56dad25dde2ee952412f16f750f59fb08c703d142b9bff8c460  art/sprites/ob
 8044cc360f932be5c0f28140b692ff743db630a2c5728b31491245fdeb4bc98e  art/sprites/objects/v1/obj-door-closed.png
 c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3  art/sprites/objects/v1/obj-door-open.png
 0bdfe4016155c93401f27620df67eb565867e21651a21ddb275803d5f2c0edbb  art/sprites/objects/v1/obj-drop-pod.png
+648918a08dc76513d5d15560083c18cb0a559cdb40bb6c94107b531bad3d8ae6  art/sprites/objects/v1/obj-escape-craft.png
 9d8019735f18112158b0f07be48c837527afebb71c5d40f2012196ff35e89105  art/sprites/objects/v1/obj-fallen-squad.png
 1529a95e4ce2eec4c01816e42f7391410c56c6094ccdfa3d9643495c673054b0  art/sprites/objects/v1/obj-fire.png
 c6281f0f8aa59a4fed18f2e57a5d738e1e6aafa40591ed343ca4abc1b96d0f16  art/sprites/objects/v1/obj-footlockers.png
@@ -1277,6 +1278,9 @@ f0016fdcdce2a9bfe5d5f5d640badf187fa3a7e41a908c13dd9d7cbe878c2969  art/sprites/ob
 385448a1636f29cd7f026316aed1777d585c490387b1c5160ee2cd7bdae469cb  art/sprites/objects/v1/previews/obj-drop-pod-128px.png
 66ae600eaf645778f6893733612d0993679182fd0bb4a2c15f02422bfee110ee  art/sprites/objects/v1/previews/obj-drop-pod-46px.png
 2a49dd75d2e9838d2b5c752b147611b70f8610dfa208771ac3a4b7f09edbd1c3  art/sprites/objects/v1/previews/obj-drop-pod-64px.png
+d8bd56e88333a5efba73e60a055ec0fdca4b4425bdbd09f69dd800f86b4a93a4  art/sprites/objects/v1/previews/obj-escape-craft-128px.png
+b8f459aa6cf8964963145e17ab4c0ad63f3ef1e70af47ad1e70ecaf1650a7a21  art/sprites/objects/v1/previews/obj-escape-craft-46px.png
+eb7ab705dabb5381e4181c2782501bae21e9159d542f277b685f4e9c6df0ceec  art/sprites/objects/v1/previews/obj-escape-craft-64px.png
 738d31faa249abea28f51edc1d2810d0272b4ae03f6c5094e7b29803331c9ca5  art/sprites/objects/v1/previews/obj-fallen-squad-128px.png
 27fbf33181a58bfd8b40f70fc9ac1031684ea91787483571e3ffb339aa0e6199  art/sprites/objects/v1/previews/obj-fallen-squad-46px.png
 06633612c5349c0c42bec5ba81511438b00f4e87b4a61b188f51c95266e4137f  art/sprites/objects/v1/previews/obj-fallen-squad-64px.png
@@ -1354,6 +1358,8 @@ ba03d9e505ecddf6fad36e93b0d00d1fe798c3f13ddba148c83f2c0284829562  art/sprites/ob
 f11bba99ac98a405d805c0d766d1c81806cc1a0aa6ca379e781ae246879bfb29  art/sprites/objects/v1/sources/obj-door-open.prompt.txt
 6858b10ad7f11eaaa09eba67fac5caa48ac025083537b6c6681c5914368e0c8b  art/sprites/objects/v1/sources/obj-drop-pod.png
 8265a467bbd755993ff296e6e472a311871ebaf158e331c82fc17a48414f1311  art/sprites/objects/v1/sources/obj-drop-pod.prompt.txt
+b93d7c4bfd46dc947afaef7eac43139d9d7d4ce2db56de130bce7adc2d6acbc6  art/sprites/objects/v1/sources/obj-escape-craft.png
+186fdd259112736fe2383cc35888446e4c3baf3b335169ec69a1687ae90c267d  art/sprites/objects/v1/sources/obj-escape-craft.prompt.txt
 e7a764e5f8bfc5f096153bb174e8988c3295d1042967735079b03759affb2372  art/sprites/objects/v1/sources/obj-fallen-squad.png
 d3528fe38b4aa7b6b396435cb0c6d6ee4c1a07dd70f44598a0fe40b6c91c3b03  art/sprites/objects/v1/sources/obj-fallen-squad.prompt.txt
 e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e  art/sprites/objects/v1/sources/obj-fire.png

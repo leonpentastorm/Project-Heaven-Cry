@@ -1749,6 +1749,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-console.prompt.txt"
+    },
+    {
+      "id": "obj-escape-craft",
+      "group": "E",
+      "order": 22,
+      "name": "Escape Craft",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-escape-craft.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 512,
+      "height": 512,
+      "sha256": "648918a08dc76513d5d15560083c18cb0a559cdb40bb6c94107b531bad3d8ae6",
+      "source_path": "art/sprites/objects/v1/sources/obj-escape-craft.png",
+      "source_sha256": "b93d7c4bfd46dc947afaef7eac43139d9d7d4ce2db56de130bce7adc2d6acbc6",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-escape-craft-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-escape-craft-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-escape-craft-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-escape-craft.prompt.txt"
     }
   ]
 }
