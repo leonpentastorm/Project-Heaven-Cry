@@ -5363,6 +5363,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "never-there": {
+      "label": "Wick — Never There",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/never-there.png",
+      "sha256": "cac47e09783c2fff00d502ce4063b2ef3affdad166896c72749fb1198bf6c1e2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "never_there",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/never-there.png",
+        "128": "art/perks/wick/production-v1/exports/128/never-there.png",
+        "64": "art/perks/wick/production-v1/exports/64/never-there.png",
+        "56": "art/perks/wick/production-v1/exports/56/never-there.png",
+        "48": "art/perks/wick/production-v1/exports/48/never-there.png",
+        "44": "art/perks/wick/production-v1/exports/44/never-there.png",
+        "40": "art/perks/wick/production-v1/exports/40/never-there.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

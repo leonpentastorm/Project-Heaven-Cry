@@ -164,11 +164,12 @@
     "skin-map",
     "earthbreaker",
     "nothing-left-to-fear",
-    "the-name-they-whisper"
+    "the-name-they-whisper",
+    "never-there"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 85
+    "perks": 86
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -194,7 +195,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "never-there",
     "trick-shot",
     "before-the-blink",
     "vanishing-act",

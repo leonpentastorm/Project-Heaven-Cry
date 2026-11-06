@@ -1910,6 +1910,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "never-there",
+      "data_id": "never_there",
+      "name": "Never There",
+      "family": "perks",
+      "order": 82,
+      "mood": "Comic, Proud",
+      "action": "Wick mid-backflip, upside down, with two fading dashed outlines of itself trailing behind; a bullet streaks through the empty outline.",
+      "screen": "Smug wink",
+      "prop": "Dashed afterimages",
+      "path": "art/perks/wick/production-v1/never-there.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/never-there.png",
+        "128": "art/perks/wick/production-v1/exports/128/never-there.png",
+        "64": "art/perks/wick/production-v1/exports/64/never-there.png",
+        "56": "art/perks/wick/production-v1/exports/56/never-there.png",
+        "48": "art/perks/wick/production-v1/exports/48/never-there.png",
+        "44": "art/perks/wick/production-v1/exports/44/never-there.png",
+        "40": "art/perks/wick/production-v1/exports/40/never-there.png"
+      },
+      "batch": "G",
+      "source_sha256": "800d7fd85be3346839459d3ae2ed41d412a0ff427e5830a8a43b143bd88228da",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
