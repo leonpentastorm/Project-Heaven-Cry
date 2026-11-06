@@ -23,7 +23,7 @@
 
 <sc-if value="{{isIdentity}}" hint-placeholder-val="{{true}}">
 <section style="display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px">
-<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="flex: 3 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
 <div style="display: flex; align-items: center; gap: 20px">
 <img src="__SEAL__" alt="Seal of the Anti-Heaven Operation Commands, Department of Extra Celestial Defense" style="width: 96px; height: 96px; flex: none; opacity: 0.9">
 <div style="display: flex; flex-direction: column; gap: 6px">
@@ -42,12 +42,11 @@
 <h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHERE YOU GREW UP · EARTH SECTOR</h2>
 <span style="font-size: 13px; color: #A3AEC2">Checks about your home's places and people are one step easier.</span>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px">
 <sc-for list="{{originCards}}" as="o" hint-placeholder-count="14">
-<button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">
-<span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
-<span style="font-size: 16px; font-weight: 700">{{o.name}}</span>
-<span style="font-family: 'Spectral', serif; font-size: 13px; line-height: 1.4; color: #C9D3E3">{{o.home}}</span>
+<button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.home}}" style="{{o.style}}">
+<span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
+<span style="font-size: 14px; font-weight: 700; line-height: 1.25">{{o.name}}</span>
 </button>
 </sc-for>
 </div>
@@ -65,12 +64,12 @@
 </sc-if>
 </div>
 
-<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<aside style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
-<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000"></button>
-<div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px">
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 280px; height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button>
+<div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOUR PORTRAIT</span>
-<div role="radiogroup" aria-label="Portraits" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; max-height: 340px; overflow-y: auto; padding-right: 6px">
+<div role="radiogroup" aria-label="Portraits" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; max-height: 470px; overflow-y: auto; padding-right: 6px">
 <sc-for list="{{portraitThumbs}}" as="p" hint-placeholder-count="10">
 <button type="button" onClick="{{p.pick}}" aria-label="{{p.aria}}" aria-pressed="{{p.pressed}}" style="{{p.style}}"><img src="{{p.img}}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px"></button>
 </sc-for>

@@ -103,7 +103,7 @@ export class CreateLogic extends DCLogic {
     // identity
     const originCards = D.origins.map((o, i) => ({
       num: String(o.n).padStart(2, '0'), name: o.name, home: o.Home, pick: set({ origin: i }), pressed: S.origin === i ? 'true' : 'false',
-      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 12px 14px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' +
+      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 8px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' +
         (S.origin === i ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'),
     }));
     const o = S.origin === null ? null : D.origins[S.origin];
