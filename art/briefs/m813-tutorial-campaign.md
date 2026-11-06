@@ -1,7 +1,7 @@
 # M813 tutorial campaign: complete art brief
 
 **For:** the artist (GPT). **From:** the M813 campaign (`data/campaigns/m813.json`; story and design in `docs/design/M813-tutorial-campaign.md`; lore in `docs/lore/MPAT-and-M813.md`).
-**Status:** open. 52 images in five groups; the order below is the priority order.
+**Status:** 52 original brief images drawn and pushed, pending Leon’s visual review. One runtime followup (E25, field lamp) brings the current delivery queue to 53. The original group order below is retained.
 
 Read `art/style-guide/v1.3/PHC-Style-Guide.md` first. Everything here is **Heavenprint** (ink and opaque gouache, angular forms, deep charcoal and warm ivory, believable faces), except the object sprites (group E), which are a flat top-down game mode defined in that section. Attach for every Heavenprint image: `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`, plus `art/illustrations/m813/v1/outpost813.png` (the approved M813 world look) and `art/character-portraits/m813/mpat.png` (the approved 258th robot design).
 
@@ -131,6 +131,10 @@ The game places these on tiles. **Top-down, flat, transparent PNG, 256 × 256**,
 | E24 | `obj-poi-marker` | Generic point-of-interest marker: a small surveyor's flag with the 258th's cross. Also used for "no-man's-land", "the ramp", "the column", "bay doors" and exits | Anywhere |
 
 NPC points of interest (Nine-Nine, Ilse Varga, the Colonel) use their portraits (group B) as tokens, so they need no sprite.
+
+## Runtime followup — 6 November 2026
+
+The implementer’s movement/vision update added two `lamp` objects to `data/campaigns/m813.json`, after this brief was written: a work lamp at Outpost-813 I9 and an infirmary lamp at H3. A shared `obj-field-lamp` sprite is added as E25 so these new objects have art. Same top-down transparent256px specification as group E. The lamp’s appearance is a proposal. Both positions are already empty floor in the painted map.
 
 ## Delivery
 

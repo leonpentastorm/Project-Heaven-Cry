@@ -219,8 +219,8 @@ def validate_campaign_art(catalog):
         require(not COMPLETE_CAMPAIGN, 'Missing campaign queue')
         return
     queue = json.loads(queue_path.read_text())
-    require(queue['target'] == len(queue['jobs']) == 52, 'M813 campaign target must be 52')
-    require(len({j['id'] for j in queue['jobs']}) == 52, 'Duplicate M813 jobs')
+    require(queue['target'] == len(queue['jobs']) and queue['target'] >= 52, 'Invalid M813 campaign target')
+    require(len({j['id'] for j in queue['jobs']}) == queue['target'], 'Duplicate M813 jobs')
     delivered = []
     for job in queue['jobs']:
         asset = catalog.get(job['family'], {}).get(job['id'])
@@ -246,7 +246,7 @@ def validate_campaign_art(catalog):
         for path in asset['previews'].values():
             require(local(path).read_bytes()[:8] == b'\x89PNG\r\n\x1a\n', f'Bad M813 preview: {path}')
     if COMPLETE_CAMPAIGN:
-        require(len(delivered) == 52, f'Incomplete M813 campaign artwork: {len(delivered)}/52')
+        require(len(delivered) == queue['target'], f'Incomplete M813 campaign artwork: {len(delivered)}/{queue["target"]}')
     progress_path = ROOT / 'art/campaigns/m813/tutorial-v1/production-progress.json'
     if progress_path.exists():
         progress = json.loads(progress_path.read_text())
@@ -318,7 +318,7 @@ def validate():
                 f'Unknown selected asset: {PIXEL_ASSET}')
     families = [('skills', 27, 27), ('characters', 83, 99),
                 ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 10)]
-    for family, maximum in [('maps', 4), ('sprites', 24)]:
+    for family, maximum in [('maps', 4), ('sprites', 25)]:
         if family in catalog:
             families.append((family, 0, maximum))
     if 'mascot' in catalog:
@@ -362,7 +362,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--asset', help='Select one asset; check its icon pixels if applicable, and all metadata/checksums.')
     parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 106-perk coverage.')
-    parser.add_argument('--complete-campaign', action='store_true', help='Require all 52 M813 tutorial campaign images.')
+    parser.add_argument('--complete-campaign', action='store_true', help='Require the full current M813 campaign queue, including runtime followups.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons

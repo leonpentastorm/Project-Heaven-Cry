@@ -18,7 +18,7 @@ QUEUE = ROOT / 'art/briefs/m813-tutorial/production-queue.json'
 HANDOFF = ROOT / 'art/campaigns/m813/tutorial-v1'
 
 
-def export(asset_id, source, prompt_path=None, revision=None):
+def export(asset_id, source, prompt_path=None, revision=None, tile_fit=False):
     queue = json.loads(QUEUE.read_text())
     job = next(j for j in queue['jobs'] if j['id'] == asset_id)
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())
@@ -38,7 +38,14 @@ def export(asset_id, source, prompt_path=None, revision=None):
     if job['mode'] == 'RGBA':
         # A generated sprite may use a wide source canvas. Preserve its whole
         # silhouette and transparent margins rather than cropping to the tile.
-        small = ImageOps.contain(original.convert('RGBA'), size, Image.Resampling.LANCZOS)
+        sprite = original.convert('RGBA')
+        if tile_fit:
+            bounds = sprite.getchannel('A').point(lambda a: 255 if a >= 16 else 0).getbbox()
+            if bounds is None:
+                raise ValueError('Sprite has no visible body')
+            sprite = sprite.crop(bounds)
+        box = tuple(round(n * .8) for n in size) if tile_fit else size
+        small = ImageOps.contain(sprite, box, Image.Resampling.LANCZOS)
         im = Image.new('RGBA', size, (0, 0, 0, 0))
         im.paste(small, ((size[0] - small.width) // 2, (size[1] - small.height) // 2))
     else:
@@ -61,6 +68,17 @@ def export(asset_id, source, prompt_path=None, revision=None):
                 source_dimensions=list(original.size), previews=previews,
                 status='review-candidate', production_approved=False,
                 collection='M813 tutorial campaign v1', brief=queue['brief'])
+    item.update(label='M813 — ' + job['name'], campaign_id='m813',
+                art_mode='painted-topdown' if job['group'] == 'E' else 'heavenprint',
+                version=2 if job['group'] in ('A', 'B', 'D') else 1,
+                usage={'A': ['zone-banner'], 'B': ['character-portrait', 'map-token'],
+                       'C': ['map-background'], 'D': ['story-moment'], 'E': ['object-sprite']}[job['group']])
+    if job['id'] == 'm813-shield-line':
+        item['usage'].append('campaign-card')
+    if job['group'] == 'B':
+        item.update(collection='m813', pool='m813-cast')
+    if job['group'] == 'E' and tile_fit:
+        item['tile_extent'] = .8
     if revision:
         item.update(previous_path=previous.get('previous_path', previous['path']),
                     previous_revision_path=previous['path'], revision=revision)
@@ -73,7 +91,7 @@ def export(asset_id, source, prompt_path=None, revision=None):
     delivered = [j['id'] for j in queue['jobs'] if j['id'] in catalog.get(j['family'], {})]
     remaining = [j['id'] for j in queue['jobs'] if j['id'] not in delivered]
     dump(HANDOFF / 'production-progress.json', {
-        'brief': queue['brief'], 'target': 52, 'delivered': delivered,
+        'brief': queue['brief'], 'target': queue['target'], 'delivered': delivered,
         'remaining': remaining, 'updated_utc': datetime.now(timezone.utc).isoformat(),
         'status': 'generation-complete-review-pending' if not remaining else 'in-progress',
         'production_approved': False,
@@ -82,7 +100,7 @@ def export(asset_id, source, prompt_path=None, revision=None):
     dump(HANDOFF / 'manifest.json', {'brief': queue['brief'], 'status': 'review-candidate',
          'production_approved': False, 'assets': entries})
     lines = ['# M813 tutorial campaign artwork', '',
-             f'{len(delivered)} of 52 new images delivered. All are review candidates pending Leon.', '',
+             f'{len(delivered)} of {queue["target"]} new images delivered. All are review candidates pending Leon.', '',
              'Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.', '',
              'Use catalog IDs. Spoiler and visibility metadata gates the story images; the demand is stored under spoilers/. Later zone banners show locations without revealing their events.', '',
              'Painted maps follow the committed layout guides. Place object sprites over their reserved floor tiles. No grid or labels are baked into a map.', '',
@@ -99,7 +117,7 @@ def export(asset_id, source, prompt_path=None, revision=None):
     for script in ('scripts/export_m813_campaign.py', 'scripts/validate_art.py'):
         records[script] = sha(ROOT / script)
     checksums.write_text(''.join(records[p] + '  ' + p + '\n' for p in sorted(records)))
-    print(f'Exported {asset_id}: {len(delivered)}/52 delivered, {len(remaining)} remaining')
+    print(f'Exported {asset_id}: {len(delivered)}/{queue["target"]} delivered, {len(remaining)} remaining')
 
 
 if __name__ == '__main__':
@@ -108,5 +126,6 @@ if __name__ == '__main__':
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--prompt', type=Path)
     parser.add_argument('--revision', type=int, help='Preserve previous selection in a versioned folder')
+    parser.add_argument('--tile-fit', action='store_true', help='Technical sprite export: center visible bounds in the 80% tile box')
     args = parser.parse_args()
-    export(args.id, args.source, args.prompt, args.revision)
+    export(args.id, args.source, args.prompt, args.revision, args.tile_fit)

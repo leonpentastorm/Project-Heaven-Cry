@@ -1,6 +1,6 @@
 {
   "brief": "art/briefs/m813-tutorial-campaign.md",
-  "target": 52,
+  "target": 53,
   "jobs": [
     {
       "id": "m813-shield-line",
@@ -889,6 +889,30 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true
+    },
+    {
+      "id": "obj-field-lamp",
+      "group": "E",
+      "order": 25,
+      "name": "Field Lamp",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-field-lamp.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E25 | `obj-field-lamp` | Portable field work lamp, lit (lamp) | Outpost-813 I9 work lamp and H3 infirmary lamp; runtime followup after original 52-image brief |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "runtime_followup": "data/campaigns/m813.json: outpost lamp objects at I9 and H3, added after original brief"
+    }
+  ],
+  "runtime_additions": [
+    {
+      "id": "obj-field-lamp",
+      "reason": "data/campaigns/m813.json: outpost lamp objects at I9 and H3, added after original brief"
     }
   ]
 }
