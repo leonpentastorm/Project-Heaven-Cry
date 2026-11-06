@@ -384,7 +384,7 @@ This lock applies to perk and trait icons; it does not change the two approved p
 Review 1 (5 November 2026) approved Chain Smoker, The Brightest Light and Forlorn Hope, asked for six revisions and one redo (Raised by Orks). Verdicts: `art/traits/wick/test-set-1/README.md`. Production follows `art/briefs/wick-production-icons.md`. These rules now bind every trait and perk icon:
 
 1. **No lettering, numbers or readable text** inside an icon. Symbols only (a crossed-out shape, an arrow, a tally).
-2. **One full figure: Wick.** Anyone else appears only as a partial (a hand, a leg, a shadow) or as tiny Wick silhouettes. Never skull-and-crossbones as a stand-in for people. **Leon’s explicit exception (5 November 2026): Sworn Sibling v3 uses two full Wicks facing inward and sharing an oath toast, following his supplied two-person pose reference.**
+2. **One full figure: Wick.** Anyone else appears only as a partial (a hand, a leg, a shadow) or as tiny Wick silhouettes. Never skull-and-crossbones as a stand-in for people. **Leon’s explicit exception (5 November 2026): Sworn Sibling v3/v4 uses two full Wicks facing inward and sharing an oath toast, following his supplied two-person pose reference.**
 3. **One dominant prop, big:** roughly a third of the frame, held close so Wick and prop read as one silhouette.
 4. **Ink weight** between The Old Blood (lightest acceptable) and The Brightest Light (heaviest acceptable).
 5. **Check at the UI's real sizes:** 44, 48 and 56 px on `#10151F`, plus 40 px. The UI zooms icons ×1.35 on hover; the resting size is the one that must read.
@@ -393,6 +393,8 @@ Review 1 (5 November 2026) approved Chain Smoker, The Brightest Light and Forlor
 Keep the approved Mind Without Fog anchor unchanged. Candidates stay `production_approved: false` until Leon passes them.
 
 Delivery update: Leon requested the seven fixes first, then continuous generation with each new icon shown in chat and pushed immediately. Round-2 files are in `art/traits/wick/test-set-1/revisions/`. This changes delivery timing, not style rules or candidate approval. Production coverage is recorded in `art/traits/wick/production-progress.json`.
+
+Mastered capstones (Batch G) use one four-point star at upper left, about one tenth of the frame, plus their main action and prop. Reserve that star shape for the mark. Keep all visible ink inside the centered 90%-diameter safe circle for 72–92 px medallions; the medallion ring belongs to the UI. The complete 74-trait/106-perk library and current selected corrections are indexed in `art/traits/wick/library-review-v2/README.md`. Candidate delivery remains separate from visual approval.
 
 M813 portrait candidates are in `art/character-portraits/m813/`; world images are in `art/illustrations/m813/v1/`. The repair-bay image is ending-only and excluded from the opening-safe preview. Painted construction choices remain proposals under the brief.
 

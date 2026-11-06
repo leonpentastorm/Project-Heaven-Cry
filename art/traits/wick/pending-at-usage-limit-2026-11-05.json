@@ -1,5 +1,5 @@
 {
-  "status": "paused-image-generation-limit; queue extended 2026-11-05 with review-4 fixes and Batch G (Mastered perks)",
+  "status": "completed; retained historical 55-job brief snapshot",
   "observed_utc": "2026-11-05",
   "reset_utc": "2026-11-05T23:59:27Z",
   "coverage": {
@@ -908,5 +908,7 @@
     "real-power",
     "Batch F (20) + 3 new combo perks",
     "Batch G: Mastered perks (27)"
-  ]
+  ],
+  "completed_utc": "2026-11-06T01:47:50.867518+00:00",
+  "queue_semantics": "remaining_icons is the historical ordered queue at resumption, not current remaining work; all 55 jobs are now delivered. See production-progress.json."
 }

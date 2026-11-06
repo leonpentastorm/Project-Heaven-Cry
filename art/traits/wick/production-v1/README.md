@@ -29,3 +29,7 @@ Keep `production_approved: false` on all 51 until Leon signs off.
 ## Sworn Sibling — Leon’s reference revision
 
 Version 3 uses two full Wick figures facing inward and raising oath cups, following Leon’s supplied two-person reference for composition and gesture. His explicit request overrides the default one-full-figure rule for this icon. The rope-bound version 2 and original remain preserved; the catalog selects [version 3](revisions/v3/sworn-sibling.png).
+
+## Complete trait library — 6 November 2026
+
+All 74 traits are delivered with seven UI sizes. The catalog selects Sworn Sibling v4, the closer two-Wick oath-toast composition requested by Leon. This explicit exception remains in force. Full trait and perk sheets are in the [180-icon library handoff](../library-review-v2/README.md).

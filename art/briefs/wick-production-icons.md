@@ -1,8 +1,11 @@
 # Wick production brief: all 74 trait icons and 106 perk icons
 
+**Delivered, 6 November 2026:** all 74 traits and 106 perks, plus the four Review 4 corrections. See [the complete 180-icon handoff](../traits/wick/library-review-v2/README.md). Earlier “NEXT UP” and pause notes below are retained as the production history; the current progress record has no remaining icons. New artwork is still review-candidate pending Leon. Sworn Sibling v4 preserves Leon’s explicit two-Wick reference direction.
+
+
 **Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
 
-**Leon's current delivery instruction, 5 November 2026:** fix the seven first and push them, then continue the full run, showing each newly drawn image in chat and pushing it immediately. This replaces the stop-between-batches timing below. It does not mark new images production-approved. The run needs 139 new icons plus seven revisions; the four existing approved designs are retained to complete 150 distinct items.
+**Leon's current delivery instruction, 5 November 2026:** fix the seven first and push them, then continue the full run, showing each newly drawn image in chat and pushing it immediately. This replaces the stop-between-batches timing below. It does not mark new images production-approved. The expanded run needs 169 new icons plus seven initial revisions; the four retained designs complete 180 distinct items. The four later Review 4 corrections are also delivered.
 
 > **NEXT UP when image generation resumes (Leon, 5 November 2026), in this order:**
 > 1. **Review 4 fixes (4 icons):** Into the Dark, Holy Ordnance, Supreme Command, Sworn Sibling. What to change: [perks production README, Review 4](../perks/wick/production-v1/README.md#review-4--5-november-2026-55-perks-plus-the-review-3-trait-fixes).
@@ -26,7 +29,7 @@
 | C | Traits 51–74 | 24 |
 | D | Acquired perks, Body skills (Endurance, Strength, Agility) | 18 |
 | E | Acquired perks, Mind and Soul skills | 36 |
-| F | Achieved and Ultimate perks, minus the two in step 1 | 20 |
+| F | Achieved and Ultimate perks, minus the two in step 1, plus three added combo perks | 23 |
 | G | **Mastered perks (new, 5 Nov 2026):** one per skill, 27 | 27 |
 
 ## The rules (binding; style guide section 14)
