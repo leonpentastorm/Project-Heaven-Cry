@@ -35,7 +35,14 @@ def export(asset_id, source, prompt_path=None, revision=None):
     original = Image.open(src)
     size = tuple(job['dimensions'])
     # Small model canvas-ratio differences are corrected only in technical export.
-    im = ImageOps.fit(original.convert(job['mode']), size, Image.Resampling.LANCZOS)
+    if job['mode'] == 'RGBA':
+        # A generated sprite may use a wide source canvas. Preserve its whole
+        # silhouette and transparent margins rather than cropping to the tile.
+        small = ImageOps.contain(original.convert('RGBA'), size, Image.Resampling.LANCZOS)
+        im = Image.new('RGBA', size, (0, 0, 0, 0))
+        im.paste(small, ((size[0] - small.width) // 2, (size[1] - small.height) // 2))
+    else:
+        im = ImageOps.fit(original.convert(job['mode']), size, Image.Resampling.LANCZOS)
     if job['mode'] == 'RGBA':
         lo, hi = im.getchannel('A').getextrema()
         if lo != 0 or hi == 0:

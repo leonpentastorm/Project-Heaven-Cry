@@ -1174,7 +1174,7 @@
       "order": 6,
       "name": "Door Closed",
       "family": "sprites",
-      "path": "art/sprites/objects/v1/obj-door-closed.png",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-door-closed.png",
       "dimensions": [
         256,
         256
@@ -1186,23 +1186,26 @@
       "proposal": true,
       "width": 256,
       "height": 256,
-      "sha256": "8044cc360f932be5c0f28140b692ff743db630a2c5728b31491245fdeb4bc98e",
-      "source_path": "art/sprites/objects/v1/sources/obj-door-closed.png",
-      "source_sha256": "13da4d5ceaffacdc65520fd45a95330f93b31165d4d50016584df35172f31dd0",
+      "sha256": "7e240db62f35243fba259c44d73e16d21a6d723b747bcb7ab54ba37e24e5b221",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-door-closed.png",
+      "source_sha256": "0126e57edfbd264961a4a697123063e2a3a2a5c6c2c51be6b4aed1ff9801b99f",
       "source_dimensions": [
-        1254,
-        1254
+        2172,
+        724
       ],
       "previews": {
-        "128": "art/sprites/objects/v1/previews/obj-door-closed-128px.png",
-        "64": "art/sprites/objects/v1/previews/obj-door-closed-64px.png",
-        "46": "art/sprites/objects/v1/previews/obj-door-closed-46px.png"
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-door-closed-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-door-closed-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-door-closed-46px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/sprites/objects/v1/sources/obj-door-closed.prompt.txt"
+      "previous_path": "art/sprites/objects/v1/obj-door-closed.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-door-closed.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-door-closed.prompt.txt"
     },
     {
       "id": "obj-door-open",
