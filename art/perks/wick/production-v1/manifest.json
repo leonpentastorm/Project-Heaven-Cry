@@ -1570,6 +1570,30 @@
       "batch": "F",
       "source_sha256": "0131aac9218712e8b902c0830a2c4dd66d881249e3a942e11e570ea0a2afb75c",
       "tier": "achieved"
+    },
+    {
+      "id": "twin-souls",
+      "data_id": "twin_souls",
+      "name": "Twin Souls",
+      "family": "perks",
+      "order": 69,
+      "mood": "Comic, Eerie",
+      "action": "Wick sits on the ground holding a tin-can telephone to its head; the taut string runs straight up out of frame.",
+      "screen": "\"?\"",
+      "prop": "Tin-can telephone",
+      "path": "art/perks/wick/production-v1/twin-souls.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/twin-souls.png",
+        "128": "art/perks/wick/production-v1/exports/128/twin-souls.png",
+        "64": "art/perks/wick/production-v1/exports/64/twin-souls.png",
+        "56": "art/perks/wick/production-v1/exports/56/twin-souls.png",
+        "48": "art/perks/wick/production-v1/exports/48/twin-souls.png",
+        "44": "art/perks/wick/production-v1/exports/44/twin-souls.png",
+        "40": "art/perks/wick/production-v1/exports/40/twin-souls.png"
+      },
+      "batch": "F",
+      "source_sha256": "aa676ce2fbe52a9e7afa20357566d1e703a69b68d662ea8976c36d05ee96a7bf",
+      "tier": "achieved"
     }
   ]
 }

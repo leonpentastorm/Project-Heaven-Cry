@@ -4937,6 +4937,31 @@
         "40": "art/perks/wick/production-v1/exports/40/dead-signal.png"
       },
       "tier": "achieved"
+    },
+    "twin-souls": {
+      "label": "Wick — Twin Souls",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/twin-souls.png",
+      "sha256": "6e531bab5f504810adeb3794a332c30a45cd45910f0a17147bf5867bb6890c97",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "twin_souls",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/twin-souls.png",
+        "128": "art/perks/wick/production-v1/exports/128/twin-souls.png",
+        "64": "art/perks/wick/production-v1/exports/64/twin-souls.png",
+        "56": "art/perks/wick/production-v1/exports/56/twin-souls.png",
+        "48": "art/perks/wick/production-v1/exports/48/twin-souls.png",
+        "44": "art/perks/wick/production-v1/exports/44/twin-souls.png",
+        "40": "art/perks/wick/production-v1/exports/40/twin-souls.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
