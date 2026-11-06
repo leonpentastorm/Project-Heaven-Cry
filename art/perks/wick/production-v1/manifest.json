@@ -1426,6 +1426,30 @@
       "batch": "F",
       "source_sha256": "82778f04183eaecdbf0f29d317a6da67d9e3a6af9d48a13e534cc417362e1a56",
       "tier": "achieved"
+    },
+    {
+      "id": "fire-sermon",
+      "data_id": "fire_sermon",
+      "name": "Fire Sermon",
+      "family": "perks",
+      "order": 63,
+      "mood": "Heroic, Eerie",
+      "action": "Wick lunges forward, thrusting a burning open book with blank pages overhead, mouth wide mid-sermon, radiant lines behind.",
+      "screen": "Shouting",
+      "prop": "Burning book",
+      "path": "art/perks/wick/production-v1/fire-sermon.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/fire-sermon.png",
+        "128": "art/perks/wick/production-v1/exports/128/fire-sermon.png",
+        "64": "art/perks/wick/production-v1/exports/64/fire-sermon.png",
+        "56": "art/perks/wick/production-v1/exports/56/fire-sermon.png",
+        "48": "art/perks/wick/production-v1/exports/48/fire-sermon.png",
+        "44": "art/perks/wick/production-v1/exports/44/fire-sermon.png",
+        "40": "art/perks/wick/production-v1/exports/40/fire-sermon.png"
+      },
+      "batch": "F",
+      "source_sha256": "ce92f924c7bbb5fadc213506cc94eaa3cf9015a5568b1ada674b478b787d454d",
+      "tier": "achieved"
     }
   ]
 }

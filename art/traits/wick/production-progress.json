@@ -142,11 +142,12 @@
     "spoon-feed",
     "cultured",
     "dance-of-iron",
-    "cold-read"
+    "cold-read",
+    "fire-sermon"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 63
+    "perks": 64
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -196,7 +197,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "fire-sermon",
     "silent-partner",
     "verse-of-war",
     "between-heartbeats",

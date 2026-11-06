@@ -4787,6 +4787,31 @@
         "40": "art/perks/wick/production-v1/exports/40/cold-read.png"
       },
       "tier": "achieved"
+    },
+    "fire-sermon": {
+      "label": "Wick — Fire Sermon",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/fire-sermon.png",
+      "sha256": "9d5727d5e12a36d36ccd654e1117eff3723afae104e1b9253ba9c2947601f88c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "fire_sermon",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/fire-sermon.png",
+        "128": "art/perks/wick/production-v1/exports/128/fire-sermon.png",
+        "64": "art/perks/wick/production-v1/exports/64/fire-sermon.png",
+        "56": "art/perks/wick/production-v1/exports/56/fire-sermon.png",
+        "48": "art/perks/wick/production-v1/exports/48/fire-sermon.png",
+        "44": "art/perks/wick/production-v1/exports/44/fire-sermon.png",
+        "40": "art/perks/wick/production-v1/exports/40/fire-sermon.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
