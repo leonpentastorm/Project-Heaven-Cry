@@ -1450,6 +1450,30 @@
       "batch": "F",
       "source_sha256": "ce92f924c7bbb5fadc213506cc94eaa3cf9015a5568b1ada674b478b787d454d",
       "tier": "achieved"
+    },
+    {
+      "id": "silent-partner",
+      "data_id": "silent_partner",
+      "name": "Silent Partner",
+      "family": "perks",
+      "order": 64,
+      "mood": "Comic, Tense",
+      "action": "Wick crouch-walks behind a big leafy branch, holding it as cover for itself and a tiny Wick silhouette tiptoeing in step beside it.",
+      "screen": "Zipped \"shh\" mouth",
+      "prop": "Leafy branch",
+      "path": "art/perks/wick/production-v1/silent-partner.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/silent-partner.png",
+        "128": "art/perks/wick/production-v1/exports/128/silent-partner.png",
+        "64": "art/perks/wick/production-v1/exports/64/silent-partner.png",
+        "56": "art/perks/wick/production-v1/exports/56/silent-partner.png",
+        "48": "art/perks/wick/production-v1/exports/48/silent-partner.png",
+        "44": "art/perks/wick/production-v1/exports/44/silent-partner.png",
+        "40": "art/perks/wick/production-v1/exports/40/silent-partner.png"
+      },
+      "batch": "F",
+      "source_sha256": "6d2adbbff75446a1bfd6c397ed9158645fb270870acf101e572083199e07954c",
+      "tier": "achieved"
     }
   ]
 }

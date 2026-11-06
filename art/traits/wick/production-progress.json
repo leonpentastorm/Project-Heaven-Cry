@@ -143,11 +143,12 @@
     "cultured",
     "dance-of-iron",
     "cold-read",
-    "fire-sermon"
+    "fire-sermon",
+    "silent-partner"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 64
+    "perks": 65
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -197,7 +198,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "silent-partner",
     "verse-of-war",
     "between-heartbeats",
     "siege-engine",
