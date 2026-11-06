@@ -5471,6 +5471,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "overhaul": {
+      "label": "Wick — Overhaul",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/overhaul.png",
+      "sha256": "d58532bab2303a3d81f343b554697deaea7bf19aba1eaf53060e083c3e5dbf67",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "overhaul",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/overhaul.png",
+        "128": "art/perks/wick/production-v1/exports/128/overhaul.png",
+        "64": "art/perks/wick/production-v1/exports/64/overhaul.png",
+        "56": "art/perks/wick/production-v1/exports/56/overhaul.png",
+        "48": "art/perks/wick/production-v1/exports/48/overhaul.png",
+        "44": "art/perks/wick/production-v1/exports/44/overhaul.png",
+        "40": "art/perks/wick/production-v1/exports/40/overhaul.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

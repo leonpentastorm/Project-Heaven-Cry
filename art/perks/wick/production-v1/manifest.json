@@ -2014,6 +2014,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "overhaul",
+      "data_id": "overhaul",
+      "name": "Overhaul",
+      "family": "perks",
+      "order": 86,
+      "mood": "Proud",
+      "action": "Wick sits on the ground cradling a rebuilt rifle across its lap like a prize, one extra rail gleaming, a wrench tucked behind its head like a pencil.",
+      "screen": "Delighted",
+      "prop": "Rebuilt rifle",
+      "path": "art/perks/wick/production-v1/overhaul.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/overhaul.png",
+        "128": "art/perks/wick/production-v1/exports/128/overhaul.png",
+        "64": "art/perks/wick/production-v1/exports/64/overhaul.png",
+        "56": "art/perks/wick/production-v1/exports/56/overhaul.png",
+        "48": "art/perks/wick/production-v1/exports/48/overhaul.png",
+        "44": "art/perks/wick/production-v1/exports/44/overhaul.png",
+        "40": "art/perks/wick/production-v1/exports/40/overhaul.png"
+      },
+      "batch": "G",
+      "source_sha256": "0a7a1e6b6745bfd33036707f4ef264be4d1b867be87302b81be1109f69a8ff3e",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
