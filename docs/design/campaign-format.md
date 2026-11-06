@@ -24,6 +24,8 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `lore` | no | Extra lore for the Narrator, as text. |
 | `sprites` · `portraits` | no | Art, by asset id (`art/catalog.json`, as built for the web): `sprites` gives a sprite per object kind (`"door:open"` for an open door); `portraits` maps NPC and enemy names to portraits (`char-<id>`), and a list alternates between same-named enemies ("Engineer": two faces). Names match exactly, else the longest name contained. |
 | `moments` | no | Illustrated story moments: `{ id, art, caption, when, zone? }`. The Narrator shows one with `moment` when the story reaches it, once each; a `zone` keeps a spoiler out of reach until the party is there. |
+| `acts` | no | `[{ id, title, summary, zones }]` for long campaigns: the Narrator's context carries the current act (the one holding the party's zone) in full and a line for each other zone. |
+| `pins` | no | Plot essentials pinned in the Narrator's memory from session 1. |
 | `narratorLore` | no | The World Bible chunks and lore docs the Narrator reads every turn, by key: `truth`, `worlds`, `magic`, `mana`, a sub-chunk such as `truth/knowing` or `worlds/timeline`, `sector-earth` (only the party's origins), `epccg-cast`. A key takes everything under it. Default `["truth", "worlds"]`. Anything else the Narrator can look up in its wiki when it needs it (spec: The Narrator's wiki). |
 | `music` | no | `{ ambient, combat }`: the default tracks where a zone has none. A track is `{ yt, title, artist, start?, length?, licence? }`: `yt` is the 11-character YouTube video id, and the video must allow embedding. An encounter can have its own `music` track (a boss theme). See the spec's Music section. |
 

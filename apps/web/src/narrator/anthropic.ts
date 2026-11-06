@@ -2,10 +2,21 @@
 // sent only to api.anthropic.com. One call per Narrator turn, structured JSON output, cached system layers.
 import Anthropic from '@anthropic-ai/sdk';
 import type { GameState, NarratorTurn } from '@engine';
-import { RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer } from './context';
+import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
 
-/** Wiki lookups per Narrator turn before it must answer. */
+/** Wiki and recall lookups per Narrator turn before it must answer. */
 const MAX_LOOKUPS = 3;
+/** The most one Narrator turn may cost, all rounds of lookups included (spec: The Narrator's memory). */
+export const COST_CEILING_USD = 0.5;
+const TOKENS = (s: string) => Math.ceil(s.length / 3.5);
+/** What a call's prompt costs at worst for this model (nothing cached; the stable blocks written to the 1-hour cache,
+ * which costs twice the input price) and with the cache warm, plus a full reply. */
+export function callEstimate(g: GameState, modelId: string, maxOut = 8000) {
+  const p = MODELS.find((m) => m.id === modelId) || MODELS[0];
+  const stable = TOKENS(RULES_PROMPT) + TOKENS(campaignPrompt(g)) + TOKENS(partyPrompt(g)) + TOKENS(memoryPrompt(g)) + TOKENS(JSON.stringify([WIKI_TOOL, RECALL_TOOL, submitTool(g)]));
+  const turn = TOKENS(turnPrompt(g));
+  return { stable, turn, worstUsd: (stable * p.input * 2 + turn * p.input + maxOut * p.output) / 1e6, warmUsd: (stable * p.cacheRead + turn * p.input + maxOut * p.output) / 1e6 };
+}
 
 export const MODELS = [
   { id: 'claude-opus-5-5', label: 'Claude Opus 5.5', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
@@ -29,30 +40,37 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       const params: any = {
         model, max_tokens: 16000,
         system: [
-          { type: 'text', text: RULES_PROMPT, cache_control: { type: 'ephemeral' } },
-          { type: 'text', text: campaignPrompt(g), cache_control: { type: 'ephemeral' } },
-          { type: 'text', text: partyPrompt(g), cache_control: { type: 'ephemeral' } },
+          // Stable first, each block cached for an hour (rounds can be minutes apart): the rules never change, the
+          // campaign changes by act, the party on level-ups, the long memory once a chapter. The turn is uncached.
+          { type: 'text', text: RULES_PROMPT, cache_control: { type: 'ephemeral', ttl: '1h' } },
+          { type: 'text', text: campaignPrompt(g), cache_control: { type: 'ephemeral', ttl: '1h' } },
+          { type: 'text', text: partyPrompt(g), cache_control: { type: 'ephemeral', ttl: '1h' } },
+          { type: 'text', text: memoryPrompt(g), cache_control: { type: 'ephemeral', ttl: '1h' } },
         ],
         output_config: { effort },
-        tools: [WIKI_TOOL, submitTool(g)],
+        tools: [WIKI_TOOL, RECALL_TOOL, submitTool(g)],
       };
       // Refusal fallback: on a policy decline the API re-runs the turn on a fallback model (Claude API skill default).
       if (model !== 'claude-haiku-5-5') { params.betas = ['server-side-fallback-2026-07-01']; params.fallbacks = 'default'; }
       const messages: any[] = [{ role: 'user', content: turnPrompt(g) }];
+      const spent = () => (sum.input * price.input + sum.cacheRead * price.cacheRead + sum.write5 * price.cacheWrite + sum.write1h * price.input * 2 + sum.output * price.output) / 1e6;
       const call = async () => {
         params.messages = messages;
+        // The cost ceiling: the reply may only use what is left of it.
+        params.max_tokens = Math.max(2000, Math.min(16000, Math.floor(((COST_CEILING_USD - spent()) * 1e6 - TOKENS(JSON.stringify(messages)) * price.input) / price.output)));
         try { return await client.beta.messages.create(params); } catch (e) {
           // If the API won't take the fallback option with this request, run the turn without it rather than stall.
           if (e instanceof Anthropic.BadRequestError && params.fallbacks) { delete params.fallbacks; delete params.betas; return call(); }
           throw new Error(explain(e));
         }
       };
-      const sum = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+      const sum = { input: 0, output: 0, cacheRead: 0, write5: 0, write1h: 0 };
       let res: any, turn: NarratorTurn | null = null, lookups = 0, nudged = false;
       while (!turn) {
         res = await call();
         const u = res.usage || {};
-        sum.input += u.input_tokens || 0; sum.output += u.output_tokens || 0; sum.cacheRead += u.cache_read_input_tokens || 0; sum.cacheWrite += u.cache_creation_input_tokens || 0;
+        const w1h = u.cache_creation?.ephemeral_1h_input_tokens ?? (u.cache_creation_input_tokens || 0), w5 = u.cache_creation?.ephemeral_5m_input_tokens ?? 0;
+        sum.input += u.input_tokens || 0; sum.output += u.output_tokens || 0; sum.cacheRead += u.cache_read_input_tokens || 0; sum.write1h += w1h; sum.write5 += w5;
         if (res.stop_reason === 'refusal') throw new Error('The model declined this turn' + (res.stop_details?.explanation ? ': ' + res.stop_details.explanation : '.') + ' Try again, or reword the last actions.');
         if (res.stop_reason === 'max_tokens') throw new Error('The Narrator ran out of room mid-turn. Retry.');
         const uses = res.content.filter((x: any) => x.type === 'tool_use');
@@ -69,14 +87,15 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         }
         lookups++;
         messages.push({ role: 'assistant', content: res.content });
-        messages.push({ role: 'user', content: uses.map((x: any) => x.name === WIKI_TOOL.name
-          ? { type: 'tool_result', tool_use_id: x.id, content: wikiAnswer(x.input?.keys) + (lookups >= MAX_LOOKUPS ? '\n\nThat was your last lookup this turn: call submit_turn now.' : '') }
+        const last = lookups >= MAX_LOOKUPS || spent() > COST_CEILING_USD * 0.7 ? '\n\nThat was your last lookup this turn: call submit_turn now.' : '';
+        messages.push({ role: 'user', content: uses.map((x: any) => x.name === WIKI_TOOL.name ? { type: 'tool_result', tool_use_id: x.id, content: wikiAnswer(x.input?.keys) + last }
+          : x.name === RECALL_TOOL.name ? { type: 'tool_result', tool_use_id: x.id, content: recallAnswer(g, x.input?.query) + last }
           : { type: 'tool_result', tool_use_id: x.id, content: 'Unknown tool.', is_error: true }) });
         onLookup?.(uses.flatMap((x: any) => x.input?.keys || []));
         if (lookups > MAX_LOOKUPS + 1) throw new Error('The Narrator kept looking things up without answering. Retry.');
       }
-      const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.cacheWrite, output = sum.output;
-      const costUsd = (input * price.input + cacheRead * price.cacheRead + cacheWrite * price.cacheWrite + output * price.output) / 1e6;
+      const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.write1h + sum.write5, output = sum.output;
+      const costUsd = spent();
       return { turn: turn!, usage: { input: input + cacheWrite, output, cacheRead, costUsd } };
     },
   };

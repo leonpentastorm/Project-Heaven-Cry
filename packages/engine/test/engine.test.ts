@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -607,5 +607,52 @@ describe('the Narrator maps typed intents to engine actions', () => {
     const id = Object.keys(g.characters)[0];
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'Go.', actions: [{ charId: id, act: 'move', to: 'J7' }] } as any }, 'host');
     expect(g.story.entries.at(-1)!.text).toMatch(/^MPAT can't move there/);
+  });
+});
+
+describe("the Narrator's memory (spec: The Narrator's memory)", () => {
+  const start = () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'mem');
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    return apply(g, { type: 'narrator/turn', turn: { narration: 'Open.', sceneTitle: 'The shield line' } as any }, 'host');
+  };
+  it('the Narrator keeps records: people, threads, facts (retired when untrue), factions, pins', () => {
+    let g = start();
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', memory: [
+      { op: 'person', name: 'Chief Engineer Keel', role: 'engineer', attitude: -1, notes: 'Holds the ramp.', update: 'Refused the medics.' },
+      { op: 'thread', title: 'Get the column aboard', kind: 'goal', who: ['Keel'], text: 'Twenty-three robots, one ship.' },
+      { op: 'fact', text: 'The ship leaves at dawn.', importance: 4 }, { op: 'faction', name: 'The 258th', change: 10 }, { op: 'pin', text: 'MPAT is a robot medic.' }] } as any }, 'host');
+    const m = memoryOf(g), f = m.facts.find((x) => x.text === 'The ship leaves at dawn.')!;
+    expect(m.people[0]).toMatchObject({ name: 'Chief Engineer Keel', attitude: -1 }); expect(m.people[0].log![0]).toMatch(/Refused the medics/);
+    expect(m.threads[0]).toMatchObject({ title: 'Get the column aboard', status: 'open' }); expect(m.factions[0].standing).toBe(10); expect(m.pins).toEqual(['MPAT is a robot medic.']);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', memory: [{ op: 'fact', id: f.id, retire: true, text: 'The ship left early, at midnight.' }, { op: 'thread', title: 'Get the column aboard', status: 'failed', update: 'The ship left.' }] } as any }, 'host');
+    expect(memoryOf(g).facts.some((x) => x.id === f.id)).toBe(false); expect(memoryOf(g).threads[0].status).toBe('failed');
+  });
+  it('the engine writes canon: fights, the dead, travel', () => {
+    let g = start();
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', memory: [{ op: 'person', name: 'Scavenger drone' }], combat: { name: 'Drones', difficulty: 'easy', enemies: [{ name: 'Scavenger drone', tier: 'minion', weapon: 'service_pistol', at: 'L4' }] } } as any }, 'host');
+    for (const u of g.combat!.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }
+    g = apply(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id }, g.characters[active(g.combat!)!.charId!]?.owner || 'host');
+    const facts = memoryOf(g).facts.filter((x) => x.canon);
+    expect(facts.some((x) => /won the fight "Drones".*killed: Scavenger drone/.test(x.text))).toBe(true);
+    expect(memoryOf(g).people.find((p) => p.name === 'Scavenger drone')!.status).toBe('dead');
+  });
+  it('scenes roll into chapters and the saga; players never receive memory or the archive', () => {
+    let g = start();
+    for (let i = 0; i < SCENES_PER_CHAPTER; i++) g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', sceneTitle: 'Scene ' + i, endScene: { summary: 'Summary ' + i } } as any }, 'host');
+    expect(memoryOf(g).scenes.length).toBe(SCENES_PER_CHAPTER);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', chapter: { title: 'The line', summary: 'They held.', saga: 'The 258th held the line.' } } as any }, 'host');
+    expect(memoryOf(g).chapters[0]).toMatchObject({ title: 'The line', summary: 'They held.' }); expect(memoryOf(g).saga).toBe('The 258th held the line.');
+    expect(memoryOf(g).scenes.length).toBe(0);
+    g.archive = [{ id: 'old', kind: 'narration', text: 'Long ago.' } as any];
+    expect(viewFor(g, 'p2').memory).toBeUndefined(); expect(viewFor(g, 'host').archive).toBeUndefined();
+  });
+  it('the live log scrolls into the archive instead of being lost', () => {
+    let g = start();
+    for (let i = 0; i < 450; i++) g = apply(g, { type: 'narrator/turn', turn: { narration: 'Line ' + i } as any }, 'host');
+    expect(g.story.entries.length).toBe(400); expect(g.archive!.length).toBeGreaterThan(50);
+    expect(recall(g, 'Line 3')[0]).toBeTruthy();
   });
 });

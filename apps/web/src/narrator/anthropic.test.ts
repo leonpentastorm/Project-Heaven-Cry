@@ -74,7 +74,7 @@ describe('Anthropic Narrator adapter', () => {
     expect(c.headers.get('anthropic-dangerous-direct-browser-access')).toBe('true');
     expect(c.headers.get('authorization')).toBe('Bearer sk-test'); // SDK 1.x sends the player's key as a bearer token
     expect(c.body.model).toBe('claude-opus-5-5');
-    expect(c.body.system).toHaveLength(3);
+    expect(c.body.system).toHaveLength(4); expect(c.body.system.every((b: any) => b.cache_control?.ttl === '1h')).toBe(true);
     expect(c.body.system.every((b: any) => b.cache_control?.type === 'ephemeral')).toBe(true);
     expect(c.body.output_config.format).toBeUndefined(); // no grammar: the turn comes back through submit_turn
     expect(c.body.output_config.effort).toBe('medium');

@@ -9,6 +9,7 @@ import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair,
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
+import { type Memory, type MemOp, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -69,6 +70,10 @@ export interface GameState {
   campaign?: Campaign | null;
   /** What the room hears (spec: Music). */
   music?: MusicState;
+  /** The Narrator's long-term memory (spec: The Narrator's memory). Host only: views never carry it. */
+  memory?: Memory;
+  /** Every story line that scrolled out of the live log, kept forever on the host's computer for recall. */
+  archive?: Entry[];
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -111,6 +116,10 @@ export type NarratorTurn = {
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: { label: string; skills: string[]; tn: number; stakes: string; success: Approach['success'] }[] }[];
   endScene?: { summary: string } | null;
+  /** Memory upkeep (spec: The Narrator's memory): people, threads, facts, factions and pins to add or update. */
+  memory?: MemOp[];
+  /** When asked: the oldest scenes rolled into a chapter, and the saga (the story so far) rewritten. */
+  chapter?: { title: string; summary: string; saga: string } | null;
   /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
   treat?: { charId: string; loc: 'arm' | 'leg' | 'all' }[];
 };
@@ -146,7 +155,7 @@ export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' |
 export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
 const id = (g: GameState, p: string) => p + (++g.seq);
-const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id: id(g, 'e'), ...e }); if (g.story.entries.length > 400) g.story.entries.splice(0, g.story.entries.length - 400); };
+const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id: id(g, 'e'), ...e }); if (g.story.entries.length > 400) (g.archive ||= []).push(...g.story.entries.splice(0, g.story.entries.length - 400)); };
 const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filter((c) => c.owner === pid && !c.dead);
 const isHost = (g: GameState, by: string) => by === g.hostId;
 /** Players taking part in the round: everyone with a living character. */
@@ -196,6 +205,7 @@ function reduce(g: GameState, a: Action, by: string) {
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
+      for (const pin of g.campaign!.pins || []) applyMemOp(g, { op: 'pin', text: pin });
       push(g, { kind: 'system', text: 'Session 1 begins.' });
       return;
     }
@@ -479,6 +489,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const c = g.characters[d.charId]; if (!c || comboEligible(c, d.perkId)) continue;
     c.perks.push({ id: d.perkId, tier: 'achieved' }); c.deeds.push(d.deed);
     push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
+    canon(g, c.name + ' earned ' + PERK[d.perkId].name + ' by a deed: ' + d.deed, [c.name], 4);
     startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
     awardAutomatic(g, c);
   }
@@ -499,6 +510,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     g.story.zone = t.travel; g.story.positions = {}; g.story.objects = zo[t.travel] || defaultObjects(zoneMap(g)); positionsOf(g);
     g.story.npcs = zn[t.travel] || initialNpcs(g); g.story.hidden = {}; g.story.sneak = {};
     push(g, { kind: 'system', text: 'The party travels to ' + zoneMap(g).name + '.' });
+    canon(g, 'The party travelled to ' + zoneMap(g).name + ' (scene ' + g.story.scene.n + ').', [], 2);
     musicOnTravel(g);
   }
   for (const op of t.objects || []) applyObjectOp(g, op);
@@ -514,7 +526,11 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     else continue;
     c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + (l.name || WEAPON[l.item]?.name || ITEM[l.item]?.name) + (rarity !== 'standard' && WEAPON[l.item] ? ' (' + rarity + ')' : '') + '.' });
   }
-  if (t.endScene?.summary) g.story.journal.push(t.endScene.summary);
+  if (t.endScene?.summary) { g.story.journal.push(t.endScene.summary); noteScene(g, g.story.scene.title, t.endScene.summary); }
+  for (const op of (t.memory || []).slice(0, 16)) applyMemOp(g, op);
+  // Chapters (recursive summaries): when due, the Narrator writes one; if it keeps not doing so, the engine folds the
+  // scene summaries in itself so memory never grows without bound.
+  if (memoryOf(g).scenes.length >= SCENES_PER_CHAPTER && (t.chapter?.summary || memoryOf(g).scenes.length >= SCENES_PER_CHAPTER * 2)) rollChapter(g, t.chapter || undefined);
   g.story.queued = t.combat && t.combat.enemies?.length ? [] : (t.actions || []).filter((x) => x && g.characters[x.charId]).slice(0, 6);
   if (t.combat && t.combat.enemies?.length) {
     const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
@@ -623,6 +639,9 @@ function finishCombat(g: GameState) {
   const cb = g.combat!;
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, true);
   const won = cb.over === 'win';
+  { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
+    canon(g, (won ? 'The party won' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
+    for (const n of [...fallen, ...lost]) { const p = findPerson(memoryOf(g), n); if (p) applyMemOp(g, { op: 'person', id: p.id, status: 'dead' }); } }
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + ' rounds. ' + cb.units.map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
   if (won) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
@@ -661,6 +680,7 @@ function poiResult(g: GameState, ck: Check, by: string) {
   g.story.needs = true; // the Narrator narrates the attempt
   if (o && ap) {
     ap.tries.push({ charId: c.id, name: c.name, ok: !!ck.roll?.ok, total: ck.roll?.total || 0, scene: g.story.scene.n });
+    canon(g, c.name + (ck.roll?.ok ? ' succeeded at' : ' failed at') + ' "' + ap.label + '" on ' + o.name + ' (scene ' + g.story.scene.n + ').', [c.name, o.name], 2);
     if (ck.roll?.ok && ap.success) {
       if (ap.success === 'remove' || ap.success === 'disarm') {
         g.story.objects = storyObjects(g).filter((x) => x !== o);
@@ -715,6 +735,7 @@ export function positionsOf(g: GameState): Record<string, string> {
 export function viewFor(g: GameState, playerId: string): GameState {
   const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...g.story.scene, hooks: [] } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
+  delete v.memory; delete v.archive;
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
@@ -794,6 +815,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
     const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
     list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)) });
     push(g, { kind: 'system', text: op.name + ' at ' + refOf(k) + '.' });
+    if (!/^(scavenger drone|engineer|security guard|guard|drone|hostile)$/i.test(op.name)) applyMemOp(g, { op: 'person', name: op.name, where: zoneMap(g).id, ...(op.side === 'hostile' ? { attitude: -2 } : {}) });
     return;
   }
   const n = list.find((x) => x.id === op.id); if (!n) return;

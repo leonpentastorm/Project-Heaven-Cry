@@ -18,6 +18,14 @@ export interface ClientState {
 const LS = { me: 'phc.me', lib: 'phc.library', key: 'phc.narrator', room: 'phc.room', sessions: 'phc.sessions', game: (c: string) => 'phc.game.' + c };
 const read = (k: string, d: any) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
 const write = (k: string, v: any) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* full or private mode */ } };
+// The host's full save, archive and all, lives in IndexedDB on the host's computer: no size limit worth worrying about
+// (spec: The Narrator's memory). localStorage and the room server keep a slim copy without the archive.
+const IDB = 'phc-saves';
+const idb = (): Promise<IDBDatabase | null> => new Promise((res) => { try { const r = indexedDB.open(IDB, 1); r.onupgradeneeded = () => r.result.createObjectStore('games'); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch { res(null); } });
+async function idbPut(code: string, v: GameState) { const db = await idb(); if (!db) return; try { db.transaction('games', 'readwrite').objectStore('games').put(v, code); } catch { /* */ } }
+async function idbGet(code: string): Promise<GameState | null> { const db = await idb(); if (!db) return null; return new Promise((res) => { try { const r = db.transaction('games', 'readonly').objectStore('games').get(code); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); } catch { res(null); } }); }
+/** A save without the archive (it can grow without end; only the host's IndexedDB keeps it). */
+const slim = (g: GameState): GameState => (g.archive ? { ...g, archive: undefined } : g);
 const rid = (n = 10) => Array.from(crypto.getRandomValues(new Uint8Array(n)), (b) => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
 export const roomCode = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
 
@@ -57,6 +65,13 @@ export function hostRoom(code = roomCode()) {
   if (!S.me.name) return toast('Enter your name first.');
   const saved: GameState | null = read(LS.game(code), null);
   hostState = saved || newGame(code, { id: S.me.id, name: S.me.name });
+  // The full save (with the archive) comes back from IndexedDB a moment later.
+  idbGet(code).then((full) => {
+    if (!full || !hostState || hostState.code !== code) return;
+    // localStorage lost it (full, or cleared): the IndexedDB save is the whole game.
+    if (!saved && full.v > hostState.v) { hostState = full; set({ game: viewFor(hostState, S.me.id), screen: screenFor(hostState) }); broadcast(true); return; }
+    if (full.archive && !hostState.archive) hostState.archive = full.archive;
+  });
   write(LS.room, { code, role: 'host' });
   set({ role: 'host', code, game: viewFor(hostState, S.me.id), screen: screenFor(hostState), conn: 'connecting' });
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'host', token: hostToken(code) }, onMessage, onConn);
@@ -81,19 +96,20 @@ function noteSession(g: GameState, role: 'host' | 'guest') {
 export function forgetSession(code: string) {
   write(LS.sessions, listSessions().filter((x) => x.code !== code));
   try { localStorage.removeItem(LS.game(code)); } catch { /* */ }
+  idb().then((db) => { try { db?.transaction('games', 'readwrite').objectStore('games').delete(code); } catch { /* */ } });
   if (read(LS.room, null)?.code === code) write(LS.room, null);
   set({});
 }
 /** Save now: the host writes this browser's save and the room server's copy; guests are saved by the host. */
 export function saveNow() {
   if (S.role !== 'host' || !hostState) return toast('The host\'s browser keeps the save for everyone. Ask the host to save.');
-  persist(); if (conn) conn.send({ t: 'save', state: hostState }); lastSave = Date.now();
+  persist(); if (conn) conn.send({ t: 'save', state: slim(hostState) }); lastSave = Date.now();
   set({ savedAt: Date.now() });
   toast('Saved · room ' + hostState.code + '. Find it under Saved sessions on the title screen.', true);
 }
 export function resumeSession(code: string) { const x = listSessions().find((s) => s.code === code); if (!x) return; x.role === 'host' ? hostRoom(code) : joinRoom(code); }
 
-export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: hostState }); } conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
+export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: slim(hostState) }); } conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
 export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.me.name) (r.role === 'host' ? hostRoom(r.code) : joinRoom(r.code)); }
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;
 function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
@@ -155,11 +171,12 @@ function runHost(a: Action, by: string, nonce: string | null) {
 }
 
 let lastSave = 0;
-function persist() { if (hostState) { write(LS.game(hostState.code), hostState); noteSession(hostState, 'host'); } }
+let idbTimer: any = null;
+function persist() { if (hostState) { write(LS.game(hostState.code), slim(hostState)); noteSession(hostState, 'host'); clearTimeout(idbTimer); const g = hostState; idbTimer = setTimeout(() => idbPut(g.code, g), 400); } }
 function broadcast(force: boolean) {
   if (!conn || !hostState) return;
   for (const p of hostState.players) if (p.id !== S.me.id) conn.send({ t: 'view', pid: p.id, state: viewFor(hostState, p.id) });
-  if (force || Date.now() - lastSave > 1500) { lastSave = Date.now(); conn.send({ t: 'save', state: hostState }); }
+  if (force || Date.now() - lastSave > 1500) { lastSave = Date.now(); conn.send({ t: 'save', state: slim(hostState) }); }
 }
 
 // ---------- the AI Narrator (host only) ----------

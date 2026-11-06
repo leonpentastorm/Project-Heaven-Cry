@@ -165,3 +165,19 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Spotlight:** a player's point of interest and rolls show to the whole party by default, with a large turn banner and their hover. Anyone can close it.
     - **Typed intents:** the Narrator maps typed intents ("I move to A15 and shoot him") to engine actions (`actions[]`), run as the player's own actions from next round's AP. `moves[]` stays for the story moving people. Checked live: the Narrator turned "I move to J4 and shoot that drone" into a move and an attack, and the engine opened the fight.
     - **How it's built:** each overworld action runs through the combat engine on a throwaway fight state built from the story, so the rules aren't duplicated.
+80. **The Narrator's memory, built for 4 players and 50 hours under $0.50 a call** (Leon: "scaffold the shit out of everything in the engine for the narrator"; the save may grow without limit on the host's computer; the cost to players must stay low).
+    - **Researched first:**
+      - Products: AI Dungeon's memory system, NovelAI lorebooks, SillyTavern World Info, Friends & Fables' Franz, Hidden Door.
+      - Papers: MemGPT, Generative Agents, recursive summarization, MemoryBank, Lost in the Middle, Context Rot, LongMemEval, Mem0, A-MEM, FIREBALL, CALYPSO, agentic and function-calling GMs.
+    - **What was taken from them:**
+      - The engine is canon and prose is never state.
+      - A ledger of people, threads, facts and factions, reconciled (Mem0's update and retire).
+      - Per-NPC logs (Friends & Fables).
+      - Scene, chapter and saga recursive summaries.
+      - Deterministic selection by relevance, importance and recency (Generative Agents), with lorebook-style name triggers.
+      - BM25 recall as a paging tool (MemGPT).
+      - Small, well-chosen context, not "everything fits" (Context Rot).
+      - Stable blocks cached for an hour, ordered first; tool definitions fixed for the session (no per-zone enums).
+      - Acts so a long campaign carries only the current act.
+    - **Measured:** a synthetic 4-player save with 300 scenes, 250 people, 180 threads, about 1,500 facts and 12,000 archived lines. Live on Sonnet 5.5 at medium effort it cost $0.18 cold and $0.045 warm. A test keeps the worst case under half the ceiling.
+    - **Not yet:** a host-visible memory panel (to read and fix the ledger), embeddings (only if BM25 misses get measured), and probe-fact recall tests on a real played campaign.

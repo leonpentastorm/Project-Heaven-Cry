@@ -46,6 +46,11 @@ export interface Campaign {
   lore?: string;
   /** Which World Bible chunks and lore docs the Narrator reads (keys like "truth", "worlds/timeline", "sector-earth"; docs/design/campaign-format.md). Default: truth and worlds. */
   narratorLore?: string[];
+  /** Plot essentials pinned in the Narrator's memory from the start (spec: The Narrator's memory). */
+  pins?: string[];
+  /** Acts of a long campaign: the Narrator's context carries the current act's zones and fights in full and only a
+   * line for the rest (spec: The Narrator's memory). The act is the one holding the party's zone. */
+  acts?: { id: string; title: string; summary: string; zones: string[] }[];
   /** false hides a built-in campaign from the Room (sketches kept for later). */
   listed?: boolean;
   /** Art: a sprite per object kind ("door:open" for an open door), portraits by name for NPCs and enemies (a list

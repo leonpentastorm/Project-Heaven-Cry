@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -121,6 +121,19 @@ THE OVERWORLD (rounds)
 - Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone. Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
 - If a player attacks a token from the overworld, the engine starts the fight by itself. If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
 
+MEMORY (you keep the campaign's records; a campaign can run 50 hours)
+- You see only what this moment needs: the saga and latest chapters, the recent scenes, the active memory (the people, threads and facts that matter here) and the recent transcript. Everything else is in memory: call recall with names or key words before you answer about anything from long ago. Never invent past events you can't see; recall them.
+- Keep the records with memory[] in submit_turn (an empty array when nothing changes):
+  - person: anyone who matters (name, role, where: a zone id, attitude -3 hostile to +3 devoted, status, notes in one or two lines, importance 1-5). Update them when they change; record deaths.
+  - thread: quests, promises, debts, mysteries, goals (title, kind, status open/done/failed/dropped, who, text; update: one line of what changed). Open one whenever someone wants something or a promise is made; close it when it ends.
+  - fact: what the party learned or did that must stay true (text, about: names, importance 1-5; secret: true for what the party doesn't know yet). When a fact stops being true, retire it (id, retire: true) and add the new one: never leave two facts that contradict.
+  - person update: one line of what just happened between them and the party; each person keeps their last few.
+  - faction: standing changes (change: -30 to +30).
+  - pin / unpin: plot essentials that must always stay in view (a few at most).
+- [canon] facts come from the engine (fights, deaths, travel, deeds): they are true; never contradict them.
+- When a scene ends, write endScene.summary: names, what changed, what is owed or open. These summaries become chapters and the saga, so they are the campaign's long memory.
+- When the turn says CHAPTER DUE, also fill chapter (title, summary, saga) as it asks; otherwise chapter is null.
+
 STORY MOMENTS
 - Some campaigns have illustrated moments. When the story reaches one the turn lists as open, set moment to its id: the players see the picture right after your narration. Once each; otherwise an empty string.
 
@@ -144,7 +157,9 @@ OUTPUT
 
 export function campaignPrompt(g: GameState): string {
   const c = campaignOf(g)!;
-  const zones = c.zones.map((z) => `- ${z.id}: ${z.name}. ${z.summary}${(z.exits || []).length ? ' Exits: ' + z.exits!.map((e) => e.to + (e.at ? ' at ' + e.at : '') + ' (' + e.text + ')').join('; ') : ''}`).join('\n');
+  // Long campaigns come in acts: the current act's zones and fights in full, the rest as one line each.
+  const act = c.acts?.find((a) => a.zones.includes(g.story.zone || '')) || c.acts?.[0] || null, here = (zid: string) => !act || act.zones.includes(zid);
+  const zones = c.zones.map((z) => here(z.id) ? `- ${z.id}: ${z.name}. ${z.summary}${(z.exits || []).length ? ' Exits: ' + z.exits!.map((e) => e.to + (e.at ? ' at ' + e.at : '') + ' (' + e.text + ')').join('; ') : ''}` : `- ${z.id}: ${z.name} (${c.acts!.find((a) => a.zones.includes(z.id))?.title || 'another act'})`).join('\n');
   return [
     `CAMPAIGN: ${c.title} (${c.kicker})`, 'What the players were told:\n' + c.pitch.join('\n'), c.meta,
     `TONE CHOSEN BY THE HOST: ${g.settings.tone}.`,
@@ -153,7 +168,8 @@ export function campaignPrompt(g: GameState): string {
     c.secrets?.length ? '\nSECRETS (never state outright):\n' + c.secrets.map((x) => '- ' + x).join('\n') : '',
     c.cast?.length ? '\nCAST:\n' + c.cast.map((x) => `- ${x.name} (${x.role}): ${x.text}`).join('\n') : '',
     '\nZONES (move the party between them with travel):\n' + zones,
-    c.encounters?.length ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
+    act ? '\nACTS:\n' + c.acts!.map((a) => (a === act ? '▶ NOW: ' : '- ') + a.title + ': ' + a.summary).join('\n') : '',
+    c.encounters?.some((e) => here(e.zone)) ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.filter((e) => here(e.zone)).map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
     c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(drop(m813, ['Use in the game'])) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
     '\nWORLD BIBLE (Narrator only; never reveal its truths outright; only the parts this campaign needs):\n' + clean(bibleFor(g)),
     takes(loreFor(g), 'sector-earth') ? '\nTHE EARTH SECTOR (the party\'s origins only):\n' + clean(sectorFor(g)) : '',
@@ -170,8 +186,8 @@ export function characterBrief(g: GameState, c: Character): string {
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
   const id = c.identity || {};
   return `CHARACTER ${c.name} (charId ${c.id})${c.dead ? ' — DEAD' : ''}
-  Origin: ${c.origin}. Level ${c.level} (${c.xp} XP; next level at ${xpForLevel(c.level + 1)}). Class: ${c.classId ? CLASS[c.classId].name : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
-  HP ${c.hp}/${maxHp(c)}. Echo ${c.echo}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
+  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
+  Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
   Perks: ${perks}. Overreach triggers: ${over}
@@ -188,20 +204,20 @@ export function partyPrompt(g: GameState): string {
 /** The uncached part: memory, recent transcript, and what this call must do. */
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
-  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$|^Round \d+\.$| (moves|sprints) to [A-Z]+\d+ \(/.test(e.text)).slice(-40).map((e) => {
+  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$|^Round \d+\.$| (moves|sprints) to [A-Z]+\d+ \(/.test(e.text))/* the last 40 lines, inside a character budget (oldest dropped first) */.slice(-40).map((e) => {
     if (e.kind === 'player') return `[${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
     if (e.kind === 'narration') return `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
     if (e.kind === 'scene') return `[New scene] ${e.text}`;
     return `[${e.kind}] ${e.text}`;
-  }).join('\n');
+  }).reverse().reduce((acc: string[], l) => (acc.join('\n').length + l.length > TRANSCRIPT_CHARS ? acc : [...acc, l]), []).reverse().join('\n');
   const choices = g.overreach.filter((o) => o.choice).map((o) => `${g.characters[o.charId]?.name} ${o.choice === 'resist' ? 'resisted' : 'indulged'} ${SKILL[o.skill].name}'s push: "${o.push}"`).join('\n');
   const job = w.kind === 'opening'
     ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
     : w.kind === 'round' ? `Round ${g.story.round} has closed: every player has used their turn. Answer what needs you since your last turn (lines said, examines, attempts, travel requests, anyone spotted), all together. Request checks where outcomes are uncertain.`
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
-  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + ' HP'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
+  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
   const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
   const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
   const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
@@ -214,8 +230,11 @@ export function turnPrompt(g: GameState): string {
   const moments = momentsOpen(g).map((m) => `${m.id}: ${m.when}`).join('\n  ');
   const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.side}, ${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}`).join('\n  ');
   const sneaking = Object.values(g.characters).filter((c) => g.story.sneak?.[c.id]).map((c) => c.name + (g.story.hidden?.[c.id] ? ' (hidden)' : ' (sneaking, but seen)')).join(', ');
-  const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  const M = memoryOf({ ...g }), sceneMem = M.scenes.map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n') || (g.story.journal.slice(-6).map((x, i) => `${i + 1}. ${x}`).join('\n') || 'none yet');
+  const lookFor = [recent, g.story.scene.title, zoneMap(g).name, people, objs.map((o) => o.name).join(' ')].join('\n');
+  const active = memoryBlock(selectMemory({ ...g }, lookFor, ACTIVE_MEMORY_CHARS));
+  const chapterJob = chapterDue(g) ? `\n\nCHAPTER DUE: also fill chapter. Roll these ${SCENES_PER_CHAPTER} oldest scenes into one chapter (title, and a summary of at most 1,200 characters keeping names, promises, debts, deaths and open questions), and rewrite the saga, the story so far, in at most 3,500 characters with this chapter folded in:\n${M.scenes.slice(0, SCENES_PER_CHAPTER).map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n')}` : '';
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -278,8 +297,8 @@ export function submitTool(g: GameState) {
     name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
     approaches: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, skills: { type: 'array', items: { type: 'string' }, description: '1 to 3 skill ids' }, tn: { type: 'integer', enum: [8, 12, 16, 20] }, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }, required: ['label', 'skills', 'tn', 'stakes', 'success'] } },
   }, required: ['action'] } };
-  const open = momentsOpen(g);
-  schema.properties.moment = { type: 'string', enum: ['', ...open.map((m) => m.id)], description: 'A story moment to show the players now (an illustration), or empty' };
+  // Plain text, not an enum: tool definitions must not change during a session, or the whole prompt cache resets.
+  schema.properties.moment = { type: 'string', description: 'A story moment id from STORY MOMENTS OPEN HERE (an illustration to show now), or empty' };
   schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map (empty when nothing changes)', items: { type: 'object', properties: {
     action: { type: 'string', enum: ['place', 'move', 'update', 'remove'] }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
     side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
@@ -289,6 +308,47 @@ export function submitTool(g: GameState) {
     to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id (attack, analyze) or a charId (stim)' },
     mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'A door id, for door' },
   }, required: ['charId', 'act'] } };
-  schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions'];
+  schema.properties.memory = { type: 'array', description: 'Memory upkeep: people, threads, facts, factions, pins (empty when nothing changes)', items: { type: 'object', properties: {
+    op: { type: 'string', enum: ['person', 'thread', 'fact', 'faction', 'pin', 'unpin'] }, id: { type: 'string', description: 'An existing record id, to update it' },
+    name: { type: 'string' }, aliases: { type: 'array', items: { type: 'string' } }, role: { type: 'string' }, where: { type: 'string', description: 'A zone id' },
+    attitude: { type: 'integer', description: '-3 hostile to +3 devoted' }, retire: { type: 'boolean', description: 'fact: retire the fact with this id (it is no longer true)' }, status: { type: 'string', description: 'person: alive, dead, missing, unknown; thread: open, done, failed, dropped' },
+    notes: { type: 'string' }, importance: { type: 'integer', description: '1 to 5' }, title: { type: 'string' }, kind: { type: 'string', enum: ['quest', 'promise', 'mystery', 'debt', 'rumour', 'goal'] },
+    who: { type: 'array', items: { type: 'string' } }, text: { type: 'string' }, update: { type: 'string' }, about: { type: 'array', items: { type: 'string' } }, secret: { type: 'boolean' },
+    standing: { type: 'integer' }, change: { type: 'integer' },
+  }, required: ['op'] } };
+  schema.properties.chapter = { anyOf: [{ type: 'null' }, { type: 'object', properties: { title: { type: 'string' }, summary: { type: 'string' }, saga: { type: 'string' } }, required: ['title', 'summary', 'saga'] }], description: 'Only when the turn says CHAPTER DUE' };
+  schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'memory', 'chapter'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
+}
+
+/** Budgets (characters) for the parts of the turn that grow with the campaign: they keep every call inside the cost
+ * ceiling however long the campaign runs (spec: The Narrator's memory). */
+export const TRANSCRIPT_CHARS = 9000;
+export const ACTIVE_MEMORY_CHARS = 9000;
+const ATT = ['hostile', 'hostile', 'unfriendly', 'neutral', 'friendly', 'warm', 'devoted'];
+/** The active memory as prompt text. */
+export function memoryBlock(sel: Selection): string {
+  const out: string[] = [];
+  if (sel.threads.length) out.push('Threads:\n' + sel.threads.map((t) => `  ${t.id} [${t.kind}, ${t.status}] ${t.title}${t.who.length ? ' (' + t.who.join(', ') + ')' : ''}: ${t.text}${t.log.length ? ' | ' + t.log.slice(-2).join(' | ') : ''}`).join('\n'));
+  if (sel.people.length) out.push('People:\n' + sel.people.map((p) => `  ${p.id} ${p.name}${p.aliases.length ? ' (' + p.aliases.join(', ') + ')' : ''}: ${p.role || 'someone'}, ${p.status}, ${ATT[p.attitude + 3]} to the party${p.where ? ', last at ' + p.where : ''}. ${p.notes}${p.log?.length ? ' | ' + p.log.slice(-3).join(' | ') : ''}`).join('\n'));
+  if (sel.factions.length) out.push('Factions: ' + sel.factions.map((f) => `${f.name} ${f.standing >= 0 ? '+' : ''}${f.standing}${f.notes ? ' (' + f.notes + ')' : ''}`).join('; '));
+  if (sel.facts.length) out.push('Facts:\n' + sel.facts.map((f) => `  ${f.canon ? '[canon] ' : ''}${f.secret ? '[secret] ' : ''}S${f.scene}: ${f.text}`).join('\n'));
+  return out.join('\n');
+}
+/** The long memory: the saga, the latest chapters and the pins. Cached: it changes once a chapter. */
+export function memoryPrompt(g: GameState): string {
+  const m = memoryOf({ ...g });
+  return ['THE STORY SO FAR (the saga, rewritten each chapter):', m.saga || 'It has only just begun.',
+    m.chapters.length ? '\nLATEST CHAPTERS:\n' + m.chapters.slice(-4).map((c) => `Chapter ${c.n}, ${c.title} (scenes ${c.scenes[0]}–${c.scenes[1]}): ${c.summary}`).join('\n') : '',
+    m.pins.length ? '\nPLOT ESSENTIALS (always true; never contradict):\n' + m.pins.map((x) => '- ' + x).join('\n') : ''].filter(Boolean).join('\n');
+}
+/** The recall tool: keyword search over the whole memory and the archived transcript. */
+export const RECALL_TOOL = {
+  name: 'recall',
+  description: 'Search the campaign\'s memory: every person, thread, fact, faction, scene and chapter summary, and the full transcript back to session 1. Use it when the players bring up something from long ago that is not in your context, before you answer about it. Query with names and key words.',
+  input_schema: { type: 'object', additionalProperties: false, properties: { query: { type: 'string' } }, required: ['query'] },
+};
+export function recallAnswer(g: GameState, query: string): string {
+  const hits = recall({ ...g }, String(query || ''), 8);
+  return hits.length ? hits.map((h) => `[${h.kind} ${h.id}] ${h.text}`).join('\n') : 'Nothing in memory matches "' + query + '".';
 }
