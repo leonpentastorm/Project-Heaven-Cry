@@ -1,0 +1,2412 @@
+{
+  "brief": "art/briefs/m813-tutorial-campaign.md",
+  "status": "review-candidate",
+  "production_approved": false,
+  "assets": [
+    {
+      "id": "m813-shield-line",
+      "group": "A",
+      "order": 1,
+      "name": "Shield Line",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/shield-line.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A1 | `m813-shield-line` · `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "31b5d4a8e5ee9144ea791e6ccf13cc5d9f680ad48adfaabc9b6bba7ce7a2c2a6",
+      "source_path": "art/illustrations/m813/v2/sources/m813-shield-line.png",
+      "source_sha256": "2153dfc443c70988ebaec2f57315517ce2f7fe4b1658cabfe17944723b5a8fe9",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-shield-line-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Shield Line",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "zone-banner",
+        "campaign-card"
+      ],
+      "zone_id": "shield_line"
+    },
+    {
+      "id": "m813-rear-pad-loading",
+      "group": "A",
+      "order": 2,
+      "name": "Rear Pad Loading",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/rear-pad-loading.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "a5226b0e8f075393ae7fc44df56bb79d9b79b20776880e1d1325f591d37a200e",
+      "source_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.png",
+      "source_sha256": "754f677ae11754b5333dd6f28ccff3f4bbe0d780203db58b05131cb9e4a8aa81",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-rear-pad-loading-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt",
+      "label": "M813 — Rear Pad Loading",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "zone-banner"
+      ],
+      "zone_id": "rear_pad"
+    },
+    {
+      "id": "m813-outpost-hangar",
+      "group": "A",
+      "order": 3,
+      "name": "Outpost Hangar",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/revisions/v2/outpost-hangar.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A3 | `m813-outpost-hangar` · `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |",
+      "spoiler": false,
+      "visibility": "zone-entry",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "c1a6a0f6c019ce0756547ffd74236337d8b518c0d9c0edc6bc7c7097be6b571e",
+      "source_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-outpost-hangar.png",
+      "source_sha256": "439e6092d04402f61bd0917e9a022da625356b05bf4c77cc8943860614b5c0e5",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/revisions/v2/previews/m813-outpost-hangar-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "previous_revision_path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "revision": 2,
+      "label": "M813 — Outpost Hangar",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "zone-banner"
+      ],
+      "zone_id": "outpost"
+    },
+    {
+      "id": "m813-outpost-1",
+      "group": "A",
+      "order": 4,
+      "name": "Outpost 1",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/outpost-1.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A4 | `m813-outpost-1` · `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |",
+      "spoiler": false,
+      "visibility": "zone-entry",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "e4e66398a91991788a7777786c82fc146f24e6b2d7007b7c4fd58b0806d89c64",
+      "source_path": "art/illustrations/m813/v2/sources/m813-outpost-1.png",
+      "source_sha256": "4f60761adbd0e110768363566974247721b668b35097d759e8bea5f9ae541673",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-outpost-1-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-1.prompt.txt",
+      "label": "M813 — Outpost 1",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "zone-banner"
+      ],
+      "zone_id": "outpost_1"
+    },
+    {
+      "id": "m813-nine-nine",
+      "group": "B",
+      "order": 1,
+      "name": "Sergeant Nine-Nine",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-nine-nine.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B1 | `m813-nine-nine` | **Sergeant Nine-Nine**, infantry sergeant: a torso and one shoulder, wedged in barrier stakes, voice box cracked, a sergeant's stripes painted on the shoulder plate. | Giving an order with his one arm, a dry joke in the tilt of the visor. Dying slowly and refusing to be dramatic about it. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "ffcff8b865a985a6ef28732b20917967d76a41673544f8409ca3b7e07fc2d42f",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.png",
+      "source_sha256": "9173b791d83694f913033f0accf925054e821465b668d2792d205406b30a09e0",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-nine-nine-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.prompt.txt",
+      "label": "M813 — Sergeant Nine-Nine",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-seven-seven",
+      "group": "B",
+      "order": 2,
+      "name": "Seven-Seven",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-seven-seven.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B2 | `m813-seven-seven` | **Seven-Seven**, infantry robot, both legs gone below the knee. | Counting under its breath; one finger tapping the seconds on its own chest plate. Frightened, holding it together. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.png",
+      "source_sha256": "cac21552badd86dc9c63abbf8ab7d2728d6542b94d8e3027e89e126102232cdc",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-seven-seven-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.prompt.txt",
+      "label": "M813 — Seven-Seven",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-hum",
+      "group": "B",
+      "order": 3,
+      "name": "Hum",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-hum.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B3 | `m813-hum` | **Hum**, infantry robot with a cracked visor. | Head tilted, humming; small notes drifting from its speaker grille as faint marks in the air. Absent, peaceful, strange. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "2ae804c69b73296e6a10ff2be51e029492a54d0304efed08c7d78dd809e88f88",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-hum.png",
+      "source_sha256": "be09737beb75d5b31e8ccf8c03badaef93a60fad55cfde91671a6386891b7fb8",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-hum-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-hum.prompt.txt",
+      "label": "M813 — Hum",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-lantern",
+      "group": "B",
+      "order": 4,
+      "name": "Lantern",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-lantern.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B4 | `m813-lantern` | **Lantern**, infantry robot. | Both hands holding its chest plate shut. Through a gap: a child's crayon drawing of a human family. Protective, shy. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "e819096722ed78e348196abe89bace77f45c54517f75f7afb6a05207ce4fc452",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-lantern.png",
+      "source_sha256": "898b422bd5f6efbc6da30a27f73f88a6780cf9643c608015d3952457c04e0c91",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-lantern-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-lantern.prompt.txt",
+      "label": "M813 — Lantern",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-soft-hands",
+      "group": "B",
+      "order": 5,
+      "name": "Soft-Hands",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-soft-hands.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B5 | `m813-soft-hands` | **Soft-Hands**, medic robot of the 258th (MPAT's design language). Slender, delicate manipulators, a cloak patched with bandage cloth. | Mid-repair on someone's arm off-frame; gentle, tired. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.png",
+      "source_sha256": "9d70f762bbea1638629181b4fd015c763d7159850b55f08daea645db8e272ad7",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-soft-hands-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.prompt.txt",
+      "label": "M813 — Soft-Hands",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-rook",
+      "group": "B",
+      "order": 6,
+      "name": "Rook",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/revisions/v2/m813-rook.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B6 | `m813-rook` | **Rook**, medic robot: heavier, a stretcher harness on its back, one replacement arm from an infantry robot. | Bracing to lift; stubborn. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "9b041a010f37c33a49297a82f0ed05d035128c536eb5eef978d7c1cb7de18ff5",
+      "source_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-rook.png",
+      "source_sha256": "0cc31c21537b17cdd9468f14457cf8bb78cb491c4ec56919e4e151ac6d0caaad",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/revisions/v2/previews/m813-rook-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/character-portraits/m813/v2/m813-rook.png",
+      "previous_revision_path": "art/character-portraits/m813/v2/m813-rook.png",
+      "revision": 2,
+      "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-rook.prompt.txt",
+      "label": "M813 — Rook",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-penny",
+      "group": "B",
+      "order": 7,
+      "name": "Penny",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-penny.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B7 | `m813-penny` | **Penny**, medic robot: small and quick, a triage tag reel at its hip, a coin-sized dent on its face screen. | Writing a tag, glancing up; the youngest-feeling of the four. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c9a2cb5830378ed8d6a561f810c310b8b787ca6c8b03ba3aae371b9dd1cff53b",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-penny.png",
+      "source_sha256": "9c9b6b287d8234382a1ef2df74edd71dcd366a6c6ae356492309b0aefdc85cb6",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-penny-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-penny.prompt.txt",
+      "label": "M813 — Penny",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-keel",
+      "group": "B",
+      "order": 8,
+      "name": "Chief Engineer Keel",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-keel.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B8 | `m813-keel` | **Chief Engineer Keel**: fifties, heavy coveralls, grease to the elbows, a manifest on a clipboard, a revolver on his hip. | Looking down at a column of robots off-frame. Frightened and reasonable: he is right about the thrust numbers, and he knows what he is about to do. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "dec08550aaa238cca1b98d33140a9356a32414b19b9041d8af3dde57970f2239",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-keel.png",
+      "source_sha256": "ca82ea13a03d1b563d04111ae64358b3ae91df0d75ae4571e36acd98670fac34",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-keel-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-keel.prompt.txt",
+      "label": "M813 — Chief Engineer Keel",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-ilse-varga",
+      "group": "B",
+      "order": 9,
+      "name": "Ilse Varga",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-ilse-varga.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B9 | `m813-ilse-varga` | **Ilse Varga**, junior engineer: early twenties, oversized coveralls, crane-control gloves. | Hands shaking on the crane controls; not looking at Keel. Conscience, and fear of it. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "dbc2c1767f717293a5896d110070ff3bad5a4ec0cea63a3e1d256a6f81faae15",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-ilse-varga.png",
+      "source_sha256": "6bf9e45d63ac0335c92e22e57a77f2ec0069963b7107beb75024b259edd0ddb5",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-ilse-varga-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-ilse-varga.prompt.txt",
+      "label": "M813 — Ilse Varga",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-engineer-a",
+      "group": "B",
+      "order": 10,
+      "name": "Engineer A",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-engineer-a.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B10 | `m813-engineer-a` | **Engineer**, generic token: work goggles up, wrench and service pistol. | Wary, finger near the trigger. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "f75b1ecd448b6850088c08071f64a090b1aaa94a82d1195072e368dea9ac1770",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.png",
+      "source_sha256": "04c371b3a6c7817ee5ee41dfea058c2b844cedad47cc51880afb5923c7d50c43",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-engineer-a-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.prompt.txt",
+      "label": "M813 — Engineer A",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-engineer-b",
+      "group": "B",
+      "order": 11,
+      "name": "Engineer B",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-engineer-b.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B11 | `m813-engineer-b` | **Engineer**, generic token, a second face: a different age, build and gear. | Clutching a grenade belt, sweating. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "7060d4c22fb29bcf992f4ca6f19c893e7aa91c9d2b6c3443b6a4c856f97208b2",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.png",
+      "source_sha256": "91221cc32b540eadd45103c783a7ecf8e18932554cf0f7bce8bf690ba0f4b0a7",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-engineer-b-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.prompt.txt",
+      "label": "M813 — Engineer B",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-novikov",
+      "group": "B",
+      "order": 12,
+      "name": "Colonel Alexei Novikov",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/revisions/v2/m813-novikov.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B12 | `m813-novikov` | **Colonel Alexei Novikov**: sixties, immaculate Thousand World Legion dress uniform, regimental \"093\" on the collar, reading glasses. | Seated at a desk, hands folded, looking up as if he expected you. Polite. Never raises his voice. The calm is the menace. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "7d47cde231d6e322cdac57cb2e9242e6ebd828e51b2aef4fc28ac9bccbd1a7a2",
+      "source_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-novikov.png",
+      "source_sha256": "db73a307c3d7ab53f2d083ba6a11078d36bbf1f88251eeecea30ef982abf03cd",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/revisions/v2/previews/m813-novikov-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "previous_revision_path": "art/character-portraits/m813/v2/m813-novikov.png",
+      "revision": 2,
+      "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-novikov.prompt.txt",
+      "label": "M813 — Colonel Alexei Novikov",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-security-guard",
+      "group": "B",
+      "order": 13,
+      "name": "Station Security Guard",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/revisions/v2/m813-security-guard.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B13 | `m813-security-guard` | **Station security guard**, generic token: Outpost-1 security armour, helmet visor up, SMG. | Alert, blocking a corridor. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "2503c6843fc2bab41226fda24c0703fdf64b7fe479fcc2a094fa6063187f2d68",
+      "source_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-security-guard.png",
+      "source_sha256": "f36f151f49d6c86754805c729941920f29d90e14f1803fadbd1bdc03d2602927",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/revisions/v2/previews/m813-security-guard-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "previous_revision_path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "revision": 2,
+      "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-security-guard.prompt.txt",
+      "label": "M813 — Station Security Guard",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-guard-captain",
+      "group": "B",
+      "order": 14,
+      "name": "Guard Captain",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-guard-captain.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B14 | `m813-guard-captain` | **Guard captain**: older, scarred, a service rifle across the chest, captain's bar. | Assessing you, unimpressed. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c071885d16cfd4b24fea8726b83c5b2873970be75562ef816ed5aa08e8e5b18c",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-guard-captain.png",
+      "source_sha256": "29b0dfd160d9b784d44faaa7d15f690e71e8c3218f0d8d57e2fcf51a135c6beb",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-guard-captain-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-guard-captain.prompt.txt",
+      "label": "M813 — Guard Captain",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-scavenger-drone",
+      "group": "B",
+      "order": 15,
+      "name": "Scavenger Drone",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-scavenger-drone.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B15 | `m813-scavenger-drone` | **Scavenger drone**: a small hovering salvage machine with grabbing claws and a cutting torch, picking at the dead. | Mid-dive, claws open. Insect-like, mindless. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "ed8ff46888c5391625b83a0797bc8356f3706f7e270263f4b91249e4eae59252",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-scavenger-drone.png",
+      "source_sha256": "01e0579f098692a134c4b72c951204425720d0106a29e459fc75d70d9e2555cd",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-scavenger-drone-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-scavenger-drone.prompt.txt",
+      "label": "M813 — Scavenger Drone",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "m813-rearguard",
+      "group": "B",
+      "order": 16,
+      "name": "Enemy Rearguard Trooper",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-rearguard.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B16 | `m813-rearguard` | **Enemy rearguard trooper**: masked, hooded, mismatched armour, a rifle, no faction marks (*proposal*: the enemy stays unknowable). | Turning to leave, then seeing you. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c3bd370ef0e1e2b02b93090facb67911f2cba9cec47476463c72b536f80a2f4e",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-rearguard.png",
+      "source_sha256": "5a0eea8337b0ff108daf623a83c04f72c0d4769ef994ea5fb5dc74d815715f9f",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-rearguard-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "m813",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-rearguard.prompt.txt",
+      "label": "M813 — Enemy Rearguard Trooper",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "character-portrait",
+        "map-token"
+      ],
+      "pool": "m813-cast",
+      "version": 2
+    },
+    {
+      "id": "map-m813-shield-line",
+      "group": "C",
+      "order": 1,
+      "name": "Shield Line",
+      "family": "maps",
+      "path": "art/maps/m813/v1/revisions/v2/shield_line.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C1 | `map-m813-shield-line` · `art/maps/m813/v1/shield_line.png` | The shield line | Grey ash plain, shell scars and scorch rings, tracks of the squads; west half (A–F) is no-man's-land with craters and wreckage; the trench line behind the stakes; coolant stains to the east. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/shield_line-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "5ea18c35cbe0bcfb51963bd108c21672c26c55dbc99ba537b8db481e088ecceb",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-shield-line.png",
+      "source_sha256": "6cdc33ac9488e1392aa0d3f4b566aa6750ac852e981069984c40b45fcddeba99",
+      "source_dimensions": [
+        1512,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-shield-line-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/maps/m813/v1/shield_line.png",
+      "previous_revision_path": "art/maps/m813/v1/shield_line.png",
+      "revision": 2,
+      "label": "M813 — Shield Line",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "map-background"
+      ],
+      "zone_id": "shield_line"
+    },
+    {
+      "id": "map-m813-rear-pad",
+      "group": "C",
+      "order": 2,
+      "name": "Rear Pad",
+      "family": "maps",
+      "path": "art/maps/m813/v1/revisions/v2/rear_pad.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C2 | `map-m813-rear-pad` · `.../rear_pad.png` | The rear pad | Scorched landing pad plating with painted landing markings (invented, no real symbols); the ship's hull in N1–P6 seen from above (wing and hull plates, ramp edge toward M); the wreck field's edge along rows 10–11. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/rear_pad-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "6cb751c6afb7bffee5621d3ddae5c3b2b3c10a00e67830b17d64c2d7e416aff5",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-rear-pad.png",
+      "source_sha256": "29ccda94a185a6bff213e1e0d2c25f4b4a8701b88d1ce29c34f7a7157ae332cb",
+      "source_dimensions": [
+        1513,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-rear-pad-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/maps/m813/v1/rear_pad.png",
+      "previous_revision_path": "art/maps/m813/v1/rear_pad.png",
+      "revision": 2,
+      "label": "M813 — Rear Pad",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "map-background"
+      ],
+      "zone_id": "rear_pad"
+    },
+    {
+      "id": "map-m813-outpost",
+      "group": "C",
+      "order": 3,
+      "name": "Outpost",
+      "family": "maps",
+      "path": "art/maps/m813/v1/revisions/v2/outpost.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11). Walls as thick ceramic-concrete. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "c2bd642f048bd1c489f40a0cb89a98420b90b8a175faf714a2ba54ce91f04832",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-outpost.png",
+      "source_sha256": "7c10ea07b141f5261e820c5c236ba4fccfbcdbb496d1d3929af483cd5fe79953",
+      "source_dimensions": [
+        1512,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-outpost-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/maps/m813/v1/outpost.png",
+      "previous_revision_path": "art/maps/m813/v1/outpost.png",
+      "revision": 2,
+      "label": "M813 — Outpost",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "map-background"
+      ],
+      "zone_id": "outpost"
+    },
+    {
+      "id": "map-m813-outpost-1",
+      "group": "C",
+      "order": 4,
+      "name": "Outpost 1",
+      "family": "maps",
+      "path": "art/maps/m813/v1/revisions/v2/outpost_1.png",
+      "dimensions": [
+        1600,
+        1100
+      ],
+      "mode": "RGB",
+      "brief_row": "| C4 | `map-m813-outpost-1` · `.../outpost_1.png` | Outpost-1 | Polished institutional floors; the Colonel's office carpet (A1–E4); security room (L1–P3); atrium (A6–F11); the repair bay's clean deck with drainage grilles (H7–P11); the bay doors' frame along the east wall. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost_1-layout.png",
+      "width": 1600,
+      "height": 1100,
+      "sha256": "5b950df8236f72d517d0bc7befe7a2e02f9ea917b6e7657fb3c1fda3b6f64d8e",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-outpost-1.png",
+      "source_sha256": "2e716e9b2c80ec074dd155ae3637c41d4ff82bdbbc9f126b8c1a81451a940486",
+      "source_dimensions": [
+        1512,
+        1040
+      ],
+      "previews": {
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-outpost-1-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/maps/m813/v1/outpost_1.png",
+      "previous_revision_path": "art/maps/m813/v1/outpost_1.png",
+      "revision": 2,
+      "label": "M813 — Outpost 1",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "map-background"
+      ],
+      "zone_id": "outpost_1"
+    },
+    {
+      "id": "m813-how-many",
+      "group": "D",
+      "order": 1,
+      "name": "How Many",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/m813-how-many.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D1 | `m813-how-many` | Opening | Close on Nine-Nine in the stakes, looking up at a medic's triage lamp: \"How many of us can you carry?\" | Opening-safe |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "9ef7a29744565fb10994673aa9261e3c251872cb073f2dfb36da6724bf05c091",
+      "source_path": "art/illustrations/m813/v2/sources/m813-how-many.png",
+      "source_sha256": "8fbcc8f0e7cae9eca60fcc84ed95bdc6342944e4b0a0c53a7241009775b64297",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-how-many-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-how-many.prompt.txt",
+      "label": "M813 — How Many",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "story-moment"
+      ]
+    },
+    {
+      "id": "m813-the-ramp",
+      "group": "D",
+      "order": 2,
+      "name": "The Ramp",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/revisions/v2/m813-the-ramp.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D2 | `m813-the-ramp` | The ramp standoff | Keel and the engineers above on the ramp; the column below; Lantern being carried up front, chest plate open. Guns not yet raised. | Mid |",
+      "spoiler": true,
+      "visibility": "mid-campaign",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "66919a754e9b59806549b991eff6955d25cba26e30cabd3db1d06911c0d2d1c7",
+      "source_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-the-ramp.png",
+      "source_sha256": "6a45dadf65ce8d31801bc908eec99875ce29e29ee1f9f072c3e443101221e265",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/revisions/v2/previews/m813-the-ramp-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "previous_revision_path": "art/illustrations/m813/v2/m813-the-ramp.png",
+      "revision": 2,
+      "prompt_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-the-ramp.prompt.txt",
+      "label": "M813 — The Ramp",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "story-moment"
+      ]
+    },
+    {
+      "id": "m813-the-choice",
+      "group": "D",
+      "order": 3,
+      "name": "The Choice",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/m813-the-choice.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D3 | `m813-the-choice` | The record's choice | Two repair cradles; MPAT and the comrade head between them; parts of everyone else laid out. Undecided. | Mid, after the ship leaves |",
+      "spoiler": true,
+      "visibility": "mid-campaign",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "834ddf8916c481c66fa18fec939c1be0888c768ea4e571e1189190555e0d2281",
+      "source_path": "art/illustrations/m813/v2/sources/m813-the-choice.png",
+      "source_sha256": "b97b9a39c31b82e9d95df062aba4ccfe73211eaa68286f647cb1809dffa9280a",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-the-choice-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-the-choice.prompt.txt",
+      "label": "M813 — The Choice",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "story-moment"
+      ]
+    },
+    {
+      "id": "m813-the-demand",
+      "group": "D",
+      "order": 4,
+      "name": "The Demand",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/spoilers/revisions/v2/m813-the-demand.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D4 | `m813-the-demand` | Outpost-1 | The Colonel's desk from the robots' side: a battered medic robot standing, the comrade head on the desk between them, the Colonel's folded hands. | End: hide until Outpost-1 |",
+      "spoiler": true,
+      "visibility": "outpost-1-only",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "ab05805aabab6d3823d6f149270461bb53f15e777f64731a1d308c571b28c606",
+      "source_path": "art/illustrations/m813/v2/spoilers/revisions/v2/sources/m813-the-demand.png",
+      "source_sha256": "6bf4d0e460e6a6646fbd46c3e78b1aaa11256c1b2bbfcba70fa416575cda9710",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/spoilers/revisions/v2/previews/m813-the-demand-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "previous_path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "previous_revision_path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "revision": 2,
+      "prompt_path": "art/illustrations/m813/v2/spoilers/revisions/v2/sources/m813-the-demand.prompt.txt",
+      "label": "M813 — The Demand",
+      "campaign_id": "m813",
+      "art_mode": "heavenprint",
+      "usage": [
+        "story-moment"
+      ]
+    },
+    {
+      "id": "obj-barrier-stakes",
+      "group": "E",
+      "order": 1,
+      "name": "Barrier Stakes",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v3/obj-barrier-stakes.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E1 | `obj-barrier-stakes` | Scorched barrier stakes in a short row (low wall) | Shield line G3–G9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "low_wall",
+      "width": 256,
+      "height": 256,
+      "sha256": "6d80e4d7256d71c48080c130fe29d2059e5c56fabb3f9b5d3ded500ce4ac0fbd",
+      "source_path": "art/sprites/objects/v1/revisions/v3/sources/obj-barrier-stakes.png",
+      "source_sha256": "3ecbed6cffe8154e0924076f8350174d3ecb165d348a203bc1e5aba883e51b4a",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v3/previews/obj-barrier-stakes-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v3/previews/obj-barrier-stakes-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v3/previews/obj-barrier-stakes-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Barrier Stakes",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-barrier-stakes.png",
+      "previous_revision_path": "art/sprites/objects/v1/revisions/v2/obj-barrier-stakes.png",
+      "revision": 3
+    },
+    {
+      "id": "obj-platinum-crates",
+      "group": "E",
+      "order": 2,
+      "name": "Platinum Crates",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-platinum-crates.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E2 | `obj-platinum-crates` | Stack of platinum crates, one split showing metal bars (crate) | Rear pad L3–L5 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "crate",
+      "width": 256,
+      "height": 256,
+      "sha256": "bb3f0eb96cdb654949a3a0ceb6cd8cf0d67de412c2df2bafdb185d3db1a17ee2",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-platinum-crates.png",
+      "source_sha256": "4cada19a280d39ad7922dd0bb2f98669e2dd7dd2315fedc3e5237b617576b4c8",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-crates-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-crates-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-crates-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Platinum Crates",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-platinum-crates.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-platinum-crates.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-platinum-crates.prompt.txt"
+    },
+    {
+      "id": "obj-tool-rack",
+      "group": "E",
+      "order": 3,
+      "name": "Tool Rack",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-tool-rack.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E3 | `obj-tool-rack` | Tool rack / workbench (crate) | Outpost hangar |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "crate",
+      "width": 256,
+      "height": 256,
+      "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-tool-rack.png",
+      "source_sha256": "0f1f9403d5b40d5cdf1b3f73a4910dd796086f4b56529664ed36233d34b6a36b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-tool-rack-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-tool-rack-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-tool-rack-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Tool Rack",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-tool-rack.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-tool-rack.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-tool-rack.prompt.txt"
+    },
+    {
+      "id": "obj-cargo-pylon",
+      "group": "E",
+      "order": 4,
+      "name": "Cargo Pylon",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-cargo-pylon.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E4 | `obj-cargo-pylon` | Cargo pylon, standing (pillar) | Rear pad K7 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "pillar",
+      "width": 256,
+      "height": 256,
+      "sha256": "76910ed6955652b19e34bbef308c535ffb66b8b33f8f7876d92780f720bb0c4b",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-cargo-pylon.png",
+      "source_sha256": "45d3af0ab23b267af967315831ea0223644e482b6606ebc80a513ef2a39ba85b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-cargo-pylon-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-cargo-pylon-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-cargo-pylon-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Cargo Pylon",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-cargo-pylon.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-cargo-pylon.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-cargo-pylon.prompt.txt"
+    },
+    {
+      "id": "obj-toppled-pylon",
+      "group": "E",
+      "order": 5,
+      "name": "Toppled Pylon",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v3/obj-toppled-pylon.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E5 | `obj-toppled-pylon` | Toppled pylon on its side (pillar) | Shield line E8 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "pillar",
+      "width": 256,
+      "height": 256,
+      "sha256": "514e11b333f15791d8476274a82d194571da7a79d36976f78a59f39284180db4",
+      "source_path": "art/sprites/objects/v1/revisions/v3/sources/obj-toppled-pylon.png",
+      "source_sha256": "0e75e064301d459266f16540c620196c64e824c311fbde3c0ac5c3125d8bcbe8",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v3/previews/obj-toppled-pylon-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v3/previews/obj-toppled-pylon-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v3/previews/obj-toppled-pylon-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Toppled Pylon",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-toppled-pylon.png",
+      "previous_revision_path": "art/sprites/objects/v1/revisions/v2/obj-toppled-pylon.png",
+      "revision": 3,
+      "prompt_path": "art/sprites/objects/v1/revisions/v3/sources/obj-toppled-pylon.prompt.txt"
+    },
+    {
+      "id": "obj-door-closed",
+      "group": "E",
+      "order": 6,
+      "name": "Door Closed",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v3/obj-door-closed.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E6 | `obj-door-closed` | Interior blast door, closed (door) | Outposts |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "door",
+      "width": 256,
+      "height": 256,
+      "sha256": "82d04ed00e28de661f08d7d491df320075ef2fdafdd626c46fd590f33d5f9d26",
+      "source_path": "art/sprites/objects/v1/revisions/v3/sources/obj-door-closed.png",
+      "source_sha256": "0126e57edfbd264961a4a697123063e2a3a2a5c6c2c51be6b4aed1ff9801b99f",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v3/previews/obj-door-closed-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v3/previews/obj-door-closed-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v3/previews/obj-door-closed-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Door Closed",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-door-closed.png",
+      "previous_revision_path": "art/sprites/objects/v1/revisions/v2/obj-door-closed.png",
+      "revision": 3,
+      "prompt_path": "art/sprites/objects/v1/revisions/v3/sources/obj-door-closed.prompt.txt"
+    },
+    {
+      "id": "obj-door-open",
+      "group": "E",
+      "order": 7,
+      "name": "Door Open",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v3/obj-door-open.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E7 | `obj-door-open` | The same door, open (door) | Outposts |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "door",
+      "width": 256,
+      "height": 256,
+      "sha256": "d8685b4604b301bdcc2b094c9254b8ceb69b1c1b4024a8f8905ce7d39d7d8df9",
+      "source_path": "art/sprites/objects/v1/revisions/v3/sources/obj-door-open.png",
+      "source_sha256": "41feee93b291b138db4152023a0748cd9497f26dc33cafa1a0418d969f80a312",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v3/previews/obj-door-open-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v3/previews/obj-door-open-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v3/previews/obj-door-open-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Door Open",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-door-open.png",
+      "previous_revision_path": "art/sprites/objects/v1/revisions/v2/obj-door-open.png",
+      "revision": 3,
+      "prompt_path": "art/sprites/objects/v1/revisions/v3/sources/obj-door-open.prompt.txt"
+    },
+    {
+      "id": "obj-crater",
+      "group": "E",
+      "order": 8,
+      "name": "Crater",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-crater.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E8 | `obj-crater` | Shell crater, deep, debris sliding in (hole) | Shield line K2–K3 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "hole",
+      "width": 256,
+      "height": 256,
+      "sha256": "3f3a37bfbe6b9863f972e56382d05d02c1022c408430f196e321254619819ba1",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-crater.png",
+      "source_sha256": "3c4d7b77667002d3807c302380f2003f85afe26d6438eed03c4e10a3a4510202",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-crater-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-crater-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-crater-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Crater",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-crater.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-crater.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-crater.prompt.txt"
+    },
+    {
+      "id": "obj-mine",
+      "group": "E",
+      "order": 9,
+      "name": "Mine",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-mine.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E9 | `obj-mine` | Unexploded mine, revealed (trap) | Shield line E5 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "trap",
+      "width": 256,
+      "height": 256,
+      "sha256": "0222779556facf902875a4467d115a35ef185a95b1310f26530e237bc378279f",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-mine.png",
+      "source_sha256": "2e16f562c9598110c8c5f5aca53c8024b100a15777d5983dbe7c50928b7133a9",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-mine-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-mine-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-mine-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Mine",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-mine.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-mine.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-mine.prompt.txt"
+    },
+    {
+      "id": "obj-coolant",
+      "group": "E",
+      "order": 10,
+      "name": "Coolant",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-coolant.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E10 | `obj-coolant` | Coolant pool, iridescent green-blue (toxic) | Shield line N5–N6 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "toxic",
+      "width": 256,
+      "height": 256,
+      "sha256": "ffb8b406150fe453582146337960147c26da6609c6720fa5f0a5e977f8e95dab",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-coolant.png",
+      "source_sha256": "163409ada5b7031f318ea079fb56d5e5f04497f74b5769fa4e38a6fc8e248205",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-coolant-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-coolant-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-coolant-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Coolant",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-coolant.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-coolant.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-coolant.prompt.txt"
+    },
+    {
+      "id": "obj-fire",
+      "group": "E",
+      "order": 11,
+      "name": "Fire",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-fire.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E11 | `obj-fire` | Burning patch of ground (fire) | After explosions |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "fire",
+      "width": 256,
+      "height": 256,
+      "sha256": "39817c9e5fcde3130c37c397d2ffff0deaa93917787321029c2c511d839f891f",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fire.png",
+      "source_sha256": "e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-fire-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-fire-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-fire-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Fire",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-fire.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-fire.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fire.prompt.txt"
+    },
+    {
+      "id": "obj-fuel-drum",
+      "group": "E",
+      "order": 12,
+      "name": "Fuel Drum",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-fuel-drum.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E12 | `obj-fuel-drum` | Fuel drum with hazard stencil (barrel) | Rear pad L9, outpost O10 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "barrel",
+      "width": 256,
+      "height": 256,
+      "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fuel-drum.png",
+      "source_sha256": "49a3054c9ff163466bfa3c430db19592139af6837b3804475b7a1a639f3d1007",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-fuel-drum-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-fuel-drum-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-fuel-drum-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Fuel Drum",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-fuel-drum.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-fuel-drum.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fuel-drum.prompt.txt"
+    },
+    {
+      "id": "obj-rubble",
+      "group": "E",
+      "order": 13,
+      "name": "Rubble",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-rubble.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E13 | `obj-rubble` | Broken cover: scattered rubble (rubble) | Anywhere cover breaks |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "rubble",
+      "width": 256,
+      "height": 256,
+      "sha256": "ea4780d8419dbac128d34f0cd579779ae14e0ad069822b05393d06b964c6f990",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-rubble.png",
+      "source_sha256": "0555a81700343b33ffd103633c9ebb644254e0a47d02d3f25bb755da7a3ddaf9",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-rubble-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-rubble-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-rubble-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Rubble",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-rubble.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-rubble.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-rubble.prompt.txt"
+    },
+    {
+      "id": "obj-fallen-squad",
+      "group": "E",
+      "order": 14,
+      "name": "Fallen Squad",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-fallen-squad.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E14 | `obj-fallen-squad` | Pile of fallen infantry robots, two lights blinking (container) | Shield line D4 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "container",
+      "width": 256,
+      "height": 256,
+      "sha256": "c71baab60da9c89d913fd0179b8618e58ce63fd0ecd7a0cb9c9668a61c0a0bf7",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fallen-squad.png",
+      "source_sha256": "e7a764e5f8bfc5f096153bb174e8988c3295d1042967735079b03759affb2372",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-fallen-squad-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-fallen-squad-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-fallen-squad-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Fallen Squad",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-fallen-squad.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-fallen-squad.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-fallen-squad.prompt.txt"
+    },
+    {
+      "id": "obj-triage-line",
+      "group": "E",
+      "order": 15,
+      "name": "Triage Line",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-triage-line.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E15 | `obj-triage-line` | Broken robots laid in a neat row on tarps (container) | Shield line J7 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "container",
+      "width": 256,
+      "height": 256,
+      "sha256": "951b3a6e4cb843e49584b94f43161d4a5f1ce3008f35b3affeea81d6f1da3652",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-triage-line.png",
+      "source_sha256": "1fd8d6a5bbb9a4e9902e7d7d8b092d127bddc3a0d2666a2f5bec0f72ac38c8ab",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-triage-line-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-triage-line-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-triage-line-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Triage Line",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-triage-line.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-triage-line.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-triage-line.prompt.txt"
+    },
+    {
+      "id": "obj-footlockers",
+      "group": "E",
+      "order": 16,
+      "name": "Footlockers",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-footlockers.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E16 | `obj-footlockers` | Two open footlockers (container) | Outpost B2 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "container",
+      "width": 256,
+      "height": 256,
+      "sha256": "70ed85d3d07014464532204fc8863c0d6cff52c3e29b767baa5d96682bacaac3",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-footlockers.png",
+      "source_sha256": "3202fcc1cddfaed403d51f28ba03d6b6858260e02c4e57e686e4d95cc1a182ba",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-footlockers-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-footlockers-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-footlockers-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Footlockers",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-footlockers.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-footlockers.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-footlockers.prompt.txt"
+    },
+    {
+      "id": "obj-cookbook",
+      "group": "E",
+      "order": 17,
+      "name": "Cookbook",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-cookbook.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E17 | `obj-cookbook` | A greasy cookbook open on a bunk (container) | Outpost D2 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "container",
+      "width": 256,
+      "height": 256,
+      "sha256": "2fc317a3d44d76c79cd6fef51d9fbe416326af120881375eb0b2de6c740343fe",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-cookbook.png",
+      "source_sha256": "a0a7eaba1a2bd2d039dc29516f76a15d669b9a3148454aededa033f5db3c51a7",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-cookbook-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-cookbook-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-cookbook-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Cookbook",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-cookbook.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-cookbook.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-cookbook.prompt.txt"
+    },
+    {
+      "id": "obj-platinum-net",
+      "group": "E",
+      "order": 18,
+      "name": "Platinum Net",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-platinum-net.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E18 | `obj-platinum-net` | Pallet of platinum in a cargo net (container) | Rear pad L6 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "container",
+      "width": 256,
+      "height": 256,
+      "sha256": "1d643e0c3d474f2bc48f0a0c1245584c29645e7e772337a0e90b08483865a77d",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-platinum-net.png",
+      "source_sha256": "e8b52f64807a0efb292c16a6cb54821dd2152ddc4b89a12a41e5b030c145a840",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-net-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-net-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-platinum-net-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Platinum Net",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-platinum-net.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-platinum-net.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-platinum-net.prompt.txt"
+    },
+    {
+      "id": "obj-terminal-field",
+      "group": "E",
+      "order": 19,
+      "name": "Terminal Field",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-terminal-field.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E19 | `obj-terminal-field` | Field radio and hatch panels: a small rugged console (terminal; one sprite for the squad radio and hatch controls) | Shield line M8, rear pad M3 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "terminal",
+      "width": 256,
+      "height": 256,
+      "sha256": "52fef656e55c625df12cfb2f33f92b41fac64aba86d1e258033754c1e2645e02",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-terminal-field.png",
+      "source_sha256": "38987034a8959565f9f29f3f2c38e6ce469128fda34bc2f1b84a87f9191b8427",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-terminal-field-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-terminal-field-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-terminal-field-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Terminal Field",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-terminal-field.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-terminal-field.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-terminal-field.prompt.txt"
+    },
+    {
+      "id": "obj-drop-pod",
+      "group": "E",
+      "order": 20,
+      "name": "Drop Pod",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-drop-pod.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E20 | `obj-drop-pod` | Enemy drop pod from above, hatch open, a glowing sigil burned into it (terminal) | Shield line B9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "terminal",
+      "width": 256,
+      "height": 256,
+      "sha256": "f97202abef5907766169e81da4cd439c584b5a28b486384dbc275e5bbe05757a",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-drop-pod.png",
+      "source_sha256": "6858b10ad7f11eaaa09eba67fac5caa48ac025083537b6c6681c5914368e0c8b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-drop-pod-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-drop-pod-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-drop-pod-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Drop Pod",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-drop-pod.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-drop-pod.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-drop-pod.prompt.txt"
+    },
+    {
+      "id": "obj-console",
+      "group": "E",
+      "order": 21,
+      "name": "Console",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-console.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E21 | `obj-console` | Wall console: medical bay, comms, security cameras (terminal; one sprite) | Outposts |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "terminal",
+      "width": 256,
+      "height": 256,
+      "sha256": "a47455ab197c655a7d50777104cc8a143806b1504ee09e0fb986fe83056063b0",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-console.png",
+      "source_sha256": "e2a39cc8aaaa77b6b0bc9f8d357369a7e2d2ad9a02ebcdcf4e38e8b8be7e424e",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-console-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-console-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-console-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Console",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-console.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-console.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-console.prompt.txt"
+    },
+    {
+      "id": "obj-escape-craft",
+      "group": "E",
+      "order": 22,
+      "name": "Escape Craft",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-escape-craft.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "poi",
+      "width": 512,
+      "height": 512,
+      "sha256": "2e92173d089cd6d5e1614298fd5629b4c06a054efda87f9cfc30f7a091b5d0e7",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-escape-craft.png",
+      "source_sha256": "b93d7c4bfd46dc947afaef7eac43139d9d7d4ce2db56de130bce7adc2d6acbc6",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-escape-craft-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-escape-craft-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-escape-craft-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Escape Craft",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-escape-craft.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-escape-craft.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-escape-craft.prompt.txt"
+    },
+    {
+      "id": "obj-repair-cradles",
+      "group": "E",
+      "order": 23,
+      "name": "Repair Cradles",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-repair-cradles.png",
+      "dimensions": [
+        512,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "poi",
+      "width": 512,
+      "height": 256,
+      "sha256": "5414371f51e0b292bf77efe3be3e440c7e5532784998a47832d6255c25b83780",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-repair-cradles.png",
+      "source_sha256": "5f030ccff0872fa3c0f1a7b16856f65e1f0b7b4a58f07407cc3c9920a46c743c",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-repair-cradles-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-repair-cradles-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-repair-cradles-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Repair Cradles",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-repair-cradles.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-repair-cradles.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-repair-cradles.prompt.txt"
+    },
+    {
+      "id": "obj-poi-marker",
+      "group": "E",
+      "order": 24,
+      "name": "Poi Marker",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-poi-marker.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E24 | `obj-poi-marker` | Generic point-of-interest marker: a small surveyor's flag with the 258th's cross. Also used for \"no-man's-land\", \"the ramp\", \"the column\", \"bay doors\" and exits | Anywhere |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "object_kind": "poi",
+      "width": 256,
+      "height": 256,
+      "sha256": "ebed5273bfa26571fdf03d309acb32fab582cda43cc240f8c9b18962cc3c63f3",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-poi-marker.png",
+      "source_sha256": "f93783ed9bf55b5cbd06622df8a4a952ab180d84d910f732939202ddab94b465",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-poi-marker-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-poi-marker-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-poi-marker-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Poi Marker",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-poi-marker.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-poi-marker.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-poi-marker.prompt.txt"
+    },
+    {
+      "id": "obj-field-lamp",
+      "group": "E",
+      "order": 25,
+      "name": "Field Lamp",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-field-lamp.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E25 | `obj-field-lamp` | Portable field work lamp, lit (lamp) | Outpost-813 I9 work lamp and H3 infirmary lamp; runtime followup after original 52-image brief |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "runtime_followup": "data/campaigns/m813.json: outpost lamp objects at I9 and H3, added after original brief",
+      "object_kind": "lamp",
+      "width": 256,
+      "height": 256,
+      "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-field-lamp.png",
+      "source_sha256": "dbee5030e449708ecd4db489831799ec07dd68ca413bda90eac71ed831665e07",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-field-lamp-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-field-lamp-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-field-lamp-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "label": "M813 — Field Lamp",
+      "campaign_id": "m813",
+      "art_mode": "painted-topdown",
+      "version": 1,
+      "usage": [
+        "object-sprite"
+      ],
+      "tile_extent": 0.8,
+      "previous_path": "art/sprites/objects/v1/obj-field-lamp.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-field-lamp.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-field-lamp.prompt.txt"
+    }
+  ]
+}

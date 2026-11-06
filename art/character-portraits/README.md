@@ -1,6 +1,6 @@
 # Character portraits
 
-83 Heavenprint paintings: three original sets of 27 and two new M813 review candidates, all 800 × 1000 PNG. Every one is a **person in the world**. None of them is a skill icon.
+99 Heavenprint paintings: three original sets of 27, the two retained M813 portraits and sixteen tutorial-campaign portraits, all 800 × 1000 PNG. Every one is a **person in the world**. None of them is a skill icon.
 
 ## Why they exist, and why they aren't skill icons
 
@@ -14,6 +14,7 @@ All three sets were first painted to be the skill icons on the skill page: one c
 | **Original Heavenprint** | [`original-heavenprint/`](original-heavenprint/) | Unnamed original characters, each prompted to fit the essence of one skill | Pool for random NPCs. Also an approved style anchor |
 | **New Faces** | [`heavenprint-new-faces/`](heavenprint-new-faces/) | Named original characters (Orren Vask, Mallow-3…), each prompted to fit the essence of one skill | Pool for random NPCs; names are proposals, not canon. Also an approved style anchor |
 | **M813, version 1** | [`m813/`](m813/) | MPAT and its unnamed comrade | One-shot cast, `pool: m813-cast`; review candidates. |
+| **M813 tutorial, version 2** | [`m813/v2/`](m813/v2/) | Sixteen infantry, medic, human and enemy portraits | Tutorial cast and map tokens, `pool: m813-cast`; [complete campaign handoff](../campaigns/m813/tutorial-v1/README.md). |
 
 In [`art/catalog.json`](../catalog.json), filter `characters` by `pool`: `epccg-cast` or `world-npc`. A character's `historical_skill_id` is a casting hint ("someone who has far too much Composure"), useful for picking an NPC who fits a scene.
 

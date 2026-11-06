@@ -11,6 +11,8 @@ Find your art mode, read that part, and attach that mode's reference images. Cur
 | You are making | Read | Attach |
 |---|---|---|
 | A character portrait or world scene | Current art modes; sections 01–07; prompts in section 12 | `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`; for a named EPCCG character, their First-Patch Revival portrait |
+| An M813 map background | Sections 01–07; campaign brief group C | Heavenprint anchors, approved M813 world/MPAT images and current tile-layout guide |
+| A campaign object sprite | Campaign brief group E; sections 01–07 for materials | Heavenprint paint anchors, a top-down map and the current overhead object reference |
 | A player skill portrait | Current art modes; sections 15–17; the abstract skill prompt in section 12 | `current-abstract-skills-27.jpg` |
 | A trait or perk icon | Current art modes; sections 08–11 and 14; the Wick icon prompt in section 12 | `approved-wick-trait-mind-without-fog.png` |
 | Painted mascot art | Sections 08–11; the Wick base prompt in section 12 | `wick-model-study.png`, the approved icon |
@@ -50,6 +52,10 @@ Use the Original 27 and New Faces sheets for Heavenprint paint, expressive belie
 
 ## Player skill portraits
 Use the newest POC 4-derived gestural collection, Palette v3. A skill is an aspect of the player: faceless, incomplete humanoid brush forms with distinct stature and a readable action. Use only black background, cream body marks and the relevant attribute hue. Sections 15–17 define this mode. The user's latest colour changes are included here.
+
+## Campaign maps and object sprites
+
+M813 map backgrounds are opaque 1600 × 1100 paintings in a strict top-down orthographic camera. Their walls and open door gaps follow the campaign tile guides. Leave placeable-object tiles as floor; grids, tokens and interaction sprites are UI layers. Object sprites use coloured, simplified painted forms on transparency, top-left light and a short bottom-right shadow. They use 256 px tiles, with the brief’s larger craft/cradle exceptions, and an 80% safe box. Doors use an overhead cutaway with separate jambs in the open state. These are not Wick’s white-ink icons. See `art/briefs/m813-tutorial-campaign.md` and the complete handoff in `art/campaigns/m813/tutorial-v1/README.md`. New art remains review-candidate until Leon approves it.
 
 ## Wick trait and perk icons
 Use the exact approved Mind Without Fog icon. Keep the cape, lantern heart, pixel-screen face and lively asymmetry. Traits and perks both use pure white flat ink. This is an independent graphic mode, not a miniature painted skill portrait.

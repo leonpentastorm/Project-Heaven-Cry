@@ -11,13 +11,14 @@ import zlib
 ROOT = Path(__file__).resolve().parents[1]
 PIXEL_ASSET = None
 COMPLETE_ICONS = False
+COMPLETE_CAMPAIGN = False
 WICK_TEST_IDS = {
     'humanity-first', 'the-old-blood', 'factory-made', 'chain-smoker',
     'raised-by-orks', 'the-brightest-light', 'rabbits-foot', 'forlorn-hope',
     'field-surgeon', 'supreme-command',
 }
 
-def validate_white_rgba(data, path, circle=False):
+def validate_white_rgba(data, path, circle=False, white=True, clear_border=False, box_fraction=None):
     """Decode PNG scanlines to check ink and alpha, without a Pillow dependency."""
     width, height = struct.unpack('>II', data[16:24])
     require(data[28] == 0, f'Interlaced PNG unsupported: {path}')
@@ -59,7 +60,14 @@ def validate_white_rgba(data, path, circle=False):
             transparent |= alpha == 0
             visible |= alpha > 0
             if alpha:
-                require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
+                if white:
+                    require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
+                if clear_border and (y in (0, height - 1) or i // 4 in (0, width - 1)):
+                    require(alpha <= 8, f'Sprite background reaches canvas edge: {path}')
+                if box_fraction is not None and alpha >= 16:
+                    require(abs(i // 4 - (width - 1) / 2) <= width * box_fraction / 2 + 1
+                            and abs(y - (height - 1) / 2) <= height * box_fraction / 2 + 1,
+                            f'Sprite exceeds tile safe box: {path}')
                 if circle and alpha >= 16:
                     x = i // 4
                     require((x - (width-1)/2)**2 + (y - (height-1)/2)**2 <= (.45*width+1)**2,
@@ -208,6 +216,49 @@ def require(condition, message):
     if not condition:
         raise ValueError(message)
 
+
+def validate_campaign_art(catalog):
+    queue_path = ROOT / 'art/briefs/m813-tutorial/production-queue.json'
+    if not queue_path.exists():
+        require(not COMPLETE_CAMPAIGN, 'Missing campaign queue')
+        return
+    queue = json.loads(queue_path.read_text())
+    require(queue['target'] == len(queue['jobs']) and queue['target'] >= 52, 'Invalid M813 campaign target')
+    require(len({j['id'] for j in queue['jobs']}) == queue['target'], 'Duplicate M813 jobs')
+    delivered = []
+    for job in queue['jobs']:
+        asset = catalog.get(job['family'], {}).get(job['id'])
+        if asset is None:
+            continue
+        delivered.append(job['id'])
+        require((asset['path'] == job['path'] or
+                 (asset.get('previous_path') == job['path'] and '/revisions/' in asset['path']))
+                and [asset['width'], asset['height']] == job['dimensions'],
+                f'M813 delivery path/dimensions: {job["id"]}')
+        require(asset['status'] == 'review-candidate' and asset['production_approved'] is False,
+                f'M813 delivery requires visual approval: {job["id"]}')
+        require(asset['spoiler'] == job['spoiler'] and asset['visibility'] == job['visibility'],
+                f'M813 visibility mismatch: {job["id"]}')
+        require(hashlib.sha256(local(asset['source_path']).read_bytes()).hexdigest() == asset['source_sha256'],
+                f'M813 source integrity: {job["id"]}')
+        if job['id'] == 'm813-the-demand':
+            require('/spoilers/' in asset['path'], 'The demand must be stored under spoilers/')
+        if job['group'] == 'C':
+            local(job['layout_guide'])
+        if job['group'] == 'E' and (PIXEL_ASSET is None or PIXEL_ASSET == job['id']):
+            validate_white_rgba(local(asset['path']).read_bytes(), asset['path'], white=False,
+                                clear_border=True, box_fraction=asset.get('tile_extent'))
+        for path in asset['previews'].values():
+            require(local(path).read_bytes()[:8] == b'\x89PNG\r\n\x1a\n', f'Bad M813 preview: {path}')
+    if COMPLETE_CAMPAIGN:
+        require(len(delivered) == queue['target'], f'Incomplete M813 campaign artwork: {len(delivered)}/{queue["target"]}')
+    progress_path = ROOT / 'art/campaigns/m813/tutorial-v1/production-progress.json'
+    if progress_path.exists():
+        progress = json.loads(progress_path.read_text())
+        require(progress['delivered'] == delivered, 'Stale M813 delivered progress')
+        require(progress['remaining'] == [j['id'] for j in queue['jobs'] if j['id'] not in delivered],
+                'Stale M813 remaining progress')
+
 def local(path):
     target = (ROOT / path).resolve()
     require(target.is_relative_to(ROOT), f'Path escapes repository: {path}')
@@ -268,11 +319,17 @@ def validate():
     require(catalog['skill_palette_version'] == palette['skill_palette_version'], 'Palette version mismatch')
     paths = set()
     if PIXEL_ASSET is not None:
-        require(any(PIXEL_ASSET in catalog[f] for f in ['traits', 'perks']), f'Unknown selected icon: {PIXEL_ASSET}')
-    families = [('skills', 27, 27), ('characters', 83, 83),
-                ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 2)]
+        require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites']),
+                f'Unknown selected asset: {PIXEL_ASSET}')
+    families = [('skills', 27, 27), ('characters', 83, 99),
+                ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 10)]
+    for family, maximum in [('maps', 4), ('sprites', 25)]:
+        if family in catalog:
+            families.append((family, 0, maximum))
     if 'mascot' in catalog:
         families.append(('mascot', 1, 1))
+    if 'emblems' in catalog:
+        families.append(('emblems', 2, 2))
     for family, minimum, maximum in families:
         require(minimum <= len(catalog[family]) <= maximum, f'Unexpected {family} count')
         for asset_id, asset in catalog[family].items():
@@ -287,7 +344,7 @@ def validate():
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')
             width, height, depth, color_type = struct.unpack('>IIBB', data[16:26])
             require((width, height) == (asset['width'], asset['height']), f'Wrong dimensions: {path}')
-            require(depth == 8 and color_type == (6 if family in ['traits', 'perks', 'mascot'] else 2), f'Wrong PNG colour/alpha type: {path}')
+            require(depth == 8 and color_type == (6 if family in ['traits', 'perks', 'mascot', 'sprites', 'emblems'] else 2), f'Wrong PNG colour/alpha type: {path}')
             if family == 'skills':
                 attribute = palette['attributes'][asset['attribute']]
                 require(asset['color'] == attribute['color'] == palette['skills'][asset_id]['color'], f'Colour mismatch: {asset_id}')
@@ -296,23 +353,28 @@ def validate():
     validate_ui_colours(catalog, palette)
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
+    validate_campaign_art(catalog)
     checksums = local('art/checksums.sha256').read_text().splitlines()
     for line in checksums:
         expected, path = line.split('  ', 1)
         require(hashlib.sha256(local(path).read_bytes()).hexdigest() == expected, f'File integrity mismatch: {path}')
     require(paths <= {line.split('  ', 1)[1] for line in checksums}, 'Primary assets missing from checksums')
-    print(f'OK: 27 skills, 83 characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, 2 illustrations, '
+    print(f'OK: 27 skills, {len(catalog["characters"])} characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, {len(catalog["illustrations"])} illustrations, '
+          f'{len(catalog.get("maps", {}))} maps, {len(catalog.get("sprites", {}))} sprites, '
           f'{len(catalog.get("mascot", {}))} mascot; '
+          f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--asset', help='Check pixels for this icon only; still check all metadata and checksums.')
+    parser.add_argument('--asset', help='Select one asset; check its icon pixels if applicable, and all metadata/checksums.')
     parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 106-perk coverage.')
+    parser.add_argument('--complete-campaign', action='store_true', help='Require the full current M813 campaign queue, including runtime followups.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons
+    COMPLETE_CAMPAIGN = args.complete_campaign
     try:
         validate()
     except (ValueError, KeyError, OSError, struct.error) as error:
