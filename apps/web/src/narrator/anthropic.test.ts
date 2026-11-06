@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { apply, newGame, ARCHETYPES, type GameState } from '@engine';
 import { anthropicProvider } from './anthropic';
-import { RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt } from './context';
+import { turnSchema, RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt } from './context';
 
 function game(): GameState {
   let g = newGame('ABC123', { id: 'host', name: 'Leon' });
@@ -31,6 +31,17 @@ describe('Narrator context', () => {
     const all = [partyPrompt(g), turnPrompt({ ...g, story: { ...g.story, work: { kind: 'round' } as any } })].join('\n');
     expect(all).not.toMatch(/Glass Hymn|Quietband|dQw4w9WgXcQ/);
     expect(all).toContain("MPAT's song is playing");
+  });
+});
+
+describe('Narrator output schema', () => {
+  // Anthropic compiles the schema into a grammar and refuses one that is too large (long enums are the cost).
+  it('stays small: no long id lists, few enum values in total', () => {
+    const enums: any[][] = [];
+    const walk = (x: any) => { if (x && typeof x === 'object') { if (Array.isArray(x.enum)) enums.push(x.enum); Object.values(x).forEach(walk); } };
+    walk(turnSchema(game()));
+    expect(Math.max(...enums.map((e) => e.length))).toBeLessThanOrEqual(20);
+    expect(enums.reduce((t, e) => t + e.length, 0)).toBeLessThanOrEqual(90);
   });
 });
 

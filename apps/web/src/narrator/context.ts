@@ -147,30 +147,30 @@ export function turnPrompt(g: GameState): string {
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
 export function turnSchema(g: GameState) {
   const charIds = Object.keys(g.characters);
-  const skillIds = SKILLS.map((s) => s.id);
-  const combos = PERKS.filter((p: any) => p.tier === 'achieved').map((p) => p.id);
+  const skill = { type: 'string', description: 'A skill id from SKILL IDS' };
+  // Long id lists (weapons, items, perks) stay out of the schema: the grammar would get too large. The prompt lists them; the engine ignores unknown ids.
   const obj = (props: Record<string, any>) => ({ type: 'object', additionalProperties: false, properties: props, required: Object.keys(props) });
   const tn = { type: 'integer', enum: [8, 12, 16, 20] };
   const charId = { type: 'string', enum: charIds.length ? charIds : ['none'] };
   return obj({
     narration: { type: 'string' },
     sceneTitle: { type: 'string' },
-    hooks: { type: 'array', items: obj({ skill: { type: 'string', enum: skillIds }, tn, truth: { type: 'string', enum: ['true', 'partial', 'misleading'] }, line: { type: 'string' } }) },
-    checks: { type: 'array', items: obj({ charId, skills: { type: 'array', items: { type: 'string', enum: skillIds } }, tn, stakes: { type: 'string' } }) },
-    overreach: { type: 'array', items: obj({ charId, skill: { type: 'string', enum: skillIds }, push: { type: 'string' } }) },
+    hooks: { type: 'array', items: obj({ skill: skill, tn, truth: { type: 'string', enum: ['true', 'partial', 'misleading'] }, line: { type: 'string' } }) },
+    checks: { type: 'array', items: obj({ charId, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' } }) },
+    overreach: { type: 'array', items: obj({ charId, skill: skill, push: { type: 'string' } }) },
     xp: { type: 'array', items: obj({ charId: { type: 'string', enum: [...charIds, 'all'] }, source: { type: 'string', enum: ['dialogue', 'discovery', 'quest'] }, amount: { type: 'integer' }, reason: { type: 'string' } }) },
-    deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string', enum: combos }, deed: { type: 'string' } }) },
+    deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string' }, deed: { type: 'string' } }) },
     combat: { anyOf: [{ type: 'null' }, obj({
       name: { type: 'string' }, map: { type: 'string', enum: [...(campaignOf(g)?.zones.map((z) => z.id) || []), 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
-      enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string', enum: WEAPONS.map((w: any) => w.id) }, at: { type: 'string' } }) },
+      enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string' }, at: { type: 'string' } }) },
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
-    loot: { type: 'array', items: obj({ charId, item: { type: 'string', enum: [...WEAPONS.map((w: any) => w.id), ...Object.keys(ITEM)] }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' } }) },
+    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     objects: { type: 'array', items: obj({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string' }, kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) },
       at: { type: 'string' }, name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
-      approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: { type: 'string', enum: skillIds } }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },
+      approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });
 }
