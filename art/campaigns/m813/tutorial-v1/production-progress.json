@@ -34,10 +34,10 @@
     "obj-platinum-crates",
     "obj-tool-rack",
     "obj-cargo-pylon",
-    "obj-toppled-pylon"
+    "obj-toppled-pylon",
+    "obj-door-closed"
   ],
   "remaining": [
-    "obj-door-closed",
     "obj-door-open",
     "obj-crater",
     "obj-mine",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:29:25.962371+00:00",
+  "updated_utc": "2026-11-06T04:30:28.479526+00:00",
   "status": "in-progress",
   "production_approved": false
 }
