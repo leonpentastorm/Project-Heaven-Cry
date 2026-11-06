@@ -21,10 +21,10 @@
     "m813-security-guard",
     "m813-guard-captain",
     "m813-scavenger-drone",
-    "m813-rearguard"
+    "m813-rearguard",
+    "map-m813-shield-line"
   ],
   "remaining": [
-    "map-m813-shield-line",
     "map-m813-rear-pad",
     "map-m813-outpost",
     "map-m813-outpost-1",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:49:20.125890+00:00",
+  "updated_utc": "2026-11-06T03:52:40.493988+00:00",
   "status": "in-progress",
   "production_approved": false
 }
