@@ -1693,6 +1693,31 @@
       "source_sha256": "b48b8a874d81c249ef98241a8377401efefe97b9888dd5021344e7b268db4c6e",
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    {
+      "id": "every-lie-is-a-door",
+      "data_id": "every_lie_is_a_door",
+      "name": "Every Lie Is a Door",
+      "family": "perks",
+      "order": 74,
+      "mood": "Comic, Proud",
+      "action": "Wick strides unhurried through a towering door that swings wide open for it, tipping a cap toward the viewer.",
+      "screen": "Wink",
+      "prop": "Towering open door",
+      "path": "art/perks/wick/production-v1/every-lie-is-a-door.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/every-lie-is-a-door.png",
+        "128": "art/perks/wick/production-v1/exports/128/every-lie-is-a-door.png",
+        "64": "art/perks/wick/production-v1/exports/64/every-lie-is-a-door.png",
+        "56": "art/perks/wick/production-v1/exports/56/every-lie-is-a-door.png",
+        "48": "art/perks/wick/production-v1/exports/48/every-lie-is-a-door.png",
+        "44": "art/perks/wick/production-v1/exports/44/every-lie-is-a-door.png",
+        "40": "art/perks/wick/production-v1/exports/40/every-lie-is-a-door.png"
+      },
+      "batch": "F",
+      "source_sha256": "c67f638df649312b6ab4fa43a37136c46cbb949ac245e9ae2464764023e1a1c2",
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   ]
 }

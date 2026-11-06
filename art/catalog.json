@@ -5065,6 +5065,32 @@
       },
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    "every-lie-is-a-door": {
+      "label": "Wick — Every Lie Is a Door",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/every-lie-is-a-door.png",
+      "sha256": "d10a9f21acd7dc0ce45722e1cf62f622441e66e938f92542843002c1fcc455e9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "every_lie_is_a_door",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/every-lie-is-a-door.png",
+        "128": "art/perks/wick/production-v1/exports/128/every-lie-is-a-door.png",
+        "64": "art/perks/wick/production-v1/exports/64/every-lie-is-a-door.png",
+        "56": "art/perks/wick/production-v1/exports/56/every-lie-is-a-door.png",
+        "48": "art/perks/wick/production-v1/exports/48/every-lie-is-a-door.png",
+        "44": "art/perks/wick/production-v1/exports/44/every-lie-is-a-door.png",
+        "40": "art/perks/wick/production-v1/exports/40/every-lie-is-a-door.png"
+      },
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   },
   "illustrations": {
