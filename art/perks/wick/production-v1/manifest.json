@@ -1754,6 +1754,32 @@
       "visibility": "awarded-only"
     },
     {
+      "id": "last-wall",
+      "data_id": "last_wall",
+      "name": "Last Wall",
+      "family": "perks",
+      "order": 76,
+      "mood": "Heroic, Grim",
+      "action": "Wick plants itself in the gap of a broken brick wall, arms locked wide across the hole, feet braced; a flattened bullet drops off its chest plate.",
+      "screen": "Eyes shut, calm",
+      "prop": "Broken wall",
+      "path": "art/perks/wick/production-v1/last-wall.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/last-wall.png",
+        "128": "art/perks/wick/production-v1/exports/128/last-wall.png",
+        "64": "art/perks/wick/production-v1/exports/64/last-wall.png",
+        "56": "art/perks/wick/production-v1/exports/56/last-wall.png",
+        "48": "art/perks/wick/production-v1/exports/48/last-wall.png",
+        "44": "art/perks/wick/production-v1/exports/44/last-wall.png",
+        "40": "art/perks/wick/production-v1/exports/40/last-wall.png"
+      },
+      "batch": "G",
+      "source_sha256": "cf08c29fd320a768d53d3de8407d6c67be88d2edbadc488973587b401fe160f2",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

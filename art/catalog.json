@@ -5201,6 +5201,33 @@
         "40": "art/perks/wick/production-v1/exports/40/what-could-be.png"
       },
       "tier": "achieved"
+    },
+    "last-wall": {
+      "label": "Wick — Last Wall",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/last-wall.png",
+      "sha256": "40e302a8b87d453883cedec6e36c8a073111c6def92eda62bb3f61ab3ad8496e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "last_wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/last-wall.png",
+        "128": "art/perks/wick/production-v1/exports/128/last-wall.png",
+        "64": "art/perks/wick/production-v1/exports/64/last-wall.png",
+        "56": "art/perks/wick/production-v1/exports/56/last-wall.png",
+        "48": "art/perks/wick/production-v1/exports/48/last-wall.png",
+        "44": "art/perks/wick/production-v1/exports/44/last-wall.png",
+        "40": "art/perks/wick/production-v1/exports/40/last-wall.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

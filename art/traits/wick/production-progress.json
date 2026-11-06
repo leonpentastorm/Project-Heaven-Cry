@@ -158,11 +158,12 @@
     "twin-discipline",
     "bite-the-bullet",
     "sixth-sense",
-    "what-could-be"
+    "what-could-be",
+    "last-wall"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 79
+    "perks": 80
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -188,7 +189,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "last-wall",
     "walking-wounded",
     "skin-map",
     "earthbreaker",

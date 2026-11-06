@@ -17,7 +17,7 @@ WICK_TEST_IDS = {
     'field-surgeon', 'supreme-command',
 }
 
-def validate_white_rgba(data, path):
+def validate_white_rgba(data, path, circle=False):
     """Decode PNG scanlines to check ink and alpha, without a Pillow dependency."""
     width, height = struct.unpack('>II', data[16:24])
     require(data[28] == 0, f'Interlaced PNG unsupported: {path}')
@@ -60,6 +60,10 @@ def validate_white_rgba(data, path):
             visible |= alpha > 0
             if alpha:
                 require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
+                if circle and alpha >= 16:
+                    x = i // 4
+                    require((x - (width-1)/2)**2 + (y - (height-1)/2)**2 <= (.45*width+1)**2,
+                            f'Mastered ink outside 90% medallion safe circle: {path}')
         previous = row
     require(transparent and visible, f'Icon must contain both ink and transparency: {path}')
 
@@ -153,11 +157,17 @@ def validate_production_icons(catalog):
                     f'Production UI sizes missing: {item["id"]}')
             require(asset['production_approved'] is False and asset['status'] == 'review-candidate',
                     f'Unreviewed production asset marked approved: {item["id"]}')
+            mastered = item.get('tier') == 'mastered'
+            if item.get('batch') == 'G':
+                require(mastered and asset.get('tier') == 'mastered'
+                        and asset.get('mastered_mark') == 'four-point star, upper left'
+                        and asset.get('medallion_safe_circle') == .9,
+                        f'Missing Mastered handoff metadata: {item["id"]}')
             # Revised tests are checked by validate_brief_assets already.
             if item['id'] in WICK_TEST_IDS:
                 continue
             if PIXEL_ASSET is None or PIXEL_ASSET == item['id']:
-                validate_white_rgba(local(asset['path']).read_bytes(), asset['path'])
+                validate_white_rgba(local(asset['path']).read_bytes(), asset['path'], circle=mastered)
             for size, path in asset['exports'].items():
                 data = local(path).read_bytes()
                 require(data[:8] == b'\x89PNG\r\n\x1a\n'
