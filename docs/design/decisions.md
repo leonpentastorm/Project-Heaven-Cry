@@ -142,3 +142,10 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       | Default combat | "Volatile Reaction" |
       | The ramp | "Red" |
       | Station security | "Pursuit" |
+77. **The Narrator reads only what the moment needs; the rest is a wiki it looks up** (Leon, 6 Nov 2026: cut what doesn't belong in the Narrator's context; split the World Bible into sections, guarded by the campaign file; build a click-to-open dictionary for the AI from the engine).
+    - **Output schema:** no long id enums. Weapon, item, perk and skill ids are plain strings that the engine validates. This fixed Anthropic's 400 "compiled grammar is too large".
+    - **Context per call:** the Earth Sector sends only the party's origins; the EPCCG cast only when the campaign asks for it; the World Bible only the chunks the campaign's `narratorLore` names (design sections never). The map moves into the turn prompt. Plain cover, exits, HP numbers, enemy stats and unearnable combo perks are gone. The cached blocks went from about 72k to 40k characters.
+    - **The wiki:**
+      - The engine's `glossary.ts` builds entries from the data pack: skills, traits, perks (no Ultimates), weapons, items, conditions, classes, patrons, enemy tiers, objects. The web adds the lore chunks.
+      - The Narrator calls `wiki_lookup` (up to 8 keys, 3 rounds) before it answers.
+      - If the API refuses tools alongside structured output, the turn runs without them.

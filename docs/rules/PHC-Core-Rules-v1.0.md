@@ -997,6 +997,15 @@ Each character gets one spotlight per scene, and one per fight. A song that is a
 
 **The Narrator** is told whose song is playing, never its title (the Unspoken Name).
 
+## The Narrator's wiki
+
+The AI Narrator carries only what the moment needs. Everything else it looks up by key, the way a player clicks a word to open its wiki page.
+
+- **Entries come from the data pack** (the engine builds them): `skill:`, `trait:`, `perk:` (never Ultimate perks), `weapon:`, `item:`, `condition:`, `class:`, `patron:`, `enemy:`, `object:`, each with its id. They say what a thing is and does in words. The engine still owns every number in play.
+- **Lore comes in keyed chunks.** The World Bible is cut by section and by titled paragraph (`truth/knowing`, `worlds/timeline`, `magic/sigil-magic`, `mana/canon`), plus `sector-earth` and `epccg-cast`. Design notes (advanced classes, how the old material reads, open questions) are never sent.
+- **The campaign file decides what is preloaded** (`narratorLore`, a list of keys; a key takes everything under it). Without one, a campaign gets `truth` and `worlds`. Magic chunks join when the party carries magic: Sigil with an Evoker or Brain Power 3+, Soul with an Emanator or Will Power 3+, Blessings with Faith 3+.
+- **Lookups:** the Narrator calls `wiki_lookup` with up to 8 keys at once, at most 3 times a turn; then it must answer. If the provider refuses tools with structured output, the turn runs without the wiki.
+
 ## 13. Data files
 
 The engine never reads this document; it reads the data pack. Every rule-bearing item carries its player-facing `text`, machine-readable `effects`, and an `adjudication` tag (engine, hybrid or narrator). Ids are snake_case and every cross-reference is by id. `validate.py` checks the whole pack and must report 0 errors before anything ships. **Where a file and this spec disagree, the spec wins and the file is the bug.**
@@ -1107,3 +1116,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 60. **The written actions and Vision** (Shove, Brace, Field Repair, Improvise Tool, Analyze on NPCs; Vision + Vigilant, darkness, light radius, Sensory presence): all numbers are first drafts.
 61. **Weapons v2** (accepted 7 Nov 2026): every new weapon, mod, rarity, durability, calibre and price number, the 58 weapon skills, off-hand items and the slot armour.
 62. **Music:** the spotlight triggers and their once-per-scene limit, the 2-area pin, the big-heal line at 30 HP, the Musek Blestor's weight and price, and the starting silence of 2.
+63. **The Narrator's wiki:** 3 lookups a turn, 8 keys a lookup, and the magic-lore thresholds (3 points).

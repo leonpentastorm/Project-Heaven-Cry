@@ -38,6 +38,8 @@ export interface Campaign {
   startZone: string; zones: CampaignZone[];
   /** Extra lore the Narrator reads (built-in campaigns name repo lore docs here; custom ones can inline text). */
   lore?: string;
+  /** Which World Bible chunks and lore docs the Narrator reads (keys like "truth", "worlds/timeline", "sector-earth"; docs/design/campaign-format.md). Default: truth and worlds. */
+  narratorLore?: string[];
   /** false hides a built-in campaign from the Room (sketches kept for later). */
   listed?: boolean;
   /** Campaign-wide music, used where a zone has none (spec: Music). */
@@ -95,6 +97,7 @@ export function validateCampaign(c: any): string[] {
   track(c.music?.ambient, 'Campaign ambient'); track(c.music?.combat, 'Campaign combat');
   for (const z of c.zones || []) { track(z.music?.ambient, z.id + ' ambient'); track(z.music?.combat, z.id + ' combat'); }
   for (const e of c.encounters || []) track(e.music, 'Encounter "' + e.name + '"');
+  need(c.narratorLore == null || (Array.isArray(c.narratorLore) && c.narratorLore.every((k: any) => typeof k === 'string' && /^[a-z0-9-]+(\/[a-z0-9-]+)?$/.test(k))), 'narratorLore must be a list of lore keys like "truth" or "worlds/timeline".');
   for (const e of c.encounters || []) {
     need(ids.has(e.zone), 'Encounter "' + e.name + '" is in unknown zone "' + e.zone + '".');
     for (const f of e.enemies || []) need(ENEMY[f.tier] && WEAPON[f.weapon], 'Encounter "' + e.name + '": enemy "' + f.name + '" needs a known tier and weapon.');

@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, songOf, comboEligible, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -12,6 +12,53 @@ const clean = (t: string) => t.replace(/^.*\bLeon PT\b.*$/gm, '').replace(/a pro
 /** Markdown without the named "## " sections (design notes, prototype notes, open questions). */
 const drop = (md: string, heads: string[]) => md.split(/(?=^## )/m).filter((sec) => !heads.some((h) => sec.startsWith('## ' + h))).join('');
 /** The Sector doc with only the origins the party has (the rest is creation material the Narrator never needs). */
+/**
+ * The World Bible in keyed chunks (spec: Campaigns, narratorLore). Each "## " section is a chunk ("truth", "worlds",
+ * "magic", "mana-loop"); inside one, a "### " heading or a paragraph led by a bold title starts a sub-chunk
+ * ("worlds/timeline", "magic/sigil-magic", "truth/the-knowing"). A campaign names the keys it needs; a key also takes
+ * everything under it. Design sections are never sent.
+ */
+const slug = (t: string) => t.replace(/\([^)]*\)/g, '').replace(/[*.:]/g, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').replace(/^the-/, '').split('-').slice(0, 4).join('-');
+const SECTION: Record<string, string> = { 'truth': 'truth', 'worlds-and-the-war': 'worlds', 'three-schools-of-magic': 'magic', 'mana-loop': 'mana' };
+const NEVER = ['advanced-classes', 'how-the-existing-material', 'open-questions'];
+export interface LoreChunk { key: string; head: string; text: string }
+export const BIBLE: LoreChunk[] = (() => {
+  const out: LoreChunk[] = [];
+  for (const sec of worldBible.split(/(?=^## )/m).filter((x) => x.startsWith('## '))) {
+    const head = sec.split('\n')[0], key = SECTION[slug(head.slice(3))] || slug(head.slice(3));
+    if (NEVER.includes(key)) continue;
+    const parts = sec.slice(head.length).split(/(?=^### |^\*\*[^*\n]+\*\*)/m);
+    out.push({ key, head, text: parts[0] });
+    for (const part of parts.slice(1)) {
+      const lead = part.startsWith('### ') ? part.split('\n')[0].slice(4) : part.match(/^\*\*([^*\n]+)\*\*/)![1];
+      out.push({ key: key + '/' + slug(lead), head, text: part });
+    }
+  }
+  return out;
+})();
+/** Extra lore that is not in the World Bible, by key. */
+export const LORE_DOCS = ['sector-earth', 'epccg-cast'];
+export const loreKeys = () => [...BIBLE.map((c) => c.key), ...LORE_DOCS];
+const takes = (want: string[], key: string) => want.some((w) => key === w || key.startsWith(w + '/'));
+/** The lore keys this call needs: the campaign's list (default: the truth and the worlds), plus magic the party actually carries. */
+export function loreFor(g: GameState): string[] {
+  const c = campaignOf(g), want = [...(c?.narratorLore || ['truth', 'worlds'])];
+  const chars = Object.values(g.characters).filter((x) => !x.dead);
+  const has = (id: string) => chars.some((x) => x.offHand?.id === id || (x.pack || []).some((it: any) => (it.item || it.id) === id));
+  if (has('evoker') || chars.some((x) => (x.skills.brain_power || 0) >= 3)) want.push('magic/sigil-magic');
+  if (has('emanator') || chars.some((x) => (x.skills.will_power || 0) >= 3)) want.push('magic/soul-magic');
+  if (chars.some((x) => (x.skills.faith || 0) >= 3)) want.push('magic/celestial-magic');
+  return want;
+}
+function bibleFor(g: GameState): string {
+  const want = loreFor(g), picked = BIBLE.filter((ch) => takes(want, ch.key));
+  let out = '', last = '';
+  for (const ch of picked) {
+    if (ch.head !== last) { out += '\n' + ch.head + '\n'; last = ch.head; const intro = BIBLE.find((x) => x.head === ch.head && !x.key.includes('/')); if (intro && intro !== ch) out += intro.text; }
+    out += ch.text;
+  }
+  return out.trim();
+}
 function sectorFor(g: GameState): string {
   const mine = Object.values(g.characters).map((c) => c.origin.toLowerCase());
   return drop(sectorEarth, ['Starting hooks']).split(/(?=^### )/m).filter((sec) => !/^### \d+\. /.test(sec) || mine.some((o) => sec.split('\n')[0].toLowerCase().includes(o))).join('');
@@ -77,6 +124,12 @@ WORLD RULES THAT NEVER BREAK
 - Tone: NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them. The tragedy belongs to the NPCs.
 - Keep traits that are deliberately ugly in clean in-world language.
 
+THE WIKI (wiki_lookup)
+- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
+- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.
+- Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
+- Looked-up lore is still Narrator-only: never reveal its truths outright.
+
 OUTPUT
 - Reply with the JSON object only. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
 
@@ -93,10 +146,9 @@ export function campaignPrompt(g: GameState): string {
     '\nZONES (move the party between them with travel):\n' + zones,
     c.encounters?.length ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
     c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(drop(m813, ['Use in the game'])) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
-    '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(drop(worldBible, ['Advanced classes', 'How the existing material', 'Open questions'])),
-    '\nTHE EARTH SECTOR (the party\'s origins only):\n' + clean(sectorFor(g)),
-    // The EPCCG cast belongs to stories set among them: the player-made campaign, not a premade one with its own cast.
-    c.cast?.length ? '' : '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
+    '\nWORLD BIBLE (Narrator only; never reveal its truths outright; only the parts this campaign needs):\n' + clean(bibleFor(g)),
+    takes(loreFor(g), 'sector-earth') ? '\nTHE EARTH SECTOR (the party\'s origins only):\n' + clean(sectorFor(g)) : '',
+    takes(loreFor(g), 'epccg-cast') ? '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast) : '',
   ].filter(Boolean).join('\n');
 }
 
@@ -183,4 +235,27 @@ export function turnSchema(g: GameState) {
       approaches: { type: 'array', items: obj({ label: { type: 'string' }, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }) } }) },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });
+}
+
+/** The Narrator's wiki tool (spec: The Narrator's wiki): look up rules entries and lore by key when the moment needs them. */
+export const WIKI_TOOL = {
+  name: 'wiki_lookup',
+  description: 'Look up what a game term is and does, or a piece of world lore, by key. Use it when the moment needs a detail you were not given: a weapon or item before you hand it out or describe it, a condition, a trait or perk a character has, a patron, a class, or lore beyond what the campaign block holds. Keys look like "weapon:service_pistol", "condition:bleeding", "trait:headbanger", "lore:worlds/the-crawlers". Ask for several keys at once; do not look up what is already in your context.',
+  input_schema: { type: 'object', additionalProperties: false, properties: { keys: { type: 'array', items: { type: 'string' }, description: 'Up to 8 keys' } }, required: ['keys'] },
+  strict: true,
+};
+/** What the wiki tool returns for some keys: data entries from the engine, lore chunks from the docs. */
+export function wikiAnswer(keys: string[]): string {
+  return (Array.isArray(keys) ? keys : []).slice(0, 8).map((k) => {
+    const key = String(k || '').trim();
+    if (key.startsWith('lore:')) {
+      const want = key.slice(5);
+      if (want === 'sector-earth') return '[' + key + ']\n' + clean(drop(sectorEarth, ['Starting hooks']));
+      if (want === 'epccg-cast') return '[' + key + ']\n' + clean(cast);
+      const picked = BIBLE.filter((ch) => takes([want], ch.key));
+      return picked.length ? '[' + key + ']\n' + clean(picked.map((ch) => ch.text).join('')).trim() : '[' + key + '] No such lore. Lore keys: ' + loreKeys().join(', ');
+    }
+    const e = wikiLookup(key);
+    return e ? '[' + e.key + '] ' + e.text : '[' + key + '] No such entry. Kinds: ' + Object.keys(wikiKinds()).join(', ') + ', lore. Check the id lists in your rules.';
+  }).join('\n\n');
 }

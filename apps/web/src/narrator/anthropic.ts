@@ -2,7 +2,10 @@
 // sent only to api.anthropic.com. One call per Narrator turn, structured JSON output, cached system layers.
 import Anthropic from '@anthropic-ai/sdk';
 import type { GameState, NarratorTurn } from '@engine';
-import { RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt, turnSchema } from './context';
+import { RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt, turnSchema, WIKI_TOOL, wikiAnswer } from './context';
+
+/** Wiki lookups per Narrator turn before it must answer. */
+const MAX_LOOKUPS = 3;
 
 export const MODELS = [
   { id: 'claude-opus-5-5', label: 'Claude Opus 5.5', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
@@ -14,7 +17,7 @@ export const MODELS = [
 export interface NarratorResult { turn: NarratorTurn; usage: { input: number; output: number; cacheRead: number; costUsd: number } }
 export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult> }
 
-export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch): NarratorProvider {
+export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch, onLookup?: (keys: string[]) => void): NarratorProvider {
   // authToken: null so only the player's own key is ever sent, never a token from the environment.
   const client = new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: 2, timeout: 180_000, ...(fetchImpl ? { fetch: fetchImpl } : {}) });
   const price = MODELS.find((m) => m.id === model) || MODELS[0];
@@ -27,28 +30,46 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
           { type: 'text', text: campaignPrompt(g), cache_control: { type: 'ephemeral' } },
           { type: 'text', text: partyPrompt(g), cache_control: { type: 'ephemeral' } },
         ],
-        messages: [{ role: 'user', content: turnPrompt(g) }],
         output_config: { effort, format: { type: 'json_schema', schema: turnSchema(g) } },
       };
       // Refusal fallback: on a policy decline the API re-runs the turn on a fallback model (Claude API skill default).
       if (model !== 'claude-haiku-5-5') { params.betas = ['server-side-fallback-2026-07-01']; params.fallbacks = 'default'; }
+      // The wiki (spec: The Narrator's wiki): the Narrator may look things up a few times, then must answer.
+      params.tools = [WIKI_TOOL];
+      const messages: any[] = [{ role: 'user', content: turnPrompt(g) }];
+      const call = async (round: number) => {
+        params.messages = messages;
+        if (round >= MAX_LOOKUPS) params.tool_choice = { type: 'none' };
+        try { return await client.beta.messages.create(params); } catch (e) {
+          if (!(e instanceof Anthropic.BadRequestError)) throw new Error(explain(e));
+          // If the API won't take an optional part of this request, drop it rather than stall: first the fallback
+          // option, then (before any lookup happened) the wiki tool.
+          if (params.fallbacks) { delete params.fallbacks; delete params.betas; }
+          else if (params.tools && round === 0) { delete params.tools; delete params.tool_choice; }
+          else throw new Error(explain(e));
+          return call(round);
+        }
+      };
+      const sum = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
       let res: any;
-      try {
-        res = await client.beta.messages.create(params);
-      } catch (e) {
-        // If the API won't take the fallback option with this request, run the turn without it rather than stall.
-        if (e instanceof Anthropic.BadRequestError && params.fallbacks) {
-          delete params.fallbacks; delete params.betas;
-          try { res = await client.beta.messages.create(params); } catch (e2) { throw new Error(explain(e2)); }
-        } else throw new Error(explain(e));
+      for (let round = 0; ; round++) {
+        res = await call(round);
+        const u = res.usage || {};
+        sum.input += u.input_tokens || 0; sum.output += u.output_tokens || 0; sum.cacheRead += u.cache_read_input_tokens || 0; sum.cacheWrite += u.cache_creation_input_tokens || 0;
+        if (res.stop_reason !== 'tool_use' || round > MAX_LOOKUPS) break;
+        const asks = res.content.filter((x: any) => x.type === 'tool_use');
+        messages.push({ role: 'assistant', content: res.content });
+        messages.push({ role: 'user', content: asks.map((x: any) => (x.name === WIKI_TOOL.name
+          ? { type: 'tool_result', tool_use_id: x.id, content: wikiAnswer(x.input?.keys) }
+          : { type: 'tool_result', tool_use_id: x.id, content: 'Unknown tool.', is_error: true })) });
+        onLookup?.(asks.flatMap((x: any) => x.input?.keys || []));
       }
       if (res.stop_reason === 'refusal') throw new Error('The model declined this turn' + (res.stop_details?.explanation ? ': ' + res.stop_details.explanation : '.') + ' Try again, or reword the last actions.');
       if (res.stop_reason === 'max_tokens') throw new Error('The Narrator ran out of room mid-turn. Retry.');
       const text = res.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
       let turn: NarratorTurn;
       try { turn = JSON.parse(text); } catch { throw new Error('The Narrator returned something that isn\'t valid JSON. Retry.'); }
-      const u = res.usage || {};
-      const input = (u.input_tokens || 0), cacheRead = (u.cache_read_input_tokens || 0), cacheWrite = (u.cache_creation_input_tokens || 0), output = (u.output_tokens || 0);
+      const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.cacheWrite, output = sum.output;
       const costUsd = (input * price.input + cacheRead * price.cacheRead + cacheWrite * price.cacheWrite + output * price.output) / 1e6;
       return { turn, usage: { input: input + cacheWrite, output, cacheRead, costUsd } };
     },

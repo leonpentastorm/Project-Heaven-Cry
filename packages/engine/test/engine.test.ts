@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -462,5 +462,19 @@ describe('music (spec: Music)', () => {
     expect(active(r.g.combat!)!.song).toBe(1);
     r.act({ type: 'music/end', seq: r.g.music!.now!.seq });
     expect(r.g.music!.now).not.toBeNull();
+  });
+});
+
+describe("the Narrator's wiki (glossary)", () => {
+  it('has an entry for every rule-bearing kind, found by key or by name', () => {
+    const kinds = wikiKinds();
+    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
+    expect(wikiLookup('weapon:service_pistol')!.text).toContain('Snap Shot');
+    expect(wikiLookup('condition:Bleeding')!.key).toBe('condition:bleeding');
+    expect(wikiLookup('item:musek_blestor')!.text).toContain('favourite song');
+    expect(wikiLookup('nope:x')).toBeNull();
+  });
+  it('never lists Ultimate perks (they are a secret)', () => {
+    expect(wikiEntries().some((e) => e.key.startsWith('perk:') && /\(ultimate/.test(e.text))).toBe(false);
   });
 });

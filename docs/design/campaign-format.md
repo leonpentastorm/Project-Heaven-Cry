@@ -22,6 +22,7 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
+| `narratorLore` | no | The World Bible chunks and lore docs the Narrator reads every turn, by key: `truth`, `worlds`, `magic`, `mana`, a sub-chunk such as `truth/knowing` or `worlds/timeline`, `sector-earth` (only the party's origins), `epccg-cast`. A key takes everything under it. Default `["truth", "worlds"]`. Anything else the Narrator can look up in its wiki when it needs it (spec: The Narrator's wiki). |
 | `music` | no | `{ ambient, combat }`: the default tracks where a zone has none. A track is `{ yt, title, artist, start?, length?, licence? }`: `yt` is the 11-character YouTube video id, and the video must allow embedding. An encounter can have its own `music` track (a boss theme). See the spec's Music section. |
 
 ## Zones

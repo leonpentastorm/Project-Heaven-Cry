@@ -1364,5 +1364,18 @@
       "length": 164,
       "licence": "CC-BY · incompetech.com"
     }
-  }
+  },
+  "narratorLore": [
+    "truth/bots",
+    "truth/celestials",
+    "truth/knowing",
+    "truth/people",
+    "truth/robots",
+    "truth/tone-line",
+    "worlds/scale",
+    "worlds/anti-heaven-operations-command",
+    "worlds/timeline",
+    "mana/canon",
+    "sector-earth"
+  ]
 }
