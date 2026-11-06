@@ -12,10 +12,10 @@
     "m813-lantern",
     "m813-soft-hands",
     "m813-rook",
-    "m813-penny"
+    "m813-penny",
+    "m813-keel"
   ],
   "remaining": [
-    "m813-keel",
     "m813-ilse-varga",
     "m813-engineer-a",
     "m813-engineer-b",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:29:51.062615+00:00",
+  "updated_utc": "2026-11-06T03:31:21.327299+00:00",
   "status": "in-progress",
   "production_approved": false
 }

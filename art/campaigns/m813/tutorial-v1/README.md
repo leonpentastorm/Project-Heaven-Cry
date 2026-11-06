@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-11 of 52 new images delivered. All are review candidates pending Leon.
+12 of 52 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -23,3 +23,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-soft-hands` | B | [PNG](../../../character-portraits/m813/v2/m813-soft-hands.png) | opening-safe |
 | `m813-rook` | B | [PNG](../../../character-portraits/m813/v2/m813-rook.png) | opening-safe |
 | `m813-penny` | B | [PNG](../../../character-portraits/m813/v2/m813-penny.png) | opening-safe |
+| `m813-keel` | B | [PNG](../../../character-portraits/m813/v2/m813-keel.png) | opening-safe |

@@ -1660,6 +1660,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-penny.prompt.txt"
+    },
+    "m813-keel": {
+      "id": "m813-keel",
+      "group": "B",
+      "order": 8,
+      "name": "Keel",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-keel.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B8 | `m813-keel` | **Chief Engineer Keel**: fifties, heavy coveralls, grease to the elbows, a manifest on a clipboard, a revolver on his hip. | Looking down at a column of robots off-frame. Frightened and reasonable: he is right about the thrust numbers, and he knows what he is about to do. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "dec08550aaa238cca1b98d33140a9356a32414b19b9041d8af3dde57970f2239",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-keel.png",
+      "source_sha256": "ca82ea13a03d1b563d04111ae64358b3ae91df0d75ae4571e36acd98670fac34",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-keel-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-keel.prompt.txt"
     }
   },
   "traits": {
