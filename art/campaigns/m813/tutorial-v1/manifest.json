@@ -1713,6 +1713,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-drop-pod.prompt.txt"
+    },
+    {
+      "id": "obj-console",
+      "group": "E",
+      "order": 21,
+      "name": "Console",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-console.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E21 | `obj-console` | Wall console: medical bay, comms, security cameras (terminal; one sprite) | Outposts |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "f96c75283dd9dd31bb3b12f8e31e7f87707b73779c727205b026408756a0abc0",
+      "source_path": "art/sprites/objects/v1/sources/obj-console.png",
+      "source_sha256": "e2a39cc8aaaa77b6b0bc9f8d357369a7e2d2ad9a02ebcdcf4e38e8b8be7e424e",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-console-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-console-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-console-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-console.prompt.txt"
     }
   ]
 }
