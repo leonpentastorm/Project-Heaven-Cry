@@ -406,9 +406,16 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty };
 }
 
-export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean }
+export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string }
 export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean } = {}): AttackResult {
   const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp });
+  // A shot the preview refuses is never rolled (a refused preview carries need 0, which every roll but a 1 would beat):
+  // no AP, ammo, wear or dice are spent, and the log says why. Volleys (burst, full auto, weapon skills) rely on this.
+  if (!pv.ok) {
+    const line = '(' + att.name + ' can\'t attack ' + tgt.name + ': ' + pv.why + ')';
+    cb.log.push(line);
+    return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, refused: pv.why };
+  }
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
   const attAt = att.pos, tgtAt = tgt.pos;
   att.ap -= pv.ap;
@@ -605,7 +612,8 @@ export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   u.ap -= 3; cb.log.push(u.name + ' fires a burst.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
-  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0 }); });
+  // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
+  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) if (resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0 }).refused) break; });
   u.heat = Math.max(0, u.heat - 1); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
@@ -616,7 +624,9 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   u.ap -= 4; cb.log.push(u.name + ' opens up on full auto.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
-  chained(() => { for (const v of hits) resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true }); });
+  // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
+  // take), and a jam or an empty magazine ends the burst of fire.
+  chained(() => { for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true }); } });
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
   if (w.magazine != null) u.ammo = Math.max(0, startAmmo - 10);
   u.heat += 4 - hits.length; checkOver(cb); return null;
@@ -673,7 +683,12 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
     if (w.magazine != null && u.ammo < rounds) return 'Not enough rounds loaded.';
     u.ap -= fx.ap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: w.id, cat: w.category, mode: 'skill', name: (w as any).grants.name, shots: fx.shots });
-    chained(() => { for (let i = 0; i < fx.shots && !t.dead && !u.jammed && (w.magazine == null || u.ammo > 0); i++) resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0 }); });
+    // Each shot after the first is checked again: one that can no longer be taken (the target fell or dropped out of
+    // sight, the gun broke) ends the volley; it is never rolled against a refused preview.
+    chained(() => { for (let i = 0; i < fx.shots && !t.dead && !u.jammed && (w.magazine == null || u.ammo > 0); i++) {
+      if (i > 0) { const p = previewAttack(cb, u, t, 'shot', { free: true }); if (!p.ok) { cb.log.push('(' + (w as any).grants.name + ' stops: ' + p.why + ')'); break; } }
+      resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0 });
+    } });
     if (rounds > 1 && w.magazine != null) u.ammo = Math.max(0, u.ammo - (rounds - 1));
     checkOver(cb); return null;
   }

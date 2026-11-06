@@ -48,10 +48,11 @@ export function zoomer(self, img, caption, kind) { return () => {
 }; }
 export const zoomBtn = 'display: block; flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: inherit';
 export function lightboxVals(self) {
-  const L = self.state.lb, closeLb = () => self.setState({ lb: null });
-  if (!L) return { lbOpen: false, closeLb, lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
+  // Closing plays the modal's out animation first (closeAnim, below; hoisted), then drops the picture.
+  const L = self.state.lb, closeLb = () => closeAnim(self, 'lb', () => self.setState({ lb: null }));
+  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
   const icon = L.kind === 'icon' || L.kind === 'perk';
-  return { lbOpen: true, closeLb, zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
+  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
     imgStyle: 'display: block; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
 }
 

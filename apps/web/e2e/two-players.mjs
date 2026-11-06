@@ -42,6 +42,12 @@ await click(host, 'Continue', { exact: true });
 await host.waitForSelector('text=Initiative', { timeout: 10000 }).catch(() => {});
 log('host url screen', await host.locator('text=/ROUND \\d+/').first().textContent().catch(() => 'no combat header'));
 await shot(host, '15-combat');
+// Both screens play the same beats from the shared state: record the turn banners and effects each one shows.
+const watch = (p) => p.evaluate(() => { const seen = (window.__seen = { banners: new Set(), fx: 0, cut: 0 });
+  setInterval(() => { for (const b of document.querySelectorAll('div[role="status"][aria-live="polite"]')) { const t = b.textContent.replace(/\s+/g, ' ').trim(); if (/ROUND \d/.test(t)) seen.banners.add(t.slice(0, 60)); }
+    seen.fx = Math.max(seen.fx, document.querySelector('.phc-fx-layer')?.childElementCount || 0); if (document.querySelector('[data-phc-cutin]')) seen.cut++; }, 60); });
+await watch(host); await watch(guest);
+const seenOf = (p) => p.evaluate(() => ({ banners: [...window.__seen.banners], fx: window.__seen.fx, cut: window.__seen.cut }));
 // fight until it's over: each player acts on their own unit's turn, read from the game state
 const myTurn = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g && g.combat; if (!cb || cb.over) return cb && cb.over ? 'over' : 'none';
   const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId && g.characters[u.charId].owner === s.me.id ? 'mine' : 'other'; });
@@ -61,6 +67,12 @@ for (let i = 0; i < 300; i++) {
   await host.waitForTimeout(80);
 }
 await shot(host, '16-combat-over'); await shot(guest, '17-combat-over-guest');
+const hs = await seenOf(host), gs = await seenOf(guest);
+log('host saw', hs.banners.length, 'banners, peak', hs.fx, 'fx nodes, cut-in', hs.cut > 0, '·', hs.banners.slice(0, 4).join(' | '));
+log('guest saw', gs.banners.length, 'banners, peak', gs.fx, 'fx nodes, cut-in', gs.cut > 0, '·', gs.banners.slice(0, 4).join(' | '));
+if (!gs.banners.length || !gs.fx || !hs.banners.length || !hs.fx) { log('FAIL a player missed the banners or the effects'); process.exitCode = 1; }
+const named = (l) => l.filter((t) => /HOSTILE/.test(t)).length;
+if (named(gs.banners) === 0 || named(hs.banners) === 0) { log('FAIL a player saw no hostile-turn banner'); process.exitCode = 1; }
 log('combat over dialog', await host.locator('text=Back to the story ›').count(), await guest.locator('text=Back to the story ›').count());
 await click(host, 'Back to the story ›'); await click(guest, 'Back to the story ›');
 await host.waitForSelector('text=The pad goes quiet', { timeout: 10000 });

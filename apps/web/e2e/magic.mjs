@@ -190,6 +190,9 @@ const evl = cb.log.filter((l) => /evokes/.test(l));
 ok('evoke in the combat log: ' + evl.at(-1), evl.length > 0);
 ok('glyphs spent', !(cb.glyphs || []).some((x) => x.pos === u.pos));
 
+// A critical evoke can end the fight here (both raiders down): then the held-Outburst steps have nothing to do.
+if (cb.over) console.log('  (the evoke ended the fight: the Outburst steps are skipped this run)');
+else {
 // Outburst: hold it. A turn that began short of AP (round 1 can) may not afford it after drawing and evoking: wait a turn.
 if (u.ap < 3 && !cb.over) {
   await host.getByRole('button', { name: 'End turn', exact: true }).click();
@@ -241,6 +244,7 @@ if (!cb.over && (await myTurn()) === 'mine' && u.mg?.flux) {
   if (await cv.isEnabled()) await cv.click(); await host.waitForTimeout(400);
   ({ cb, u } = await CB());
   ok('vent: ' + cb.log.filter((l) => /vents/.test(l)).at(-1) + ' · mana ' + cb.mana, cb.log.some((l) => /vents \d+ Flux/.test(l)) && !u.mg.flux);
+}
 }
 await host.evaluate(() => scrollTo(0, 0)); await snap('16-combat-after-vent');
 

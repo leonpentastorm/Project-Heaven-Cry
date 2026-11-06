@@ -1,7 +1,7 @@
 // Presentation events (combat.ts FxEvent): the effects layer animates from these, so the main actions must emit them,
 // and emitting them must never change a roll.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat, resolveAttack, reload, clearJam, useWeaponSkill, FX_CAP, emitFx, type Combat } from '../src';
+import { ARCHETYPES, type Sheet, type GameState, newCharacter, newGame, apply, positionsOf, standable, zoneMap, storyObjects, startCombat, resolveAttack, reload, clearJam, useWeaponSkill, FX_CAP, emitFx, type Combat } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
   const a = ARCHETYPES.find((x) => x.id === archId)!;
@@ -45,5 +45,16 @@ describe('presentation events', () => {
     expect(ra).toEqual(rb);
     for (let i = 0; i < 100; i++) emitFx(a.cb, 'x');
     expect(a.cb.fx!.length).toBe(FX_CAP); expect(a.cb.fx![FX_CAP - 1].n).toBe(a.cb.fxSeq);
+  });
+  it('area-map actions keep their events in the story', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'fx');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Open.' } as any }, 'host');
+    const id = Object.keys(g.characters)[0], at = positionsOf(g)[id], [x, y] = at.split(',').map(Number);
+    const to = [x + 1 + ',' + y, x - 1 + ',' + y, x + ',' + (y + 1), x + ',' + (y - 1)].find((t) => standable(zoneMap(g), t) && !storyObjects(g).some((o) => o.pos === t))!;
+    g = apply(g, { type: 'world/act', charId: id, act: 'move', to, how: 'move' }, 'host');
+    const mv = (g.story.fx || []).find((e) => e.k === 'move')!;
+    expect(mv).toMatchObject({ unit: 'pc-' + id, from: at, to }); expect(g.story.fxSeq).toBe(g.story.fx!.at(-1)!.n);
   });
 });

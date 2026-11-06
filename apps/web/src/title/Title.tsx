@@ -4,6 +4,7 @@
 // Celestial glow, Wick's welcome mark).
 import React from 'react';
 import { ART } from '../screens/shared';
+import { startProvingGround } from '../game/sandbox';
 import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions, removeFromLibrary, resumeSession, setName, subscribe } from '../game/store';
 import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';
@@ -71,6 +72,7 @@ export function Title() {
   const items: Item[] = [
     ...(lastInfo ? [{ id: 'continue', label: 'CONTINUE', sub: 'Room ' + lastInfo.code + ' · ' + ago(lastInfo.savedAt), start: true, bubble: 'Welcome back!', run: () => (needName('resume:' + lastInfo.code) ? setPanel('name') : resumeSession(lastInfo.code)) }] : []),
     { id: 'new', label: 'NEW GAME', start: true, bubble: "Let's go!", run: () => (needName('host') ? setPanel('name') : hostRoom()) },
+    { id: 'proving', label: 'PROVING GROUND', sub: 'Practice fights · endless waves · no Narrator', bubble: 'Fight me!', run: () => (needName('proving') ? setPanel('name') : startProvingGround()) },
     { id: 'join', label: 'JOIN A FRIEND', bubble: 'Who\'s there?', run: () => setPanel('join') },
     { id: 'chars', label: 'CHARACTERS', bubble: 'Hello!', run: () => setPanel('characters') },
     ...(sessions.length ? [{ id: 'saved', label: 'SAVED GAMES', bubble: 'Hello!', run: () => setPanel('saved') }] : []),
@@ -273,11 +275,11 @@ function NameInput() {
   return <label style={lab}>YOUR NAME (THE OTHER PLAYERS SEE IT)<input autoFocus value={st.me.name} onChange={(e) => setName(e.target.value)} placeholder="Leon" style={field} /></label>;
 }
 function NamePanel({ after }: { after: null | string }) {
-  const resume = after && after.startsWith('resume:') ? after.slice(7) : null;
+  const resume = after && after.startsWith('resume:') ? after.slice(7) : null, prove = after === 'proving';
   return <>
     <h2 style={h2}>Who's playing?</h2>
     <NameInput />
-    <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => (resume ? resumeSession(resume) : hostRoom())}>{resume ? 'Continue ›' : 'Open a room ›'}</button>
+    <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => (resume ? resumeSession(resume) : prove ? startProvingGround() : hostRoom())}>{resume ? 'Continue ›' : prove ? 'To the Proving Ground ›' : 'Open a room ›'}</button>
     <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>You run the Narrator with your Anthropic key. Share the room code; friends join from anywhere.</span>
   </>;
 }

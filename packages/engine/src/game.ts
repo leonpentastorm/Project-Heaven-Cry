@@ -1,12 +1,14 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE } from './data';
+import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, ENEMY, MANA_BANDS } from './data';
+import provingJ from '../../../data/campaigns/proving.json';
+import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
-import { type Combat, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
+import { type Combat, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -96,6 +98,8 @@ export interface GameState {
   memory?: Memory;
   /** Every story line that scrolled out of the live log, kept forever on the host's computer for recall. */
   archive?: Entry[];
+  /** The Proving Ground (practice mode): endless waves on one map, no Narrator, no XP, no story (see Sandbox). */
+  sandbox?: Sandbox | null;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -182,7 +186,8 @@ export type Action =
   | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
   | { type: 'narrator/rewrite'; entryId: string; text: string; refused?: string }
   | { type: 'campaign/refresh' } | { type: 'memory/edit'; edit: MemEdit }
-  | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
+  | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string }
+  | SandboxAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean }
@@ -211,11 +216,15 @@ export const SHEET_MAX = 30_000;
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   reduce(g, action, by);
+  if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   g.v++;
   return g;
 }
 
 function reduce(g: GameState, a: Action, by: string) {
+  if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
+  if (g.sandbox && SANDBOX_REFUSED.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
     case 'player/join': {
       if (!isHost(g, by)) fail('Only the host admits players.');
@@ -240,6 +249,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const c = newCharacter(id(g, 'c'), by, a.sheet);
       if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: 'tool' }];
       g.characters[c.id] = c;
+      if (g.sandbox) g.sandbox.saved.characters[c.id] = JSON.parse(JSON.stringify(c)); // leaving the Proving Ground restores it as it came
       push(g, { kind: 'system', text: c.name + ' is locked in.' });
       if (g.phase !== 'lobby') c.echo = 1;
       return;
@@ -676,7 +686,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); err = shove(cb!, g.rng, u, t!); break; }
     case 'combat/prone': err = toggleProne(cb!, u); break;
     case 'combat/brace': err = brace(cb!, u); break;
-    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; err = useWeaponSkill(cb!, g.rng, u, t, c); break; }
+    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, c); break; }
     case 'combat/repair': err = fieldRepair(cb!, u); break;
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
     case 'combat/overwatch': err = setOverwatch(cb!, u, a.mode); break;
@@ -749,10 +759,10 @@ function runEnemies(g: GameState) {
   for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
     const u = active(cb)!;
     if (u.side !== 'foe') break;
-    enemyTurn(cb, g.rng);
+    if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
-  if (cb.over) finishCombat(g);
+  if (cb.over) { if (g.sandbox) sandboxOver(g); else finishCombat(g); }
 }
 
 function finishCombat(g: GameState) {
@@ -867,6 +877,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
+  if (g.sandbox) v.sandbox = { ...g.sandbox, saved: { characters: {}, campaign: null, story: null, music: null } };
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
@@ -1339,4 +1350,415 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
   if (g.story.work) g.story.work = { ...g.story.work, redo: note || 'Tell it differently.' };
   g.story.entries.push({ id: 'e' + (++g.seq), kind: 'system', text: 'The room voted to reroll the Narrator\'s turn' + (note ? ': "' + note + '"' : '') + '. Everything since it is undone.', ooc: true });
   return g;
+}
+
+// ---------- the Proving Ground (practice mode) ----------
+// Endless waves of drill units on one arena, with infinite retries, and a tools panel for everything the engine owns:
+// gear, class, level, skills, magic, enemies, the enemy AI, the mana meter. No Narrator is ever called (nothing sets
+// story.work, and every Narrator and story action is refused), no XP, no story entries, no lasting injuries or deaths.
+// Leaving restores the room's characters, campaign and story as they were.
+
+/** Proving Ground state. `saved` is the room before it began (host only: views carry an empty copy). */
+export interface Sandbox {
+  wave: number; best: number; attempt: number; ai: boolean;
+  /** The next wave comes by itself after a short pause (the host's client sends sandbox/wave), or waits for a click. */
+  auto: boolean;
+  state: 'fighting' | 'cleared' | 'fallen';
+  /** An advanced class picked in the tools (by character): the engine plays its first parent (advanced moves are not engine-run yet). */
+  advanced: Record<string, string>;
+  /** Test characters made for the Proving Ground: removed when it ends. */
+  temp: string[];
+  /** The mana meter when this wave began (Retry puts it back). */
+  waveMana: number;
+  spawned: number;
+  saved: { characters: Record<string, Character>; campaign: Campaign | null; story: any; music: any };
+}
+export type SandboxAction =
+  | { type: 'sandbox/start'; archetype?: string; kit?: string } | { type: 'sandbox/end' }
+  | { type: 'sandbox/wave'; wave?: number } | { type: 'sandbox/retry'; restart?: boolean }
+  | { type: 'sandbox/give'; charId: string; item: string; qty?: number; rarity?: Rarity; equip?: boolean }
+  | { type: 'sandbox/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' | 'mod' } | { type: 'sandbox/unequip'; charId: string; slot: string }
+  | { type: 'sandbox/drop'; charId: string; idx: number } | { type: 'sandbox/armour'; charId: string; armourClass: number }
+  | { type: 'sandbox/class'; charId: string; classId: string | null; rank?: number }
+  | { type: 'sandbox/level'; charId: string; level: number } | { type: 'sandbox/skill'; charId: string; skill: string; points: number }
+  | { type: 'sandbox/refill'; charId?: string }
+  | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string }
+  | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
+  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string } | { type: 'sandbox/clear' }
+  | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number };
+
+/** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
+const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
+export const PROVING_GROUND = provingJ as unknown as Campaign;
+/** Drill units by tier: their names and the weapons each wave cycles through. */
+export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> = {
+  minion: { name: 'Drill drone', weapons: ['service_pistol', 'combat_knife', 'decrkm_smg', 'lever_carbine'] },
+  soldier: { name: 'Sparring trooper', weapons: ['hellraiser_service_rifle', 'lumeri_scattergun', 'legion_pdw', 'sabre'] },
+  elite: { name: 'Range warden', weapons: ['legion_bullpup', 'brigade_auto_shotgun', 'ccec_marksman_rifle', 'war_axe'] },
+  boss: { name: 'Proving champion', weapons: ['hellraiser_lmg', 'adamantile_greatsword'] },
+};
+/** Advanced classes (rules 1.2): the engine knows them by id for the tools; base classes are in CLASS. */
+export const ADVANCED_CLASSES: { id: string; name: string; parents: string[]; summary?: string }[] = ((classesJ as any).advanced || []).map((x: any) => ({ id: x.id, name: x.name, parents: x.parents || [], summary: x.summary }));
+const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, boss: 8 };
+/** Wave n's drill units (deterministic, so a wave can be replayed): a point budget of 2 + 1.5n; soldiers from wave 2,
+ * elites from wave 4, a champion every 5th wave; at most 8. Provisional: tuned by play. */
+export function sandboxWave(n: number): { name: string; tier: string; weapon: string }[] {
+  n = Math.max(1, Math.floor(n));
+  let pts = 2 + Math.floor(n * 1.5); const tiers: string[] = [];
+  if (n % 5 === 0) for (let i = 0; i < Math.min(2, n / 5) && pts >= TIER_COST.boss; i++) { tiers.push('boss'); pts -= TIER_COST.boss; }
+  const caps: [string, number][] = [['elite', n >= 4 ? Math.floor(n / 4) : 0], ['soldier', n >= 2 ? Math.ceil(n / 2) : 0]];
+  for (const [t, cap] of caps) for (let i = 0; i < cap && pts > TIER_COST[t] && tiers.length < 7; i++) { tiers.push(t); pts -= TIER_COST[t]; }
+  while (pts > 0 && tiers.length < 8) { tiers.push('minion'); pts--; }
+  if (!tiers.length) tiers.push('minion');
+  const count: Record<string, number> = {};
+  return tiers.map((t) => { const i = (count[t] = (count[t] || 0) + 1), T = SANDBOX_TIERS[t]; return { name: T.name + ' ' + i, tier: t, weapon: T.weapons[(i - 1 + n) % T.weapons.length] }; });
+}
+
+const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is not open.');
+/** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
+const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
+  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init'] as const;
+
+/** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
+ * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
+function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
+  const cb = g.combat; if (!cb) return;
+  const i = cb.units.findIndex((u) => u.charId === c.id); if (i < 0) return;
+  const old = cb.units[i], u = unitFromCharacter(c, old.pos, { state: g.rng.state });
+  u.init = old.init;
+  if (mode === 'keep') {
+    for (const k of SB_KEEP) if (old[k] !== undefined) (u as any)[k] = JSON.parse(JSON.stringify(old[k]));
+    if (old.offWeapon && old.offWeapon === u.offWeapon) u.offAmmo = old.offAmmo;
+    if (old.mg && u.mg) { u.mg.flux = old.mg.flux; u.mg.strain = old.mg.strain; u.mg.held = old.mg.held; u.mg.cast = old.mg.cast; u.mg.lockRound = old.mg.lockRound; }
+    if (u.conds?.slowed) { u.baseMove = u.movement; u.movement /= 2; }
+    if (u.conds?.blinded) { u.baseVision = u.vision || 12; u.vision = 1; }
+    if (u.conds?.guarded) u.def += 2;
+    u.hp = Math.min(u.hp, u.maxHp);
+  } else {
+    u.ap = active(cb)?.id === old.id ? Math.max(old.ap, 6) : old.ap;
+    u.waitRound = old.waitRound;
+  }
+  cb.units[i] = u; syncSong(g);
+}
+/** Change a character in the Proving Ground: its fighter's state is written onto it first, then rebuilt from it. */
+function sbChange(g: GameState, c: Character, fn: () => void, mode: 'keep' | 'refill' = 'keep') {
+  const u = g.combat?.units.find((x) => x.charId === c.id);
+  if (u) unitToCharacter(g, u, false);
+  fn();
+  sbRebuild(g, c, mode);
+}
+/** Levelling up mid-fight in the Proving Ground: the fighter takes the new numbers and keeps everything else. */
+export function sandboxResync(g: GameState, charId: string) { const c = g.characters[charId]; if (c && g.combat) sbChange(g, c, () => {}); }
+
+/** Full HP, no injuries, every magazine full, stims, MP, the Evoker's charge and cores, a mended weapon. */
+function sbRefill(c: Character) {
+  c.dead = false; c.hp = maxHp(c); c.injuries = []; c.downedFails = 0;
+  c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : { ...it }));
+  const w = WEAPON[c.weapon];
+  if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
+  if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
+  if (hasEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
+  c.pack = pack;
+  if (hasEmanator(c)) c.mp = maxMp(c);
+  c.stims = Math.max(c.stims, 3);
+  if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
+}
+/** Set a skill, raising its Attribute and Core to fit (the Proving Ground ignores budgets, never the tree's caps). */
+function sbSetSkill(c: Character, id: string, p: number) {
+  const sk = SKILL[id]; if (!sk) fail('Unknown skill.');
+  p = Math.max(0, Math.min(10, Math.round(p)));
+  c.skills = { ...c.skills, [id]: p };
+  if ((c.attrs[sk.attribute] || 1) < p) c.attrs = { ...c.attrs, [sk.attribute]: p };
+  const core = sk.core as keyof Character['cores']; if ((c.cores[core] || 1) < (c.attrs[sk.attribute] || 1)) c.cores = { ...c.cores, [core]: c.attrs[sk.attribute] };
+  grantAutomaticPerks(c);
+}
+/** Raise a class's signature skills, evenly, until their total reaches `total`. */
+function sbRaiseSignature(c: Character, classId: string, total: number) {
+  const sig = CLASS[classId]?.signature || [];
+  for (let guard = 0; guard < 40; guard++) {
+    const now = sig.reduce((t, s) => t + (c.skills[s] || 0), 0); if (now >= total) return;
+    const low = [...sig].sort((a, b) => (c.skills[a] || 0) - (c.skills[b] || 0))[0]; if ((c.skills[low] || 0) >= 10) return;
+    sbSetSkill(c, low, (c.skills[low] || 0) + 1);
+  }
+}
+/** Put an item or weapon in the pack (weapons come with three magazines and loose rounds). Returns its pack index. */
+function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number {
+  const pack = packOf(c).map((x) => ({ ...x })), n = Math.max(1, Math.min(20, Math.round(qty || 1)));
+  if (WEAPON[item]) {
+    const w = WEAPON[item];
+    for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id: item, name: w.name, qty: 1, kind: 'weapon', weapon: item, rarity, ...(rarity !== 'standard' ? { dur: maxDurOf(item, rarity) } : {}) });
+    const at = pack.length - 1;
+    if (w.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === item && it.mags)) pack.push(magsOf(item, 3));
+    if (w.ammo) { const want = 3 * (w.magazine || 6), r = pack.find((it) => it.calibre === w.ammo); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
+    c.pack = pack; return at;
+  }
+  if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
+  const def = ITEM[item] as any; if (!def) fail('No such item.');
+  const kind: PackItem['kind'] = def.category === 'focus' ? 'focus' : item === 'standard_core' ? 'ammo' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool';
+  const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
+  if (ex >= 0 && kind !== 'focus') { pack[ex].qty += n; c.pack = pack; return ex; }
+  pack.push({ id: item, item, name: def.name, qty: n, kind }); c.pack = pack; return pack.length - 1;
+}
+/** Equip from the pack, in a fight too: a weapon taken in hand comes loaded. */
+function sbEquip(c: Character, idx: number, to: 'main' | 'off' | 'worn' | 'mod'): string | null {
+  const it = packOf(c)[idx]; if (!it) return 'Nothing there.';
+  const err = to === 'mod' ? fitMod(c, idx) : equip(c, idx, to); if (err) return err;
+  if (to === 'main') c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  return null;
+}
+const sbLog = (g: GameState, t: string) => { if (g.combat) g.combat.log.push('⚙ ' + t); };
+/** The fighters' state written back onto their characters (between waves: nobody stays dead or down). */
+function sbCollect(g: GameState) {
+  const cb = g.combat; if (!cb) return;
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false);
+  magicOut(g, cb, true);
+  for (const c of Object.values(g.characters)) { c.dead = false; if (c.hp <= 0) c.hp = 1; c.downedFails = 0; c.injuries = []; }
+}
+/** Start wave n on the Proving Ground. fresh: everyone refilled at the start tiles, the field clean (Retry);
+ * otherwise the squad carries its HP, ammo and magic in and stays where it stands (the next wave). */
+function sbStartWave(g: GameState, n: number, fresh: boolean, mana?: number) {
+  const sb = sbOf(g), old = g.combat;
+  const pos: Record<string, string> = {};
+  if (old && !fresh) for (const u of old.units) if (u.charId && !u.dead) pos[u.charId] = u.pos;
+  sbCollect(g);
+  if (mana != null) g.story.mana = mana;
+  if (fresh) { g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; for (const c of Object.values(g.characters)) sbRefill(c); }
+  const map = zoneMap(g), foes = sandboxWave(n);
+  const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
+  if (!pcs.length) fail('Lock in a character first.');
+  const cb = startCombat('Proving Ground · Wave ' + n, map, pcs, foes, n % 5 === 0 ? 'boss' : n >= 4 ? 'hard' : 'standard', g.rng);
+  magicIn(g, cb);
+  cb.noXp = true;
+  cb.log.unshift('WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + foes.length + ' drill unit' + (foes.length === 1 ? '' : 's'));
+  { const seen: Record<string, number> = {}; for (const u of cb.units) if (u.side === 'foe') { u.npcId = u.id; const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
+  g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
+  sb.wave = n; sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START;
+  syncSong(g);
+  runEnemies(g);
+}
+/** A wave ends: cleared (the next one waits for a click or the host's short pause) or the squad fell (Retry). */
+function sandboxOver(g: GameState) {
+  const sb = sbOf(g), cb = g.combat!;
+  if (cb.over === 'win') { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); cb.log.push('WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
+  else { sb.state = 'fallen'; cb.log.push('The squad falls on wave ' + sb.wave + '. Retry the wave, or start again from wave 1.'); }
+  cb.summary = (cb.over === 'win' ? 'Cleared' : 'Fell on') + ' wave ' + sb.wave + '.';
+}
+/** A fight that was over runs again (an enemy spawned into a cleared wave, or the field cleared). */
+function sbResume(g: GameState) {
+  const cb = g.combat!; cb.over = null; sbOf(g).state = 'fighting';
+  const u = active(cb); if (!u || u.dead || (u.side === 'foe' && u.downed)) endTurn(cb, g.rng);
+  runEnemies(g);
+}
+/** A test character from an archetype (for a quick Proving Ground with nobody locked in). */
+function sbTestSheet(archetype: string | undefined, kit: string | undefined): Sheet {
+  const a = ARCHETYPES.find((x) => x.id === archetype) || ARCHETYPES.find((x) => x.id === 'sharpshooter') || ARCHETYPES[0];
+  // Most archetypes have a painted portrait in the web app's assets (char-arch-<id>.webp); the rest show their initials.
+  const painted = !['heavy_gunner', 'silver_tongue', 'witch_hunter', 'field_medic', 'living_wall', 'wrecking_ball'].includes(a.id);
+  return { name: 'Recruit ' + a.name, portrait: painted ? '/assets/char-arch-' + a.id.replace(/_/g, '-') + '.webp' : '', origin: 'Proving Ground', kit: ['medic', 'soldier', 'sigil', 'soul'].includes(kit || '') ? kit! : 'soldier', traits: [],
+    skills: { ...(a.preset || {}) }, attrs: { ...(a.attributes || {}) }, cores: { ...(a.cores || {}) }, identity: {}, archetype: a.id };
+}
+
+function sandboxAction(g: GameState, a: SandboxAction, by: string) {
+  const host = isHost(g, by), inRoom = g.players.some((p) => p.id === by);
+  const hostOnly = () => { if (!host) fail('Only the host does that in the Proving Ground.'); };
+  /** The character a tool acts on: its player's, or anyone's for the host. */
+  const mine = (charId: string) => { const c = g.characters[charId]; if (!c) fail('No such character.'); if (c!.owner !== by && !host) fail('Not your character.'); return c!; };
+  if (a.type === 'sandbox/start') {
+    hostOnly();
+    if (g.phase !== 'lobby') fail('Open the Proving Ground from the room, before the session starts.');
+    const saved = { characters: JSON.parse(JSON.stringify(g.characters)), campaign: g.campaign ? JSON.parse(JSON.stringify(g.campaign)) : null, story: JSON.parse(JSON.stringify(g.story)), music: g.music ? JSON.parse(JSON.stringify(g.music)) : null };
+    const sb: Sandbox = { wave: 1, best: 0, attempt: 1, ai: true, auto: true, state: 'fighting', advanced: {}, temp: [], waveMana: MANA_START, spawned: 0, saved };
+    g.sandbox = sb;
+    if (!charsOf(g, by).length && (a.archetype || !Object.keys(g.characters).length)) {
+      const c = newCharacter(id(g, 'c'), by, sbTestSheet(a.archetype, a.kit)); c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id);
+    }
+    if (!Object.keys(g.characters).length) { g.sandbox = null; fail('Lock in a character first.'); }
+    g.campaign = JSON.parse(JSON.stringify(PROVING_GROUND));
+    g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.objects = []; g.story.mana = MANA_START;
+    g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.await = 'none'; g.story.work = null;
+    musicOf(g).fight++;
+    sbStartWave(g, 1, true);
+    return;
+  }
+  const sb = sbOf(g), cb = g.combat;
+  switch (a.type) {
+    case 'sandbox/end': {
+      hostOnly();
+      const s = sb.saved, added = Object.values(g.characters).filter((c) => !s.characters[c.id] && !sb.temp.includes(c.id));
+      g.characters = { ...s.characters }; for (const c of added) g.characters[c.id] = c; // added mid-practice: kept (s.characters has their fresh copy too)
+      g.campaign = s.campaign; g.story = s.story; if (s.music) g.music = s.music; else delete g.music;
+      g.combat = null; g.phase = 'lobby'; g.sandbox = null; g.checks = []; g.overreach = []; g.awards = [];
+      return;
+    }
+    case 'sandbox/wave': {
+      if (a.wave != null) hostOnly(); else if (!inRoom) fail('Join the room first.');
+      if (a.wave == null && sb.state !== 'cleared') fail(sb.state === 'fallen' ? 'The squad is down: retry the wave.' : 'Clear this wave first.');
+      const n = Math.max(1, Math.min(99, Math.round(a.wave ?? sb.wave + 1)));
+      // Starting the wave already on the field again is a new attempt: the fight's name, first log line and effects
+      // numbering would otherwise match the old one, and the client would skip its banner and opening effects.
+      if (n === sb.wave && g.combat) sb.attempt++;
+      sbStartWave(g, n, sb.state === 'fallen');
+      return;
+    }
+    case 'sandbox/retry': {
+      // Anyone may retry once the squad has fallen; mid-fight (or after a clear) only the host resets the room's run.
+      if (sb.state === 'fallen') { if (!inRoom) fail('Join the room first.'); } else hostOnly();
+      sb.attempt++;
+      sbStartWave(g, a.restart ? 1 : sb.wave, true, a.restart ? MANA_START : sb.waveMana);
+      return;
+    }
+    case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
+    case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
+    case 'sandbox/mana': {
+      hostOnly(); const v = Math.max(0, Math.min(40, Math.round(Number(a.value) || 0)));
+      g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }
+      sbLog(g, 'The mana meter is set to ' + v + '.'); return;
+    }
+    case 'sandbox/spawn': {
+      hostOnly(); if (!cb) fail('No fight is on.');
+      if (sb.state === 'fallen') fail('The squad is down: retry first.');
+      if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
+      if (!WEAPON[a.weapon]) fail('No such weapon.');
+      const k = tileKey(g, a.at);
+      if (!standable(cb!.map, k) || cb!.units.some((u) => u.pos === k && !u.dead) || objectsOf(cb!).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
+      const name = (a.name || '').trim().slice(0, 40) || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (cb!.units.filter((u) => u.tier === a.tier).length + 1);
+      const u = unitFromEnemy('foe-s' + (++sb.spawned), name, a.tier, a.weapon, k, g.rng); u.npcId = u.id;
+      const p = portraitFor(g, name); if (p) u.img = p;
+      cb!.units.push(u); cb!.order.push(u.id);
+      sbLog(g, name + ' (' + a.tier + ', ' + WEAPON[a.weapon].name + ') enters at ' + refOf(k) + '.');
+      if (cb!.over) sbResume(g);
+      return;
+    }
+    case 'sandbox/clear': {
+      hostOnly(); if (!cb) fail('No fight is on.');
+      if (sb.state === 'fallen') fail('The squad is down: retry first.');
+      const cur = cb!.order[cb!.turn];
+      cb!.units = cb!.units.filter((u) => u.side !== 'foe'); cb!.order = cb!.order.filter((x) => cb!.units.some((u) => u.id === x));
+      const t = cb!.order.indexOf(cur);
+      if (t >= 0) cb!.turn = t; else { cb!.turn = 0; beginTurn(cb!, g.rng); }
+      cb!.over = null; sb.state = 'fighting';
+      sbLog(g, 'The field is cleared. Spawn enemies, or call the next wave.');
+      return;
+    }
+    case 'sandbox/refill': {
+      const list = a.charId ? [mine(a.charId)] : (host ? Object.values(g.characters) : fail('Pick a character.'));
+      for (const c of list) sbChange(g, c, () => sbRefill(c), 'refill');
+      if (cb) for (const c of list) { const u = cb.units.find((x) => x.charId === c.id); if (u) { u.downed = false; u.dead = false; u.saves = { ok: 0, fail: 0 }; u.bleed = 0; u.conds = {}; u.shield = 0; u.jammed = false; u.heat = 0; } }
+      sbLog(g, list.map((c) => c.name).join(', ') + ': refilled.'); return;
+    }
+    case 'sandbox/give': {
+      const c = mine(a.charId), rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(a.rarity || '') ? a.rarity : 'standard') as Rarity;
+      if (!WEAPON[a.item] && !ITEM[a.item]) fail('No such item.');
+      let err: string | null = null;
+      sbChange(g, c, () => {
+        const at = sbGive(c, a.item, a.qty || 1, rarity);
+        if (a.equip && at >= 0) {
+          const it = packOf(c)[at], def = ITEM[a.item] as any;
+          const to = WEAPON[a.item] ? 'main' : def?.category === 'mod' ? 'mod' : def?.category === 'armour' ? 'worn' : def?.slot === 'off_hand' ? 'off' : null;
+          if (to && it) err = sbEquip(c, at, to);
+        }
+      });
+      sbLog(g, c.name + ' gets ' + (WEAPON[a.item]?.name || ITEM[a.item]?.name) + (WEAPON[a.item] && rarity !== 'standard' ? ' (' + rarity + ')' : '') + (a.equip && !err ? ', equipped' : '') + '.');
+      if (err) fail(err);
+      return;
+    }
+    case 'sandbox/equip': case 'sandbox/unequip': case 'sandbox/drop': case 'sandbox/armour': {
+      const c = mine(a.charId); let err: string | null = null;
+      sbChange(g, c, () => {
+        if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
+        else if (a.type === 'sandbox/unequip') err = unequip(c, a.slot);
+        else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else { pack.splice(a.idx, 1); c.pack = pack; } }
+        else c.armourClass = Math.max(0, Math.min(5, Math.round(a.armourClass)));
+      });
+      if (err) fail(err);
+      return;
+    }
+    case 'sandbox/class': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => {
+        delete sb.advanced[c.id];
+        if (!a.classId) { c.classId = null; return; }
+        const adv = ADVANCED_CLASSES.find((x) => x.id === a.classId);
+        if (adv) {
+          // An advanced class needs 15 in one parent's signatures and 9 in the other (rules 1.2): brought up to that here.
+          sbRaiseSignature(c, adv.parents[0], 15); if (adv.parents[1]) sbRaiseSignature(c, adv.parents[1], 9);
+          c.classId = adv.parents[0]; sb.advanced[c.id] = adv.id; return;
+        }
+        if (!CLASS[a.classId]) fail('No such class.');
+        c.classId = a.classId;
+        const rank = Math.max(1, Math.min(3, Math.round(a.rank || 1)));
+        if (rank >= 2) sbRaiseSignature(c, a.classId, rank === 3 ? 18 : 13);
+      });
+      const adv = sb.advanced[c.id];
+      sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (played as ' + CLASS[c.classId!]?.name + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');
+      return;
+    }
+    case 'sandbox/level': {
+      const c = mine(a.charId), L = Math.max(1, Math.min(20, Math.round(a.level)));
+      sbChange(g, c, () => {
+        if (L > c.level) { c.xp = Math.max(c.xp, xpForLevel(L)); applyLevels(c); }
+        else { c.level = L; c.xp = xpForLevel(L); }
+        c.hp = maxHp(c);
+      });
+      const u = cb?.units.find((x) => x.charId === c.id); if (u) u.hp = u.maxHp;
+      sbLog(g, c.name + ' is level ' + c.level + ' (' + maxHp(c) + ' HP).'); return;
+    }
+    case 'sandbox/skill': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => sbSetSkill(c, a.skill, a.points));
+      sbLog(g, c.name + ': ' + SKILL[a.skill].name + ' ' + (c.skills[a.skill] || 0) + '.'); return;
+    }
+    case 'sandbox/learn': {
+      const c = mine(a.charId);
+      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.');
+      if (!a.word && !a.school && !a.module) fail('Pick a word, a school or a module.');
+      sbChange(g, c, () => {
+        if (a.word && !(c.sigils ||= []).includes(a.word)) c.sigils.push(a.word); // the Proving Ground ignores the Brain Power cap
+        const k = (c.soulKnown ||= { schools: [], modules: [] });
+        if (a.school && !k.schools.includes(a.school)) k.schools.push(a.school);
+        if (a.module && !k.modules.includes(a.module)) k.modules.push(a.module);
+      });
+      sbLog(g, c.name + ' learns ' + [a.word && SIGIL[a.word].word, a.school && SCHOOL[a.school].name + ' (school)', a.module && MODULE[a.module].name + ' (module)'].filter(Boolean).join(', ') + '.');
+      return;
+    }
+    case 'sandbox/design': {
+      const c = mine(a.charId), d = a.design;
+      if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
+      const mods = [...new Set(d.modules || [])].filter((x) => MODULE[x]).slice(0, 4);
+      sbChange(g, c, () => {
+        const k = (c.soulKnown ||= { schools: [], modules: [] });
+        for (const s of [d.school, d.school2].filter(Boolean) as string[]) if (!k.schools.includes(s)) k.schools.push(s);
+        for (const m of mods) if (!k.modules.includes(m)) k.modules.push(m);
+        const list = (c.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
+        const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}) };
+        if (at >= 0) list[at] = clean; else { if (list.length >= 8) fail('Eight designs at most here: forget one first.'); list.push(clean); }
+      });
+      return;
+    }
+    case 'sandbox/forget': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => {
+        if (a.word) c.sigils = (c.sigils || []).filter((x) => x !== a.word);
+        if (a.designId) { const u = cb?.units.find((x) => x.charId === c.id); if (u?.mg?.held?.design === a.designId) fail('That Outburst is being held: release it first.'); c.outbursts = (c.outbursts || []).filter((x) => x.id !== a.designId); }
+      });
+      return;
+    }
+  }
+  fail('Unknown action.');
+}
+/** The ordinary gear and magic-book actions, allowed mid-fight in the Proving Ground (the fighter is rebuilt). */
+function sandboxGear(g: GameState, a: Action, by: string) {
+  const charId = (a as any).charId as string, c = g.characters[charId]; if (!c || c.owner !== by) fail('Not your character.');
+  const m: Record<string, () => SandboxAction> = {
+    'gear/equip': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: (a as any).to }),
+    'gear/unequip': () => ({ type: 'sandbox/unequip', charId, slot: (a as any).slot }),
+    'gear/mod': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: 'mod' }),
+    'magic/design': () => ({ type: 'sandbox/design', charId, design: (a as any).design }),
+    'magic/forget': () => ({ type: 'sandbox/forget', charId, designId: (a as any).designId }),
+    'magic/learn': () => ({ type: 'sandbox/learn', charId, word: (a as any).word, school: (a as any).school, module: (a as any).module }),
+  };
+  if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
+  const to = m[a.type]; if (!to) fail('Unknown action.');
+  sandboxAction(g, to(), by);
 }

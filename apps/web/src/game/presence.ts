@@ -4,6 +4,10 @@
 import React from 'react';
 import { reducedMotion } from './sfx';
 
+/** How long the combat-in screen transition runs (App.tsx); music.tsx waits this long before the fight music fades
+ *  in, and turnIntro.tsx holds the first turn banner until it is over. */
+export const COMBAT_IN_MS = 950;
+
 /** How long an overlay stays mounted after it closes (matches the .phc-closing animations). */
 export const CLOSE_MS = 200;
 

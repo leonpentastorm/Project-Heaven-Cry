@@ -1,6 +1,7 @@
 // The credits manifest (spec: docs/design/title-screen.md §7, magic-presentation licence rules): every third-party
 // asset the game ships, with its author and licence, shown on the title screen's Credits page.
 import { SFX_CREDITS } from './sfxCredits';
+import { FX_CREDITS } from './fx/fxCredits';
 
 export interface Credit { what: string; who: string; licence?: string; url?: string }
 export const CREDITS: { group: string; items: Credit[] }[] = [
@@ -15,6 +16,7 @@ export const CREDITS: { group: string; items: Credit[] }[] = [
     { what: 'Players\' favourite songs', who: 'their own YouTube links, played from YouTube' },
   ] },
   { group: 'Sound', items: SFX_CREDITS },
+  { group: 'Combat effects', items: FX_CREDITS },
   { group: 'Voice and code', items: [
     { what: 'The Narrator\'s voice: Kokoro-82M via kokoro-js', who: 'hexgrad, Xenova', licence: 'Apache-2.0', url: 'https://github.com/hexgrad/kokoro' },
     { what: 'React', who: 'Meta', licence: 'MIT' },

@@ -195,11 +195,11 @@ export class MainLogic extends DCLogic {
     const sheetSkills = D.skills.filter((s) => s.core === S.core).map((s) => {
       const p = P(s.id), m = mod(p), ink = ATTR[s.attr].ink, done = asked.includes(s.id), off = !c || p === 0 || g.phase !== 'story', silent = !done && !off && !voiced.includes(s.id);
       return { key: s.id, zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
-        ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent ? 'Silent' : 'Ask',
+        ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent || off ? 'Silent' : 'Ask',
         askTitle: done ? 'Asked once this scene.' : silent ? 'Nothing to say about this right now.' : off ? (p === 0 ? 'No points: no voice yet.' : g.phase !== 'story' ? 'Ask a skill out of combat.' : '') : 'It has something to say. Ask it (once this scene).',
         rowCls: 'phc-m-tab-' + (S.coreDir || 'r'),
         nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (p ? ink : '#A3AEC2'), modStyle: 'font-size: 13px; text-align: right; color: ' + (p ? '#E7EBF3' : '#7F8BA1'),
-        askStyle: 'min-height: 32px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' + (silent ? 'border: 1px dashed #232D3F; background: transparent; color: #5B6577; font-style: italic' : done || off ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + ink + '; background: ' + epRgba(ink, 0.14) + '; color: ' + ink) };
+        askStyle: 'min-height: 32px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; ' + (silent || (off && !done) ? 'border: 1px dashed #232D3F; background: transparent; color: #5B6577; font-style: italic' : done ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + ink + '; background: ' + epRgba(ink, 0.14) + '; color: ' + ink) };
     });
     const au = P('authority'), lead = au >= 5 ? 'Command' : au >= 3 ? 'Platoon' : au >= 1 ? 'Squad' : 'Unfit';
     const w = c ? WEAPON[c.weapon] : null;
@@ -587,7 +587,7 @@ export class MainLogic extends DCLogic {
     // Shot, Aimed shot and Melee show the weapon's reach as a red grid around you: targets in it are outlined in red, the
     // rest dimmed, and hovering one shows the engine's hit chance and AP. All of it comes from the engine (paths,
     // apForTiles, previewAttack, lineOfSight) on the story map as a throwaway fight; nothing here is a rule of its own.
-    const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Set(), tgt: {}, info: '', isMove: false, isAtk: false };
+    const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false };
     const planOn = !!(S.area && mover && mover.hp > 0 && myAt && g.story.await === 'players' && !(g.story.ended || {})[mover.id]);
     if (planOn && (['move', 'sprint', 'sneak'].includes(W) || ['shot', 'aimed', 'melee'].includes(W))) {
       const cbx = scb(), u = sU(cbx);
@@ -610,8 +610,9 @@ export class MainLogic extends DCLogic {
         if (!this._redMemo || this._redMemo.key !== memoKey) {
           const reachM = useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w0 && fx.op === 'reach') ? (fx.op === 'reach' && useW === w0 ? fx.value : 2) : 1;
           const optic = (u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0;
-          const maxR = melee ? reachM : effectiveRange(useW) * (3 + optic), red = new Set();
-          for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y; if (k === u.pos || solid.has(k)) continue; const d = dist(u.pos, k); if (d <= maxR && (melee || lineOfSight(cbx, u.pos, k))) red.add(k); }
+          const maxR = melee ? reachM : effectiveRange(useW) * (3 + optic), red = new Map(), bandW = melee ? 0 : effectiveRange(useW);
+          // By range band: the first band reads strongest, the far ones fade (−2 to hit per band past the first).
+          for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y; if (k === u.pos || solid.has(k)) continue; const d = dist(u.pos, k); if (d <= maxR && (melee || lineOfSight(cbx, u.pos, k))) red.set(k, bandW ? Math.max(0, Math.ceil(d / bandW) - 1) : 0); }
           this._redMemo = { key: memoKey, red };
         }
         plan.red = this._redMemo.red;
@@ -644,7 +645,7 @@ export class MainLogic extends DCLogic {
           const planStyle = !labels ? '' : plan.hv === k && plan.isMove ? 'border: 2px solid #FFFFFF; background: rgba(255, 255, 255, 0.28)'
             : plan.route[k] && k !== myAt ? 'border: 1px dashed rgba(231, 235, 243, 0.8); background: rgba(255, 255, 255, 0.2)'
             : canGo ? 'border: 1px dashed rgba(231, 235, 243, 0.55); background: rgba(231, 235, 243, 0.08)'
-            : inRed ? 'border: 1px dashed ' + epRgba(RANGE_RED, 0.75) + '; background: ' + epRgba(RANGE_RED, plan.hv === k ? 0.3 : 0.14) : '';
+            : inRed ? 'border: 1px dashed ' + epRgba(RANGE_RED, [0.9, 0.55, 0.35, 0.25][Math.min(3, plan.red.get(k) || 0)]) + '; background: ' + epRgba(RANGE_RED, plan.hv === k ? 0.3 : [0.2, 0.11, 0.06, 0.04][Math.min(3, plan.red.get(k) || 0)]) : '';
           const tgtMark = !pT ? '' : pT.inRange ? (S.wTarget && u && u.id === S.wTarget ? '' : '; outline: 2px solid ' + RANGE_RED + '; outline-offset: -2px') : '; filter: grayscale(0.7) brightness(0.55)';
           out.push({ key: k, cls: 'phc-tok' + (pT && pT.inRange ? ' phc-plan-target' : ''),
             hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; border-radius: 2px; ' + planStyle,

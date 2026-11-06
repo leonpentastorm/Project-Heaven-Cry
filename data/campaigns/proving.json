@@ -1,0 +1,254 @@
+{
+ "id": "proving_ground",
+ "title": "The Proving Ground",
+ "short": "Proving Ground",
+ "kicker": "PRACTICE · ENDLESS WAVES · NO NARRATOR",
+ "pitch": [
+  "An Anti-Heaven drill yard: sand, sandbags, a blockhouse with two doors, fuel drums nobody should stand next to. Drill units come in waves until the squad drops, and then the yard resets.",
+  "No story and no Narrator: only the engine. Spawn gear, change class, set the level, learn any word or school, and see what every rule does."
+ ],
+ "meta": "Practice mode. Nothing here carries into a campaign.",
+ "arc": {
+  "beginning": "Wave 1.",
+  "middle": "Harder waves.",
+  "end": "There is no end: retry or leave."
+ },
+ "opening": "No Narrator runs here.",
+ "startZone": "proving_ground",
+ "listed": false,
+ "zones": [
+  {
+   "id": "proving_ground",
+   "name": "The Proving Ground",
+   "summary": "An open drill yard with mixed cover, a blockhouse, fuel drums and a rubble field.",
+   "w": 16,
+   "h": 12,
+   "solid": [
+    "G1–G4",
+    "K1",
+    "K3–K4",
+    "H4",
+    "J4"
+   ],
+   "difficult": [
+    "H11–J12"
+   ],
+   "start": [
+    "A5",
+    "A7",
+    "B6",
+    "A9",
+    "B4",
+    "B8"
+   ],
+   "enemyStart": [
+    "P3",
+    "P5",
+    "P7",
+    "P9",
+    "O4",
+    "O6",
+    "O8",
+    "O10",
+    "P11"
+   ],
+   "notes": [
+    {
+     "at": "A1–P12",
+     "text": "The Proving Ground: packed sand under floodlights. The squad comes in from the west; drill units from the east."
+    },
+    {
+     "at": "G1–K4",
+     "text": "The blockhouse: concrete walls, a door to the south (I4) and one to the east (K2). Full cover from everything outside."
+    },
+    {
+     "at": "D3–D4, D9, L10–M10",
+     "text": "Sandbag crates: half cover (30 HP)."
+    },
+    {
+     "at": "G9–I9",
+     "text": "A low wall: half cover (60 HP)."
+    },
+    {
+     "at": "F5, K7",
+     "text": "Concrete pillars: full cover, blocks sight (80 HP)."
+    },
+    {
+     "at": "M3–M4",
+     "text": "A barricade: full cover (60 HP)."
+    },
+    {
+     "at": "E7, I6, N8",
+     "text": "Fuel drums: half cover until they go up (40 damage, 2 tiles)."
+    },
+    {
+     "at": "G11",
+     "text": "A marked practice mine: step on it and it bites (25 damage)."
+    },
+    {
+     "at": "L5",
+     "text": "A burning drum fire: 10 damage to anyone who starts a turn in it; it lights the yard."
+    },
+    {
+     "at": "B12",
+     "text": "Spilled coolant: 8 damage to anyone who starts a turn in it."
+    },
+    {
+     "at": "H11–J12",
+     "text": "A rubble field: slow going."
+    }
+   ],
+   "objects": [
+    {
+     "kind": "door",
+     "at": "I4",
+     "name": "Blockhouse door (south)"
+    },
+    {
+     "kind": "door",
+     "at": "K2",
+     "name": "Blockhouse door (east)"
+    },
+    {
+     "kind": "lamp",
+     "at": "H2",
+     "name": "Blockhouse lamp"
+    },
+    {
+     "kind": "terminal",
+     "at": "J1",
+     "name": "Range terminal",
+     "text": "Logs every wave. Nobody reads it."
+    },
+    {
+     "kind": "crate",
+     "at": "D3",
+     "name": "Sandbags"
+    },
+    {
+     "kind": "crate",
+     "at": "D4",
+     "name": "Sandbags"
+    },
+    {
+     "kind": "crate",
+     "at": "D9",
+     "name": "Sandbags"
+    },
+    {
+     "kind": "crate",
+     "at": "L10",
+     "name": "Sandbags"
+    },
+    {
+     "kind": "crate",
+     "at": "M10",
+     "name": "Sandbags"
+    },
+    {
+     "kind": "low_wall",
+     "at": "G9",
+     "name": "Low wall"
+    },
+    {
+     "kind": "low_wall",
+     "at": "H9",
+     "name": "Low wall"
+    },
+    {
+     "kind": "low_wall",
+     "at": "I9",
+     "name": "Low wall"
+    },
+    {
+     "kind": "pillar",
+     "at": "F5",
+     "name": "Concrete pillar"
+    },
+    {
+     "kind": "pillar",
+     "at": "K7",
+     "name": "Concrete pillar"
+    },
+    {
+     "kind": "barricade",
+     "at": "M3",
+     "name": "Barricade"
+    },
+    {
+     "kind": "barricade",
+     "at": "M4",
+     "name": "Barricade"
+    },
+    {
+     "kind": "barrel",
+     "at": "E7",
+     "name": "Fuel drum"
+    },
+    {
+     "kind": "barrel",
+     "at": "I6",
+     "name": "Fuel drum"
+    },
+    {
+     "kind": "barrel",
+     "at": "N8",
+     "name": "Fuel drum"
+    },
+    {
+     "kind": "container",
+     "at": "C11",
+     "name": "Ammo locker"
+    },
+    {
+     "kind": "trap",
+     "at": "G11",
+     "name": "Practice mine",
+     "hidden": false
+    },
+    {
+     "kind": "fire",
+     "at": "L5",
+     "name": "Drum fire"
+    },
+    {
+     "kind": "toxic",
+     "at": "B12",
+     "name": "Spilled coolant"
+    }
+   ],
+   "music": {
+    "combat": {
+     "yt": "2pXa5jzaOBg",
+     "title": "Volatile Reaction",
+     "artist": "Kevin MacLeod",
+     "length": 164,
+     "licence": "CC-BY · incompetech.com"
+    }
+   }
+  }
+ ],
+ "sprites": {
+  "low_wall": "sprite-obj-barrier-stakes",
+  "crate": "sprite-obj-platinum-crates",
+  "pillar": "sprite-obj-cargo-pylon",
+  "door": "sprite-obj-door-closed",
+  "door:open": "sprite-obj-door-open",
+  "hole": "sprite-obj-crater",
+  "trap": "sprite-obj-mine",
+  "toxic": "sprite-obj-coolant",
+  "fire": "sprite-obj-fire",
+  "barrel": "sprite-obj-fuel-drum",
+  "rubble": "sprite-obj-rubble",
+  "container": "sprite-obj-footlockers",
+  "terminal": "sprite-obj-terminal-field",
+  "poi": "sprite-obj-poi-marker",
+  "lamp": "sprite-obj-field-lamp"
+ },
+ "portraits": {
+  "Drill drone": "char-m813-scavenger-drone",
+  "Sparring trooper": "char-m813-rearguard",
+  "Range warden": "char-m813-security-guard",
+  "Proving champion": "char-m813-guard-captain"
+ }
+}

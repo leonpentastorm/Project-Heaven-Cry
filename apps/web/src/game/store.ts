@@ -193,6 +193,7 @@ export function provider(): NarratorProvider | null {
 async function maybeNarrate() {
   const g = hostState;
   if (!g || narrating || !g.story.work || g.narrator.busy || g.narrator.error) return;
+  if (g.sandbox) return; // the Proving Ground never calls the Narrator
   if (g.settings.mode !== 'ai') return;
   const p = provider();
   if (!p) { runHost({ type: 'narrator/error', message: 'Add your Anthropic API key in the Narrator settings (Room screen) so the AI Narrator can answer.' }, S.me.id, null); return; }

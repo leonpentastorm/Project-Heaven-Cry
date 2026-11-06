@@ -2,6 +2,7 @@
 // once per browser; "No more tips" turns them all off.
 import React from 'react';
 import { getState, subscribe } from './store';
+import { usePresence, presenceCls } from './presence';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -32,12 +33,13 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
 export function Tips() {
   const st = React.useSyncExternalStore(subscribe, getState);
   const [, force] = React.useReducer((x: number) => x + 1, 0);
-  if (!st.role || seen.has('*')) return null;
-  const tip = TIPS.find((t) => !seen.has(t.id) && t.when(st));
+  const live = !st.role || seen.has('*') ? undefined : TIPS.find((t) => !seen.has(t.id) && t.when(st));
+  // Slides in from the right; "Got it" slides it back out.
+  const { shown: tip, closing } = usePresence(live);
   if (!tip) return null;
   const done = (all?: boolean) => { seen.add(all ? '*' : tip.id); save(); force(); };
   return (
-    <div role="status" aria-label={'Tip: ' + tip.title} style={{ position: 'fixed', top: 70, right: 16, zIndex: 9, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div key={tip.id} role="status" aria-label={'Tip: ' + tip.title} className={presenceCls('phc-a-right', closing)} style={{ position: 'fixed', top: 70, right: 16, zIndex: 9, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
       <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
       <span style={{ fontSize: 13, lineHeight: 1.5 }}>{tip.text}</span>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

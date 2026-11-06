@@ -1,7 +1,7 @@
 // The Room: players, the squad, where the story starts, who narrates, and Start. Ported from room.logic.js,
 // now reading the real room (players online, characters locked in) and the host's Narrator settings.
 import { DCLogic } from '../dc/runtime';
-import { D, IMG, lightboxVals, zoomer } from './shared';
+import { D, IMG, lightboxVals, zoomer, closeAnim } from './shared';
 import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
@@ -9,6 +9,7 @@ import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../ga
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
+import { openProvingGround } from '../game/sandbox';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
@@ -67,7 +68,8 @@ export class RoomLogic extends DCLogic {
       players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', hostAI: S.mode === 'ai' && isHost, guestAI: S.mode === 'ai' && !isHost, hostName: host?.name || 'The host', tones,
       create: () => go('create', { draft: null }), cantAdd: g.phase !== 'lobby' || mine.length >= 2,
       report: openReport, importChar: () => importCharacter().then((c) => { if (c && !c.draft) { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } }),
-      toggleBring: () => this.setState({ bring: !this.state.bring }), bringOpen: this.state.bring, noSaved: !lib.length,
+      toggleBring: () => (this.state.bring ? closeAnim(this, 'bring', () => this.setState({ bring: false })) : this.setState({ bring: true })), bringOpen: this.state.bring,
+      bringCls: 'phc-a-drop' + ((this.state.closing || {}).bring ? ' phc-closing' : ''), noSaved: !lib.length,
       saved: lib.map((c) => ({ key: c.name, name: c.name, img: c.portrait, line: c.origin, bring: () => { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } })),
       key: st.narrator.key, onKey: (e) => setNarrator({ key: e.target.value.trim() }), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),
       models: MODELS.map((m) => ({ id: m.id, label: m.label + ' · $' + m.input + ' / $' + m.output + ' per M tokens' })), model: st.narrator.model, onModel: (e) => setNarrator({ model: e.target.value }),
@@ -75,6 +77,9 @@ export class RoomLogic extends DCLogic {
       costNote: 'Estimated cost with ' + model.label + ': about $' + (model.input <= 0.1 ? '0.40' : model.input <= 2 ? '5' : model.input <= 4 ? '10' : '25') + ' per 3-hour session for the whole room.',
       notReady, startLabel: why || (g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
       startSession: () => act({ type: 'session/start' }),
+      // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.
+      proveCan: isHost && g.phase === 'lobby', proveGuest: !isHost && g.phase === 'lobby', openProve: () => openProvingGround(mine.length ? undefined : 'sharpshooter'),
+      proveLabel: '⚔ Proving Ground' + (mine.length ? '' : ' · with a test character'),
       startStyle: 'min-height: 52px; border-radius: 12px; border: 0; font-family: inherit; font-size: 15px; font-weight: 700; ' + (notReady ? 'background: #1C2536; color: #A3AEC2' : 'background: #6FEA77; color: #0A0D13; cursor: pointer'),
     };
   }

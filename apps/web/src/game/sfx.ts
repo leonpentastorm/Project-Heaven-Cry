@@ -6,7 +6,17 @@ import { voiceState } from './voice';
 export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' | 'error' | 'toggle' | 'tab' | 'wick_hello' | 'wick_steps'
   | 'shot' | 'hit' | 'miss' | 'reload' | 'melee' | 'down'
   // Magic (docs/design/magic-presentation.md): Sigils are synthetic and snap; Outbursts are organic and swell.
-  | 'draw' | 'evoke' | 'overload' | 'outburst' | 'release' | 'short';
+  | 'draw' | 'evoke' | 'overload' | 'outburst' | 'release' | 'short'
+  // Combat feel (game/fx/FxLayer.tsx plays these from the engine's presentation events, in sync with the visuals).
+  | CombatSfx;
+/** Weapons, impacts, reloads, bodies, doors, spells: public/sfx/cb (credits in game/sfxCredits.ts). */
+export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg' | 'gun_rifle' | 'gun_sniper' | 'gun_lever' | 'gun_shotgun' | 'gun_heavy'
+  | 'burst_smg' | 'burst_rifle' | 'auto_smg' | 'auto_rifle' | 'auto_heavy'
+  | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
+  | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
+  | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
+  | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent';
+const CB = (...n: string[]) => n.map((x) => '/sfx/cb/' + x + '.ogg');
 
 /** The chosen files (public/sfx/…, CC0; credits in game/sfxCredits.ts). A list plays one at random. Missing means the
  *  synthesised stand-in (Wick's footsteps are synthesised on purpose: tiny metal taps). */
@@ -14,9 +24,34 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   hover: '/sfx/select_001.ogg', click: '/sfx/click_001.ogg', start: '/sfx/confirmation_002.ogg',
   back: '/sfx/back_001.ogg', slide: '/sfx/maximize_004.ogg', slide_back: '/sfx/minimize_004.ogg', error: '/sfx/error_004.ogg',
   toggle: ['/sfx/toggle_001.ogg', '/sfx/toggle_002.ogg'], tab: '/sfx/pluck_001.ogg', wick_hello: '/sfx/wick_hello.ogg',
+  gun_pistol: CB('shot_pistol_1', 'shot_pistol_2', 'shot_pistol_3'), gun_revolver: CB('shot_revolver_1', 'shot_revolver_2'), gun_magnum: CB('shot_magnum'),
+  gun_smg: CB('shot_smg'), gun_rifle: CB('shot_rifle_1', 'shot_rifle_2'), gun_sniper: CB('shot_sniper'), gun_lever: CB('shot_lever'),
+  gun_shotgun: CB('shot_shotgun_1', 'shot_shotgun_2'), gun_heavy: CB('shot_heavy'),
+  burst_smg: CB('burst_smg'), burst_rifle: CB('burst_rifle'), auto_smg: CB('auto_smg'), auto_rifle: CB('auto_rifle'), auto_heavy: CB('auto_heavy'),
+  reload_pistol: CB('reload_pistol'), reload_mag: CB('reload_mag', 'reload_mag_2'), reload_rifle: CB('reload_rifle'), reload_shells: CB('reload_shells'),
+  rack: CB('rack'), jam_clear: CB('jam_clear'), round_in: CB('round_in'), mag_in: CB('mag_in'), dry_click: CB('dry_click'),
+  hit_flesh: CB('hit_flesh_1', 'hit_flesh_2'), hit_heavy: CB('hit_heavy'), hit_metal: CB('hit_metal_1', 'hit_metal_2'), hit_wood: CB('hit_wood'), body_fall: CB('body_fall'),
+  step: CB('step_1', 'step_2', 'step_3'), swish: CB('swish_1', 'swish_2'), whiz: CB('whiz'), slice: CB('slice'), chop: CB('chop'),
+  explosion: CB('explosion_1', 'explosion_2'), explosion_boom: CB('explosion_boom'), door_open: CB('door_open'), door_close: CB('door_close'), stim: CB('stim_hiss'),
+  sigil_draw: CB('sigil_draw'), sigil_evoke: CB('sigil_evoke'), sigil_core: CB('sigil_core'), sigil_overload: CB('sigil_overload'),
+  soul_hold: CB('soul_hold'), heartbeat: CB('heartbeat'), soul_release: CB('soul_release'), crystal: CB('crystal'), vent: CB('vent'),
+};
+/** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
+const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
+/** Combat names fall back to the old synthesised stand-ins until their file has loaded. */
+const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
+  reload_pistol: 'reload', reload_mag: 'reload', reload_rifle: 'reload', reload_shells: 'reload', rack: 'reload', jam_clear: 'reload', round_in: 'reload', mag_in: 'reload',
+  hit_flesh: 'hit', hit_heavy: 'hit', hit_metal: 'hit', hit_wood: 'hit', body_fall: 'down', swish: 'melee', slice: 'melee', chop: 'melee', whiz: 'miss',
+  explosion: 'shot', explosion_boom: 'hit', sigil_draw: 'draw', sigil_evoke: 'evoke', sigil_overload: 'overload', soul_hold: 'outburst', soul_release: 'release',
 };
 /** The mix: how loud each event sits under the master UI volume. */
-const MIX: Partial<Record<Sfx, number>> = { draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
+const MIX: Partial<Record<Sfx, number>> = {
+  gun_pistol: 0.5, gun_revolver: 0.55, gun_magnum: 0.6, gun_smg: 0.45, gun_rifle: 0.55, gun_sniper: 0.6, gun_lever: 0.55, gun_shotgun: 0.6, gun_heavy: 0.65,
+  burst_smg: 0.5, burst_rifle: 0.55, auto_smg: 0.5, auto_rifle: 0.55, auto_heavy: 0.6,
+  reload_pistol: 0.45, reload_mag: 0.45, reload_rifle: 0.45, reload_shells: 0.45, rack: 0.45, jam_clear: 0.5, round_in: 0.35, mag_in: 0.4, dry_click: 0.35,
+  hit_flesh: 0.45, hit_heavy: 0.5, hit_metal: 0.35, hit_wood: 0.35, body_fall: 0.5, step: 0.2, swish: 0.4, whiz: 0.25, slice: 0.4, chop: 0.45,
+  explosion: 0.65, explosion_boom: 0.6, door_open: 0.4, door_close: 0.4, stim: 0.35,
+  sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
 // ---------- settings (shared with the title screen's Settings) ----------
@@ -49,7 +84,10 @@ function audio(): AudioContext | null {
   return ctx;
 }
 /** Call from a user gesture: sound is allowed from then on. */
-export function unlockSfx() { unlocked = true; if (!audio()) return; for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) load(f); }
+export function unlockSfx() { unlocked = true; if (!audio()) return; for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) if (!isCombatFile(f) || combatWanted) load(f); }
+let combatWanted = false;
+/** Fetch the combat sounds (once a game is on screen); before the first gesture they load as sound is unlocked. */
+export function preloadCombatSfx() { combatWanted = true; if (!unlocked || !audio()) return; for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) if (isCombatFile(f)) load(f); }
 // Touch only grants permission on the finger lifting, so listen to every kind of gesture and resume a suspended context.
 if (typeof window !== 'undefined') for (const ev of ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click']) window.addEventListener(ev, () => { if (!unlocked) unlockSfx(); else if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); }, { capture: true });
 async function load(url: string) {
@@ -61,16 +99,24 @@ async function load(url: string) {
 const level = () => (prefs.mute ? 0 : prefs.sfx / 100) * (voiceState().speaking ? 0.4 : 1);
 let lastHover = 0;
 
-export function sfx(name: Sfx) {
+/** Options for one sound: rate (pitch and speed, 1 = as recorded), gain (× its mix), delay in ms (scheduled on the
+ *  audio clock), pan (−1 left … 1 right, from where it happens on screen). */
+export interface SfxOpts { rate?: number; gain?: number; delay?: number; pan?: number }
+export function sfx(name: Sfx, o: SfxOpts = {}) {
   if (!unlocked || level() <= 0) return;
   if (name === 'hover') { const t = performance.now(); if (t - lastHover < 60) return; lastHover = t; }
   try {
     const ac = audio(); if (!ac || !out) return;
-    const g = ac.createGain(); g.gain.value = Math.min(1, level() * (MIX[name] ?? 0.4) * 2); g.connect(out);
+    const g = ac.createGain(); g.gain.value = Math.min(1, level() * (MIX[name] ?? 0.4) * 2 * (o.gain ?? 1));
+    let dest: AudioNode = out;
+    if (o.pan && (ac as any).createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, o.pan)); p.connect(out); dest = p; }
+    g.connect(dest);
     const list = files(name), file = list[Math.floor(Math.random() * list.length)], buf = file ? buffers.get(file) : null;
-    if (buf) { const s = ac.createBufferSource(); s.buffer = buf; s.connect(g); s.start(); return; }
+    const at = ac.currentTime + Math.max(0, (o.delay || 0) / 1000);
+    if (buf) { const s = ac.createBufferSource(); s.buffer = buf; if (o.rate) s.playbackRate.value = o.rate; s.connect(g); s.start(at); return; }
     if (file && !buffers.has(file)) load(file);
-    synth(ac, g, name);
+    const stand = (STAND_IN as Record<string, Sfx>)[name] || (name.startsWith('gun_') || name.startsWith('burst_') || name.startsWith('auto_') ? 'shot' : name);
+    if (o.delay) setTimeout(() => synth(ac, g, stand), o.delay); else synth(ac, g, stand);
   } catch { /* sound must never break the game */ }
 }
 

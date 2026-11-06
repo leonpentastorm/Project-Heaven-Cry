@@ -5,6 +5,7 @@ import { zipSync, strToU8 } from 'fflate';
 import { getState, reportState, reportBefores, toast } from './store';
 import { recentLogs, recentExchanges, scrub } from './debug';
 import { voiceState, voicePrefs } from './voice';
+import { usePresence, presenceCls } from './presence';
 import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
 
 // ---------- open from anywhere (the screens' buttons) ----------
@@ -46,11 +47,14 @@ function download(what: string, withSave: boolean) {
   toast('Report saved to your downloads. Send the file to Leon with a screenshot if you have one.', true);
 }
 
+/** Set by PlaytestTools while a dialog plays its out animation. */
+const Closing = React.createContext(false);
 function Dialog({ title, children, close }: { title: string; children: React.ReactNode; close: () => void }) {
+  const closing = React.useContext(Closing);
   React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); }; addEventListener('keydown', k); return () => removeEventListener('keydown', k); }, [close]);
   return (
-    <div role="dialog" aria-modal="true" aria-label={title} onClick={(e) => { if (e.target === e.currentTarget) close(); }} style={{ position: 'fixed', inset: 0, zIndex: 30, background: 'rgba(5, 7, 11, 0.85)', display: 'grid', placeItems: 'center', padding: 16 }}>
-      <div style={{ width: 'min(560px, 96vw)', maxHeight: '90vh', overflowY: 'auto', padding: 20, borderRadius: 14, background: ink.panel, border: '1px solid #3B475D', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div role="dialog" aria-modal="true" aria-label={title} onClick={(e) => { if (e.target === e.currentTarget) close(); }} className={presenceCls('phc-a-fade', closing)} style={{ position: 'fixed', inset: 0, zIndex: 30, background: 'rgba(5, 7, 11, 0.85)', display: 'grid', placeItems: 'center', padding: 16 }}>
+      <div className={presenceCls('phc-a-pop', closing)} style={{ width: 'min(560px, 96vw)', maxHeight: '90vh', overflowY: 'auto', padding: 20, borderRadius: 14, background: ink.panel, border: '1px solid #3B475D', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}><span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '0.1em' }}>{title}</span><button type="button" style={{ ...btn, marginLeft: 'auto', minHeight: 34 }} onClick={close}>Close</button></div>
         {children}
       </div>
@@ -112,7 +116,7 @@ export function PlaytestTools() {
   const [, force] = React.useReducer((x: number) => x + 1, 0);
   React.useEffect(() => { subs.add(force); return () => { subs.delete(force); }; }, []);
   const close = React.useCallback(() => setWhich(null), []);
-  if (which === 'report') return <ReportDialog close={close} />;
-  if (which === 'spend') return <SpendDialog close={close} />;
-  return null;
+  const { shown, closing } = usePresence(which);
+  if (!shown) return null;
+  return <Closing.Provider value={closing}>{shown === 'report' ? <ReportDialog close={close} /> : <SpendDialog close={close} />}</Closing.Provider>;
 }
