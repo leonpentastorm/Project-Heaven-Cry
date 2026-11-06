@@ -21,7 +21,7 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-hum` | B | [PNG](../../../character-portraits/m813/v2/m813-hum.png) | opening-safe |
 | `m813-lantern` | B | [PNG](../../../character-portraits/m813/v2/m813-lantern.png) | opening-safe |
 | `m813-soft-hands` | B | [PNG](../../../character-portraits/m813/v2/m813-soft-hands.png) | opening-safe |
-| `m813-rook` | B | [PNG](../../../character-portraits/m813/v2/m813-rook.png) | opening-safe |
+| `m813-rook` | B | [PNG](../../../character-portraits/m813/v2/revisions/v2/m813-rook.png) | opening-safe |
 | `m813-penny` | B | [PNG](../../../character-portraits/m813/v2/m813-penny.png) | opening-safe |
 | `m813-keel` | B | [PNG](../../../character-portraits/m813/v2/m813-keel.png) | opening-safe |
 | `m813-ilse-varga` | B | [PNG](../../../character-portraits/m813/v2/m813-ilse-varga.png) | opening-safe |
