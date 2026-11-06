@@ -1522,6 +1522,30 @@
       "batch": "F",
       "source_sha256": "d094ec7d94868cabf32da47f6e3355f5ff259ebddb1cd8f4b1c189ed9cda3e15",
       "tier": "achieved"
+    },
+    {
+      "id": "siege-engine",
+      "data_id": "siege_engine",
+      "name": "Siege Engine",
+      "family": "perks",
+      "order": 67,
+      "mood": "Heroic, Comic",
+      "action": "Wick barges shoulder-first through a brick wall, bricks flying and bouncing harmlessly off its shell, never breaking stride.",
+      "screen": "Determined",
+      "prop": "Bursting brick wall",
+      "path": "art/perks/wick/production-v1/siege-engine.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/siege-engine.png",
+        "128": "art/perks/wick/production-v1/exports/128/siege-engine.png",
+        "64": "art/perks/wick/production-v1/exports/64/siege-engine.png",
+        "56": "art/perks/wick/production-v1/exports/56/siege-engine.png",
+        "48": "art/perks/wick/production-v1/exports/48/siege-engine.png",
+        "44": "art/perks/wick/production-v1/exports/44/siege-engine.png",
+        "40": "art/perks/wick/production-v1/exports/40/siege-engine.png"
+      },
+      "batch": "F",
+      "source_sha256": "deda39ae5be640e58f7fb3404f6da80c730209b307cd47d7c661f5362b513bf3",
+      "tier": "achieved"
     }
   ]
 }

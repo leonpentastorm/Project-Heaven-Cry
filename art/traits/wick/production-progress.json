@@ -146,11 +146,12 @@
     "fire-sermon",
     "silent-partner",
     "verse-of-war",
-    "between-heartbeats"
+    "between-heartbeats",
+    "siege-engine"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 67
+    "perks": 68
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -200,7 +201,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "siege-engine",
     "dead-signal",
     "twin-souls",
     "the-voice",

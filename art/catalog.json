@@ -4887,6 +4887,31 @@
         "40": "art/perks/wick/production-v1/exports/40/between-heartbeats.png"
       },
       "tier": "achieved"
+    },
+    "siege-engine": {
+      "label": "Wick — Siege Engine",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/siege-engine.png",
+      "sha256": "14053cc1e357a3aaa6f0bb052503f5ed892ba17fe1c9d5608622e12d03de2744",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "siege_engine",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/siege-engine.png",
+        "128": "art/perks/wick/production-v1/exports/128/siege-engine.png",
+        "64": "art/perks/wick/production-v1/exports/64/siege-engine.png",
+        "56": "art/perks/wick/production-v1/exports/56/siege-engine.png",
+        "48": "art/perks/wick/production-v1/exports/48/siege-engine.png",
+        "44": "art/perks/wick/production-v1/exports/44/siege-engine.png",
+        "40": "art/perks/wick/production-v1/exports/40/siege-engine.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
