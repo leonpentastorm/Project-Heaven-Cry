@@ -7391,6 +7391,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-fire.prompt.txt"
+    },
+    "obj-fuel-drum": {
+      "id": "obj-fuel-drum",
+      "group": "E",
+      "order": 12,
+      "name": "Fuel Drum",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-fuel-drum.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E12 | `obj-fuel-drum` | Fuel drum with hazard stencil (barrel) | Rear pad L9, outpost O10 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "c4857262c60724c1279f4a9a223f3e983a54267c33161584c439897f65fc11d3",
+      "source_path": "art/sprites/objects/v1/sources/obj-fuel-drum.png",
+      "source_sha256": "49a3054c9ff163466bfa3c430db19592139af6837b3804475b7a1a639f3d1007",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-fuel-drum-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-fuel-drum-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-fuel-drum-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-fuel-drum.prompt.txt"
     }
   }
 }
