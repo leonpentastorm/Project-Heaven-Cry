@@ -942,6 +942,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-the-choice.prompt.txt"
+    },
+    {
+      "id": "m813-the-demand",
+      "group": "D",
+      "order": 4,
+      "name": "The Demand",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D4 | `m813-the-demand` | Outpost-1 | The Colonel's desk from the robots' side: a battered medic robot standing, the comrade head on the desk between them, the Colonel's folded hands. | End: hide until Outpost-1 |",
+      "spoiler": true,
+      "visibility": "outpost-1-only",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "055c63fb9e06f90ba7427248a7eec8e6f4309de6d94a5c30c304db335fccb40e",
+      "source_path": "art/illustrations/m813/v2/spoilers/sources/m813-the-demand.png",
+      "source_sha256": "6c70fec733c287c79228341cc6380edd3ccf87d36564221426a9fcec86559307",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/spoilers/previews/m813-the-demand-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/spoilers/sources/m813-the-demand.prompt.txt"
     }
   ]
 }
