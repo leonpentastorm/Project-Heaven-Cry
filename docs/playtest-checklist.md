@@ -27,6 +27,9 @@ Two browsers, two locations, Anthropic key on the host. Tick what works; note wh
 - [ ] Reload early (the magazine drops), pick it up, load it.
 - [ ] Shoot an object (stakes, a barrel); cover breaks into rubble.
 - [ ] Get injured (crits); see it on the Status body.
+- [ ] Try the new actions: Sprint, Disengage (no opportunity attack), drop prone, Shove, Overwatch, Burst or Full auto.
+- [ ] Fog of war: an enemy behind the pylon shows as "Unseen hostile"; you can't target what nobody sees.
+- [ ] Your weapon's skill shows under Attack & defend; durability drops as you fire.
 - [ ] The fight ends; the Narrator's aftermath mentions what actually happened.
 
 ## The ramp (rear pad)
@@ -34,6 +37,12 @@ Two browsers, two locations, Anthropic key on the host. Tick what works; note wh
 - [ ] Try different angles on Keel, the platinum, Ilse, the hatch.
 - [ ] Do your successes change how the talk or the fight goes?
 - [ ] If it turns into a fight: is it hard, fair, and readable?
+
+## Gear and loot
+- [ ] Does the Narrator hand out loot (search a body, open a locker)?
+- [ ] Equip it: a new weapon in the main hand, a shield or torch in the off hand, armour pieces, a mod. Do the numbers change where you expect?
+- [ ] Carry too much: you become Overburdened and slow down.
+- [ ] If you reach the outpost: is the darkness readable, and do lamps help?
 
 ## Saving and coming back
 - [ ] Save; leave; Resume from the title screen.
