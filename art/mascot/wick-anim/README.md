@@ -1,0 +1,25 @@
+# Wick menu animations — production queue
+
+**No animation frames delivered yet.** The first run-sheet request reached the image tool’s daily usage limit before generating an image. Reported reset: **7 November 2026, 07:29:58 Asia/Bangkok** (`2026-11-07T00:29:58Z`). Do not retry before that time. Exact state is in [production-progress.json](production-progress.json).
+
+Leon requested only the two animated Wick families in [sectionB of the brief](../../briefs/title-screen.md#b-wicks-menu-animations). Title-screen key art, its instructions and screen implementation are excluded from this run. The source brief is unchanged.
+
+The two families require five clips and 36 delivered frames:
+
+| Clip | Frames | FPS | Loop |
+|---|---:|---:|---|
+| run |8|12|yes|
+| stop |4|12|no|
+| idle |4|8|yes|
+| hello |16|12|no|
+| wave |4|10|yes|
+
+Frames: 256×256 RGBA, white ink, transparent, nominal 200 px Wick, registered sole baseline y240. Right-facing identity is never mirrored; hello turns toward the viewer. The run has footfalls on frames 2/6 (one-based). Test every frame at 48 px character height. The welcome mark is primary; preserve the clipped head, pixel screen, capelet, boots and thick equal-arm lantern cross.
+
+[production-plan.json](production-plan.json) retains the exact sequence plan and approved-reference hashes. Four prepared image-generation sheet prompts are in [plans/v1](plans/v1/); wave reuses the hello apex drawings 7–10, so the hold matches its fall. Neutral idle can be reused at stop/hello endpoints for an exact handoff. All creative poses must be drawn with image_gen. Cropping, ink separation, frame registration and animated previews are technical exports only.
+
+Registered frames keep baseline y240. A root-motion track and optional presentation variants carry the hello’s jump without breaking that registration. Native 16-frame hello at 12fps lasts 1.333s; playback acceleration for a screen transition belongs to the consumer. No game/title-screen implementation is part of this art job.
+
+On resume: fetch and safely integrate current implementer commits, read art/AGENTS.md and current guide/sectionB, inspect references and any saved sources, generate one sheet, show it in chat, export/validate and push it before the next sheet. Preserve sources and every revision; never redraw an existing rendered sheet just because its push failed. Deliver the required numbered-frame folders, horizontal strips, GIF and manifest only after actual artwork exists. Leave approval false until Leon reviews it.
+
+A one-time continuation is scheduled for **7 November 2026, 07:31 Asia/Bangkok**, after the reported reset. It is instructed to generate and push the work, not send a reminder.

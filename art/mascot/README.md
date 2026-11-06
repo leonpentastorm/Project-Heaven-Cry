@@ -7,3 +7,7 @@
 This is Wick as the EPCCG's guide, not a trait or perk icon: the trait and perk rules (one action that says the item) don't apply. The capelet is small in this pose; keep it larger in trait and perk icons.
 
 **Wick's modes (Leon, 5 November 2026):** flat white ink is for trait and perk icons (and this welcome mark, Leon's pick for the app icon). Wherever the Narrator appears, Wick is **fully 3D and rendered**: brief in [`../briefs/wick-narrator-3d.md`](../briefs/wick-narrator-3d.md); deliveries go in `wick-3d/` here.
+
+## Menu animation production
+
+The two requested animated Wick families use five clips (run, stop, idle, hello, wave), 36 frames total. The [production queue](wick-anim/README.md) records the image-limit pause and scheduled continuation; no animation frames have been generated yet. Title-screen key art and its instructions are outside this run.

@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "brief": "art/briefs/title-screen.md#b-wicks-menu-animations",
+  "brief_sha256": "518321500b7e501ab59c31ab7cb748348a5a691a15a5bc475dca562a627cf3dd",
+  "scope": "B only: two animation families (run/hello) and their stop/idle/wave support clips. No title-screen key art or screen implementation.",
+  "branch": "art/briefs-complete",
+  "frame_size": [
+    256,
+    256
+  ],
+  "baseline_y": 240,
+  "nominal_character_height": 200,
+  "preview_character_height": 48,
+  "ink": "#FFFFFF",
+  "background": "transparent",
+  "target_sequences": 5,
+  "target_frames": 36,
+  "generation_order": [
+    "run",
+    "idle",
+    "stop",
+    "hello"
+  ],
+  "sequences": [
+    {
+      "id": "run",
+      "frames": 8,
+      "fps": 12,
+      "loop": true,
+      "grid": [
+        4,
+        2
+      ],
+      "footfalls_1based": [
+        2,
+        6
+      ],
+      "footfalls_0based": [
+        1,
+        5
+      ],
+      "facing": "right"
+    },
+    {
+      "id": "idle",
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "grid": [
+        2,
+        2
+      ],
+      "facing": "right",
+      "blink_frame_0based": 2
+    },
+    {
+      "id": "stop",
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "grid": [
+        2,
+        2
+      ],
+      "facing": "right",
+      "frame_aliases": {
+        "3": "idle/idle_00.png"
+      }
+    },
+    {
+      "id": "hello",
+      "frames": 16,
+      "fps": 12,
+      "loop": false,
+      "grid": [
+        4,
+        4
+      ],
+      "facing": "right-to-viewer-to-right",
+      "root_motion_y": [
+        0,
+        0,
+        -4,
+        -12,
+        -22,
+        -30,
+        -36,
+        -40,
+        -40,
+        -40,
+        -40,
+        -27,
+        -12,
+        0,
+        0,
+        0
+      ],
+      "frame_aliases": {
+        "15": "idle/idle_00.png"
+      }
+    },
+    {
+      "id": "wave",
+      "frames": 4,
+      "fps": 10,
+      "loop": true,
+      "facing": "viewer",
+      "derive_from": {
+        "sequence": "hello",
+        "frames_0based": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "root_motion_y": [
+        -40,
+        -40,
+        -40,
+        -40
+      ]
+    }
+  ],
+  "references": [
+    {
+      "path": "art/mascot/wick-welcome.png",
+      "sha256": "757b112eb8a7a3b7c263f56daa2ba211308bca455e463d0e6d1b1b54353e6939"
+    },
+    {
+      "path": "art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png",
+      "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+    }
+  ],
+  "registration_note": "Required frames and strips keep sole registration at y240. Also supply root_motion_y for hello/wave and optionally presentation frames/strips with jump baked in; this preserves fixed registration and visible flight. Grounded frames stay y240.",
+  "timing_note": "Native hello is16 frames at12fps (1.333s). Any title-screen transition acceleration is a consumer decision; do not modify screen code or its instructions.",
+  "preservation": "Version raw sources and frame masters under sources/v1 and masters/v1; keep all earlier revisions. Main delivery uses requested run/,stop/,idle/,hello/,wave/ folders and horizontal PNG strips.",
+  "status": "planned-no-generated-frames"
+}

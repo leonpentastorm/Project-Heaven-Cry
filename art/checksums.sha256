@@ -12,6 +12,8 @@ f193d5856e20a83fbe816e7de03da32e1390ba0a9325cbbc86bf935eeb5623cf  art/briefs/m81
 7f5a563e2d024a997c4bf7022c79081e22c78f9d6ff8ed8f426f01dc02a30986  art/briefs/m813-tutorial/maps/rear_pad-layout.png
 a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m813-tutorial/maps/shield_line-layout.png
 e3744e2c614d26594c899f04bfc5b7390fe9669e7c69925444d62cbb58c1454e  art/briefs/m813-tutorial/production-queue.json
+518321500b7e501ab59c31ab7cb748348a5a691a15a5bc475dca562a627cf3dd  art/briefs/title-screen.md
+621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
@@ -349,7 +351,14 @@ fafadaa0d44d00c4e2508f6d678025e16f99b27062afba3bb053fae5c8fd2551  art/maps/m813/
 d8a240b4daa5215d659e5b03493485f19ce45f8a434715e73dd6973a4b5cf6e0  art/maps/m813/v1/sources/map-m813-rear-pad.prompt.txt
 2d0d3fe2a2d011b0204b31934ee2ff303457850da3c07e54d7feb6bade593312  art/maps/m813/v1/sources/map-m813-shield-line.png
 a46437747a2dfebbf7f742563d3a27efaf4ac920830b5671a27598a438dcd282  art/maps/m813/v1/sources/map-m813-shield-line.prompt.txt
-b749b23d546c8cb908e851772ff6172053a44e5b49276b3fa7d6fa1ec533280b  art/mascot/README.md
+f018d3705655926ff9ec2395e686e7bc471be39e2ddcc8ae5d558b2b282a1413  art/mascot/README.md
+02f5f44a858bcfa459d272a87cca724b9ab65aa5b10cef72f03c034785498fe6  art/mascot/wick-anim/README.md
+ccc42cd3953a28c8fe5c0a0724890375b52d7d11cbe5c5038c7ad38e2d6cad3a  art/mascot/wick-anim/plans/v1/hello.prompt.txt
+276d0c5822168c52533da92b8eb0b33b66f5246a43c751aafe957c31d64a0203  art/mascot/wick-anim/plans/v1/idle.prompt.txt
+83bbd7c262d71c6bbbb68e38b2b1581c835da9395ff1704c80a3fa8411030b77  art/mascot/wick-anim/plans/v1/run.prompt.txt
+5ede844881571001a8dc69203aaaf245dd95b141b4213391be58f708bedd07fe  art/mascot/wick-anim/plans/v1/stop.prompt.txt
+2c9e829a8da230acc4fe830ebfaf73c9a7eb05bb90cc88967215d04cc9fa30c7  art/mascot/wick-anim/production-plan.json
+8453d9aa1115d7dc94e60907fedea9b43e68b9b9cf099c6c4fbaa19c44a66fd4  art/mascot/wick-anim/production-progress.json
 757b112eb8a7a3b7c263f56daa2ba211308bca455e463d0e6d1b1b54353e6939  art/mascot/wick-welcome.png
 0753d6bae4da740dbcbae5d707e72f39d6ebe30b92e81bab750a1bbbe28ea4de  art/perks/wick/production-v1/README.md
 ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6  art/perks/wick/production-v1/angel-of-the-trenches.png
