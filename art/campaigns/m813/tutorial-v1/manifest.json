@@ -173,6 +173,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.prompt.txt"
+    },
+    {
+      "id": "m813-seven-seven",
+      "group": "B",
+      "order": 2,
+      "name": "Seven Seven",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-seven-seven.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B2 | `m813-seven-seven` | **Seven-Seven**, infantry robot, both legs gone below the knee. | Counting under its breath; one finger tapping the seconds on its own chest plate. Frightened, holding it together. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.png",
+      "source_sha256": "cac21552badd86dc9c63abbf8ab7d2728d6542b94d8e3027e89e126102232cdc",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-seven-seven-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.prompt.txt"
     }
   ]
 }
