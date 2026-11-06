@@ -2,10 +2,10 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle } from './shared';
+import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
-import { npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj } from '@engine';
+import { npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
@@ -51,7 +51,7 @@ export class MainLogic extends DCLogic {
     const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', 100, mpMax + ' / ' + mpMax],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
-    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['gear', 'GEAR'], ['bio', 'BIO']].map(([id, label]) => ({ label, pick: () => this.setState({ tab: id }), selected: S.tab === id ? 'true' : 'false',
+    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR']].map(([id, label]) => ({ label, pick: () => this.setState({ tab: id }), selected: S.tab === id ? 'true' : 'false',
       style: 'min-height: 38px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
     const coreTabs = ['body', 'mind', 'soul'].map((k) => ({ label: k.toUpperCase(), pick: () => this.setState({ core: k }), pressed: S.core === k ? 'true' : 'false',
       style: 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; color: ' + D.core[k] + '; ' + (S.core === k ? 'border: 1px solid ' + D.core[k] + '; background: #1C2536' : 'border: 1px solid #232D3F; background: transparent') }));
@@ -376,6 +376,32 @@ export class MainLogic extends DCLogic {
       if (['move', 'sprint', 'sneak'].includes(W)) act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: W });
     };
     const areaCells = cellsFor(true, worldClick);
+    // ---------- buffs and debuffs (the Status tab) ----------
+    const fxList = (() => {
+      if (!c) return [];
+      const out = [], add = (name, text, bad) => out.push({ key: name + out.length, name, text, mark: bad ? '▼' : '▲',
+        style: 'display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 8px; border: 1px solid ' + (bad ? '#F65157' : '#2F6B3A') + '; background: ' + (bad ? 'rgba(246, 81, 87, 0.08)' : 'rgba(111, 234, 119, 0.06)'),
+        headStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + (bad ? '#F65157' : '#6FEA77') });
+      const cu = inFight && cb ? cb.units.find((u) => u.charId === c.id) : null;
+      if (cu) {
+        effectsOf(cu).forEach(([n, t]) => add(n, t, !/WEAK POINT/.test(n)));
+        if (cu.prone) add('PRONE', 'Harder to hit from range, easier up close; standing up costs 1 AP.', true);
+        if (cu.braced) add('BRACED', 'Weapon set: steadier fire until you move.', false);
+        if (cu.overwatch) add('OVERWATCH', 'Holding a shot for the first enemy that moves in sight.', false);
+      } else {
+        if (c.hp <= 0 && !c.dead) add('DOWNED', 'Can\'t act until an ally\'s stim or the Narrator gets you up.' + (c.downedFails ? ' Death saves failed: ' + c.downedFails + ' / 3.' : ''), true);
+        (c.injuries || []).forEach((i) => add(((i.side ? i.side + ' ' : '') + i.loc).toUpperCase() + ' INJURED', injuryText[i.loc] || 'Injured.', true));
+        if (ow > 0) add('OVERBURDENED', ow + ' kg over your carry limit: −' + Math.ceil(ow / 5) + ' Movement and no Sprint until you drop something.', true);
+      }
+      if ((g.story.sneak || {})[c.id] && !inFight) add((g.story.hidden || {})[c.id] ? 'HIDDEN' : 'SNEAKING · SEEN', (g.story.hidden || {})[c.id] ? 'Sneaking and unseen: an attack from here is an ambush.' : 'Sneaking, but a hostile has seen you. Move normally and sneak again to hide.', !(g.story.hidden || {})[c.id]);
+      const ss = songStateOf(g, c), mt = musicTraitOf(c);
+      if (ss === 'on') add('SONG · ' + mt.name.toUpperCase(), String((mt.upsides || [])[0] || '+1 while your song plays.'), false);
+      if (ss === 'off') add('SILENCE · ' + mt.name.toUpperCase(), String((mt.downsides || [])[0] || '−1: silent too long.'), true);
+      const GEAR_FX = { dark_sight: ['NIGHT SIGHT', 'Darkness doesn\'t halve your sight.'], light: ['LIGHT', 'You light the tiles around you.'], armour_bonus: ['ARMOUR', '+{v} armour against every hit.'], defense_bonus: ['GUARD', '+{v} Defense.'],
+        movement_bonus: ['QUICK', '+{v} Movement.'], carry_bonus: ['PACK', '+{v} kg carry.'], hazard_immune: ['SEALED', 'Immune to {h} hazards.'], ignore_difficult: ['SURE-FOOTED', 'Rough ground costs no extra.'], unarmed_damage_bonus: ['HEAVY HANDS', '+{v} unarmed damage.'] };
+      for (const e of gearEffects(c)) { const d = GEAR_FX[e.op]; if (d) add(d[0], d[1].replace('{v}', e.value).replace('{h}', e.hazard || ''), false); }
+      return out;
+    })();
     // The overworld action panel (spec: Overworld rounds): the combat actions, the same AP, on the story's map.
     const wW = c ? WEAPON[c.weapon] : null, wMelee = wW ? isMelee(wW) : false, apNow = c ? apLeft(g, c) : 0, mv = c ? movement(c) : 1;
     const sneaking = !!(c && (g.story.sneak || {})[c.id]), hiddenNow = sneaking && !!(g.story.hidden || {})[c.id];
@@ -407,8 +433,9 @@ export class MainLogic extends DCLogic {
       narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
-      echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
-      zoomPc: zoomer(this, pc.img, pc.name, 'portrait'), canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
+      echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio',
+      zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => this.setState({ card: false }), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
+      fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !rig.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,

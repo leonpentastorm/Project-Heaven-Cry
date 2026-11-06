@@ -67,8 +67,9 @@
 <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CONDITION</span>
 <span style="font-size: 14px; font-weight: 700; color: #F65157">{{hpLine}}</span>
-<sc-if value="{{noInjuries}}"><span style="font-size: 12px; color: #A3AEC2">No injuries. A critical hit can wound a head, torso, arm or leg; arm and leg wounds stay until treated.</span></sc-if>
-<sc-for list="{{injuries}}" as="i"><div style="display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 8px; border: 1px solid #F65157; background: rgba(246, 81, 87, 0.08)"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #F65157">✚ {{i.where}}</span><span style="font-size: 12px; color: #E7EBF3">{{i.what}}</span></div></sc-for>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">BUFFS AND DEBUFFS</span>
+<sc-if value="{{noFx}}"><span style="font-size: 12px; color: #A3AEC2">None right now. Injuries, Bleeding, being Downed or Overburdened, sneaking, your gear and your song show here.</span></sc-if>
+<sc-for list="{{fx}}" as="f"><div style="{{f.style}}"><span style="{{f.headStyle}}">{{f.mark}} {{f.name}}</span><span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{f.text}}</span></div></sc-for>
 </div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
@@ -78,7 +79,10 @@
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">REPUTATION</span>
 <sc-for list="{{rep}}" as="r" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{r.k}}</span><span>{{r.v}}</span></div></sc-for>
 </div>
-<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px">
+</sc-if>
+
+<sc-if value="{{tabPerks}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px; ">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TRAITS</span>
 <sc-if value="{{noTraits}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No traits.</span></sc-if><sc-for list="{{traits}}" as="t" hint-placeholder-count="1"><div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"><button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 44px; height: 44px"></button><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">{{t.name}}</span><span style="font-size: 12px; color: #A3AEC2">{{t.text}}</span></span></div></sc-for>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 6px">PERKS</span>
@@ -158,11 +162,7 @@
 </div>
 </sc-if>
 
-<sc-if value="{{tabBio}}" hint-placeholder-val="{{false}}">
-<div style="display: flex; flex-direction: column; gap: 8px">
-<sc-for list="{{bio}}" as="b" hint-placeholder-count="8"><div style="display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{b.k}}</span><span>{{b.v}}</span></div></sc-for>
-</div>
-</sc-if>
+
 </aside>
 
 <main aria-label="Story" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
@@ -381,6 +381,18 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{reroll}}" disabled="{{noReroll}}" style="min-height: 46px; padding: 0 16px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">◆ Spend Echo · throw again</button></sc-if>
 <sc-if value="{{rolled}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{closeDice}}" style="min-height: 46px; padding: 0 20px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Continue</button></sc-if>
 </div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{cardOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="{{pc.name}}" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 12; padding: 16px">
+<div style="display: flex; gap: 20px; flex-wrap: wrap; padding: 22px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(820px, 100%); max-height: 100%; overflow: auto; box-sizing: border-box">
+<button type="button" onClick="{{zoomPcBig}}" aria-label="Enlarge the portrait" style="{{zoomBtn}}; flex: none"><img src="{{pc.img}}" alt="{{pc.name}}" style="width: 260px; height: 325px; object-fit: cover; border-radius: 14px; border: 1px solid #232D3F; background: #000"></button>
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: flex-start; gap: 10px"><div style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pc.name}}</span><span style="font-size: 13px; color: #A3AEC2">{{pc.line1}}</span></div>
+<button type="button" onClick="{{closeCard}}" style="min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close</button></div>
+<sc-for list="{{bio}}" as="b"><div style="display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 6px 0"><span style="color: #A3AEC2">{{b.k}}</span><span style="white-space: pre-wrap">{{b.v}}</span></div></sc-for>
 </div>
 </div>
 </div>

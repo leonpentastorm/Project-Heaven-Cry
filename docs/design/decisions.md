@@ -198,3 +198,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       - every hostile gets a seat in the fight;
       - a failed queued attack is rolled back;
       - client targeting fixes (stim selections, self-stim, object highlights, one shared rule for "is this a person").
+83. **Character sheet tabs: SKILLS · STATUS · PERKS · GEAR** (Leon). The BIO tab is gone; its details show on a character card when you click your portrait. Traits, perks and the Mastered perk in reach move to a PERKS tab. Status keeps the body figure, HP and the stats, and now lists **buffs and debuffs** (▲ green, ▼ red), built from live state:
+    - **In a fight:** the fighter's conditions (Downed, Bleeding, Dazed, jams, heat, injuries, Overburdened, prone, braced, Overwatch).
+    - **Outside a fight:** Downed with its death saves, injuries, Overburdened, Sneak (hidden or seen).
+    - **Always:** a music trait's song bonus or silence penalty, and what your gear grants (night sight, light, armour, Defense, and so on).
