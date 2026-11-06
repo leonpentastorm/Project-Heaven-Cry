@@ -64,7 +64,7 @@ export class CreateLogic extends DCLogic {
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : 1, upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
-        traits: [...(d.traits || [])], kit: d.kit || null, applied: d.archetype || null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) } });
+        traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) } });
     }
   }
 

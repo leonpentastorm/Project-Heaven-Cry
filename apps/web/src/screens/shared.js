@@ -5,6 +5,7 @@ import ASSETS from '../game/assets.json';
 import epTpl from '../templates/epccg.template.html?raw';
 import lbTpl from '../templates/lightbox.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
+import { bigPortrait } from '../game/charfile';
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -38,7 +39,12 @@ export function expand(tpl) {
 // ---------- lightbox ----------
 const LB_BIG = D.big || {};
 const LB_KIND = { portrait: 'CHARACTER PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'WICK ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
-export function zoomer(self, img, caption, kind) { return () => { if (img) self.setState({ lb: { img: LB_BIG[img] || img, caption: caption || '', kind: kind || 'portrait' } }); }; }
+export function zoomer(self, img, caption, kind) { return () => {
+  if (!img) return;
+  self.setState({ lb: { img: LB_BIG[img] || img, caption: caption || '', kind: kind || 'portrait' } });
+  // Your own uploaded portrait: show the full size this browser keeps, if it has it.
+  if (/^data:image\//.test(img)) bigPortrait(img).then((big) => { if (big !== img && self.state.lb && self.state.lb.img === img) self.setState({ lb: { ...self.state.lb, img: big } }); });
+}; }
 export const zoomBtn = 'display: block; flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: inherit';
 export function lightboxVals(self) {
   const L = self.state.lb, closeLb = () => self.setState({ lb: null });

@@ -207,6 +207,7 @@ async function maybeNarrate() {
     const opened = hostState ? votesOf(hostState).turns.at(-1) : undefined;
     if (opened && opened !== turnsBefore) keepBefore(opened, pre);
   } catch (e) {
+    const spent = (e as any)?.usage; if (spent) runHost({ type: 'narrator/usage', ...spent }, S.me.id, null);
     runHost({ type: 'narrator/error', message: String((e as Error)?.message || e) }, S.me.id, null);
   } finally { narrating = false; queueMicrotask(maybeNarrate); }
 }
@@ -255,7 +256,7 @@ async function carryOutVote() {
       const e = hostState!.story.entries.find((x) => x.id === o.entryId)!;
       try {
         const r = await p.rewrite(hostState!, e.text, o.note);
-        if (r.usage) runHost({ type: 'narrator/usage', ...r.usage }, S.me.id, null);
+        if (r.usage) runHost({ type: 'narrator/usage', ...r.usage, kind: 'rewrite' }, S.me.id, null);
         runHost({ type: 'narrator/rewrite', entryId: o.entryId, text: r.text, refused: r.refused || undefined }, S.me.id, null);
       } catch (err) { runHost({ type: 'narrator/rewrite', entryId: o.entryId, text: '', refused: 'the rewrite failed (' + String((err as Error)?.message || err).slice(0, 120) + ').' }, S.me.id, null); }
     }

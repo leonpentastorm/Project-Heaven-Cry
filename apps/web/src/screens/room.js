@@ -16,7 +16,7 @@ export class RoomLogic extends DCLogic {
   constructor(props) { super(props); this.state = { bring: false, copied: false }; }
   renderVals() {
     const st = getState(), g = st.game, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', leave: () => leaveRoom(), create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
+    if (!g) return { ...lightboxVals(this), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', leave: () => leaveRoom(), create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
     const S = g.settings, me = st.me.id, host = g.players.find((p) => p.id === g.hostId);
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const players = [...g.players, ...Array(Math.max(0, 4 - g.players.length)).fill(null)].map((p) => {

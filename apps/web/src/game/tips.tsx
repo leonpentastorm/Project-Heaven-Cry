@@ -35,7 +35,7 @@ export function Tips() {
   if (!tip) return null;
   const done = (all?: boolean) => { seen.add(all ? '*' : tip.id); save(); force(); };
   return (
-    <div role="status" aria-label={'Tip: ' + tip.title} style={{ position: 'fixed', top: 70, right: 16, zIndex: 12, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div role="status" aria-label={'Tip: ' + tip.title} style={{ position: 'fixed', top: 70, right: 16, zIndex: 9, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
       <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
       <span style={{ fontSize: 13, lineHeight: 1.5 }}>{tip.text}</span>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

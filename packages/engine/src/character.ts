@@ -85,6 +85,8 @@ export function validateSheet(s: Sheet): string | null {
   if (!s.origin) return 'Pick an origin.';
   if (!s.kit) return 'Pick a starting kit.';
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
+  const whole = (o: Record<string, unknown> = {}) => Object.values(o).every((v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 10);
+  if (!whole(s.skills) || !whole(s.attrs) || !whole(s.cores)) return 'Points must be whole numbers from 0 to 10.';
   for (const [id, p] of Object.entries(s.skills)) { if (!SKILL[id]) return 'Unknown skill ' + id; if (p < 0 || p > 10) return 'Skills run 0–10.'; }
   const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? 2 : 0);
   const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);

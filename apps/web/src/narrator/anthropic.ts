@@ -75,6 +75,8 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       };
       const sum = { input: 0, output: 0, cacheRead: 0, write5: 0, write1h: 0 };
       let res: any, turn: NarratorTurn | null = null, lookups = 0, nudged = false;
+      const usageNow = () => ({ input: sum.input + sum.write1h + sum.write5, output: sum.output, cacheRead: sum.cacheRead, costUsd: spent() });
+      try {
       while (!turn) {
         res = await call(); dbg.res = res;
         const u = res.usage || {};
@@ -102,6 +104,12 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
           : { type: 'tool_result', tool_use_id: x.id, content: 'Unknown tool.', is_error: true }) });
         onLookup?.(uses.flatMap((x: any) => x.input?.keys || []));
         if (lookups > MAX_LOOKUPS + 1) throw new Error('The Narrator kept looking things up without answering. Retry.');
+      }
+      } catch (e: any) {
+        // A turn that fails after the API answered was still billed: say what it cost so the spend meter counts it.
+        const err = e instanceof Error ? e : new Error(String(e));
+        if (sum.input || sum.output || sum.cacheRead || sum.write1h || sum.write5) (err as any).usage = usageNow();
+        throw err;
       }
       const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.write1h + sum.write5, output = sum.output;
       const costUsd = spent();

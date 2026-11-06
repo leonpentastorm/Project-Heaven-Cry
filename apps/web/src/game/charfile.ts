@@ -2,8 +2,14 @@
 // character.json (the sheet) plus portrait.jpg at full size when the portrait is your own upload. The room only
 // ever carries a small copy of an uploaded portrait (320 × 400), so rooms stay light whatever people upload.
 import { zipSync, unzipSync, strToU8, strFromU8 } from 'fflate';
-import { validateSheet, type Sheet } from '@engine';
-import { saveToLibrary, toast } from './store';
+import { validateSheet, ARCHETYPES, type Sheet } from '@engine';
+import { getState, saveToLibrary, toast } from './store';
+import PD from './protodata.json';
+
+/** The identity fields a character file may carry, each a short string. */
+export const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
+const ID_LEN: Record<string, number> = { dream: 2000, history: 4000 };
+const BUILT_IN = new Set((PD as any).portraits.map((p: any) => p.img));
 
 const THUMB = [320, 400], FULL = [1200, 1500];
 const FORMAT = 'phc-character', VERSION = 1;
@@ -61,7 +67,11 @@ export async function readCharacterFile(f: Blob): Promise<Sheet & { draft?: bool
   let json: any, portrait: Uint8Array | null = null;
   if (bytes[0] === 0x50 && bytes[1] === 0x4b) {
     let files: Record<string, Uint8Array>;
-    try { files = unzipSync(bytes, { filter: (x) => x.originalSize < 30_000_000 }); } catch { throw new Error('That zip is damaged.'); }
+    // Unpack only the two files we read, and refuse anything that would inflate past 21 MB.
+    let total = 0;
+    try { files = unzipSync(bytes, { filter: (x) => {
+      const want = /(^|\/)character\.json$/.test(x.name) ? x.originalSize < 1_000_000 : /(^|\/)portrait\.(jpe?g|png|webp)$/i.test(x.name) ? x.originalSize < 20_000_000 : false;
+      return want && (total += x.originalSize) <= 21_000_000; } }); } catch { throw new Error('That zip is damaged.'); }
     const name = Object.keys(files).find((n) => /(^|\/)character\.json$/.test(n));
     if (!name) throw new Error('No character.json in that zip.');
     json = JSON.parse(strFromU8(files[name]));
@@ -69,10 +79,16 @@ export async function readCharacterFile(f: Blob): Promise<Sheet & { draft?: bool
   } else { try { json = JSON.parse(new TextDecoder().decode(bytes)); } catch { throw new Error('That is not a character file.'); } }
   if (!json || json.format !== FORMAT || !json.sheet || typeof json.sheet.name !== 'string') throw new Error('That is not a character file.');
   const s = json.sheet;
-  const sheet: any = { name: String(s.name).slice(0, 60), portrait: '', origin: String(s.origin || ''), kit: String(s.kit || ''), traits: Array.isArray(s.traits) ? s.traits.map(String) : [],
-    skills: { ...(s.skills || {}) }, attrs: { ...(s.attrs || {}) }, cores: { ...(s.cores || {}) }, identity: { ...(s.identity || {}) }, archetype: s.archetype || null };
+  // A file is untrusted: keep only what a sheet has, as plain numbers and short strings.
+  const nums = (o: any) => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).filter(([k, v]) => k.length < 40 && typeof v === 'number').slice(0, 40));
+  const idIn = s.identity && typeof s.identity === 'object' ? s.identity : {};
+  const sheet: any = { name: String(s.name).slice(0, 60), portrait: '', origin: String(s.origin || '').slice(0, 80), kit: String(s.kit || '').slice(0, 40),
+    traits: Array.isArray(s.traits) ? s.traits.slice(0, 4).map((t: unknown) => String(t).slice(0, 60)) : [],
+    skills: nums(s.skills), attrs: nums(s.attrs), cores: nums(s.cores),
+    identity: Object.fromEntries(ID_KEYS.filter((k) => typeof idIn[k] === 'string').map((k) => [k, idIn[k].slice(0, ID_LEN[k] || 300)])),
+    archetype: typeof s.archetype === 'string' && ARCHETYPES.some((a: any) => a.id === s.archetype) ? s.archetype : null };
   if (portrait) sheet.portrait = await portraitFrom(new Blob([portrait as BlobPart]));
-  else if (typeof s.portrait === 'string' && /^\/[\w\-./]+$/.test(s.portrait)) sheet.portrait = s.portrait; // a built-in portrait
+  else if (typeof s.portrait === 'string' && BUILT_IN.has(s.portrait)) sheet.portrait = s.portrait; // a built-in portrait, never an outside link
   if (s.draft || validateSheet(sheet)) sheet.draft = true;
   return sheet;
 }
@@ -81,6 +97,9 @@ export async function importCharacter(): Promise<(Sheet & { draft?: boolean }) |
   const f = await pick('.zip,.json,application/zip,application/json'); if (!f) return null;
   try {
     const sheet = await readCharacterFile(f);
+    // Never overwrite a character you already have: the import takes a free name.
+    const taken = new Set(getState().library.map((x) => x.name));
+    if (taken.has(sheet.name)) { const base = sheet.name.slice(0, 54); let n = 2; while (taken.has(base + ' (' + n + ')')) n++; sheet.name = base + ' (' + n + ')'; }
     saveToLibrary(sheet as any);
     toast(sheet.draft ? sheet.name + ' imported as a draft: open it to finish or fix it.' : sheet.name + ' imported to your characters.', true);
     return sheet;

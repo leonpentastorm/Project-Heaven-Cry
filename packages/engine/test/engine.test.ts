@@ -32,6 +32,17 @@ describe('creation', () => {
     expect(() => apply(g, { type: 'char/add', sheet: { ...sheetFrom(ARCHETYPES[0].id, 'Big'), portrait: 'data:image/jpeg;base64,' + 'A'.repeat(PORTRAIT_MAX) } }, 'host')).toThrow(/too big/);
     g = apply(g, { type: 'char/add', sheet: { ...sheetFrom(ARCHETYPES[0].id, 'Small'), portrait: 'data:image/jpeg;base64,' + 'A'.repeat(30000) } }, 'host');
     expect(Object.values(g.characters).length).toBe(1);
+    const big = sheetFrom(ARCHETYPES[0].id, 'Wordy'); big.identity = { history: 'x'.repeat(40000) } as any;
+    expect(() => apply(g, { type: 'char/add', sheet: big }, 'host')).toThrow(/too much text/);
+    const half = sheetFrom(ARCHETYPES[0].id, 'Half'); const k = Object.keys(half.skills)[0]; half.skills[k] -= 0.5;
+    expect(validateSheet(half)).toMatch(/whole numbers/);
+  });
+  it('rewordings count in the spend but not as Narrator turns', () => {
+    let g = newGame('USE1', { id: 'host', name: 'Host' });
+    g = apply(g, { type: 'narrator/usage', input: 10, output: 10, cacheRead: 0, costUsd: 0.2 }, 'host');
+    g = apply(g, { type: 'narrator/usage', input: 10, output: 10, cacheRead: 0, costUsd: 0.01, kind: 'rewrite' }, 'host');
+    const u = g.narrator.usage;
+    expect(u.calls).toBe(1); expect(u.rewrites).toBe(1); expect(u.costUsd).toBeCloseTo(0.21); expect(u.last).toBe(0.2); expect(u.recent).toEqual([0.2]);
   });
   it('every archetype is a legal, fully spent sheet', () => {
     for (const a of ARCHETYPES) expect(validateSheet(sheetFrom(a.id)), a.id).toBeNull();
