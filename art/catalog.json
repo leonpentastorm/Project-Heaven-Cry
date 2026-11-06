@@ -5498,6 +5498,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "nothing-gets-past": {
+      "label": "Wick — Nothing Gets Past",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/nothing-gets-past.png",
+      "sha256": "1b7f6bec26fc3011635a4c3672243b341e14ef36d73a3468db841159526298eb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "nothing_gets_past",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/nothing-gets-past.png",
+        "128": "art/perks/wick/production-v1/exports/128/nothing-gets-past.png",
+        "64": "art/perks/wick/production-v1/exports/64/nothing-gets-past.png",
+        "56": "art/perks/wick/production-v1/exports/56/nothing-gets-past.png",
+        "48": "art/perks/wick/production-v1/exports/48/nothing-gets-past.png",
+        "44": "art/perks/wick/production-v1/exports/44/nothing-gets-past.png",
+        "40": "art/perks/wick/production-v1/exports/40/nothing-gets-past.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

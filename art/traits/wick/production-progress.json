@@ -169,11 +169,12 @@
     "trick-shot",
     "before-the-blink",
     "vanishing-act",
-    "overhaul"
+    "overhaul",
+    "nothing-gets-past"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 90
+    "perks": 91
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -199,7 +200,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "nothing-gets-past",
     "clean-draw",
     "established-fact",
     "closing-argument",

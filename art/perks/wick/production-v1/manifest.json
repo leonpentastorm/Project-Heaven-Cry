@@ -2040,6 +2040,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "nothing-gets-past",
+      "data_id": "nothing_gets_past",
+      "name": "Nothing Gets Past",
+      "family": "perks",
+      "order": 87,
+      "mood": "Tense, Heroic",
+      "action": "Wick kneels with a rifle shouldered inside a wide fan of light sweeping out like a lighthouse beam; three small dash marks sit in the beam where shots landed.",
+      "screen": "Narrowed eyes",
+      "prop": "Sweeping light cone",
+      "path": "art/perks/wick/production-v1/nothing-gets-past.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/nothing-gets-past.png",
+        "128": "art/perks/wick/production-v1/exports/128/nothing-gets-past.png",
+        "64": "art/perks/wick/production-v1/exports/64/nothing-gets-past.png",
+        "56": "art/perks/wick/production-v1/exports/56/nothing-gets-past.png",
+        "48": "art/perks/wick/production-v1/exports/48/nothing-gets-past.png",
+        "44": "art/perks/wick/production-v1/exports/44/nothing-gets-past.png",
+        "40": "art/perks/wick/production-v1/exports/40/nothing-gets-past.png"
+      },
+      "batch": "G",
+      "source_sha256": "b231e863d74eaa32aacf9019afefc27427edcfdca51f3d7a8895163be0436d66",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
