@@ -2170,6 +2170,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "case-closed",
+      "data_id": "case_closed",
+      "name": "Case Closed",
+      "family": "perks",
+      "order": 92,
+      "mood": "Proud",
+      "action": "Wick perches on the edge of a desk, slapping a thick case folder shut, its string tie flying.",
+      "screen": "Satisfied grin",
+      "prop": "Case folder",
+      "path": "art/perks/wick/production-v1/case-closed.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/case-closed.png",
+        "128": "art/perks/wick/production-v1/exports/128/case-closed.png",
+        "64": "art/perks/wick/production-v1/exports/64/case-closed.png",
+        "56": "art/perks/wick/production-v1/exports/56/case-closed.png",
+        "48": "art/perks/wick/production-v1/exports/48/case-closed.png",
+        "44": "art/perks/wick/production-v1/exports/44/case-closed.png",
+        "40": "art/perks/wick/production-v1/exports/40/case-closed.png"
+      },
+      "batch": "G",
+      "source_sha256": "56a73dc614163ed7a3df1e30828fb19f0ee520ab2981c9048f72474d4f290e01",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

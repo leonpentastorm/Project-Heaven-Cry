@@ -5633,6 +5633,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "case-closed": {
+      "label": "Wick — Case Closed",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/case-closed.png",
+      "sha256": "f59c29c0de2500f272cd6cee7dee4fc04a7a6e765cacc8b444bc58202004ca1e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "case_closed",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/case-closed.png",
+        "128": "art/perks/wick/production-v1/exports/128/case-closed.png",
+        "64": "art/perks/wick/production-v1/exports/64/case-closed.png",
+        "56": "art/perks/wick/production-v1/exports/56/case-closed.png",
+        "48": "art/perks/wick/production-v1/exports/48/case-closed.png",
+        "44": "art/perks/wick/production-v1/exports/44/case-closed.png",
+        "40": "art/perks/wick/production-v1/exports/40/case-closed.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
