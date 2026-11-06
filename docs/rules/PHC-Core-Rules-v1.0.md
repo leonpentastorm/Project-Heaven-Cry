@@ -262,6 +262,8 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 ## Attacks, damage and armour
 
+**Analyze.** 2 AP (1 with Analysis's Quick Read), at an enemy you can see within 4 + Analysis tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has Weak Point (Analysis 5), the squad deals +15% damage to that enemy. Details are provisional (item 56).
+
 **Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge + cover).
 
 | Attack | Skill |
@@ -310,6 +312,8 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **The Veil** is a special equipment type with its own slot. Its rules aren't written yet: the engine records what's worn there and applies nothing, and the Narrator reads the item's text.
 
+**Item weights.** Everything carried has a weight, down to the single round, and counts against Carry weight: the weapon itself, the loaded magazine (magazine plus rounds), every spare magazine and loose round, armour, and every item in the backpack. Armour by class: none 0, Light 4 kg, Medium 8, Heavy 12, Assault 18, Juggernaut 28. Rounds: .32 Decrkm 0.01 kg, revolver 0.015, rifle 0.012, shell 0.04, .700 0.12, arrow 0.03, bolt 0.04. Empty magazines: service pistol 0.1 kg, Decrkm SMG 0.2, service rifle 0.15, revolver speedloader 0.05, .700 Blackpoint 0.3, LMG box 0.8. Gear: stim 0.1, field kit 1.5, ration pack 0.6, Evoker 1.2, standard mana core 0.2, chalk and wax 0.4, Emanator 0.4, prayer beads and incense 0.3, Essence of Experience 0.1. All provisional (item 54); more items get weights as they're added. What happens over the limit isn't settled yet.
+
 **Injuries.** After a critical, the target rolls Injury resistance; if that fails, roll a d6. 1: head, Dazed for 1 turn. 2–3: torso, Bleeding. 4: arm, −2 to attacks with it. 5–6: leg, half Movement. Arm and leg injuries last until treated. Details (item 53): Injury resistance is a d100 at or under 10% × (Endurance − 1); arms and legs are left or right on a d2; an arm injury hurts attacks with a two-handed weapon (anything but pistols, revolvers, light melee, thrown and unarmed) whichever arm it is, and a one-handed weapon only if it's the main-hand arm; leg injuries halve Movement once, however many; head and torso injuries end with the fight, arm and leg injuries go back to the character. The Narrator decides when the story treats them (a long rest with a Medic, surgery, a field hospital). Enemy stat blocks have no Endurance yet, so enemies resist as Endurance 1 (0%).
 
 **Shields** are temporary HP, used up before real HP, and gone at the end of combat unless a rule says otherwise. Healing can't raise HP above its maximum.
@@ -351,6 +355,8 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Hollow-point | +30% damage; armour counts double |
 | Incendiary | target is Burning; −10% damage |
 | Enhanced | a sliver of mana core in every round. Ignores armour, deals Elemental damage, and each hit releases bots (+1 on the ambient mana meter). One core makes 10 rounds. Rare, and expensive to buy. |
+
+**Reloading** (2 AP) uses up ammo you carry. Magazine weapons (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) swap in your fullest spare magazine, and the one in the gun drops on the floor: empty, or with whatever rounds were left in it, which are lost with it. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry unlimited spares until their stat blocks list ammo. Provisional (item 55).
 
 **Starter weapons** (damage before multipliers; range in tiles)
 
@@ -668,3 +674,6 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 51. **Combo perks at Mastery 2** (Leon: combos are for high levels in 2–3 skills): 5 points in every listed skill, up from 3, now that each Mastery level also gives a perk step. A two-skill combo costs 10 points, a three-skill one 15. Plus three new combos so every skill is in one: Bite the Bullet (Guts + Pain Threshold), Sixth Sense (Sensory + Vigilant), What Could Be (Visualization + Conscience).
 52. **Enemy stat tiers** (Minion, Soldier, Elite, Boss): HP 30/60/100/200, Defense 10/12/13/14, attack +1/+3/+5/+6, armour 0/5/10/10. Written for the first playable build; tune from playtest fights.
 53. **Injury details** (provisional): the d2 side, the two-handed list, one halving for legs, and enemies at 0% resistance were set for the first playable build. Tune from playtests.
+54. **Item weights** (Leon: everything has weight, down to the single bullet): the armour, round, magazine and gear weights under Item weights were set for the first playable build. The effect of going over Carry weight is still open.
+55. **Ammo and reloading** (Leon: reloading uses ammo up; reloading early drops the magazine and its rounds): the round-by-round list, the kits' spare magazines, and enemies' unlimited spares.
+56. **Analyze details:** no roll, line of sight needed, shared with the whole squad for the rest of the fight, and what the squad sees before it.

@@ -1,6 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG } from './data';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
@@ -20,10 +20,16 @@ export interface Character extends Sheet {
   injuries?: Injury[];
   /** What's in the backpack besides stims and the Essence (spec: Equipment slots). Old saves fall back to the kit's list. */
   pack?: PackItem[];
+  /** Rounds in the weapon's magazine now; missing means full (old saves). */
+  loaded?: number;
 }
 export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
 export interface Injury { loc: InjuryLoc; side?: 'left' | 'right' }
-export interface PackItem { id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string }
+export interface PackItem {
+  id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string;
+  /** Spare magazines for `weapon`: rounds in each. Loose rounds use `calibre` and qty = rounds. `item` names the items.json entry for weight. */
+  mags?: number[]; calibre?: string; item?: string;
+}
 
 
 /** Skill modifier (spec: Core resolution): −2 at 0 points, otherwise points − 1. */
@@ -77,20 +83,44 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   return c;
 }
 
-/** The four starting kits from the creation screen: what's held, worn and packed. */
+/** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */
+const magsOf = (weapon: string, n: number, unit = 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
+const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
 export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
-    pack: [{ id: 'field_kit', name: 'Field kit', qty: 1, kind: 'tool', note: 'Bandages, splints, a suture set' }] },
+    pack: [magsOf('service_pistol', 2), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
   soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, armourName: 'Flak vest', stims: 0,
-    pack: [{ id: 'rifle_magazine', name: 'Rifle magazine', qty: 3, kind: 'ammo', note: 'Spares for the service rifle' }, { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' },
-      { id: 'ration_pack', name: 'Ration pack', qty: 1, kind: 'food' }] },
+    pack: [magsOf('hellraiser_service_rifle', 3), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }, gear('ration_pack')] },
   sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [{ id: 'evoker', name: 'Evoker', qty: 1, kind: 'focus', note: 'Holds one core; Sigil magic' }, { id: 'standard_core', name: 'Standard mana core', qty: 4, kind: 'ammo' },
-      { id: 'chalk_and_wax', name: 'Chalk and wax', qty: 1, kind: 'tool' }] },
+    pack: [magsOf('service_pistol', 2), gear('evoker', 1, 'Holds one core; Sigil magic'), gear('standard_core', 4), gear('chalk_and_wax')] },
   soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [{ id: 'emanator', name: 'Emanator', qty: 1, kind: 'focus', note: 'The heart link; Soul magic' }, { id: 'prayer_beads', name: 'Prayer beads and incense', qty: 1, kind: 'tool' }] },
+    pack: [magsOf('drifter_revolver', 2, 'speedloader'), gear('emanator', 1, 'The heart link; Soul magic'), gear('prayer_beads')] },
 };
-export const packOf = (c: Character): PackItem[] => c.pack ?? (KITS[c.kit] || KITS.medic).pack;
+/** The pack, with saves from before magazines were tracked brought up to date. */
+export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || KITS.medic).pack).map((it) => {
+  if (it.id === 'rifle_magazine' && !it.mags) return magsOf(c.weapon, it.qty);
+  if (!it.item && ITEM[it.id]) return { ...it, item: it.id };
+  return it;
+});
+export const loadedOf = (c: Character) => c.loaded ?? (WEAPON[c.weapon]?.magazine || 0);
+export const spareMags = (c: Character) => packOf(c).find((x) => x.weapon === c.weapon && x.mags)?.mags || [];
+
+// ---------- weight (spec: Item weights) ----------
+const roundKg = (weapon: string) => ROUND_KG[WEAPON[weapon]?.ammo || ''] || 0;
+export function itemKg(it: PackItem): number {
+  if (it.mags) return it.mags.length * (WEAPON[it.weapon!]?.magazine_kg || 0) + it.mags.reduce((t, n) => t + n, 0) * roundKg(it.weapon!);
+  if (it.calibre) return it.qty * (ROUND_KG[it.calibre] || 0);
+  if (it.kind === 'weapon' && it.weapon) return it.qty * (WEAPON[it.weapon]?.weight_kg || 0);
+  return it.qty * (ITEM[it.item || it.id]?.weight_kg || 0);
+}
+/** Everything carried: the weapon and its loaded magazine, armour, stims, the Essence and the pack. */
+export function carriedKg(c: Character) {
+  const w = WEAPON[c.weapon];
+  const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon), armour: ARMOUR_KG[c.armourClass] || 0,
+    pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) };
+  return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
+}
+export const carryLimit = (c: Character) => 20 + 5 * (A(c, 'strength') - 1);
 
 // ---------- injuries (spec: Injuries) ----------
 /** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */

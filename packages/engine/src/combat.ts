@@ -1,6 +1,6 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
-import { type Character, type Injury, ARMOUR, ONE_HANDED, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
+import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
 
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
@@ -28,8 +28,14 @@ export interface Unit {
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
   /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
   injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
+  /** PCs: spare magazines (rounds in each) and loose rounds for the weapon. Enemies leave these out: unlimited spares. */
+  mags?: number[]; loose?: number;
+  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
+  analyzedBy?: string; weakPoint?: boolean; analysis?: number;
 }
-export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string }
+export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
+  /** What lies on the floor: dropped magazines and the rounds left in them. */
+  floor?: { pos: string; text: string }[] }
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
@@ -40,9 +46,10 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait,
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: ARMOUR[c.armourClass]?.value || 0, attack: mod(c.skills[w.skill] || 0), weapon: w.id,
-    movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
+    movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), w.magazine ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
+    mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
   };
 }
 
@@ -158,6 +165,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
     const base = weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0);
     let dmg = base * (who ? physicalMult(who) : 1);
     if (crit) dmg *= who ? critMult(who) : 2;
+    if (tgt.weakPoint && att.side === 'pc') dmg *= 1.15;
     damage = Math.max(1, Math.floor(dmg) - (useW.properties?.includes('ignores_10_armour') ? Math.max(0, tgt.armour - 10) : tgt.armour));
     if (tgt.downed) { tgt.saves.fail += crit ? 2 : 1; if (tgt.saves.fail >= 3) { tgt.dead = true; killed = true; } }
     else {
@@ -255,12 +263,40 @@ export function moveUnit(cb: Combat, u: Unit, to: string): string | null {
   return null;
 }
 
+/** Reload (spec: Reloading): 2 AP. A magazine weapon swaps in the fullest spare and drops the one in the gun on the floor;
+ *  a weapon loaded round by round tops up from loose rounds. Enemies carry unlimited spares. */
 export function reload(cb: Combat, u: Unit): string | null {
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
   if (u.ap < 2) return 'Needs 2 AP.';
-  u.ap -= 2; u.ammo = w.magazine; u.jammed = false;
-  cb.log.push(u.name + ' reloads.');
+  if (u.side === 'foe' || !u.mags) { u.ap -= 2; u.ammo = w.magazine; u.jammed = false; cb.log.push(u.name + ' reloads.'); return null; }
+  if (w.reload === 'loose') {
+    const room = w.magazine - u.ammo, take = Math.min(room, u.loose || 0);
+    if (room <= 0) return 'Already full.';
+    if (!take) return 'No rounds left to load.';
+    u.ap -= 2; u.ammo += take; u.loose = (u.loose || 0) - take; u.jammed = false;
+    cb.log.push(u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
+    return null;
+  }
+  if (!u.mags.length) return 'No spare ' + (w.reload_unit || 'magazine') + 's left.';
+  const i = u.mags.indexOf(Math.max(...u.mags)), fresh = u.mags.splice(i, 1)[0];
+  const left = u.ammo, unit = w.reload_unit || 'magazine';
+  (cb.floor ||= []).push({ pos: u.pos, text: (left ? unit + ' with ' + left + (left === 1 ? ' round' : ' rounds') : 'empty ' + unit) });
+  u.ap -= 2; u.ammo = fresh; u.jammed = false;
+  cb.log.push(u.name + ' reloads and drops the ' + (left ? unit + ' on the floor with ' + left + (left === 1 ? ' round' : ' rounds') + ' still in it' : 'empty ' + unit) + ' (' + u.mags.length + ' spare left).');
+  return null;
+}
+/** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
+export const analyzeCost = (u: Unit) => ((u.analysis || 0) >= 3 ? 1 : 2);
+export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
+  if (t.side !== 'foe' || t.dead) return 'Pick a living enemy.';
+  if (t.analyzedBy) return t.name + ' is already analyzed.';
+  const cost = analyzeCost(u), range = 4 + (u.analysis || 0);
+  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
+  if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
+  u.ap -= cost; t.analyzedBy = u.name; t.weakPoint = (u.analysis || 0) >= 5;
+  cb.log.push(u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Weak Point: +15% squad damage' : '') + '.');
   return null;
 }
 export function clearJam(cb: Combat, u: Unit): string | null {

@@ -638,19 +638,22 @@
           "class": 0,
           "name": "None",
           "value": 0,
-          "penalty": {}
+          "penalty": {},
+          "weight_kg": 0
         },
         {
           "class": 1,
           "name": "Light",
           "value": 5,
-          "penalty": {}
+          "penalty": {},
+          "weight_kg": 4
         },
         {
           "class": 2,
           "name": "Medium",
           "value": 10,
-          "penalty": {}
+          "penalty": {},
+          "weight_kg": 8
         },
         {
           "class": 3,
@@ -658,7 +661,8 @@
           "value": 15,
           "penalty": {
             "movement": -0.5
-          }
+          },
+          "weight_kg": 12
         },
         {
           "class": 4,
@@ -667,7 +671,8 @@
           "penalty": {
             "movement": -0.5,
             "dodge": -1
-          }
+          },
+          "weight_kg": 18
         },
         {
           "class": 5,
@@ -676,11 +681,13 @@
           "penalty": {
             "movement": -1,
             "no_sprint": true
-          }
+          },
+          "weight_kg": 28
         }
       ],
       "other_slots": "head, hands, footwear etc. carry per-item effects",
-      "other_slot_items": null
+      "other_slot_items": null,
+      "weights_provisional": true
     },
     "injuries": {
       "after": "critical",
@@ -809,7 +816,52 @@
         "rarity": "rare"
       }
     ],
-    "data": "weapons.json"
+    "data": "weapons.json",
+    "calibres": [
+      {
+        "id": ".32 decrkm",
+        "name": ".32 Decrkm",
+        "round_kg": 0.01
+      },
+      {
+        "id": "revolver",
+        "name": "Revolver",
+        "round_kg": 0.015
+      },
+      {
+        "id": "rifle",
+        "name": "Rifle",
+        "round_kg": 0.012
+      },
+      {
+        "id": "shell",
+        "name": "Shell",
+        "round_kg": 0.04
+      },
+      {
+        "id": ".700",
+        "name": ".700 Blackpoint",
+        "round_kg": 0.12
+      },
+      {
+        "id": "arrow",
+        "name": "Arrow",
+        "round_kg": 0.03
+      },
+      {
+        "id": "bolt",
+        "name": "Bolt",
+        "round_kg": 0.04
+      }
+    ],
+    "calibres_provisional": true,
+    "reloading": {
+      "cost_ap": 2,
+      "magazine": "swap in the fullest spare magazine; the one in the gun drops on the floor with any rounds left in it",
+      "loose": "top up from loose rounds; nothing drops",
+      "enemies": "carry unlimited spares (until stat blocks list ammo)",
+      "provisional": true
+    }
   },
   "conditions_rules": {
     "families": [

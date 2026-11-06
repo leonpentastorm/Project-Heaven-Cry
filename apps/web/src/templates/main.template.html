@@ -113,7 +113,7 @@
 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="display: flex; align-items: center; gap: 10px">
 <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex: none"><g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M14,12 v-3 a4,4 0 0 1 8,0 v3"></path><path d="M9,12 h18 a3,3 0 0 1 3,3 v15 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-15 a3,3 0 0 1 3,-3 z"></path><path d="M6,19 h24"></path><path d="M12,24 h12 v5 h-12 z"></path></g></svg>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="font-size: 12px; color: #A3AEC2">{{load}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span>
 </div>
 <div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
 <sc-if value="{{noRig}}"><span style="font-size: 12px; color: #A3AEC2">Empty.</span></sc-if>
@@ -208,10 +208,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <div style="{{zoneStyle}}">
 <div class="phc-mini" style="{{miniGrid}}">
 <sc-for list="{{mini}}" as="m"><span style="{{m.style}}"><sc-if value="{{m.has}}"><span class="phc-tok" tabindex="0" aria-label="{{m.t.name}}, {{m.t.state}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
-<span class="phc-pop" role="tooltip" style="{{m.t.popStyle}}">
-<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{m.t.name}}</span><span style="{{m.t.subStyle}}">{{m.t.sub}}</span></span></span>
-<sc-if value="{{m.t.ally}}"><span style="display: flex; justify-content: space-between; font-size: 11px"><span style="font-weight: 700; color: #F65157">{{m.t.hp}}</span><span style="{{m.t.stateStyle}}">{{m.t.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{m.t.hpFill}}"></span></span><sc-if value="{{m.t.hasAp}}"><span style="font-size: 11px; color: #A3AEC2">{{m.t.ap}}</span></sc-if><sc-if value="{{m.t.hasInj}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">✚ {{m.t.inj}}</span></sc-if></sc-if>
-<sc-if value="{{m.t.foe}}"><span style="{{m.t.stateStyle}}">{{m.t.state}}</span></sc-if>
+<!--TOKPOP:m.t-->
 </span></span></sc-if></span></sc-for>
 </div>
 <button type="button" onClick="{{toCombat}}" disabled="{{noCombat}}" aria-label="{{zoneAria}}" style="display: block; width: 100%; padding: 6px 0 0; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer"><span style="{{zoneNoteStyle}}">{{zoneNote}}</span></button>
@@ -235,10 +232,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <div style="padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F">
 <div style="{{areaGrid}}">
 <sc-for list="{{mini}}" as="m"><span style="{{m.style}}"><sc-if value="{{m.has}}"><span class="phc-tok" tabindex="0" aria-label="{{m.t.name}}, {{m.t.state}}"><span style="{{m.t.tokStyle}}"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.t.noImg}}">{{m.t.short}}</sc-if></span>
-<span class="phc-pop" role="tooltip" style="{{m.t.popStyle}}">
-<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{m.t.hasImg}}"><img src="{{m.t.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{m.t.name}}</span><span style="{{m.t.subStyle}}">{{m.t.sub}}</span></span></span>
-<sc-if value="{{m.t.ally}}"><span style="display: flex; justify-content: space-between; font-size: 11px"><span style="font-weight: 700; color: #F65157">{{m.t.hp}}</span><span style="{{m.t.stateStyle}}">{{m.t.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{m.t.hpFill}}"></span></span><sc-if value="{{m.t.hasAp}}"><span style="font-size: 11px; color: #A3AEC2">{{m.t.ap}}</span></sc-if><sc-if value="{{m.t.hasInj}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">✚ {{m.t.inj}}</span></sc-if></sc-if>
-<sc-if value="{{m.t.foe}}"><span style="{{m.t.stateStyle}}">{{m.t.state}}</span></sc-if>
+<!--TOKPOP:m.t-->
 </span></span></sc-if></span></sc-for>
 </div>
 </div>

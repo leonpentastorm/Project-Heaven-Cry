@@ -21,11 +21,13 @@
 <section aria-label="Tactical grid" style="flex: 999 1 760px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
 <div style="overflow-x: auto"><div style="{{gridStyle}}">
 <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
-<button type="button" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" style="{{t.style}}">
+<button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" style="{{t.style}}">
 <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
 <sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span style="font-size: 9px; letter-spacing: 0.06em; color: #7F8BA1">{{t.text}}</span></sc-if>
 <sc-if value="{{t.hasArrow}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 700; color: #FFFFFF">{{t.arrow}}</span></sc-if>
+<sc-if value="{{t.hasFloor}}"><span aria-hidden="true" style="position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 700; color: #A3AEC2">{{t.floor}}</span></sc-if>
+<sc-if value="{{t.hasTok}}"><!--TOKPOP:t.t--></sc-if>
 <sc-if value="{{t.hasCost}}" hint-placeholder-val="{{false}}"><span style="position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 2; padding: 2px 6px; border-radius: 6px; background: #FFFFFF; color: #0A0D13; font-size: 11px; font-weight: 700; white-space: nowrap">{{t.cost}}</span></sc-if>
 </button>
 </sc-for>
@@ -44,6 +46,32 @@
 </section>
 
 <aside aria-label="Turn" style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{hasMe}}">
+<div aria-label="You" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<div style="display: flex; gap: 10px; align-items: flex-start">
+<button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #000"></button>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU · {{me.name}}</span>
+<span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #F65157">HP</span><span style="display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{me.hpFill}}"></span></span><span style="text-align: right">{{me.hp}}</span></span>
+<span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #5C9EFF">MP</span><span style="display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{me.mpFill}}"></span></span><span style="text-align: right">{{me.mp}}</span></span>
+<span style="font-size: 11px; color: #A3AEC2">{{me.line}}</span>
+</div>
+<svg viewBox="-4 -4 128 248" width="40" height="78" role="img" aria-label="Your injuries" style="flex: none"><sc-for list="{{me.fig.parts}}" as="p"><path d="{{p.d}}" fill="{{p.fill}}" stroke="{{p.stroke}}" stroke-width="{{p.sw}}" stroke-linejoin="round"></path></sc-for></svg>
+</div>
+<sc-if value="{{me.noFx}}"><span style="font-size: 11px; color: #A3AEC2">No status effects.</span></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{me.fx}}" as="f"><span title="{{f.t}}" style="padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">{{f.k}}</span></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{hasAllies}}">
+<div aria-label="Allies" style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SQUAD · HOVER FOR DETAILS</span>
+<sc-for list="{{allyRows}}" as="a"><div class="phc-tok" tabindex="0" aria-label="{{a.name}}, {{a.hp}}" style="position: relative; display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; height: auto">
+<sc-if value="{{a.hasImg}}"><img src="{{a.img}}" alt="" style="{{a.imgStyle}}"></sc-if>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="display: flex; justify-content: space-between; font-size: 12px"><span style="font-weight: 700">{{a.name}}</span><span style="color: #A3AEC2">{{a.hp}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{a.hpFill}}"></span></span><sc-if value="{{a.hasFx}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #F65157">{{a.fx}}</span></sc-if></span>
+<!--TOKPOP:a.t-->
+</div></sc-for>
+</div>
+</sc-if>
 <div style="display: flex; gap: 12px; align-items: center">
 <button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{who.name}}" style="{{zoomBtn}}"><img src="{{who.img}}" alt="{{who.name}}" style="{{who.imgStyle}}"></button>
 <div style="display: flex; flex-direction: column"><span style="font-size: 18px; font-weight: 700">{{who.title}}</span><span style="font-size: 12px; color: #A3AEC2">{{who.line}}</span></div>
@@ -75,7 +103,7 @@
 <div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
 <span style="font-size: 12px; letter-spacing: 0.14em; color: #F65157">TARGET</span>
 <span style="font-size: 16px; font-weight: 700">{{target.name}}</span>
-<div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{target.hpFill}}"></div></div>
+<sc-if value="{{target.known}}"><div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{target.hpFill}}"></div></div></sc-if>
 <span style="font-size: 12px; color: #A3AEC2">{{target.line}}</span>
 <span style="font-size: 13px; font-weight: 700">{{target.odds}}</span>
 </div>

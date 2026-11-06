@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -86,6 +86,31 @@ describe('combat', () => {
     expect(u.hp).toBe(hp - 5); expect(u.bleed).toBe(2);
     expect(movement({ ...c, injuries: [{ loc: 'leg', side: 'left' }] })).toBe(movement(c) / 2);
     expect(packOf(c).map((x) => x.id)).toContain('field_kit');
+  });
+  it('reloading uses up magazines and drops the one in the gun, rounds and all', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); // medic kit: pistol, 2 spare magazines
+    expect(spareMags(c)).toEqual([12, 12]);
+    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const u = cb.units[0]; u.ap = 6;
+    u.ammo = 5; expect(reload(cb, u)).toBeNull();
+    expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(cb.floor![0].text).toBe('magazine with 5 rounds');
+    u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(cb.floor![1].text).toBe('empty magazine'); expect(u.mags).toEqual([]);
+    u.ammo = 3; expect(reload(cb, u)).toMatch(/No spare magazines/);
+  });
+  it('weights: everything counts, down to the round', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const k = carriedKg(c);
+    // pistol 1 + empty magazine 0.1 + 12 rounds × 0.01; Medium armour 8; 2 magazines (0.2 + 24 × 0.01), field kit 1.5, 3 stims 0.3, Essence 0.1
+    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 1.5 + 0.3 + 0.1, 5);
+  });
+  it('Analyze: 2 AP, range 4 + Analysis, line of sight, shared with the squad', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'soldier', weapon: 'service_pistol' }], 'easy', { state: 3 });
+    const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
+    u.ap = 6; u.analysis = 0; u.pos = '1,5'; e.pos = '9,5';
+    expect(analyze(cb, u, e)).toMatch(/range/);
+    e.pos = '4,5'; expect(analyze(cb, u, e)).toBeNull(); expect(u.ap).toBe(4); expect(e.analyzedBy).toBe(u.name); expect(e.weakPoint).toBe(false);
+    expect(analyze(cb, u, e)).toMatch(/already/);
   });
 });
 

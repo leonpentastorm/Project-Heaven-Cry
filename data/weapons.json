@@ -27,7 +27,10 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "sidearms"
+      "mastery_family": "sidearms",
+      "reload": "magazine",
+      "magazine_kg": 0.1,
+      "reload_unit": "magazine"
     },
     {
       "id": "drifter_revolver",
@@ -52,7 +55,10 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "sidearms"
+      "mastery_family": "sidearms",
+      "reload": "magazine",
+      "magazine_kg": 0.05,
+      "reload_unit": "speedloader"
     },
     {
       "id": "decrkm_smg",
@@ -81,7 +87,10 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "smgs"
+      "mastery_family": "smgs",
+      "reload": "magazine",
+      "magazine_kg": 0.2,
+      "reload_unit": "magazine"
     },
     {
       "id": "hellraiser_service_rifle",
@@ -110,7 +119,10 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "rifles"
+      "mastery_family": "rifles",
+      "reload": "magazine",
+      "magazine_kg": 0.15,
+      "reload_unit": "magazine"
     },
     {
       "id": "lever_carbine",
@@ -135,7 +147,8 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "rifles"
+      "mastery_family": "rifles",
+      "reload": "loose"
     },
     {
       "id": "lumeri_scattergun",
@@ -165,7 +178,8 @@
         "damage_falloff"
       ],
       "text": "",
-      "mastery_family": "shotguns"
+      "mastery_family": "shotguns",
+      "reload": "loose"
     },
     {
       "id": "long_rifle",
@@ -190,7 +204,8 @@
       "price_credits": null,
       "properties": [],
       "text": "",
-      "mastery_family": "rifles"
+      "mastery_family": "rifles",
+      "reload": "loose"
     },
     {
       "id": "blackpoint_700",
@@ -218,7 +233,10 @@
         "requires_braced_or_prone"
       ],
       "text": "",
-      "mastery_family": "heavy"
+      "mastery_family": "heavy",
+      "reload": "magazine",
+      "magazine_kg": 0.3,
+      "reload_unit": "magazine"
     },
     {
       "id": "hellraiser_lmg",
@@ -246,7 +264,10 @@
         "minus2_to_hit_unless_emplaced"
       ],
       "text": "",
-      "mastery_family": "heavy"
+      "mastery_family": "heavy",
+      "reload": "magazine",
+      "magazine_kg": 0.8,
+      "reload_unit": "magazine"
     },
     {
       "id": "recurve_bow",
@@ -276,7 +297,8 @@
         "quiver"
       ],
       "text": "",
-      "mastery_family": "bows"
+      "mastery_family": "bows",
+      "reload": "loose"
     },
     {
       "id": "crossbow",
@@ -305,7 +327,8 @@
         "no_recoil"
       ],
       "text": "",
-      "mastery_family": "bows"
+      "mastery_family": "bows",
+      "reload": "loose"
     },
     {
       "id": "combat_knife",

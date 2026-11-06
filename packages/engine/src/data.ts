@@ -8,13 +8,14 @@ import perksJ from '../../../data/perks.json';
 import traitsJ from '../../../data/traits.json';
 import enemiesJ from '../../../data/enemies.json';
 import archetypesJ from '../../../data/archetypes.json';
+import itemsJ from '../../../data/items.json';
 
 export type CoreId = 'body' | 'mind' | 'soul';
 export const CORES: CoreId[] = ['body', 'mind', 'soul'];
 
 export interface SkillDef { id: string; name: string; attribute: string; core: CoreId; slot: string; summary: string; overreach?: any; voice: any }
 export interface AttrDef { id: string; name: string; core: CoreId }
-export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[] }
+export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[]; ammo?: string | null; weight_kg?: number; reload?: 'magazine' | 'loose'; magazine_kg?: number; reload_unit?: string }
 export interface ClassDef { id: string; name: string; core: CoreId; role: string; signature: string[]; ranks: any; resource: any }
 export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastered' | 'achieved' | 'ultimate'; skills: string[]; requires: any[]; text: string; tiers?: any; deed?: string; flavour?: string }
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }
@@ -44,3 +45,9 @@ export const XP_SOURCES: Record<string, [number, number]> = {
   combat: [25, 200], dialogue: [25, 100], discovery: [25, 75], quest: [50, 300], essence: [100, 100], bond: [50, 50],
 };
 export const COMBAT_XP: Record<string, number> = { easy: 25, standard: 50, hard: 100, boss: 200 };
+
+// ---------- weights (spec: Item weights; provisional) ----------
+export const ITEM: Record<string, { id: string; name: string; weight_kg: number; text?: string }> = Object.fromEntries((itemsJ as any).items.map((x: any) => [x.id, x]));
+const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') return null; if (k in o) return o; for (const v of Object.values(o)) { const r = findKey(v, k); if (r) return r; } return null; };
+export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));
+export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || []).map((c: any) => c.weight_kg || 0);

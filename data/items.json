@@ -1,13 +1,13 @@
 {
   "$schema_version": "1.0",
   "kind": "items",
-  "source": "PHC Core Rules v1.0, Levels and XP: Essence of Experience (added after 1.1; the 2020 sheet's starting inventory)",
+  "source": "PHC Core Rules v1.0: Essence of Experience (Levels and XP); starting-kit gear and its weights (Equipment slots, item weights; provisional)",
   "items": [
     {
       "id": "essence_of_experience",
       "name": "Essence of Experience",
       "category": "consumable",
-      "weight_kg": 0,
+      "weight_kg": 0.1,
       "price_credits": 300,
       "start_quantity": 1,
       "adjudication": "engine",
@@ -39,6 +39,78 @@
           "limit": "one absorbed per character per long rest"
         }
       ]
+    },
+    {
+      "id": "stim_injector",
+      "name": "Stim injector",
+      "category": "consumable",
+      "weight_kg": 0.1,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "One dose. Adjacent ally: stabilise the Downed at 1 HP, or heal 30 × Healing given. Stops Bleeding."
+    },
+    {
+      "id": "field_kit",
+      "name": "Field kit",
+      "category": "tool",
+      "weight_kg": 1.5,
+      "adjudication": "narrator",
+      "provisional": true,
+      "text": "Bandages, splints and a suture set. What a Medic treats injuries with."
+    },
+    {
+      "id": "ration_pack",
+      "name": "Ration pack",
+      "category": "food",
+      "weight_kg": 0.6,
+      "adjudication": "narrator",
+      "provisional": true,
+      "text": "A day of food, sealed."
+    },
+    {
+      "id": "evoker",
+      "name": "Evoker",
+      "category": "focus",
+      "weight_kg": 1.2,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Holds one mana core; the focus for Sigil magic."
+    },
+    {
+      "id": "standard_core",
+      "name": "Standard mana core",
+      "category": "consumable",
+      "weight_kg": 0.2,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A core of condensed mana. An Evoker burns it for Sigils."
+    },
+    {
+      "id": "chalk_and_wax",
+      "name": "Chalk and wax",
+      "category": "tool",
+      "weight_kg": 0.4,
+      "adjudication": "narrator",
+      "provisional": true,
+      "text": "For drawing sigils by hand."
+    },
+    {
+      "id": "emanator",
+      "name": "Emanator",
+      "category": "focus",
+      "weight_kg": 0.4,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "The heart link; the focus for Soul magic."
+    },
+    {
+      "id": "prayer_beads",
+      "name": "Prayer beads and incense",
+      "category": "tool",
+      "weight_kg": 0.3,
+      "adjudication": "narrator",
+      "provisional": true,
+      "text": "For prayer and patience."
     }
   ]
 }

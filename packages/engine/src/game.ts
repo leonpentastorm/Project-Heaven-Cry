@@ -3,9 +3,9 @@
 import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES } from './data';
 import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  passive, pendingPerkSteps, validateSheet,
+  packOf, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, active, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, active, analyze, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -80,7 +80,7 @@ export type Action =
   | { type: 'levelup/perk'; charId: string; perkId: string }
   | { type: 'combat/move'; unitId: string; to: string } | { type: 'combat/attack'; unitId: string; targetId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
-  | { type: 'combat/end-turn'; unitId: string }
+  | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'award/ack'; charId: string; perkId: string };
 
 export class RuleError extends Error {}
@@ -361,6 +361,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       resolveAttack(cb!, g.rng, u, t!, a.mode, c); break;
     }
     case 'combat/reload': err = reload(cb!, u); break;
+    case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, c!.classId === 'medic'); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
@@ -389,6 +390,14 @@ function finishCombat(g: GameState) {
     const c = g.characters[u.charId];
     c.hp = u.dead ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
+    // Ammo carried out of the fight (spec: Reloading).
+    c.loaded = u.ammo;
+    const pack = packOf(c).map((it) => ({ ...it }));
+    const mi = pack.findIndex((it) => it.weapon === c.weapon && it.mags);
+    if (mi >= 0 && u.mags) { pack[mi].mags = [...u.mags]; pack[mi].qty = u.mags.length; }
+    const w = WEAPON[c.weapon];
+    if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    c.pack = pack.filter((it) => it.qty > 0 || it.mags);
     const fam = WEAPON[u.weapon]?.mastery_family; if (fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
   }
   const won = cb.over === 'win';
