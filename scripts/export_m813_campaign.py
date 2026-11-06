@@ -18,12 +18,15 @@ QUEUE = ROOT / 'art/briefs/m813-tutorial/production-queue.json'
 HANDOFF = ROOT / 'art/campaigns/m813/tutorial-v1'
 
 
-def export(asset_id, source, prompt_path=None):
+def export(asset_id, source, prompt_path=None, revision=None):
     queue = json.loads(QUEUE.read_text())
     job = next(j for j in queue['jobs'] if j['id'] == asset_id)
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())
-    if asset_id in catalog.get(job['family'], {}):
+    previous = catalog.get(job['family'], {}).get(asset_id)
+    if previous and not revision:
         raise ValueError('Already delivered; use a versioned revision instead of overwriting: ' + asset_id)
+    if revision:
+        job = dict(job, path=str(Path(job['path']).parent / 'revisions' / f'v{revision}' / Path(job['path']).name))
     path = ROOT / job['path']
     path.parent.mkdir(parents=True, exist_ok=True)
     src = path.parent / 'sources' / (asset_id + '.png')
@@ -51,6 +54,9 @@ def export(asset_id, source, prompt_path=None):
                 source_dimensions=list(original.size), previews=previews,
                 status='review-candidate', production_approved=False,
                 collection='M813 tutorial campaign v1', brief=queue['brief'])
+    if revision:
+        item.update(previous_path=previous.get('previous_path', previous['path']),
+                    previous_revision_path=previous['path'], revision=revision)
     if prompt_path:
         prompt = path.parent / 'sources' / (asset_id + '.prompt.txt')
         shutil.copy2(prompt_path, prompt)
@@ -94,5 +100,6 @@ if __name__ == '__main__':
     parser.add_argument('--id', required=True)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--prompt', type=Path)
+    parser.add_argument('--revision', type=int, help='Preserve previous selection in a versioned folder')
     args = parser.parse_args()
-    export(args.id, args.source, args.prompt)
+    export(args.id, args.source, args.prompt, args.revision)

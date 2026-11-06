@@ -14,5 +14,5 @@ All newly named cast appearances and enemy designs are proposals under the brief
 |---|---|---|---|
 | `m813-shield-line` | A | [PNG](../../../illustrations/m813/v2/shield-line.png) | opening-safe |
 | `m813-rear-pad-loading` | A | [PNG](../../../illustrations/m813/v2/rear-pad-loading.png) | opening-safe |
-| `m813-outpost-hangar` | A | [PNG](../../../illustrations/m813/v2/outpost-hangar.png) | zone-entry |
+| `m813-outpost-hangar` | A | [PNG](../../../illustrations/m813/v2/revisions/v2/outpost-hangar.png) | zone-entry |
 | `m813-outpost-1` | A | [PNG](../../../illustrations/m813/v2/outpost-1.png) | zone-entry |

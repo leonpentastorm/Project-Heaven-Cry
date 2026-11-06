@@ -224,7 +224,9 @@ def validate_campaign_art(catalog):
         if asset is None:
             continue
         delivered.append(job['id'])
-        require(asset['path'] == job['path'] and [asset['width'], asset['height']] == job['dimensions'],
+        require((asset['path'] == job['path'] or
+                 (asset.get('previous_path') == job['path'] and '/revisions/' in asset['path']))
+                and [asset['width'], asset['height']] == job['dimensions'],
                 f'M813 delivery path/dimensions: {job["id"]}')
         require(asset['status'] == 'review-candidate' and asset['production_approved'] is False,
                 f'M813 delivery requires visual approval: {job["id"]}')

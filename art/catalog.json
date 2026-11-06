@@ -6040,7 +6040,7 @@
       "order": 3,
       "name": "Outpost Hangar",
       "family": "illustrations",
-      "path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "path": "art/illustrations/m813/v2/revisions/v2/outpost-hangar.png",
       "dimensions": [
         1600,
         900
@@ -6052,21 +6052,23 @@
       "proposal": true,
       "width": 1600,
       "height": 900,
-      "sha256": "8b928714567ecef0a93b001012a737c1088270fe1b2af17a50bf26bb5f41536d",
-      "source_path": "art/illustrations/m813/v2/sources/m813-outpost-hangar.png",
-      "source_sha256": "199972f5f379256ad4add73a3f08cfe8bad89b20f0fce0773ce3bee629c2604b",
+      "sha256": "c1a6a0f6c019ce0756547ffd74236337d8b518c0d9c0edc6bc7c7097be6b571e",
+      "source_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-outpost-hangar.png",
+      "source_sha256": "439e6092d04402f61bd0917e9a022da625356b05bf4c77cc8943860614b5c0e5",
       "source_dimensions": [
         1672,
         941
       ],
       "previews": {
-        "320": "art/illustrations/m813/v2/previews/m813-outpost-hangar-320px.png"
+        "320": "art/illustrations/m813/v2/revisions/v2/previews/m813-outpost-hangar-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-hangar.prompt.txt"
+      "previous_path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "previous_revision_path": "art/illustrations/m813/v2/outpost-hangar.png",
+      "revision": 2
     },
     "m813-outpost-1": {
       "id": "m813-outpost-1",
