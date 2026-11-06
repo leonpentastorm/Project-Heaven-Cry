@@ -23,7 +23,7 @@ await click(host, 'Make a character');
 await host.getByPlaceholder('What the squad calls you').fill('Upload Test');
 const [chooser] = await Promise.all([host.waitForEvent('filechooser'), click(host, 'Upload', { exact: true })]);
 await chooser.setFiles({ name: 'me.jpg', mimeType: 'image/jpeg', buffer: photo });
-await host.waitForSelector('text=Your portrait (uploaded)', { timeout: 8000 });
+await host.waitForSelector('img[alt="Your portrait (uploaded)"]', { timeout: 8000 });
 ok('upload shows the portrait', /^data:image\/jpeg/.test(await host.locator('img[alt="Your portrait (uploaded)"]').first().getAttribute('src')));
 await host.locator('main button[aria-pressed]').first().click().catch(() => {});
 await host.locator('button:has-text("Thousand-Planet")').first().click().catch(() => {});

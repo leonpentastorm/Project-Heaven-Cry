@@ -1019,6 +1019,13 @@ The room can redo or reword the AI Narrator's answers, **only if everyone agrees
 - **Reword:** nobody can type into the Narrator's words. The Narrator rewords its own line as asked: wording, tone, emphasis and details that change no outcome. It refuses, keeping its words, any request that would change what happened (items, money, injuries, deaths, positions, who did what, results, new events). The original is kept.
 - **Cost:** a reroll is one Narrator call; a rewording is a small call at low effort.
 
+## Character portraits are cards
+
+- **One pool, no labels.** The creation screen's portraits are one grid of cards with no names and no set labels: a card is who *you* are, not someone else in the world. *Upload* adds your own.
+- **Archetype cards.** Each of the 46 archetypes gets its own painted card (commissioned: `art/briefs/archetype-portraits.md`). It shows beside the archetype on the creation screen and joins the pool first.
+- **NPCs use the same cards.** An NPC shows its own portrait, or, if it has none and is a person, a card from the pool cast by its role (a guard gets a guard's card). Things that aren't people (drones, turrets, beasts) don't.
+- **A card a player holds is theirs.** If a player's portrait is a card an NPC was showing, the NPC shows another free card that fits the same role instead. Casting is the same on every screen.
+
 ## Character files
 
 A character is a file you can keep, or make for a friend and send to them.

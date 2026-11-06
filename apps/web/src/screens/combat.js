@@ -4,6 +4,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure } from './shared';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, maxMp, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt } from '@engine';
 import { act, getState, go } from '../game/store';
+import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
@@ -13,7 +14,7 @@ export class CombatLogic extends DCLogic {
 
   renderVals() {
     const S = this.state, st = getState(), g = st.game, me = st.me.id;
-    const cb = g && g.combat;
+    const cb = castFight(g, g && g.combat, ART);
     if (!cb) return { ...lightboxVals(this), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '' };
     const cur = active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
@@ -171,7 +172,7 @@ export class CombatLogic extends DCLogic {
   }
 
   tileClick(k) {
-    const S = this.state, g = getState().game, cb = g.combat, cur = active(cb);
+    const S = this.state, g = getState().game, cb = castFight(g, g.combat, ART), cur = active(cb);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     if (u && u.side === 'foe') { this.setState({ target: u.id, action: ['shot', 'aimed', 'melee', 'burst', 'auto', 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : (WEAPON[cur?.weapon] && isMelee(WEAPON[cur.weapon]) ? 'melee' : 'shot') }); return; }
     if (u && u.side === 'pc' && S.action === 'stim') { this.setState({ target: u.id }); return; }

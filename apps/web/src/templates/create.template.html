@@ -67,18 +67,12 @@
 
 <aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
-<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge {{portrait.label}}" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000"></button>
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid #232D3F; background: #000"></button>
 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PORTRAIT</span>
-<span style="font-size: 13px; color: #C9D3E3">{{portrait.label}}</span>
-<div style="display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 6px">
-<sc-for list="{{portraitGroups}}" as="grp" hint-placeholder-count="3">
-<span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">{{grp.name}} · {{grp.count}}</span>
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
-<sc-for list="{{grp.thumbs}}" as="p" hint-placeholder-count="8">
-<button type="button" onClick="{{p.pick}}" aria-label="{{p.label}}" title="{{p.label}}" aria-pressed="{{p.pressed}}" style="{{p.style}}"><img src="{{p.img}}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px"></button>
-</sc-for>
-</div>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOUR PORTRAIT</span>
+<div role="radiogroup" aria-label="Portraits" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; max-height: 340px; overflow-y: auto; padding-right: 6px">
+<sc-for list="{{portraitThumbs}}" as="p" hint-placeholder-count="10">
+<button type="button" onClick="{{p.pick}}" aria-label="{{p.aria}}" aria-pressed="{{p.pressed}}" style="{{p.style}}"><img src="{{p.img}}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px"></button>
 </sc-for>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
@@ -124,6 +118,7 @@
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px">
 <sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
 <button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
+<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="" loading="lazy" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"></sc-if>
 <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 19px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{a.role}}</span></span>
 <span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
 <span style="display: flex; gap: 6px; flex-wrap: wrap">
@@ -266,7 +261,7 @@
 
 <div style="position: relative; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
 <img src="__SEAL__" alt="Stamped by the Anti-Heaven Operation Commands" style="position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; transform: rotate(-12deg); opacity: 0.55">
-<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge {{portrait.label}}" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.label}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000"></button>
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000"></button>
 <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; padding-right: 110px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">EPCCG · PERSONNEL RECORD</span>
 <span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>

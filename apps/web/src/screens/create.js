@@ -91,11 +91,10 @@ export class CreateLogic extends DCLogic {
     }));
     const o = S.origin === null ? null : D.origins[S.origin];
     const origin = o ? { ...o, knows: o['You know'], seen: o[Object.keys(o).find((k) => k.startsWith('People see you as'))] || '', traitsFit: o['Traits that fit'] } : {};
-    const portrait = S.upload ? { img: S.upload, label: 'Your portrait (uploaded)' } : D.portraits[S.portrait];
-    const portraitGroups = [...new Set(D.portraits.map((p) => p.group))].map((name) => { const thumbs = D.portraits.map((p, i) => ({ p, i })).filter((x) => x.p.group === name).map(({ p, i }) => ({ key: p.id, label: p.label, img: p.img, pick: set({ portrait: i, upload: null }), pressed: !S.upload && S.portrait === i ? 'true' : 'false',
-      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (!S.upload && S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') })); return { name: name.toUpperCase(), count: thumbs.length, thumbs }; });
-    const portraitThumbs = D.portraits.map((p, i) => ({ ...p, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
-      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
+    // The picker is one pool of cards with no names or set labels: a card is who *you* are (Leon).
+    const portrait = S.upload ? { img: S.upload, label: '', alt: 'Your portrait (uploaded)' } : { ...D.portraits[S.portrait], label: '', alt: 'Your portrait' };
+    const portraitThumbs = D.portraits.map((p, i) => ({ key: p.id, img: p.img, aria: 'Portrait ' + (i + 1), pick: set({ portrait: i, upload: null }), pressed: !S.upload && S.portrait === i ? 'true' : 'false',
+      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (!S.upload && S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
 
     // archetype
     const fams = [...D.arch.families, { id: 'custom', name: 'Custom', blurb: 'Start from zero and place all 10 points yourself.' }];
@@ -108,6 +107,7 @@ export class CreateLogic extends DCLogic {
     // Every archetype spends all three budgets (decision 49); the card lists what it raises.
     const raisedOf = (arch) => D.attrs.filter((x) => arch.attributes[x.id] > 1).map((x) => x.name + ' ' + arch.attributes[x.id]).join(' · ');
     const budgetOf = (arch) => 'Every point placed. Attributes: ' + raisedOf(arch);
+    archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name), card = arch && D.portraits.find((p) => p.archetype === arch.id); c.card = card ? card.img : ''; c.hasCard = !!card; });
     archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.budget = arch ? budgetOf(arch) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place'; });
     archCards.forEach((c) => { c.style = 'display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; padding: 16px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
@@ -245,10 +245,10 @@ export class CreateLogic extends DCLogic {
     const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id);
       return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
 
-    return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, portrait.label, 'portrait'),
+    return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
-      name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs, portraitGroups,
+      name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),

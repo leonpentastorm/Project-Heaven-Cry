@@ -9,6 +9,7 @@ import { voiceState, speak, stopVoice, CORE_VOICE } from '../game/voice';
 import { npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
+import { castFight, npcFace, npcTags, takenCards } from '../game/cast';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 
@@ -300,13 +301,13 @@ export class MainLogic extends DCLogic {
       : c && (g.story.ended || {})[c.id] ? 'Turn ended. Waiting for the others.' : iSpoke ? 'You spoke. Use your ' + apLeft(g, c) + ' AP on the area map, or End turn.' : 'Your turn: ' + (c ? apLeft(g, c) : 0) + ' AP and one Say. Open the area map to act; End turn when done.';
 
     // ---------- the zone: the story's map (or the fight's), with grid references (spec: Grid references) ----------
-    const cb = g.combat, inFight = g.phase === 'combat', map = inFight && cb ? cb.map : zoneMap(g);
+    const cb = castFight(g, g.combat, ART), inFight = g.phase === 'combat', taken = takenCards(g), map = inFight && cb ? cb.map : zoneMap(g);
     const pos = inFight ? {} : positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
     const seenNow = inFight && cb ? visibility(cb, 'pc').seen : null;
     const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe') && (u.side === 'pc' || seenNow.has(u.id)))
       : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }))
-        .concat(npcsOf({ ...g, story: { ...g.story } }).map((n) => ({ id: n.id, side: 'foe', npc: n, name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: n.portrait,
+        .concat(npcsOf({ ...g, story: { ...g.story } }).map((n) => ({ id: n.id, side: 'foe', npc: n, name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: npcFace(g, n.id, ART(n.portrait) || null, npcTags(n.name, n.tier, n.weapon), taken),
           pos: n.pos, hp: ENEMY[n.tier]?.hp || 30, maxHp: ENEMY[n.tier]?.hp || 30, analyzedBy: n.analyzed ? 'party' : undefined, injuries: [], downed: false, dead: false })));
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
     const objs = (inFight && cb ? cb.objects : g.story.objects) || defaultObjects(map), objAt = {};
@@ -359,7 +360,8 @@ export class MainLogic extends DCLogic {
     const myTurn = !!c && !c.dead && g.phase === 'story' && g.story.await === 'players' && !(g.story.ended || {})[c.id] && !g.checks.some((k) => !k.done && k.poi && charOf(k.charId)?.owner === me);
     const tnWord = (tn) => ({ 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' }[tn] || 'TN');
     const poiWhy = spectating ? '' : !c ? 'You have no character here.' : g.phase !== 'story' ? 'After the fight.' : !isNear ? 'Walk up to it first.' : g.story.await !== 'players' ? 'Wait for the round to open.' : (g.story.ended || {})[c.id] ? 'You ended your turn this round.' : apLeft(g, c) < 1 ? 'No AP left this round.' : '';
-    const objPanel = P0 ? { hasPic: !!(P0.portrait || spriteOf(g, P0)), pic: ART(P0.portrait) || spriteOf(g, P0), zoomPic: zoomer(this, ART_BIG(P0.portrait) || spriteOf(g, P0), P0.name, 'portrait'), name: P0.name, kicker: kindOf(P0).name.toUpperCase() + ' · ' + refOf(P0.pos) + (P0.hp != null ? ' · ' + P0.hp + '/' + P0.max + ' HP' : '') + (P0.locked ? ' · LOCKED' : P0.open ? ' · OPEN' : '') + (P0.resolved ? ' · DEALT WITH' : ''),
+    const P0face = P0 && isPersonObj(g, P0) ? npcFace(g, P0.npcId || P0.id, ART(P0.portrait) || null, npcTags(P0.name), takenCards(g)) : P0 && ART(P0.portrait);
+    const objPanel = P0 ? { hasPic: !!(P0face || spriteOf(g, P0)), pic: P0face || spriteOf(g, P0), zoomPic: zoomer(this, (P0face && P0face !== ART(P0.portrait) ? P0face : ART_BIG(P0.portrait)) || spriteOf(g, P0), P0.name, 'portrait'), name: P0.name, kicker: kindOf(P0).name.toUpperCase() + ' · ' + refOf(P0.pos) + (P0.hp != null ? ' · ' + P0.hp + '/' + P0.max + ' HP' : '') + (P0.locked ? ' · LOCKED' : P0.open ? ' · OPEN' : '') + (P0.resolved ? ' · DEALT WITH' : ''),
       text: P0.text || kindOf(P0).text, rules: P0.text ? kindOf(P0).text : '', hasRules: !!P0.text, why: poiWhy, hasWhy: !!poiWhy,
       approaches: P0.approaches.map((a, i) => { const tried = c && a.tries.some((t) => t.charId === c.id && t.scene === g.story.scene.n), ink = a.skills[0] && SK[a.skills[0]] ? ATTR[SK[a.skills[0]].attr].ink : '#FFFFFF';
         const best = c ? (() => { const mods = a.skills.map((s) => mod(c.skills[s] || 0)), low = Math.min(...mods), li = mods.indexOf(low); return low + 2 * a.skills.filter((s, j) => j !== li && (c.skills[s] || 0) > 0).length; })() : 0;

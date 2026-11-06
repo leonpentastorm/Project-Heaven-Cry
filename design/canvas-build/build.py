@@ -299,13 +299,19 @@ def build_web():
     """Screen data for the web game: what each prototype board's logic reads as D, with the app's image URLs."""
     # Avatar picker: the featured set, then every New Faces and Original Heavenprint painting (catalog order).
     C = json.loads((ROOT / "art/catalog.json").read_text())
+    # One pool of cards (Leon: no names or set labels in the picker). The archetype player cards come first once
+    # they are delivered (pool "player-card"), then the featured set and the world portraits. Each card carries
+    # what the NPC casting needs: its historical skill and its role tags.
     featured = {p["id"] for p in PORTRAITS}
-    portraits = [dict(p, group="Featured") for p in PORTRAITS]
-    for coll, group in (("new-faces", "New Faces"), ("original-heavenprint", "Original Heavenprint")):
+    def card(cid, a, base=None):
+        return dict(base or {"id": cid, "label": a.get("label", cid), "img": BLOBS["char-" + cid]},
+                    skill=a.get("historical_skill_id"), tags=a.get("tags", []), archetype=a.get("archetype"))
+    portraits = [card(cid, a) for cid, a in C["characters"].items() if a.get("pool") == "player-card" and ("char-" + cid) in BLOBS]
+    portraits += [card(p["id"], C["characters"].get(p["id"], {}), p) for p in PORTRAITS]
+    for coll in ("new-faces", "original-heavenprint"):
         for cid, a in C["characters"].items():
             if a.get("collection") == coll and cid not in featured:
-                label = a["label"] if coll == "new-faces" else "Heavenprint · " + a["label"]
-                portraits.append({"id": cid, "label": label, "img": BLOBS["char-" + cid], "group": group})
+                portraits.append(card(cid, a))
     out = {
         "skills": skills(), "attrs": attrs(), "classes": classes(), "classesFull": classes_full(), "arch": archetypes(), "origins": origins(),
         "traits": traits(), "portraits": portraits, "kits": KITS, "core": CORE, "coreText": CORE_TEXT, "wm": weapon_mastery(),
