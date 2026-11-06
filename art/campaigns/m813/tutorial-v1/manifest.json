@@ -1135,7 +1135,7 @@
       "order": 5,
       "name": "Toppled Pylon",
       "family": "sprites",
-      "path": "art/sprites/objects/v1/obj-toppled-pylon.png",
+      "path": "art/sprites/objects/v1/revisions/v2/obj-toppled-pylon.png",
       "dimensions": [
         256,
         256
@@ -1147,23 +1147,26 @@
       "proposal": true,
       "width": 256,
       "height": 256,
-      "sha256": "5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3",
-      "source_path": "art/sprites/objects/v1/sources/obj-toppled-pylon.png",
-      "source_sha256": "b7a56d7b5286a1b8045ec5dce848053f7d47cb61a5a3547255a65468c3280c51",
+      "sha256": "09153c37112a6ffd4ce70a9872f2e3979b2bc4ed827e8a396e0de0c27f5c5856",
+      "source_path": "art/sprites/objects/v1/revisions/v2/sources/obj-toppled-pylon.png",
+      "source_sha256": "0e75e064301d459266f16540c620196c64e824c311fbde3c0ac5c3125d8bcbe8",
       "source_dimensions": [
         1254,
         1254
       ],
       "previews": {
-        "128": "art/sprites/objects/v1/previews/obj-toppled-pylon-128px.png",
-        "64": "art/sprites/objects/v1/previews/obj-toppled-pylon-64px.png",
-        "46": "art/sprites/objects/v1/previews/obj-toppled-pylon-46px.png"
+        "128": "art/sprites/objects/v1/revisions/v2/previews/obj-toppled-pylon-128px.png",
+        "64": "art/sprites/objects/v1/revisions/v2/previews/obj-toppled-pylon-64px.png",
+        "46": "art/sprites/objects/v1/revisions/v2/previews/obj-toppled-pylon-46px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/sprites/objects/v1/sources/obj-toppled-pylon.prompt.txt"
+      "previous_path": "art/sprites/objects/v1/obj-toppled-pylon.png",
+      "previous_revision_path": "art/sprites/objects/v1/obj-toppled-pylon.png",
+      "revision": 2,
+      "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-toppled-pylon.prompt.txt"
     },
     {
       "id": "obj-door-closed",

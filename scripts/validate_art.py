@@ -18,7 +18,7 @@ WICK_TEST_IDS = {
     'field-surgeon', 'supreme-command',
 }
 
-def validate_white_rgba(data, path, circle=False):
+def validate_white_rgba(data, path, circle=False, white=True, clear_border=False):
     """Decode PNG scanlines to check ink and alpha, without a Pillow dependency."""
     width, height = struct.unpack('>II', data[16:24])
     require(data[28] == 0, f'Interlaced PNG unsupported: {path}')
@@ -60,7 +60,10 @@ def validate_white_rgba(data, path, circle=False):
             transparent |= alpha == 0
             visible |= alpha > 0
             if alpha:
-                require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
+                if white:
+                    require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
+                if clear_border and (y in (0, height - 1) or i // 4 in (0, width - 1)):
+                    require(alpha <= 8, f'Sprite background reaches canvas edge: {path}')
                 if circle and alpha >= 16:
                     x = i // 4
                     require((x - (width-1)/2)**2 + (y - (height-1)/2)**2 <= (.45*width+1)**2,
@@ -238,6 +241,8 @@ def validate_campaign_art(catalog):
             require('/spoilers/' in asset['path'], 'The demand must be stored under spoilers/')
         if job['group'] == 'C':
             local(job['layout_guide'])
+        if job['group'] == 'E' and (PIXEL_ASSET is None or PIXEL_ASSET == job['id']):
+            validate_white_rgba(local(asset['path']).read_bytes(), asset['path'], white=False, clear_border=True)
         for path in asset['previews'].values():
             require(local(path).read_bytes()[:8] == b'\x89PNG\r\n\x1a\n', f'Bad M813 preview: {path}')
     if COMPLETE_CAMPAIGN:
