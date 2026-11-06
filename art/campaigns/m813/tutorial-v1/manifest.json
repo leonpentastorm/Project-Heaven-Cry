@@ -445,6 +445,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-ilse-varga.prompt.txt"
+    },
+    {
+      "id": "m813-engineer-a",
+      "group": "B",
+      "order": 10,
+      "name": "Engineer A",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-engineer-a.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B10 | `m813-engineer-a` | **Engineer**, generic token: work goggles up, wrench and service pistol. | Wary, finger near the trigger. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "f75b1ecd448b6850088c08071f64a090b1aaa94a82d1195072e368dea9ac1770",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.png",
+      "source_sha256": "04c371b3a6c7817ee5ee41dfea058c2b844cedad47cc51880afb5923c7d50c43",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-engineer-a-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.prompt.txt"
     }
   ]
 }

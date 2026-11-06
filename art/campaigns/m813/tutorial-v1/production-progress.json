@@ -14,10 +14,10 @@
     "m813-rook",
     "m813-penny",
     "m813-keel",
-    "m813-ilse-varga"
+    "m813-ilse-varga",
+    "m813-engineer-a"
   ],
   "remaining": [
-    "m813-engineer-a",
     "m813-engineer-b",
     "m813-novikov",
     "m813-security-guard",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:32:40.597483+00:00",
+  "updated_utc": "2026-11-06T03:33:45.213991+00:00",
   "status": "in-progress",
   "production_approved": false
 }
