@@ -9,6 +9,8 @@ import traitsJ from '../../../data/traits.json';
 import enemiesJ from '../../../data/enemies.json';
 import archetypesJ from '../../../data/archetypes.json';
 import itemsJ from '../../../data/items.json';
+import sigilsJ from '../../../data/sigils.json';
+import soulJ from '../../../data/soul_modules.json';
 
 export type CoreId = 'body' | 'mind' | 'soul';
 export const CORES: CoreId[] = ['body', 'mind', 'soul'];
@@ -52,3 +54,16 @@ const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') r
 export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));
 export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || []).map((c: any) => c.weight_kg || 0);
+
+// ---------- magic (spec: Mana, rules 1.2) ----------
+export interface SigilDef { id: string; word: string; class: 'subject_element' | 'subject_effect' | 'form' | 'motion' | 'modifier'; charge: number; text: string; damage?: number; damage_type?: string; grand?: string; [k: string]: any }
+export interface SchoolDef { id: string; name: string; base_cost: number; text: string; damage?: number; options?: string[]; save?: string }
+export interface ModuleDef { id: string; name: string; family?: string; cost: number; text: string; range_tiles?: number }
+export const SIGILS: SigilDef[] = (sigilsJ as any).items;
+export const SIGIL: Record<string, SigilDef> = Object.fromEntries(SIGILS.map((w) => [w.id, w]));
+export const SCHOOLS: SchoolDef[] = (soulJ as any).schools;
+export const SCHOOL: Record<string, SchoolDef> = Object.fromEntries(SCHOOLS.map((x) => [x.id, x]));
+export const MODULES: ModuleDef[] = (soulJ as any).items;
+export const MODULE: Record<string, ModuleDef> = Object.fromEntries(MODULES.map((x) => [x.id, x]));
+export const MANA_BANDS: { id: string; min: number; max: number; soul_cost_mult: number; syphon_mp: number; healing_given_mult: number; strain_per_cast_extra: number }[] = RULES.mana.meter.bands;
+

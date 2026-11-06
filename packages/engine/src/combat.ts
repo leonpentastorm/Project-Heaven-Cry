@@ -2,6 +2,7 @@
 import { ENEMY, WEAPON, COMBAT_XP, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult } from './character';
 import { type Rng, d20, die } from './rng';
+import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, condHit, condOn, enemyScuff, noteDeaths } from './magic';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
@@ -67,6 +68,9 @@ export interface Unit {
   /** Weapons v2 (spec): the weapon's condition and mods, gear effects, and per-turn flags. */
   dmgMult?: number; dur?: number; maxDur?: number; mods?: string[]; offWeapon?: string | null; offAmmo?: number; light?: number; darkSight?: boolean; hazardImmune?: string[];
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
+  /** Magic (spec: Mana, rules 1.2): what the unit knows and carries; conditions (rounds left); a shield; the base
+   * Movement and Vision a condition halved. */
+  mg?: MagicUnit; conds?: Record<string, number>; shield?: number; baseMove?: number; baseVision?: number;
 }
 export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
@@ -76,7 +80,10 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Cover still standing, with its HP; broken cover becomes rubble (spec: Cover). Old saves fall back to the map. */
   cover?: Record<string, { kind: 'half' | 'full'; hp: number; max: number }>; rubble?: string[];
   /** Everything placed on the grid: cover, barricades, doors, traps, hazards, POIs (spec: Map objects). */
-  objects?: MapObject[] }
+  objects?: MapObject[];
+  /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
+   * meter, and the dead already counted toward it. */
+  glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number }
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
@@ -146,6 +153,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    mg: magicOf(c),
   };
 }
 
@@ -197,7 +205,7 @@ export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp:
 const coverKeys = (cb: Combat, kind?: 'half' | 'full') => Object.entries(coverOf(cb)).filter(([, c]) => !kind || c.kind === kind).map(([k]) => k);
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
-export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]);
+export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
 
 /** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false): string {
@@ -299,7 +307,7 @@ export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFo
 
 // ---------- vision and fog of war (spec: Vision) ----------
 export function litAt(cb: Combat, k: string): boolean {
-  if (!cb.map.dark) return true;
+  if (!cb.map.dark || magicLit(cb, k)) return true;
   return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o)) || cb.units.some((u) => !u.dead && (u.light || 0) > 0 && dist(u.pos, k) <= (u.light || 0));
 }
 /** Can this unit see that tile (range, darkness, line of sight)? */
@@ -356,7 +364,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const prone = tgt.prone ? (melee ? 2 : -2) : 0, unbraced = !melee && (w.properties || []).includes('minus2_to_hit_unless_emplaced') && !att.braced && !att.prone ? -2 : 0;
   const skillBonus = useW !== w ? 0 : (fx.op === 'hit_bonus' && r <= fx.within ? fx.value : 0) + (fx.op === 'first_shot_bonus' && !att.firstShotDone ? fx.value : 0)
     + (fx.op === 'aimed_still_bonus' && mode === 'aimed' && !att.moved ? fx.value : 0) + (fx.op === 'braced_bonus' && att.braced ? fx.value : 0) + (hasMod(att.mods, 'mod_scope') && mode === 'aimed' ? 1 : 0);
-  const toHit = att.attack + (att.song || 0) + skillBonus + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + (mode === 'auto' ? -2 : 0) + (opts.extra || 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0) + prone + unbraced - cover;
+  const toHit = att.attack + (att.song || 0) + skillBonus + (useW.accuracy || 0) + (mode === 'aimed' ? 2 : 0) + (mode === 'auto' ? -2 : 0) + (opts.extra || 0) + rangePenalty + heat + armPenalty(att, useW) + (tgt.downed ? 2 : 0) + prone + unbraced - cover + condHit(att);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty };
 }
@@ -390,7 +398,10 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt: Unit, mode: 
     if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) dmg *= fx.mult;
     const pierce = (fx.op === 'ignore_armour' ? fx.value : 0) + (useW.properties?.includes('armor_ignore_5') ? 5 : 0);
     damage = Math.max(1, Math.floor(dmg) - Math.max(0, (useW.properties?.includes('ignores_10_armour') ? Math.max(0, tgt.armour - 10) : tgt.armour) - pierce));
+    // A WARD shield takes damage first (spec: Sigils).
+    if (tgt.shield && tgt.shield > 0 && !tgt.downed) { const s = Math.min(tgt.shield, damage); tgt.shield -= s; damage -= s; }
     if (tgt.downed) { tgt.saves.fail += crit ? 2 : 1; if (tgt.saves.fail >= 3) { tgt.dead = true; killed = true; } }
+    else if (damage <= 0) { /* all on the shield */ }
     else {
       tgt.hp = Math.max(0, tgt.hp - damage);
       if (tgt.hp === 0) { if (tgt.side === 'foe') { tgt.dead = true; } else { tgt.downed = true; } killed = true; }
@@ -447,6 +458,8 @@ export function beginTurn(cb: Combat, rng: Rng) {
   u.ap = Math.max(2, Math.min(9, 6 - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)));
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
   u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2);
+  // Magic upkeep (spec: Mana): conditions, a held Outburst growing, Strain, wall zones.
+  magicTurnStart(cb, rng, u); if (u.dead) { u.ap = 0; return; }
   const hzObj = objectsAt(cb, u.pos).find((o) => hazardOf(o) && !(u.hazardImmune || []).includes(o.kind)), hz = hzObj ? hazardOf(hzObj) : null;
   if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true)); if (u.downed || u.dead) { u.ap = 0; return; } }
   if (u.bleed && !u.dead && !u.downed) {
@@ -477,7 +490,7 @@ export function endTurn(cb: Combat, rng: Rng) {
   if (checkOver(cb)) return;
   for (let guard = 0; guard < cb.units.length * 2; guard++) {
     cb.turn++;
-    if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; }
+    if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; magicRoundTick(cb); }
     const u = active(cb)!;
     if (u.dead || (u.side === 'foe' && u.downed)) continue;
     if (u.waitRound && cb.round < u.waitRound) { cb.log.push(u.name + ' is still reeling from striking in the open: no turn this round.'); continue; }
@@ -491,6 +504,7 @@ export function endTurn(cb: Combat, rng: Rng) {
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move'): string | null {
   if (u.downed || u.dead) return 'Downed units can\'t move.';
   if (u.prone) return 'Stand up first (1 AP).';
+  if (condOn(u, 'pinned')) return 'Pinned: you can\'t move this round.';
   const P = paths(cb, u.pos, u.id);
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
@@ -506,6 +520,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   let end = to, sprung = '';
   for (const k of route) { const t = objectsAt(cb, k).find(isTrap); if (t) { end = k; t.resolved = true; t.hidden = false; sprung = ' · steps on a trap' + hurtUnit(u, kindOf(t).trap!.damage); cb.objects = objectsOf(cb).filter((x) => x !== t); break; } }
   u.pos = end;
+  if (rng && (cb.zones || []).length) for (const k of route) { if (u.dead) break; zoneEnter(cb, rng, u, k); if (k === end) break; }
   cb.log.push(u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l));
   if (rng) {
@@ -756,6 +771,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     if (u.prone && u.ap >= 1) { toggleProne(cb, u); continue; }
     if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
+    if (enemyScuff(cb, u)) continue;
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
     if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2) { reload(cb, u); continue; }
