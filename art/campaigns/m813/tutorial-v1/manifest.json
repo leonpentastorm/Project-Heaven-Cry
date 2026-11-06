@@ -207,6 +207,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.prompt.txt"
+    },
+    {
+      "id": "m813-hum",
+      "group": "B",
+      "order": 3,
+      "name": "Hum",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-hum.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B3 | `m813-hum` | **Hum**, infantry robot with a cracked visor. | Head tilted, humming; small notes drifting from its speaker grille as faint marks in the air. Absent, peaceful, strange. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "2ae804c69b73296e6a10ff2be51e029492a54d0304efed08c7d78dd809e88f88",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-hum.png",
+      "source_sha256": "be09737beb75d5b31e8ccf8c03badaef93a60fad55cfde91671a6386891b7fb8",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-hum-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-hum.prompt.txt"
     }
   ]
 }

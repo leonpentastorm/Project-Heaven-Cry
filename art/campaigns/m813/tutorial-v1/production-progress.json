@@ -7,10 +7,10 @@
     "m813-outpost-hangar",
     "m813-outpost-1",
     "m813-nine-nine",
-    "m813-seven-seven"
+    "m813-seven-seven",
+    "m813-hum"
   ],
   "remaining": [
-    "m813-hum",
     "m813-lantern",
     "m813-soft-hands",
     "m813-rook",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T03:22:52.939658+00:00",
+  "updated_utc": "2026-11-06T03:24:23.274011+00:00",
   "status": "in-progress",
   "production_approved": false
 }
