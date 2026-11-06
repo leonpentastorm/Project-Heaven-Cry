@@ -35,6 +35,40 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md"
+    },
+    {
+      "id": "m813-rear-pad-loading",
+      "group": "A",
+      "order": 2,
+      "name": "Rear Pad Loading",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/rear-pad-loading.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "a5226b0e8f075393ae7fc44df56bb79d9b79b20776880e1d1325f591d37a200e",
+      "source_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.png",
+      "source_sha256": "754f677ae11754b5333dd6f28ccff3f4bbe0d780203db58b05131cb9e4a8aa81",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-rear-pad-loading-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt"
     }
   ]
 }
