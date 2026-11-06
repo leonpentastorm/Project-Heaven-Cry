@@ -7679,6 +7679,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-terminal-field.prompt.txt"
+    },
+    "obj-drop-pod": {
+      "id": "obj-drop-pod",
+      "group": "E",
+      "order": 20,
+      "name": "Drop Pod",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-drop-pod.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E20 | `obj-drop-pod` | Enemy drop pod from above, hatch open, a glowing sigil burned into it (terminal) | Shield line B9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "0bdfe4016155c93401f27620df67eb565867e21651a21ddb275803d5f2c0edbb",
+      "source_path": "art/sprites/objects/v1/sources/obj-drop-pod.png",
+      "source_sha256": "6858b10ad7f11eaaa09eba67fac5caa48ac025083537b6c6681c5914368e0c8b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-drop-pod-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-drop-pod-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-drop-pod-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-drop-pod.prompt.txt"
     }
   }
 }

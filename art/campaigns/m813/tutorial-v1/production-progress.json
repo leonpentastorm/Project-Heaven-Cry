@@ -48,16 +48,16 @@
     "obj-footlockers",
     "obj-cookbook",
     "obj-platinum-net",
-    "obj-terminal-field"
+    "obj-terminal-field",
+    "obj-drop-pod"
   ],
   "remaining": [
-    "obj-drop-pod",
     "obj-console",
     "obj-escape-craft",
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:56:25.429015+00:00",
+  "updated_utc": "2026-11-06T04:57:33.862988+00:00",
   "status": "in-progress",
   "production_approved": false
 }
