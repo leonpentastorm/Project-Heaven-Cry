@@ -2144,6 +2144,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "solid-image",
+      "data_id": "solid_image",
+      "name": "Solid Image",
+      "family": "perks",
+      "order": 91,
+      "mood": "Comic, Eerie",
+      "action": "Wick leans its whole weight back against a wall drawn in dashed lines, arms folded, and the dashed wall holds it up.",
+      "screen": "Smug",
+      "prop": "Dashed wall",
+      "path": "art/perks/wick/production-v1/solid-image.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/solid-image.png",
+        "128": "art/perks/wick/production-v1/exports/128/solid-image.png",
+        "64": "art/perks/wick/production-v1/exports/64/solid-image.png",
+        "56": "art/perks/wick/production-v1/exports/56/solid-image.png",
+        "48": "art/perks/wick/production-v1/exports/48/solid-image.png",
+        "44": "art/perks/wick/production-v1/exports/44/solid-image.png",
+        "40": "art/perks/wick/production-v1/exports/40/solid-image.png"
+      },
+      "batch": "G",
+      "source_sha256": "cff7749e6d317cfd1c396f5183659d5e289c1deee6597da25fe662779ddcf3d0",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

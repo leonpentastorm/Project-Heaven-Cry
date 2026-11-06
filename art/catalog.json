@@ -5606,6 +5606,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "solid-image": {
+      "label": "Wick — Solid Image",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/solid-image.png",
+      "sha256": "9ac15d707d42b4816b4b017eddd597a12b7abf57cf1d29f37004824393be98d9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "solid_image",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/solid-image.png",
+        "128": "art/perks/wick/production-v1/exports/128/solid-image.png",
+        "64": "art/perks/wick/production-v1/exports/64/solid-image.png",
+        "56": "art/perks/wick/production-v1/exports/56/solid-image.png",
+        "48": "art/perks/wick/production-v1/exports/48/solid-image.png",
+        "44": "art/perks/wick/production-v1/exports/44/solid-image.png",
+        "40": "art/perks/wick/production-v1/exports/40/solid-image.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
