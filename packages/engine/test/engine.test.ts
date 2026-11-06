@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -796,5 +796,54 @@ describe('anyone is a target: review fixes', () => {
     const before = npcsOf(g).length;
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', actions: [{ charId: a, act: 'attack', objId: storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!.id, mode: 'melee' }] } as any }, 'host');
     if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);
+  });
+});
+
+describe('rerolls and edits by unanimous vote (spec: Rerolls and edits)', () => {
+  const room = () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'vote');
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'Seven') }, 'p2');
+    g = apply(g, { type: 'session/start' }, 'host');
+    const before = g;
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Keel shoots first.', loot: [{ charId: Object.keys(g.characters)[0], item: 'stim_injector', qty: 2 }] } as any }, 'host');
+    const line = g.story.entries.find((e) => e.kind === 'narration')!;
+    return { g, before, line };
+  };
+  it('players suggest, only the host starts a vote, and everyone must say yes', () => {
+    let { g, line } = room();
+    g = apply(g, { type: 'vote/suggest', kind: 'reroll', entryId: line.id, note: 'Keel would not shoot first.' }, 'p2');
+    expect(votesOf(g).suggestions).toHaveLength(1);
+    expect(() => apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id }, 'p2')).toThrow(/Only the host/);
+    g = apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id, suggestionId: votesOf(g).suggestions[0].id }, 'host');
+    expect(votesOf(g).open).toMatchObject({ status: 'open', note: 'Keel would not shoot first.', suggestedBy: 'p2', yes: ['host'] });
+    const failed = apply(g, { type: 'vote/cast', yes: false }, 'p2');
+    expect(votesOf(failed).open!.status).toBe('failed');
+    g = apply(g, { type: 'vote/cast', yes: true }, 'p2');
+    expect(votesOf(g).open!.status).toBe('passed');
+  });
+  it('a passed reroll undoes the turn and everything after it, and asks the Narrator again', () => {
+    let { g, before, line } = room();
+    const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack);
+    expect(JSON.stringify(g.characters[id].pack)).not.toBe(packed);
+    g = apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id, note: 'Keel talks instead.' }, 'host');
+    g = apply(g, { type: 'vote/cast', yes: true }, 'p2');
+    const r = rerollFrom(g, before, 'Keel talks instead.');
+    expect(JSON.stringify(r.characters[id].pack)).toBe(packed); expect(r.v).toBe(g.v + 1);
+    expect(r.story.work).toMatchObject({ kind: 'opening', redo: 'Keel talks instead.' }); expect(r.narrator.busy).toBe(false);
+    expect(r.story.entries.find((e) => e.rerolled)!.text).toBe('Keel shoots first.');
+    expect(votesOf(r).open).toBeNull();
+  });
+  it('an edit only changes the words, only after a passed vote, and the original is kept', () => {
+    let { g, line } = room();
+    expect(() => apply(g, { type: 'narrator/rewrite', entryId: line.id, text: 'Leon steals 2 million.' }, 'host')).toThrow(/No edit was voted/);
+    g = apply(g, { type: 'vote/start', kind: 'edit', entryId: line.id, note: 'Make Keel sound scared, not cruel.' }, 'host');
+    g = apply(g, { type: 'vote/cast', yes: true }, 'p2');
+    expect(() => apply(g, { type: 'narrator/rewrite', entryId: line.id, text: 'x' }, 'p2')).toThrow(/host/);
+    const id = Object.keys(g.characters)[0], stims = g.characters[id].stims;
+    g = apply(g, { type: 'narrator/rewrite', entryId: line.id, text: 'Keel fires, hands shaking.' }, 'host');
+    const e = g.story.entries.find((x) => x.id === line.id)!;
+    expect(e.text).toBe('Keel fires, hands shaking.'); expect(e.original).toBe('Keel shoots first.'); expect(g.characters[id].stims).toBe(stims);
   });
 });

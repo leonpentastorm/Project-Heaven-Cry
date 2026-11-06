@@ -210,7 +210,22 @@ export class MainLogic extends DCLogic {
       const base = { key: e.id, text: e.text, head: e.head || '', isScene: false, isNarration: false, isPlayer: false, isVoice: false, isCheck: false, isNote: false, isArt: false, paras: [] };
       if (e.kind === 'scene') return { ...base, isScene: true, text: e.text.toUpperCase() };
       if (e.kind === 'art') return { ...base, isArt: true, img: ART(e.art), zoom: zoomer(this, ART_BIG(e.art), e.text, 'world') };
-      if (e.kind === 'narration') return { ...base, isNarration: true, paras: e.text.split(/\n\s*\n/).map((t) => ({ text: t.trim() })).filter((x) => x.text) };
+      if (e.kind === 'narration') {
+        // Rerolls and edits (spec: Rerolls and edits): players suggest, the host starts a vote, everyone must agree.
+        const V = g.votes || { turns: [], open: null }, canReroll = V.turns.includes(e.id) && !e.rerolled, busyVote = !!(V.open && V.open.status === 'open');
+        const ask = (kind) => { const note = window.prompt(kind === 'reroll' ? 'What should the Narrator do differently? (optional)' : 'How should it be reworded? Only the words change, never what happened.', ''); if (note === null) return null; return note; };
+        const undoText = () => { const i = g.story.entries.findIndex((x) => x.id === e.id), after = g.story.entries.slice(i + 1); const pl = after.filter((x) => x.kind === 'player').length, ck = after.filter((x) => x.kind === 'check').length, fights = after.filter((x) => x.kind === 'combat' && /^Combat: /.test(x.text)).map((x) => x.text.replace(/^Combat: /, ''));
+          return [pl ? pl + (pl === 1 ? ' player action' : ' player actions') : '', ck ? ck + (ck === 1 ? ' roll' : ' rolls') : '', fights.length ? 'the fight ' + fights.join(', ') : ''].filter(Boolean).join(', ') || 'nothing after it'; };
+        const voteActs = e.rerolled || !c ? [] : isHost
+          ? [...(canReroll ? [{ key: 'r', label: '⟲ Vote to reroll', title: 'Everyone must agree. Undoes this turn and everything after it.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('reroll'); if (n !== null) act({ type: 'vote/start', kind: 'reroll', entryId: e.id, note: n, undo: undoText() }); } }] : []),
+             { key: 'e', label: '✎ Vote to reword', title: 'Everyone must agree. Only the words change.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('edit'); if (n !== null) act({ type: 'vote/start', kind: 'edit', entryId: e.id, note: n }); } }]
+          : [...(canReroll ? [{ key: 'r', label: '⟲ Suggest reroll', title: 'The host can put it to a vote.', go: () => { const n = ask('reroll'); if (n !== null) { act({ type: 'vote/suggest', kind: 'reroll', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }] : []),
+             { key: 'e', label: '✎ Suggest rewording', title: 'The host can put it to a vote.', go: () => { const n = ask('edit'); if (n !== null) { act({ type: 'vote/suggest', kind: 'edit', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }];
+        return { ...base, isNarration: true, paras: e.text.split(/\n\s*\n/).map((t) => ({ text: t.trim() })).filter((x) => x.text),
+          wrapStyle: 'display: flex; flex-direction: column; gap: 12px' + (e.rerolled ? '; opacity: 0.45' : ''), pStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC" + (e.rerolled ? '; text-decoration: line-through' : ''),
+          hasTag: !!(e.rerolled || e.original), tag: e.rerolled ? 'REROLLED BY VOTE' : '✎ REWORDED BY VOTE', tagStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2',
+          voteActs, hasVoteActs: voteActs.length > 0 };
+      }
       if (e.kind === 'player') {
         const p = playerOf(e.who), first = Object.values(g.characters).find((x) => x.owner === e.who);
         return { ...base, isPlayer: true, roll: !!e.roll, img: first ? first.portrait : IMG['wick-welcome'], nameStyle: 'color: ' + p.color + '; font-weight: 600',

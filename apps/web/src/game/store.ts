@@ -1,7 +1,7 @@
 // Client store. The host's browser holds the authoritative GameState, applies every action through the engine,
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
-import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor } from '@engine';
+import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom } from '@engine';
 import { type NarratorProvider, anthropicProvider, scriptedProvider, polish } from '../narrator/anthropic';
 import { connect, type Conn } from './net';
 
@@ -65,6 +65,7 @@ export function hostRoom(code = roomCode()) {
   if (!S.me.name) return toast('Enter your name first.');
   const saved: GameState | null = read(LS.game(code), null);
   hostState = saved || newGame(code, { id: S.me.id, name: S.me.name });
+  befores = {}; loadBefores(code);
   // The full save (with the archive) comes back from IndexedDB a moment later.
   idbGet(code).then((full) => {
     if (!full || !hostState || hostState.code !== code) return;
@@ -168,6 +169,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
   persist();
   broadcast(false);
   queueMicrotask(maybeNarrate);
+  queueMicrotask(carryOutVote);
 }
 
 let lastSave = 0;
@@ -196,7 +198,11 @@ async function maybeNarrate() {
   try {
     const { turn, usage } = await p.turn(hostState!);
     runHost({ type: 'narrator/usage', ...usage }, S.me.id, null);
+    // Keep the state from just before this turn: a reroll the room votes for goes back to it (spec: Rerolls and edits).
+    const pre = hostState!, turnsBefore = votesOf(pre).turns.at(-1);
     runHost({ type: 'narrator/turn', turn }, S.me.id, null);
+    const opened = hostState ? votesOf(hostState).turns.at(-1) : undefined;
+    if (opened && opened !== turnsBefore) keepBefore(opened, pre);
   } catch (e) {
     runHost({ type: 'narrator/error', message: String((e as Error)?.message || e) }, S.me.id, null);
   } finally { narrating = false; queueMicrotask(maybeNarrate); }
@@ -212,3 +218,43 @@ setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(l
 
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
 (globalThis as any).__phc = { getState, act, setNarrator, toast };
+
+// ---------- rerolls and edits (spec: Rerolls and edits) ----------
+// The host's copies of the state from just before each of the Narrator's latest turns, by the line the turn opened with.
+// Only on the host's computer (memory and IndexedDB): the room server and the players never get them.
+let befores: Record<string, GameState> = {};
+function keepBefore(entryId: string, pre: GameState) {
+  befores[entryId] = { ...pre, archive: undefined };
+  const keep = new Set(hostState ? votesOf(hostState).turns : []);
+  for (const k of Object.keys(befores)) if (!keep.has(k)) delete befores[k];
+  if (hostState) { const code = hostState.code, copy = befores; idb().then((db) => { try { db?.transaction('games', 'readwrite').objectStore('games').put(copy, code + '#befores'); } catch { /* */ } }); }
+}
+export async function loadBefores(code: string) { const db = await idb(); if (!db) return; await new Promise<void>((res) => { try { const r = db.transaction('games', 'readonly').objectStore('games').get(code + '#befores'); r.onsuccess = () => { if (r.result) befores = r.result; res(); }; r.onerror = () => res(); } catch { res(); } }); }
+let carrying = false;
+/** A vote passed: the host's browser carries it out. A reroll goes back to the kept copy and asks the Narrator again;
+ * an edit asks the Narrator to reword its own line, and it refuses anything that would change what happened. */
+async function carryOutVote() {
+  const o = hostState ? votesOf(hostState).open : null;
+  if (!o || o.status === 'open' || carrying) return;
+  if (o.status === 'failed') { runHost({ type: 'vote/close' }, S.me.id, null); return; }
+  carrying = true;
+  try {
+    if (o.kind === 'reroll') {
+      const before = befores[o.entryId];
+      if (!before) { toast('The copy from before that turn isn\'t on this computer any more: the reroll can\'t be done.'); runHost({ type: 'vote/close' }, S.me.id, null); return; }
+      hostState = rerollFrom(hostState!, before, o.note);
+      for (const k of Object.keys(befores)) if (!votesOf(hostState).turns.includes(k)) delete befores[k];
+      const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persist(); broadcast(true);
+      queueMicrotask(maybeNarrate);
+    } else {
+      const p = provider();
+      if (!p || !p.rewrite) { runHost({ type: 'narrator/rewrite', entryId: o.entryId, text: '', refused: 'no AI Narrator is set up to reword it.' }, S.me.id, null); return; }
+      const e = hostState!.story.entries.find((x) => x.id === o.entryId)!;
+      try {
+        const r = await p.rewrite(hostState!, e.text, o.note);
+        if (r.usage) runHost({ type: 'narrator/usage', ...r.usage }, S.me.id, null);
+        runHost({ type: 'narrator/rewrite', entryId: o.entryId, text: r.text, refused: r.refused || undefined }, S.me.id, null);
+      } catch (err) { runHost({ type: 'narrator/rewrite', entryId: o.entryId, text: '', refused: 'the rewrite failed (' + String((err as Error)?.message || err).slice(0, 120) + ').' }, S.me.id, null); }
+    }
+  } finally { carrying = false; }
+}

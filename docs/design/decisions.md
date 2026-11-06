@@ -202,3 +202,6 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **In a fight:** the fighter's conditions (Downed, Bleeding, Dazed, jams, heat, injuries, Overburdened, prone, braced, Overwatch).
     - **Outside a fight:** Downed with its death saves, injuries, Overburdened, Sneak (hidden or seen).
     - **Always:** a music trait's song bonus or silence penalty, and what your gear grants (night sight, light, armour, Defense, and so on).
+84. **Rerolls and edits by unanimous vote** (Leon: everyone in the room must accept, or nothing happens; the host starts votes and others suggest; no freehand edits that could break the game, like "Leon handsomely steals 2 million from the ATM").
+    - **Reroll:** restores the host's copy of the state from just before that Narrator turn (`rerollFrom`) and asks the Narrator again with the note.
+    - **Edit:** a constrained AI rewording of the prose only, which refuses outcome changes; state never changes. Checked in two browsers (`e2e/vote.mjs`): a no changes nothing; a yes rerolls; a rewording passes; a "steal 2 million" rewording is refused even with everyone's yes.

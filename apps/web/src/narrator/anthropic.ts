@@ -26,7 +26,8 @@ export const MODELS = [
 ];
 
 export interface NarratorResult { turn: NarratorTurn; usage: { input: number; output: number; cacheRead: number; costUsd: number } }
-export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult> }
+export interface RewriteResult { text: string; refused: string; usage?: NarratorResult['usage'] }
+export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult>; rewrite?(g: GameState, text: string, ask: string): Promise<RewriteResult> }
 
 export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch, onLookup?: (keys: string[]) => void): NarratorProvider {
   // authToken: null so only the player's own key is ever sent, never a token from the environment.
@@ -98,8 +99,22 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       const costUsd = spent();
       return { turn: turn!, usage: { input: input + cacheWrite, output, cacheRead, costUsd } };
     },
+    // An edit the room voted for (spec: Rerolls and edits): the Narrator rewords its own line. Only the words: anything
+    // that would change what happened (items, money, injuries, deaths, positions, events, outcomes) is refused.
+    async rewrite(g, text, ask) {
+      const tool = { name: 'submit_rewrite', description: 'Hand in the reworded line, or refuse.', input_schema: { type: 'object', properties: { text: { type: 'string' }, refused: { type: 'string', description: 'Empty if you reworded it; otherwise why the request would change what happened' } }, required: ['text', 'refused'] } };
+      const res: any = await client.messages.create({
+        model, max_tokens: 4000, output_config: { effort: 'low' }, tools: [tool],
+        system: [{ type: 'text', text: 'You are the Narrator of a tabletop RPG. The players voted to have one of your lines reworded. You may change wording, tone, emphasis, pacing, and descriptive detail that changes no outcome. You must NOT add, remove or change anything the game tracks or that happened: items, money, loot, injuries, deaths, HP, positions, who did what, results of rolls or fights, promises made, or new events. If the request asks for any of that (or for something absurd, out of character, or naming the players instead of their characters), refuse: return the original line unchanged and say why in refused. Keep the same length, give or take a third. Never name a real-world person, brand or work. Call submit_rewrite.' }],
+        messages: [{ role: 'user', content: 'THE LINE:\n' + text + '\n\nWHAT THE PLAYERS ASKED:\n' + (ask || 'Tell it better.') + '\n\nRECENT STORY FOR CONTEXT:\n' + g.story.entries.filter((e) => e.kind === 'narration' && !e.rerolled).slice(-4).map((e) => e.text).join('\n---\n') }],
+      } as any).catch((e: unknown) => { throw new Error(explain(e)); });
+      const use = res.content.find((b: any) => b.type === 'tool_use' && b.name === 'submit_rewrite')?.input || {};
+      const u = res.usage || {}, input = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0), output = u.output_tokens || 0;
+      return { text: String(use.text || text), refused: String(use.refused || ''), usage: { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: (input * price.input + output * price.output) / 1e6 } };
+    },
   };
 }
+
 
 function explain(e: unknown): string {
   if (e instanceof Anthropic.AuthenticationError) return 'Anthropic rejected the API key. Check it in the room settings.';
@@ -127,6 +142,7 @@ export async function polish(apiKey: string, text: string, charName: string): Pr
 /** A scripted Narrator for tests and offline demos: it plays a short M813 opening, a check, a fight and the aftermath. */
 export function scriptedProvider(): NarratorProvider {
   return {
+    async rewrite(_g, text, ask) { return /steal|million|kill/i.test(ask) ? { text, refused: 'that would change what happened.' } : { text: text + ' (Reworded: ' + ask + ')', refused: '' }; },
     async turn(g) {
       const chars = Object.values(g.characters), first = chars[0];
       const w = g.story.work!;

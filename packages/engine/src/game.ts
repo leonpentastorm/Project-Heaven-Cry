@@ -20,6 +20,10 @@ export interface Entry {
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
   /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */
   ooc?: boolean;
+  /** A Narrator turn the room voted to reroll: kept greyed out, never sent to the Narrator. */
+  rerolled?: boolean;
+  /** The Narrator's original words, when the room voted to have them rewritten. */
+  original?: string;
 }
 export interface Hook { id: string; skill: string; tn: number; truth: 'true' | 'partial' | 'misleading'; line: string }
 export interface Check {
@@ -29,7 +33,9 @@ export interface Check {
   roll?: { die: number; mod: number; total: number; ok: boolean; crit: boolean; fumble: boolean; rerolled: boolean; first?: number };
 }
 export interface Overreach { id: string; charId: string; skill: string; push: string; choice?: 'indulge' | 'resist' }
-export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'combat_end'; note?: string };
+export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'combat_end'; note?: string;
+  /** A reroll the room voted for: what the players asked the Narrator to do differently (spec: Rerolls and edits). */
+  redo?: string };
 
 export interface GameState {
   v: number; seq: number; rng: Rng; code: string; hostId: string;
@@ -70,6 +76,9 @@ export interface GameState {
   campaign?: Campaign | null;
   /** What the room hears (spec: Music). */
   music?: MusicState;
+  /** Rerolls and edits (spec: Rerolls and edits): suggestions to the host, the vote under way, and the Narrator's
+   * latest turns that can still be rerolled (by the id of the line each one opened with). */
+  votes?: { suggestions: Suggestion[]; open: Vote | null; turns: string[]; seq: number };
   /** The Narrator's long-term memory (spec: The Narrator's memory). Host only: views never carry it. */
   memory?: Memory;
   /** Every story line that scrolled out of the live log, kept forever on the host's computer for recall. */
@@ -146,6 +155,9 @@ export type Action =
   | { type: 'award/ack'; charId: string; perkId: string }
   | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
+  | { type: 'vote/suggest'; kind: 'reroll' | 'edit'; entryId: string; note?: string } | { type: 'vote/dismiss'; id: string }
+  | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
+  | { type: 'narrator/rewrite'; entryId: string; text: string; refused?: string }
   | { type: 'campaign/refresh' } | { type: 'memory/edit'; edit: MemEdit }
   | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
 
@@ -153,6 +165,10 @@ export type Action =
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean }
 
 export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door';
+export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
+export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
+  /** Everyone who must say yes: the players online when the vote started. */
+  voters: string[]; yes: string[]; no: string[]; status: 'open' | 'passed' | 'failed' }
 export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
 const id = (g: GameState, p: string) => p + (++g.seq);
@@ -323,6 +339,7 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'memory/edit': { if (!isHost(g, by)) fail('Only the host edits the Narrator\'s memory.'); const err = editMemory(g, a.edit); if (err) fail(err); return; }
+    case 'vote/suggest': case 'vote/dismiss': case 'vote/start': case 'vote/cast': case 'vote/close': case 'narrator/rewrite': { voteAction(g, a, by); return; }
     case 'campaign/refresh': { if (!isHost(g, by)) fail('Host only.'); refreshCampaign(g); return; }
     case 'music/end': { if (!isHost(g, by)) fail('Host only.'); songEnded(g, a.seq); return; }
     case 'music/play': {
@@ -456,7 +473,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     g.story.scene = { title: t.sceneTitle, n: g.story.scene.n + 1, hooks: [], revealed: [], asked: {}, fired: {} };
     push(g, { kind: 'scene', text: t.sceneTitle });
   }
-  if (t.narration?.trim()) push(g, { kind: 'narration', text: t.narration.trim() });
+  if (t.narration?.trim()) { push(g, { kind: 'narration', text: t.narration.trim() }); const v = votesOf(g); v.turns = [...v.turns, g.story.entries.at(-1)!.id].slice(-REROLLABLE_TURNS); }
   { const m = momentsOpen(g).find((x) => x.id === t.moment); if (m) { (g.story.moments ||= []).push(m.id); push(g, { kind: 'art', art: m.art, text: m.caption }); } }
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
   const hooks: Hook[] = (t.hooks || []).filter((h) => SKILL[h.skill] && TN_LADDER.includes(h.tn) && h.line).map((h) => ({ id: id(g, 'h'), skill: h.skill, tn: h.tn, truth: (['true', 'partial', 'misleading'].includes(h.truth) ? h.truth : 'true') as Hook['truth'], line: h.line }));
@@ -1043,3 +1060,73 @@ export function refreshCampaign(g: GameState): boolean {
 
 /** Is this map object a person (spec: Anyone is a target)? A portrait of its own, or a campaign portrait by name. */
 export const isPersonObj = (g: GameState, o: MapObject) => !!(o.portrait || portraitFor(g, o.name));
+
+// ---------- rerolls and edits by unanimous vote (spec: Rerolls and edits) ----------
+/** How many of the Narrator's latest turns can be rerolled (the host keeps a copy of the state before each). */
+export const REROLLABLE_TURNS = 5;
+export function votesOf(g: GameState) { return (g.votes ||= { suggestions: [], open: null, turns: [], seq: 0 }); }
+const isNarration = (g: GameState, id: string) => g.story.entries.some((e) => e.id === id && e.kind === 'narration' && !e.rerolled);
+function voteAction(g: GameState, a: Action, by: string) {
+  const v = votesOf(g), clip = (s?: string) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+  if (a.type === 'vote/suggest') {
+    if (!g.players.some((p) => p.id === by)) fail('Join the room first.');
+    if (!isNarration(g, a.entryId)) fail('That isn\'t one of the Narrator\'s lines.');
+    if (a.kind === 'reroll' && !v.turns.includes(a.entryId)) fail('Only the Narrator\'s last ' + REROLLABLE_TURNS + ' turns can be rerolled.');
+    if (v.suggestions.filter((x) => x.by === by).length >= 3) fail('You have three suggestions waiting already.');
+    v.suggestions.push({ id: 'sg' + (++v.seq), by, kind: a.kind, entryId: a.entryId, note: clip(a.note) });
+    return;
+  }
+  if (a.type === 'vote/dismiss') { if (!isHost(g, by)) fail('Only the host decides on suggestions.'); v.suggestions = v.suggestions.filter((x) => x.id !== a.id); return; }
+  if (a.type === 'vote/start') {
+    if (!isHost(g, by)) fail('Only the host starts a vote; suggest it to them.');
+    if (v.open && v.open.status === 'open') fail('A vote is already under way.');
+    if (g.narrator.busy) fail('Wait for the Narrator to finish.');
+    if (!isNarration(g, a.entryId)) fail('That isn\'t one of the Narrator\'s lines.');
+    if (a.kind === 'reroll' && !v.turns.includes(a.entryId)) fail('Only the Narrator\'s last ' + REROLLABLE_TURNS + ' turns can be rerolled.');
+    const sg = a.suggestionId ? v.suggestions.find((x) => x.id === a.suggestionId) : null;
+    const voters = g.players.filter((p) => p.online || p.id === g.hostId).map((p) => p.id);
+    v.open = { id: 'v' + (++v.seq), kind: a.kind, entryId: a.entryId, note: clip(a.note ?? sg?.note), from: by, suggestedBy: sg?.by, undo: clip(a.undo), voters, yes: [by], no: [], status: 'open' };
+    if (sg) v.suggestions = v.suggestions.filter((x) => x !== sg);
+    settle(v.open);
+    return;
+  }
+  if (a.type === 'vote/cast') {
+    const o = v.open; if (!o || o.status !== 'open') fail('No vote is under way.');
+    if (!o!.voters.includes(by)) fail('You weren\'t in the room when this vote started.');
+    o!.yes = o!.yes.filter((x) => x !== by); o!.no = o!.no.filter((x) => x !== by);
+    (a.yes ? o!.yes : o!.no).push(by);
+    settle(o!);
+    return;
+  }
+  if (a.type === 'vote/close') { if (!isHost(g, by)) fail('Host only.'); v.open = null; return; }
+  if (a.type === 'narrator/rewrite') {
+    if (!isHost(g, by)) fail('Only the Narrator (the host\'s client) rewrites.');
+    const o = v.open; if (!o || o.status !== 'passed' || o.kind !== 'edit' || o.entryId !== a.entryId) fail('No edit was voted through for that line.');
+    const e = g.story.entries.find((x) => x.id === a.entryId)!;
+    if (a.refused) push(g, { kind: 'system', text: 'The Narrator kept its words: ' + clip(a.refused), ooc: true });
+    else { if (!e.original) e.original = e.text; e.text = String(a.text || '').slice(0, 6000) || e.text; push(g, { kind: 'system', text: 'The room voted to reword the Narrator\'s line; it was rewritten.', ooc: true }); }
+    v.open = null;
+  }
+}
+/** Unanimous: one no fails it at once; every voter's yes passes it. */
+function settle(o: Vote) { if (o.no.length) o.status = 'failed'; else if (o.voters.every((p) => o.yes.includes(p))) o.status = 'passed'; }
+
+/**
+ * A reroll the room voted for (spec: Rerolls and edits): the game goes back to the copy the host kept from just before
+ * that Narrator turn, so everything the turn did, and everything after it, is undone, dice included. The Narrator is
+ * asked again (its work restored) with the players' note. The old turn stays in the log, greyed, and is never sent to
+ * the Narrator. Costs are kept; the version moves forward so every copy accepts the result.
+ */
+export function rerollFrom(current: GameState, before: GameState, note: string): GameState {
+  const g: GameState = JSON.parse(JSON.stringify(before));
+  const v = votesOf(current), o = v.open!;
+  const old = current.story.entries.findIndex((e) => e.id === o.entryId);
+  const dropped = old >= 0 ? current.story.entries.slice(old).filter((e) => e.kind === 'narration' && !e.ooc).map((e) => ({ ...e, id: e.id + '-r' + v.seq, rerolled: true, ooc: true })) : [];
+  g.story.entries.push(...dropped);
+  g.v = current.v + 1; g.seq = Math.max(g.seq, current.seq);
+  g.narrator = { ...g.narrator, busy: false, error: null, usage: current.narrator.usage };
+  g.players = current.players; g.votes = { ...votesOf(current), open: null, turns: votesOf(g).turns.filter((t) => g.story.entries.some((e) => e.id === t && !e.rerolled)) };
+  if (g.story.work) g.story.work = { ...g.story.work, redo: note || 'Tell it differently.' };
+  g.story.entries.push({ id: 'e' + (++g.seq), kind: 'system', text: 'The room voted to reroll the Narrator\'s turn' + (note ? ': "' + note + '"' : '') + '. Everything since it is undone.', ooc: true });
+  return g;
+}

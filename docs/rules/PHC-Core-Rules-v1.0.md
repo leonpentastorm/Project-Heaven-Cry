@@ -1006,6 +1006,19 @@ It's an RPG: players can attack anyone and anything. The game never refuses an a
 - **The Narrator** puts every person the party can see or reach on the map as a token, maps a declared attack to actions (a target can be named by id or by exact name), and never refuses or softens one.
 - A fight that has no foes can never end as a win.
 
+## Rerolls and edits
+
+The room can redo or reword the AI Narrator's answers, **only if everyone agrees**.
+
+- **Suggest:** any player can suggest rerolling or rewording one of the Narrator's lines, with a note ("Keel wouldn't shoot first"). The suggestion goes to the host. Each player can have at most 3 waiting.
+- **Vote:** only the host starts a vote, from a suggestion or on their own. Every player online when it starts must say yes; one no and nothing happens. The host's own yes counts.
+- **Reroll:** possible for the Narrator's last 5 turns. The game goes back to how it was just before that turn: everything the turn did, and everything after it (moves, rolls, fights, loot, XP, memory), is undone, dice included. The Narrator answers the same moment again with the note.
+  - The old answer stays in the log, greyed and struck through, and is never sent to the Narrator.
+  - Costs already spent are kept.
+  - The copies of past states live only on the host's computer.
+- **Reword:** nobody can type into the Narrator's words. The Narrator rewords its own line as asked: wording, tone, emphasis and details that change no outcome. It refuses, keeping its words, any request that would change what happened (items, money, injuries, deaths, positions, who did what, results, new events). The original is kept.
+- **Cost:** a reroll is one Narrator call; a rewording is a small call at low effort.
+
 ## The Narrator's memory
 
 A campaign of 50 hours and four players is far more story than any prompt should carry. Models also get worse as their input grows. So the engine keeps the campaign as data and gives the Narrator only what the moment needs, inside a hard cost ceiling. **The ceiling is $0.50 per Narrator turn**, every round of lookups included. On Sonnet 5.5 at medium effort, a call on a full 50-hour, 4-player save measured **$0.18 with nothing cached and $0.045 warm**.
@@ -1205,3 +1218,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 64. **Overworld rounds:** the examine, approach and exit costs (1, 2, 1 AP), the notice range (4 + bonus − Dexterity), the notice bonuses by tier, sitting out round 1 after an open attack, and the Narrator's queued actions spending next round's AP.
 65. **The Narrator's memory:** the $0.50 ceiling, 6 scenes per chapter, the 9,000-character budgets for active memory and transcript, the ledger caps (300 people, 200 threads, 1,500 facts), the forgetting curve (scenes/10).
 66. **Anyone is a target:** a point-of-interest person fights as a minion with fists; attacking something without HP costs 2 AP; Downed outside a fight lasts until a stim or treatment.
+67. **Rerolls and edits:** the last 5 turns can be rerolled; 3 waiting suggestions per player; only online players vote.
