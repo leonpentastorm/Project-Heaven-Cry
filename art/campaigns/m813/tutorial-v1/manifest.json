@@ -1,0 +1,40 @@
+{
+  "brief": "art/briefs/m813-tutorial-campaign.md",
+  "status": "review-candidate",
+  "production_approved": false,
+  "assets": [
+    {
+      "id": "m813-shield-line",
+      "group": "A",
+      "order": 1,
+      "name": "Shield Line",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/shield-line.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| A1 | `m813-shield-line` · `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "31b5d4a8e5ee9144ea791e6ccf13cc5d9f680ad48adfaabc9b6bba7ce7a2c2a6",
+      "source_path": "art/illustrations/m813/v2/sources/m813-shield-line.png",
+      "source_sha256": "2153dfc443c70988ebaec2f57315517ce2f7fe4b1658cabfe17944723b5a8fe9",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-shield-line-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md"
+    }
+  ]
+}
