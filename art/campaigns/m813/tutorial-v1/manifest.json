@@ -1092,6 +1092,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-tool-rack.prompt.txt"
+    },
+    {
+      "id": "obj-cargo-pylon",
+      "group": "E",
+      "order": 4,
+      "name": "Cargo Pylon",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-cargo-pylon.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E4 | `obj-cargo-pylon` | Cargo pylon, standing (pillar) | Rear pad K7 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "366bb80a40a22c9671b2c69d67afd3a7cda98caebddcdf1bede0bce0d78938b4",
+      "source_path": "art/sprites/objects/v1/sources/obj-cargo-pylon.png",
+      "source_sha256": "45d3af0ab23b267af967315831ea0223644e482b6606ebc80a513ef2a39ba85b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-cargo-pylon-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-cargo-pylon-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-cargo-pylon-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-cargo-pylon.prompt.txt"
     }
   ]
 }
