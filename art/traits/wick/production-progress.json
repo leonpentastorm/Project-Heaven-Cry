@@ -176,11 +176,12 @@
     "closing-argument",
     "solid-image",
     "case-closed",
-    "everyones-friend"
+    "everyones-friend",
+    "open-hand"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 97
+    "perks": 98
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -206,7 +207,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "open-hand",
     "many-hands",
     "their-own-idea",
     "the-twin-pays",

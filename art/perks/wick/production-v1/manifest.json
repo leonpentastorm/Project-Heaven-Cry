@@ -2222,6 +2222,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "open-hand",
+      "data_id": "open_hand",
+      "name": "Open Hand",
+      "family": "perks",
+      "order": 94,
+      "mood": "Tender",
+      "action": "Wick kneels and holds out a small flower toward an armoured gauntlet (partial, entering from the side) that is lowering its blade.",
+      "screen": "Soft smile",
+      "prop": "Flower",
+      "path": "art/perks/wick/production-v1/open-hand.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/open-hand.png",
+        "128": "art/perks/wick/production-v1/exports/128/open-hand.png",
+        "64": "art/perks/wick/production-v1/exports/64/open-hand.png",
+        "56": "art/perks/wick/production-v1/exports/56/open-hand.png",
+        "48": "art/perks/wick/production-v1/exports/48/open-hand.png",
+        "44": "art/perks/wick/production-v1/exports/44/open-hand.png",
+        "40": "art/perks/wick/production-v1/exports/40/open-hand.png"
+      },
+      "batch": "G",
+      "source_sha256": "4e566b87700f7a0e82f8645e63e0908645494db3d17025fe287b69484d86533e",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
