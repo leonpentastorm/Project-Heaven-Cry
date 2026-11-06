@@ -160,11 +160,12 @@
     "sixth-sense",
     "what-could-be",
     "last-wall",
-    "walking-wounded"
+    "walking-wounded",
+    "skin-map"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 81
+    "perks": 82
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -190,7 +191,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "skin-map",
     "earthbreaker",
     "nothing-left-to-fear",
     "the-name-they-whisper",

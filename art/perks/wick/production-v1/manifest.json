@@ -1806,6 +1806,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "skin-map",
+      "data_id": "skin_map",
+      "name": "Skin Map",
+      "family": "perks",
+      "order": 78,
+      "mood": "Eerie, Calm",
+      "action": "Wick kneels low with one mitten pressed flat to the floor; big ripple rings spread out from the palm across the ground to the frame edges.",
+      "screen": "Eyes closed",
+      "prop": "Ripple rings in the floor",
+      "path": "art/perks/wick/production-v1/skin-map.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/skin-map.png",
+        "128": "art/perks/wick/production-v1/exports/128/skin-map.png",
+        "64": "art/perks/wick/production-v1/exports/64/skin-map.png",
+        "56": "art/perks/wick/production-v1/exports/56/skin-map.png",
+        "48": "art/perks/wick/production-v1/exports/48/skin-map.png",
+        "44": "art/perks/wick/production-v1/exports/44/skin-map.png",
+        "40": "art/perks/wick/production-v1/exports/40/skin-map.png"
+      },
+      "batch": "G",
+      "source_sha256": "80133ceb6dbd15774a1e0afd154e6aa631b922ccab1ec5cb4f57b84bb8868ed8",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
