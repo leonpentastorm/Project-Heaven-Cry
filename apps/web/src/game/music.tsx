@@ -137,7 +137,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   return (
     <>
       {/* The panel (and the video in it) stays in the page: on screen when open, out of view when closed, so the music keeps playing. */}
-      <div role="dialog" aria-label="Music" aria-hidden={!open} style={{ position: 'fixed', [side]: open ? 16 : -10000, bottom: 64, zIndex: 55, width: 380, padding: 12, borderRadius: 14, background: '#10151F', border: '1px solid #3B475D', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div role="dialog" aria-label="Music" aria-hidden={!open} style={{ position: 'fixed', [side]: open ? 16 : -10000, bottom: 64, zIndex: 9, width: 380, padding: 12, borderRadius: 14, background: '#10151F', border: '1px solid #3B475D', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div ref={holder} style={{ width: 356, height: 200, borderRadius: 8, overflow: 'hidden', background: '#000' }} />
           <div style={label}>NOW PLAYING{want?.layer ? ' · ' + ({ spotlight: 'SPOTLIGHT', pin: 'KEPT ON', encounter: 'FIGHT THEME', combat: 'FIGHT', ambient: 'AREA' } as any)[want.layer] : ''}</div>
           {track ? <>
@@ -168,12 +168,12 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
           })}
       </div>
       <button onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
-        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 55, maxWidth: 300, minHeight: 40, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
+        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music'}</span>
       </button>
       {credit && !open && (
-        <div role="status" style={{ position: 'fixed', [side]: 16, bottom: 66, zIndex: 54, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + credit.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
+        <div role="status" style={{ position: 'fixed', [side]: 16, bottom: 66, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + credit.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
           <div style={label}>♪ NOW PLAYING</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#E7EBF3' }}>{credit.title}</div>
           <div style={{ fontSize: 12, color: '#A3AEC2' }}>{credit.artist}</div>

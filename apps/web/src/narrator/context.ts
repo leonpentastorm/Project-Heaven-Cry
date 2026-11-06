@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -115,6 +115,12 @@ LOOT
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
 
+THE OVERWORLD (rounds)
+- Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.
+- People and enemies stand on the map as tokens (listed each turn with their ids, side and tile). Place, move, update (side or name) or remove them with npcs[]: a place needs name, side (hostile or neutral), tier, weapon id and at. Move them when the story moves them; a hostile stepping next to a hidden character makes that character roll to stay hidden.
+- Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone. Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
+- If a player attacks a token from the overworld, the engine starts the fight by itself. If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
+
 STORY MOMENTS
 - Some campaigns have illustrated moments. When the story reaches one the turn lists as open, set moment to its id: the players see the picture right after your narration. Once each; otherwise an empty string.
 
@@ -182,7 +188,7 @@ export function partyPrompt(g: GameState): string {
 /** The uncached part: memory, recent transcript, and what this call must do. */
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
-  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$/.test(e.text)).slice(-40).map((e) => {
+  const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$|^Round \d+\.$| (moves|sprints) to [A-Z]+\d+ \(/.test(e.text)).slice(-40).map((e) => {
     if (e.kind === 'player') return `[${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
     if (e.kind === 'narration') return `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
@@ -192,7 +198,7 @@ export function turnPrompt(g: GameState): string {
   const choices = g.overreach.filter((o) => o.choice).map((o) => `${g.characters[o.charId]?.name} ${o.choice === 'resist' ? 'resisted' : 'indulged'} ${SKILL[o.skill].name}'s push: "${o.push}"`).join('\n');
   const job = w.kind === 'opening'
     ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
-    : w.kind === 'round' ? `Round ${g.story.round}: every player has acted (see the transcript's last [Player] lines). Answer all of them together. Request checks where outcomes are uncertain.`
+    : w.kind === 'round' ? `Round ${g.story.round} has closed: every player has used their turn. Answer what needs you since your last turn (lines said, examines, attempts, travel requests, anyone spotted), all together. Request checks where outcomes are uncertain.`
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
   const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + ' HP'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
@@ -206,8 +212,10 @@ export function turnPrompt(g: GameState): string {
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
   const moments = momentsOpen(g).map((m) => `${m.id}: ${m.when}`).join('\n  ');
+  const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.side}, ${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}`).join('\n  ');
+  const sneaking = Object.values(g.characters).filter((c) => g.story.sneak?.[c.id]).map((c) => c.name + (g.story.hidden?.[c.id] ? ' (hidden)' : ' (sneaking, but seen)')).join(', ');
   const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -272,6 +280,15 @@ export function submitTool(g: GameState) {
   }, required: ['action'] } };
   const open = momentsOpen(g);
   schema.properties.moment = { type: 'string', enum: ['', ...open.map((m) => m.id)], description: 'A story moment to show the players now (an illustration), or empty' };
-  schema.required = [...schema.required, 'objects', 'moment'];
+  schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map (empty when nothing changes)', items: { type: 'object', properties: {
+    action: { type: 'string', enum: ['place', 'move', 'update', 'remove'] }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
+    side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
+  }, required: ['action'] } };
+  schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {
+    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone'] },
+    to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id (attack, analyze) or a charId (stim)' },
+    mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'A door id, for door' },
+  }, required: ['charId', 'act'] } };
+  schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }

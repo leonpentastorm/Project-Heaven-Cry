@@ -8,7 +8,7 @@ export async function player(browser, name) {
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+  page.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy violation/.test(m.text())) errors.push('console: ' + m.text()); });
   page.errors = errors; page.pname = name;
   return page;
 }

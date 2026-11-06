@@ -959,6 +959,40 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 5. **Hold the tone line:** NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them, careless and therefore cruel. The tragedy belongs to the NPCs.
 6. Leave numbers to the engine. The Narrator asks for a roll and narrates the result; it never invents a modifier.
 
+## Overworld rounds
+
+Outside fights the story runs in rounds, the way a fight does, but with everyone acting at once.
+
+- **Each round** every player character has a full turn of AP (6, at the same movement rate as in a fight) and every player has one **Say**. Players act in any order.
+- **Actions** are the fight's actions at the fight's AP costs, on the area map:
+  - Moving: Move, Sprint, Sneak.
+  - Attacking: Shot, Aimed shot, Melee.
+  - Analyze, Reload, Load a magazine, Clear a jam, Field Repair, Stim an ally, drop prone or stand.
+  - Points of interest: examining one costs **1 AP**, trying an approach **2 AP**, stepping through an exit **1 AP** (and it asks the Narrator to travel). Opening a door costs 1 AP.
+- **Pass** gives up only the Say. **End turn** gives up the AP left, and the Say if unused. Running out of AP ends the turn too.
+- **The round closes** when every player has used or passed the Say and ended every character's turn (the host can skip an away player). It goes to the Narrator only if something needs judgement: a line said, an examine, an attempt, a travel request, or a sneaking character spotted. Otherwise the next round opens at once, with no Narrator call.
+- **Trails:** each character's path this round shows on every player's area map and minimap.
+
+**People and enemies** stand on the overworld map as tokens: hostile or neutral, each with a tier and a weapon.
+- The campaign places them, and the Narrator places, moves, updates or removes them.
+- A neutral token turns hostile when attacked.
+- When the Narrator starts a fight on the current map, every hostile token joins where it stands.
+
+**Attacking from the overworld** starts the fight on the spot, with everyone where they stand, the target and every hostile token on the map.
+- **Seen:** the attack still lands, but the attacker sits out round 1 and acts from round 2. Allies roll initiative as normal.
+- **Hidden** (sneaking and unseen): an ambush. The attack lands and the fight opens on the attacker's turn, with the AP they had left after it.
+
+**Sneak** is a move mode for +1 AP per tile, with no dice. Starting to sneak hides you. You stay hidden until a hostile notices you, and then you must pass **Ingenuity** (d20 + Ingenuity vs 10 + its notice bonus) or be seen. A hostile notices you when:
+- it has line of sight within its notice range: 4 + its notice bonus − your Dexterity modifier, halved in the dark;
+- it steps next to you;
+- or you attack it from its front (the half it faces).
+
+Notice bonus: minion +0, soldier +2, elite +4, boss +6. Each hostile checks each character at most once a round. Once seen, you stay seen until you move normally and start sneaking again.
+
+**Typed intents.** A player can also say what they do ("I move to A15 and shoot that guard"). The Narrator turns the mechanical part into actions, and the engine runs them as that player's own actions when the next round opens, from their fresh AP, under every rule above. An action the rules forbid is reported, not done.
+
+**The shared spotlight.** When a player opens a point of interest or rolls a check, the panel or the dice table opens for the whole party by default, with a large "NAME'S TURN" banner. Everyone sees what that player hovers and chooses, live. Anyone can close it and wait for the story to tell them what happened.
+
 ## Music
 
 The room hears one song at a time. The engine decides what plays and why; each player's browser plays it through YouTube's embedded player and can pause it or turn it down for that player alone. **Pausing changes nothing in the rules:** a song counts as playing for everyone while the room plays it.
@@ -1117,3 +1151,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 61. **Weapons v2** (accepted 7 Nov 2026): every new weapon, mod, rarity, durability, calibre and price number, the 58 weapon skills, off-hand items and the slot armour.
 62. **Music:** the spotlight triggers and their once-per-scene limit, the 2-area pin, the big-heal line at 30 HP, the Musek Blestor's weight and price, and the starting silence of 2.
 63. **The Narrator's wiki:** 3 lookups a turn, 8 keys a lookup, and the magic-lore thresholds (3 points).
+64. **Overworld rounds:** the examine, approach and exit costs (1, 2, 1 AP), the notice range (4 + bonus − Dexterity), the notice bonuses by tier, sitting out round 1 after an open attack, and the Narrator's queued actions spending next round's AP.

@@ -158,3 +158,10 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **The campaign card** now uses the shield-line banner, as the handoff suggested.
     - **Approval:** Leon approved the set for the game. The catalog's `production_approved` flags stay with the artist's pipeline (its validator requires them as delivered).
     - **Map tokens:** pinned inside the circle (they collapsed to a sliver).
+79. **The overworld runs in rounds, like a fight** (Leon, 6 Nov 2026). Each round gives one Say and a full turn of AP. Every combat action works on the area map. Pass gives up only the Say; End turn gives up the AP. Attacks from the overworld start fights: seen means the attacker sits out round 1; hidden means an ambush on the attacker's turn with the AP left.
+    - **Calls:** the Narrator is called only when a round has something to judge (Leon's call).
+    - **Stealth:** Sneak uses a deterministic notice range plus an Ingenuity roll to stay hidden when an enemy sees you, steps next to you, or you attack it from its front (Leon's call).
+    - **Tokens:** people and enemies now stand on the overworld map (campaign `npcs`, Narrator `npcs[]`).
+    - **Spotlight:** a player's point of interest and rolls show to the whole party by default, with a large turn banner and their hover. Anyone can close it.
+    - **Typed intents:** the Narrator maps typed intents ("I move to A15 and shoot him") to engine actions (`actions[]`), run as the player's own actions from next round's AP. `moves[]` stays for the story moving people. Checked live: the Narrator turned "I move to J4 and shoot that drone" into a move and an attack, and the engine opened the fight.
+    - **How it's built:** each overworld action runs through the combat engine on a throwaway fight state built from the story, so the rules aren't duplicated.

@@ -26,6 +26,8 @@ export interface CampaignZone {
   exits?: { to: string; at?: string; text: string }[];
   /** Dark zones halve sight except near light sources (spec: Vision). */
   dark?: boolean;
+  /** People and enemies standing on this zone's overworld map (spec: Overworld rounds). Facing: N, E, S or W. */
+  npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W' }[];
   /** Art: the map painting under the grid and the zone's banner (asset ids). */
   art?: { map?: string; banner?: string };
   /** Area and fight music for this zone (spec: Music). */
@@ -110,6 +112,7 @@ export function validateCampaign(c: any): string[] {
     need(ids.has(e.zone), 'Encounter "' + e.name + '" is in unknown zone "' + e.zone + '".');
     for (const f of e.enemies || []) need(ENEMY[f.tier] && WEAPON[f.weapon], 'Encounter "' + e.name + '": enemy "' + f.name + '" needs a known tier and weapon.');
   }
+  for (const z of c.zones || []) for (const n of z.npcs || []) need(n && n.name && ['hostile', 'neutral'].includes(n.side) && ENEMY[n.tier] && WEAPON[n.weapon] && n.at, z.id + ': npc "' + (n?.name || '?') + '" needs name, side (hostile or neutral), a known tier and weapon, and at.');
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
   return errs;
 }

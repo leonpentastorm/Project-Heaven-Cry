@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -48,6 +48,19 @@ export interface GameState {
     zoneObjects?: Record<string, MapObject[]>;
     /** Story moments already shown (each once). */
     moments?: string[];
+    /** Overworld rounds (spec: Overworld rounds): AP left and turn ended per character, this round's paths, Sneak. */
+    ap?: Record<string, number>; ended?: Record<string, boolean>; trail?: Record<string, string[]>;
+    sneak?: Record<string, boolean>; hidden?: Record<string, boolean>;
+    /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
+    needs?: boolean;
+    /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
+    queued?: NonNullable<NarratorTurn['actions']>;
+    /** Notice checks made this round, by "npc|char", so each pair rolls once a round. */
+    noticed?: Record<string, number>;
+    /** People and enemies on the overworld map (spec: Overworld rounds), and those of zones the party has left. */
+    npcs?: Npc[]; zoneNpcs?: Record<string, Npc[]>;
+    /** The party's shared spotlight: who is dealing with what (a point of interest), and what they're hovering. */
+    focus?: { charId: string; objId?: string; hover?: number; seq: number } | null;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -82,6 +95,11 @@ export type NarratorTurn = {
   deeds?: { charId: string; perkId: string; deed: string }[];
   /** A story moment to show (an illustration), by id; only those open in this zone count. */
   moment?: string;
+  /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
+   * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }[];
+  /** Place, move, update or remove people and enemies on the overworld map. */
+  npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string }[];
   combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
@@ -117,8 +135,14 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }
+  | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
   | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
 
+/** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
+export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean }
+
+export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door';
 export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
 const id = (g: GameState, p: string) => p + (++g.seq);
@@ -182,15 +206,29 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.story.spoken[by] != null) fail('You already spoke this round.');
       if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
       const text = a.text.trim().slice(0, 1200); if (!text) fail('Say something.');
-      g.story.spoken[by] = text;
+      g.story.spoken[by] = text; g.story.needs = true;
       push(g, { kind: 'player', who: by, text, head: mine.map((c) => c.name).join(' & '), roll: !!a.roll });
       closeRoundIfDone(g);
       return;
     }
+    case 'story/pass': {
+      if (g.phase !== 'story' || g.story.await !== 'players') fail('Not your turn to speak.');
+      if (!charsOf(g, by).length) fail('You have no character in this story.');
+      if (g.story.spoken[by] != null) fail('You already spoke this round.');
+      g.story.spoken[by] = ''; closeRoundIfDone(g); return;
+    }
+    case 'story/focus': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      const f = g.story.focus; g.story.focus = { charId: c.id, objId: a.objId, hover: a.hover, seq: f && f.charId === c.id && f.objId === a.objId ? f.seq : g.seq + 1 };
+      return;
+    }
+    case 'story/unfocus': { const f = g.story.focus; if (f && (g.characters[f.charId]?.owner === by || isHost(g, by))) g.story.focus = null; return; }
+    case 'world/act': { worldAct(g, a, by); return; }
     case 'story/skip': {
       if (!isHost(g, by)) fail('Only the host can skip a player.');
       if (g.story.await !== 'players') return;
       g.story.spoken[a.playerId] = '';
+      for (const c of charsOf(g, a.playerId)) (g.story.ended ||= {})[c.id] = true;
       const p = g.players.find((x) => x.id === a.playerId);
       push(g, { kind: 'system', text: (p?.name || 'A player') + ' is skipped this round.', ooc: true });
       closeRoundIfDone(g);
@@ -296,52 +334,34 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.campaign!.tone) g.settings.tone = g.campaign!.tone;
       return;
     }
-    case 'story/move': {
-      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (g.phase !== 'story') fail(g.phase === 'combat' ? 'A fight is on: move on the combat grid.' : 'The session hasn\'t started.');
-      if (c!.dead) fail('The dead stay where they fell.');
-      const map = zoneMap(g), k = /,/.test(a.to) ? a.to : keyOf(a.to, map);
-      if (!k || !standable(map, k)) fail('Nobody can stand there.');
-      if (storyObjects(g).some((o) => o.pos === k && blocksMove(o))) fail('Something is in the way there.');
-      const pos = positionsOf(g); if (Object.entries(pos).some(([id, p]) => id !== c!.id && p === k)) fail('Someone is already standing there.');
-      if (!walkable(map, storyObjects(g), pos[c!.id], k!)) fail('There\'s no way through to there: a wall or a closed door is in the way.');
-      pos[c!.id] = k!;
-      arrive(g, c!, k!);
-      return;
-    }
-    case 'story/door': {
-      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (g.phase !== 'story') fail('In a fight, doors cost 1 AP on the combat screen.');
-      const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
-      if (dist(positionsOf(g)[c!.id], o!.pos) > 1) fail('Walk up to it first.');
-      if (o!.locked) fail('Locked. Examine it for a way in.');
-      o!.open = !o!.open; push(g, { kind: 'system', text: c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.' });
-      return;
-    }
+    case 'story/move': { worldAct(g, { type: 'world/act', charId: a.charId, act: 'move', to: a.to, how: 'move' }, by); return; }
+    case 'story/door': { worldAct(g, { type: 'world/act', charId: a.charId, act: 'door', objId: a.objId }, by); return; }
     case 'poi/examine': case 'poi/try': case 'poi/travel': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase !== 'story') fail('Deal with it after the fight.');
-      if (g.story.await !== 'players') fail('Wait for your turn to speak.');
-      if (g.story.spoken[by] != null) fail('You already acted this round.');
+      if (g.story.await !== 'players') fail('Wait for the round to open.');
+      if (g.story.ended?.[c!.id]) fail(c!.name + ' has ended the turn.');
       if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
+      const cost = a.type === 'poi/try' ? 2 : 1; if (apLeft(g, c!) < cost) fail('Needs ' + cost + ' AP (' + apLeft(g, c!) + ' left).');
       const o = storyObjects(g).find((x) => x.id === a.objId); if (!o || o.hidden) fail('Nothing like that here.');
       if (dist(positionsOf(g)[c!.id], o!.pos) > 1) fail('Walk up to it first (stand on it or next to it).');
       if (a.type === 'poi/travel') {
         if (!o!.to) fail('That doesn\'t lead anywhere.');
         const dest = campaignOf(g)?.zones.find((z) => z.id === o!.to)?.name || o!.to;
         const text = 'asks to travel to ' + dest + ' (the way out at ' + refOf(o!.pos) + ') [travel:' + o!.to + ']';
-        g.story.spoken[by] = text; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
+        spendAp(g, c!, 1); g.story.needs = true; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
         closeRoundIfDone(g); return;
       }
       if (a.type === 'poi/examine') {
         const text = 'examines the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + ' [' + o!.id + ']';
-        g.story.spoken[by] = text; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
+        spendAp(g, c!, 1); g.story.needs = true; push(g, { kind: 'player', who: by, text: c!.name + ' ' + text + '.', head: c!.name });
         closeRoundIfDone(g); return;
       }
       const ap = o!.approaches[a.idx]; if (!ap) fail('No such approach.');
       if (o!.resolved) fail('That\'s already dealt with.');
       if (triedThisScene(ap!, c!.id, g.story.scene.n)) fail(c!.name + ' already tried that this scene.');
       push(g, { kind: 'player', who: by, text: c!.name + ' tries: ' + ap!.label + ' (' + o!.name + ', ' + refOf(o!.pos) + ').', head: c!.name });
+      spendAp(g, c!, 2);
       g.checks.push({ id: id(g, 'k'), charId: c!.id, skills: ap!.skills.filter((s) => SKILL[s]), tn: ap!.tn, stakes: ap!.stakes || ap!.label, done: false, poi: { objId: o!.id, idx: a.idx } });
       return;
     }
@@ -370,7 +390,12 @@ function reduce(g: GameState, a: Action, by: string) {
 }
 
 function closeRoundIfDone(g: GameState) {
-  if (speakers(g).every((p) => g.story.spoken[p.id] != null)) { g.story.await = 'narrator'; g.story.work = { kind: 'round' }; }
+  if (g.phase !== 'story' || g.story.await !== 'players') return;
+  const done = (p: Player) => g.story.spoken[p.id] != null && charsOf(g, p.id).every((c) => g.story.ended?.[c.id] || apLeft(g, c) <= 0);
+  if (!speakers(g).every(done) || g.checks.some((k) => !k.done && k.poi)) return;
+  // Only call the Narrator when something needs judgement (spec: Overworld rounds); otherwise the next round just opens.
+  if (g.story.needs) { g.story.await = 'narrator'; g.story.work = { kind: 'round' }; }
+  else { newRound(g); push(g, { kind: 'system', text: 'Round ' + g.story.round + '.' }); }
 }
 
 function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
@@ -470,11 +495,15 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   }
   if (t.travel && t.travel !== zoneMap(g).id && campaignOf(g)?.zones.some((z) => z.id === t.travel)) {
     const zo = (g.story.zoneObjects ||= {}); zo[zoneMap(g).id] = storyObjects(g);
+    const zn = (g.story.zoneNpcs ||= {}); zn[zoneMap(g).id] = npcsOf(g);
     g.story.zone = t.travel; g.story.positions = {}; g.story.objects = zo[t.travel] || defaultObjects(zoneMap(g)); positionsOf(g);
+    g.story.npcs = zn[t.travel] || initialNpcs(g); g.story.hidden = {}; g.story.sneak = {};
     push(g, { kind: 'system', text: 'The party travels to ' + zoneMap(g).name + '.' });
     musicOnTravel(g);
   }
   for (const op of t.objects || []) applyObjectOp(g, op);
+  for (const op of t.npcs || []) applyNpcOp(g, op);
+  if ((t.npcs || []).length) noticeAll(g);
   for (const l of t.loot || []) {
     const c = g.characters[l.charId]; if (!c || c.dead) continue;
     const n = Math.max(1, Math.min(20, Math.round(l.qty || 1))), pack = packOf(c).map((x) => ({ ...x }));
@@ -486,10 +515,16 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + (l.name || WEAPON[l.item]?.name || ITEM[l.item]?.name) + (rarity !== 'standard' && WEAPON[l.item] ? ' (' + rarity + ')' : '') + '.' });
   }
   if (t.endScene?.summary) g.story.journal.push(t.endScene.summary);
+  g.story.queued = t.combat && t.combat.enemies?.length ? [] : (t.actions || []).filter((x) => x && g.characters[x.charId]).slice(0, 6);
   if (t.combat && t.combat.enemies?.length) {
     const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-    const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
+    let foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
+    // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
+    if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
+      const used = new Set<number>();
+      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f = { name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+      g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
     g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
     { const seen: Record<string, number> = {}; for (const u of g.combat.units) if (u.side === 'foe') { const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
@@ -501,7 +536,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (g.overreach.some((x) => !x.choice)) { g.story.await = 'choices'; return; }
   // Results consumed: the next round opens.
   g.checks = []; g.overreach = [];
-  g.story.round++; g.story.spoken = {}; g.story.await = 'players';
+  newRound(g);
 }
 
 // ---------- combat actions ----------
@@ -586,24 +621,7 @@ function runEnemies(g: GameState) {
 
 function finishCombat(g: GameState) {
   const cb = g.combat!;
-  for (const u of cb.units) if (u.charId) {
-    const c = g.characters[u.charId];
-    c.hp = u.dead ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
-    c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
-    // Ammo carried out of the fight (spec: Reloading).
-    c.loaded = u.ammo;
-    if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
-    { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
-      if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
-    const pack = packOf(c).map((it) => ({ ...it }));
-    const mi = pack.findIndex((it) => it.weapon === c.weapon && it.mags);
-    if (mi >= 0 && u.mags) { pack[mi].mags = [...u.mags]; pack[mi].qty = u.mags.length; }
-    const w = WEAPON[c.weapon];
-    if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
-    for (const x of u.extra || []) { let it = pack.find((p) => p.weapon === x.weapon && p.mags); if (!it) { it = { ...magsOf(x.weapon, 0), mags: [] }; pack.push(it); } it.mags!.push(x.rounds); it.qty = it.mags!.length; }
-    c.pack = pack.filter((it) => it.qty > 0 || it.mags);
-    const fam = WEAPON[u.weapon]?.mastery_family; if (fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
-  }
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, true);
   const won = cb.over === 'win';
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + ' rounds. ' + cb.units.map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
@@ -640,7 +658,7 @@ function arrive(g: GameState, c: Character, k: string) {
 }
 function poiResult(g: GameState, ck: Check, by: string) {
   const c = g.characters[ck.charId], o = storyObjects(g).find((x) => x.id === ck.poi!.objId), ap = o?.approaches[ck.poi!.idx];
-  g.story.spoken[by] = 'tried an approach'; // the attempt is this player's turn this round
+  g.story.needs = true; // the Narrator narrates the attempt
   if (o && ap) {
     ap.tries.push({ charId: c.id, name: c.name, ok: !!ck.roll?.ok, total: ck.roll?.total || 0, scene: g.story.scene.n });
     if (ck.roll?.ok && ap.success) {
@@ -717,4 +735,184 @@ export function portraitFor(g: GameState, name: string, seen: Record<string, num
   if (!key) return null;
   const v = P[key]; if (!Array.isArray(v)) return v;
   const i = seen[key] = (seen[key] ?? -1) + 1; return v[i % v.length];
+}
+
+/** Write a fighter back onto its character: HP, injuries, ammo, magazines, durability, parts (and kills after a fight). */
+function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: boolean) {
+  const c = g.characters[u.charId!]; if (!c) return;
+    c.hp = u.dead ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
+    c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
+    // Ammo carried out of the fight (spec: Reloading).
+    c.loaded = u.ammo;
+    if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
+    { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
+      if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
+    const pack = packOf(c).map((it) => ({ ...it }));
+    const mi = pack.findIndex((it) => it.weapon === c.weapon && it.mags);
+    if (mi >= 0 && u.mags) { pack[mi].mags = [...u.mags]; pack[mi].qty = u.mags.length; }
+    const w = WEAPON[c.weapon];
+    if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    for (const x of u.extra || []) { let it = pack.find((p) => p.weapon === x.weapon && p.mags); if (!it) { it = { ...magsOf(x.weapon, 0), mags: [] }; pack.push(it); } it.mags!.push(x.rounds); it.qty = it.mags!.length; }
+    c.pack = pack.filter((it) => it.qty > 0 || it.mags);
+    const fam = WEAPON[u.weapon]?.mastery_family; if (afterFight && fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
+}
+
+// ---------- overworld rounds (spec: Overworld rounds) ----------
+/** How hard an enemy is to slip past: its notice bonus (Vigilant) and the TN of the Ingenuity check to stay hidden. */
+export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
+export const ROUND_AP = 6;
+export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
+function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, apLeft(g, c) - n); }
+/** A new overworld round: full AP, a fresh Say, no trails. */
+export function newRound(g: GameState) {
+  g.story.round++; g.story.spoken = {}; g.story.await = 'players';
+  g.story.ap = {}; g.story.ended = {}; g.story.trail = {}; g.story.needs = false; g.story.noticed = {}; g.story.focus = null;
+  // What the Narrator mapped from players' words runs now, as those players' own actions, from their fresh AP.
+  const q = g.story.queued || []; g.story.queued = [];
+  for (const x of q) {
+    if (g.phase !== 'story' || g.story.await !== 'players') break;
+    const c = g.characters[x.charId]; if (!c || c.dead) continue;
+    try { worldAct(g, { type: 'world/act', ...x }, c.owner); }
+    catch (e) { if (!(e instanceof RuleError)) throw e; push(g, { kind: 'system', text: c.name + ' can\'t ' + (x.act === 'move' ? 'move there' : x.act === 'attack' ? 'make that attack' : x.act) + ': ' + e.message }); }
+  }
+}
+const FACE: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0] };
+/** The zone's people and enemies as it starts (from the campaign). */
+export function initialNpcs(g: GameState): Npc[] {
+  const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
+  const seen: Record<string, number> = {};
+  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined }));
+}
+export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
+function facingToward(from: string, to: string): [number, number] { const [a, b] = from.split(',').map(Number), [c, d] = to.split(',').map(Number); return [Math.sign(c - a), Math.sign(d - b)]; }
+function partyCentre(g: GameState): string { const ps = Object.values(positionsOf(g)); if (!ps.length) return '0,0'; const xs = ps.map((k) => +k.split(',')[0]), ys = ps.map((k) => +k.split(',')[1]); return Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) + ',' + Math.round(ys.reduce((a, b) => a + b, 0) / ys.length); }
+function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number]) {
+  const list = npcsOf(g), map = zoneMap(g);
+  const free = (k: string) => standable(map, k) && !storyObjects(g).some((o) => o.pos === k && blocksMove(o)) && !Object.values(positionsOf(g)).includes(k) && !list.some((n) => n.pos === k);
+  if (op.action === 'place') {
+    const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k) || !op.name) return;
+    const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
+    list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)) });
+    push(g, { kind: 'system', text: op.name + ' at ' + refOf(k) + '.' });
+    return;
+  }
+  const n = list.find((x) => x.id === op.id); if (!n) return;
+  if (op.action === 'remove') { g.story.npcs = list.filter((x) => x !== n); return; }
+  if (op.action === 'update') { if (op.side) n.side = op.side === 'hostile' ? 'hostile' : 'neutral'; if (op.name) n.name = op.name.slice(0, 40); return; }
+  if (op.action === 'move') { const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k)) return; n.facing = facingToward(n.pos, k); n.pos = k; }
+}
+const ENEMY_TIERS = ['minion', 'soldier', 'elite', 'boss'];
+
+/** The overworld as a throwaway fight state, so every combat rule (paths, sight, actions) runs unchanged. Units carry
+ * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
+function storyCb(g: GameState): Combat {
+  const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
+  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); return u; });
+  for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
+  return { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
+}
+
+/** Sneaking characters: each hostile with sight of them inside its notice range (4 + its notice − your Dexterity,
+ * halved in the dark), or standing next to them, makes them roll Ingenuity to stay hidden, once per pair per round. */
+function noticeFor(g: GameState, c: Character, cb?: Combat) {
+  if (!g.story.sneak?.[c.id] || !g.story.hidden?.[c.id]) return;
+  const at = positionsOf(g)[c.id]; cb ||= storyCb(g);
+  for (const n of npcsOf(g)) {
+    if (n.side !== 'hostile') continue;
+    const d = dist(n.pos, at), dark = !!cb.map.dark && !litAt(cb, at);
+    let range = Math.max(1, 4 + (NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
+    const sees = d <= 1 || (d <= range && lineOfSight(cb, n.pos, at));
+    if (!sees) continue;
+    const key = n.id + '|' + c.id; if ((g.story.noticed ||= {})[key] === g.story.round) continue;
+    g.story.noticed[key] = g.story.round;
+    if (!stayHidden(g, c, n, d <= 1 ? 'steps right up to' : 'looks toward')) return;
+  }
+}
+/** The Ingenuity check to stay hidden (spec: Overworld rounds): d20 + Ingenuity vs 10 + the enemy's notice. */
+function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
+  const die = d20(g.rng), m = mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity'), tn = 10 + (NOTICE[n.tier] ?? 0), ok = die === 20 || (die !== 1 && die + m >= tn);
+  push(g, { kind: 'check', charId: c.id, ok, head: 'INGENUITY · STAY HIDDEN · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ SUCCESS' : '✗ FAILURE'),
+    text: n.name + ' ' + why + ' ' + c.name + (ok ? '; ' + c.name + ' stays hidden.' : ' and spots them.') });
+  if (!ok) { g.story.hidden![c.id] = false; g.story.needs = true; }
+  return ok;
+}
+function noticeAll(g: GameState) { const cb = storyCb(g); for (const c of Object.values(g.characters)) if (!c.dead) noticeFor(g, c, cb); }
+
+/** One overworld action: the same actions and AP costs as a fight, on the story's map (spec: Overworld rounds). */
+function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: string) {
+  const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+  if (g.phase !== 'story') fail(g.phase === 'combat' ? 'A fight is on: act on the combat grid.' : 'The session hasn\'t started.');
+  if (c!.dead) fail('The dead stay where they fell.');
+  if (g.story.await !== 'players') fail('Wait for the round to open.');
+  if (g.story.ended?.[c!.id] && a.act !== 'end') fail(c!.name + ' has ended the turn.');
+  if (a.act === 'end') { (g.story.ended ||= {})[c!.id] = true; if (g.story.spoken[by] == null && charsOf(g, by).every((x) => g.story.ended![x.id])) g.story.spoken[by] = ''; closeRoundIfDone(g); return; }
+  const cb = storyCb(g), u = cb.units.find((x) => x.charId === c!.id)!;
+  const target = a.targetId ? cb.units.find((x) => x.id === a.targetId || x.id === 'pc-' + a.targetId) || null : null;
+  const before = u.ap; let err: string | null = null;
+  if (a.act === 'move') {
+    const map = zoneMap(g), k = a.to ? (/,/.test(a.to) ? a.to : keyOf(a.to, map)) : null;
+    if (!k || !standable(map, k)) fail('Nobody can stand there.');
+    const P = paths(cb, u.pos, u.id), tiles = P.dist[k!];
+    if (tiles === undefined) fail('There\'s no way through to there: a wall, a closed door or someone is in the way.');
+    const extra = a.how === 'sneak' ? tiles : 0; if (apForTiles(tiles, 0, u.movement) + extra > u.ap && a.how !== 'sprint') fail('Needs ' + (apForTiles(tiles, 0, u.movement) + extra) + ' AP (' + u.ap + ' left).');
+    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err);
+    u.ap -= extra;
+    const route: string[] = []; for (let x = k!; x && x !== from; x = P.prev[x]) route.unshift(x);
+    ((g.story.trail ||= {})[c!.id] ||= []).push(...(route.length ? [from, ...route] : [from, k!]));
+    positionsOf(g)[c!.id] = u.pos;
+    // Sneak: starting to sneak hides you; once spotted you stay seen until you move normally and start sneaking again.
+    if (a.how === 'sneak') { const was = !!g.story.sneak?.[c!.id]; (g.story.sneak ||= {})[c!.id] = true; if (!was) (g.story.hidden ||= {})[c!.id] = true; }
+    else { (g.story.sneak ||= {})[c!.id] = false; (g.story.hidden ||= {})[c!.id] = false; }
+  } else if (a.act === 'door') {
+    const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
+    if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
+    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+  } else if (a.act === 'reload') err = reload(cb, u);
+  else if (a.act === 'load') err = loadMagazine(cb, u);
+  else if (a.act === 'clear') err = clearJam(cb, u);
+  else if (a.act === 'repair') err = fieldRepair(cb, u);
+  else if (a.act === 'prone') err = toggleProne(cb, u);
+  else if (a.act === 'stim') { if (!target || target.side !== 'pc') fail('Pick an ally.'); err = useStim(cb, u, target!, c!, c!.classId === 'medic'); }
+  else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
+  else if (a.act === 'attack') { if (!target || target.side !== 'foe') fail('Pick a target.'); overworldAttack(g, cb, c!, u, target!, a.mode || 'shot'); return; }
+  else fail('Unknown action.');
+  if (err) fail(err);
+  // Write back: AP, the character's state, objects (doors, traps), and the log as story lines.
+  spendAp(g, c!, before - u.ap);
+  for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false);
+  g.story.objects = cb.objects;
+  for (const l of cb.log) push(g, { kind: 'system', text: l });
+  noticeFor(g, c!);
+  closeRoundIfDone(g);
+}
+
+/** Attacking from the overworld starts the fight on this map, everyone where they stand (spec: Overworld rounds).
+ * Hidden (sneaking, unseen): an ambush; from the target's front the attacker must pass Ingenuity first. The fight opens
+ * on the attacker's turn with the AP they have left. Seen: the attack still lands, but the attacker sits out round 1. */
+function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['units'][number], t: Combat['units'][number], mode: AttackMode) {
+  const pv = previewAttack(cb, u, t, mode); if (!pv.ok) fail(pv.why!);
+  const npc = npcsOf(g).find((n) => n.id === t.id)!;
+  let hidden = !!(g.story.sneak?.[c.id] && g.story.hidden?.[c.id]);
+  if (hidden) {
+    const f = npc.facing || facingToward(npc.pos, u.pos), [nx, ny] = npc.pos.split(',').map(Number), [ux, uy] = u.pos.split(',').map(Number);
+    if ((ux - nx) * f[0] + (uy - ny) * f[1] >= 0) hidden = stayHidden(g, c, npc, 'is facing');
+  }
+  // Who fights: the target and every hostile on this map; the rest stay where they are.
+  npc.side = 'hostile';
+  const foes = npcsOf(g).filter((n) => n.side === 'hostile'), stay = npcsOf(g).filter((n) => n.side !== 'hostile');
+  const pos = positionsOf(g), apNow = apLeft(g, c);
+  const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id] }));
+  const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
+  const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) })), tier, g.rng, storyObjects(g));
+  const cbx = g.combat; g.story.npcs = stay;
+  cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; });
+  const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.filter((x) => x.side === 'foe')[foes.indexOf(npc)];
+  g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
+  push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
+  if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); }
+  else { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
+  att.ap = apNow; resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
+  checkOver(cbx); runEnemies(g);
 }

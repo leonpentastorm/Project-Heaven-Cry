@@ -878,7 +878,33 @@
       "art": {
         "map": "map-m813-rear-pad",
         "banner": "ill-m813-rear-pad-loading"
-      }
+      },
+      "npcs": [
+        {
+          "name": "Chief Engineer Keel",
+          "side": "neutral",
+          "tier": "soldier",
+          "weapon": "drifter_revolver",
+          "at": "M4",
+          "facing": "W"
+        },
+        {
+          "name": "Engineer",
+          "side": "neutral",
+          "tier": "minion",
+          "weapon": "service_pistol",
+          "at": "M2",
+          "facing": "W"
+        },
+        {
+          "name": "Engineer",
+          "side": "neutral",
+          "tier": "minion",
+          "weapon": "service_pistol",
+          "at": "M6",
+          "facing": "W"
+        }
+      ]
     },
     {
       "id": "outpost",
@@ -1406,7 +1432,41 @@
       "art": {
         "map": "map-m813-outpost-1",
         "banner": "ill-m813-outpost-1"
-      }
+      },
+      "npcs": [
+        {
+          "name": "Security guard",
+          "side": "neutral",
+          "tier": "soldier",
+          "weapon": "hellraiser_service_rifle",
+          "at": "M3",
+          "facing": "W"
+        },
+        {
+          "name": "Security guard",
+          "side": "neutral",
+          "tier": "soldier",
+          "weapon": "hellraiser_service_rifle",
+          "at": "O3",
+          "facing": "W"
+        },
+        {
+          "name": "Security guard",
+          "side": "neutral",
+          "tier": "soldier",
+          "weapon": "hellraiser_service_rifle",
+          "at": "J5",
+          "facing": "W"
+        },
+        {
+          "name": "Guard captain",
+          "side": "neutral",
+          "tier": "elite",
+          "weapon": "hellraiser_service_rifle",
+          "at": "N2",
+          "facing": "S"
+        }
+      ]
     }
   ],
   "lore": "docs/lore/MPAT-and-M813.md",

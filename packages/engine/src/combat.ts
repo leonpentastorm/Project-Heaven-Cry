@@ -50,6 +50,8 @@ export interface Unit {
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
   /** A music trait's modifier to the weapon skill while its song state holds (spec: Music). */
   song?: number;
+  /** Attacked in the open from the overworld: this unit sits out every round before this one (spec: Overworld rounds). */
+  waitRound?: number;
   /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
   injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
   /** PCs: spare magazines (rounds in each) and loose rounds for the weapon. Enemies leave these out: unlimited spares. */
@@ -473,6 +475,7 @@ export function endTurn(cb: Combat, rng: Rng) {
     if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; }
     const u = active(cb)!;
     if (u.dead || (u.side === 'foe' && u.downed)) continue;
+    if (u.waitRound && cb.round < u.waitRound) { cb.log.push(u.name + ' is still reeling from striking in the open: no turn this round.'); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc')) { checkOver(cb); if (cb.over) return; continue; }
     return;

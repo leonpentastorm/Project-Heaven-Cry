@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -64,7 +64,10 @@ describe('grid references and the story map', () => {
     g = apply(g, { type: 'session/start' }, 'host');
     const id = Object.keys(g.characters)[0];
     expect(refOf(positionsOf(g)[id])).toBe('I4'); // the campaign's first start tile
-    g = apply(g, { type: 'story/move', charId: id, to: 'C7' }, 'host'); expect(g.story.positions![id]).toBe('2,6');
+    expect(() => apply(g, { type: 'story/move', charId: id, to: 'G4' }, 'host')).toThrow(/round to open/); // the Narrator is opening
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'The guns stop.' } as any }, 'host');
+    g = apply(g, { type: 'story/move', charId: id, to: 'H5' }, 'host'); expect(g.story.positions![id]).toBe('7,4');
+    expect(g.story.ap![id]).toBe(5); expect(g.story.trail![id]).toEqual(['8,3', '7,4']);
     expect(() => apply(g, { type: 'story/move', charId: id, to: 'J7' }, 'host')).toThrow(/in the way/); // the triage line
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', moves: [{ charId: id, to: 'F4' }],
       combat: { name: 'Line', map: 'shield_line', difficulty: 'easy', enemies: [{ name: 'Keel', tier: 'soldier', weapon: 'service_pistol', at: 'J5' }] } } as any }, 'host');
@@ -90,7 +93,7 @@ describe('campaigns', () => {
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'The guns stop.' } as any }, 'host'); // the opening
     const id0 = Object.keys(g.characters)[0], exit = storyObjects(g).find((o) => o.to === 'rear_pad')!;
     expect(exit.name).toBe('To Outpost-813 rear landing pad');
-    g = apply(g, { type: 'story/move', charId: id0, to: 'O6' }, 'host');
+    g.story.positions![id0] = '14,5'; // O6, next to the exit
     g = apply(g, { type: 'poi/travel', charId: id0, objId: exit.id }, 'host');
     expect(g.story.entries.at(-1)!.text).toMatch(/asks to travel to Outpost-813 rear landing pad/);
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
@@ -231,7 +234,9 @@ describe('map objects and points of interest', () => {
     const after = storyObjects(g).find((o) => o.id === bar.id);
     const ok = g.checks.find((k) => k.id === ck.id)!.roll!.ok;
     if (ok) expect(after).toBeUndefined(); else expect(after!.approaches[0].tries[0].name).toBe('MPAT');
-    expect(g.story.await).toBe('narrator'); // the attempt was MPAT's turn this round
+    expect(g.story.await).toBe('players'); expect(g.story.needs).toBe(true); // the round goes on; the Narrator will narrate it
+    g = apply(g, { type: 'world/act', charId: id, act: 'end' }, 'host');
+    expect(g.story.await).toBe('narrator');
   });
 });
 
@@ -340,6 +345,8 @@ function play(seed: string) {
   expect(() => apply(g, { type: 'story/speak', text: 'x' }, 'nobody')).toThrow(RuleError);
   act({ type: 'story/speak', text: 'I walk up the ramp.' });
   act({ type: 'story/speak', text: 'I cover him.' }, 'p2');
+  expect(g.story.await).toBe('players'); // speaking doesn't end the turn: AP are left
+  act({ type: 'world/act', charId: mpat.id, act: 'end' }); act({ type: 'world/act', charId: ninety.id, act: 'end' }, 'p2');
   expect(g.story.await).toBe('narrator');
   act({ type: 'narrator/turn', turn: { narration: 'Keel blocks the ramp.', checks: [{ charId: mpat.id, skills: ['authority', 'camaraderie'], tn: 12, stakes: 'Stare him down.' }], xp: [{ charId: 'all', source: 'quest', amount: 250 }] } });
   expect(g.story.await).toBe('rolls');
@@ -511,5 +518,94 @@ describe('campaign art (spec: Campaigns, art)', () => {
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'The ramp', difficulty: 'standard', enemies: [{ name: 'Chief Engineer Keel', tier: 'soldier', weapon: 'drifter_revolver' }, { name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }] } } }, 'host');
     const foes = g.combat!.units.filter((u) => u.side === 'foe');
     expect(foes.map((u) => u.img)).toEqual(['char-m813-keel', 'char-m813-engineer-a', 'char-m813-engineer-b']);
+  });
+});
+
+describe('overworld rounds (spec: Overworld rounds)', () => {
+  const open = (seed = 'ow') => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, seed);
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Open.' } as any }, 'host');
+    return { g, id: Object.keys(g.characters)[0] };
+  };
+  it('a round: AP for moves and actions, the Say, End turn; a round of only moves needs no Narrator', () => {
+    let { g, id } = open(); const r0 = g.story.round;
+    g = apply(g, { type: 'story/move', charId: id, to: 'H5' }, 'host'); expect(apLeft(g, g.characters[id])).toBe(5);
+    { const t = JSON.parse(JSON.stringify(g)); t.story.ap[id] = 0; expect(() => apply(t, { type: 'story/move', charId: id, to: 'G5' }, 'host')).toThrow(/Needs \d+ AP/); }
+    g = apply(g, { type: 'story/pass' }, 'host'); expect(g.story.await).toBe('players'); // passing the Say keeps the AP
+    g = apply(g, { type: 'world/act', charId: id, act: 'end' }, 'host');
+    expect(g.story.await).toBe('players'); expect(g.story.round).toBe(r0 + 1); expect(apLeft(g, g.characters[id])).toBe(6);
+    expect(g.story.entries.at(-1)!.text).toBe('Round ' + (r0 + 1) + '.');
+    g = apply(g, { type: 'story/speak', text: 'Nine-Nine, report.' }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'end' }, 'host');
+    expect(g.story.await).toBe('narrator'); // a line said needs the Narrator
+  });
+  it('people stand on the overworld map; the Narrator places and moves them', () => {
+    let { g } = open();
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'To the pad.', travel: 'rear_pad' } as any }, 'host');
+    expect(npcsOf(g).map((n) => n.name + '@' + refOf(n.pos) + ':' + n.side)).toEqual(['Chief Engineer Keel@M4:neutral', 'Engineer@M2:neutral', 'Engineer@M6:neutral']);
+    expect(npcsOf(g).map((n) => n.portrait)).toEqual(['char-m813-keel', 'char-m813-engineer-a', 'char-m813-engineer-b']);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Drones.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'C3' }] } as any }, 'host');
+    const d = npcsOf(g).find((n) => n.name === 'Scavenger drone')!; expect(refOf(d.pos)).toBe('C3');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'It drifts.', npcs: [{ action: 'move', id: d.id, at: 'D3' }] } as any }, 'host');
+    expect(refOf(npcsOf(g).find((n) => n.id === d.id)!.pos)).toBe('D3');
+  });
+  it('attacking in the open starts the fight; the attacker sits out round 1', () => {
+    let { g, id } = open('seen');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'L4' }] } as any }, 'host');
+    const d = npcsOf(g)[0];
+    g = apply(g, { type: 'world/act', charId: id, act: 'attack', targetId: d.id, mode: 'shot' }, 'host');
+    expect(g.phase).toBe('combat'); expect(g.combat!.name).toMatch(/^Fight at L4/);
+    const me = g.combat!.units.find((u) => u.charId === id)!;
+    expect(me.waitRound).toBe(2); expect(g.combat!.log.some((l) => l.startsWith('MPAT') && /fires|shoots|d20/.test(l))).toBe(true);
+    expect(npcsOf(g)).toEqual([]);
+  });
+  it('sneaking: hidden until seen; an Ingenuity roll to stay hidden; an ambush opens on your turn with the AP left', () => {
+    let { g, id } = open('hide');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone, facing away.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'O4' }] } as any }, 'host');
+    const d = npcsOf(g)[0]; d.facing = [1, 0]; // looking east, away from the party
+    g = apply(g, { type: 'world/act', charId: id, act: 'move', to: 'J4', how: 'sneak' }, 'host');
+    expect(g.story.sneak![id]).toBe(true); expect(g.story.hidden![id]).toBe(true);
+    const seen = g.story.entries.some((e) => /STAY HIDDEN/.test(e.head || ''));
+    if (!seen || g.story.hidden![id]) {
+      const left = apLeft(g, g.characters[id]);
+      g = apply(g, { type: 'world/act', charId: id, act: 'attack', targetId: d.id, mode: 'shot' }, 'host');
+      expect(g.combat!.name).toMatch(/^Ambush at O4/); (globalThis as any).__ambush = true;
+      expect(g.combat!.order[0]).toBe('pc-' + id);
+      expect(g.combat!.units.find((u) => u.charId === id)!.ap).toBe(left - 2);
+    }
+  });
+  it('the shared spotlight: who is dealing with what, and what they hover', () => {
+    let { g, id } = open();
+    const poi = storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!;
+    g = apply(g, { type: 'story/focus', charId: id, objId: poi.id }, 'host');
+    const seq = g.story.focus!.seq;
+    g = apply(g, { type: 'story/focus', charId: id, objId: poi.id, hover: 1 }, 'host');
+    expect(g.story.focus).toMatchObject({ charId: id, objId: poi.id, hover: 1, seq });
+    g = apply(g, { type: 'story/unfocus' }, 'host'); expect(g.story.focus).toBeNull();
+  });
+});
+
+describe('the Narrator maps typed intents to engine actions', () => {
+  it('"I move to J4 and shoot the drone": run as the player\'s own actions when the next round opens', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'intent');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'M4' }] } as any }, 'host');
+    const id = Object.keys(g.characters)[0], d = npcsOf(g)[0];
+    g = apply(g, { type: 'story/speak', text: 'I move to J4 and shoot that drone with my pistol.' }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'end' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'MPAT steps out and fires.', actions: [{ charId: id, act: 'move', to: 'J4' }, { charId: id, act: 'attack', targetId: d.id, mode: 'shot' }, { charId: id, act: 'move', to: 'A1' }] } as any }, 'host');
+    expect(g.phase).toBe('combat'); expect(g.combat!.name).toBe('Fight at M4');
+    expect(refOf(g.combat!.units.find((u) => u.charId === id)!.pos)).toBe('J4');
+  });
+  it('an action the rules forbid is reported, not done', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'intent2');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Go.', actions: [{ charId: id, act: 'move', to: 'J7' }] } as any }, 'host');
+    expect(g.story.entries.at(-1)!.text).toMatch(/^MPAT can't move there/);
   });
 });
