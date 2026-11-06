@@ -460,3 +460,12 @@ Read the cream masses as action and the coloured masses as the attribute. Compar
 All 27 individual 800 × 1000 PNGs are in `art/skills/poc4-palette-v3/`. The character portraits are in `art/character-portraits/`. The exact approved Wick example is in `art/traits/wick/mind-without-fog/`.
 
 ![17 / Current abstract skill reference](references/current-abstract-skills-27.jpg)
+
+
+# 18 / Archetype player cards — commission 7e0fc10
+
+The 46 review candidates in `art/character-portraits/archetypes/` are selectable player portraits and an NPC casting pool. They retain Heavenprint character rendering: original faces, opaque gouache, broken ink, natural material colours and PHC equipment. They do not use the abstract skill palette or Wick icon construction.
+
+Keep a large readable face and one archetype-specific gesture in each 4:5 scene. Family lighting follows `art/briefs/archetype-portraits.md`: amber frontline, dawn gunners, violet shadows, cyan Sigils, lamp-and-screen minds, violet-gold Soul, stage-warm voices, mixed hybrids and exaggerated single-colour all-in cards. Evokers serve Mind/Sigils; Emanators serve Soul.
+
+Use the painting alone in the picker. Archetype names on the contact sheet are review metadata. Catalog IDs `arch-<id>`, `pool: player-card`, archetype bindings and casting tags live in the collection manifest and catalog additions. Candidates remain unapproved until visual review. Existing character collections and skill colour rules are unchanged.

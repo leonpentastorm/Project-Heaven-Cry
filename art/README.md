@@ -4,7 +4,7 @@
 
 - `catalog.json` is the integration entry point. All paths in it are relative to the repository root.
 - `skills/poc4-palette-v3/` contains the 27 current abstract player-skill portraits. Versioned paths prevent an earlier POC from silently replacing them.
-- `character-portraits/` holds 99 painted character portraits: three original sets of 27, the two retained M813 portraits and sixteen tutorial-campaign candidates. None are skill icons; see its README.
+- `character-portraits/` holds 145 painted character portraits: three original sets of 27, eighteen M813 portraits and 46 archetype player-card candidates. None are skill icons; see its README.
 - `traits/wick/mind-without-fog/` contains the exact approved Wick trait icon and trait description.
 - `traits/wick/test-set-1/` contains ten review candidates (eight traits and two perks), transparent masters, UI exports and review sheets. Production approval is pending.
 - `traits/wick/test-set-1/revisions/` holds seven round-2 fixes. New icons arrive in `traits/wick/production-v1/` and `perks/wick/production-v1/`, each pushed individually; `traits/wick/production-progress.json` records complete coverage of 74 traits and 106 perks.
@@ -18,4 +18,7 @@ Each collection's `previews/` is for review. Use individual PNG files in gamepla
 
 Future revisions should use a new versioned folder and update the central catalog, guide and validation checks together. Keep existing approved files intact. File integrity for the published handoff is recorded in [checksums.sha256](checksums.sha256).
 
-**M813 campaign production complete (6 November 2026):** 53 images — four banners, sixteen portraits, four map backgrounds, four story moments and twenty-five object sprites (the original 52 plus one shared runtime field lamp). [Review and implementation handoff](campaigns/m813/tutorial-v1/README.md). New art awaits Leon’s visual review. The selected catalog now has 348 primary assets, including the unchanged 180-icon library and two AHOC emblems.
+**M813 campaign production complete (6 November 2026):** 53 images — four banners, sixteen portraits, four map backgrounds, four story moments and twenty-five object sprites (the original 52 plus one shared runtime field lamp). [Review and implementation handoff](campaigns/m813/tutorial-v1/README.md). New art awaits Leon’s visual review. The selected catalog now has 394 primary assets, including the unchanged 180-icon library and two AHOC emblems.
+
+**Archetype player cards:** [46 Heavenprint portraits](character-portraits/archetypes/README.md), with [review sheet](character-portraits/archetypes/previews/all-46.jpg), 48 × 60 thumbnails and casting metadata. Select `pool: player-card` in the catalog. These remain review candidates.
+

@@ -126,3 +126,4 @@ The light key per family: Frontline warm amber; Guns and hunters cold dawn; Shad
 - **Checksums and validation:** update `art/checksums.sha256`, run `python3 scripts/validate_art.py`; it must pass.
 - **Review sheet:** all 46 at thumbnail size (48 × 60) in a grid. Every face must still read, and no two cards should look like the same person.
 - If time allows, a **second card for any archetype** (a different gender or age) is welcome later in the same folder as `<id>-2.png`, with the same catalog fields. More cards means more choice for players and more room for the NPC swap.
+
