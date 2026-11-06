@@ -343,6 +343,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-rook.prompt.txt"
+    },
+    {
+      "id": "m813-penny",
+      "group": "B",
+      "order": 7,
+      "name": "Penny",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-penny.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B7 | `m813-penny` | **Penny**, medic robot: small and quick, a triage tag reel at its hip, a coin-sized dent on its face screen. | Writing a tag, glancing up; the youngest-feeling of the four. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c9a2cb5830378ed8d6a561f810c310b8b787ca6c8b03ba3aae371b9dd1cff53b",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-penny.png",
+      "source_sha256": "9c9b6b287d8234382a1ef2df74edd71dcd366a6c6ae356492309b0aefdc85cb6",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-penny-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-penny.prompt.txt"
     }
   ]
 }
