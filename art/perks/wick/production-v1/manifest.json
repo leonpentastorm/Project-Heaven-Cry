@@ -2400,6 +2400,32 @@
       "tier": "achieved"
     },
     {
+      "id": "still-water",
+      "data_id": "still_water",
+      "name": "Still Water",
+      "family": "perks",
+      "order": 99,
+      "mood": "Calm",
+      "action": "Wick sits perfectly still on one stepping stone in flat water, a tea bowl balanced on its head, no ripple anywhere.",
+      "screen": "Flat line, eyes closed",
+      "prop": "Tea bowl on its head",
+      "path": "art/perks/wick/production-v1/still-water.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/still-water.png",
+        "128": "art/perks/wick/production-v1/exports/128/still-water.png",
+        "64": "art/perks/wick/production-v1/exports/64/still-water.png",
+        "56": "art/perks/wick/production-v1/exports/56/still-water.png",
+        "48": "art/perks/wick/production-v1/exports/48/still-water.png",
+        "44": "art/perks/wick/production-v1/exports/44/still-water.png",
+        "40": "art/perks/wick/production-v1/exports/40/still-water.png"
+      },
+      "batch": "G",
+      "source_sha256": "68156ce6a2479d5954f22484c954372d087c8bf5f8c6ad1648c666593b9abfd1",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "what-could-be",
       "data_id": "what_could_be",
       "name": "What Could Be",

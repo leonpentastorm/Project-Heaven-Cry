@@ -5822,6 +5822,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "still-water": {
+      "label": "Wick — Still Water",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/still-water.png",
+      "sha256": "7c15325c0debc96a4536de3365a1cb1d5af4eccdb395309954ec2b15689b0eb1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "still_water",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/still-water.png",
+        "128": "art/perks/wick/production-v1/exports/128/still-water.png",
+        "64": "art/perks/wick/production-v1/exports/64/still-water.png",
+        "56": "art/perks/wick/production-v1/exports/56/still-water.png",
+        "48": "art/perks/wick/production-v1/exports/48/still-water.png",
+        "44": "art/perks/wick/production-v1/exports/44/still-water.png",
+        "40": "art/perks/wick/production-v1/exports/40/still-water.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
