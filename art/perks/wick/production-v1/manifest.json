@@ -1546,6 +1546,30 @@
       "batch": "F",
       "source_sha256": "deda39ae5be640e58f7fb3404f6da80c730209b307cd47d7c661f5362b513bf3",
       "tier": "achieved"
+    },
+    {
+      "id": "dead-signal",
+      "data_id": "dead_signal",
+      "name": "Dead Signal",
+      "family": "perks",
+      "order": 68,
+      "mood": "Tense, Comic",
+      "action": "Wick hangs one-handed from a security camera's bracket arm, pulling its cable plug with the other mitten; the camera's head droops.",
+      "screen": "Zipped mouth",
+      "prop": "Security camera",
+      "path": "art/perks/wick/production-v1/dead-signal.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/dead-signal.png",
+        "128": "art/perks/wick/production-v1/exports/128/dead-signal.png",
+        "64": "art/perks/wick/production-v1/exports/64/dead-signal.png",
+        "56": "art/perks/wick/production-v1/exports/56/dead-signal.png",
+        "48": "art/perks/wick/production-v1/exports/48/dead-signal.png",
+        "44": "art/perks/wick/production-v1/exports/44/dead-signal.png",
+        "40": "art/perks/wick/production-v1/exports/40/dead-signal.png"
+      },
+      "batch": "F",
+      "source_sha256": "0131aac9218712e8b902c0830a2c4dd66d881249e3a942e11e570ea0a2afb75c",
+      "tier": "achieved"
     }
   ]
 }

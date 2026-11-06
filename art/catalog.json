@@ -4912,6 +4912,31 @@
         "40": "art/perks/wick/production-v1/exports/40/siege-engine.png"
       },
       "tier": "achieved"
+    },
+    "dead-signal": {
+      "label": "Wick — Dead Signal",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/dead-signal.png",
+      "sha256": "673d771942d5cea1ac4e072284201e61c3d21df2007b6b3655ee52057b9cd1cf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "dead_signal",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/dead-signal.png",
+        "128": "art/perks/wick/production-v1/exports/128/dead-signal.png",
+        "64": "art/perks/wick/production-v1/exports/64/dead-signal.png",
+        "56": "art/perks/wick/production-v1/exports/56/dead-signal.png",
+        "48": "art/perks/wick/production-v1/exports/48/dead-signal.png",
+        "44": "art/perks/wick/production-v1/exports/44/dead-signal.png",
+        "40": "art/perks/wick/production-v1/exports/40/dead-signal.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
