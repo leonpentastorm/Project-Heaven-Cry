@@ -184,11 +184,12 @@
     "true-name",
     "still-water",
     "judgement-day",
-    "foreseen"
+    "foreseen",
+    "on-my-mark"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 105
+    "perks": 106
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -213,7 +214,5 @@
     "supreme-command",
     "sworn-sibling"
   ],
-  "remaining_new_icons": [
-    "on-my-mark"
-  ]
+  "remaining_new_icons": []
 }

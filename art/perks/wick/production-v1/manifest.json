@@ -2500,6 +2500,32 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    {
+      "id": "on-my-mark",
+      "data_id": "on_my_mark",
+      "name": "On My Mark",
+      "family": "perks",
+      "order": 102,
+      "mood": "Heroic",
+      "action": "Wick leans forward pointing hard with one mitten, a whistle at its screen, cape snapping; motion lines run the way it points.",
+      "screen": "Shouting",
+      "prop": "Whistle",
+      "path": "art/perks/wick/production-v1/on-my-mark.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/on-my-mark.png",
+        "128": "art/perks/wick/production-v1/exports/128/on-my-mark.png",
+        "64": "art/perks/wick/production-v1/exports/64/on-my-mark.png",
+        "56": "art/perks/wick/production-v1/exports/56/on-my-mark.png",
+        "48": "art/perks/wick/production-v1/exports/48/on-my-mark.png",
+        "44": "art/perks/wick/production-v1/exports/44/on-my-mark.png",
+        "40": "art/perks/wick/production-v1/exports/40/on-my-mark.png"
+      },
+      "batch": "G",
+      "source_sha256": "dcdae0f3cd98fbe414e649ef333e7d5de1157c3be142458a2d94b59829b7c5fc",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   ]
 }
