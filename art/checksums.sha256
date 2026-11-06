@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-915dad1a90f56d8ecd5ab3b6d8e2fb7261bdfb8cc381198a345d8061fae88c58  art/campaigns/m813/tutorial-v1/README.md
-962b5d6c4765a1af50371513d21a416fc6323380aceed50fff4af0057bb4f54a  art/campaigns/m813/tutorial-v1/manifest.json
-6f5ebe71a76145dd2e89a5ea664a1bb62142c2bdbb50a836473237d7fc26c5a0  art/campaigns/m813/tutorial-v1/production-progress.json
-5cca9bdce7fc8385dc0c1405ee2455279e326ef1f343b9084c7423419fa3c41e  art/catalog.json
+7543a151645bcfdb99870ce3cfcd4da7be1ec045ba80aa97d5bcdd1612df4e2b  art/campaigns/m813/tutorial-v1/README.md
+1fb523a62df42305984be23d77cfbf1eef7b4062ad1164aeab847cd155b0f013  art/campaigns/m813/tutorial-v1/manifest.json
+9937562b9fb653172ad8f98ca06e7be7748771ec84ea634fbb94eaf693c4ae13  art/campaigns/m813/tutorial-v1/production-progress.json
+f77827992fbf574c86420431e5cd1827adda502ee223ac078e00e2bf96d1970e  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1232,6 +1232,7 @@ ffa7293de8374ca0cf9c9b0d4e95ed4c182074de86b7033152b2778d3afeca19  art/skills/poc
 4f3e85d2eca2a7d3e58683c93ef7197c3f59e10123f8d18a0b59670b52a406f1  art/sprites/objects/v1/obj-barrier-stakes.png
 366bb80a40a22c9671b2c69d67afd3a7cda98caebddcdf1bede0bce0d78938b4  art/sprites/objects/v1/obj-cargo-pylon.png
 8044cc360f932be5c0f28140b692ff743db630a2c5728b31491245fdeb4bc98e  art/sprites/objects/v1/obj-door-closed.png
+c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3  art/sprites/objects/v1/obj-door-open.png
 cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/objects/v1/obj-platinum-crates.png
 64f39d65b7554e44d73cf29c3da1d74279cbd81555ef5dc804380e99cba206ed  art/sprites/objects/v1/obj-tool-rack.png
 5dd3c520f54448900b25439e4b11e4d55bda3f83e9f9116cd439efc92b86c9f3  art/sprites/objects/v1/obj-toppled-pylon.png
@@ -1244,6 +1245,9 @@ a4ae26aceebf5ed1a2a2744fca8655281496eaae7b2bcef007a1d97116c2b0e8  art/sprites/ob
 e05f3aba519befced84f01a1bc167f7a0d3219043443775c787ff1e823d1f582  art/sprites/objects/v1/previews/obj-door-closed-128px.png
 e3f0006d8e7ae17ea026b9e921790ea243297b31328eaa4e951c2f28df27c7fd  art/sprites/objects/v1/previews/obj-door-closed-46px.png
 978e0fe4d0dac94e40717802b37ea1fe78da948515e2860b05022fe4ceca89cc  art/sprites/objects/v1/previews/obj-door-closed-64px.png
+0856493e9817e9d01ad6c6d8f774b90d14066294672cb7dc93f0c89325692d56  art/sprites/objects/v1/previews/obj-door-open-128px.png
+f0016fdcdce2a9bfe5d5f5d640badf187fa3a7e41a908c13dd9d7cbe878c2969  art/sprites/objects/v1/previews/obj-door-open-46px.png
+52226f94f7e026882be1ae8ca59d8f83e1e9f8fdd1f3426f387f0580f9251c18  art/sprites/objects/v1/previews/obj-door-open-64px.png
 80b8ba5c2c508db13dbd6a381404755167cb9ca9086e57ec78d9345f9a5d9430  art/sprites/objects/v1/previews/obj-platinum-crates-128px.png
 59eaf1185397eaeecaa08e9ee9ad14fbf3c8549aaa6ea63bc6b335c50e97fafa  art/sprites/objects/v1/previews/obj-platinum-crates-46px.png
 e5fed85fb07cba43c71e3de07bbb31fbea43f2be943ec3553ba75d7d847ecb05  art/sprites/objects/v1/previews/obj-platinum-crates-64px.png
@@ -1264,6 +1268,8 @@ e2771eefdb8acd6d8621229118ec7cbc852e16062ed0c3a7b6ed0b661d6f25c7  art/sprites/ob
 1097ff1d43d5232c927e893421ae5f72e1c0868afd3805a276399837d73137c4  art/sprites/objects/v1/sources/obj-cargo-pylon.prompt.txt
 13da4d5ceaffacdc65520fd45a95330f93b31165d4d50016584df35172f31dd0  art/sprites/objects/v1/sources/obj-door-closed.png
 ba03d9e505ecddf6fad36e93b0d00d1fe798c3f13ddba148c83f2c0284829562  art/sprites/objects/v1/sources/obj-door-closed.prompt.txt
+4964133d83bd8e4223655a7e835a249b080d5c38e4b651b9ff415e17f3bcd986  art/sprites/objects/v1/sources/obj-door-open.png
+f11bba99ac98a405d805c0d766d1c81806cc1a0aa6ca379e781ae246879bfb29  art/sprites/objects/v1/sources/obj-door-open.prompt.txt
 4cada19a280d39ad7922dd0bb2f98669e2dd7dd2315fedc3e5237b617576b4c8  art/sprites/objects/v1/sources/obj-platinum-crates.png
 3f69a2052c5bed30cc2e6687ed24c751e27242eda32f2c59eee2a1140939a952  art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt
 0f1f9403d5b40d5cdf1b3f73a4910dd796086f4b56529664ed36233d34b6a36b  art/sprites/objects/v1/sources/obj-tool-rack.png

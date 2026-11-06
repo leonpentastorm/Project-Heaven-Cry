@@ -7202,6 +7202,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-door-closed.prompt.txt"
+    },
+    "obj-door-open": {
+      "id": "obj-door-open",
+      "group": "E",
+      "order": 7,
+      "name": "Door Open",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-door-open.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E7 | `obj-door-open` | The same door, open (door) | Outposts |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "c9bddc6fc85c7829175c1826b42a3cb43ca65a3300b5b8313eda30f8d50d61d3",
+      "source_path": "art/sprites/objects/v1/sources/obj-door-open.png",
+      "source_sha256": "4964133d83bd8e4223655a7e835a249b080d5c38e4b651b9ff415e17f3bcd986",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-door-open-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-door-open-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-door-open-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-door-open.prompt.txt"
     }
   }
 }
