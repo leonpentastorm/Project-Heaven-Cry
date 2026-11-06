@@ -654,21 +654,24 @@
           "name": "None",
           "value": 0,
           "penalty": {},
-          "weight_kg": 0
+          "weight_kg": 0,
+          "price_credits": 0
         },
         {
           "class": 1,
           "name": "Light",
           "value": 5,
           "penalty": {},
-          "weight_kg": 4
+          "weight_kg": 4,
+          "price_credits": 150
         },
         {
           "class": 2,
           "name": "Medium",
           "value": 10,
           "penalty": {},
-          "weight_kg": 8
+          "weight_kg": 8,
+          "price_credits": 400
         },
         {
           "class": 3,
@@ -677,7 +680,8 @@
           "penalty": {
             "movement": -0.5
           },
-          "weight_kg": 12
+          "weight_kg": 12,
+          "price_credits": 900
         },
         {
           "class": 4,
@@ -687,7 +691,8 @@
             "movement": -0.5,
             "dodge": -1
           },
-          "weight_kg": 18
+          "weight_kg": 18,
+          "price_credits": 1800
         },
         {
           "class": 5,
@@ -697,7 +702,8 @@
             "movement": -1,
             "no_sprint": true
           },
-          "weight_kg": 28
+          "weight_kg": 28,
+          "price_credits": 4000
         }
       ],
       "other_slots": "head, hands, footwear etc. carry per-item effects",
@@ -836,37 +842,74 @@
       {
         "id": ".32 decrkm",
         "name": ".32 Decrkm",
-        "round_kg": 0.01
+        "round_kg": 0.01,
+        "price_credits": 1
       },
       {
         "id": "revolver",
         "name": "Revolver",
-        "round_kg": 0.015
+        "round_kg": 0.015,
+        "price_credits": 2
       },
       {
         "id": "rifle",
         "name": "Rifle",
-        "round_kg": 0.012
+        "round_kg": 0.012,
+        "price_credits": 2
       },
       {
         "id": "shell",
         "name": "Shell",
-        "round_kg": 0.04
+        "round_kg": 0.04,
+        "price_credits": 3
       },
       {
         "id": ".700",
         "name": ".700 Blackpoint",
-        "round_kg": 0.12
+        "round_kg": 0.12,
+        "price_credits": 40
       },
       {
         "id": "arrow",
         "name": "Arrow",
-        "round_kg": 0.03
+        "round_kg": 0.03,
+        "price_credits": 3
       },
       {
         "id": "bolt",
         "name": "Bolt",
-        "round_kg": 0.04
+        "round_kg": 0.04,
+        "price_credits": 4
+      },
+      {
+        "id": ".50 frontier",
+        "name": ".50 Frontier",
+        "round_kg": 0.03,
+        "price_credits": 4
+      },
+      {
+        "id": "40 mm grenade",
+        "name": "40 mm grenade",
+        "round_kg": 0.25,
+        "price_credits": 60
+      },
+      {
+        "id": "rocket",
+        "name": "Rocket",
+        "round_kg": 2.5,
+        "price_credits": 400
+      },
+      {
+        "id": "fuel canister",
+        "name": "Fuel canister",
+        "round_kg": 1.5,
+        "price_credits": 50
+      },
+      {
+        "id": "core charge",
+        "name": "Core charge",
+        "round_kg": 0.02,
+        "price_credits": 15
       }
     ],
     "calibres_provisional": true,

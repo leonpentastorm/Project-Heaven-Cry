@@ -47,7 +47,8 @@
       "weight_kg": 0.1,
       "adjudication": "engine",
       "provisional": true,
-      "text": "One dose. Adjacent ally: stabilise the Downed at 1 HP, or heal 30 × Healing given. Stops Bleeding."
+      "text": "One dose. Adjacent ally: stabilise the Downed at 1 HP, or heal 30 × Healing given. Stops Bleeding.",
+      "price_credits": 80
     },
     {
       "id": "field_kit",
@@ -56,7 +57,8 @@
       "weight_kg": 1.5,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "Bandages, splints and a suture set. What a Medic treats injuries with."
+      "text": "Bandages, splints and a suture set. What a Medic treats injuries with.",
+      "price_credits": 120
     },
     {
       "id": "ration_pack",
@@ -65,7 +67,8 @@
       "weight_kg": 0.6,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "A day of food, sealed."
+      "text": "A day of food, sealed.",
+      "price_credits": 10
     },
     {
       "id": "evoker",
@@ -74,7 +77,9 @@
       "weight_kg": 1.2,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Holds one mana core; the focus for Sigil magic."
+      "text": "Holds one mana core; the focus for Sigil magic.",
+      "slot": "off_hand",
+      "price_credits": 1000
     },
     {
       "id": "standard_core",
@@ -83,7 +88,8 @@
       "weight_kg": 0.2,
       "adjudication": "engine",
       "provisional": true,
-      "text": "A core of condensed mana. An Evoker burns it for Sigils."
+      "text": "A core of condensed mana. An Evoker burns it for Sigils.",
+      "price_credits": 150
     },
     {
       "id": "chalk_and_wax",
@@ -92,7 +98,8 @@
       "weight_kg": 0.4,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "For drawing sigils by hand."
+      "text": "For drawing sigils by hand.",
+      "price_credits": 15
     },
     {
       "id": "emanator",
@@ -101,7 +108,9 @@
       "weight_kg": 0.4,
       "adjudication": "engine",
       "provisional": true,
-      "text": "The heart link; the focus for Soul magic."
+      "text": "The heart link; the focus for Soul magic.",
+      "slot": "off_hand",
+      "price_credits": 1000
     },
     {
       "id": "prayer_beads",
@@ -110,7 +119,578 @@
       "weight_kg": 0.3,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "For prayer and patience."
+      "text": "For prayer and patience.",
+      "price_credits": 20
+    },
+    {
+      "id": "buckler",
+      "name": "Buckler",
+      "category": "shield",
+      "weight_kg": 2,
+      "price_credits": 200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "+1 Defense. Parry (reaction): +3 Defense against one melee attack.",
+      "slot": "off_hand",
+      "effects": [
+        {
+          "op": "defense_bonus",
+          "value": 1
+        }
+      ],
+      "durability": 150
+    },
+    {
+      "id": "riot_shield",
+      "name": "Legion riot shield",
+      "category": "shield",
+      "weight_kg": 7,
+      "price_credits": 700,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "+2 Defense; you count as behind half cover against shots from the front. −0.5 Movement. Shield Wall: an adjacent ally behind you counts as behind half cover.",
+      "slot": "off_hand",
+      "effects": [
+        {
+          "op": "defense_bonus",
+          "value": 2
+        },
+        {
+          "op": "movement_bonus",
+          "value": -0.5
+        }
+      ],
+      "durability": 150,
+      "hp": 60
+    },
+    {
+      "id": "pavise",
+      "name": "Pavise",
+      "category": "shield",
+      "weight_kg": 10,
+      "price_credits": 1200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Carried, it does nothing. Plant (2 AP): it becomes a full-cover tile in front of you (80 HP). Picking it back up is 2 AP.",
+      "slot": "off_hand",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Plant: becomes a pillar-class object in front of you."
+        }
+      ],
+      "durability": 150,
+      "hp": 80
+    },
+    {
+      "id": "torch",
+      "name": "Torch",
+      "category": "light",
+      "weight_kg": 0.6,
+      "price_credits": 10,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Lights 4 tiles around you, so darkness doesn't halve sight there. Strikes for 12 Elemental (Unarmed); a hit on 15+ sets the target Burning. Burns 30 minutes.",
+      "slot": "off_hand",
+      "effects": [
+        {
+          "op": "light",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "flare",
+      "name": "Flare",
+      "category": "light",
+      "weight_kg": 0.3,
+      "price_credits": 25,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Thrown or held: lights 6 tiles for 3 rounds and shows anyone Hidden in it. Consumable.",
+      "slot": "off_hand",
+      "effects": [
+        {
+          "op": "light",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "id": "spare_parts",
+      "name": "Spare-parts charge",
+      "category": "tool",
+      "weight_kg": 0.16,
+      "price_credits": 16,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "One charge of parts for Field Repair. A kit of five weighs 0.8 kg and costs 80.",
+      "effects": []
+    },
+    {
+      "id": "mod_red_dot",
+      "name": "Red dot sight",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Optic: no −2 for the first range band past effective range.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "optic"
+        }
+      ],
+      "mod_slot": "optic"
+    },
+    {
+      "id": "mod_scope",
+      "name": "Scope",
+      "category": "mod",
+      "weight_kg": 0.4,
+      "price_credits": 450,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Optic: +1 to aimed shots; +1 range band before penalties.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "optic"
+        }
+      ],
+      "mod_slot": "optic"
+    },
+    {
+      "id": "mod_suppressor",
+      "name": "Suppressor",
+      "category": "mod",
+      "weight_kg": 0.3,
+      "price_credits": 400,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Muzzle: shots don't reveal a Hidden shooter; −2 damage.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "muzzle"
+        }
+      ],
+      "mod_slot": "muzzle"
+    },
+    {
+      "id": "mod_compensator",
+      "name": "Compensator",
+      "category": "mod",
+      "weight_kg": 0.2,
+      "price_credits": 250,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Muzzle: Recoil −1 per shot.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "muzzle"
+        }
+      ],
+      "mod_slot": "muzzle"
+    },
+    {
+      "id": "mod_extended_mag",
+      "name": "Extended magazine",
+      "category": "mod",
+      "weight_kg": 0.2,
+      "price_credits": 300,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Magazine: +50% capacity (rounded down).",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "magazine"
+        }
+      ],
+      "mod_slot": "magazine"
+    },
+    {
+      "id": "mod_quick_release",
+      "name": "Quick-release magazine",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 350,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Magazine: reloading costs 1 AP.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "magazine"
+        }
+      ],
+      "mod_slot": "magazine"
+    },
+    {
+      "id": "mod_foregrip",
+      "name": "Foregrip",
+      "category": "mod",
+      "weight_kg": 0.2,
+      "price_credits": 150,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Underbarrel: the first burst each turn ignores Recoil.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "underbarrel"
+        }
+      ],
+      "mod_slot": "underbarrel"
+    },
+    {
+      "id": "mod_bayonet",
+      "name": "Bayonet",
+      "category": "mod",
+      "weight_kg": 0.4,
+      "price_credits": 120,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Underbarrel: melee strikes with the gun deal 15 (Athletics) instead of fists.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "underbarrel"
+        }
+      ],
+      "mod_slot": "underbarrel"
+    },
+    {
+      "id": "mod_underslung",
+      "name": "Underslung launcher",
+      "category": "mod",
+      "weight_kg": 1.5,
+      "price_credits": 900,
+      "adjudication": "hybrid",
+      "provisional": true,
+      "text": "Underbarrel: holds one 40 mm grenade round.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "underbarrel"
+        }
+      ],
+      "mod_slot": "underbarrel"
+    },
+    {
+      "id": "mod_serrated",
+      "name": "Serrated edge",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 250,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Edge: crits also cause Bleeding.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "edge"
+        }
+      ],
+      "mod_slot": "edge"
+    },
+    {
+      "id": "mod_weighted",
+      "name": "Weighted head",
+      "category": "mod",
+      "weight_kg": 0.5,
+      "price_credits": 200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Edge: +3 damage.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "edge"
+        }
+      ],
+      "mod_slot": "edge"
+    },
+    {
+      "id": "mod_wrapped_grip",
+      "name": "Wrapped grip",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 80,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Grip: can't be disarmed.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "grip"
+        }
+      ],
+      "mod_slot": "grip"
+    },
+    {
+      "id": "mod_sigil_magazine",
+      "name": "Sigil-etched magazine",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 600,
+      "adjudication": "hybrid",
+      "provisional": true,
+      "text": "Inscription: holds one stored Sigil (with the magic pass).",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "inscription"
+        }
+      ],
+      "mod_slot": "inscription"
+    },
+    {
+      "id": "field_helmet",
+      "name": "Field helmet",
+      "category": "armour",
+      "weight_kg": 1.2,
+      "price_credits": 120,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Head: +10% Injury resistance.",
+      "slot": "head",
+      "effects": [
+        {
+          "op": "injury_resist_bonus",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "ballistic_helmet",
+      "name": "Ballistic helmet",
+      "category": "armour",
+      "weight_kg": 2,
+      "price_credits": 350,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Head: +2 armour.",
+      "slot": "head",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "night_goggles",
+      "name": "Night-sight goggles",
+      "category": "armour",
+      "weight_kg": 0.6,
+      "price_credits": 500,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Head accessory: darkness doesn't halve your sight.",
+      "slot": "head_accessory",
+      "effects": [
+        {
+          "op": "dark_sight"
+        }
+      ]
+    },
+    {
+      "id": "gas_mask",
+      "name": "Gas mask",
+      "category": "armour",
+      "weight_kg": 0.8,
+      "price_credits": 150,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Head accessory: toxic spills don't hurt you.",
+      "slot": "head_accessory",
+      "effects": [
+        {
+          "op": "hazard_immune",
+          "hazard": "toxic"
+        }
+      ]
+    },
+    {
+      "id": "padded_undershirt",
+      "name": "Padded undershirt",
+      "category": "armour",
+      "weight_kg": 1,
+      "price_credits": 80,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Inner torso: +1 armour.",
+      "slot": "inner_torso",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "trauma_plate",
+      "name": "Trauma plate insert",
+      "category": "armour",
+      "weight_kg": 2,
+      "price_credits": 400,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Inner torso: +3 armour.",
+      "slot": "inner_torso",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "utility_belt",
+      "name": "Utility belt",
+      "category": "armour",
+      "weight_kg": 0.6,
+      "price_credits": 90,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Lower torso: +3 kg carry limit.",
+      "slot": "lower_torso",
+      "effects": [
+        {
+          "op": "carry_bonus",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "armoured_belt",
+      "name": "Armoured belt",
+      "category": "armour",
+      "weight_kg": 1.5,
+      "price_credits": 200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Lower torso: +1 armour.",
+      "slot": "lower_torso",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "armoured_greaves",
+      "name": "Armoured greaves",
+      "category": "armour",
+      "weight_kg": 3,
+      "price_credits": 300,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Legs: +2 armour; −0.5 Movement.",
+      "slot": "legs",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 2
+        },
+        {
+          "op": "movement_bonus",
+          "value": -0.5
+        }
+      ]
+    },
+    {
+      "id": "runner_trousers",
+      "name": "Runner's trousers",
+      "category": "armour",
+      "weight_kg": 0.8,
+      "price_credits": 180,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Legs: +0.5 Movement.",
+      "slot": "legs",
+      "effects": [
+        {
+          "op": "movement_bonus",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "id": "work_gloves",
+      "name": "Work gloves",
+      "category": "armour",
+      "weight_kg": 0.3,
+      "price_credits": 40,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Hands: +2 Unarmed damage.",
+      "slot": "hands",
+      "effects": [
+        {
+          "op": "unarmed_damage_bonus",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "combat_gloves",
+      "name": "Combat gloves",
+      "category": "armour",
+      "weight_kg": 0.4,
+      "price_credits": 220,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Hands: +1 armour.",
+      "slot": "hands",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "field_boots",
+      "name": "Field boots",
+      "category": "armour",
+      "weight_kg": 1.2,
+      "price_credits": 120,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Footwear: rough ground costs no extra.",
+      "slot": "footwear",
+      "effects": [
+        {
+          "op": "ignore_difficult"
+        }
+      ]
+    },
+    {
+      "id": "heavy_boots",
+      "name": "Heavy boots",
+      "category": "armour",
+      "weight_kg": 2,
+      "price_credits": 200,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Footwear: +1 armour; +10% Injury resistance.",
+      "slot": "footwear",
+      "effects": [
+        {
+          "op": "armour_bonus",
+          "value": 1
+        },
+        {
+          "op": "injury_resist_bonus",
+          "value": 10
+        }
+      ]
     }
   ]
 }

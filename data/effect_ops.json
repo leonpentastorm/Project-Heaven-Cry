@@ -3042,6 +3042,309 @@
         "op": "weapon_mastery_rate",
         "value_pct": 25
       }
+    },
+    {
+      "id": "multi_shot",
+      "tier": "weapon",
+      "summary": "An action that fires several shots or rounds at one target for a fixed AP (shots, extra to-hit, dmg_mult, rounds).",
+      "count": 3,
+      "params": [],
+      "used_by": [
+        "weapons:drifter_revolver",
+        "weapons:coach_gun",
+        "weapons:repeating_crossbow"
+      ]
+    },
+    {
+      "id": "auto_ap",
+      "tier": "weapon",
+      "summary": "Full auto costs this many AP with this weapon.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:decrkm_smg"
+      ]
+    },
+    {
+      "id": "cover_damage_mult",
+      "tier": "weapon",
+      "summary": "Multiply damage this weapon deals to objects (cover, doors, shields).",
+      "count": 3,
+      "params": [],
+      "used_by": [
+        "weapons:lumeri_scattergun",
+        "weapons:breacher_tube",
+        "weapons:hatchet"
+      ]
+    },
+    {
+      "id": "aimed_still_bonus",
+      "tier": "weapon",
+      "summary": "Extra to-hit on aimed shots if you haven't moved this turn.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:long_rifle"
+      ]
+    },
+    {
+      "id": "braced_bonus",
+      "tier": "weapon",
+      "summary": "Extra to-hit while braced.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:hellraiser_lmg"
+      ]
+    },
+    {
+      "id": "aimed_ap",
+      "tier": "weapon",
+      "summary": "Aimed shots cost this many AP with this weapon.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:crossbow"
+      ]
+    },
+    {
+      "id": "vs_status_damage",
+      "tier": "weapon",
+      "summary": "Damage multiplier against targets with any listed status.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:combat_knife"
+      ]
+    },
+    {
+      "id": "on_hit",
+      "tier": "weapon",
+      "summary": "On a hit, apply: ap_loss, push (tiles), prone, bleed or armour_break (value).",
+      "count": 6,
+      "params": [],
+      "used_by": [
+        "weapons:maul",
+        "weapons:magistrate_pistol",
+        "weapons:frontier_hand_cannon",
+        "weapons:war_axe",
+        "weapons:ork_rip_saw",
+        "weapons:hellraiser_servo_fist"
+      ]
+    },
+    {
+      "id": "hit_bonus",
+      "tier": "weapon",
+      "summary": "Extra to-hit within a range in tiles.",
+      "count": 2,
+      "params": [],
+      "used_by": [
+        "weapons:decrkm_autopistol",
+        "weapons:legion_pdw"
+      ]
+    },
+    {
+      "id": "first_shot_bonus",
+      "tier": "weapon",
+      "summary": "Extra to-hit on the first attack of a fight.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:parlour_pistol"
+      ]
+    },
+    {
+      "id": "auto_width",
+      "tier": "weapon",
+      "summary": "Full auto catches enemies this many tiles from the line.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:mandestra_drum_gun"
+      ]
+    },
+    {
+      "id": "ignore_armour",
+      "tier": "weapon",
+      "summary": "Ignore this much of the target's armour.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:adamantile_battle_rifle"
+      ]
+    },
+    {
+      "id": "aimed_crit_min",
+      "tier": "weapon",
+      "summary": "Aimed shots crit on this roll or higher.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:ccec_marksman_rifle"
+      ]
+    },
+    {
+      "id": "defense_with_shield",
+      "tier": "weapon",
+      "summary": "Extra Defense while a shield is in the off hand.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:legion_gladius"
+      ]
+    },
+    {
+      "id": "reach",
+      "tier": "weapon",
+      "summary": "Melee reach in tiles.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:kemizuchi_duelling_blade"
+      ]
+    },
+    {
+      "id": "sweep",
+      "tier": "weapon",
+      "summary": "An action that strikes every adjacent enemy.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:adamantile_greatsword"
+      ]
+    },
+    {
+      "id": "defense_bonus",
+      "tier": "item",
+      "summary": "Add to Defense while held or worn.",
+      "count": 2,
+      "params": [],
+      "used_by": [
+        "items:buckler",
+        "items:riot_shield"
+      ]
+    },
+    {
+      "id": "movement_bonus",
+      "tier": "item",
+      "summary": "Add to Movement (tiles per AP) while held or worn.",
+      "count": 3,
+      "params": [],
+      "used_by": [
+        "items:riot_shield",
+        "items:armoured_greaves",
+        "items:runner_trousers"
+      ]
+    },
+    {
+      "id": "light",
+      "tier": "item",
+      "summary": "Light radius in tiles around the holder (see Vision).",
+      "count": 2,
+      "params": [],
+      "used_by": [
+        "items:torch",
+        "items:flare"
+      ]
+    },
+    {
+      "id": "mod",
+      "tier": "item",
+      "summary": "A weapon mod for the named slot; its effect is in its text and run by the engine.",
+      "count": 13,
+      "params": [],
+      "used_by": [
+        "items:mod_red_dot",
+        "items:mod_scope",
+        "items:mod_suppressor",
+        "items:mod_compensator",
+        "items:mod_extended_mag",
+        "items:mod_quick_release",
+        "items:mod_foregrip",
+        "items:mod_bayonet",
+        "items:mod_underslung",
+        "items:mod_serrated",
+        "items:mod_weighted",
+        "items:mod_wrapped_grip",
+        "items:mod_sigil_magazine"
+      ]
+    },
+    {
+      "id": "injury_resist_bonus",
+      "tier": "item",
+      "summary": "Add percentage points to Injury resistance.",
+      "count": 2,
+      "params": [],
+      "used_by": [
+        "items:field_helmet",
+        "items:heavy_boots"
+      ]
+    },
+    {
+      "id": "armour_bonus",
+      "tier": "item",
+      "summary": "Add to armour while worn.",
+      "count": 7,
+      "params": [],
+      "used_by": [
+        "items:ballistic_helmet",
+        "items:padded_undershirt",
+        "items:trauma_plate",
+        "items:armoured_belt",
+        "items:armoured_greaves",
+        "items:combat_gloves",
+        "items:heavy_boots"
+      ]
+    },
+    {
+      "id": "dark_sight",
+      "tier": "item",
+      "summary": "Darkness doesn't halve your Vision.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "items:night_goggles"
+      ]
+    },
+    {
+      "id": "hazard_immune",
+      "tier": "item",
+      "summary": "A hazard kind (toxic, fire) doesn't hurt you.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "items:gas_mask"
+      ]
+    },
+    {
+      "id": "carry_bonus",
+      "tier": "item",
+      "summary": "Add kg to the carry limit.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "items:utility_belt"
+      ]
+    },
+    {
+      "id": "unarmed_damage_bonus",
+      "tier": "item",
+      "summary": "Add to Unarmed damage.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "items:work_gloves"
+      ]
+    },
+    {
+      "id": "ignore_difficult",
+      "tier": "item",
+      "summary": "Rough ground costs no extra movement.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "items:field_boots"
+      ]
     }
   ]
 }

@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -53,6 +53,10 @@ MAP OBJECTS AND POINTS OF INTEREST
 - Objects sit on map tiles: ${OBJECT_KINDS.map((k: any) => k.id).join(', ')}. The engine runs what they do in a fight (cover, blocking, HP, traps, hazards, explosions, doors). Place, update or remove them with objects[] (an empty array otherwise): a place needs kind, at (a grid reference), name and text; update and remove need the object's id.
 - A point of interest is any object worth dealing with (a barricade, a locked door, a terminal, a rune, or a plain "poi" marker). When a player examines one (their line reads "examines … [id]"), describe it in your narration and update it with 2 to 4 approaches: each is a label (what they try), 1 to 3 skill ids, a TN, the stakes, and a success effect the engine applies by itself: remove (break or clear it), open (unlock or open), reveal (show something hidden), disarm (a trap), or "" (you narrate the result). Approaches stay on the object: players try them later without you, once per character per scene, and you see every try.
 - Mix approaches across Body, Mind and Soul skills, the way a good event offers brute force, cleverness and talk. Example: a rune-marked barricade could take Raw Power + Durability to break down (remove), Ingenuity + Lore Master to read the rune (""), or Charisma to talk the guard into opening it (remove).
+
+LOOT
+- Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a body searched, a locker opened, a reward). Relic and celestial are rare events.
+- Item ids: ${Object.keys(ITEM).join(', ')}.
 
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
@@ -160,6 +164,7 @@ export function turnSchema(g: GameState) {
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
+    loot: { type: 'array', items: obj({ charId, item: { type: 'string', enum: [...WEAPONS.map((w: any) => w.id), ...Object.keys(ITEM)] }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     objects: { type: 'array', items: obj({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string' }, kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) },
       at: { type: 'string' }, name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },

@@ -181,6 +181,18 @@
         "cooked",
         "quick_toss"
       ]
+    },
+    {
+      "id": "mana_arms",
+      "name": "Mana arms",
+      "categories": [
+        "mana"
+      ],
+      "perks": [
+        "bot_sense",
+        "charged_flow",
+        "living_weapon"
+      ]
     }
   ],
   "items": [
@@ -723,6 +735,54 @@
           "action": "throw",
           "value": -1,
           "uses": "per_turn"
+        }
+      ]
+    },
+    {
+      "id": "bot_sense",
+      "name": "Bot Sense",
+      "family": "mana_arms",
+      "tier": "I",
+      "mastery_level": 1,
+      "adjudication": "hybrid",
+      "provisional": true,
+      "text": "Your mana arms never jam from a Bot-scrambler.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Your mana arms never jam from a Bot-scrambler."
+        }
+      ]
+    },
+    {
+      "id": "charged_flow",
+      "name": "Charged Flow",
+      "family": "mana_arms",
+      "tier": "II",
+      "mastery_level": 2,
+      "adjudication": "hybrid",
+      "provisional": true,
+      "text": "Kills with mana arms release one fewer bot into the air (−1 on the meter, minimum 0).",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Kills with mana arms release one fewer bot into the air (−1 on the meter, minimum 0)."
+        }
+      ]
+    },
+    {
+      "id": "living_weapon",
+      "name": "Living Weapon",
+      "family": "mana_arms",
+      "tier": "III",
+      "mastery_level": 3,
+      "adjudication": "hybrid",
+      "provisional": true,
+      "text": "Once per fight, a mana arm's skill costs no AP.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once per fight, a mana arm's skill costs no AP."
         }
       ]
     }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  ARCHETYPES, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -158,6 +158,47 @@ describe('vision, stances and reactions', () => {
   });
 });
 
+describe('weapons v2', () => {
+  const give = (c: any, extra: any[]) => { c.pack = [...packOf(c), ...extra]; };
+  it('equip, slot armour, mods, durability and repair, rarity', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    give(c, [{ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' }, { id: 'ballistic_helmet', item: 'ballistic_helmet', name: 'Helmet', qty: 1, kind: 'tool' },
+      { id: 'mod_quick_release', item: 'mod_quick_release', name: 'QR', qty: 1, kind: 'tool' }, { id: 'magistrate_pistol', name: 'Magistrate', qty: 1, kind: 'weapon', weapon: 'magistrate_pistol', rarity: 'masterwork' }]);
+    const d0 = defense(c);
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'buckler'), 'off')).toBeNull(); expect(defense(c)).toBe(d0 + 1);
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'ballistic_helmet'), 'worn')).toBeNull(); expect(c.worn!.head).toBe('ballistic_helmet');
+    expect(equip(c, packOf(c).findIndex((x) => x.id === 'magistrate_pistol'), 'main')).toBeNull(); expect(c.weapon).toBe('magistrate_pistol');
+    expect(packOf(c).some((x) => x.weapon === 'service_pistol')).toBe(true); // the old pistol went back to the pack
+    expect(fitMod(c, packOf(c).findIndex((x) => x.id === 'mod_quick_release'))).toBeNull();
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
+    expect(u.armour).toBe(10 + 2); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
+    u.ap = 9; u.ammo = 0; u.mags = [7]; expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(8); // quick-release: 1 AP
+    const d1 = u.dur!; u.ap = 9; resolveAttack(cb, { state: 3 }, u, e, 'shot', c); expect(u.dur).toBeLessThan(d1);
+    u.dur = 10; u.proficiency = 3; u.parts = 1; u.ap = 9; expect(fieldRepair(cb, u)).toBeNull(); expect(u.dur).toBeGreaterThan(10); expect(u.parts).toBe(0);
+    u.dur = 0; expect(previewAttack(cb, u, e, 'shot').why).toMatch(/Broken/);
+  });
+  it('weapon skill actions and paired attacks', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'C5' }, { name: 'F', tier: 'boss', weapon: 'service_pistol', at: 'C6' }], 'easy', { state: 4 }, []);
+    const u = cb.units.find((x) => x.side === 'pc')!, [e, f] = cb.units.filter((x) => x.side === 'foe');
+    u.weapon = 'drifter_revolver'; u.ammo = 6; u.ap = 9; const before = cb.log.length;
+    expect(useWeaponSkill(cb, { state: 8 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6); expect(cb.log.slice(before).filter((l) => /fires at/.test(l)).length).toBe(3); // Fan the Hammer
+    u.weapon = 'adamantile_greatsword'; u.pos = '2,5'; e.pos = '3,5'; f.pos = '3,6'; u.ap = 9; u.maxDur = 0;
+    expect(useWeaponSkill(cb, { state: 8 }, u, null, c)).toBeNull(); expect(u.ap).toBe(5); // Sweep hits both
+    u.weapon = 'combat_knife'; u.offWeapon = 'hatchet'; u.ap = 9; const b2 = cb.log.length;
+    expect(pairedAttack(cb, { state: 2 }, u, e, null, c)).toBeNull(); expect(u.ap).toBe(6); expect(cb.log.slice(b2).filter((l) => /strikes/.test(l)).length).toBe(2);
+  });
+  it('the Narrator hands out loot', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host'); g = apply(g, { type: 'session/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', loot: [{ charId: id, item: 'legion_bullpup', qty: 1, rarity: 'fine', name: 'Keel\'s bullpup' }, { charId: id, item: 'riot_shield', qty: 1 }] } as any }, 'host');
+    const pack = packOf(g.characters[id]);
+    expect(pack.find((x) => x.weapon === 'legion_bullpup')!.rarity).toBe('fine'); expect(pack.some((x) => x.id === 'riot_shield')).toBe(true);
+  });
+});
+
 describe('map objects and points of interest', () => {
   it('traps spring, barrels explode, doors block until opened', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
@@ -246,7 +287,7 @@ describe('combat', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     const k = carriedKg(c);
     // pistol 1 + empty magazine 0.1 + 12 rounds × 0.01; Medium armour 8; 2 magazines (0.2 + 24 × 0.01), field kit 1.5, 3 stims 0.3, Essence 0.1
-    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 0.24 + 1.5 + 0.3 + 0.1, 5); // + 24 loose rounds
+    expect(k.weapon).toBeCloseTo(1.22, 5); expect(k.armour).toBe(8); expect(k.pack).toBeCloseTo(0.44 + 0.24 + 1.5 + 0.48 + 0.3 + 0.1, 5); // + 24 loose rounds, 3 spare-parts charges
   });
   it('cover: half is −5 and can be shot to rubble; full blocks sight', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));

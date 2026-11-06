@@ -107,3 +107,10 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Written:** Field Repair (built with weapon durability), Break, Improvise Tool, Analyze on NPCs, and wards and rituals (Narrator until the magic branch).
     - **Vision:** 12 + 2 × (Perception − 1) + Vigilant, halved in darkness except near light sources (fire, lamps, terminals; torches later). The squad shares sight: unseen enemies aren't drawn or targetable. Sensory senses close unseen enemies as a "?". Enemies see by the same rule.
     - **Darkness:** Outpost-813's hangar is the dark zone, where the tutorial teaches it.
+74. **Weapons v2 is in the rules and the engine** (Leon accepted the proposal with his calls, decision 72). The proposal merged into the spec as "Weapons, version 2" (item 61). Data: 58 weapons with hands, a granted weapon skill, durability, mod slots, prices and lore; a Mana arms mastery family; new calibres with prices; 5 off-hand items; 13 mods; per-charge spare parts; 14 slot armour pieces; prices on everything. Engine:
+    - **Weapon condition and gear:** rarity (accuracy, damage, durability); durability worn per attack (worn guns jam on 1–2, broken guns can't fire, worn or broken blades lose damage); Field Repair.
+    - **Mods:** red dot, scope, suppressor, extended and quick-release magazines, bayonet, serrated and weighted edges.
+    - **Weapon skills:** 16 run as effects or actions. Fan the Hammer, Both Barrels, Volley and Sweep are actions; the rest are passive effects (bonuses, armour piercing, on-hit push, prone, bleeding, armour break, cover damage). The other 42 are labelled "the Narrator rules this one" until they're built.
+    - **Hands and armour:** paired attacks with an off-hand weapon; shields, torches (light radius into Vision) and slot armour bonuses (armour, Defense, Movement, carry, dark sight, toxic immunity, rough ground, unarmed damage).
+    - **Equipping:** equip, take off and fit mods out of combat.
+    - **Loot:** the Narrator's `loot[]` hands out weapons and items with rarity and a name.
