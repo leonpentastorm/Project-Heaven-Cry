@@ -2196,6 +2196,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "everyones-friend",
+      "data_id": "everyones_friend",
+      "name": "Everyone's Friend",
+      "family": "perks",
+      "order": 93,
+      "mood": "Comic, Tender",
+      "action": "Wick beams as a stranger's hand (entering from the frame edge) drops a ring of keys into its open mitten.",
+      "screen": "Hearts",
+      "prop": "Ring of keys",
+      "path": "art/perks/wick/production-v1/everyones-friend.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/everyones-friend.png",
+        "128": "art/perks/wick/production-v1/exports/128/everyones-friend.png",
+        "64": "art/perks/wick/production-v1/exports/64/everyones-friend.png",
+        "56": "art/perks/wick/production-v1/exports/56/everyones-friend.png",
+        "48": "art/perks/wick/production-v1/exports/48/everyones-friend.png",
+        "44": "art/perks/wick/production-v1/exports/44/everyones-friend.png",
+        "40": "art/perks/wick/production-v1/exports/40/everyones-friend.png"
+      },
+      "batch": "G",
+      "source_sha256": "f1cb662d38ea327d3635444cba90c15402a0cb32e3b625353a1e6da602f72117",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

@@ -175,11 +175,12 @@
     "established-fact",
     "closing-argument",
     "solid-image",
-    "case-closed"
+    "case-closed",
+    "everyones-friend"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 96
+    "perks": 97
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -205,7 +206,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "everyones-friend",
     "open-hand",
     "many-hands",
     "their-own-idea",
