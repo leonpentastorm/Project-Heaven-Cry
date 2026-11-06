@@ -5282,6 +5282,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "earthbreaker": {
+      "label": "Wick — Earthbreaker",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/earthbreaker.png",
+      "sha256": "ea9fc47cddefe9abbfecac0f776f8e0432358823c6b204b00ba822d7eb34f047",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "earthbreaker",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/earthbreaker.png",
+        "128": "art/perks/wick/production-v1/exports/128/earthbreaker.png",
+        "64": "art/perks/wick/production-v1/exports/64/earthbreaker.png",
+        "56": "art/perks/wick/production-v1/exports/56/earthbreaker.png",
+        "48": "art/perks/wick/production-v1/exports/48/earthbreaker.png",
+        "44": "art/perks/wick/production-v1/exports/44/earthbreaker.png",
+        "40": "art/perks/wick/production-v1/exports/40/earthbreaker.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

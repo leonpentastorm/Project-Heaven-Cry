@@ -161,11 +161,12 @@
     "what-could-be",
     "last-wall",
     "walking-wounded",
-    "skin-map"
+    "skin-map",
+    "earthbreaker"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 82
+    "perks": 83
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -191,7 +192,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "earthbreaker",
     "nothing-left-to-fear",
     "the-name-they-whisper",
     "never-there",

@@ -1832,6 +1832,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "earthbreaker",
+      "data_id": "earthbreaker",
+      "name": "Earthbreaker",
+      "family": "perks",
+      "order": 79,
+      "mood": "Heroic",
+      "action": "Wick at the top of an overhead swing, both mittens on a huge sledgehammer, about to bring it down; a deep starburst crack already splits the ground below.",
+      "screen": "Roaring",
+      "prop": "Sledgehammer",
+      "path": "art/perks/wick/production-v1/earthbreaker.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/earthbreaker.png",
+        "128": "art/perks/wick/production-v1/exports/128/earthbreaker.png",
+        "64": "art/perks/wick/production-v1/exports/64/earthbreaker.png",
+        "56": "art/perks/wick/production-v1/exports/56/earthbreaker.png",
+        "48": "art/perks/wick/production-v1/exports/48/earthbreaker.png",
+        "44": "art/perks/wick/production-v1/exports/44/earthbreaker.png",
+        "40": "art/perks/wick/production-v1/exports/40/earthbreaker.png"
+      },
+      "batch": "G",
+      "source_sha256": "5ecc55880fcab1d65298528ae7f018ec95f28c80d89b95707f9b95dddeee3de6",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
