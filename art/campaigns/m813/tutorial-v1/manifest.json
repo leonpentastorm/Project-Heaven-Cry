@@ -1785,6 +1785,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-escape-craft.prompt.txt"
+    },
+    {
+      "id": "obj-repair-cradles",
+      "group": "E",
+      "order": 23,
+      "name": "Repair Cradles",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-repair-cradles.png",
+      "dimensions": [
+        512,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 512,
+      "height": 256,
+      "sha256": "bb9f9c660e7ef10e216cccfe76c9913743d5beef9b918816f771a6eed11fa506",
+      "source_path": "art/sprites/objects/v1/sources/obj-repair-cradles.png",
+      "source_sha256": "5f030ccff0872fa3c0f1a7b16856f65e1f0b7b4a58f07407cc3c9920a46c743c",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-repair-cradles-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-repair-cradles-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-repair-cradles-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-repair-cradles.prompt.txt"
     }
   ]
 }
