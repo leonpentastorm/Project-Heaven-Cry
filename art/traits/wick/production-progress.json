@@ -166,11 +166,12 @@
     "nothing-left-to-fear",
     "the-name-they-whisper",
     "never-there",
-    "trick-shot"
+    "trick-shot",
+    "before-the-blink"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 87
+    "perks": 88
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -196,7 +197,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "before-the-blink",
     "vanishing-act",
     "overhaul",
     "nothing-gets-past",

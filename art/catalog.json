@@ -5417,6 +5417,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "before-the-blink": {
+      "label": "Wick — Before the Blink",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/before-the-blink.png",
+      "sha256": "7a1b47f867faed3a0b0758f47f96b97111a33780be0c933fc4094b5732462be1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "before_the_blink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/before-the-blink.png",
+        "128": "art/perks/wick/production-v1/exports/128/before-the-blink.png",
+        "64": "art/perks/wick/production-v1/exports/64/before-the-blink.png",
+        "56": "art/perks/wick/production-v1/exports/56/before-the-blink.png",
+        "48": "art/perks/wick/production-v1/exports/48/before-the-blink.png",
+        "44": "art/perks/wick/production-v1/exports/44/before-the-blink.png",
+        "40": "art/perks/wick/production-v1/exports/40/before-the-blink.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

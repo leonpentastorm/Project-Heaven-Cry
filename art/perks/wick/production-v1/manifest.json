@@ -1962,6 +1962,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "before-the-blink",
+      "data_id": "before_the_blink",
+      "name": "Before the Blink",
+      "family": "perks",
+      "order": 84,
+      "mood": "Tense",
+      "action": "Wick explodes out of a sprinter's crouch, already one stride gone, beside a big pocket stopwatch whose hand still points straight up.",
+      "screen": "Wide, focused",
+      "prop": "Stopwatch",
+      "path": "art/perks/wick/production-v1/before-the-blink.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/before-the-blink.png",
+        "128": "art/perks/wick/production-v1/exports/128/before-the-blink.png",
+        "64": "art/perks/wick/production-v1/exports/64/before-the-blink.png",
+        "56": "art/perks/wick/production-v1/exports/56/before-the-blink.png",
+        "48": "art/perks/wick/production-v1/exports/48/before-the-blink.png",
+        "44": "art/perks/wick/production-v1/exports/44/before-the-blink.png",
+        "40": "art/perks/wick/production-v1/exports/40/before-the-blink.png"
+      },
+      "batch": "G",
+      "source_sha256": "166081cd4c0f638887765b5e8822bad177e517c92de52c74cd63337156960206",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
