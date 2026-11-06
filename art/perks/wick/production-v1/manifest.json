@@ -1800,6 +1800,30 @@
       "batch": "F",
       "source_sha256": "d3bd10df5531e5fce0021fc61e493d0b9e544caab43adbbb19127673bdc60100",
       "tier": "achieved"
+    },
+    {
+      "id": "what-could-be",
+      "data_id": "what_could_be",
+      "name": "What Could Be",
+      "family": "perks",
+      "order": 100,
+      "mood": "Tender, Hopeful",
+      "action": "Wick holds up a hand mirror toward the viewer; the mirror shows a small sun and a sprouting flower where the frame around Wick is bare.",
+      "screen": "Soft, hopeful eyes",
+      "prop": "Hand mirror",
+      "path": "art/perks/wick/production-v1/what-could-be.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/what-could-be.png",
+        "128": "art/perks/wick/production-v1/exports/128/what-could-be.png",
+        "64": "art/perks/wick/production-v1/exports/64/what-could-be.png",
+        "56": "art/perks/wick/production-v1/exports/56/what-could-be.png",
+        "48": "art/perks/wick/production-v1/exports/48/what-could-be.png",
+        "44": "art/perks/wick/production-v1/exports/44/what-could-be.png",
+        "40": "art/perks/wick/production-v1/exports/40/what-could-be.png"
+      },
+      "batch": "F",
+      "source_sha256": "b4e5da8d0f6c1b7ca06356cf65c09415e745df02580955fafac6e98bf395947d",
+      "tier": "achieved"
     }
   ]
 }

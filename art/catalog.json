@@ -5176,6 +5176,31 @@
         "40": "art/perks/wick/production-v1/exports/40/sixth-sense.png"
       },
       "tier": "achieved"
+    },
+    "what-could-be": {
+      "label": "Wick — What Could Be",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/what-could-be.png",
+      "sha256": "12c3a57db3f1a7f970c66e50a7d0819ab6b81048fbda5dd3bf17cba0bec935e5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "what_could_be",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/what-could-be.png",
+        "128": "art/perks/wick/production-v1/exports/128/what-could-be.png",
+        "64": "art/perks/wick/production-v1/exports/64/what-could-be.png",
+        "56": "art/perks/wick/production-v1/exports/56/what-could-be.png",
+        "48": "art/perks/wick/production-v1/exports/48/what-could-be.png",
+        "44": "art/perks/wick/production-v1/exports/44/what-could-be.png",
+        "40": "art/perks/wick/production-v1/exports/40/what-could-be.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
