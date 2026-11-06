@@ -1776,6 +1776,30 @@
       "batch": "F",
       "source_sha256": "c36140ec65745c66152ab05129509085ba1fb3afc95352d77e00bffc9d882add",
       "tier": "achieved"
+    },
+    {
+      "id": "sixth-sense",
+      "data_id": "sixth_sense",
+      "name": "Sixth Sense",
+      "family": "perks",
+      "order": 99,
+      "mood": "Tense, Eerie",
+      "action": "Wick crouches low with its capelet pulled up like a hood, a humming tuning fork held above its head; a dotted trail of footprints creeps in from behind it.",
+      "screen": "Eyes wide, glancing sideways",
+      "prop": "Tuning fork",
+      "path": "art/perks/wick/production-v1/sixth-sense.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sixth-sense.png",
+        "128": "art/perks/wick/production-v1/exports/128/sixth-sense.png",
+        "64": "art/perks/wick/production-v1/exports/64/sixth-sense.png",
+        "56": "art/perks/wick/production-v1/exports/56/sixth-sense.png",
+        "48": "art/perks/wick/production-v1/exports/48/sixth-sense.png",
+        "44": "art/perks/wick/production-v1/exports/44/sixth-sense.png",
+        "40": "art/perks/wick/production-v1/exports/40/sixth-sense.png"
+      },
+      "batch": "F",
+      "source_sha256": "d3bd10df5531e5fce0021fc61e493d0b9e544caab43adbbb19127673bdc60100",
+      "tier": "achieved"
     }
   ]
 }

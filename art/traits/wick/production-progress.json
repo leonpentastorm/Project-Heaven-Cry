@@ -156,11 +156,12 @@
     "angel-of-the-trenches",
     "every-lie-is-a-door",
     "twin-discipline",
-    "bite-the-bullet"
+    "bite-the-bullet",
+    "sixth-sense"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 77
+    "perks": 78
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -213,7 +214,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "sixth-sense",
     "what-could-be"
   ]
 }

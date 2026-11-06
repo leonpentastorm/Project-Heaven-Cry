@@ -5151,6 +5151,31 @@
         "40": "art/perks/wick/production-v1/exports/40/bite-the-bullet.png"
       },
       "tier": "achieved"
+    },
+    "sixth-sense": {
+      "label": "Wick — Sixth Sense",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/sixth-sense.png",
+      "sha256": "ab9961d2ab4af82353e3c659bb7897a527d4acbed295c0d3ae7c6991000c6f53",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "sixth_sense",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/sixth-sense.png",
+        "128": "art/perks/wick/production-v1/exports/128/sixth-sense.png",
+        "64": "art/perks/wick/production-v1/exports/64/sixth-sense.png",
+        "56": "art/perks/wick/production-v1/exports/56/sixth-sense.png",
+        "48": "art/perks/wick/production-v1/exports/48/sixth-sense.png",
+        "44": "art/perks/wick/production-v1/exports/44/sixth-sense.png",
+        "40": "art/perks/wick/production-v1/exports/40/sixth-sense.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
