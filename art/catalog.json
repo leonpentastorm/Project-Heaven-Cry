@@ -5795,6 +5795,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "true-name": {
+      "label": "Wick — True Name",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/true-name.png",
+      "sha256": "d9d6ed4038a4aba4894b2261cc476e3aba307c598829fbcb9fdc66272de115f2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "true_name",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/true-name.png",
+        "128": "art/perks/wick/production-v1/exports/128/true-name.png",
+        "64": "art/perks/wick/production-v1/exports/64/true-name.png",
+        "56": "art/perks/wick/production-v1/exports/56/true-name.png",
+        "48": "art/perks/wick/production-v1/exports/48/true-name.png",
+        "44": "art/perks/wick/production-v1/exports/44/true-name.png",
+        "40": "art/perks/wick/production-v1/exports/40/true-name.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

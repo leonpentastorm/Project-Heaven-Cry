@@ -180,11 +180,12 @@
     "open-hand",
     "many-hands",
     "their-own-idea",
-    "the-twin-pays"
+    "the-twin-pays",
+    "true-name"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 101
+    "perks": 102
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -210,7 +211,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "true-name",
     "still-water",
     "judgement-day",
     "foreseen",

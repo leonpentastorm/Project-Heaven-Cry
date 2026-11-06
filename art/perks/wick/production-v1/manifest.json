@@ -2350,6 +2350,32 @@
       "tier": "achieved"
     },
     {
+      "id": "true-name",
+      "data_id": "true_name",
+      "name": "True Name",
+      "family": "perks",
+      "order": 98,
+      "mood": "Grim, Eerie",
+      "action": "Wick holds up an unrolled scroll showing one sigil (a symbol, never letters) toward a huge horned shadow at the frame edge, which shrinks back.",
+      "screen": "Stern",
+      "prop": "Unrolled scroll",
+      "path": "art/perks/wick/production-v1/true-name.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/true-name.png",
+        "128": "art/perks/wick/production-v1/exports/128/true-name.png",
+        "64": "art/perks/wick/production-v1/exports/64/true-name.png",
+        "56": "art/perks/wick/production-v1/exports/56/true-name.png",
+        "48": "art/perks/wick/production-v1/exports/48/true-name.png",
+        "44": "art/perks/wick/production-v1/exports/44/true-name.png",
+        "40": "art/perks/wick/production-v1/exports/40/true-name.png"
+      },
+      "batch": "G",
+      "source_sha256": "bf7ee0f33e2a41aa996f1b6bbf028e5e46c9797c8135896828dec6dd2136b5b5",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "sixth-sense",
       "data_id": "sixth_sense",
       "name": "Sixth Sense",
