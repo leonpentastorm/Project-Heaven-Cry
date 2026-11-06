@@ -63,14 +63,14 @@ describe('grid references and the story map', () => {
     g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
     g = apply(g, { type: 'session/start' }, 'host');
     const id = Object.keys(g.characters)[0];
-    expect(positionsOf(g)[id]).toBe(MAPS.rear_pad.pcStart[0]);
+    expect(refOf(positionsOf(g)[id])).toBe('I4'); // the campaign's first start tile
     g = apply(g, { type: 'story/move', charId: id, to: 'C7' }, 'host'); expect(g.story.positions![id]).toBe('2,6');
-    expect(() => apply(g, { type: 'story/move', charId: id, to: 'N1' }, 'host')).toThrow(/stand/); // the ship's hull
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', moves: [{ charId: id, to: 'E5' }],
-      combat: { name: 'Pad', map: 'rear_pad', difficulty: 'easy', enemies: [{ name: 'Keel', tier: 'soldier', weapon: 'service_pistol', at: 'J5' }] } } as any }, 'host');
+    expect(() => apply(g, { type: 'story/move', charId: id, to: 'J7' }, 'host')).toThrow(/in the way/); // the triage line
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', moves: [{ charId: id, to: 'F4' }],
+      combat: { name: 'Line', map: 'shield_line', difficulty: 'easy', enemies: [{ name: 'Keel', tier: 'soldier', weapon: 'service_pistol', at: 'J5' }] } } as any }, 'host');
     const u = g.combat!.units.find((x) => x.charId === id)!, k = g.combat!.units.find((x) => x.side === 'foe')!;
-    expect(refOf(u.pos)).toBe('E5'); expect(refOf(k.pos)).toBe('J5');
-    expect(combatReport(g.combat!)).toContain('MPAT: ' + u.hp + '/' + u.maxHp + ' HP at E5');
+    expect(refOf(u.pos)).toBe('F4'); expect(refOf(k.pos)).toBe('J5');
+    expect(combatReport(g.combat!)).toContain('MPAT: ' + u.hp + '/' + u.maxHp + ' HP at F4');
   });
 });
 
@@ -79,17 +79,20 @@ describe('campaigns', () => {
     for (const c of BUILT_IN_CAMPAIGNS) expect(validateCampaign(c), c.id).toEqual([]);
     expect(validateCampaign({ id: 'x' })).not.toEqual([]);
   });
-  it('M813 starts on the rear pad with its pre-written ramp; travel keeps each zone as it was left', () => {
+  it('M813 starts on the shield line (the tutorial); travel keeps each zone as it was left', () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
     g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
     g = apply(g, { type: 'session/start' }, 'host');
-    expect(g.campaign!.id).toBe('m813'); expect(zoneMap(g).id).toBe('rear_pad');
-    const ramp = storyObjects(g).find((o) => o.name === 'The loading ramp')!;
-    expect(ramp.approaches.length).toBe(3); expect(refOf(ramp.pos)).toBe('M5');
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', objects: [{ action: 'remove', id: ramp.id }] } as any }, 'host');
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'wreck_field' } as any }, 'host');
-    expect(zoneMap(g).id).toBe('wreck_field'); expect(storyObjects(g).some((o) => o.name === 'The fallen squad')).toBe(true);
+    expect(g.campaign!.id).toBe('m813'); expect(zoneMap(g).id).toBe('shield_line');
+    const skills = new Set(storyObjects(g).flatMap((o) => o.approaches.flatMap((a) => a.skills)));
+    expect(skills.size).toBe(27); // every skill has a way in, in the tutorial zone
     expect(storyObjects(g).find((o) => o.kind === 'trap')!.hidden).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
+    const ramp = storyObjects(g).find((o) => o.name === 'The loading ramp')!;
+    expect(ramp.approaches.length).toBe(5); expect(refOf(ramp.pos)).toBe('M5');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', objects: [{ action: 'remove', id: ramp.id }] } as any }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'shield_line' } as any }, 'host');
+    expect(storyObjects(g).some((o) => o.name === 'Sergeant Nine-Nine')).toBe(true);
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', travel: 'rear_pad' } as any }, 'host');
     expect(storyObjects(g).some((o) => o.name === 'The loading ramp')).toBe(false); // still gone
   });
@@ -124,12 +127,12 @@ describe('map objects and points of interest', () => {
     g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
     g = apply(g, { type: 'session/start' }, 'host');
     const id = Object.keys(g.characters)[0];
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A barricade.', objects: [{ action: 'place', id: '', kind: 'barricade', at: 'H7', name: 'Rune-marked barricade', text: 'Welded plates, a rune scratched in.',
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A barricade.', objects: [{ action: 'place', id: '', kind: 'barricade', at: 'L4', name: 'Rune-marked barricade', text: 'Welded plates, a rune scratched in.',
       approaches: [{ label: 'Break it down', skills: ['raw_power', 'durability'], tn: 8, stakes: 'Smash through.', success: 'remove' }, { label: 'Read the rune', skills: ['ingenuity', 'lore_master'], tn: 12, stakes: 'What is it warding?', success: '' }] }] } as any }, 'host');
     const bar = storyObjects(g).find((o) => o.kind === 'barricade')!;
-    expect(refOf(bar.pos)).toBe('H7'); expect(bar.approaches).toHaveLength(2);
+    expect(refOf(bar.pos)).toBe('L4'); expect(bar.approaches).toHaveLength(2);
     expect(() => apply(g, { type: 'poi/try', charId: id, objId: bar.id, idx: 0 }, 'host')).toThrow(/Walk up/);
-    g = apply(g, { type: 'story/move', charId: id, to: 'G7' }, 'host');
+    g = apply(g, { type: 'story/move', charId: id, to: 'K4' }, 'host');
     g = apply(g, { type: 'poi/try', charId: id, objId: bar.id, idx: 0 }, 'host');
     const ck = g.checks.find((k) => k.poi)!; expect(ck.skills).toEqual(['raw_power', 'durability']); expect(ck.tn).toBe(8);
     g = apply(g, { type: 'check/roll', checkId: ck.id }, 'host'); g = apply(g, { type: 'check/accept', checkId: ck.id }, 'host');
