@@ -1,7 +1,7 @@
 # M813 tutorial campaign: complete art brief
 
 **For:** the artist (GPT). **From:** the M813 campaign (`data/campaigns/m813.json`; story and design in `docs/design/M813-tutorial-campaign.md`; lore in `docs/lore/MPAT-and-M813.md`).
-**Status:** 52 original brief images drawn and pushed, pending Leon’s visual review. One runtime followup (E25, field lamp) brings the current delivery queue to 53. The original group order below is retained.
+**Status, 6 November 2026:** all 53 current images drawn and individually pushed — the original 52 plus the runtime field-lamp followup. New art remains review-candidate pending Leon. [Complete review and handoff](../campaigns/m813/tutorial-v1/README.md). Original priority order below is retained.
 
 Read `art/style-guide/v1.3/PHC-Style-Guide.md` first. Everything here is **Heavenprint** (ink and opaque gouache, angular forms, deep charcoal and warm ivory, believable faces), except the object sprites (group E), which are a flat top-down game mode defined in that section. Attach for every Heavenprint image: `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`, plus `art/illustrations/m813/v1/outpost813.png` (the approved M813 world look) and `art/character-portraits/m813/mpat.png` (the approved 258th robot design).
 
@@ -99,7 +99,7 @@ Shown in the story stream at key beats. **1600 × 900 PNG.** Mind the spoiler le
 | D3 | `m813-the-choice` | The record's choice | Two repair cradles; MPAT and the comrade head between them; parts of everyone else laid out. Undecided. | Mid, after the ship leaves |
 | D4 | `m813-the-demand` | Outpost-1 | The Colonel's desk from the robots' side: a battered medic robot standing, the comrade head on the desk between them, the Colonel's folded hands. | End: hide until Outpost-1 |
 
-## E. Object sprites: 24 (needed before maps are playable)
+## E. Object sprites: 24 original + 1 runtime followup
 
 The game places these on tiles. **Top-down, flat, transparent PNG, 256 × 256**, the object filling about 80% of the tile, a soft drop shadow toward the bottom-right, and the same light (top-left). Style: a simplified painted look (Heavenprint shapes, fewer details, strong silhouettes), readable at 46 px. **Not Wick's flat white ink**; that's for icons.
 
@@ -129,12 +129,13 @@ The game places these on tiles. **Top-down, flat, transparent PNG, 256 × 256**,
 | E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |
 | E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |
 | E24 | `obj-poi-marker` | Generic point-of-interest marker: a small surveyor's flag with the 258th's cross. Also used for "no-man's-land", "the ramp", "the column", "bay doors" and exits | Anywhere |
+| E25 | `obj-field-lamp` | Shared portable field work lamp, lit (lamp; runtime followup below) | Outpost I9 and H3 |
 
 NPC points of interest (Nine-Nine, Ilse Varga, the Colonel) use their portraits (group B) as tokens, so they need no sprite.
 
 ## Runtime followup — 6 November 2026
 
-The implementer’s movement/vision update added two `lamp` objects to `data/campaigns/m813.json`, after this brief was written: a work lamp at Outpost-813 I9 and an infirmary lamp at H3. A shared `obj-field-lamp` sprite is added as E25 so these new objects have art. Same top-down transparent256px specification as group E. The lamp’s appearance is a proposal. Both positions are already empty floor in the painted map.
+The implementer’s movement/vision update added two `lamp` objects to `data/campaigns/m813.json`, after this brief was written: a work lamp at Outpost-813 I9 and an infirmary lamp at H3. A shared `obj-field-lamp` sprite is added as E25 so these new objects have art. Same top-down transparent 256 px specification as group E. The lamp’s appearance is a proposal. Both positions are already empty floor in the painted map.
 
 ## Delivery
 

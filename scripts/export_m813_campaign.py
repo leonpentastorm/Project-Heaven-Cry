@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Technical exports and provenance for the 52-image M813 campaign brief.
+"""Technical exports and provenance for the current M813 campaign queue.
 
 Requires Pillow. All creative artwork is generated with image_gen; this script
 only preserves sources, resizes finished paintings and writes handoff metadata.

@@ -1,16 +1,42 @@
-# M813 tutorial campaign artwork
+# M813 tutorial campaign — complete art handoff
 
-53 of 53 new images delivered. All are review candidates pending Leon.
+**53 images delivered:** 4 banners, 16 portraits, 4 maps, 4 story moments and 25 object sprites. The original brief requested 52; one shared field lamp covers the implementer’s later H3/I9 lamp objects.
 
-Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
+Every creative drawing was shown in chat and pushed individually. All new art remains `review-candidate`, `production_approved: false`, pending Leon. Earlier masters, sources and revisions are retained. The original 295 primary assets, including the complete 180-icon library and accepted portrait revisions, are preserved.
 
-Use catalog IDs. Spoiler and visibility metadata gates the story images; the demand is stored under spoilers/. Later zone banners show locations without revealing their events.
+## Review
 
-Painted maps follow the committed layout guides. Place object sprites over their reserved floor tiles. No grid or labels are baked into a map.
+- [Zone banners](previews/banners.png)
+- [Sixteen portraits](previews/portraits.png)
+- [All 25 object sprites at actual 46 px, dark/light](previews/sprites-46px-dark-light.png)
+- [Internal story review — includes spoilers](previews/spoilers/story-moments.png)
 
-All newly named cast appearances and enemy designs are proposals under the brief. B813 lighting and 258th/093 construction follow the existing approved references.
+Maps have [layout overlays](#map-layout-checks) against the current campaign and assembly examples using the existing sprites. These are technical review layouts, not screenshots of game integration. Grids and review outlines are never baked into a map master.
 
-| ID | Group | Image | Visibility |
+## Implementation
+
+Use catalog IDs and selected paths; never select a historical image by glob. Banners/stories are RGB 1600×900, portraits RGB 800×1000, maps RGB 1600×1100. Sprites are RGBA 256×256, except the 512×512 escape craft and 512×256 paired cradles. Versioned tile-fit exports center sprite ink/shadow bounds inside an 80% box; source drawings remain unchanged. 128/64/46 px sprite previews are supplied.
+
+New portraits join `pool: m813-cast`, collection `m813` (18 portraits including the retained two). Group A has zone IDs; the shield-line banner also serves as campaign card art. Object sprites carry `object_kind`. Doors use a matching overhead cutaway pair.
+
+Respect `spoiler` and `visibility`: the ramp and choice are mid-campaign; the demand is `outpost-1-only` and stored under spoilers/. Later zone banners are gated to zone entry. Full review sheets are internal. Character appearances, unknown enemy design, regimental/prop decoration and details absent from the lore remain proposals. No new fact about the enemy faction is established.
+
+The latest campaign added field lamps at Outpost H3/I9. Both reserved floor tiles remain clear; the updated guide shows them. Painted map geometry was compared visually with the guides; engine collision remains defined by campaign data. The pixel validator verifies image formats/alpha/metadata, not semantic geometry or art approval.
+
+## Map layout checks
+
+- The shield line: [tile overlay](previews/shield_line-layout-check.png), [sprite assembly](previews/shield_line-assembly-preview.png).
+- Outpost-813 rear landing pad: [tile overlay](previews/rear_pad-layout-check.png), [sprite assembly](previews/rear_pad-assembly-preview.png).
+- Outpost-813: [tile overlay](previews/outpost-layout-check.png), [sprite assembly](previews/outpost-assembly-preview.png).
+- Outpost-1: [tile overlay](previews/outpost_1-layout-check.png), [sprite assembly](previews/outpost_1-assembly-preview.png).
+
+## Validation and regeneration
+
+`python3 scripts/validate_art.py --complete-icons --complete-campaign` checks full 180-icon and current 53-image campaign coverage, selected PNGs, sources, metadata, spoilers, sprite transparency and all checksums. `git diff --check` checks whitespace.
+
+`python3 scripts/review_m813_campaign.py` rebuilds review layouts from existing art. It does not draw or regenerate images. The committed queue and production-progress record retain exact coverage.
+
+| ID | Group | Selected image | Visibility |
 |---|---|---|---|
 | `m813-shield-line` | A | [PNG](../../../illustrations/m813/v2/shield-line.png) | opening-safe |
 | `m813-rear-pad-loading` | A | [PNG](../../../illustrations/m813/v2/rear-pad-loading.png) | opening-safe |
@@ -40,28 +66,28 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-the-ramp` | D | [PNG](../../../illustrations/m813/v2/revisions/v2/m813-the-ramp.png) | mid-campaign |
 | `m813-the-choice` | D | [PNG](../../../illustrations/m813/v2/m813-the-choice.png) | mid-campaign |
 | `m813-the-demand` | D | [PNG](../../../illustrations/m813/v2/spoilers/revisions/v2/m813-the-demand.png) | outpost-1-only |
-| `obj-barrier-stakes` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-barrier-stakes.png) | opening-safe |
-| `obj-platinum-crates` | E | [PNG](../../../sprites/objects/v1/obj-platinum-crates.png) | opening-safe |
-| `obj-tool-rack` | E | [PNG](../../../sprites/objects/v1/obj-tool-rack.png) | opening-safe |
-| `obj-cargo-pylon` | E | [PNG](../../../sprites/objects/v1/obj-cargo-pylon.png) | opening-safe |
-| `obj-toppled-pylon` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-toppled-pylon.png) | opening-safe |
-| `obj-door-closed` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-closed.png) | opening-safe |
-| `obj-door-open` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-door-open.png) | opening-safe |
-| `obj-crater` | E | [PNG](../../../sprites/objects/v1/obj-crater.png) | opening-safe |
-| `obj-mine` | E | [PNG](../../../sprites/objects/v1/obj-mine.png) | opening-safe |
-| `obj-coolant` | E | [PNG](../../../sprites/objects/v1/obj-coolant.png) | opening-safe |
-| `obj-fire` | E | [PNG](../../../sprites/objects/v1/obj-fire.png) | opening-safe |
-| `obj-fuel-drum` | E | [PNG](../../../sprites/objects/v1/obj-fuel-drum.png) | opening-safe |
-| `obj-rubble` | E | [PNG](../../../sprites/objects/v1/obj-rubble.png) | opening-safe |
-| `obj-fallen-squad` | E | [PNG](../../../sprites/objects/v1/obj-fallen-squad.png) | opening-safe |
-| `obj-triage-line` | E | [PNG](../../../sprites/objects/v1/obj-triage-line.png) | opening-safe |
-| `obj-footlockers` | E | [PNG](../../../sprites/objects/v1/obj-footlockers.png) | opening-safe |
-| `obj-cookbook` | E | [PNG](../../../sprites/objects/v1/obj-cookbook.png) | opening-safe |
-| `obj-platinum-net` | E | [PNG](../../../sprites/objects/v1/obj-platinum-net.png) | opening-safe |
-| `obj-terminal-field` | E | [PNG](../../../sprites/objects/v1/obj-terminal-field.png) | opening-safe |
-| `obj-drop-pod` | E | [PNG](../../../sprites/objects/v1/obj-drop-pod.png) | opening-safe |
-| `obj-console` | E | [PNG](../../../sprites/objects/v1/obj-console.png) | opening-safe |
-| `obj-escape-craft` | E | [PNG](../../../sprites/objects/v1/obj-escape-craft.png) | opening-safe |
-| `obj-repair-cradles` | E | [PNG](../../../sprites/objects/v1/obj-repair-cradles.png) | opening-safe |
-| `obj-poi-marker` | E | [PNG](../../../sprites/objects/v1/obj-poi-marker.png) | opening-safe |
-| `obj-field-lamp` | E | [PNG](../../../sprites/objects/v1/obj-field-lamp.png) | opening-safe |
+| `obj-barrier-stakes` | E | [PNG](../../../sprites/objects/v1/revisions/v3/obj-barrier-stakes.png) | opening-safe |
+| `obj-platinum-crates` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-platinum-crates.png) | opening-safe |
+| `obj-tool-rack` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-tool-rack.png) | opening-safe |
+| `obj-cargo-pylon` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-cargo-pylon.png) | opening-safe |
+| `obj-toppled-pylon` | E | [PNG](../../../sprites/objects/v1/revisions/v3/obj-toppled-pylon.png) | opening-safe |
+| `obj-door-closed` | E | [PNG](../../../sprites/objects/v1/revisions/v3/obj-door-closed.png) | opening-safe |
+| `obj-door-open` | E | [PNG](../../../sprites/objects/v1/revisions/v3/obj-door-open.png) | opening-safe |
+| `obj-crater` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-crater.png) | opening-safe |
+| `obj-mine` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-mine.png) | opening-safe |
+| `obj-coolant` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-coolant.png) | opening-safe |
+| `obj-fire` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-fire.png) | opening-safe |
+| `obj-fuel-drum` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-fuel-drum.png) | opening-safe |
+| `obj-rubble` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-rubble.png) | opening-safe |
+| `obj-fallen-squad` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-fallen-squad.png) | opening-safe |
+| `obj-triage-line` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-triage-line.png) | opening-safe |
+| `obj-footlockers` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-footlockers.png) | opening-safe |
+| `obj-cookbook` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-cookbook.png) | opening-safe |
+| `obj-platinum-net` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-platinum-net.png) | opening-safe |
+| `obj-terminal-field` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-terminal-field.png) | opening-safe |
+| `obj-drop-pod` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-drop-pod.png) | opening-safe |
+| `obj-console` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-console.png) | opening-safe |
+| `obj-escape-craft` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-escape-craft.png) | opening-safe |
+| `obj-repair-cradles` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-repair-cradles.png) | opening-safe |
+| `obj-poi-marker` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-poi-marker.png) | opening-safe |
+| `obj-field-lamp` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-field-lamp.png) | opening-safe |

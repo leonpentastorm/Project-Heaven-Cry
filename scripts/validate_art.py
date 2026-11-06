@@ -18,7 +18,7 @@ WICK_TEST_IDS = {
     'field-surgeon', 'supreme-command',
 }
 
-def validate_white_rgba(data, path, circle=False, white=True, clear_border=False):
+def validate_white_rgba(data, path, circle=False, white=True, clear_border=False, box_fraction=None):
     """Decode PNG scanlines to check ink and alpha, without a Pillow dependency."""
     width, height = struct.unpack('>II', data[16:24])
     require(data[28] == 0, f'Interlaced PNG unsupported: {path}')
@@ -64,6 +64,10 @@ def validate_white_rgba(data, path, circle=False, white=True, clear_border=False
                     require(row[i:i + 3] == b'\xff\xff\xff', f'Non-white visible ink: {path}')
                 if clear_border and (y in (0, height - 1) or i // 4 in (0, width - 1)):
                     require(alpha <= 8, f'Sprite background reaches canvas edge: {path}')
+                if box_fraction is not None and alpha >= 16:
+                    require(abs(i // 4 - (width - 1) / 2) <= width * box_fraction / 2 + 1
+                            and abs(y - (height - 1) / 2) <= height * box_fraction / 2 + 1,
+                            f'Sprite exceeds tile safe box: {path}')
                 if circle and alpha >= 16:
                     x = i // 4
                     require((x - (width-1)/2)**2 + (y - (height-1)/2)**2 <= (.45*width+1)**2,
@@ -242,7 +246,8 @@ def validate_campaign_art(catalog):
         if job['group'] == 'C':
             local(job['layout_guide'])
         if job['group'] == 'E' and (PIXEL_ASSET is None or PIXEL_ASSET == job['id']):
-            validate_white_rgba(local(asset['path']).read_bytes(), asset['path'], white=False, clear_border=True)
+            validate_white_rgba(local(asset['path']).read_bytes(), asset['path'], white=False,
+                                clear_border=True, box_fraction=asset.get('tile_extent'))
         for path in asset['previews'].values():
             require(local(path).read_bytes()[:8] == b'\x89PNG\r\n\x1a\n', f'Bad M813 preview: {path}')
     if COMPLETE_CAMPAIGN:
@@ -323,6 +328,8 @@ def validate():
             families.append((family, 0, maximum))
     if 'mascot' in catalog:
         families.append(('mascot', 1, 1))
+    if 'emblems' in catalog:
+        families.append(('emblems', 2, 2))
     for family, minimum, maximum in families:
         require(minimum <= len(catalog[family]) <= maximum, f'Unexpected {family} count')
         for asset_id, asset in catalog[family].items():
@@ -337,7 +344,7 @@ def validate():
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')
             width, height, depth, color_type = struct.unpack('>IIBB', data[16:26])
             require((width, height) == (asset['width'], asset['height']), f'Wrong dimensions: {path}')
-            require(depth == 8 and color_type == (6 if family in ['traits', 'perks', 'mascot', 'sprites'] else 2), f'Wrong PNG colour/alpha type: {path}')
+            require(depth == 8 and color_type == (6 if family in ['traits', 'perks', 'mascot', 'sprites', 'emblems'] else 2), f'Wrong PNG colour/alpha type: {path}')
             if family == 'skills':
                 attribute = palette['attributes'][asset['attribute']]
                 require(asset['color'] == attribute['color'] == palette['skills'][asset_id]['color'], f'Colour mismatch: {asset_id}')
@@ -355,6 +362,7 @@ def validate():
     print(f'OK: 27 skills, {len(catalog["characters"])} characters, {len(catalog["traits"])} traits, {len(catalog["perks"])} perks, {len(catalog["illustrations"])} illustrations, '
           f'{len(catalog.get("maps", {}))} maps, {len(catalog.get("sprites", {}))} sprites, '
           f'{len(catalog.get("mascot", {}))} mascot; '
+          f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
 

@@ -17,7 +17,8 @@
       "brief_row": "| A1 | `m813-shield-line` · `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "zone_id": "shield_line"
     },
     {
       "id": "m813-rear-pad-loading",
@@ -34,7 +35,8 @@
       "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "zone_id": "rear_pad"
     },
     {
       "id": "m813-outpost-hangar",
@@ -51,7 +53,8 @@
       "brief_row": "| A3 | `m813-outpost-hangar` · `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |",
       "spoiler": false,
       "visibility": "zone-entry",
-      "proposal": true
+      "proposal": true,
+      "zone_id": "outpost"
     },
     {
       "id": "m813-outpost-1",
@@ -68,13 +71,14 @@
       "brief_row": "| A4 | `m813-outpost-1` · `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |",
       "spoiler": false,
       "visibility": "zone-entry",
-      "proposal": true
+      "proposal": true,
+      "zone_id": "outpost_1"
     },
     {
       "id": "m813-nine-nine",
       "group": "B",
       "order": 1,
-      "name": "Nine Nine",
+      "name": "Sergeant Nine-Nine",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-nine-nine.png",
       "dimensions": [
@@ -91,7 +95,7 @@
       "id": "m813-seven-seven",
       "group": "B",
       "order": 2,
-      "name": "Seven Seven",
+      "name": "Seven-Seven",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-seven-seven.png",
       "dimensions": [
@@ -142,7 +146,7 @@
       "id": "m813-soft-hands",
       "group": "B",
       "order": 5,
-      "name": "Soft Hands",
+      "name": "Soft-Hands",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-soft-hands.png",
       "dimensions": [
@@ -193,7 +197,7 @@
       "id": "m813-keel",
       "group": "B",
       "order": 8,
-      "name": "Keel",
+      "name": "Chief Engineer Keel",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-keel.png",
       "dimensions": [
@@ -261,7 +265,7 @@
       "id": "m813-novikov",
       "group": "B",
       "order": 12,
-      "name": "Novikov",
+      "name": "Colonel Alexei Novikov",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-novikov.png",
       "dimensions": [
@@ -278,7 +282,7 @@
       "id": "m813-security-guard",
       "group": "B",
       "order": 13,
-      "name": "Security Guard",
+      "name": "Station Security Guard",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-security-guard.png",
       "dimensions": [
@@ -329,7 +333,7 @@
       "id": "m813-rearguard",
       "group": "B",
       "order": 16,
-      "name": "Rearguard",
+      "name": "Enemy Rearguard Trooper",
       "family": "characters",
       "path": "art/character-portraits/m813/v2/m813-rearguard.png",
       "dimensions": [
@@ -358,7 +362,8 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
-      "layout_guide": "art/briefs/m813-tutorial/maps/shield_line-layout.png"
+      "layout_guide": "art/briefs/m813-tutorial/maps/shield_line-layout.png",
+      "zone_id": "shield_line"
     },
     {
       "id": "map-m813-rear-pad",
@@ -376,7 +381,8 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
-      "layout_guide": "art/briefs/m813-tutorial/maps/rear_pad-layout.png"
+      "layout_guide": "art/briefs/m813-tutorial/maps/rear_pad-layout.png",
+      "zone_id": "rear_pad"
     },
     {
       "id": "map-m813-outpost",
@@ -394,7 +400,8 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
-      "layout_guide": "art/briefs/m813-tutorial/maps/outpost-layout.png"
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost-layout.png",
+      "zone_id": "outpost"
     },
     {
       "id": "map-m813-outpost-1",
@@ -412,7 +419,8 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
-      "layout_guide": "art/briefs/m813-tutorial/maps/outpost_1-layout.png"
+      "layout_guide": "art/briefs/m813-tutorial/maps/outpost_1-layout.png",
+      "zone_id": "outpost_1"
     },
     {
       "id": "m813-how-many",
@@ -497,7 +505,8 @@
       "brief_row": "| E1 | `obj-barrier-stakes` | Scorched barrier stakes in a short row (low wall) | Shield line G3–G9 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "low_wall"
     },
     {
       "id": "obj-platinum-crates",
@@ -514,7 +523,8 @@
       "brief_row": "| E2 | `obj-platinum-crates` | Stack of platinum crates, one split showing metal bars (crate) | Rear pad L3–L5 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "crate"
     },
     {
       "id": "obj-tool-rack",
@@ -531,7 +541,8 @@
       "brief_row": "| E3 | `obj-tool-rack` | Tool rack / workbench (crate) | Outpost hangar |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "crate"
     },
     {
       "id": "obj-cargo-pylon",
@@ -548,7 +559,8 @@
       "brief_row": "| E4 | `obj-cargo-pylon` | Cargo pylon, standing (pillar) | Rear pad K7 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "pillar"
     },
     {
       "id": "obj-toppled-pylon",
@@ -565,7 +577,8 @@
       "brief_row": "| E5 | `obj-toppled-pylon` | Toppled pylon on its side (pillar) | Shield line E8 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "pillar"
     },
     {
       "id": "obj-door-closed",
@@ -582,7 +595,8 @@
       "brief_row": "| E6 | `obj-door-closed` | Interior blast door, closed (door) | Outposts |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "door"
     },
     {
       "id": "obj-door-open",
@@ -599,7 +613,8 @@
       "brief_row": "| E7 | `obj-door-open` | The same door, open (door) | Outposts |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "door"
     },
     {
       "id": "obj-crater",
@@ -616,7 +631,8 @@
       "brief_row": "| E8 | `obj-crater` | Shell crater, deep, debris sliding in (hole) | Shield line K2–K3 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "hole"
     },
     {
       "id": "obj-mine",
@@ -633,7 +649,8 @@
       "brief_row": "| E9 | `obj-mine` | Unexploded mine, revealed (trap) | Shield line E5 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "trap"
     },
     {
       "id": "obj-coolant",
@@ -650,7 +667,8 @@
       "brief_row": "| E10 | `obj-coolant` | Coolant pool, iridescent green-blue (toxic) | Shield line N5–N6 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "toxic"
     },
     {
       "id": "obj-fire",
@@ -667,7 +685,8 @@
       "brief_row": "| E11 | `obj-fire` | Burning patch of ground (fire) | After explosions |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "fire"
     },
     {
       "id": "obj-fuel-drum",
@@ -684,7 +703,8 @@
       "brief_row": "| E12 | `obj-fuel-drum` | Fuel drum with hazard stencil (barrel) | Rear pad L9, outpost O10 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "barrel"
     },
     {
       "id": "obj-rubble",
@@ -701,7 +721,8 @@
       "brief_row": "| E13 | `obj-rubble` | Broken cover: scattered rubble (rubble) | Anywhere cover breaks |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "rubble"
     },
     {
       "id": "obj-fallen-squad",
@@ -718,7 +739,8 @@
       "brief_row": "| E14 | `obj-fallen-squad` | Pile of fallen infantry robots, two lights blinking (container) | Shield line D4 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "container"
     },
     {
       "id": "obj-triage-line",
@@ -735,7 +757,8 @@
       "brief_row": "| E15 | `obj-triage-line` | Broken robots laid in a neat row on tarps (container) | Shield line J7 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "container"
     },
     {
       "id": "obj-footlockers",
@@ -752,7 +775,8 @@
       "brief_row": "| E16 | `obj-footlockers` | Two open footlockers (container) | Outpost B2 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "container"
     },
     {
       "id": "obj-cookbook",
@@ -769,7 +793,8 @@
       "brief_row": "| E17 | `obj-cookbook` | A greasy cookbook open on a bunk (container) | Outpost D2 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "container"
     },
     {
       "id": "obj-platinum-net",
@@ -786,7 +811,8 @@
       "brief_row": "| E18 | `obj-platinum-net` | Pallet of platinum in a cargo net (container) | Rear pad L6 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "container"
     },
     {
       "id": "obj-terminal-field",
@@ -803,7 +829,8 @@
       "brief_row": "| E19 | `obj-terminal-field` | Field radio and hatch panels: a small rugged console (terminal; one sprite for the squad radio and hatch controls) | Shield line M8, rear pad M3 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "terminal"
     },
     {
       "id": "obj-drop-pod",
@@ -820,7 +847,8 @@
       "brief_row": "| E20 | `obj-drop-pod` | Enemy drop pod from above, hatch open, a glowing sigil burned into it (terminal) | Shield line B9 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "terminal"
     },
     {
       "id": "obj-console",
@@ -837,7 +865,8 @@
       "brief_row": "| E21 | `obj-console` | Wall console: medical bay, comms, security cameras (terminal; one sprite) | Outposts |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "terminal"
     },
     {
       "id": "obj-escape-craft",
@@ -854,7 +883,8 @@
       "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "poi"
     },
     {
       "id": "obj-repair-cradles",
@@ -871,7 +901,8 @@
       "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "poi"
     },
     {
       "id": "obj-poi-marker",
@@ -888,7 +919,8 @@
       "brief_row": "| E24 | `obj-poi-marker` | Generic point-of-interest marker: a small surveyor's flag with the 258th's cross. Also used for \"no-man's-land\", \"the ramp\", \"the column\", \"bay doors\" and exits | Anywhere |",
       "spoiler": false,
       "visibility": "opening-safe",
-      "proposal": true
+      "proposal": true,
+      "object_kind": "poi"
     },
     {
       "id": "obj-field-lamp",
@@ -906,7 +938,8 @@
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
-      "runtime_followup": "data/campaigns/m813.json: outpost lamp objects at I9 and H3, added after original brief"
+      "runtime_followup": "data/campaigns/m813.json: outpost lamp objects at I9 and H3, added after original brief",
+      "object_kind": "lamp"
     }
   ],
   "runtime_additions": [
