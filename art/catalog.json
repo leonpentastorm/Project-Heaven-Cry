@@ -1524,6 +1524,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-hum.prompt.txt"
+    },
+    "m813-lantern": {
+      "id": "m813-lantern",
+      "group": "B",
+      "order": 4,
+      "name": "Lantern",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-lantern.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B4 | `m813-lantern` | **Lantern**, infantry robot. | Both hands holding its chest plate shut. Through a gap: a child's crayon drawing of a human family. Protective, shy. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "e819096722ed78e348196abe89bace77f45c54517f75f7afb6a05207ce4fc452",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-lantern.png",
+      "source_sha256": "898b422bd5f6efbc6da30a27f73f88a6780cf9643c608015d3952457c04e0c91",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-lantern-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-lantern.prompt.txt"
     }
   },
   "traits": {
