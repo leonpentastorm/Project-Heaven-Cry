@@ -1932,6 +1932,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-scavenger-drone.prompt.txt"
+    },
+    "m813-rearguard": {
+      "id": "m813-rearguard",
+      "group": "B",
+      "order": 16,
+      "name": "Rearguard",
+      "family": "characters",
+      "path": "art/character-portraits/m813/v2/m813-rearguard.png",
+      "dimensions": [
+        800,
+        1000
+      ],
+      "mode": "RGB",
+      "brief_row": "| B16 | `m813-rearguard` | **Enemy rearguard trooper**: masked, hooded, mismatched armour, a rifle, no faction marks (*proposal*: the enemy stays unknowable). | Turning to leave, then seeing you. |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 800,
+      "height": 1000,
+      "sha256": "c3bd370ef0e1e2b02b93090facb67911f2cba9cec47476463c72b536f80a2f4e",
+      "source_path": "art/character-portraits/m813/v2/sources/m813-rearguard.png",
+      "source_sha256": "5a0eea8337b0ff108daf623a83c04f72c0d4769ef994ea5fb5dc74d815715f9f",
+      "source_dimensions": [
+        1122,
+        1402
+      ],
+      "previews": {
+        "320": "art/character-portraits/m813/v2/previews/m813-rearguard-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/character-portraits/m813/v2/sources/m813-rearguard.prompt.txt"
     }
   },
   "traits": {
