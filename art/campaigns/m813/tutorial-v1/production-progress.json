@@ -45,10 +45,10 @@
     "obj-rubble",
     "obj-fallen-squad",
     "obj-triage-line",
-    "obj-footlockers"
+    "obj-footlockers",
+    "obj-cookbook"
   ],
   "remaining": [
-    "obj-cookbook",
     "obj-platinum-net",
     "obj-terminal-field",
     "obj-drop-pod",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:52:38.395474+00:00",
+  "updated_utc": "2026-11-06T04:53:57.540267+00:00",
   "status": "in-progress",
   "production_approved": false
 }
