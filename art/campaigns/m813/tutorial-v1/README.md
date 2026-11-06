@@ -28,7 +28,7 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-engineer-a` | B | [PNG](../../../character-portraits/m813/v2/m813-engineer-a.png) | opening-safe |
 | `m813-engineer-b` | B | [PNG](../../../character-portraits/m813/v2/m813-engineer-b.png) | opening-safe |
 | `m813-novikov` | B | [PNG](../../../character-portraits/m813/v2/revisions/v2/m813-novikov.png) | opening-safe |
-| `m813-security-guard` | B | [PNG](../../../character-portraits/m813/v2/m813-security-guard.png) | opening-safe |
+| `m813-security-guard` | B | [PNG](../../../character-portraits/m813/v2/revisions/v2/m813-security-guard.png) | opening-safe |
 | `m813-guard-captain` | B | [PNG](../../../character-portraits/m813/v2/m813-guard-captain.png) | opening-safe |
 | `m813-scavenger-drone` | B | [PNG](../../../character-portraits/m813/v2/m813-scavenger-drone.png) | opening-safe |
 | `m813-rearguard` | B | [PNG](../../../character-portraits/m813/v2/m813-rearguard.png) | opening-safe |

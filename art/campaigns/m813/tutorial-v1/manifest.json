@@ -560,7 +560,7 @@
       "order": 13,
       "name": "Security Guard",
       "family": "characters",
-      "path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "path": "art/character-portraits/m813/v2/revisions/v2/m813-security-guard.png",
       "dimensions": [
         800,
         1000
@@ -572,21 +572,24 @@
       "proposal": true,
       "width": 800,
       "height": 1000,
-      "sha256": "cc61f9c8c3207901a938bd06a50c26788338598516c1ca30decbd6fbff71f624",
-      "source_path": "art/character-portraits/m813/v2/sources/m813-security-guard.png",
-      "source_sha256": "a2a57bd47aa48e92ed33004120b48980a7378d8014c33dda60cf7d95aec2389e",
+      "sha256": "2503c6843fc2bab41226fda24c0703fdf64b7fe479fcc2a094fa6063187f2d68",
+      "source_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-security-guard.png",
+      "source_sha256": "f36f151f49d6c86754805c729941920f29d90e14f1803fadbd1bdc03d2602927",
       "source_dimensions": [
         1122,
         1402
       ],
       "previews": {
-        "320": "art/character-portraits/m813/v2/previews/m813-security-guard-320px.png"
+        "320": "art/character-portraits/m813/v2/revisions/v2/previews/m813-security-guard-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/character-portraits/m813/v2/sources/m813-security-guard.prompt.txt"
+      "previous_path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "previous_revision_path": "art/character-portraits/m813/v2/m813-security-guard.png",
+      "revision": 2,
+      "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-security-guard.prompt.txt"
     },
     {
       "id": "m813-guard-captain",
