@@ -1293,19 +1293,22 @@
       "action": "Wick strolls chin-high, mittens clasped behind its back, no weapon at all, as two walls of shoulder silhouettes lean away on either side.",
       "screen": "Serene closed-eye smile",
       "prop": "Parting crowd (two flat masses)",
-      "path": "art/perks/wick/production-v1/make-way.png",
+      "path": "art/perks/wick/production-v1/revisions/v2/make-way.png",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/make-way.png",
-        "128": "art/perks/wick/production-v1/exports/128/make-way.png",
-        "64": "art/perks/wick/production-v1/exports/64/make-way.png",
-        "56": "art/perks/wick/production-v1/exports/56/make-way.png",
-        "48": "art/perks/wick/production-v1/exports/48/make-way.png",
-        "44": "art/perks/wick/production-v1/exports/44/make-way.png",
-        "40": "art/perks/wick/production-v1/exports/40/make-way.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/make-way.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/make-way.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/make-way.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/make-way.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/make-way.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/make-way.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/make-way.png"
       },
       "batch": "F",
       "source_sha256": "9876d4012f2a0f1837c33df8c532fb1f8bda77855b72a817f84e367922f9b5ad",
-      "tier": "achieved"
+      "tier": "achieved",
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/make-way.png",
+      "previous_revision_path": "art/perks/wick/production-v1/make-way.png"
     },
     {
       "id": "just-the-repairman",

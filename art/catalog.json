@@ -4641,8 +4641,8 @@
     "make-way": {
       "label": "Wick — Make Way",
       "collection": "wick-production-v1",
-      "path": "art/perks/wick/production-v1/make-way.png",
-      "sha256": "abbcdd0bba486a23ccbb351d253a03c95a59a018bd05e33f6f2493a1f9505016",
+      "path": "art/perks/wick/production-v1/revisions/v2/make-way.png",
+      "sha256": "c124e046de1e5d21744e19bf1292fd91959b0ec69675b8e459fb0c06e75b0723",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -4653,15 +4653,18 @@
       "production_approved": false,
       "batch": "F",
       "exports": {
-        "256": "art/perks/wick/production-v1/exports/256/make-way.png",
-        "128": "art/perks/wick/production-v1/exports/128/make-way.png",
-        "64": "art/perks/wick/production-v1/exports/64/make-way.png",
-        "56": "art/perks/wick/production-v1/exports/56/make-way.png",
-        "48": "art/perks/wick/production-v1/exports/48/make-way.png",
-        "44": "art/perks/wick/production-v1/exports/44/make-way.png",
-        "40": "art/perks/wick/production-v1/exports/40/make-way.png"
+        "256": "art/perks/wick/production-v1/revisions/v2/exports/256/make-way.png",
+        "128": "art/perks/wick/production-v1/revisions/v2/exports/128/make-way.png",
+        "64": "art/perks/wick/production-v1/revisions/v2/exports/64/make-way.png",
+        "56": "art/perks/wick/production-v1/revisions/v2/exports/56/make-way.png",
+        "48": "art/perks/wick/production-v1/revisions/v2/exports/48/make-way.png",
+        "44": "art/perks/wick/production-v1/revisions/v2/exports/44/make-way.png",
+        "40": "art/perks/wick/production-v1/revisions/v2/exports/40/make-way.png"
       },
-      "tier": "achieved"
+      "tier": "achieved",
+      "revision": 2,
+      "previous_path": "art/perks/wick/production-v1/make-way.png",
+      "previous_revision_path": "art/perks/wick/production-v1/make-way.png"
     },
     "just-the-repairman": {
       "label": "Wick — Just the Repairman",
