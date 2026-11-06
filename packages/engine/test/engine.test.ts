@@ -729,3 +729,72 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
     expect(g.campaign!.custom).toBe(true); expect(g.campaign!.id).toBe('m813-custom');
   });
 });
+
+describe('the Memory menu (host edits)', () => {
+  it('the host reads and fixes memory; nobody else can; only the host sees it', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'edit');
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', memory: [{ op: 'person', name: 'Keel', attitude: 2 }, { op: 'fact', text: 'Keel is kind.' }] } as any }, 'host');
+    const keel = memoryOf(g).people[0], f = memoryOf(g).facts.find((x) => x.text === 'Keel is kind.')!;
+    g = apply(g, { type: 'memory/edit', edit: { kind: 'person', id: keel.id, patch: { attitude: -2, notes: 'He left them to die.', name: 'Chief Engineer Keel' } } }, 'host');
+    expect(memoryOf(g).people[0]).toMatchObject({ name: 'Chief Engineer Keel', attitude: -2, notes: 'He left them to die.' });
+    g = apply(g, { type: 'memory/edit', edit: { kind: 'fact', id: f.id, remove: true } }, 'host');
+    expect(memoryOf(g).facts.some((x) => x.id === f.id)).toBe(false);
+    g = apply(g, { type: 'memory/edit', edit: { kind: 'thread', patch: { title: 'Find the comrade', kind: 'goal' } } }, 'host');
+    g = apply(g, { type: 'memory/edit', edit: { kind: 'saga', text: 'The line held.' } }, 'host');
+    g = apply(g, { type: 'memory/edit', edit: { kind: 'pin', text: 'MPAT never leaves anyone.' } }, 'host');
+    expect(memoryOf(g)).toMatchObject({ saga: 'The line held.', pins: ['MPAT never leaves anyone.'] }); expect(memoryOf(g).threads[0].title).toBe('Find the comrade');
+    expect(() => apply(g, { type: 'memory/edit', edit: { kind: 'saga', text: 'hacked' } }, 'p2')).toThrow(/Only the host/);
+    expect(viewFor(g, 'host').memory).toBeTruthy(); expect(viewFor(g, 'p2').memory).toBeUndefined();
+  });
+});
+
+describe('anyone is a target: review fixes', () => {
+  const two = (seed: string) => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, seed);
+    g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'Seven') }, 'p2');
+    g = apply(g, { type: 'session/start' }, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Open.' } as any }, 'host');
+    const [a, b] = Object.keys(g.characters); return { g, a, b };
+  };
+  it('a point-of-interest person who died stays dead; one who lives is the same token', () => {
+    let { g, a } = two('poi2');
+    g.story.positions![a] = keyOf('H4')!;
+    const nine = storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!;
+    g = apply(g, { type: 'world/act', charId: a, act: 'attack', objId: nine.id, mode: 'melee' }, 'host');
+    expect(storyObjects({ ...g, story: { ...g.story } }).length).toBeGreaterThan(0);
+    for (const u of g.combat!.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }
+    const cur = active(g.combat!)!; g = apply(g, { type: 'combat/end-turn', unitId: cur.id }, g.characters[cur.charId!]?.owner || 'host');
+    expect(storyObjects(g).find((o) => o.id === nine.id)!.dead).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'After.' } as any }, 'host');
+    expect(() => apply(g, { type: 'world/act', charId: a, act: 'attack', objId: nine.id, mode: 'melee' }, 'host')).toThrow(/is dead/);
+  });
+  it('a Downed ally keeps their death-save failures between shots, and can be finished off', () => {
+    let { g, a, b } = two('saves');
+    g.story.positions![b] = keyOf('I5')!; g.characters[b].hp = 0;
+    let died = false;
+    for (let i = 0; i < 12 && !died; i++) {
+      g.story.ap = {}; g.story.ended = {};
+      try { g = apply(g, { type: 'world/act', charId: a, act: 'attack', targetId: b, mode: 'melee' }, 'host'); } catch { /* a miss is fine */ }
+      died = !!g.characters[b].dead;
+    }
+    expect(died).toBe(true);
+  });
+  it('a Downed character can\'t work points of interest or take the spotlight', () => {
+    let { g, b } = two('downpoi');
+    g.characters[b].hp = 0; g.story.positions![b] = keyOf('H4')!;
+    const nine = storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!;
+    expect(() => apply(g, { type: 'poi/examine', charId: b, objId: nine.id }, 'p2')).toThrow(/Downed/);
+    expect(() => apply(g, { type: 'story/focus', charId: b, objId: nine.id }, 'p2')).toThrow(/can't/);
+  });
+  it('a failed queued attack leaves no stray token behind', () => {
+    let { g, a } = two('stray');
+    const before = npcsOf(g).length;
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', actions: [{ charId: a, act: 'attack', objId: storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!.id, mode: 'melee' }] } as any }, 'host');
+    if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);
+  });
+});

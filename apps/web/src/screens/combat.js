@@ -29,7 +29,7 @@ export class CombatLogic extends DCLogic {
     const route = {}; let moveAp = 0;
     if (hv) { moveAp = moveCost(hv); let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } }
     const foes = cb.units.filter((u) => u.side === 'foe' && !u.dead);
-    const tgtUnit = cb.units.find((u) => u.id === S.target && !u.dead && (u.side === 'pc' || seenFoe(u))) || foes.find((u) => !u.downed && seenFoe(u)) || null;
+    const tgtUnit = cb.units.find((u) => u.id === S.target && !u.dead && (!cur || u.id !== cur.id) && (u.side === 'pc' || seenFoe(u))) || foes.find((u) => !u.downed && seenFoe(u)) || null;
     const ATTACKS = ['shot', 'aimed', 'melee', 'burst', 'auto'];
     const attackMode = ATTACKS.includes(S.action) ? S.action : 'shot';
     const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? previewAttack(cb, cur, tgtUnit, attackMode) : null;
@@ -121,7 +121,7 @@ export class CombatLogic extends DCLogic {
         ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']]],
     ];
     const groups = ITEMS.map(([name, items]) => ({ name, items: items.map(([id, label, costText, text]) => ({
-      name: label, cost: costText, text, locked: !mineTurn, pressed: S.action === id ? 'true' : 'false', pick: () => this.setState({ action: id, target: id === 'stim' ? null : this.state.target }),
+      name: label, cost: costText, text, locked: !mineTurn, pressed: S.action === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' +
         (S.action === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: #10151F; color: #E7EBF3') })) }));

@@ -207,3 +207,43 @@ export function recall(g: GameState, query: string, k = 8): RecallHit[] {
     return { ...d, score: s };
   }).filter((h) => h.score > 0).sort((a, b) => b.score - a.score).slice(0, k);
 }
+
+// ---------- editing by hand (the host's Memory menu; later the human Narrator's memory aid) ----------
+export type MemEdit =
+  | { kind: 'person' | 'thread' | 'fact' | 'faction'; id?: string; patch?: Record<string, any>; remove?: boolean }
+  | { kind: 'saga'; text: string }
+  | { kind: 'chapter'; n: number; title?: string; summary?: string; remove?: boolean }
+  | { kind: 'scene'; n: number; title?: string; summary?: string; remove?: boolean }
+  | { kind: 'pin'; text: string; remove?: boolean };
+/** A hand edit: anything in memory can be read, corrected, added or removed (canon included: the host is the judge). */
+export function editMemory(g: GameState, e: MemEdit): string | null {
+  const m = memoryOf(g);
+  if (e.kind === 'saga') { m.saga = clip(e.text, MEM_CAPS.sagaLen); return null; }
+  if (e.kind === 'pin') { if (e.remove) m.pins = m.pins.filter((x) => x !== e.text); else applyMemOp(g, { op: 'pin', text: e.text }); return null; }
+  if (e.kind === 'chapter' || e.kind === 'scene') {
+    const list: any[] = e.kind === 'chapter' ? m.chapters : m.scenes, x = list.find((y) => y.n === e.n);
+    if (!x) return 'No such ' + e.kind + '.';
+    if (e.remove) { list.splice(list.indexOf(x), 1); return null; }
+    if (e.title != null) x.title = clip(e.title, 80);
+    if (e.summary != null) x.summary = clip(e.summary, e.kind === 'chapter' ? MEM_CAPS.chapterLen : MEM_CAPS.sceneLen);
+    return null;
+  }
+  const list: any[] = e.kind === 'person' ? m.people : e.kind === 'thread' ? m.threads : e.kind === 'fact' ? m.facts : m.factions;
+  if (e.remove) { const i = list.findIndex((x) => x.id === e.id); if (i < 0) return 'Nothing to remove.'; list.splice(i, 1); return null; }
+  const p = e.patch || {};
+  if (e.kind === 'fact') {
+    const f = e.id ? m.facts.find((x) => x.id === e.id) : null;
+    if (!f) return applyMemOp(g, { op: 'fact', text: p.text, about: p.about, importance: p.importance, secret: p.secret }) ? null : 'A fact needs text.';
+    if (p.text != null) f.text = clip(p.text, MEM_CAPS.fact);
+    if (p.importance != null) f.importance = imp(p.importance);
+    if (p.secret != null) f.secret = !!p.secret;
+    if (p.canon != null) f.canon = !!p.canon;
+    if (Array.isArray(p.about)) f.about = p.about.map((a: any) => clip(a, 60)).filter(Boolean).slice(0, 6);
+    return null;
+  }
+  if (e.kind === 'person' && e.id && p.name != null) { const x = m.people.find((y) => y.id === e.id); if (x) x.name = clip(p.name, 60); }
+  if (e.kind === 'thread' && e.id && p.title != null) { const x = m.threads.find((y) => y.id === e.id); if (x) x.title = clip(p.title, 80); }
+  if (e.kind === 'faction' && e.id && p.name != null) { const x = m.factions.find((y) => y.id === e.id); if (x) x.name = clip(p.name, 60); }
+  const id = applyMemOp(g, { ...p, op: e.kind, id: e.id } as MemOp);
+  return id || e.id ? null : 'That needs a name (or a title).';
+}

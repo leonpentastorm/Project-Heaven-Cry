@@ -1035,6 +1035,13 @@ A campaign of 50 hours and four players is far more story than any prompt should
    - the job.
 3. **How the active memory is picked:** by relevance (named in the recent transcript or the scene, or standing in this zone), importance, and recency with a forgetting curve. Open important threads and the people named now always make it in.
 
+**The Memory menu (host only).** The host can read and fix everything the Narrator remembers, secrets and spoilers included:
+- the saga, chapters and scene summaries;
+- people, threads, facts (canon included) and factions;
+- pins.
+
+Every record can be edited, added or deleted, and every change is an engine action. Other players never receive the memory. The same menu will be the human Narrator's memory aid.
+
 **Recall:** the Narrator can search everything with `recall`: every record, every scene and chapter summary, and the whole transcript back to session 1 (keyword search, BM25, on the host). It also has the wiki for rules and lore. It gets at most 3 lookups a turn, and fewer if the turn's cost nears the ceiling. Each reply may only use what is left of the ceiling.
 
 ## Music

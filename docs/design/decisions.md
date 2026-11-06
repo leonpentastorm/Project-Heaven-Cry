@@ -187,3 +187,14 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **The Narrator** places a token for everyone present and may target by name. "Doc Michel" had no token, being only in the Narrator's prose, so there was nothing to shoot.
     - **Old saves:** the missing art came from a session saved before the art pass, since a save keeps the campaign as it was at session start. Leon will start new saves, so the engine's `campaign/refresh` exists but isn't wired into resuming.
     - **Custom campaigns:** a loaded campaign file is marked `custom` and may not use a built-in id.
+82. **The host's Memory menu** (Leon: "let the host read and fix things in a special menu; later this memory is shown to the human DM as memory aid").
+    - **The menu:** a host-only ◈ Memory button opens tabs for the story so far, people, threads, facts, and factions & pins, with search. Every record can be edited, added or deleted through host-only `memory/edit` actions.
+    - **Visibility:** only the host's view carries the memory.
+    - **Later:** the component (`apps/web/src/game/memory.tsx`) is built to be reused as the human Narrator's memory aid.
+    - **Review fixes to "Anyone is a target",** from a three-lens adversarial review:
+      - a point-of-interest person is linked to their token, and the dead stay dead;
+      - a Downed ally's death-save failures persist outside fights, and Downed characters can't work points of interest;
+      - enemies left over after a fight go back to the right zone, on free tiles;
+      - every hostile gets a seat in the fight;
+      - a failed queued attack is rolled back;
+      - client targeting fixes (stim selections, self-stim, object highlights, one shared rule for "is this a person").

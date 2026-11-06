@@ -27,6 +27,8 @@ export interface MapObject {
   to?: string;
   /** Art (spec: Campaigns, art): a sprite asset drawn on the tile (spriteBox in tiles from the tile's corner, for art
    * bigger than one tile) and a portrait for NPC points of interest. Visual only: the engine never reads them. */
+  /** A person at this point of interest who became a token when attacked, and whether they died (spec: Anyone is a target). */
+  npcId?: string; dead?: boolean;
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
 }
 

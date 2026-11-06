@@ -4,6 +4,8 @@ import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTA
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** Death-save failures while Downed outside a fight (spec: Anyone is a target). */
+  downedFails?: number;
   skills: Record<string, number>; attrs: Record<string, number>; cores: Record<CoreId, number>;
   identity: Record<string, string>; archetype?: string | null;
 }

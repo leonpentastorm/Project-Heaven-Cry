@@ -9,7 +9,7 @@ import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair,
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
-import { type Memory, type MemOp, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
+import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -146,7 +146,7 @@ export type Action =
   | { type: 'award/ack'; charId: string; perkId: string }
   | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
-  | { type: 'campaign/refresh' }
+  | { type: 'campaign/refresh' } | { type: 'memory/edit'; edit: MemEdit }
   | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
@@ -230,6 +230,7 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'story/focus': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (c!.hp <= 0 || c!.dead) fail(c!.name + ' can\'t do that now.');
       const f = g.story.focus; g.story.focus = { charId: c.id, objId: a.objId, hover: a.hover, seq: f && f.charId === c.id && f.objId === a.objId ? f.seq : g.seq + 1 };
       return;
     }
@@ -321,6 +322,7 @@ function reduce(g: GameState, a: Action, by: string) {
       push(g, { kind: 'system', text: c!.name + ' takes ' + PERK[a.perkId].name + ' (Tier ' + step!.tier + ').' });
       return;
     }
+    case 'memory/edit': { if (!isHost(g, by)) fail('Only the host edits the Narrator\'s memory.'); const err = editMemory(g, a.edit); if (err) fail(err); return; }
     case 'campaign/refresh': { if (!isHost(g, by)) fail('Host only.'); refreshCampaign(g); return; }
     case 'music/end': { if (!isHost(g, by)) fail('Host only.'); songEnded(g, a.seq); return; }
     case 'music/play': {
@@ -356,6 +358,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'story') fail('Deal with it after the fight.');
       if (g.story.await !== 'players') fail('Wait for the round to open.');
       if (g.story.ended?.[c!.id]) fail(c!.name + ' has ended the turn.');
+      if (c!.hp <= 0) fail(c!.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up.');
       if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
       const cost = a.type === 'poi/try' ? 2 : 1; if (apLeft(g, c!) < cost) fail('Needs ' + cost + ' AP (' + apLeft(g, c!) + ' left).');
       const o = storyObjects(g).find((x) => x.id === a.objId); if (!o || o.hidden) fail('Nothing like that here.');
@@ -499,7 +502,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     awardAutomatic(g, c);
   }
   for (const x of t.treat || []) {
-    const c = g.characters[x.charId]; if (c && !c.dead && c.hp <= 0 && x.loc === 'all') { c.hp = 1; push(g, { kind: 'system', text: c.name + ' is stabilised at 1 HP.' }); }
+    const c = g.characters[x.charId]; if (c && !c.dead && c.hp <= 0 && x.loc === 'all') { c.hp = 1; c.downedFails = 0; push(g, { kind: 'system', text: c.name + ' is stabilised at 1 HP.' }); }
     if (!c || !c.injuries?.length) continue;
     const before = c.injuries.length;
     c.injuries = x.loc === 'all' ? [] : c.injuries.filter((i) => i.loc !== x.loc);
@@ -656,10 +659,14 @@ function finishCombat(g: GameState) {
   // No XP for a fight on people who weren't hostile (spec: Anyone is a target).
   if (won && !cb.noXp) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
   // Where everyone ends up becomes the story's positions.
+  if (g.story.zone && g.story.zone !== cb.map.id) { const zn = (g.story.zoneNpcs ||= {}); zn[g.story.zone] = npcsOf(g); g.story.npcs = zn[cb.map.id]; delete zn[cb.map.id]; }
   g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
+  for (const u of cb.units) if (u.side === 'foe' && u.dead && u.npcId) for (const o of g.story.objects!) if (o.npcId === u.npcId) { o.dead = true; o.resolved = true; }
   for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
   // Enemies still standing go back on the map as hostile tokens where they ended.
-  for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed) npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined });
+  { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
+    const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
+    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined }); } }
   g.phase = 'story'; g.story.await = 'narrator'; g.story.work = { kind: 'combat_end', note: combatReport(cb) };
   musicAfterFight(g);
   g.combat = { ...cb };
@@ -747,7 +754,7 @@ export function positionsOf(g: GameState): Record<string, string> {
 export function viewFor(g: GameState, playerId: string): GameState {
   const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...g.story.scene, hooks: [] } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
-  delete v.memory; delete v.archive;
+  if (playerId !== g.hostId) delete v.memory; delete v.archive;
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
@@ -775,6 +782,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
   const c = g.characters[u.charId!]; if (!c) return;
     // After a fight the Downed get up at 1 HP; on the overworld (friendly fire) they stay Downed at 0 until stimmed or treated.
     c.hp = u.dead ? 0 : u.downed && keepDowned ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
+    c.downedFails = u.downed && keepDowned && !u.dead ? u.saves.fail : 0;
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
     // Ammo carried out of the fight (spec: Reloading).
     c.loaded = u.ammo;
@@ -806,8 +814,9 @@ export function newRound(g: GameState) {
   for (const x of q) {
     if (g.phase !== 'story' || g.story.await !== 'players') break;
     const c = g.characters[x.charId]; if (!c || c.dead) continue;
+    const snap = JSON.stringify({ npcs: g.story.npcs, objects: g.story.objects, seq: g.seq });
     try { worldAct(g, { type: 'world/act', ...x }, c.owner); }
-    catch (e) { if (!(e instanceof RuleError)) throw e; push(g, { kind: 'system', text: c.name + ' can\'t ' + (x.act === 'move' ? 'move there' : x.act === 'attack' ? 'make that attack' : x.act) + ': ' + e.message }); }
+    catch (e) { if (!(e instanceof RuleError)) throw e; { const r = JSON.parse(snap); g.story.npcs = r.npcs; g.story.objects = r.objects; g.seq = r.seq; } push(g, { kind: 'system', text: c.name + ' can\'t ' + (x.act === 'move' ? 'move there' : x.act === 'attack' ? 'make that attack' : x.act) + ': ' + e.message }); }
   }
 }
 const FACE: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0] };
@@ -844,7 +853,7 @@ const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard cap
  * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
 function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
-  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); return u; });
+  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
   return { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
 }
@@ -918,7 +927,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     // Anyone and anything is a target (spec: Anyone is a target).
     let t = target;
     const o = !t ? storyObjects(g).find((x) => !x.hidden && (x.id === (a.objId || tid) || (!!tname && x.name.toLowerCase() === tname))) || null : null;
-    if (!t && o && (o.portrait || portraitFor(g, o.name))) t = poiToNpc(g, cb, o);
+    if (!t && o && o.dead) fail(o.name + ' is dead.');
+    if (!t && o && isPersonObj(g, o)) t = (o.npcId && cb.units.find((x) => x.id === o.npcId)) || poiToNpc(g, cb, o);
     if (!t && o) {
       if (o.hp == null || o.hp <= 0) { if (u.ap < 2) fail('Needs 2 AP.'); u.ap -= 2; cb.log.push(c!.name + ' attacks the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + '.'); g.story.needs = true; }
       else err = shootCover(cb, u, o.pos, c!);
@@ -961,7 +971,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
   g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) })), tier, g.rng, storyObjects(g));
-  const cbx = g.combat; g.story.npcs = stay;
+  const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; });
   if (!wasHostile) cbx.noXp = true;
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
@@ -978,7 +988,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
  * the campaign says more (spec: Anyone is a target; provisional). The point of interest stays where it is. */
 function poiToNpc(g: GameState, cb: Combat, o: MapObject): Combat['units'][number] {
   const n: Npc = { id: 'n' + (++g.seq), name: o.name, side: 'neutral', tier: 'minion', weapon: 'fists', pos: o.pos, portrait: o.portrait || portraitFor(g, o.name) || undefined, facing: facingToward(o.pos, partyCentre(g)) };
-  npcsOf(g).push(n);
+  npcsOf(g).push(n); o.npcId = n.id;
   const unit = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, { state: g.rng.state }); if (n.portrait) unit.img = n.portrait;
   cb.units.push(unit);
   return unit;
@@ -1030,3 +1040,6 @@ export function refreshCampaign(g: GameState): boolean {
   for (const pin of fresh.pins || []) applyMemOp(g, { op: 'pin', text: pin });
   return true;
 }
+
+/** Is this map object a person (spec: Anyone is a target)? A portrait of its own, or a campaign portrait by name. */
+export const isPersonObj = (g: GameState, o: MapObject) => !!(o.portrait || portraitFor(g, o.name));
