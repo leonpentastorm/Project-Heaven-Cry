@@ -145,11 +145,12 @@
     "cold-read",
     "fire-sermon",
     "silent-partner",
-    "verse-of-war"
+    "verse-of-war",
+    "between-heartbeats"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 66
+    "perks": 67
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -199,7 +200,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "between-heartbeats",
     "siege-engine",
     "dead-signal",
     "twin-souls",

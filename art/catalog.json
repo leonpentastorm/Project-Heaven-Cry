@@ -4862,6 +4862,31 @@
         "40": "art/perks/wick/production-v1/exports/40/verse-of-war.png"
       },
       "tier": "achieved"
+    },
+    "between-heartbeats": {
+      "label": "Wick — Between Heartbeats",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/between-heartbeats.png",
+      "sha256": "7f9972d9cd55aa95a13a255e1c5ac6ec873fbc9d1401786e434db4b0315d47d4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "between_heartbeats",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/between-heartbeats.png",
+        "128": "art/perks/wick/production-v1/exports/128/between-heartbeats.png",
+        "64": "art/perks/wick/production-v1/exports/64/between-heartbeats.png",
+        "56": "art/perks/wick/production-v1/exports/56/between-heartbeats.png",
+        "48": "art/perks/wick/production-v1/exports/48/between-heartbeats.png",
+        "44": "art/perks/wick/production-v1/exports/44/between-heartbeats.png",
+        "40": "art/perks/wick/production-v1/exports/40/between-heartbeats.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

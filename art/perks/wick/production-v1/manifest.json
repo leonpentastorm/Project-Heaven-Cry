@@ -1498,6 +1498,30 @@
       "batch": "F",
       "source_sha256": "305aa882fc4398f9304fef24452cca8e80b6b817dc9b10a262a3d079973e5b9a",
       "tier": "achieved"
+    },
+    {
+      "id": "between-heartbeats",
+      "data_id": "between_heartbeats",
+      "name": "Between Heartbeats",
+      "family": "perks",
+      "order": 66,
+      "mood": "Calm, Tense",
+      "action": "Wick steps calmly around a bullet hanging frozen in the air beside its head, one mitten raised to flick it aside.",
+      "screen": "One heart, mid-beat",
+      "prop": "Frozen bullet (oversized)",
+      "path": "art/perks/wick/production-v1/between-heartbeats.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/between-heartbeats.png",
+        "128": "art/perks/wick/production-v1/exports/128/between-heartbeats.png",
+        "64": "art/perks/wick/production-v1/exports/64/between-heartbeats.png",
+        "56": "art/perks/wick/production-v1/exports/56/between-heartbeats.png",
+        "48": "art/perks/wick/production-v1/exports/48/between-heartbeats.png",
+        "44": "art/perks/wick/production-v1/exports/44/between-heartbeats.png",
+        "40": "art/perks/wick/production-v1/exports/40/between-heartbeats.png"
+      },
+      "batch": "F",
+      "source_sha256": "d094ec7d94868cabf32da47f6e3355f5ff259ebddb1cd8f4b1c189ed9cda3e15",
+      "tier": "achieved"
     }
   ]
 }
