@@ -2248,6 +2248,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "many-hands",
+      "data_id": "many_hands",
+      "name": "Many Hands",
+      "family": "perks",
+      "order": 95,
+      "mood": "Heroic, Tender",
+      "action": "Seen from above: Wick in a team huddle, its mitten at the bottom of a pile of hands stacked from every side of the frame (all partials).",
+      "screen": "Determined smile",
+      "prop": "Pile of hands",
+      "path": "art/perks/wick/production-v1/many-hands.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/many-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/many-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/many-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/many-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/many-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/many-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/many-hands.png"
+      },
+      "batch": "G",
+      "source_sha256": "be74812cda5324c1096fc4b0b867b926accc23dd51d0d786967368842f06cdf1",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

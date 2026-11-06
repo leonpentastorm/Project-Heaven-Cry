@@ -5714,6 +5714,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "many-hands": {
+      "label": "Wick — Many Hands",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/many-hands.png",
+      "sha256": "c3a9d4ec68abbd8ee8345af2132cefff892b488d3fd6ede45751475513ff1d21",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "many_hands",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/many-hands.png",
+        "128": "art/perks/wick/production-v1/exports/128/many-hands.png",
+        "64": "art/perks/wick/production-v1/exports/64/many-hands.png",
+        "56": "art/perks/wick/production-v1/exports/56/many-hands.png",
+        "48": "art/perks/wick/production-v1/exports/48/many-hands.png",
+        "44": "art/perks/wick/production-v1/exports/44/many-hands.png",
+        "40": "art/perks/wick/production-v1/exports/40/many-hands.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
