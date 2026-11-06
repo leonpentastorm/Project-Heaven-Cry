@@ -1594,6 +1594,30 @@
       "batch": "F",
       "source_sha256": "aa676ce2fbe52a9e7afa20357566d1e703a69b68d662ea8976c36d05ee96a7bf",
       "tier": "achieved"
+    },
+    {
+      "id": "the-voice",
+      "data_id": "the_voice",
+      "name": "The Voice",
+      "family": "perks",
+      "order": 70,
+      "mood": "Proud, Eerie",
+      "action": "Wick stands at parade rest, officer's baton under one arm, staring dead ahead; one heavy sound ring drops from its screen and flattens the dust.",
+      "screen": "Stern flat stare",
+      "prop": "Officer's baton",
+      "path": "art/perks/wick/production-v1/the-voice.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/the-voice.png",
+        "128": "art/perks/wick/production-v1/exports/128/the-voice.png",
+        "64": "art/perks/wick/production-v1/exports/64/the-voice.png",
+        "56": "art/perks/wick/production-v1/exports/56/the-voice.png",
+        "48": "art/perks/wick/production-v1/exports/48/the-voice.png",
+        "44": "art/perks/wick/production-v1/exports/44/the-voice.png",
+        "40": "art/perks/wick/production-v1/exports/40/the-voice.png"
+      },
+      "batch": "F",
+      "source_sha256": "8e28603dfbad59c411e001583f96587bc39a4006e930aa9a9063652056ccd2e6",
+      "tier": "achieved"
     }
   ]
 }

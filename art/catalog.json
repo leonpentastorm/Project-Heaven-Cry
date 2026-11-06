@@ -4962,6 +4962,31 @@
         "40": "art/perks/wick/production-v1/exports/40/twin-souls.png"
       },
       "tier": "achieved"
+    },
+    "the-voice": {
+      "label": "Wick — The Voice",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/the-voice.png",
+      "sha256": "efdc9b1258cc361d559fef986c1a338df80fa1b113840a08a1f7ea7675c80d3b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "the_voice",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/the-voice.png",
+        "128": "art/perks/wick/production-v1/exports/128/the-voice.png",
+        "64": "art/perks/wick/production-v1/exports/64/the-voice.png",
+        "56": "art/perks/wick/production-v1/exports/56/the-voice.png",
+        "48": "art/perks/wick/production-v1/exports/48/the-voice.png",
+        "44": "art/perks/wick/production-v1/exports/44/the-voice.png",
+        "40": "art/perks/wick/production-v1/exports/40/the-voice.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

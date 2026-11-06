@@ -149,11 +149,12 @@
     "between-heartbeats",
     "siege-engine",
     "dead-signal",
-    "twin-souls"
+    "twin-souls",
+    "the-voice"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 70
+    "perks": 71
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -203,7 +204,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "the-voice",
     "bite-the-bullet",
     "sixth-sense",
     "what-could-be",
