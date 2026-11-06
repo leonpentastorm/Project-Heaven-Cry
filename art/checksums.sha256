@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-a4b0b1e1ebe3da9f2204ab8e5951c95740a56e905ba44a5d131365c3f86b8cb1  art/campaigns/m813/tutorial-v1/README.md
-c879332d8f38d1272e9535f5d1ec988c0210ad6eedf1b168833abf2363bbc664  art/campaigns/m813/tutorial-v1/manifest.json
-d754a3eb60d0da7c8c4856f935d6a84f8d4a43c7e57db38cbd6af7487d20a893  art/campaigns/m813/tutorial-v1/production-progress.json
-a545b537282552403d8d3b7e30897fcfbe4d5e296eed4da5222b0dd79413614e  art/catalog.json
+f21adec5794792a37f66467634aff0e4d365a15a107252b6174eefe2205d9ad0  art/campaigns/m813/tutorial-v1/README.md
+f457133d587ee262036c33ceef805df4b4c1afb62d1ac60b602de74055841610  art/campaigns/m813/tutorial-v1/manifest.json
+3ea85ad3dbe70ef8cd71496501e2bcd76aa62a6a50d06d6ee3021afe0af92b99  art/campaigns/m813/tutorial-v1/production-progress.json
+9d79319a94230454807abc918f313a6b9cb8fc747f4a8f8762be39844832bffb  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -102,6 +102,7 @@ ffcff8b865a985a6ef28732b20917967d76a41673544f8409ca3b7e07fc2d42f  art/character-
 69a154b7d1dd234b5df1fbf022778dbc66c32a960f7201f0e07de4a14eaa3490  art/character-portraits/m813/v2/m813-novikov.png
 c9a2cb5830378ed8d6a561f810c310b8b787ca6c8b03ba3aae371b9dd1cff53b  art/character-portraits/m813/v2/m813-penny.png
 d9545bd041a2b429605b14a83b8846f231d27497aaa9ab705a4709ae6acff054  art/character-portraits/m813/v2/m813-rook.png
+ed8ff46888c5391625b83a0797bc8356f3706f7e270263f4b91249e4eae59252  art/character-portraits/m813/v2/m813-scavenger-drone.png
 cc61f9c8c3207901a938bd06a50c26788338598516c1ca30decbd6fbff71f624  art/character-portraits/m813/v2/m813-security-guard.png
 3f33574cdd1777d44d214ea60c7bab3d01b1590cfa6e9f126d9849cd1a858227  art/character-portraits/m813/v2/m813-seven-seven.png
 f138d60f3a1005d7d23115ed2422278e6c60365996e787d37b3c56fc4f3146cc  art/character-portraits/m813/v2/m813-soft-hands.png
@@ -116,6 +117,7 @@ a54d49c0e339d95d86ff6b28b6e1a5f89d3a75070ddae5b116f0576f5f0a9e3f  art/character-
 875a2f840355ecdc2fd005b94d1186af08ec2567d316397e98d80d89f2a4bf4f  art/character-portraits/m813/v2/previews/m813-novikov-320px.png
 8674f3d64d570e57b9154ee367fe617705a30d416923377fe857444ed2f3964c  art/character-portraits/m813/v2/previews/m813-penny-320px.png
 ccd804fb6e208d7921124b3eeb42bf2df656591d1039be6f32b5e9bd96585d6e  art/character-portraits/m813/v2/previews/m813-rook-320px.png
+0db0ae214a32288f4bbf79f1967a86ee3515df921472f7a9ccbd30e00805b0c7  art/character-portraits/m813/v2/previews/m813-scavenger-drone-320px.png
 3ccff2527bc93a69c2956693f7041c24b88776531e8eb96ba6a20ddb5cd0ac54  art/character-portraits/m813/v2/previews/m813-security-guard-320px.png
 d5c6d3e3e4e78c707878f735b3f3a9694fede1001d544a585afd2af974e5bff0  art/character-portraits/m813/v2/previews/m813-seven-seven-320px.png
 b20997cba88b6866c71b56142fb158acc7e6e455db31cf844551930d5cb42e47  art/character-portraits/m813/v2/previews/m813-soft-hands-320px.png
@@ -141,6 +143,8 @@ d4cec97230fb2b2e94b8ae21454f80286ae440247c74c9d8106c7acd00f14f27  art/character-
 50af69ea5211d220c56e92dea1cf73c8aa6a266748d830d3d89b4d80f95977fe  art/character-portraits/m813/v2/sources/m813-penny.prompt.txt
 8b05f841d54cf2949f2b8c6504bcc86ea12771cb61b36dcbfc3667eb822ae388  art/character-portraits/m813/v2/sources/m813-rook.png
 a6b6530df277bdbd404366845ac937e2e68d9c84f98e91669760251516e667a5  art/character-portraits/m813/v2/sources/m813-rook.prompt.txt
+01e0579f098692a134c4b72c951204425720d0106a29e459fc75d70d9e2555cd  art/character-portraits/m813/v2/sources/m813-scavenger-drone.png
+6b5c1410f02c609e532a0b9b05282c4b038892dd2922d6ba60c8b2b5127a6c27  art/character-portraits/m813/v2/sources/m813-scavenger-drone.prompt.txt
 a2a57bd47aa48e92ed33004120b48980a7378d8014c33dda60cf7d95aec2389e  art/character-portraits/m813/v2/sources/m813-security-guard.png
 723561665969690ffb0ea640e502c78168ccfb5f07fb35759784f2319b5afb98  art/character-portraits/m813/v2/sources/m813-security-guard.prompt.txt
 cac21552badd86dc9c63abbf8ab7d2728d6542b94d8e3027e89e126102232cdc  art/character-portraits/m813/v2/sources/m813-seven-seven.png
