@@ -1,4 +1,4 @@
-<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+<div class="phc-play" style="height: 100vh; overflow: hidden; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
 
 <header style="display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
 <span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
@@ -12,9 +12,9 @@
 </div>
 </header>
 
-<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 0; min-height: 0">
+<div class="phc-play-row" style="flex: 1; display: flex; gap: 0; min-height: 0; overflow: hidden">
 
-<aside aria-label="Character sheet" style="flex: 1 1 340px; max-width: 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
+<aside aria-label="Character sheet" class="phc-col-scroll" style="flex: 1 1 340px; max-width: 400px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-right: 1px solid #232D3F">
 <sc-if value="{{multi}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px"><sc-for list="{{myChars}}" as="c" hint-placeholder-count="2"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.name}}</button></sc-for></div></sc-if>
 <div style="display: flex; gap: 14px">
 <button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{pc.name}}" style="{{zoomBtn}}"><img src="{{pc.img}}" alt="{{pc.name}}" style="width: 104px; height: 130px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F"></button>
@@ -165,8 +165,9 @@
 
 </aside>
 
-<main aria-label="Story" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
-<div style="flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
+<main aria-label="Story" style="flex: 999 1 560px; min-width: 0; min-height: 0; display: flex; flex-direction: column">
+<div class="phc-story phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none">
+<div style="display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
 <figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
 <button type="button" onClick="{{hero.zoom}}" aria-label="Enlarge the art for {{hero.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}"></button>
 <figcaption style="position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px; background: rgba(10, 13, 19, 0.82); display: flex; flex-direction: column; gap: 4px">
@@ -203,7 +204,8 @@
 </sc-for>
 </div>
 
-<div style="position: sticky; bottom: 0; border-top: 1px solid #232D3F; background: #0A0D13; padding: 14px 32px; display: flex; flex-direction: column; gap: 10px">
+</div>
+<div class="phc-input" style="flex: none; border-top: 1px solid #232D3F; background: #0A0D13; padding: 14px 32px; display: flex; flex-direction: column; gap: 10px; max-height: 45vh; overflow-y: auto">
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-if value="{{hasChecks}}" hint-placeholder-val="{{false}}"><span style="width: 100%; font-size: 11px; letter-spacing: 0.18em; color: #FFFFFF">THE NARRATOR CALLS FOR A CHECK · CLICK TO ROLL</span></sc-if>
 <sc-for list="{{actions}}" as="a" hint-placeholder-count="4">
@@ -225,7 +227,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 </main>
 
-<aside aria-label="Map and speaking order" style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
+<aside aria-label="Map and speaking order" class="phc-col-scroll" style="flex: 1 1 300px; max-width: 360px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 18px; border-left: 1px solid #232D3F">
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{zoneLabel}}</span>
 <button type="button" onClick="{{openArea}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Area map</button></div>
 <div style="{{zoneStyle}}">
@@ -279,9 +281,18 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </div>
 <span aria-live="polite" style="min-height: 20px; padding: 8px 10px; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; font-size: 13px; color: #E7EBF3">{{hereText}}</span>
 <span style="font-size: 12px; color: #A3AEC2">{{areaNote}}</span>
+<div aria-label="What just happened" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F; max-height: 200px; overflow-y: auto">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">LOG</span>
+<sc-if value="{{noAreaLog}}"><span style="font-size: 12px; color: #7F8BA1">Nothing yet this round.</span></sc-if>
+<sc-for list="{{areaLog}}" as="l"><span style="{{l.style}}">{{l.text}}</span></sc-for>
+</div>
 </div>
 <aside aria-label="Your turn" style="flex: 0 0 280px; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F">
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em">{{wHead}}</span>
+<sc-if value="{{hud.has}}"><div aria-label="Your status" style="display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F">
+<sc-for list="{{hud.bars}}" as="b"><div style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 64px; gap: 6px; align-items: center"><span style="{{b.labelStyle}}">{{b.label}}</span><div style="height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div><span style="font-size: 11px; text-align: right; color: #C9D3E3">{{b.text}}</span></div></sc-for>
+<span style="{{hud.ammoStyle}}">{{hud.ammo}}</span>
+</div></sc-if>
 <div style="display: flex; gap: 4px"><sc-for list="{{wPips}}" as="p"><span style="{{p.style}}"></span></sc-for></div>
 <span style="{{wStatusStyle}}">{{wStatus}}</span>
 <sc-for list="{{wGroups}}" as="grp"><span style="margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">{{grp.name}}</span>
@@ -304,6 +315,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #E7EBF3">{{objPanel.text}}</p>
 <sc-if value="{{objPanel.hasRules}}"><span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{objPanel.rules}}</span></sc-if>
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2; padding-top: 4px">WAYS TO DEAL WITH IT</span>
+<sc-if value="{{objPanel.hasPending}}"><button type="button" onClick="{{objPanel.rollPending}}" style="min-height: 48px; padding: 0 16px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; text-align: left">{{objPanel.pendingLabel}}</button></sc-if>
 <sc-if value="{{objPanel.noApproaches}}"><span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">None known yet. Examine it: the Narrator describes it and writes the ways in. Examining costs 1 AP; trying an approach costs 2.</span></sc-if>
 <sc-for list="{{objPanel.approaches}}" as="a">
 <div style="{{a.style}}" onMouseEnter="{{a.hover}}">
@@ -325,7 +337,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </sc-if>
 
 <sc-if value="{{dice}}" hint-placeholder-val="{{false}}">
-<div role="dialog" aria-modal="true" aria-label="Dice table" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 10; padding: 16px">
+<div role="dialog" aria-modal="true" aria-label="Dice table" style="position: fixed; inset: 0; background: rgba(5, 7, 11, 0.88); display: grid; place-items: center; z-index: 13; padding: 16px">
 <div style="display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; border-radius: 18px; background: #10151F; border: 1px solid #232D3F; width: min(760px, 100%); box-sizing: border-box">
 <sc-if value="{{watching}}"><div style="display: flex; align-items: center; gap: 10px"><div style="flex: 1; {{diceBannerStyle}}">{{diceBanner}}</div><button type="button" onClick="{{watchClose}}" aria-label="Close and wait for the story" style="min-height: 52px; min-width: 52px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 20px; cursor: pointer">✕</button></div></sc-if>
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">

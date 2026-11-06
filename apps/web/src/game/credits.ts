@@ -9,6 +9,7 @@ export const CREDITS: { group: string; items: Credit[] }[] = [
     { what: 'Art: Heavenprint portraits, skill figures, campaign art, Wick', who: 'The PHC art team' },
   ] },
   { group: 'Music', items: [
+    { what: 'Heaven Cry (title theme)', who: 'Leon, made with Suno', licence: 'Project Heaven Cry' },
     { what: 'Shadows and Dust', who: 'Scott Buckley', licence: 'CC-BY 4.0', url: 'https://www.scottbuckley.com.au' },
     { what: 'Volatile Reaction', who: 'Kevin MacLeod', licence: 'CC-BY 4.0', url: 'https://incompetech.com' },
     { what: 'Players\' favourite songs', who: 'their own YouTube links, played from YouTube' },

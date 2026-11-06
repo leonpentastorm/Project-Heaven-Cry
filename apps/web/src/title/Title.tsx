@@ -11,6 +11,7 @@ import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx'
 import { NARRATOR_VOICES, voicePrefs, setVoicePrefs, onVoice } from '../game/voice';
 import { resetTips } from '../game/tips';
 import { CREDITS } from '../game/credits';
+import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 
 type Panel = null | 'name' | 'join' | 'characters' | 'saved' | 'settings' | 'credits';
 type Item = { id: string; label: string; sub?: string; start?: boolean; bubble: string; run: () => void };
@@ -57,6 +58,9 @@ export function Title() {
     window.addEventListener('keydown', begin, { once: true }); window.addEventListener('pointerdown', begin, { once: true });
     return () => { window.removeEventListener('keydown', begin); window.removeEventListener('pointerdown', begin); };
   }, [pressed]);
+  // The title theme: from the first key press (browsers allow sound only after one), out when the title goes.
+  React.useEffect(() => { if (!pressed) return; playTitleMusic(); const retry = () => playTitleMusic(); window.addEventListener('pointerup', retry, { once: true }); return () => window.removeEventListener('pointerup', retry); }, [pressed]);
+  React.useEffect(() => () => stopTitleMusic(), []);
   // A ?room= link opens straight on Join.
   React.useEffect(() => { if (pressed && roomParam && !panel && !inviteUsed) { inviteUsed = true; setPanel('join'); } }, [pressed]);
 
@@ -335,7 +339,8 @@ function SettingsPanel() {
     <NameInput />
     <span style={lab}>SOUND</span>
     <label style={row}>Interface sounds <input type="range" min={0} max={100} value={p.sfx} onChange={(e) => setUiPrefs({ sfx: Number(e.target.value) })} aria-label="Interface sounds volume" /> <span style={{ color: ink.muted }}>{p.sfx}%</span></label>
-    <label style={row}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute interface sounds</label>
+    <label style={row}>Title music <input type="range" min={0} max={100} value={p.music} onChange={(e) => setUiPrefs({ music: Number(e.target.value) })} aria-label="Title music volume" /> <span style={{ color: ink.muted }}>{p.music}%</span></label>
+    <label style={row}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute interface sounds and title music</label>
     <span style={lab}>THE NARRATOR'S VOICE</span>
     <label style={row}><input type="checkbox" checked={v.auto} onChange={(e) => setVoicePrefs({ auto: e.target.checked })} /> Read new lines aloud</label>
     <label style={row}>Voice <select value={v.voice} onChange={(e) => setVoicePrefs({ voice: e.target.value })} style={{ ...field, minHeight: 36, fontSize: 14 }}>{NARRATOR_VOICES.map(([id, n]) => <option key={id} value={id}>{n}</option>)}</select></label>

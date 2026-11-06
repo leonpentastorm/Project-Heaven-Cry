@@ -1052,7 +1052,7 @@ Outside fights the story runs in rounds, the way a fight does, but with everyone
 - **Each round** every player character has a full turn of AP (6, at the same movement rate as in a fight) and every player has one **Say**. Players act in any order.
 - **Actions** are the fight's actions at the fight's AP costs, on the area map:
   - Moving: Move, Sprint, Sneak.
-  - Attacking: Shot, Aimed shot, Melee.
+  - Attacking: Shot, Aimed shot, Melee. A shot at something with no HP (a console, a crate, a door) is a real shot: it spends a round, adds heat, needs sight and an unjammed, loaded weapon, and shows in the story as an action; the Narrator rules what it does.
   - Analyze, Reload, Load a magazine, Clear a jam, Field Repair, Stim an ally, drop prone or stand.
   - Points of interest: examining one costs **1 AP**, trying an approach **2 AP**, stepping through an exit **1 AP** (and it asks the Narrator to travel). Opening a door costs 1 AP.
 - **Pass** gives up only the Say. **End turn** gives up the AP left, and the Say if unused. Running out of AP ends the turn too.
@@ -1078,6 +1078,12 @@ Notice bonus: minion +0, soldier +2, elite +4, boss +6. Each hostile checks each
 **Typed intents.** A player can also say what they do ("I move to A15 and shoot that guard"). The Narrator turns the mechanical part into actions, and the engine runs them as that player's own actions when the next round opens, from their fresh AP, under every rule above. An action the rules forbid is reported, not done.
 
 **The shared spotlight.** When a player opens a point of interest or rolls a check, the panel or the dice table opens for the whole party by default, with a large "NAME'S TURN" banner. Everyone sees what that player hovers and chooses, live. Anyone can close it and wait for the story to tell them what happened.
+
+**On screen** (6 Nov 2026, Leon):
+- **The area map** shows your status beside the actions (HP, MP, AP left, the weapon with rounds loaded and spare magazines, red when empty) and a **log** of this round under the map: shots, reloads, doors, rolls.
+- **Actions read as actions** in the story: a line with a red edge for an attack, a white edge for anything else.
+- **A point of interest is rolled in its own popup:** trying an approach opens the dice right there, and a "Roll it" button stays in the popup until you do. The bar above the chat is only for checks the Narrator calls.
+- **The play screen is fixed:** the header, the sheet, the map column and the input stay on screen; each column scrolls on its own. The story sticks to the newest line; scrolled up, a **↓ Latest** button (with the count of new lines) jumps back down.
 
 ## Anyone is a target
 

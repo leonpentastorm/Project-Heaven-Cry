@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt } from './combat';
+import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt, isMelee, attackApCost } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -18,6 +18,8 @@ export interface Entry {
   /** For kind art: the asset id of a story moment (spec: Campaigns, moments). */
   art?: string;
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
+  /** An action someone took on the area map (a shot, a reload, a door): shown as an action line and in the map's log. */
+  act?: boolean;
   /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */
   ooc?: boolean;
   /** A Narrator turn the room voted to reroll: kept greyed out, never sent to the Narrator. */
@@ -962,7 +964,20 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (!t && o && o.dead) fail(o.name + ' is dead.');
     if (!t && o && isPersonObj(g, o)) t = (o.npcId && cb.units.find((x) => x.id === o.npcId)) || poiToNpc(g, cb, o);
     if (!t && o) {
-      if (o.hp == null || o.hp <= 0) { if (u.ap < 2) fail('Needs 2 AP.'); u.ap -= 2; cb.log.push(c!.name + ' attacks the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + '.'); g.story.needs = true; }
+      if (o.hp == null || o.hp <= 0) {
+        // Something without HP: the shot is real (a round, heat, sight, range) and the Narrator rules what it does.
+        const w = WEAPON[u.weapon], melee = isMelee(w), cost = attackApCost(w, melee ? 'melee' : 'shot'), r = dist(u.pos, o.pos);
+        if (u.ap < cost) fail('Needs ' + cost + ' AP.');
+        if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); }
+        else {
+          if (u.jammed) fail('Weapon jammed: clear it (2 AP).');
+          if (w.magazine != null && u.ammo <= 0) fail('Empty: reload (2 AP).');
+          if (!lineOfSight(cb, u.pos, o.pos)) fail('No line of sight.');
+          if (w.magazine != null) u.ammo--; u.heat += 1;
+        }
+        u.ap -= cost; cb.log.push(c!.name + (melee ? ' strikes ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ').'));
+        g.story.needs = true;
+      }
       else err = shootCover(cb, u, o.pos, c!);
     } else {
       if (!t || t.id === u.id || t.dead) fail('Pick someone else to attack.');
@@ -976,7 +991,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   spendAp(g, c!, before - u.ap);
   for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false, true);
   g.story.objects = cb.objects;
-  for (const l of cb.log) push(g, { kind: 'system', text: l });
+  for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
   noticeFor(g, c!);
   closeRoundIfDone(g);
 }

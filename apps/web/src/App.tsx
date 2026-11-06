@@ -18,7 +18,7 @@ import { LevelUpLogic } from './screens/levelup';
 import { UltimateLogic } from './screens/ultimate';
 import { Music } from './game/music';
 import { Title } from './title/Title';
-import { installButtonSounds, sfx, reducedMotion } from './game/sfx';
+import { installButtonSounds, sfx, sfxForLine, reducedMotion } from './game/sfx';
 import { MemoryPanel } from './game/memory';
 import { VotePanel } from './game/vote';
 import { NarratorVoice } from './game/narratorVoice';
@@ -26,6 +26,7 @@ import { onVoice } from './game/voice';
 import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
 import { Tips } from './game/tips';
+import { StoryScroll } from './game/storyScroll';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -47,16 +48,19 @@ export function App() {
   const prev = React.useRef(st.screen), slideFor = React.useRef<string | null>(null);
   if (prev.current !== st.screen) { slideFor.current = prev.current === 'home' && !reducedMotion() ? st.screen : null; prev.current = st.screen; }
   const slideIn = slideFor.current === st.screen;
+  // Combat and area-map actions make a sound as their lines arrive, for everyone in the room.
+  const cbLog = st.game?.combat?.log || [], cbN = cbLog.length, actN = st.game?.story.entries.length || 0;
+  const heard = React.useRef({ cb: cbN, st: actN, fight: st.game?.combat?.name });
+  React.useEffect(() => {
+    const h = heard.current, g = st.game; if (!g) return;
+    if (g.combat && h.fight === g.combat.name && cbN > h.cb) cbLog.slice(h.cb).slice(-4).forEach((l, i) => setTimeout(() => sfxForLine(l), i * 140));
+    if (actN > h.st) g.story.entries.slice(h.st).filter((e) => e.act).slice(-3).forEach((e, i) => setTimeout(() => sfxForLine(e.text), i * 140));
+    heard.current = { cb: cbN, st: actN, fight: g.combat?.name };
+  }, [cbN, actN]);
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
   React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
-  // Keep the newest story lines in view when the player is already near the bottom.
   const n = st.game?.story.entries.length || 0;
-  React.useEffect(() => {
-    if (st.screen !== 'main') return;
-    const nearBottom = window.innerHeight + window.scrollY > document.body.scrollHeight - 400;
-    if (nearBottom) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }, [n, st.screen, st.game?.narrator.busy]);
   const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   return (
     <>
@@ -66,6 +70,7 @@ export function App() {
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
+      {st.screen === 'main' && <StoryScroll count={n} busy={!!st.game?.narrator.busy} />}
       <PlaytestTools />
       <Tips />
       {bar && <div role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{bar}</div>}

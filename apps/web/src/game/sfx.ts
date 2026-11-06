@@ -3,7 +3,8 @@
 // Nothing plays before the first key press or click (browsers forbid it anyway). Ducks under the Narrator's voice.
 import { voiceState } from './voice';
 
-export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' | 'error' | 'toggle' | 'tab' | 'wick_hello' | 'wick_steps';
+export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' | 'error' | 'toggle' | 'tab' | 'wick_hello' | 'wick_steps'
+  | 'shot' | 'hit' | 'miss' | 'reload' | 'melee' | 'down';
 
 /** The chosen files (public/sfx/…, CC0; credits in game/sfxCredits.ts). A list plays one at random. Missing means the
  *  synthesised stand-in (Wick's footsteps are synthesised on purpose: tiny metal taps). */
@@ -13,13 +14,13 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   toggle: ['/sfx/toggle_001.ogg', '/sfx/toggle_002.ogg'], tab: '/sfx/pluck_001.ogg', wick_hello: '/sfx/wick_hello.ogg',
 };
 /** The mix: how loud each event sits under the master UI volume. */
-const MIX: Partial<Record<Sfx, number>> = { hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
+const MIX: Partial<Record<Sfx, number>> = { shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
 // ---------- settings (shared with the title screen's Settings) ----------
 const LS = 'phc.ui';
-export interface UiPrefs { sfx: number; mute: boolean; reduceMotion: boolean }
-let prefs: UiPrefs = (() => { try { return { sfx: 60, mute: false, reduceMotion: false, ...JSON.parse(localStorage.getItem(LS) || '{}') }; } catch { return { sfx: 60, mute: false, reduceMotion: false }; } })();
+export interface UiPrefs { sfx: number; music: number; mute: boolean; reduceMotion: boolean }
+let prefs: UiPrefs = (() => { try { return { sfx: 60, music: 70, mute: false, reduceMotion: false, ...JSON.parse(localStorage.getItem(LS) || '{}') }; } catch { return { sfx: 60, music: 70, mute: false, reduceMotion: false }; } })();
 const subs = new Set<() => void>();
 export const uiPrefs = () => prefs;
 export const onUiPrefs = (f: () => void) => { subs.add(f); return () => { subs.delete(f); }; };
@@ -97,6 +98,13 @@ function synth(ac: AudioContext, dest: GainNode, name: Sfx) {
     case 'tab': noise(0.05, 2400, 0.08); break;
     case 'wick_hello': tone(880, 1320, 0.07, 'square', 0.06); tone(1320, 1760, 0.09, 'square', 0.06, 0.09); tone(1760, 2200, 0.06, 'square', 0.05, 0.2); break;
     case 'wick_steps': for (let i = 0; i < 4; i++) noise(0.025, 3200, 0.05, i * 0.07); break;
+    // Combat stand-ins until real files are chosen (spec: more effects later).
+    case 'shot': noise(0.09, 1800, 0.35); tone(140, 50, 0.12, 'sine', 0.3); break;
+    case 'hit': tone(120, 60, 0.14, 'sine', 0.3); noise(0.05, 600, 0.15, 0.01); break;
+    case 'miss': noise(0.18, 4200, 0.06, 0.02); tone(2400, 900, 0.16, 'sine', 0.03, 0.02); break;
+    case 'reload': tone(1400, 1200, 0.03, 'square', 0.07); tone(900, 800, 0.04, 'square', 0.08, 0.18); noise(0.03, 2500, 0.08, 0.2); break;
+    case 'melee': noise(0.12, 900, 0.2); tone(90, 50, 0.15, 'sine', 0.25, 0.03); break;
+    case 'down': tone(300, 70, 0.5, 'sawtooth', 0.08); break;
   }
 }
 
@@ -110,4 +118,14 @@ export function installButtonSounds() {
     if (want === 'none') return;
     sfx((want as Sfx) || (b.getAttribute('role') === 'tab' ? 'tab' : b.matches('input[type="checkbox"]') ? 'toggle' : /^(‹|close|back|cancel|✕)/i.test((b.textContent || '').trim()) ? 'back' : 'click'));
   }, { capture: true });
+}
+
+/** Combat and area-map feedback: each new log line that describes a shot, a hit, a miss or a reload sounds. */
+export function sfxForLine(text: string) {
+  const t = text.toLowerCase();
+  if (/\breload|loads? (a|the|loose)|speedloader|clears? the jam/.test(t)) return sfx('reload');
+  if (/\b(fires|shoots|opens fire|burst|full auto)\b/.test(t)) { sfx('shot'); if (/\bmiss/.test(t)) setTimeout(() => sfx('miss'), 90); else if (/\bhit|damage|\d+ dmg|−\d+/.test(t)) setTimeout(() => sfx('hit'), 90); return; }
+  if (/\b(strikes|smashes|punches|slashes|stabs|swings)\b/.test(t)) return sfx('melee');
+  if (/\bmiss/.test(t)) return sfx('miss');
+  if (/\b(is downed|goes down|drops to 0|is dead|dies)\b/.test(t)) return sfx('down');
 }

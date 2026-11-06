@@ -245,6 +245,9 @@ export class MainLogic extends DCLogic {
           style: 'display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink };
       }
       if (e.kind === 'check') return { ...base, isCheck: true, headStyle: 'font-weight: 700; letter-spacing: 0.06em; color: ' + (e.ok ? '#6FEA77' : '#A3AEC2') };
+      // An action on the area map reads as an action, not a footnote: a shot is red-edged.
+      if (e.act) { const hit = /\b(fires|shoots|strikes|smashes|attacks|hits|misses)\b/.test(e.text);
+        return { ...base, isNote: true, text: (hit ? '⚔ ' : '› ') + e.text, noteStyle: 'margin: 0; padding: 6px 10px; border-radius: 6px; background: #10151F; border-left: 3px solid ' + (hit ? '#F65157' : '#E7EBF3') + '; font-size: 14px; line-height: 1.5; color: #E7EBF3' }; }
       return { ...base, isNote: true, noteStyle: 'margin: 0; font-size: 13px; line-height: 1.5; color: ' + (e.kind === 'xp' ? '#FFFFFF' : e.kind === 'combat' ? '#F65157' : '#A3AEC2') };
     }), ...(heldAt >= 0 ? [{ key: 'gathering', text: 'The Narrator gathers their voice…' + (VS.status === 'loading' && VS.progress < 100 ? ' (preparing the voice on this device, once: ' + VS.progress + '%)' : ''), isGathering: true, paras: [] }] : [])];
     const busy = g.narrator.busy, err = g.narrator.error;
@@ -260,7 +263,8 @@ export class MainLogic extends DCLogic {
     const label = (tn) => ({ 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' }[tn] || 'TN');
     const comboOf = (ch, ids) => { const mods = ids.map((i) => mod(ch.skills[i] || 0)), low = Math.min(...mods), lowIx = mods.indexOf(low);
       const bonus = ids.filter((i, k) => k !== lowIx && (ch.skills[i] || 0) > 0).length * 2; return { low, bonus, total: low + bonus, lowId: ids[lowIx] }; };
-    const actions = myChecks.map((k) => { const ch = charOf(k.charId), cb = comboOf(ch, k.skills), ink = ATTR[SK[k.skills[0]].attr].ink;
+    // The bar above the chat is for checks the Narrator calls; a point of interest's attempt is rolled in its own popup.
+    const actions = myChecks.filter((k) => !k.poi).map((k) => { const ch = charOf(k.charId), cb = comboOf(ch, k.skills), ink = ATTR[SK[k.skills[0]].attr].ink;
       return { key: k.id, title: (mine.length > 1 ? ch.name + ': ' : '') + k.stakes, tag: k.skills.map((i) => SK[i].name.toUpperCase()).join(' + ') + ' · ' + label(k.tn).toUpperCase() + ' ' + k.tn + ' · ' + fmt(cb.total) + (k.roll ? ' · ROLLED' : ''),
         roll: () => this.setState({ dice: k.id }), tagStyle: 'font-size: 11px; letter-spacing: 0.08em; color: ' + ink,
         style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 52px; padding: 8px 12px; border-radius: 10px; border: 1px solid ' + ink + '; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 14px; text-align: left; cursor: pointer' }; });
@@ -357,6 +361,7 @@ export class MainLogic extends DCLogic {
     const openObj = (o) => { this.setState({ objPanel: o.id }); if (c && !inFight && g.phase === 'story') act({ type: 'story/focus', charId: c.id, objId: o.id }); };
     const fOwner = fChar ? playerOf(fChar.owner) : null;
     const isNear = !!(P0 && near.includes(P0));
+    if (S.awaitPoi && !S.dice) { const pk = myChecks.find((k) => k.poi && k.poi.objId === S.awaitPoi); if (pk) queueMicrotask(() => this.setState({ dice: pk.id, awaitPoi: null })); }
     const myTurn = !!c && !c.dead && g.phase === 'story' && g.story.await === 'players' && !(g.story.ended || {})[c.id] && !g.checks.some((k) => !k.done && k.poi && charOf(k.charId)?.owner === me);
     const tnWord = (tn) => ({ 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' }[tn] || 'TN');
     const poiWhy = spectating ? '' : !c ? 'You have no character here.' : g.phase !== 'story' ? 'After the fight.' : !isNear ? 'Walk up to it first.' : g.story.await !== 'players' ? 'Wait for the round to open.' : (g.story.ended || {})[c.id] ? 'You ended your turn this round.' : apLeft(g, c) < 1 ? 'No AP left this round.' : '';
@@ -370,8 +375,9 @@ export class MainLogic extends DCLogic {
           tries: a.tries.map((t, j) => ({ key: j, text: (t.ok ? '✓ ' : '✕ ') + t.name + ' · ' + t.total, style: 'font-size: 11px; font-weight: 700; color: ' + (t.ok ? '#6FEA77' : '#A3AEC2') })), hasTries: a.tries.length > 0,
           cant: spectating || !myTurn || !isNear || !!tried || !!P0.resolved || apLeft(g, c) < 2, label2: tried ? 'Tried this scene' : 'Try this · 2 AP',
           hover: () => { if (!spectating && c && F && fMine && F.hover !== i) act({ type: 'story/focus', charId: c.id, objId: P0.id, hover: i }); },
-          go: () => { act({ type: 'poi/try', charId: c.id, objId: P0.id, idx: i }); this.setState({ objPanel: null }); },
+          go: () => { act({ type: 'poi/try', charId: c.id, objId: P0.id, idx: i }); this.setState({ awaitPoi: P0.id }); },
           style: 'display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 10px; background: ' + (F && F.objId === P0.id && F.hover === i ? '#1C2536' : '#0D1119') + '; border: 1px solid ' + (F && F.objId === P0.id && F.hover === i ? (fOwner?.color || '#FFFFFF') : '#232D3F') + '; border-left: 3px solid ' + ink }; }),
+      ...(() => { const pk = myChecks.find((k) => k.poi && k.poi.objId === P0.id); return { hasPending: !!pk, pendingLabel: pk ? '🎲 Roll it: ' + pk.stakes : '', rollPending: () => pk && this.setState({ dice: pk.id }) }; })(),
       noApproaches: !P0.approaches.length, cantExamine: spectating || !(myTurn && isNear) || apLeft(g, c) < 1,
       spectating, turnBanner: spectating && fChar ? fChar.name.toUpperCase() + '\'S TURN' : '', turnSub: spectating && fOwner ? fOwner.name + ' is looking at this. Close it to wait for the story to tell you what they do.' : '',
       turnBannerStyle: 'padding: 14px 18px; border-radius: 12px; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 0.16em; color: #0A0D13; background: ' + (fOwner?.color || '#FFFFFF'),
@@ -504,6 +510,15 @@ export class MainLogic extends DCLogic {
         const cell = areaCells.find((c) => c.key === k); return cell.label; })(), areaHint: mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + st0.short.toUpperCase() + ' · ' + map.name.toUpperCase(), inFight,
+      hud: (() => { if (!c) return { has: false, bars: [], ammo: '', ammoStyle: '' };
+        const w = WEAPON[c.weapon], ap = inFight ? 0 : apLeft(g, c), spare = (packOf(c).find((it) => it.weapon === c.weapon && it.mags) || { mags: [] }).mags.length, loaded = loadedOf(c);
+        const hb = bars.filter((b) => b.label !== 'XP').concat(inFight ? [] : [{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
+        const ammo = !w ? 'No weapon' : w.magazine ? (w.name || c.weapon) + ' · ' + loaded + ' / ' + w.magazine + ' loaded · ' + spare + ' spare' + (loaded <= 0 ? ' · EMPTY: reload (2 AP)' : '') : (w.name || c.weapon);
+        return { has: true, bars: hb, ammo, ammoStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: ' + (w && w.magazine && loaded <= 0 ? '#F65157' : '#E7EBF3') }; })(),
+      ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
+        const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
+          style: 'font-size: 12px; line-height: 1.4; color: ' + (e.act && /\b(fires|shoots|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3') }));
+        return { areaLog: L, noAreaLog: !L.length }; })(),
       areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + '. Tell the Narrator "I move to C7", or click a tile.',
       zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',
       zoneNoteStyle: 'display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (inFight ? '#F65157' : '#A3AEC2'),
