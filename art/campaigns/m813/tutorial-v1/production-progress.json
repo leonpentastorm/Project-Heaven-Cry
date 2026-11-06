@@ -42,10 +42,10 @@
     "obj-coolant",
     "obj-fire",
     "obj-fuel-drum",
-    "obj-rubble"
+    "obj-rubble",
+    "obj-fallen-squad"
   ],
   "remaining": [
-    "obj-fallen-squad",
     "obj-triage-line",
     "obj-footlockers",
     "obj-cookbook",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:46:40.148958+00:00",
+  "updated_utc": "2026-11-06T04:49:51.585158+00:00",
   "status": "in-progress",
   "production_approved": false
 }
