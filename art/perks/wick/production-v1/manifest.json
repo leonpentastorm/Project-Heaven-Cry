@@ -2118,6 +2118,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "closing-argument",
+      "data_id": "closing_argument",
+      "name": "Closing Argument",
+      "family": "perks",
+      "order": 90,
+      "mood": "Comic",
+      "action": "Wick walks away from the viewer, back turned, cape swinging, having just let go of a microphone that's falling behind it.",
+      "screen": "Seen from behind: none",
+      "prop": "Dropped microphone",
+      "path": "art/perks/wick/production-v1/closing-argument.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/closing-argument.png",
+        "128": "art/perks/wick/production-v1/exports/128/closing-argument.png",
+        "64": "art/perks/wick/production-v1/exports/64/closing-argument.png",
+        "56": "art/perks/wick/production-v1/exports/56/closing-argument.png",
+        "48": "art/perks/wick/production-v1/exports/48/closing-argument.png",
+        "44": "art/perks/wick/production-v1/exports/44/closing-argument.png",
+        "40": "art/perks/wick/production-v1/exports/40/closing-argument.png"
+      },
+      "batch": "G",
+      "source_sha256": "e87ae209a1559158f52111c65ea81addb93e8cb13b0b00fe0974d93e6e71780b",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

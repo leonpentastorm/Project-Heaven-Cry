@@ -5579,6 +5579,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "closing-argument": {
+      "label": "Wick — Closing Argument",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/closing-argument.png",
+      "sha256": "2cfa28262ce2c4f2a00fe272e22b0fded31ef90957d5ef97c46ca4b95bad1971",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "closing_argument",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/closing-argument.png",
+        "128": "art/perks/wick/production-v1/exports/128/closing-argument.png",
+        "64": "art/perks/wick/production-v1/exports/64/closing-argument.png",
+        "56": "art/perks/wick/production-v1/exports/56/closing-argument.png",
+        "48": "art/perks/wick/production-v1/exports/48/closing-argument.png",
+        "44": "art/perks/wick/production-v1/exports/44/closing-argument.png",
+        "40": "art/perks/wick/production-v1/exports/40/closing-argument.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

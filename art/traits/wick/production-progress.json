@@ -172,11 +172,12 @@
     "overhaul",
     "nothing-gets-past",
     "clean-draw",
-    "established-fact"
+    "established-fact",
+    "closing-argument"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 93
+    "perks": 94
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -202,7 +203,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "closing-argument",
     "solid-image",
     "case-closed",
     "everyones-friend",
