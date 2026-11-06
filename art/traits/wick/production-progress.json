@@ -182,11 +182,12 @@
     "their-own-idea",
     "the-twin-pays",
     "true-name",
-    "still-water"
+    "still-water",
+    "judgement-day"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 103
+    "perks": 104
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -212,7 +213,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "judgement-day",
     "foreseen",
     "on-my-mark"
   ]

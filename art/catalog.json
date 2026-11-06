@@ -5849,6 +5849,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "judgement-day": {
+      "label": "Wick — Judgement Day",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/judgement-day.png",
+      "sha256": "0a87eb04c0e40778ccba663c6fc48211bebe568d8234478395a5e687377e0943",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "judgement_day",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/judgement-day.png",
+        "128": "art/perks/wick/production-v1/exports/128/judgement-day.png",
+        "64": "art/perks/wick/production-v1/exports/64/judgement-day.png",
+        "56": "art/perks/wick/production-v1/exports/56/judgement-day.png",
+        "48": "art/perks/wick/production-v1/exports/48/judgement-day.png",
+        "44": "art/perks/wick/production-v1/exports/44/judgement-day.png",
+        "40": "art/perks/wick/production-v1/exports/40/judgement-day.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {
