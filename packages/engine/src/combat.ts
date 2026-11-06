@@ -4,7 +4,9 @@ import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, p
 import { type Rng, d20, die } from './rng';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
-export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[] }
+export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
+  /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
+  notes?: { at: string; text: string }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
@@ -14,11 +16,25 @@ export const MAPS: Record<string, MapDef> = {
     cover: ['11,2', '11,3', '11,4'], full: ['10,6'], // platinum crates (half); a cargo pylon (full)
     difficult: ['1,9', '2,9', '3,9', '4,9', '6,9', '7,9', '1,10', '3,10', '5,10', '8,10'],
     pcStart: ['3,6', '2,8', '5,8', '2,5', '4,7', '3,4'], foeStart: ['12,3', '12,6', '12,1', '11,7', '12,8', '10,1', '9,4'],
+    notes: [
+      { at: 'N1–P6', text: 'The last ship off M813: the engineers\' hull, its hold full of platinum crates. Solid; nobody walks through it.' },
+      { at: 'M2–M6', text: 'The foot of the loading ramp, where Chief Engineer Keel and his engineers stand.' },
+      { at: 'L3–L5', text: 'Stacked platinum crates: half cover.' },
+      { at: 'K7', text: 'A cargo pylon: full cover.' },
+      { at: 'B10–I11', text: 'The edge of the wreck field: dead infantry robots, twisted plating. Slow going.' },
+      { at: 'A1–J9', text: 'Open landing pad, scorched, under the black hole\'s light. The squad comes in from the west.' },
+    ],
   },
   yard: {
     id: 'yard', name: 'Open ground', w: 16, h: 11, solid: [],
     cover: ['5,3', '5,4', '7,1', '8,9'], full: ['10,6', '10,7'], difficult: ['7,5', '8,5', '7,6'],
     pcStart: ['1,4', '1,6', '2,5', '1,8', '2,2', '1,2'], foeStart: ['14,5', '14,3', '14,7', '13,4', '13,6', '15,5', '13,9'],
+    notes: [
+      { at: 'A1–P11', text: 'Open ground. Whatever the Narrator says this place is.' },
+      { at: 'F4–F5, H2, I10', text: 'Low walls and debris: half cover.' },
+      { at: 'K7–K8', text: 'A thick pillar: full cover.' },
+      { at: 'H6–I6, H7', text: 'Rough ground: slow going.' },
+    ],
   },
 };
 
@@ -39,11 +55,45 @@ export interface Unit {
 export interface Combat { name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
+  /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
+  notes?: string[];
   /** Cover still standing, with its HP; broken cover becomes rubble (spec: Cover). Old saves fall back to the map. */
   cover?: Record<string, { kind: 'half' | 'full'; hp: number; max: number }>; rubble?: string[] }
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
+// ---------- grid references (spec: Grid references): columns A, B, C… left to right, rows 1, 2, 3… top to bottom ----------
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+export const colName = (x: number) => (x < 26 ? LETTERS[x] : LETTERS[Math.floor(x / 26) - 1] + LETTERS[x % 26]);
+export const refOf = (k: string) => { const [x, y] = k.split(',').map(Number); return colName(x) + (y + 1); };
+/** "C7" (or "c 7") to a tile key, or null if it doesn't parse or falls off the map. */
+export function keyOf(ref: string, map?: MapDef): string | null {
+  const m = /^\s*([A-Za-z]{1,2})\s*(\d{1,3})\s*$/.exec(ref || ''); if (!m) return null;
+  const L = m[1].toUpperCase(), x = L.length === 1 ? LETTERS.indexOf(L) : (LETTERS.indexOf(L[0]) + 1) * 26 + LETTERS.indexOf(L[1]), y = Number(m[2]) - 1;
+  if (x < 0 || y < 0 || (map && (x >= map.w || y >= map.h))) return null;
+  return x + ',' + y;
+}
+/** The map in words, for the Narrator and hover: size, what's where, and where the cover is. */
+export function mapBrief(map: MapDef): string {
+  const refs = (ks: string[]) => ks.map(refOf).join(', ');
+  return [map.name + ': ' + map.w + ' columns (A–' + colName(map.w - 1) + ') × ' + map.h + ' rows (1–' + map.h + '); 1.5 m tiles.',
+    ...(map.notes || []).map((n) => n.at + ': ' + n.text),
+    'Half cover at ' + (refs(map.cover) || 'none') + '; full cover at ' + (refs(map.full || []) || 'none') + '; solid ' + (map.solid.length ? map.solid.length + ' tiles' : 'none') + '.'].join('\n');
+}
+/** The map's notes that cover one tile ("N1–P6" is a rectangle; commas separate parts). Most specific first. */
+export function notesAt(map: MapDef, k: string): string[] {
+  const [x, y] = k.split(',').map(Number), hits: { area: number; text: string }[] = [];
+  for (const n of map.notes || []) for (const part of n.at.split(',')) {
+    const [a, b] = part.split(/[–-]/).map((r) => keyOf(r.trim()));
+    if (!a) continue;
+    const [x1, y1] = a.split(',').map(Number), [x2, y2] = (b || a).split(',').map(Number);
+    if (x >= Math.min(x1, x2) && x <= Math.max(x1, x2) && y >= Math.min(y1, y2) && y <= Math.max(y1, y2)) { hits.push({ area: (Math.abs(x2 - x1) + 1) * (Math.abs(y2 - y1) + 1), text: n.text }); break; }
+  }
+  return hits.sort((p, q) => p.area - q.area).map((h) => h.text);
+}
+/** Tiles a character may stand on outside a fight. */
+export const standable = (map: MapDef, k: string) => { const [x, y] = k.split(',').map(Number); return x >= 0 && y >= 0 && x < map.w && y < map.h && !map.solid.includes(k) && !map.cover.includes(k) && !(map.full || []).includes(k); };
+
 export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
@@ -225,11 +275,13 @@ export function rollInjury(rng: Rng, t: Unit): string {
 }
 
 // ---------- turns ----------
-export function startCombat(name: string, mapId: string, pcs: { c: Character }[], foes: { name: string; tier: string; weapon: string }[], difficulty: string, rng: Rng): Combat {
+/** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
+export function startCombat(name: string, mapId: string, pcs: { c: Character; pos?: string }[], foes: { name: string; tier: string; weapon: string; at?: string }[], difficulty: string, rng: Rng): Combat {
   const map = MAPS[mapId] || MAPS.rear_pad;
-  const units: Unit[] = [];
-  pcs.forEach(({ c }, i) => units.push(unitFromCharacter(c, map.pcStart[i % map.pcStart.length], rng)));
-  foes.slice(0, map.foeStart.length).forEach((f, i) => units.push(unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, map.foeStart[i], rng)));
+  const units: Unit[] = [], taken = new Set<string>();
+  const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || fallback[0]; taken.add(k); return k; };
+  pcs.forEach(({ c, pos }) => units.push(unitFromCharacter(c, place(pos, map.pcStart), rng)));
+  foes.slice(0, map.foeStart.length).forEach((f, i) => units.push(unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng)));
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null };
   coverOf(cb);
@@ -288,7 +340,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string): string | null {
   const ap = apForTiles(tiles, u.bank, u.movement);
   if (ap > u.ap) return 'Needs ' + ap + ' AP.';
   u.ap -= ap; u.bank = u.bank + ap * u.movement - tiles; u.pos = to;
-  cb.log.push(u.name + ' moves ' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ' for ' + ap + ' AP.');
+  cb.log.push(u.name + ' moves to ' + refOf(to) + ' (' + tiles + (tiles === 1 ? ' tile' : ' tiles') + ', ' + ap + ' AP).');
   return null;
 }
 

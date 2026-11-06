@@ -2,7 +2,7 @@
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure } from './shared';
-import { WEAPON, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, maxMp, coverOf, difficultOf, dist, ROUNDS_PER_AP } from '@engine';
+import { WEAPON, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, maxMp, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt } from '@engine';
 import { act, getState, go } from '../game/store';
 
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
@@ -33,15 +33,17 @@ export class CombatLogic extends DCLogic {
     const covers = coverOf(cb), coverSel = S.action === 'cover' && covers[S.tile] ? S.tile : null, pickSel = S.action === 'pickup' && (cb.floor || []).some((f) => f.pos === S.tile && f.weapon) ? S.tile : null;
     const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n) => n < cap).sort((a, b) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
     const cost = isMove ? moveAp : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
-    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
+    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
     const floorAt = {}; (cb.floor || []).forEach((f) => { (floorAt[f.pos] ||= []).push(f.text); });
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
 
     const at = {}; cb.units.filter((u) => !u.dead).forEach((u) => { at[u.pos] = u; });
     const solid = new Set(cb.map.solid), diff = difficultOf(cb);
-    const tiles = [];
-    for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) {
-      const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k);
+    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text });
+    tiles.push(axis('h-', '')); for (let x = 0; x < cb.map.w; x++) tiles.push(axis('h' + x, refOf(x + ',0').replace(/\d+$/, '')));
+    for (let y = 0; y < cb.map.h; y++) for (let x = -1; x < cb.map.w; x++) {
+      if (x < 0) { tiles.push(axis('r' + y, String(y + 1))); continue; }
+      const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k), note = notesAt(cb.map, k)[0];
       let bg = '#0D1119', border = '1px solid #151C29';
       if (solid.has(k)) { bg = '#1C2536'; border = '1px solid #232D3F'; }
       const cv = covers[k];
@@ -52,7 +54,7 @@ export class CombatLogic extends DCLogic {
       const sel = u && tgtUnit && u.id === tgtUnit.id;
       const isCur = u && cur && u.id === cur.id;
       tiles.push({
-        key: k, cover: cv, label: (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.downed ? ' · Downed' : '') : solid.has(k) ? 'Solid' : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'Tile ' + k) + (floorAt[k] ? ' · on the floor: ' + floorAt[k].join(', ') : ''),
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.downed ? ' · Downed' : '') : solid.has(k) ? 'Solid' : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (floorAt[k] ? ' · on the floor: ' + floorAt[k].join(', ') : '') + (note ? ' · ' + note : ''), title: u ? '' : refOf(k) + (note ? ' · ' + note : ''),
         hasTok: !!u, t: u ? tokenVals(u, tokOpt(u, x, y)) : null, hasFloor: !!floorAt[k], floor: floorAt[k] ? '▪' + (floorAt[k].length > 1 ? floorAt[k].length : '') : '',
         click: () => this.tileClick(k), hover: () => { if (this.state.hover !== k) this.setState({ hover: k }); },
         hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv, cost: (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + P.dist[k] + (P.dist[k] === 1 ? ' tile' : ' tiles'),
@@ -117,13 +119,15 @@ export class CombatLogic extends DCLogic {
         fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
         imgStyle: 'width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #000; flex: none; border: 2px solid ' + (p ? p.color : '#7FD4FF') + (u.downed || u.dead ? '; opacity: 0.5' : '') }; });
     const squad = true;
+    const say = { can: !!myU && !cb.over, value: S.say || '', onChange: (e) => this.setState({ say: e.target.value }),
+      send: () => { const text = (this.state.say || '').trim(); if (!text || !myU) return; act({ type: 'combat/say', charId: myU.charId, text }); this.setState({ say: '' }); } };
     const won = cb.over === 'win';
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend,
-      gridStyle: 'display: grid; grid-template-columns: repeat(' + cb.map.w + ', 46px); grid-auto-rows: 46px; gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F',
+      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F',
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
-      initiative, tiles, apPips, apText: mineTurn ? (ap - cost) + ' / ' + ap + ' after this' : ap + ' AP', groups, sel, hasTarget: !!target && !['move', 'reload', 'clear', 'stim', 'cover', 'pickup', 'load'].includes(S.action), squad, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
+      initiative, tiles, apPips, apText: mineTurn ? (ap - cost) + ' / ' + ap + ' after this' : ap + ' AP', groups, sel, hasTarget: !!target && !['move', 'reload', 'clear', 'stim', 'cover', 'pickup', 'load'].includes(S.action), squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
       log: cb.log.slice(-6).map((text, i) => ({ key: cb.log.length - 6 + i, text })),
       cantConfirm: !mineTurn || isMove || (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'pickup' && !pickSel) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || ((S.action === 'shot' || S.action === 'aimed' || S.action === 'melee') && !pv),
       confirm: () => this.confirm(tgtUnit, attackMode, stimTarget), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,

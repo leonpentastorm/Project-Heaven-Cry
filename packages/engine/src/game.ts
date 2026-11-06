@@ -5,7 +5,7 @@ import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, loadAll, passive, pendingPerkSteps, validateSheet,
 } from './character';
-import { type Combat, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
+import { type Combat, MAPS, keyOf, refOf, standable, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -33,6 +33,8 @@ export interface GameState {
     await: 'none' | 'players' | 'narrator' | 'rolls' | 'choices';
     scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]> };
     journal: string[]; work: NarratorWork;
+    /** Where the story happens (a map id) and where each character stands on it, by tile key (spec: Grid references). */
+    zone?: string; positions?: Record<string, string>;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -61,7 +63,9 @@ export type NarratorTurn = {
   overreach?: { charId: string; skill: string; push: string }[];
   xp?: { charId: string; source: string; amount: number; reason?: string }[];
   deeds?: { charId: string; perkId: string; deed: string }[];
-  combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string }[] } | null;
+  combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
+  /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
+  moves?: { charId: string; to: string }[];
   endScene?: { summary: string } | null;
   /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
   treat?: { charId: string; loc: 'arm' | 'leg' | 'all' }[];
@@ -82,7 +86,7 @@ export type Action =
   | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
-  | { type: 'gear/load'; charId: string }
+  | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'combat/say'; charId: string; text: string }
   | { type: 'award/ack'; charId: string; perkId: string };
 
 export class RuleError extends Error {}
@@ -135,6 +139,7 @@ function reduce(g: GameState, a: Action, by: string) {
       g.phase = 'story';
       for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); }
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
+      g.story.zone = g.settings.start === 'm813' ? 'rear_pad' : 'yard'; g.story.positions = {}; positionsOf(g);
       push(g, { kind: 'system', text: 'Session 1 begins.' });
       return;
     }
@@ -233,6 +238,23 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'award/ack': { g.awards = g.awards.filter((x) => !(x.charId === a.charId && x.perkId === a.perkId)); return; }
+    case 'story/move': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase !== 'story') fail(g.phase === 'combat' ? 'A fight is on: move on the combat grid.' : 'The session hasn\'t started.');
+      if (c!.dead) fail('The dead stay where they fell.');
+      const map = zoneMap(g), k = /,/.test(a.to) ? a.to : keyOf(a.to, map);
+      if (!k || !standable(map, k)) fail('Nobody can stand there.');
+      const pos = positionsOf(g); if (Object.entries(pos).some(([id, p]) => id !== c!.id && p === k)) fail('Someone is already standing there.');
+      pos[c!.id] = k!; return;
+    }
+    case 'combat/say': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      const cb = g.combat; if (!cb || g.phase !== 'combat' || cb.over) fail('No fight is on.');
+      const text = String(a.text || '').trim().slice(0, 300); if (!text) fail('Say something.');
+      (cb!.notes ||= []).push(c!.name + ' (round ' + cb!.round + '): "' + text + '"');
+      cb!.log.push(c!.name + ': "' + text + '"');
+      return;
+    }
     case 'gear/load': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('In a fight, load magazines from the combat screen (1 AP per 5 rounds).');
@@ -335,11 +357,17 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     c.injuries = x.loc === 'all' ? [] : c.injuries.filter((i) => i.loc !== x.loc);
     if (c.injuries.length < before) push(g, { kind: 'system', text: c.name + '’s ' + (x.loc === 'all' ? 'injuries are' : x.loc + ' injury is') + ' treated.' });
   }
+  for (const mv of t.moves || []) {
+    const c = g.characters[mv.charId], map = zoneMap(g), k = keyOf(mv.to, map), pos = positionsOf(g);
+    if (!c || c.dead || !k || !standable(map, k) || Object.entries(pos).some(([id, p]) => id !== c.id && p === k)) continue;
+    pos[c.id] = k; push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' });
+  }
   if (t.endScene?.summary) g.story.journal.push(t.endScene.summary);
   if (t.combat && t.combat.enemies?.length) {
-    const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c }));
-    const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol' }));
-    g.combat = startCombat(t.combat.name || 'Fight', t.combat.map || (g.settings.start === 'm813' ? 'rear_pad' : 'yard'), pcs, foes, t.combat.difficulty || 'standard', g.rng);
+    const mapId = t.combat.map && MAPS[t.combat.map] ? t.combat.map : zoneMap(g).id, same = mapId === zoneMap(g).id, pos = positionsOf(g);
+    const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
+    const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
+    g.combat = startCombat(t.combat.name || 'Fight', mapId, pcs, foes, t.combat.difficulty || 'standard', g.rng);
     g.phase = 'combat'; g.story.await = 'none';
     push(g, { kind: 'combat', text: 'Combat: ' + g.combat.name });
     runEnemies(g);
@@ -416,8 +444,29 @@ function finishCombat(g: GameState) {
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + ' rounds. ' + cb.units.map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
   if (won) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
-  g.phase = 'story'; g.story.await = 'narrator'; g.story.work = { kind: 'combat_end', note: cb.summary };
+  // Where everyone ends up becomes the story's positions.
+  g.story.zone = cb.map.id; g.story.positions = {};
+  for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
+  g.phase = 'story'; g.story.await = 'narrator'; g.story.work = { kind: 'combat_end', note: combatReport(cb) };
   g.combat = { ...cb };
+}
+
+/** The one Narrator call a fight costs gets this: the result, the moments that mattered, who's left where, and anything said mid-fight. */
+export function combatReport(cb: Combat): string {
+  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge/;
+  const moments = cb.log.filter((l) => key.test(l)).slice(-14);
+  const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
+    + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));
+  return [cb.summary || '', 'Key moments:\n' + (moments.map((m) => '- ' + m).join('\n') || '- none'), 'At the end:\n' + where.map((w) => '- ' + w).join('\n'),
+    ...(cb.notes?.length ? ['Said or attempted mid-fight (yours to judge):\n' + cb.notes.map((n) => '- ' + n).join('\n')] : [])].join('\n');
+}
+
+/** The story's map, and where everyone stands on it (filled in from the map's start tiles). */
+export const zoneMap = (g: GameState) => MAPS[g.story.zone || (g.settings.start === 'm813' ? 'rear_pad' : 'yard')] || MAPS.yard;
+export function positionsOf(g: GameState): Record<string, string> {
+  const map = zoneMap(g), pos = (g.story.positions ||= {}), taken = new Set(Object.values(pos));
+  for (const c of Object.values(g.characters)) if (!pos[c.id] && !c.dead) { const k = map.pcStart.find((t) => !taken.has(t)) || map.pcStart[0]; pos[c.id] = k; taken.add(k); }
+  return pos;
 }
 
 // ---------- views ----------

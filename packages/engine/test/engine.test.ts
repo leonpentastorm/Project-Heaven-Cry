@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, apply, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, refOf, keyOf, notesAt, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -48,6 +48,29 @@ describe('classes and perk steps', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     c.skills = { camaraderie: 5 };
     expect(pendingPerkSteps(c)[0].choices.length).toBe(2);
+  });
+});
+
+describe('grid references and the story map', () => {
+  it('A1 is the top-left tile; columns are letters, rows numbers', () => {
+    expect(refOf('0,0')).toBe('A1'); expect(refOf('15,10')).toBe('P11'); expect(refOf('26,0')).toBe('AA1');
+    expect(keyOf('c7')).toBe('2,6'); expect(keyOf('Q1', MAPS.rear_pad)).toBeNull(); expect(keyOf('nonsense')).toBeNull();
+    expect(mapBrief(MAPS.rear_pad)).toContain('L3–L5: Stacked platinum crates');
+    expect(notesAt(MAPS.rear_pad, keyOf('L4')!)[0]).toMatch(/crates/); expect(notesAt(MAPS.yard, keyOf('H2')!)[0]).toMatch(/half cover/);
+  });
+  it('players move themselves; the Narrator moves them; fights start where they stand', () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }, 'host');
+    g = apply(g, { type: 'session/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    expect(positionsOf(g)[id]).toBe(MAPS.rear_pad.pcStart[0]);
+    g = apply(g, { type: 'story/move', charId: id, to: 'C7' }, 'host'); expect(g.story.positions![id]).toBe('2,6');
+    expect(() => apply(g, { type: 'story/move', charId: id, to: 'N1' }, 'host')).toThrow(/stand/); // the ship's hull
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', moves: [{ charId: id, to: 'E5' }],
+      combat: { name: 'Pad', map: 'rear_pad', difficulty: 'easy', enemies: [{ name: 'Keel', tier: 'soldier', weapon: 'service_pistol', at: 'J5' }] } } as any }, 'host');
+    const u = g.combat!.units.find((x) => x.charId === id)!, k = g.combat!.units.find((x) => x.side === 'foe')!;
+    expect(refOf(u.pos)).toBe('E5'); expect(refOf(k.pos)).toBe('J5');
+    expect(combatReport(g.combat!)).toContain('MPAT: ' + u.hp + '/' + u.maxHp + ' HP at E5');
   });
 });
 

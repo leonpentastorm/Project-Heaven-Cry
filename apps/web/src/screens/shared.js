@@ -140,7 +140,7 @@ export function tokenVals(u, opt) {
   const known = !!opt.ally || !!u.analyzedBy, fx = known ? effectsOf(u) : [];
   return {
     ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: u.img || '', hasImg: !!u.img, noImg: !u.img, short: u.short, name: u.name,
-    sub: opt.ally ? opt.player : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase() + (u.analyzedBy ? ' · ANALYZED' : ''), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
+    sub: (opt.ref ? opt.ref + ' · ' : '') + (opt.ally ? opt.player : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase() + (u.analyzedBy ? ' · ANALYZED' : '')), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
     hp: u.hp + ' / ' + u.maxHp + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
     stateStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
     ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : !opt.ally && known ? 'Defense ' + u.def + ' · Armour ' + u.armour : '', hasAp: !!(opt.inFight && opt.ally) || (!opt.ally && known),

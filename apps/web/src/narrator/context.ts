@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel } from '@engine';
+import { type GameState, type Character, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -43,6 +43,12 @@ FIGHTS
 - Enemy tiers: ${ENEMIES.map((e: any) => `${e.id} (HP ${e.hp}, Defense ${e.defense}, attack +${e.attack_bonus}, armour ${e.armour})`).join('; ')}.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
+THE MAP (grid references)
+- Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. The current map and what is where is in the campaign block; each turn tells you where everyone stands.
+- Players may say "I move to A15"; they can also move themselves on the map between your turns. You may move characters when the story moves them: add moves[] with charId and a grid reference (an empty array otherwise). Keep descriptions consistent with the map's notes.
+- When a fight starts on the current map, characters start where they stand. Give each enemy an "at" grid reference to place it (an empty string lets the engine choose). Place enemies on open tiles, not on hulls or cover.
+- A fight costs you one call: when it ends you get a report of key moments, where everyone ended up, and anything players said or attempted mid-fight that needs your judgement. Rule on those in your aftermath.
+
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
 
@@ -64,6 +70,7 @@ export function campaignPrompt(g: GameState): string {
     `CAMPAIGN START: ${st.title} (${st.kicker})`, st.lore.join('\n'), st.meta,
     `TONE CHOSEN BY THE HOST: ${g.settings.tone}.`,
     st.id === 'm813' ? '\nM813 SOURCE (the canon behind this one-shot; the incident is history the players are about to live):\n' + clean(m813) : '',
+    '\nTHE MAP WHERE THE STORY IS NOW:\n' + mapBrief(zoneMap(g)),
     '\nWORLD BIBLE (Narrator only; never reveal its truths outright):\n' + clean(worldBible),
     '\nTHE EARTH SECTOR AND ORIGINS:\n' + clean(sectorEarth),
     '\nTHE EPCCG CAST AND FACTIONS:\n' + clean(cast),
@@ -108,10 +115,12 @@ export function turnPrompt(g: GameState): string {
     ? 'This is the OPENING of session 1. Set the first scene (give a sceneTitle), introduce the situation from the campaign start, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
     : w.kind === 'round' ? `Round ${g.story.round}: every player has acted (see the transcript's last [Player] lines). Answer all of them together. Request checks where outcomes are uncertain.`
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
-    : `The fight is over. Engine summary: ${w.note || ''}. Narrate the aftermath and what it means, then open the next round. The engine already gave combat XP.`;
+    : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
   const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + ' HP'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
+  const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
+  const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
   const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -132,9 +141,10 @@ export function turnSchema(g: GameState) {
     deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string', enum: combos }, deed: { type: 'string' } }) },
     combat: { anyOf: [{ type: 'null' }, obj({
       name: { type: 'string' }, map: { type: 'string', enum: ['rear_pad', 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
-      enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string', enum: WEAPONS.map((w: any) => w.id) } }) },
+      enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string', enum: WEAPONS.map((w: any) => w.id) }, at: { type: 'string' } }) },
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
+    moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });
 }

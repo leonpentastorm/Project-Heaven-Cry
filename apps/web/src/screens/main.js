@@ -3,7 +3,7 @@
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, coverOf, difficultOf, magsOf, WEAPONS } from '@engine';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt } from '@engine';
 import { STARTS } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 
@@ -192,21 +192,35 @@ export class MainLogic extends DCLogic {
       : g.story.await === 'rolls' ? 'Waiting for the checks to be rolled.' : g.story.await === 'choices' ? 'Waiting for an Overreach choice.' : g.story.await === 'narrator' ? 'The Narrator is about to answer…'
       : iSpoke ? 'You spoke. Waiting for ' + waitingOn.map((p) => p.name).join(', ') + '.' : 'Your turn: everyone speaks once, then the Narrator answers.';
 
-    // ---------- the zone ----------
-    const cb = g.combat, map = cb ? cb.map : MAPS.rear_pad;
-    // Who stands where: the fight's units, or (no fight yet) the living party at the map's start tiles.
-    const inFight = g.phase === 'combat';
-    const units = cb ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
-      : Object.values(g.characters).filter((x) => !x.dead).map((x, i) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
-        pos: map.pcStart[i % map.pcStart.length], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }));
+    // ---------- the zone: the story's map (or the fight's), with grid references (spec: Grid references) ----------
+    const cb = g.combat, inFight = g.phase === 'combat', map = inFight && cb ? cb.map : zoneMap(g);
+    const pos = inFight ? {} : positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
+    const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
+      : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
+        pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }));
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
-    const cov = cb ? coverOf(cb) : Object.fromEntries([...map.cover.map((k) => [k, { kind: 'half' }]), ...(map.full || []).map((k) => [k, { kind: 'full' }])]);
-    const solid = new Set(map.solid), diff = cb ? difficultOf(cb) : new Set(map.difficult);
+    const cov = inFight && cb ? coverOf(cb) : Object.fromEntries([...map.cover.map((k) => [k, { kind: 'half' }]), ...(map.full || []).map((k) => [k, { kind: 'full' }])]);
+    const solid = new Set(map.solid), diff = inFight && cb ? difficultOf(cb) : new Set(map.difficult);
     const cellBg = (k) => (solid.has(k) ? '#1C2536' : cov[k] ? (cov[k].kind === 'full' ? '#6B5430' : '#4A3A20') : diff.has(k) ? '#232D3F' : '#0D1119');
-    const mini = []; for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k];
-      const p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null;
-      mini.push({ key: k, has: !!u, t: u ? tokenVals(u, { ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
-        style: 'position: relative; aspect-ratio: 1; border-radius: 1px; background: ' + (u ? '#0D1119' : cellBg(k)) }); }
+    const mover = c && !c.dead && !inFight && g.phase === 'story' ? c : null;
+    const moveTo = (k) => () => { if (!mover) return toast(inFight ? 'A fight is on: move on the combat grid.' : 'You have no character to move.'); act({ type: 'story/move', charId: mover.id, to: k }); };
+    const cellsFor = (labels, onClick) => {
+      const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
+      if (labels) { out.push(lab('h-', '')); for (let x = 0; x < map.w; x++) out.push(lab('h' + x, refOf(x + ',0').replace(/\d+$/, ''))); }
+      for (let y = 0; y < map.h; y++) {
+        if (labels) out.push(lab('r' + y, String(y + 1)));
+        for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k], p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null, ref = refOf(k), note = notesAt(map, k)[0] || '';
+          const what = solid.has(k) ? 'blocked' : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
+          out.push({ key: k, isLabel: false, isTile: true, has: !!u, click: onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
+            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
+            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : ''), title: u ? '' : ref + ' · ' + what + (note ? '\n' + note : ''),
+            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u ? '#0D1119' : cellBg(k)) });
+        }
+      }
+      return out;
+    };
+    const mini = cellsFor(false, () => () => this.setState({ area: true }));
+    const areaCells = cellsFor(true, (k) => moveTo(k));
     const regions = st0.id === 'm813' ? REGIONS.map(([name, note, l, t2, ww, h]) => ({ name, note, style: 'position: absolute; left: ' + l + '%; top: ' + t2 + '%; width: ' + ww + '%; height: ' + h + '%; box-sizing: border-box; padding: 8px; border-radius: 10px; border: 1px dashed #3B475D; color: #C9D3E3; display: flex; flex-direction: column; gap: 3px' })) : [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
@@ -245,12 +259,14 @@ export class MainLogic extends DCLogic {
       pass: () => act({ type: 'story/speak', text: '(passes this round)' }),
       skipRest: () => waitingOn.forEach((p) => act({ type: 'story/skip', playerId: p.id })), cantSkip: !isHost || g.story.await !== 'players' || !waitingOn.length,
       pickRoll: S.pickRoll, togglePick: () => this.setState({ pickRoll: !S.pickRoll }),
-      zoneLabel: 'CURRENT ZONE · ' + (cb ? map.name.toUpperCase() : (st0.id === 'm813' ? 'REAR PAD' : 'THE STORY')), zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
+      zoneLabel: 'ZONE · ' + map.name.toUpperCase(), zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
       zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
       miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
-      areaGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 240px) * ' + (map.w / map.h).toFixed(3) + '))',
+      areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
+        const cell = areaCells.find((c) => c.key === k); return cell.label; })(), areaHint: mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
+      areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + (st0.id === 'm813' ? 'PLANET M813 · ' : '') + map.name.toUpperCase(), inFight,
-      areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : cb ? 'Where everyone stood when the last fight ended.' : 'Where the squad stands. When a fight starts, everyone here moves to the grid.',
+      areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + '. Tell the Narrator "I move to C7", or click a tile.',
       zoneNote: inFight ? 'COMBAT ZONE · ENTER ›' : cb ? 'LAST FIGHT · ' + (cb.over === 'win' ? 'WON' : 'LOST') + ' · VIEW ›' : 'NO FIGHT YET · HOVER A TOKEN',
       zoneNoteStyle: 'display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (inFight ? '#F65157' : '#A3AEC2'),
       mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => this.setState({ area: false }), order,

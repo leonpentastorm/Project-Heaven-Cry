@@ -228,6 +228,12 @@ Each class's three signature moves, and all 15 advanced classes, are in classes.
 
 **Reactions.** Each character gets one reaction per round, used outside their turn: an opportunity attack, or a perk that says "reaction." Reactions cost no AP unless stated.
 
+**Grid references.** Every map is a grid. Columns are letters, A, B, C… from left to right (after Z: AA, AB…), and rows are numbers, 1, 2, 3… from top to bottom. "C7" is column C, row 7. Each map carries notes on what is where ("L3–L5: stacked platinum crates"). Players see them by hovering a tile, and the Narrator reads them with the map.
+
+**Moving outside a fight.** Between fights each character stands on a tile of the story's map. Players move their own characters freely (no AP), and the Narrator moves characters when the story moves them ("Leon moves to A15"). A fight on the same map starts with everyone where they stand; the Narrator places enemies by grid reference. When a fight ends, everyone stays where they ended up.
+
+**Speaking in a fight** costs 0 AP. What a character says or attempts that needs judgement (a bluff, a surrender offer, a prayer) goes in the combat log and is ruled on by the Narrator when the fight ends. A fight costs the AI Narrator one call: the engine runs every roll, move and enemy turn, then sends one report (key moments, who's left where, what was said).
+
 **Moving.** Movement is tiles per AP: at Agility 1 every tile costs 1 AP; Agility 3 moves 2 tiles per AP, Agility 5 three, Agility 7 four. Moving N tiles costs N ÷ Movement AP, rounded up. Tiles you've paid for but not walked carry over to the rest of the turn, so half a Movement is never wasted. Before you commit, the grid shows your path and its AP cost.
 
 **Opportunity attacks.** When an enemy leaves your melee reach without Disengaging, you may make one free melee attack against it as your reaction.
