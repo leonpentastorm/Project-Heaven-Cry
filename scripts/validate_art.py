@@ -310,6 +310,41 @@ def validate_ui_colours(catalog, palette):
         for asset_id, asset in catalog[family].items():
             require(asset['ink'] == '#FFFFFF', f'Icon ink must be white: {asset_id}')
 
+def validate_archetype_cards(catalog):
+    """Validate the complete player-card commission independently of older art."""
+    rules = {a['id']: a for a in json.loads(local('data/archetypes.json').read_text())['items']}
+    cards = {k: a for k, a in catalog['characters'].items() if a.get('collection') == 'archetypes'}
+    require(len(cards) == 46 and set(cards) == {'arch-' + k for k in rules}, 'Archetypes must cover all 46 rules IDs')
+    roles = {'woman', 'man', 'androgynous'}
+    ages = {'young', 'adult', 'old'}
+    paths = set()
+    for key, a in cards.items():
+        rule = rules[a['archetype']]
+        require(key == 'arch-' + a['archetype'], f'Archetype ID mismatch: {key}')
+        require(a['path'] == f"art/character-portraits/archetypes/{rule['family']}/{rule['id']}.png", f'Archetype path mismatch: {key}')
+        require(a['path'] not in paths, f'Duplicate archetype path: {key}')
+        paths.add(a['path'])
+        require(a['pool'] == 'player-card' and a['usage'] == 'character portrait', f'Archetype pool mismatch: {key}')
+        require(a['background'] == 'opaque painted scene', f'Archetype background mismatch: {key}')
+        require(a['status'] == 'review-candidate' and a['production_approved'] is False, f'Unreviewed card marked approved: {key}')
+        tags = set(a['tags'])
+        require(len(tags & roles) == 1 and len(tags & ages) == 1 and len(tags - roles - ages) >= 3, f'Incomplete casting tags: {key}')
+        data = local(a['path']).read_bytes()
+        require(hashlib.sha256(data).hexdigest() == a['sha256'], f'Archetype checksum mismatch: {key}')
+        require(data[:8] == b'\x89PNG\r\n\x1a\n' and struct.unpack('>IIBB', data[16:26]) == (800, 1000, 8, 2), f'Archetype PNG mismatch: {key}')
+        require((a['width'], a['height']) == (800, 1000), f'Archetype metadata dimensions: {key}')
+    manifest = json.loads(local('art/character-portraits/archetypes/manifest.json').read_text())
+    require({a['id'] for a in manifest['portraits']} == set(cards), 'Archetype manifest coverage')
+    for a in manifest['portraits']:
+        require(a['sha256'] == cards[a['id']]['sha256'] and a['path'] == cards[a['id']]['path'], 'Archetype manifest mismatch')
+    for name in ['all-46.jpg', 'thumbnail-48x60.png']:
+        local('art/character-portraits/archetypes/previews/' + name)
+    checksum_map = {line.split('  ', 1)[1]: line.split('  ', 1)[0] for line in local('art/checksums.sha256').read_text().splitlines()}
+    require(paths <= set(checksum_map), 'Archetype files missing from checksum list')
+    for a in cards.values():
+        require(checksum_map[a['path']] == a['sha256'], 'Archetype checksum list mismatch')
+    print('OK: all 46 archetype cards; IDs, role tags, review status, PNG format, hashes, manifest and previews.')
+
 def validate():
     catalog = json.loads(local('art/catalog.json').read_text())
     palette = json.loads(local(catalog['palette']).read_text())
@@ -321,7 +356,7 @@ def validate():
     if PIXEL_ASSET is not None:
         require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites']),
                 f'Unknown selected asset: {PIXEL_ASSET}')
-    families = [('skills', 27, 27), ('characters', 83, 99),
+    families = [('skills', 27, 27), ('characters', 83, 145),
                 ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 10)]
     for family, maximum in [('maps', 4), ('sprites', 25)]:
         if family in catalog:
@@ -350,6 +385,8 @@ def validate():
                 require(asset['color'] == attribute['color'] == palette['skills'][asset_id]['color'], f'Colour mismatch: {asset_id}')
                 require(asset['attribute'] == palette['skills'][asset_id]['attribute'], f'Attribute mismatch: {asset_id}')
     require(set(catalog['skills']) == set(palette['skills']), 'Skill list differs from palette')
+    if any(a.get('collection') == 'archetypes' for a in catalog['characters'].values()):
+        validate_archetype_cards(catalog)
     validate_ui_colours(catalog, palette)
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
@@ -371,12 +408,17 @@ if __name__ == '__main__':
     parser.add_argument('--asset', help='Select one asset; check its icon pixels if applicable, and all metadata/checksums.')
     parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 106-perk coverage.')
     parser.add_argument('--complete-campaign', action='store_true', help='Require the full current M813 campaign queue, including runtime followups.')
+    parser.add_argument('--archetypes-only', action='store_true', help='Check the 46-card delivery without requiring unrelated historical assets.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons
     COMPLETE_CAMPAIGN = args.complete_campaign
     try:
-        validate()
+        if args.archetypes_only:
+            validate_archetype_cards(json.loads(local('art/catalog.json').read_text()))
+        else:
+            validate()
     except (ValueError, KeyError, OSError, struct.error) as error:
         print(f'FAIL: {error}', file=sys.stderr)
         sys.exit(1)
+
