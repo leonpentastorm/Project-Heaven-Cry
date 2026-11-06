@@ -3,8 +3,8 @@
   "title": "The Last Ship Out",
   "short": "M813",
   "kicker": "M813 · ONE-SHOT · 2–3 SESSIONS",
-  "art": "world-outpost813",
-  "artNote": "Outpost-813: the rear landing pad under B813",
+  "art": "ill-m813-shield-line",
+  "artNote": "The shield line, the moment the guns stop",
   "focus": "center 45%",
   "tone": "Grim",
   "pitch": [
@@ -258,7 +258,8 @@
         {
           "kind": "pillar",
           "at": "E8",
-          "name": "Toppled pylon"
+          "name": "Toppled pylon",
+          "sprite": "sprite-obj-toppled-pylon"
         },
         {
           "kind": "toxic",
@@ -274,7 +275,8 @@
           "kind": "trap",
           "at": "E5",
           "name": "Unexploded mine",
-          "hidden": true
+          "hidden": true,
+          "sprite": "sprite-obj-mine"
         },
         {
           "kind": "poi",
@@ -311,7 +313,9 @@
               "stakes": "Under the jokes: what he's afraid of, and what he wants you to do with him.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-poi-marker",
+          "portrait": "char-m813-nine-nine"
         },
         {
           "kind": "container",
@@ -358,7 +362,8 @@
               "stakes": "Serials, squads, one thing each of them cared about. Someone should remember.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-triage-line"
         },
         {
           "kind": "poi",
@@ -423,7 +428,8 @@
               "stakes": "What they saw in the last minutes, and who gave the order.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-fallen-squad"
         },
         {
           "kind": "poi",
@@ -525,7 +531,8 @@
               "stakes": "Whatever they left behind in a hurry.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-drop-pod"
         },
         {
           "kind": "terminal",
@@ -562,7 +569,8 @@
               "stakes": "Say plainly how many are coming, and what it will cost to carry them.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-terminal-field"
         }
       ],
       "exits": [
@@ -585,6 +593,10 @@
           "length": 485,
           "licence": "CC-BY 4.0 · scottbuckley.com.au"
         }
+      },
+      "art": {
+        "map": "map-m813-shield-line",
+        "banner": "ill-m813-shield-line"
       }
     },
     {
@@ -658,7 +670,8 @@
         {
           "kind": "pillar",
           "at": "K7",
-          "name": "Cargo pylon"
+          "name": "Cargo pylon",
+          "sprite": "sprite-obj-cargo-pylon"
         },
         {
           "kind": "poi",
@@ -744,7 +757,8 @@
               "stakes": "Dump the pallet before anyone can stop you. The engineers will not take it well.",
               "success": "remove"
             }
-          ]
+          ],
+          "sprite": "sprite-obj-platinum-net"
         },
         {
           "kind": "poi",
@@ -772,7 +786,8 @@
               "stakes": "Who on the ramp would follow her, and who would follow Keel.",
               "success": ""
             }
-          ]
+          ],
+          "portrait": "char-m813-ilse-varga"
         },
         {
           "kind": "terminal",
@@ -800,13 +815,15 @@
               "stakes": "Where the fuel runs, where the engines are, what one robot could do inside.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-terminal-field"
         },
         {
           "kind": "barrel",
           "at": "L9",
           "name": "Fuel line junction",
-          "text": "The pad's fuel feed to the ship. Ugly options start here."
+          "text": "The pad's fuel feed to the ship. Ugly options start here.",
+          "sprite": "sprite-obj-fuel-drum"
         },
         {
           "kind": "poi",
@@ -857,6 +874,10 @@
           "length": 619,
           "licence": "CC-BY 4.0 · scottbuckley.com.au"
         }
+      },
+      "art": {
+        "map": "map-m813-rear-pad",
+        "banner": "ill-m813-rear-pad-loading"
       }
     },
     {
@@ -958,7 +979,8 @@
               "stakes": "Supplies, and the lives that owned them.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-footlockers"
         },
         {
           "kind": "terminal",
@@ -986,7 +1008,8 @@
               "stakes": "Feedstock from the wreck field would make it work.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-console"
         },
         {
           "kind": "terminal",
@@ -1014,7 +1037,8 @@
               "stakes": "Who ordered the line held, and what it says about robots.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-console"
         },
         {
           "kind": "poi",
@@ -1051,22 +1075,32 @@
               "stakes": "Half a tank, if the drums hold.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-escape-craft",
+          "spriteBox": {
+            "w": 2,
+            "h": 2,
+            "dx": -0.5,
+            "dy": -0.5
+          }
         },
         {
           "kind": "crate",
           "at": "C9",
-          "name": "Tool racks"
+          "name": "Tool racks",
+          "sprite": "sprite-obj-tool-rack"
         },
         {
           "kind": "crate",
           "at": "M9",
-          "name": "Tool racks"
+          "name": "Tool racks",
+          "sprite": "sprite-obj-tool-rack"
         },
         {
           "kind": "barrel",
           "at": "O10",
-          "name": "Fuel drum"
+          "name": "Fuel drum",
+          "sprite": "sprite-obj-fuel-drum"
         },
         {
           "kind": "poi",
@@ -1084,7 +1118,14 @@
               "stakes": "Who is rebuilt, and who becomes the parts, decided out loud, by both of you.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-repair-cradles",
+          "spriteBox": {
+            "w": 2,
+            "h": 1,
+            "dx": 0,
+            "dy": 0
+          }
         },
         {
           "kind": "container",
@@ -1102,19 +1143,22 @@
               "stakes": "A meal for a table of robots, because it was always about the table.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-cookbook"
         },
         {
           "kind": "lamp",
           "at": "I9",
           "name": "Work lamp",
-          "text": "The survivors' work lamp over the escape craft."
+          "text": "The survivors' work lamp over the escape craft.",
+          "sprite": "sprite-obj-field-lamp"
         },
         {
           "kind": "lamp",
           "at": "H3",
           "name": "Infirmary lamp",
-          "text": "A field lamp on the medical bay."
+          "text": "A field lamp on the medical bay.",
+          "sprite": "sprite-obj-field-lamp"
         }
       ],
       "exits": [
@@ -1142,6 +1186,10 @@
           "length": 250,
           "licence": "CC-BY · incompetech.com"
         }
+      },
+      "art": {
+        "map": "map-m813-outpost",
+        "banner": "ill-m813-outpost-hangar"
       }
     },
     {
@@ -1281,7 +1329,8 @@
               "stakes": "A hundred robots held it on his order.",
               "success": ""
             }
-          ]
+          ],
+          "portrait": "char-m813-novikov"
         },
         {
           "kind": "terminal",
@@ -1299,7 +1348,8 @@
               "stakes": "Whatever happens next, nobody records it.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-console"
         },
         {
           "kind": "poi",
@@ -1327,7 +1377,14 @@
               "stakes": "Keep this room attached to the station.",
               "success": ""
             }
-          ]
+          ],
+          "sprite": "sprite-obj-repair-cradles",
+          "spriteBox": {
+            "w": 2,
+            "h": 1,
+            "dx": 0,
+            "dy": 0
+          }
         },
         {
           "kind": "poi",
@@ -1345,6 +1402,10 @@
           "length": 291,
           "licence": "CC-BY 4.0 · scottbuckley.com.au"
         }
+      },
+      "art": {
+        "map": "map-m813-outpost-1",
+        "banner": "ill-m813-outpost-1"
       }
     }
   ],
@@ -1377,5 +1438,79 @@
     "worlds/timeline",
     "mana/canon",
     "sector-earth"
+  ],
+  "sprites": {
+    "low_wall": "sprite-obj-barrier-stakes",
+    "crate": "sprite-obj-platinum-crates",
+    "pillar": "sprite-obj-cargo-pylon",
+    "door": "sprite-obj-door-closed",
+    "door:open": "sprite-obj-door-open",
+    "hole": "sprite-obj-crater",
+    "trap": "sprite-obj-mine",
+    "toxic": "sprite-obj-coolant",
+    "fire": "sprite-obj-fire",
+    "barrel": "sprite-obj-fuel-drum",
+    "rubble": "sprite-obj-rubble",
+    "container": "sprite-obj-footlockers",
+    "terminal": "sprite-obj-terminal-field",
+    "poi": "sprite-obj-poi-marker",
+    "lamp": "sprite-obj-field-lamp"
+  },
+  "portraits": {
+    "Sergeant Nine-Nine": "char-m813-nine-nine",
+    "Nine-Nine": "char-m813-nine-nine",
+    "Seven-Seven": "char-m813-seven-seven",
+    "Hum": "char-m813-hum",
+    "Lantern": "char-m813-lantern",
+    "Soft-Hands": "char-m813-soft-hands",
+    "Rook": "char-m813-rook",
+    "Penny": "char-m813-penny",
+    "Keel": "char-m813-keel",
+    "Chief Engineer Keel": "char-m813-keel",
+    "Ilse": "char-m813-ilse-varga",
+    "Ilse Varga": "char-m813-ilse-varga",
+    "Engineer": [
+      "char-m813-engineer-a",
+      "char-m813-engineer-b"
+    ],
+    "Novikov": "char-m813-novikov",
+    "Colonel": "char-m813-novikov",
+    "Security guard": "char-m813-security-guard",
+    "Guard": "char-m813-security-guard",
+    "Guard captain": "char-m813-guard-captain",
+    "Captain": "char-m813-guard-captain",
+    "Scavenger drone": "char-m813-scavenger-drone",
+    "Drone": "char-m813-scavenger-drone",
+    "Rearguard": "char-m813-rearguard",
+    "Trooper": "char-m813-rearguard"
+  },
+  "moments": [
+    {
+      "id": "how-many",
+      "art": "ill-m813-how-many",
+      "caption": "\"How many of us can you carry?\"",
+      "when": "The opening: Nine-Nine in the stakes asks the medics how many they can carry."
+    },
+    {
+      "id": "the-ramp",
+      "art": "ill-m813-the-ramp",
+      "caption": "The ramp",
+      "zone": "rear_pad",
+      "when": "The standoff at the ramp: Keel and the engineers above, the column below, guns not yet raised."
+    },
+    {
+      "id": "the-choice",
+      "art": "ill-m813-the-choice",
+      "caption": "The record's choice",
+      "zone": "outpost",
+      "when": "After the ship leaves: the two repair cradles, MPAT and the comrade, the choice undecided."
+    },
+    {
+      "id": "the-demand",
+      "art": "ill-m813-the-demand",
+      "caption": "The demand",
+      "zone": "outpost_1",
+      "when": "The end: the Colonel's desk, MPAT's demand."
+    }
   ]
 }

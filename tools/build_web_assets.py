@@ -44,5 +44,14 @@ emit("wick-welcome", ROOT / C["mascot"]["wick-welcome"]["path"], (256, 256), (51
 emit("world-pilot", STATIC / "world-pilot.jpg", (1400, 933), (1400, 933))
 emit("wick-narrator-placeholder", STATIC / "wick-narrator-placeholder.jpg", (256, 256), (256, 256))
 emit("wick-narrator-placeholder", ROOT / "art/style-guide/v1.3/references/wick-model-study.png", None, (1024, 1024))
+# Campaign art (M813 handoff): zone banners and story moments, map backgrounds, object sprites. Catalog ids, selected paths.
+for iid, a in C.get("illustrations", {}).items():
+    if a.get("campaign_id"):
+        emit("ill-" + iid, ROOT / a["path"], (1400, 788), (1600, 900))
+for mid, a in C.get("maps", {}).items():
+    emit(mid, ROOT / a["path"], (1600, 1100), None, 80)
+for sid, a in C.get("sprites", {}).items():
+    w, h = a.get("dimensions", [256, 256])
+    emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
 MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n")
 print(f"{len(assets)} assets -> {OUT.relative_to(ROOT)}")

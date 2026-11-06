@@ -10,7 +10,7 @@ export interface MapDef { id: string; name: string; w: number; h: number; solid:
   notes?: { at: string; text: string }[];
   /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
   dark?: boolean;
-  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
+  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
 
 /** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
 export const MAPS: Record<string, MapDef> = {
@@ -171,7 +171,8 @@ export function defaultObjects(map: MapDef): MapObject[] {
   return [...map.cover.map((k) => makeObject(id(), 'crate', k)), ...(map.full || []).map((k) => makeObject(id(), 'pillar', k)),
     ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); if (!k) return null;
       const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })) });
-      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.to) ob.to = o.to; return ob; }).filter(Boolean) as MapObject[]];
+      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.to) ob.to = o.to;
+      if (o.sprite) ob.sprite = o.sprite; if (o.spriteBox) ob.spriteBox = o.spriteBox; if (o.portrait) ob.portrait = o.portrait; return ob; }).filter(Boolean) as MapObject[]];
 }
 /** The fight's objects; saves from before objects existed are rebuilt from their cover state. */
 export function objectsOf(cb: Combat): MapObject[] {

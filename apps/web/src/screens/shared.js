@@ -1,6 +1,7 @@
 // Shared screen helpers: the prototypes' D data, the EPCCG "?" pop-up, the lightbox and the Mastered card,
 // ported from design/canvas-build/{epccg,lightbox}.logic.js. Screens import what they need.
 import PD from '../game/protodata.json';
+import ASSETS from '../game/assets.json';
 import epTpl from '../templates/epccg.template.html?raw';
 import lbTpl from '../templates/lightbox.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
@@ -11,6 +12,19 @@ export const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
 export const mod = (p) => (p <= 0 ? -2 : p - 1);
 export const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 export const IMG = D.img;
+/** Any built asset by name (tools/build_web_assets.py): campaign maps, sprites, banners, portraits. URLs pass through. */
+export const ART = (n) => (!n ? '' : ASSETS[n] || (/^(\/|https?:|data:|blob:)/.test(n) ? n : ''));
+export const ART_BIG = (n) => ASSETS[n + '-lg'] || ART(n);
+/** The campaign zone a state is in (the fight's map during a fight). */
+export const zoneOf = (g) => g?.campaign?.zones?.find((z) => z.id === (g.phase === 'combat' && g.combat ? g.combat.map.id : g.story.zone)) || null;
+/** An object's sprite: its own, else the campaign's for its kind (an open door has its own). */
+export const spriteOf = (g, o) => { const S = g?.campaign?.sprites || {}; return ART(o.sprite || (o.kind === 'door' && o.open && S['door:open']) || S[o.kind]); };
+/** CSS for one tile showing its slice of the map painting, under a tint (the painting is the whole grid, w × h tiles). */
+export const tileBg = (url, k, w, h, tint) => { const [x, y] = k.split(',').map(Number);
+  return 'linear-gradient(' + tint + ', ' + tint + '), url("' + url + '") ' + (w > 1 ? (x / (w - 1)) * 100 : 0) + '% ' + (h > 1 ? (y / (h - 1)) * 100 : 0) + '% / ' + w * 100 + '% ' + h * 100 + '% no-repeat'; };
+/** An <img> style for a sprite on its tile; a spriteBox (in tiles) lets big art overflow onto its neighbours. */
+export const spriteStyle = (o) => { const b = o.spriteBox || { w: 1, h: 1, dx: 0, dy: 0 };
+  return 'position: absolute; left: ' + b.dx * 100 + '%; top: ' + b.dy * 100 + '%; width: ' + b.w * 100 + '%; height: ' + b.h * 100 + '%; object-fit: contain; pointer-events: none; z-index: 1' + (o.hp != null && o.hp <= 0 ? '; opacity: 0.35' : ''); };
 
 /** Expand the shared template pieces exactly as design/canvas-build/build.py does. */
 const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 11px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 11px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 11px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n';
@@ -140,13 +154,13 @@ export function tokenVals(u, opt) {
   const word = u.dead ? 'DEAD' : u.downed ? 'DOWNED' : hpPct >= 100 ? 'UNHURT' : hpPct > 50 ? 'WOUNDED' : 'BADLY HURT';
   const known = !!opt.ally || !!u.analyzedBy, fx = known ? effectsOf(u) : [];
   return {
-    ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: u.img || '', hasImg: !!u.img, noImg: !u.img, short: u.short, name: u.name,
+    ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: ART(u.img) || u.img || '', hasImg: !!u.img, noImg: !u.img, short: u.short, name: u.name,
     sub: (opt.ref ? opt.ref + ' · ' : '') + (opt.ally ? opt.player : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase() + (u.analyzedBy ? ' · ANALYZED' : '')), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
     hp: u.hp + ' / ' + u.maxHp + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
     stateStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
     ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : !opt.ally && known ? 'Defense ' + u.def + ' · Armour ' + u.armour : '', hasAp: !!(opt.inFight && opt.ally) || (!opt.ally && known),
     inj: fx.map((f) => f[0]).join(' · '), hasInj: fx.length > 0, hint: opt.ally ? '' : 'Analyze to see its HP and status.',
-    tokStyle: 'position: absolute; inset: 6%; display: grid; place-items: center; border-radius: 50%; overflow: hidden; box-sizing: border-box; font-size: 9px; font-weight: 700; '
+    tokStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; border-radius: 50%; overflow: hidden; box-sizing: border-box; font-size: 9px; font-weight: 700; '
       + (opt.ally ? 'border: 2px solid ' + opt.color + '; background: #000' : 'border: 2px solid #F65157; background: #2A0F14; color: #F65157') + (u.downed || u.dead ? '; opacity: 0.45' : ''),
     popStyle: 'position: absolute; z-index: 30; ' + (opt.up ? 'bottom' : 'top') + ': calc(100% + 6px); ' + (opt.right ? 'right: 0' : 'left: 0') + '; width: 210px; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (opt.ally ? opt.color : '#F65157') + '; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); color: #E7EBF3; text-align: left; pointer-events: none; white-space: normal',
   };

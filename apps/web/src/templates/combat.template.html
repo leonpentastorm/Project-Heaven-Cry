@@ -22,6 +22,7 @@
 <div style="overflow-x: auto"><div style="{{gridStyle}}">
 <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
 <sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" style="{{t.style}}">
+<sc-if value="{{t.hasSprite}}" hint-placeholder-val="{{false}}"><img src="{{t.sprite}}" alt="" style="{{t.spriteStyle}}"></sc-if>
 <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
 <sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span style="position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 9px; letter-spacing: 0.06em; color: #A3AEC2">{{t.text}}</span></sc-if>

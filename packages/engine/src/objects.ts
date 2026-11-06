@@ -25,6 +25,9 @@ export interface MapObject {
   hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
   /** A way out: the zone it leads to. */
   to?: string;
+  /** Art (spec: Campaigns, art): a sprite asset drawn on the tile (spriteBox in tiles from the tile's corner, for art
+   * bigger than one tile) and a portrait for NPC points of interest. Visual only: the engine never reads them. */
+  sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
 }
 
 export function makeObject(id: string, kind: string, pos: string, extra: Partial<MapObject> = {}): MapObject {

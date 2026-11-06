@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -115,6 +115,9 @@ LOOT
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
 
+STORY MOMENTS
+- Some campaigns have illustrated moments. When the story reaches one the turn lists as open, set moment to its id: the players see the picture right after your narration. Once each; otherwise an empty string.
+
 SCENES
 - sceneTitle: set a short new title (2-6 words) when the scene changes location or time; otherwise an empty string. endScene: when a scene closes, a 1-3 sentence summary of what matters later (facts, NPCs, promises, open threads); otherwise null.
 
@@ -202,8 +205,9 @@ export function turnPrompt(g: GameState): string {
     + (o.approaches.length ? '\n    approaches: ' + o.approaches.map((a, i) => `${i + 1}. ${a.label} [${a.skills.join('+')} TN ${a.tn}${a.success ? ', ' + a.success : ''}]${a.tries.length ? ' tries: ' + a.tries.map((t) => t.name + ' ' + (t.ok ? 'succeeded' : 'failed') + ' (' + t.total + ')').join(', ') : ''}`).join('; ') : '')).join('\n  ');
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
+  const moments = momentsOpen(g).map((m) => `${m.id}: ${m.when}`).join('\n  ');
   const sceneMem = g.story.journal.slice(-8).map((s, i) => `${i + 1}. ${s}`).join('\n') || 'none yet';
-  return `MEMORY (summaries of closed scenes):\n${sceneMem}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
+  return `MEMORY (summaries of closed scenes):\n${sceneMem}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}`;
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -266,6 +270,8 @@ export function submitTool(g: GameState) {
     name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
     approaches: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, skills: { type: 'array', items: { type: 'string' }, description: '1 to 3 skill ids' }, tn: { type: 'integer', enum: [8, 12, 16, 20] }, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }, required: ['label', 'skills', 'tn', 'stakes', 'success'] } },
   }, required: ['action'] } };
-  schema.required = [...schema.required, 'objects'];
+  const open = momentsOpen(g);
+  schema.properties.moment = { type: 'string', enum: ['', ...open.map((m) => m.id)], description: 'A story moment to show the players now (an illustration), or empty' };
+  schema.required = [...schema.required, 'objects', 'moment'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }

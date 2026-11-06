@@ -13,6 +13,8 @@ import ownJ from '../../../data/campaigns/own.json';
 
 export interface CampaignObject {
   kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean;
+  /** Art: a sprite asset id (else the campaign's sprite for its kind), its box in tiles if bigger than one, an NPC portrait. */
+  sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
   approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: '' | 'remove' | 'open' | 'reveal' | 'disarm' }[];
 }
 export interface CampaignZone {
@@ -24,6 +26,8 @@ export interface CampaignZone {
   exits?: { to: string; at?: string; text: string }[];
   /** Dark zones halve sight except near light sources (spec: Vision). */
   dark?: boolean;
+  /** Art: the map painting under the grid and the zone's banner (asset ids). */
+  art?: { map?: string; banner?: string };
   /** Area and fight music for this zone (spec: Music). */
   music?: { ambient?: Track; combat?: Track };
 }
@@ -42,6 +46,10 @@ export interface Campaign {
   narratorLore?: string[];
   /** false hides a built-in campaign from the Room (sketches kept for later). */
   listed?: boolean;
+  /** Art: a sprite per object kind ("door:open" for an open door), portraits by name for NPCs and enemies (a list
+   * alternates between same-named enemies), and story moments the Narrator can show (zone-gated spoilers). */
+  sprites?: Record<string, string>; portraits?: Record<string, string | string[]>;
+  moments?: { id: string; art: string; caption: string; zone?: string; when: string }[];
   /** Campaign-wide music, used where a zone has none (spec: Music). */
   music?: { ambient?: Track; combat?: Track };
 }
@@ -102,6 +110,7 @@ export function validateCampaign(c: any): string[] {
     need(ids.has(e.zone), 'Encounter "' + e.name + '" is in unknown zone "' + e.zone + '".');
     for (const f of e.enemies || []) need(ENEMY[f.tier] && WEAPON[f.weapon], 'Encounter "' + e.name + '": enemy "' + f.name + '" needs a known tier and weapon.');
   }
+  for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
   return errs;
 }
 

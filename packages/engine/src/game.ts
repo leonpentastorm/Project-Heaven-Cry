@@ -13,7 +13,9 @@ import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isT
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
-  id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene';
+  id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene' | 'art';
+  /** For kind art: the asset id of a story moment (spec: Campaigns, moments). */
+  art?: string;
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
   /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */
   ooc?: boolean;
@@ -44,6 +46,8 @@ export interface GameState {
     objects?: MapObject[];
     /** Objects of zones the party has left, so a zone is as they left it when they return. */
     zoneObjects?: Record<string, MapObject[]>;
+    /** Story moments already shown (each once). */
+    moments?: string[];
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -76,6 +80,8 @@ export type NarratorTurn = {
   overreach?: { charId: string; skill: string; push: string }[];
   xp?: { charId: string; source: string; amount: number; reason?: string }[];
   deeds?: { charId: string; perkId: string; deed: string }[];
+  /** A story moment to show (an illustration), by id; only those open in this zone count. */
+  moment?: string;
   combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
@@ -408,6 +414,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     push(g, { kind: 'scene', text: t.sceneTitle });
   }
   if (t.narration?.trim()) push(g, { kind: 'narration', text: t.narration.trim() });
+  { const m = momentsOpen(g).find((x) => x.id === t.moment); if (m) { (g.story.moments ||= []).push(m.id); push(g, { kind: 'art', art: m.art, text: m.caption }); } }
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
   const hooks: Hook[] = (t.hooks || []).filter((h) => SKILL[h.skill] && TN_LADDER.includes(h.tn) && h.line).map((h) => ({ id: id(g, 'h'), skill: h.skill, tn: h.tn, truth: (['true', 'partial', 'misleading'].includes(h.truth) ? h.truth : 'true') as Hook['truth'], line: h.line }));
   g.story.scene.hooks.push(...hooks);
@@ -485,6 +492,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
     g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
+    { const seen: Record<string, number> = {}; for (const u of g.combat.units) if (u.side === 'foe') { const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
     push(g, { kind: 'combat', text: 'Combat: ' + g.combat.name });
     runEnemies(g);
     return;
@@ -696,3 +704,17 @@ export function viewFor(g: GameState, playerId: string): GameState {
 }
 
 export const archetypes = ARCHETYPES;
+
+/** Story moments the Narrator may show now: not shown yet, and in their zone if they have one (spoilers stay gated). */
+export function momentsOpen(g: GameState) {
+  const shown = g.story.moments || [];
+  return (g.campaign?.moments || []).filter((m) => !shown.includes(m.id) && (!m.zone || m.zone === g.story.zone));
+}
+/** A campaign portrait for an NPC or enemy by name: exact, then the longest name it contains; lists alternate. */
+export function portraitFor(g: GameState, name: string, seen: Record<string, number> = {}): string | null {
+  const P = g.campaign?.portraits || {}, n = name.toLowerCase().trim();
+  const key = Object.keys(P).find((k) => k.toLowerCase() === n) || Object.keys(P).filter((k) => n.includes(k.toLowerCase())).sort((a, b) => b.length - a.length)[0];
+  if (!key) return null;
+  const v = P[key]; if (!Array.isArray(v)) return v;
+  const i = seen[key] = (seen[key] ?? -1) + 1; return v[i % v.length];
+}

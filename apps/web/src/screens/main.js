@@ -2,7 +2,7 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals } from './shared';
+import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
@@ -200,12 +200,15 @@ export class MainLogic extends DCLogic {
 
     // ---------- the story stream ----------
     const st0 = startOf(g);
-    const heroImg = IMG[st0.art] || IMG['world-pilot'];
-    const hero = { zoom: zoomer(this, heroImg, st0.title + ' · ' + st0.artNote, 'world'), img: heroImg, title: g.story.scene.title || st0.title, kicker: st0.kicker, imgStyle: 'width: 100%; height: 260px; object-fit: cover; object-position: ' + st0.focus + '; display: block' };
+    // The zone's banner when the campaign has one (spec: Campaigns, art), else the campaign's card art.
+    const zone0 = zoneOf(g), banner = zone0?.art?.banner;
+    const heroImg = ART(banner) || IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
+    const hero = { zoom: zoomer(this, ART_BIG(banner) || ART_BIG(st0.art) || heroImg, (zone0 ? zone0.name : st0.title) + (banner ? '' : ' · ' + st0.artNote), 'world'), img: heroImg, title: g.story.scene.title || st0.title, kicker: st0.kicker + (zone0 ? ' · ' + zone0.name.toUpperCase() : ''), imgStyle: 'width: 100%; height: 260px; object-fit: cover; object-position: ' + (banner ? 'center 45%' : st0.focus) + '; display: block' };
     const charOf = (id) => g.characters[id];
     const stream = g.story.entries.slice(-150).map((e) => {
-      const base = { key: e.id, text: e.text, head: e.head || '', isScene: false, isNarration: false, isPlayer: false, isVoice: false, isCheck: false, isNote: false, paras: [] };
+      const base = { key: e.id, text: e.text, head: e.head || '', isScene: false, isNarration: false, isPlayer: false, isVoice: false, isCheck: false, isNote: false, isArt: false, paras: [] };
       if (e.kind === 'scene') return { ...base, isScene: true, text: e.text.toUpperCase() };
+      if (e.kind === 'art') return { ...base, isArt: true, img: ART(e.art), zoom: zoomer(this, ART_BIG(e.art), e.text, 'world') };
       if (e.kind === 'narration') return { ...base, isNarration: true, paras: e.text.split(/\n\s*\n/).map((t) => ({ text: t.trim() })).filter((x) => x.text) };
       if (e.kind === 'player') {
         const p = playerOf(e.who), first = Object.values(g.characters).find((x) => x.owner === e.who);
@@ -282,7 +285,10 @@ export class MainLogic extends DCLogic {
     const cov = {}; objs.forEach((o) => { const k = coverKind(o); if (k) cov[o.pos] = { kind: k }; });
     const solid = new Set(map.solid), diff = new Set([...map.difficult, ...objs.filter(isDifficult).map((o) => o.pos)]);
     const interesting = (o) => o && (o.approaches.length || ['poi', 'door', 'barricade', 'container', 'terminal', 'exit', 'trap', 'hole'].includes(o.kind));
-    const cellBg = (k) => (solid.has(k) ? '#1C2536' : cov[k] ? (cov[k].kind === 'full' ? '#6B5430' : '#4A3A20') : diff.has(k) ? '#232D3F' : '#0D1119');
+    const mapArt = ART(zoneOf(g)?.art?.map);
+    const cellBg = (k) => (mapArt
+      ? tileBg(mapArt, k, map.w, map.h, solid.has(k) ? 'rgba(10, 13, 19, 0.55)' : diff.has(k) ? 'rgba(22, 28, 40, 0.3)' : 'rgba(10, 13, 19, 0.08)')
+      : solid.has(k) ? '#1C2536' : cov[k] ? (cov[k].kind === 'full' ? '#6B5430' : '#4A3A20') : diff.has(k) ? '#232D3F' : '#0D1119');
     const mover = c && !c.dead && !inFight && g.phase === 'story' ? c : null;
     const moveTo = (k) => () => { if (!mover) return toast(inFight ? 'A fight is on: move on the combat grid.' : 'You have no character to move.'); act({ type: 'story/move', charId: mover.id, to: k }); };
     const cellsFor = (labels, onClick) => {
@@ -292,12 +298,13 @@ export class MainLogic extends DCLogic {
         if (labels) out.push(lab('r' + y, String(y + 1)));
         for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k], p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null, ref = refOf(k), note = notesAt(map, k)[0] || '', o = objAt[k];
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
-          const glyph = o && !u && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
-          out.push({ key: k, isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
+          const spr = o ? spriteOf(g, o) : '';
+          const glyph = o && !u && !spr && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
+          out.push({ key: k, isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
             click: interesting(o) && labels ? () => this.setState({ objPanel: o.id }) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
             t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
             label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : ''), title: u ? '' : ref + ' · ' + what + (note ? '\n' + note : ''),
-            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u ? '#0D1119' : cellBg(k)) });
+            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) });
         }
       }
       return out;
@@ -312,7 +319,7 @@ export class MainLogic extends DCLogic {
     const myTurn = !!c && !c.dead && g.phase === 'story' && g.story.await === 'players' && g.story.spoken[me] == null && !g.checks.some((k) => !k.done && k.poi && charOf(k.charId)?.owner === me);
     const tnWord = (tn) => ({ 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' }[tn] || 'TN');
     const poiWhy = !c ? 'You have no character here.' : g.phase !== 'story' ? 'After the fight.' : !isNear ? 'Walk up to it first.' : g.story.await !== 'players' ? 'Wait for your turn to speak.' : g.story.spoken[me] != null ? 'You already acted this round.' : '';
-    const objPanel = P0 ? { name: P0.name, kicker: kindOf(P0).name.toUpperCase() + ' · ' + refOf(P0.pos) + (P0.hp != null ? ' · ' + P0.hp + '/' + P0.max + ' HP' : '') + (P0.locked ? ' · LOCKED' : P0.open ? ' · OPEN' : '') + (P0.resolved ? ' · DEALT WITH' : ''),
+    const objPanel = P0 ? { hasPic: !!(P0.portrait || spriteOf(g, P0)), pic: ART(P0.portrait) || spriteOf(g, P0), zoomPic: zoomer(this, ART_BIG(P0.portrait) || spriteOf(g, P0), P0.name, 'portrait'), name: P0.name, kicker: kindOf(P0).name.toUpperCase() + ' · ' + refOf(P0.pos) + (P0.hp != null ? ' · ' + P0.hp + '/' + P0.max + ' HP' : '') + (P0.locked ? ' · LOCKED' : P0.open ? ' · OPEN' : '') + (P0.resolved ? ' · DEALT WITH' : ''),
       text: P0.text || kindOf(P0).text, rules: P0.text ? kindOf(P0).text : '', hasRules: !!P0.text, why: poiWhy, hasWhy: !!poiWhy,
       approaches: P0.approaches.map((a, i) => { const tried = c && a.tries.some((t) => t.charId === c.id && t.scene === g.story.scene.n), ink = a.skills[0] && SK[a.skills[0]] ? ATTR[SK[a.skills[0]].attr].ink : '#FFFFFF';
         const best = c ? (() => { const mods = a.skills.map((s) => mod(c.skills[s] || 0)), low = Math.min(...mods), li = mods.indexOf(low); return low + 2 * a.skills.filter((s, j) => j !== li && (c.skills[s] || 0) > 0).length; })() : 0;

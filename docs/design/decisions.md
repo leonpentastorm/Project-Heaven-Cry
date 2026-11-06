@@ -149,3 +149,12 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       - The engine's `glossary.ts` builds entries from the data pack: skills, traits, perks (no Ultimates), weapons, items, conditions, classes, patrons, enemy tiers, objects. The web adds the lore chunks.
       - The Narrator calls `wiki_lookup` (up to 8 keys, 3 rounds) before it answers.
       - If the API refuses tools alongside structured output, the turn runs without them.
+78. **M813 art is in the game** (Leon, 6 Nov 2026: "finalize it"; the artist's 53-image handoff merged from `art/briefs-complete`).
+    - **Maps:** each zone's painting sits under its grid. Every tile shows its slice of the painting, so the minimap, the area map and the combat grid share one image. Walls, cover and fog are tints on top.
+    - **Sprites:** each object draws its sprite (its own, else the campaign's sprite for its kind). The escape craft spans 2×2 tiles and the repair cradles 2×1, through a `spriteBox`.
+    - **Banners:** the story header shows the current zone's banner. Later zones' banners only appear on arrival.
+    - **Portraits:** NPC points of interest (Nine-Nine, Ilse, Novikov) carry them in their panel. Enemies take campaign portraits by name; the two engineer faces alternate.
+    - **Story moments:** the Narrator shows them with `moment`, once each. "How many" is opening-safe. The ramp, the choice and the demand only open in their zones, so the ending can't spoil early.
+    - **The campaign card** now uses the shield-line banner, as the handoff suggested.
+    - **Approval:** Leon approved the set for the game. The catalog's `production_approved` flags stay with the artist's pipeline (its validator requires them as delivered).
+    - **Map tokens:** pinned inside the circle (they collapsed to a sliver).

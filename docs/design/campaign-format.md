@@ -22,6 +22,8 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
+| `sprites` · `portraits` | no | Art, by asset id (`art/catalog.json`, as built for the web): `sprites` gives a sprite per object kind (`"door:open"` for an open door); `portraits` maps NPC and enemy names to portraits (`char-<id>`), and a list alternates between same-named enemies ("Engineer": two faces). Names match exactly, else the longest name contained. |
+| `moments` | no | Illustrated story moments: `{ id, art, caption, when, zone? }`. The Narrator shows one with `moment` when the story reaches it, once each; a `zone` keeps a spoiler out of reach until the party is there. |
 | `narratorLore` | no | The World Bible chunks and lore docs the Narrator reads every turn, by key: `truth`, `worlds`, `magic`, `mana`, a sub-chunk such as `truth/knowing` or `worlds/timeline`, `sector-earth` (only the party's origins), `epccg-cast`. A key takes everything under it. Default `["truth", "worlds"]`. Anything else the Narrator can look up in its wiki when it needs it (spec: The Narrator's wiki). |
 | `music` | no | `{ ambient, combat }`: the default tracks where a zone has none. A track is `{ yt, title, artist, start?, length?, licence? }`: `yt` is the 11-character YouTube video id, and the video must allow embedding. An encounter can have its own `music` track (a boss theme). See the spec's Music section. |
 
@@ -40,6 +42,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | `notes` | no | `{ at, text }`: what is where. Players see it when they hover a tile; the Narrator reads all of it. |
 | `objects` | no | Things on tiles (below). |
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
+| `art` | no | `{ map, banner }`: the painting under this zone's grid (the whole grid, `w` × `h` tiles) and the banner over the story while the party is here. |
 | `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
 
 ## Objects and points of interest

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -476,5 +476,40 @@ describe("the Narrator's wiki (glossary)", () => {
   });
   it('never lists Ultimate perks (they are a secret)', () => {
     expect(wikiEntries().some((e) => e.key.startsWith('perk:') && /\(ultimate/.test(e.text))).toBe(false);
+  });
+});
+
+describe('campaign art (spec: Campaigns, art)', () => {
+  const start = () => {
+    let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'art');
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
+    return apply(g, { type: 'session/start' }, 'host');
+  };
+  it('built-in campaigns validate; every M813 zone has its map and banner', () => {
+    for (const c of BUILT_IN_CAMPAIGNS) expect(validateCampaign(c), c.id).toEqual([]);
+    const m = BUILT_IN_CAMPAIGNS.find((c) => c.id === 'm813')!;
+    for (const z of m.zones) { expect(z.art?.map, z.id).toMatch(/^map-m813/); expect(z.art?.banner, z.id).toMatch(/^ill-m813/); }
+  });
+  it('objects keep their sprite, box and portrait on the map', () => {
+    const g = start(), objs = storyObjects(g);
+    expect(objs.find((o) => o.name === 'Sergeant Nine-Nine')!.portrait).toBe('char-m813-nine-nine');
+    expect(objs.find((o) => o.name === 'Enemy drop pod')!.sprite).toBe('sprite-obj-drop-pod');
+  });
+  it('story moments open by zone, once each; spoilers stay gated', () => {
+    let g = start();
+    expect(momentsOpen(g).map((m) => m.id)).toEqual(['how-many']);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Try the ending early.', moment: 'the-demand' } }, 'host');
+    expect(g.story.entries.some((e) => e.kind === 'art')).toBe(false);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'How many?', moment: 'how-many' } }, 'host');
+    expect(g.story.entries.filter((e) => e.kind === 'art').map((e) => e.art)).toEqual(['ill-m813-how-many']);
+    expect(momentsOpen(g)).toEqual([]);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Years later.', travel: 'outpost_1' } }, 'host');
+    expect(momentsOpen(g).map((m) => m.id)).toEqual(['the-demand']);
+  });
+  it('enemies get campaign portraits by name; same-named ones alternate', () => {
+    let g = start();
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'The ramp', difficulty: 'standard', enemies: [{ name: 'Chief Engineer Keel', tier: 'soldier', weapon: 'drifter_revolver' }, { name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }] } } }, 'host');
+    const foes = g.combat!.units.filter((u) => u.side === 'foe');
+    expect(foes.map((u) => u.img)).toEqual(['char-m813-keel', 'char-m813-engineer-a', 'char-m813-engineer-b']);
   });
 });
