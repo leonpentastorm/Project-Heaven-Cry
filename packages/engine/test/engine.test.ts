@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  PORTRAIT_MAX,
   ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
@@ -26,6 +27,12 @@ describe('spec tables', () => {
 });
 
 describe('creation', () => {
+  it('a room refuses a portrait bigger than its small copy (Character files)', () => {
+    let g = newGame('PRT1', { id: 'host', name: 'Host' });
+    expect(() => apply(g, { type: 'char/add', sheet: { ...sheetFrom(ARCHETYPES[0].id, 'Big'), portrait: 'data:image/jpeg;base64,' + 'A'.repeat(PORTRAIT_MAX) } }, 'host')).toThrow(/too big/);
+    g = apply(g, { type: 'char/add', sheet: { ...sheetFrom(ARCHETYPES[0].id, 'Small'), portrait: 'data:image/jpeg;base64,' + 'A'.repeat(30000) } }, 'host');
+    expect(Object.values(g.characters).length).toBe(1);
+  });
   it('every archetype is a legal, fully spent sheet', () => {
     for (const a of ARCHETYPES) expect(validateSheet(sheetFrom(a.id)), a.id).toBeNull();
   });

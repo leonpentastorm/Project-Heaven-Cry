@@ -5,8 +5,8 @@ export const BASE = process.env.BASE || 'http://127.0.0.1:8787';
 export const OUT = new URL('./shots/', import.meta.url).pathname;
 export async function player(browser, name) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true });
-  // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off.
-  if (!process.env.VOICE) await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); } catch { /* */ } });
+  // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off (and no tips).
+  if (!process.env.VOICE) await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); } catch { /* */ } });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));

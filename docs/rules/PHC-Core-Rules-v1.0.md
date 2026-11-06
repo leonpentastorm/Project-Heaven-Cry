@@ -1019,6 +1019,20 @@ The room can redo or reword the AI Narrator's answers, **only if everyone agrees
 - **Reword:** nobody can type into the Narrator's words. The Narrator rewords its own line as asked: wording, tone, emphasis and details that change no outcome. It refuses, keeping its words, any request that would change what happened (items, money, injuries, deaths, positions, who did what, results, new events). The original is kept.
 - **Cost:** a reroll is one Narrator call; a rewording is a small call at low effort.
 
+## Character files
+
+A character is a file you can keep, or make for a friend and send to them.
+
+- **Download:** ⬇ beside any character on the title screen saves it as `Name.phc.zip`. Inside are `character.json` (the sheet) and `portrait.jpg` if the portrait is your own upload, at full size (up to 1200 × 1500).
+- **Import:** *Import* on the title screen, or *Import a character file…* under "Bring a saved character" in a room, adds the character to your characters. In a room's lobby it is brought in at once. A file that breaks the creation rules comes in as a draft to fix on the creation screen.
+- **Your own portrait:** *Upload* on the creation screen takes any image and crops it to 4:5. The full size stays in the file and in your browser. The room only ever carries a small copy (320 × 400, about 15–30 KB), so rooms stay light whatever people upload; a room refuses a portrait over 150 KB.
+
+## Playtest tools
+
+- **Report a problem:** ⚑ *Report* (top bar in play, the room and combat; the footer of the title screen) downloads one file, `phc-report-ROOM-time.zip`, to send to the developer. It holds what the player wrote, the browser and connection, the Narrator model (never the key: it is stripped, with anything shaped like a key), the voice's state, the last 300 errors and warnings, the host's last 3 Narrator calls (what was sent and what came back), and the game: the host's whole save, or what a guest's screen shows. Nothing is sent from the game.
+- **The spend meter:** the cost beside the room code opens the Narrator's spend: the room's total, the average, last and dearest call, how much input was read from the cache, the last 20 calls against the $0.50 ceiling, and (for the host) an estimate of the next call.
+- **First-time tips:** one tip the first time a player meets each part of play: their round (Say, AP, Pass, End turn), the Narrator's voice, skill voices, rerolls and rewordings, combat, and the Report button. Each shows once per browser; *No more tips* turns them off.
+
 ## The Narrator's voice
 
 The Narrator speaks aloud, free, in each player's own browser. Nothing is paid and nothing leaves the browser except the one-time model download.

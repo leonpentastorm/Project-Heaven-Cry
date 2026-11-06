@@ -53,9 +53,9 @@
 <aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">YOUR CHARACTERS · {{libCount}}</span>
-<button type="button" onClick="{{create}}" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Make a character</button>
+<div style="display: flex; gap: 8px"><button type="button" onClick="{{importChar}}" title="Add a character file (.phc.zip) a friend sent you" style="min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Import</button><button type="button" onClick="{{create}}" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Make a character</button></div>
 </div>
-<sc-if value="{{noLib}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #A3AEC2">None yet. Characters you lock in are kept in this browser and can be brought into any room.</p></sc-if>
+<sc-if value="{{noLib}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #A3AEC2">None yet. Characters you lock in are kept in this browser and can be brought into any room. ⬇ downloads one as a file you can keep or send to a friend; Import adds one.</p></sc-if>
 <sc-for list="{{lib}}" as="c" hint-placeholder-count="2">
 <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <img src="{{c.img}}" alt="" style="width: 48px; height: 60px; object-fit: cover; border-radius: 6px; background: #000">
@@ -64,10 +64,11 @@
 <span style="font-size: 12px; color: #A3AEC2">{{c.line}}</span>
 </div>
 <button type="button" onClick="{{c.edit}}" style="min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; cursor: pointer">Open</button>
+<button type="button" onClick="{{c.download}}" aria-label="Download {{c.name}} as a file" title="Download as a file to keep or send to a friend" style="min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; cursor: pointer">⬇</button>
 <button type="button" onClick="{{c.del}}" aria-label="Delete {{c.name}}" style="min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; cursor: pointer">✕</button>
 </div>
 </sc-for>
 </aside>
 </main>
-<footer style="padding: 14px 32px; border-top: 1px solid #232D3F; font-size: 12px; color: #7F8BA1">Your API key stays in your browser and goes only to Anthropic. Rooms are relayed through Cloudflare; the relay never sees your key.</footer>
+<footer style="padding: 14px 32px; border-top: 1px solid #232D3F; font-size: 12px; color: #7F8BA1">Your API key stays in your browser and goes only to Anthropic. Rooms are relayed through Cloudflare; the relay never sees your key. <button type="button" onClick="{{report}}" style="padding: 0; border: 0; background: none; color: #A3AEC2; font-family: inherit; font-size: 12px; text-decoration: underline; cursor: pointer">⚑ Report a problem</button></footer>
 </div>

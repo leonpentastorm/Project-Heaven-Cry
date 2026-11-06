@@ -71,7 +71,7 @@ export interface GameState {
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
-  narrator: { busy: boolean; error: string | null; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number } };
+  narrator: { busy: boolean; error: string | null; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number; last?: number; max?: number; recent?: number[] } };
   /** The campaign being played (spec: Campaigns): copied in at session start, or loaded from a file by the host. */
   campaign?: Campaign | null;
   /** What the room hears (spec: Music). */
@@ -179,6 +179,9 @@ const isHost = (g: GameState, by: string) => by === g.hostId;
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
 /** Apply one action by one player. Returns a new state, or throws RuleError with a plain sentence. */
+/** The largest portrait a room takes (a data URL of the 320 × 400 copy is about 30 KB). */
+export const PORTRAIT_MAX = 150_000;
+
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   reduce(g, action, by);
@@ -203,6 +206,8 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'settings': { if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.'); Object.assign(g.settings, a.patch); return; }
     case 'char/add': {
       const err = validateSheet(a.sheet); if (err) fail(err);
+      // Rooms carry only the small copy of an uploaded portrait (spec: Character files); the full one stays in the file.
+      if (typeof a.sheet.portrait === 'string' && a.sheet.portrait.length > PORTRAIT_MAX) fail('That portrait is too big for a room. Re-upload it on the creation screen.');
       if (!g.players.some((p) => p.id === by)) fail('Join the room first.');
       if (charsOf(g, by).length >= 2) fail('Two characters per player at most.');
       const c = newCharacter(id(g, 'c'), by, a.sheet);
@@ -268,6 +273,8 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'narrator/usage': {
       if (!isHost(g, by)) fail('Host only.');
       const u = g.narrator.usage; u.input += a.input; u.output += a.output; u.cacheRead += a.cacheRead; u.costUsd += a.costUsd; u.calls++;
+      // For the host's spend meter: the last call, the dearest, and the last 20.
+      u.last = a.costUsd; u.max = Math.max(u.max || 0, a.costUsd); u.recent = [...(u.recent || []), Math.round(a.costUsd * 10000) / 10000].slice(-20);
       return;
     }
     case 'narrator/turn': { if (!isHost(g, by)) fail('Only the Narrator (the host\'s client) can do that.'); narratorTurn(g, a.turn); return; }

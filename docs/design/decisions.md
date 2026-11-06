@@ -210,3 +210,9 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Kokoro** (82M, Apache-2.0) through `kokoro-js`: WebGPU at fp32, else WASM at q8; a lazy 2.2 MB chunk plus the cached model. Chosen over paid voices (cost per line) and the browser voice alone (quality varies by device). The browser voice is the fallback.
     - Sentence streaming: the line is held until its first sentence is ready (at most 15 s for the model, 8 s for the sentence), so slow devices never block the story.
     - Music ducks to 25%. 🔊 replays any Narrator or skill voice line; skill voices take a voice by core. Settings are per player in localStorage (`phc.voice`). The e2e tests start with auto off.
+
+86. **Character files, not characters stored in rooms** (Leon: "2 MB is too small, don't store characters in the room, store them in a zip our system can download so players can design characters for their friends").
+    - A character is a `.phc.zip` (`character.json` + full-size `portrait.jpg`), downloaded from the title screen and imported there or in a room. Drafts survive the round trip.
+    - Pushback, kept: the room still needs each character's sheet to play (the engine resolves its rolls), but sheets are a few KB. What was heavy is uploaded art, so the room carries only a 320 × 400 copy, the file carries the full one, and the engine refuses portraits over 150 KB (`PORTRAIT_MAX`).
+    - The Upload button on the creation screen now works (it had no handler).
+87. **Playtest tools before magic** (Leon: "implement your small features first"): a Report button that downloads one zip (the save, the last 3 Narrator calls, recent errors; the API key stripped), a spend meter on the room's cost, and first-time tips. All local: nothing is uploaded anywhere.

@@ -24,6 +24,8 @@ import { VotePanel } from './game/vote';
 import { NarratorVoice } from './game/narratorVoice';
 import { onVoice } from './game/voice';
 import { poke } from './game/store';
+import { PlaytestTools } from './game/report';
+import { Tips } from './game/tips';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: makeScreen(expand(homeT), HomeLogic as any),
@@ -56,6 +58,8 @@ export function App() {
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
+      <PlaytestTools />
+      <Tips />
       {bar && <div role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{bar}</div>}
       {st.toast && <div role={st.toast.ok ? 'status' : 'alert'} style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 70, maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid ' + (st.toast.ok ? '#6FEA77' : '#F65157'), color: '#E7EBF3', fontSize: 14, boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{st.toast.ok ? '✓ ' : ''}{st.toast.text}</div>}
     </>

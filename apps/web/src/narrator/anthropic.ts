@@ -2,6 +2,7 @@
 // sent only to api.anthropic.com. One call per Narrator turn, structured JSON output, cached system layers.
 import Anthropic from '@anthropic-ai/sdk';
 import type { GameState, NarratorTurn } from '@engine';
+import { noteExchange } from '../game/debug';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
 
 /** Wiki and recall lookups per Narrator turn before it must answer. */
@@ -33,8 +34,14 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
   // authToken: null so only the player's own key is ever sent, never a token from the environment.
   const client = new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: 2, timeout: 180_000, ...(fetchImpl ? { fetch: fetchImpl } : {}) });
   const price = MODELS.find((m) => m.id === model) || MODELS[0];
-  return {
+  const prov: NarratorProvider & { turnRaw(g: GameState, dbg: any): Promise<NarratorResult> } = {
     async turn(g) {
+      const t0 = Date.now(), dbg: { params?: any; messages?: any[]; res?: any; usage?: any } = {};
+      const note = (error?: string) => noteExchange({ at: t0, kind: 'turn', model, effort, ms: Date.now() - t0, system: dbg.params?.system?.map((x: any) => x.text), tools: dbg.params?.tools?.map((x: any) => x.name),
+        messages: (dbg.messages || []).map((m) => JSON.parse(JSON.stringify(m))), reply: dbg.res?.content, usage: dbg.usage || dbg.res?.usage, error });
+      try { const r = await this.turnRaw(g, dbg); dbg.usage = r.usage; note(); return r; } catch (e: any) { note(e?.message || String(e)); throw e; }
+    },
+    async turnRaw(g: GameState, dbg: any): Promise<NarratorResult> {
       // The turn comes back through the submit_turn tool, not a structured-output schema: Anthropic compiles a strict
       // schema into a grammar, and ours is past its size limit (400 "compiled grammar is too large"). A non-strict
       // tool has no grammar, the API still returns its input as parsed JSON, and the engine validates every field.
@@ -54,6 +61,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       // Refusal fallback: on a policy decline the API re-runs the turn on a fallback model (Claude API skill default).
       if (model !== 'claude-haiku-5-5') { params.betas = ['server-side-fallback-2026-07-01']; params.fallbacks = 'default'; }
       const messages: any[] = [{ role: 'user', content: turnPrompt(g) }];
+      dbg.params = params; dbg.messages = messages;
       const spent = () => (sum.input * price.input + sum.cacheRead * price.cacheRead + sum.write5 * price.cacheWrite + sum.write1h * price.input * 2 + sum.output * price.output) / 1e6;
       const call = async () => {
         params.messages = messages;
@@ -68,7 +76,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       const sum = { input: 0, output: 0, cacheRead: 0, write5: 0, write1h: 0 };
       let res: any, turn: NarratorTurn | null = null, lookups = 0, nudged = false;
       while (!turn) {
-        res = await call();
+        res = await call(); dbg.res = res;
         const u = res.usage || {};
         const w1h = u.cache_creation?.ephemeral_1h_input_tokens ?? (u.cache_creation_input_tokens || 0), w5 = u.cache_creation?.ephemeral_5m_input_tokens ?? 0;
         sum.input += u.input_tokens || 0; sum.output += u.output_tokens || 0; sum.cacheRead += u.cache_read_input_tokens || 0; sum.write1h += w1h; sum.write5 += w5;
@@ -113,6 +121,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       return { text: String(use.text || text), refused: String(use.refused || ''), usage: { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: (input * price.input + output * price.output) / 1e6 } };
     },
   };
+  return prov;
 }
 
 

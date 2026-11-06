@@ -6,6 +6,8 @@ import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
 import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
+import { openReport } from '../game/report';
+import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
@@ -64,6 +66,7 @@ export class RoomLogic extends DCLogic {
       inSession: g.phase !== 'lobby', backToSession: () => go(g.phase === 'combat' ? 'combat' : 'main'),
       players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', hostAI: S.mode === 'ai' && isHost, guestAI: S.mode === 'ai' && !isHost, hostName: host?.name || 'The host', tones,
       create: () => go('create', { draft: null }), cantAdd: g.phase !== 'lobby' || mine.length >= 2,
+      report: openReport, importChar: () => importCharacter().then((c) => { if (c && !c.draft) { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } }),
       toggleBring: () => this.setState({ bring: !this.state.bring }), bringOpen: this.state.bring, noSaved: !lib.length,
       saved: lib.map((c) => ({ key: c.name, name: c.name, img: c.portrait, line: c.origin, bring: () => { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } })),
       key: st.narrator.key, onKey: (e) => setNarrator({ key: e.target.value.trim() }), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),

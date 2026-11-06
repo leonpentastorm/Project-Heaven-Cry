@@ -102,6 +102,9 @@ export function forgetSession(code: string) {
   set({});
 }
 /** Save now: the host writes this browser's save and the room server's copy; guests are saved by the host. */
+/** For a problem report: the host's whole game (archive included), else what this player sees. */
+export const reportState = (): GameState | null => hostState || S.game;
+export const reportBefores = () => Object.keys(befores).length;
 export function saveNow() {
   if (S.role !== 'host' || !hostState) return toast('The host\'s browser keeps the save for everyone. Ask the host to save.');
   persist(); if (conn) conn.send({ t: 'save', state: slim(hostState) }); lastSave = Date.now();

@@ -1,3 +1,4 @@
+import './game/debug'; // first, so it hears every error
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';

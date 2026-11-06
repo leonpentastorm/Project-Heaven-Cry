@@ -2,6 +2,8 @@
 import { DCLogic } from '../dc/runtime';
 import { D, IMG } from './shared';
 import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions, removeFromLibrary, resumeSession, setName } from '../game/store';
+import { openReport } from '../game/report';
+import { exportCharacter, importCharacter } from '../game/charfile';
 
 const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; };
 
@@ -21,10 +23,10 @@ export class HomeLogic extends DCLogic {
           forget: () => { if (confirm('Remove room ' + x.code + ' from this list?' + (x.role === 'host' ? ' This deletes the save in this browser.' : ''))) forgetSession(x.code); },
           style: 'display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: #10151F; border: 1px solid ' + (on ? '#FFFFFF' : '#232D3F') }; }),
       noSessions: !listSessions().length,
-      create: () => go('create', { draft: null }),
+      create: () => go('create', { draft: null }), importChar: () => importCharacter(), report: openReport,
       libCount: st.library.length, noLib: !st.library.length,
       lib: st.library.map((c) => ({ key: c.name, name: c.name + (c.draft ? ' (draft)' : ''), img: c.portrait, line: [c.origin || 'no origin', 'Classless'].join(' · '),
-        edit: () => go('create', { draft: c }), del: () => { if (confirm('Delete ' + c.name + ' from this browser?')) removeFromLibrary(c.name); } })),
+        edit: () => go('create', { draft: c }), download: () => exportCharacter(c), del: () => { if (confirm('Delete ' + c.name + ' from this browser?')) removeFromLibrary(c.name); } })),
     };
   }
 }

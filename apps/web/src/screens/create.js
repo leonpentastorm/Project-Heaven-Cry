@@ -4,6 +4,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { validateSheet, ytId, ytStart } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
+import { uploadPortrait } from '../game/charfile';
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
@@ -62,7 +63,7 @@ export class CreateLogic extends DCLogic {
     const d = getState().draft;
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
-      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : 1, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
+      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : 1, upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: d.archetype || null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) } });
     }
   }
@@ -90,9 +91,9 @@ export class CreateLogic extends DCLogic {
     }));
     const o = S.origin === null ? null : D.origins[S.origin];
     const origin = o ? { ...o, knows: o['You know'], seen: o[Object.keys(o).find((k) => k.startsWith('People see you as'))] || '', traitsFit: o['Traits that fit'] } : {};
-    const portrait = D.portraits[S.portrait];
-    const portraitGroups = [...new Set(D.portraits.map((p) => p.group))].map((name) => { const thumbs = D.portraits.map((p, i) => ({ p, i })).filter((x) => x.p.group === name).map(({ p, i }) => ({ key: p.id, label: p.label, img: p.img, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
-      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') })); return { name: name.toUpperCase(), count: thumbs.length, thumbs }; });
+    const portrait = S.upload ? { img: S.upload, label: 'Your portrait (uploaded)' } : D.portraits[S.portrait];
+    const portraitGroups = [...new Set(D.portraits.map((p) => p.group))].map((name) => { const thumbs = D.portraits.map((p, i) => ({ p, i })).filter((x) => x.p.group === name).map(({ p, i }) => ({ key: p.id, label: p.label, img: p.img, pick: set({ portrait: i, upload: null }), pressed: !S.upload && S.portrait === i ? 'true' : 'false',
+      style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (!S.upload && S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') })); return { name: name.toUpperCase(), count: thumbs.length, thumbs }; });
     const portraitThumbs = D.portraits.map((p, i) => ({ ...p, pick: set({ portrait: i }), pressed: S.portrait === i ? 'true' : 'false',
       style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
 
@@ -270,14 +271,15 @@ export class CreateLogic extends DCLogic {
       idv: S.idv, idc: { ...Object.fromEntries(ID_KEYS.map((k) => [k, (e) => this.setState({ idv: { ...this.state.idv, [k]: e.target.value } })])), song: (e) => this.setState({ songState: null, idv: { ...this.state.idv, song: e.target.value, ...(ytId(e.target.value) !== ytId(this.state.idv.song) ? { songTitle: '', songArtist: '' } : {}) } }) },
       lockIn: () => this.lockIn(der), saveDraft: () => this.saveDraft(der), exit: () => go(getState().code ? 'room' : 'home', { draft: null }), exitLabel: getState().code ? 'Back to the room' : 'Home',
       lockLabel: getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
-      generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length) }),
+      generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length), upload: null }),
+      upload: () => uploadPortrait((url) => this.setState({ upload: url })),
       back: set({ step: STEPS[Math.max(0, stepIdx - 1)][0] }), next: set({ step: STEPS[Math.min(STEPS.length - 1, stepIdx + 1)][0] }), atStart: stepIdx === 0, atEnd: stepIdx === STEPS.length - 1,
     };
   }
 
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
-    return { name: S.name.trim(), portrait: D.portraits[S.portrait].img, origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
+    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null };
   }
   lockIn() {
