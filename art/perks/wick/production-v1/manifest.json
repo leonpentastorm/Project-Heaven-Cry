@@ -2300,6 +2300,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "the-twin-pays",
+      "data_id": "the_twin_pays",
+      "name": "The Twin Pays",
+      "family": "perks",
+      "order": 97,
+      "mood": "Eerie, Comic",
+      "action": "Wick holds a soul flame high in one mitten while a coin drops from the top edge of the frame into its other open mitten.",
+      "screen": "Pleased",
+      "prop": "Falling coin",
+      "path": "art/perks/wick/production-v1/the-twin-pays.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/the-twin-pays.png",
+        "128": "art/perks/wick/production-v1/exports/128/the-twin-pays.png",
+        "64": "art/perks/wick/production-v1/exports/64/the-twin-pays.png",
+        "56": "art/perks/wick/production-v1/exports/56/the-twin-pays.png",
+        "48": "art/perks/wick/production-v1/exports/48/the-twin-pays.png",
+        "44": "art/perks/wick/production-v1/exports/44/the-twin-pays.png",
+        "40": "art/perks/wick/production-v1/exports/40/the-twin-pays.png"
+      },
+      "batch": "G",
+      "source_sha256": "d8d12d7a19c2dc7527fad3bc2de8c6529747b6009baac2c074773d374d480219",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",
