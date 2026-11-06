@@ -578,11 +578,13 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
     if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
       const used = new Set<number>();
-      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f = { name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
       g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
     g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
-    { const seen: Record<string, number> = {}; for (const u of g.combat.units) if (u.side === 'foe') { const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
+    // Every enemy gets a stable NPC id (its face and its survival after the fight follow it); a story NPC keeps its own.
+    g.combat.units.filter((u) => u.side === 'foe').forEach((u, i) => { const f: any = foes[i]; u.npcId = (f && f.id) || 'n' + (++g.seq); if (f && f.portrait) u.img = f.portrait; });
+    { const seen: Record<string, number> = {}; for (const u of g.combat.units) if (u.side === 'foe' && !u.img) { const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
     push(g, { kind: 'combat', text: 'Combat: ' + g.combat.name });
     runEnemies(g);
     return;

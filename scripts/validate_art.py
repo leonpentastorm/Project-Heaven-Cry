@@ -321,7 +321,7 @@ def validate():
     if PIXEL_ASSET is not None:
         require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites']),
                 f'Unknown selected asset: {PIXEL_ASSET}')
-    families = [('skills', 27, 27), ('characters', 83, 99),
+    families = [('skills', 27, 27), ('characters', 83, 191),
                 ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 10)]
     for family, maximum in [('maps', 4), ('sprites', 25)]:
         if family in catalog:

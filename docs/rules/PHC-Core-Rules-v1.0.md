@@ -1022,7 +1022,8 @@ The room can redo or reword the AI Narrator's answers, **only if everyone agrees
 ## Character portraits are cards
 
 - **One pool, no labels.** The creation screen's portraits are one grid of cards with no names and no set labels: a card is who *you* are, not someone else in the world. *Upload* adds your own.
-- **Archetype cards.** Each of the 46 archetypes gets its own painted card (commissioned: `art/briefs/archetype-portraits.md`). It shows beside the archetype on the creation screen and joins the pool first.
+- **Archetype cards.** Each of the 46 archetypes gets its own painted card (commissioned: `art/briefs/archetype-portraits.md`). It shows beside the archetype on the creation screen, large in the preview, and joins the pool first. Until it is delivered, each archetype shows a different world portrait painted for one of its skills. Either way it is labelled a *suggested character icon*: the player's portrait is chosen on the Identity step.
+- **The archetype screen** opens on *Show all* (all 46, with their family), and each family has its own tab.
 - **NPCs use the same cards.** An NPC shows its own portrait, or, if it has none and is a person, a card from the pool cast by its role (a guard gets a guard's card). Things that aren't people (drones, turrets, beasts) don't.
 - **A card a player holds is theirs.** If a player's portrait is a card an NPC was showing, the NPC shows another free card that fits the same role instead. Casting is the same on every screen.
 

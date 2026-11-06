@@ -49,21 +49,38 @@ const chip = (color) => 'padding: 4px 10px; border-radius: 999px; border: 1px so
 const dia = (n, filled, color, size) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
   (i < filled ? 'background: ' + color : 'border: 1px solid #3B475D') }));
 
+/** A portrait's place in the pool by id (the pool's order changes as cards are added). */
+/** The portrait shown with an archetype: its own painted card once delivered (pool "player-card"); until then a world
+ *  portrait painted for one of its skills, a different one for each archetype. Only a suggestion: the player picks
+ *  their portrait on the Identity step. */
+const STAND_IN = (() => {
+  const used = new Set(), out = {};
+  for (const a of D.arch.items) {
+    const own = D.portraits.find((p) => p.archetype === a.id); if (own) { out[a.id] = own.img; used.add(own.img); continue; }
+    const skills = Object.entries(a.preset).sort((x, y) => y[1] - x[1]).map(([k]) => k.replace(/_/g, '-'));
+    const pick = skills.map((k) => D.portraits.find((p) => p.skill === k && !used.has(p.img))).find(Boolean) || D.portraits.find((p) => !used.has(p.img));
+    if (pick) { out[a.id] = pick.img; used.add(pick.img); }
+  }
+  return out;
+})();
+const cardFor = (arch) => (arch && STAND_IN[arch.id]) || '';
+const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
+
 export class CreateLogic extends DCLogic {
   setState(x) { const before = this.state.step; super.setState(x); if (this.state.step !== before) window.scrollTo(0, 0); }
   constructor(props) {
     super(props);
     const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
-      step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? 0 : 1,
-      fam: 'frontline', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
+      step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? pIdx('mpat') : pIdx('mallow-3'),
+      fam: 'all', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
       idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', songTitle: '', songArtist: '', dream: '', history: '' },
     };
     const d = getState().draft;
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
-      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : 1, upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
+      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) } });
     }
   }
@@ -97,22 +114,23 @@ export class CreateLogic extends DCLogic {
       style: 'padding: 0; aspect-ratio: 4 / 5; border-radius: 6px; cursor: pointer; background: #000; ' + (!S.upload && S.portrait === i ? 'border: 2px solid #E7EBF3' : 'border: 2px solid transparent') }));
 
     // archetype
-    const fams = [...D.arch.families, { id: 'custom', name: 'Custom', blurb: 'Start from zero and place all 10 points yourself.' }];
-    const famTabs = fams.map((f) => ({ name: f.name, pick: set({ fam: f.id, arch: f.id === 'custom' ? 'custom' : (D.arch.items.find((a) => a.family === f.id) || {}).id }), selected: S.fam === f.id ? 'true' : 'false', style: btn(S.fam === f.id, '#E7EBF3') }));
+    const fams = [{ id: 'all', name: 'Show all', blurb: 'Every archetype, all ' + D.arch.items.length + '. Scroll and explore.' }, ...D.arch.families, { id: 'custom', name: 'Custom', blurb: 'Start from zero and place all 10 points yourself.' }];
+    const famTabs = fams.map((f) => ({ name: f.name, pick: set({ fam: f.id, arch: f.id === 'custom' ? 'custom' : f.id === 'all' ? (S.arch === 'custom' ? D.arch.items[0].id : S.arch) : (D.arch.items.find((a) => a.family === f.id) || {}).id }), selected: S.fam === f.id ? 'true' : 'false', style: btn(S.fam === f.id, '#E7EBF3') }));
     const famBlurb = (fams.find((f) => f.id === S.fam) || {}).blurb || '';
     const coreChips = (cores) => CORES.map((c) => ({ label: c.toUpperCase() + ' ' + cores[c], style: 'padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; ' + (cores[c] > 1 ? 'color: #0A0D13; background: ' + D.core[c] : 'color: #A3AEC2; background: #1C2536') }));
     const archCards = S.fam === 'custom'
       ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', cores: coreChips({ body: 1, mind: 1, soul: 1 }), leans: 'whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
-      : D.arch.items.filter((a) => a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
+      : D.arch.items.filter((a) => S.fam === 'all' || a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, kicker: S.fam === 'all' ? (D.arch.families.find((f) => f.id === a.family) || {}).name : '', cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
     // Every archetype spends all three budgets (decision 49); the card lists what it raises.
     const raisedOf = (arch) => D.attrs.filter((x) => arch.attributes[x.id] > 1).map((x) => x.name + ' ' + arch.attributes[x.id]).join(' · ');
     const budgetOf = (arch) => 'Every point placed. Attributes: ' + raisedOf(arch);
-    archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name), card = arch && D.portraits.find((p) => p.archetype === arch.id); c.card = card ? card.img : ''; c.hasCard = !!card; });
+    archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.card = cardFor(arch); c.hasCard = !!c.card; c.hasKicker = !!c.kicker; });
     archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.budget = arch ? budgetOf(arch) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place'; });
-    archCards.forEach((c) => { c.style = 'display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; padding: 16px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
+    archCards.forEach((c) => { c.style = 'display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 12px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
     const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
     const pv = {
+      card: cardFor(A), hasCard: !!cardFor(A), zoomCard: zoomer(this, cardFor(A), A ? A.name + ': suggested portrait' : '', 'portrait'),
       name: A ? A.name : 'Custom', role: A ? A.role.toUpperCase() : 'YOUR CALL',
       coreRows: CORES.map((c) => ({ name: c.toUpperCase(), word: WORDS[pvCores[c]], val: pvCores[c], dia: dia(10, pvCores[c], D.core[c], 9),
         nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),

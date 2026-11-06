@@ -115,25 +115,27 @@
 </sc-for>
 </div>
 <p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
-<p style="margin: 0; font-size: 12px; color: #A3AEC2">The portrait beside each archetype is a suggested character icon, not part of the build. Your portrait is your choice on the Identity step.</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px">
+<p style="margin: 0; font-size: 12px; color: #A3AEC2">Portraits here are suggested character icons, not part of the build: you pick yours on the Identity step.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px">
 <sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
 <button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
-<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><span style="display: flex; align-items: flex-end; gap: 8px"><img src="{{a.card}}" alt="Suggested character portrait for {{a.name}}" loading="lazy" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"><span style="font-size: 11px; line-height: 1.4; color: #A3AEC2">Suggested portrait.<br>Pick any portrait on the Identity step.</span></span></sc-if>
-<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 19px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{a.role}}</span></span>
-<span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
+<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="Suggested portrait for {{a.name}}" loading="lazy" style="flex: none; width: 72px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"></sc-if>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{a.hasKicker}}" hint-placeholder-val="{{false}}"><span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{a.kicker}}</span></sc-if>
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 18px; font-weight: 700">{{a.name}}</span><span style="font-size: 10px; letter-spacing: 0.1em; color: #A3AEC2; text-align: right">{{a.role}}</span></span>
+<span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.4; color: #C9D3E3">{{a.blurb}}</span>
 <span style="display: flex; gap: 6px; flex-wrap: wrap">
 <sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
 </span>
-<span style="font-size: 12px; color: #A3AEC2">Leans: {{a.leans}}</span>
-<span style="font-size: 12px; color: #A3AEC2">{{a.budget}}</span>
+</span>
 </button>
 </sc-for>
 </div>
 </div>
 
-<aside style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<aside style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start; position: sticky; top: 16px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">PREVIEW</span>
+<sc-if value="{{pv.hasCard}}" hint-placeholder-val="{{false}}"><figure style="margin: 0; display: flex; flex-direction: column; gap: 6px"><button type="button" onClick="{{pv.zoomCard}}" aria-label="Enlarge the suggested portrait" style="{{zoomBtn}}; width: 100%"><img src="{{pv.card}}" alt="Suggested portrait for {{pv.name}}" style="width: 100%; max-height: 420px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button><figcaption style="font-size: 11px; letter-spacing: 0.08em; color: #A3AEC2">SUGGESTED CHARACTER ICON · pick yours on the Identity step</figcaption></figure></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pv.name}}</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #A3AEC2">{{pv.role}}</span></div>
 <sc-for list="{{pv.coreRows}}" as="r" hint-placeholder-count="3">
 <div style="display: grid; grid-template-columns: 110px 44px minmax(0, 1fr); gap: 10px; align-items: center">
