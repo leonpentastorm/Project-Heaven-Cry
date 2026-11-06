@@ -736,7 +736,7 @@
       "order": 2,
       "name": "Rear Pad",
       "family": "maps",
-      "path": "art/maps/m813/v1/rear_pad.png",
+      "path": "art/maps/m813/v1/revisions/v2/rear_pad.png",
       "dimensions": [
         1600,
         1100
@@ -749,21 +749,23 @@
       "layout_guide": "art/briefs/m813-tutorial/maps/rear_pad-layout.png",
       "width": 1600,
       "height": 1100,
-      "sha256": "059b1262da078e855ebc173b992f669cee16e13d67e8adbe75f61e6d6627266f",
-      "source_path": "art/maps/m813/v1/sources/map-m813-rear-pad.png",
-      "source_sha256": "fafadaa0d44d00c4e2508f6d678025e16f99b27062afba3bb053fae5c8fd2551",
+      "sha256": "6cb751c6afb7bffee5621d3ddae5c3b2b3c10a00e67830b17d64c2d7e416aff5",
+      "source_path": "art/maps/m813/v1/revisions/v2/sources/map-m813-rear-pad.png",
+      "source_sha256": "29ccda94a185a6bff213e1e0d2c25f4b4a8701b88d1ce29c34f7a7157ae332cb",
       "source_dimensions": [
         1513,
-        1039
+        1040
       ],
       "previews": {
-        "320": "art/maps/m813/v1/previews/map-m813-rear-pad-320px.png"
+        "320": "art/maps/m813/v1/revisions/v2/previews/map-m813-rear-pad-320px.png"
       },
       "status": "review-candidate",
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "prompt_path": "art/maps/m813/v1/sources/map-m813-rear-pad.prompt.txt"
+      "previous_path": "art/maps/m813/v1/rear_pad.png",
+      "previous_revision_path": "art/maps/m813/v1/rear_pad.png",
+      "revision": 2
     }
   ]
 }
