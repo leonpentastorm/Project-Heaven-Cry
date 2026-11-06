@@ -6724,6 +6724,40 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-the-ramp.prompt.txt"
+    },
+    "m813-the-choice": {
+      "id": "m813-the-choice",
+      "group": "D",
+      "order": 3,
+      "name": "The Choice",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/m813-the-choice.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D3 | `m813-the-choice` | The record's choice | Two repair cradles; MPAT and the comrade head between them; parts of everyone else laid out. Undecided. | Mid, after the ship leaves |",
+      "spoiler": true,
+      "visibility": "mid-campaign",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "834ddf8916c481c66fa18fec939c1be0888c768ea4e571e1189190555e0d2281",
+      "source_path": "art/illustrations/m813/v2/sources/m813-the-choice.png",
+      "source_sha256": "b97b9a39c31b82e9d95df062aba4ccfe73211eaa68286f647cb1809dffa9280a",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-the-choice-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-the-choice.prompt.txt"
     }
   },
   "mascot": {
