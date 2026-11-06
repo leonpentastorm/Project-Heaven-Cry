@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-1ff800debb55a213ee54ab8df1fe846dbba60dfc0c71886111e26e25cddecb25  art/campaigns/m813/tutorial-v1/README.md
-5614210069c51874639f73259c645cbc5c4e9f2547ca477d976be7170dd30082  art/campaigns/m813/tutorial-v1/manifest.json
-922f73cdd57686f8bb9cf05580087342b2c3112ced8f5119ab897cf544e2d1f4  art/campaigns/m813/tutorial-v1/production-progress.json
-a0a82756fa56c7ce9040d18aa513db07ae00311cdbf3a052ee27b12dd9beb09c  art/catalog.json
+d44dc6d2d5ce147fbfa87c5505e36980887894805630db0051c3ed2e51960e35  art/campaigns/m813/tutorial-v1/README.md
+d6e09e56bca98e00053a7cb1a73cffe8b4b78b752e0bd2abfb732a9eae718784  art/campaigns/m813/tutorial-v1/manifest.json
+339103f8be886629dc016f909dd540d6d0e1e2e555dbaf56ed73cc18e3e919d8  art/campaigns/m813/tutorial-v1/production-progress.json
+8f432a241b9b03b988cc891e0924eb7066ec0e50a552ea182fdb8df7c24eb50d  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1246,6 +1246,7 @@ c4857262c60724c1279f4a9a223f3e983a54267c33161584c439897f65fc11d3  art/sprites/ob
 22b07c207c7fa1869850d18be42848ea08407c21ec4a28e40825f92fd768d653  art/sprites/objects/v1/obj-mine.png
 cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/objects/v1/obj-platinum-crates.png
 4f2f9846e219e3ee3a1c4a5629e4574995dcbb8f0414bc4d55b6e86f8a559414  art/sprites/objects/v1/obj-platinum-net.png
+11c3eab77f8cb537f1ed9630368bda2d1bc5172862b3c08b34b4faddd99f5ad1  art/sprites/objects/v1/obj-poi-marker.png
 bb9f9c660e7ef10e216cccfe76c9913743d5beef9b918816f771a6eed11fa506  art/sprites/objects/v1/obj-repair-cradles.png
 9817ce4c73ca855c685f6f0b6d51e281315ce85433e39e90525ee902a5d8cbea  art/sprites/objects/v1/obj-rubble.png
 6e8c60132dc68697485e8a977024181a827df3cf9dfc950581e2661f5c8a7165  art/sprites/objects/v1/obj-terminal-field.png
@@ -1303,6 +1304,9 @@ e5fed85fb07cba43c71e3de07bbb31fbea43f2be943ec3553ba75d7d847ecb05  art/sprites/ob
 a1008d46123c3b023759febd6cbd7768a544d85cc7b2cfaa20999e82d1fb9a0e  art/sprites/objects/v1/previews/obj-platinum-net-128px.png
 a2eb976118e25e247864019aa4dad5096cf41ea08a51a85ecb9871d9c64cb9ad  art/sprites/objects/v1/previews/obj-platinum-net-46px.png
 3995e353f40804d531f560499af93d19be54c4495b47e65c2e36463f513ea826  art/sprites/objects/v1/previews/obj-platinum-net-64px.png
+09aae8a5062ea1118fe4acc6d1508dfadca654b1c675099b456d7f9784c2e986  art/sprites/objects/v1/previews/obj-poi-marker-128px.png
+25cc5d9eeb5815c08330e6a7dbbc4e75b2a9e9cb7ed73ee46baa3fa62884a412  art/sprites/objects/v1/previews/obj-poi-marker-46px.png
+fca205f12d91945ddcc23bf813634edfe897d2207f1e0eda3b6074c155a590d9  art/sprites/objects/v1/previews/obj-poi-marker-64px.png
 ca1478d85cacda9c68c652a87465d9be855506cbb6f144334d25ad9f3dbb7175  art/sprites/objects/v1/previews/obj-repair-cradles-128px.png
 d367b2c0407e32e50b362ccf75929c9a192b9b0525c1a2c87f3c381cb9d09321  art/sprites/objects/v1/previews/obj-repair-cradles-46px.png
 47c4fb62b88dc0537cea4470977a0483870175ef6e3085e2b207dea998b56c8b  art/sprites/objects/v1/previews/obj-repair-cradles-64px.png
@@ -1378,6 +1382,8 @@ e7c3ca1cdf7ddccc504f8f288f3565e4c59aec1c8192c194eb82af54353d434e  art/sprites/ob
 3f69a2052c5bed30cc2e6687ed24c751e27242eda32f2c59eee2a1140939a952  art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt
 e8b52f64807a0efb292c16a6cb54821dd2152ddc4b89a12a41e5b030c145a840  art/sprites/objects/v1/sources/obj-platinum-net.png
 e03cc424027b127e0921c284ecf617e562b7a9a11c1fec20f7e219c26c26c713  art/sprites/objects/v1/sources/obj-platinum-net.prompt.txt
+f93783ed9bf55b5cbd06622df8a4a952ab180d84d910f732939202ddab94b465  art/sprites/objects/v1/sources/obj-poi-marker.png
+6260e7f895b685ca3609b6bd8259b0d0607c88859945ddc6028b8db4ce66e3c9  art/sprites/objects/v1/sources/obj-poi-marker.prompt.txt
 5f030ccff0872fa3c0f1a7b16856f65e1f0b7b4a58f07407cc3c9920a46c743c  art/sprites/objects/v1/sources/obj-repair-cradles.png
 072b684daebe248dc45aeb876ba85d20907133a5b40e695945ee837c253a3031  art/sprites/objects/v1/sources/obj-repair-cradles.prompt.txt
 0555a81700343b33ffd103633c9ebb644254e0a47d02d3f25bb755da7a3ddaf9  art/sprites/objects/v1/sources/obj-rubble.png

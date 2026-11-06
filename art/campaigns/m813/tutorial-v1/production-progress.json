@@ -52,12 +52,11 @@
     "obj-drop-pod",
     "obj-console",
     "obj-escape-craft",
-    "obj-repair-cradles"
-  ],
-  "remaining": [
+    "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T05:00:59.149512+00:00",
-  "status": "in-progress",
+  "remaining": [],
+  "updated_utc": "2026-11-06T05:02:07.809834+00:00",
+  "status": "generation-complete-review-pending",
   "production_approved": false
 }
