@@ -1,7 +1,7 @@
 // Magic (rules 1.2) end to end: a caster picks 2 Sigil words and an Outburst on the Kit step, the MAGIC sheet tab shows
 // them, a glyph is drawn and evoked on the area map, then a fight: draw + evoke, begin/hold/release an Outburst.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
-import { chromium, player, click, hostAs, OUT } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -155,19 +155,19 @@ let { cb, u } = await CB();
 console.log('combat: me', u.pos, 'AP', u.ap, 'mg', JSON.stringify({ charge: u.mg?.charge, flux: u.mg?.flux, mp: u.mg?.mp, words: u.mg?.words, designs: u.mg?.designs?.map((d) => d.id) }), 'mana', cb.mana);
 const grid = host.locator('button.phc-tok');
 const ctile = (k) => host.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
-const groups = await host.locator('text=/^MAGIC · (SIGILS|OUTBURSTS)$/').allTextContents();
-ok('combat shows both magic groups: ' + groups.join(', '), groups.length === 2);
+const groups = await host.locator('[role="tablist"][aria-label="Actions"] [role="tab"][data-tab$="s"]').evaluateAll((ts) => ts.map((t) => t.getAttribute('data-tab')).filter((x) => x === 'sigils' || x === 'outbursts'));
+ok('combat shows both magic tabs: ' + groups.join(', '), groups.length === 2);
 ok('the header shows the mana', await host.locator('text=/MANA \\d+ · /').count() > 0);
 await snap('07-combat-start');
 
 // Draw FIRE then PUSH on our own tile
-await host.getByRole('button', { name: /^Draw a glyph/ }).first().click();
+await pickAction(host, /^Draw a glyph/);
 await host.waitForSelector('div[aria-label="Glyph keyboard"]');
 await host.locator('div[aria-label="Glyph keyboard"] button', { hasText: 'FIRE' }).click();
 await ctile(u.pos).hover(); await host.waitForTimeout(150);
 await snap('08-combat-draw-hover');
 await ctile(u.pos).click(); await host.waitForTimeout(300);
-await host.getByRole('button', { name: /^Draw a glyph/ }).first().click().catch(() => {});
+await pickAction(host, /^Draw a glyph/).catch(() => {});
 await host.locator('div[aria-label="Glyph keyboard"] button', { hasText: 'PUSH' }).click();
 await ctile(u.pos).click(); await host.waitForTimeout(300);
 ({ cb, u } = await CB());
@@ -177,7 +177,7 @@ await host.evaluate(() => scrollTo(0, 0)); await snap('09-combat-drawn');
 
 // Evoke it at the raider
 const foe = cb.units.find((x) => x.side === 'foe' && !x.dead);
-await host.getByRole('button', { name: /^Evoke/ }).first().click();
+await pickAction(host, /^Evoke/);
 await ctile(u.pos).click(); await host.waitForTimeout(200);
 await ctile(foe.pos).click(); await host.waitForTimeout(250);
 await snap('10-combat-evoke-aim');
@@ -198,7 +198,7 @@ if (u.ap < 3 && !cb.over) {
   await host.getByRole('button', { name: 'End turn', exact: true }).click();
   await host.waitForTimeout(300); await waitMine(); ({ cb, u } = await CB());
 }
-await host.getByRole('button', { name: /^Outburst/ }).first().click();
+await pickAction(host, /^Outburst/);
 await host.waitForSelector('div[aria-label="Your Outbursts"]');
 await host.locator('div[aria-label="Release now or hold"] button', { hasText: 'Hold' }).click();
 await host.waitForTimeout(200);
@@ -219,10 +219,10 @@ if (back !== 'mine') console.log('  state:', await host.evaluate(() => { const c
 ({ cb, u } = await CB());
 console.log('  held now', JSON.stringify(u.mg?.held), 'strain', u.mg?.strain, 'AP', u.ap);
 await host.evaluate(() => scrollTo(0, 0)); await snap('13-combat-held-next-turn');
-const rel = host.getByRole('button', { name: /^Release/ }).first();
-ok('Release appears while holding', await rel.count() > 0);
-if (await rel.count()) {
-  await rel.click(); await host.waitForTimeout(200);
+const relOk = await pickAction(host, /^Release ·/, { timeout: 4000 }).then(() => true, () => false);
+ok('Release appears while holding', relOk);
+if (relOk) {
+  await host.waitForTimeout(200);
   // the nearest live raider if it's within the design's reach (8), else open ground two tiles off
   const d1 = (a, b) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
   const f2 = cb.units.filter((x) => x.side === 'foe' && !x.dead).sort((a, b) => d1(a.pos, u.pos) - d1(b.pos, u.pos))[0];
@@ -239,7 +239,7 @@ if (await rel.count()) {
 await snap('15-combat-after-release');
 ({ cb, u } = await CB());
 if (!cb.over && (await myTurn()) === 'mine' && u.mg?.flux) {
-  await host.getByRole('button', { name: /^Vent Flux/ }).first().click(); await host.waitForTimeout(150);
+  await pickAction(host, /^Vent Flux/); await host.waitForTimeout(150);
   const cv = host.getByRole('button', { name: /^Confirm/ }).first();
   if (await cv.isEnabled()) await cv.click(); await host.waitForTimeout(400);
   ({ cb, u } = await CB());

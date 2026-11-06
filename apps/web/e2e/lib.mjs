@@ -22,6 +22,20 @@ export async function hostAs(page, name) {
   await click(page, 'Open a room ›');
 }
 export const click = async (page, text, opts = {}) => { const b = page.getByRole('button', { name: text, exact: !!opts.exact }).first(); await b.waitFor({ timeout: opts.timeout || 8000 }); await b.click(); };
+/** Click a combat action by its button name (string or RegExp). The actions live in tabs (Move · Attack · Utility ·
+ *  Sigils · Outbursts) and only the open tab's buttons are on the page, so this flips to the tab that holds it first. */
+export async function pickAction(page, name, opts = {}) {
+  const btn = () => page.locator('[role="tabpanel"]').getByRole('button', { name, exact: !!opts.exact }).first();
+  if (!(await btn().count())) {
+    const tabs = page.locator('[role="tablist"][aria-label="Actions"] [role="tab"]');
+    const n = await tabs.count();
+    for (let i = 0; i < n; i++) {
+      await tabs.nth(i).click();
+      if (await btn().waitFor({ timeout: 250 }).then(() => true, () => false)) break;
+    }
+  }
+  await btn().click({ timeout: opts.timeout || 8000 });
+}
 export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullPage: !!0 });
 export async function makeCharacter(page, name, archFamily, archName, kit) {
   await click(page, 'Make a character');

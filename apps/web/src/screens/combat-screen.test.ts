@@ -107,6 +107,44 @@ describe('combat screen', () => {
     else expect(r.turnPanels[0].waiting).toBe(true);
   });
 
+  it('action tabs: one per family with its count, a default on your turn, the tab follows the action, keys, remembered per character', () => {
+    fight('tabs', 'service_pistol');
+    const L = new CombatLogic({}) as any;
+    const sel = (r: any) => r.turnPanels[0].tabs.find((t: any) => t.selected === 'true')?.key;
+    let r = L.renderVals();
+    const T = r.turnPanels[0];
+    expect(T.tabs.map((t: any) => t.key)).toEqual(['move', 'attack', 'utility']);
+    expect(T.tabs.every((t: any) => t.count === r.groups.find((g: any) => g.id === t.key).items.length && t.count > 0)).toBe(true);
+    expect(T.tabs.filter((t: any) => t.tabindex === '0').length).toBe(1);
+    // Default: Attack with a hostile in sight, else Move.
+    expect(['attack', 'move']).toContain(sel(r));
+    expect(T.tabPanel).toHaveLength(1);
+    expect(T.tabPanel[0].items.map((a: any) => a.key)).toEqual(r.groups.find((g: any) => g.id === sel(r)).items.map((a: any) => a.key));
+    // Picking an action anywhere opens its tab; flipping tabs keeps the chosen action (the footer still shows it).
+    L.setState({ action: 'reload' }); r = L.renderVals(); expect(sel(r)).toBe('utility');
+    L.setTab('move'); r = L.renderVals(); expect(sel(r)).toBe('move'); expect(r.turnPanels[0].sel.name).toMatch(/^Reload/);
+    expect(r.turnPanels[0].tabs.find((t: any) => t.key === 'utility').holds).toBe(true);
+    L.pickAction('shot'); r = L.renderVals(); expect(sel(r)).toBe('attack');
+    L.setTab('utility'); L.pickAction('shot'); r = L.renderVals(); expect(sel(r)).toBe('attack'); // the same action again still opens its tab
+    // Keys: 1–6 anywhere (not while typing), arrows / Home / End in the tab bar.
+    const key = (k: string, target: any = document.body) => ({ key: k, target, preventDefault() {}, defaultPrevented: false });
+    L.numKey(key('1')); r = L.renderVals(); expect(sel(r)).toBe('move');
+    L.numKey(key('3', document.createElement('input'))); r = L.renderVals(); expect(sel(r)).toBe('move');
+    L.tabKey(key('ArrowRight')); r = L.renderVals(); expect(sel(r)).toBe('attack');
+    L.tabKey(key('End')); r = L.renderVals(); expect(sel(r)).toBe('utility');
+    L.tabKey(key('ArrowRight')); r = L.renderVals(); expect(sel(r)).toBe('move'); // wraps
+    // A number key pressed on a button inside the tab panel (which is about to be replaced) moves focus to the new tab.
+    const tabEl = document.createElement('button'); tabEl.id = 'phc-tab-attack'; tabEl.setAttribute('role', 'tab');
+    const panel = document.createElement('div'); panel.className = 'phc-cb-tabpanel'; const inside = document.createElement('button'); panel.appendChild(inside);
+    document.body.append(tabEl, panel); inside.focus();
+    L.numKey(key('2', inside)); r = L.renderVals(); expect(sel(r)).toBe('attack'); expect(document.activeElement).toBe(tabEl);
+    tabEl.remove(); panel.remove();
+    L.setTab('move'); r = L.renderVals();
+    // Remembered for this character: a fresh turn (a new screen) opens the last tab used.
+    L.setTab('utility'); r = L.renderVals();
+    const L2 = new CombatLogic({}) as any; expect(sel(L2.renderVals())).toBe('utility');
+  });
+
   it('a command tile on the your-turn card selects that action here', () => {
     fight('cmd', 'service_pistol');
     const L = new CombatLogic({}) as any; L.renderVals();

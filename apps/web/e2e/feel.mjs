@@ -3,7 +3,7 @@
 // mid-volley, the volley that ends the wave) with no page errors, then the story screen: the area map's red attack
 // grid and move planning, Ask / Silent on the skill panel, and an Echo reroll that keeps the dice table open.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/feel-*.png; effects are caught ~80–300 ms after the action.
-import { chromium, player, click, hostAs, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, hostAs, BASE, OUT, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
@@ -31,7 +31,7 @@ async function catchFx(name, go, at = [90, 220, 380]) {
   return { peak, events: (await st()).cb.fx.filter((e) => e.n > n0) };
 }
 const dismissCut = async () => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
-const pickAct = async (re) => { await dismissCut(); await p.getByRole('button', { name: re }).first().click(); await p.waitForTimeout(120); };
+const pickAct = async (re) => { await dismissCut(); await pickAction(p, re); await p.waitForTimeout(120); };
 const confirm = async () => { const b = p.getByRole('button', { name: /^Confirm/ }).first(); if (!(await b.isEnabled())) return false; await b.click(); return true; };
 async function newRound() {
   // Enemy AI is off: ending the turn hands it straight back with full AP.

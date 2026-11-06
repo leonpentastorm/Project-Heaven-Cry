@@ -1,7 +1,7 @@
 // The Proving Ground: start it from the title, clear wave 1 with the tools, wave 2 spawns, lose on purpose and Retry,
 // give a weapon and change class from the tools drawer, and never call a Narrator (no provider host is contacted, the
 // Narrator is never busy). Screenshots land in e2e/shots/sandbox-*.png.
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -90,8 +90,8 @@ await p.waitForTimeout(300);
 g = await G();
 ok('the class changes to ' + g.characters[me.id].classId, !!g.characters[me.id].classId);
 await snap('06-tools-squad');
-ok('the Fan the Hammer action is on the panel', await p.getByRole('button', { name: /^Fan the Hammer/ }).count() > 0);
-await drawer.getByRole('button', { name: 'Close the tools' }).click();
+await drawer.getByRole('button', { name: 'Close the tools' }).click(); await p.waitForTimeout(300);
+ok('the Fan the Hammer action is on the panel', await pickAction(p, /^Fan the Hammer/, { timeout: 4000 }).then(() => true, () => false));
 
 // 4. Lose on purpose: armour off, level 1, three champions next to us, end turns until the squad is down
 await act({ type: 'sandbox/level', charId: me.id, level: 1 });

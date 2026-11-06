@@ -1,4 +1,4 @@
-import { chromium, player, click, shot, BASE, hostAs } from './lib.mjs';
+import { chromium, player, click, shot, BASE, hostAs, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 const log = (...a) => console.log(...a);
@@ -57,8 +57,7 @@ for (let i = 0; i < 300; i++) {
   for (const [k, p] of [[0, host], [1, guest]]) {
     if (states[k] !== 'mine') continue;
     if (!(await p.locator('text=ACTION POINTS').count())) { await p.waitForTimeout(200); continue; }
-    const shotBtn = p.getByRole('button', { name: /^(Shot|Strike)/ }).first();
-    if (await shotBtn.count()) await shotBtn.click();
+    await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
     const conf = p.getByRole('button', { name: 'Confirm', exact: true });
     if (await conf.isEnabled()) await conf.click(); else await p.getByRole('button', { name: 'End turn', exact: true }).click();
     await p.waitForTimeout(60);
