@@ -840,6 +840,40 @@
       "previous_path": "art/maps/m813/v1/outpost_1.png",
       "previous_revision_path": "art/maps/m813/v1/outpost_1.png",
       "revision": 2
+    },
+    {
+      "id": "m813-how-many",
+      "group": "D",
+      "order": 1,
+      "name": "How Many",
+      "family": "illustrations",
+      "path": "art/illustrations/m813/v2/m813-how-many.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "| D1 | `m813-how-many` | Opening | Close on Nine-Nine in the stakes, looking up at a medic's triage lamp: \"How many of us can you carry?\" | Opening-safe |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 1600,
+      "height": 900,
+      "sha256": "9ef7a29744565fb10994673aa9261e3c251872cb073f2dfb36da6724bf05c091",
+      "source_path": "art/illustrations/m813/v2/sources/m813-how-many.png",
+      "source_sha256": "8fbcc8f0e7cae9eca60fcc84ed95bdc6342944e4b0a0c53a7241009775b64297",
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "previews": {
+        "320": "art/illustrations/m813/v2/previews/m813-how-many-320px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/illustrations/m813/v2/sources/m813-how-many.prompt.txt"
     }
   ]
 }
