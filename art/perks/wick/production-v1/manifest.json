@@ -1378,6 +1378,30 @@
       "batch": "F",
       "source_sha256": "4b655f910ab4c1fb2693129cee99550d868d4a551e6b9529e44bf4400649d974",
       "tier": "achieved"
+    },
+    {
+      "id": "dance-of-iron",
+      "data_id": "dance_of_iron",
+      "name": "Dance of Iron",
+      "family": "perks",
+      "order": 61,
+      "mood": "Heroic, Comic",
+      "action": "Wick turns a one-handed cartwheel, fully upside down, the other mitten firing a pistol back under its body, a muzzle-flash star.",
+      "screen": "Cool narrowed eyes",
+      "prop": "Pistol",
+      "path": "art/perks/wick/production-v1/dance-of-iron.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/dance-of-iron.png",
+        "128": "art/perks/wick/production-v1/exports/128/dance-of-iron.png",
+        "64": "art/perks/wick/production-v1/exports/64/dance-of-iron.png",
+        "56": "art/perks/wick/production-v1/exports/56/dance-of-iron.png",
+        "48": "art/perks/wick/production-v1/exports/48/dance-of-iron.png",
+        "44": "art/perks/wick/production-v1/exports/44/dance-of-iron.png",
+        "40": "art/perks/wick/production-v1/exports/40/dance-of-iron.png"
+      },
+      "batch": "F",
+      "source_sha256": "1d0844a01b04523b0eefbb8fa20b5a36dde4a7b816c123eaec9d08aa6f2281ae",
+      "tier": "achieved"
     }
   ]
 }

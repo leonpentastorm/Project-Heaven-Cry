@@ -4737,6 +4737,31 @@
         "40": "art/perks/wick/production-v1/exports/40/cultured.png"
       },
       "tier": "achieved"
+    },
+    "dance-of-iron": {
+      "label": "Wick — Dance of Iron",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/dance-of-iron.png",
+      "sha256": "b1ad4970a479e46bab581b5fd4debd100e148f86f48a30f34aa79abb7336146a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "dance_of_iron",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/dance-of-iron.png",
+        "128": "art/perks/wick/production-v1/exports/128/dance-of-iron.png",
+        "64": "art/perks/wick/production-v1/exports/64/dance-of-iron.png",
+        "56": "art/perks/wick/production-v1/exports/56/dance-of-iron.png",
+        "48": "art/perks/wick/production-v1/exports/48/dance-of-iron.png",
+        "44": "art/perks/wick/production-v1/exports/44/dance-of-iron.png",
+        "40": "art/perks/wick/production-v1/exports/40/dance-of-iron.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {
