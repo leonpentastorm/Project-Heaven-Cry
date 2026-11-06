@@ -7058,6 +7058,42 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt"
+    },
+    "obj-tool-rack": {
+      "id": "obj-tool-rack",
+      "group": "E",
+      "order": 3,
+      "name": "Tool Rack",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-tool-rack.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E3 | `obj-tool-rack` | Tool rack / workbench (crate) | Outpost hangar |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "64f39d65b7554e44d73cf29c3da1d74279cbd81555ef5dc804380e99cba206ed",
+      "source_path": "art/sprites/objects/v1/sources/obj-tool-rack.png",
+      "source_sha256": "0f1f9403d5b40d5cdf1b3f73a4910dd796086f4b56529664ed36233d34b6a36b",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-tool-rack-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-tool-rack-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-tool-rack-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-tool-rack.prompt.txt"
     }
   }
 }

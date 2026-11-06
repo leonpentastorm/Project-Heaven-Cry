@@ -31,10 +31,10 @@
     "m813-the-choice",
     "m813-the-demand",
     "obj-barrier-stakes",
-    "obj-platinum-crates"
+    "obj-platinum-crates",
+    "obj-tool-rack"
   ],
   "remaining": [
-    "obj-tool-rack",
     "obj-cargo-pylon",
     "obj-toppled-pylon",
     "obj-door-closed",
@@ -57,7 +57,7 @@
     "obj-repair-cradles",
     "obj-poi-marker"
   ],
-  "updated_utc": "2026-11-06T04:25:13.892143+00:00",
+  "updated_utc": "2026-11-06T04:27:02.991128+00:00",
   "status": "in-progress",
   "production_approved": false
 }
