@@ -114,3 +114,8 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Hands and armour:** paired attacks with an off-hand weapon; shields, torches (light radius into Vision) and slot armour bonuses (armour, Defense, Movement, carry, dark sight, toxic immunity, rough ground, unarmed damage).
     - **Equipping:** equip, take off and fit mods out of combat.
     - **Loot:** the Narrator's `loot[]` hands out weapons and items with rarity and a name.
+75. **The Gear tab shows hands, body and backpack as separate cards, names only** (Leon: hands get their own panels for weapon art; the body list shows names, hover for details, click to act).
+    - **Hands:** a right-hand and a left-hand card (in the order of the main hand's side), each with a square art frame. The frame border takes the rarity. A two-handed main weapon fills the off hand.
+    - **Names only:** the body slots and backpack rows show the item's name (and kg in the pack). Hovering, or focusing with the keyboard, opens a card with the icon, the stats, the granted skill, the weight and price, and the lore line.
+    - **Click to act:** clicking opens that item's actions in place: Equip, Hold in the off hand, Wear, Take off, Fit mod, Load magazines. In a fight the menu says gear changes after the fight.
+    - **Art hooks:** the frames and cards look up `weapon-<id>` and `item-<id>` in the art catalog. Until those exist they show the weapon type's glyph.

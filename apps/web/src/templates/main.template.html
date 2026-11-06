@@ -99,6 +99,17 @@
 
 <sc-if value="{{tabGear}}" hint-placeholder-val="{{false}}">
 <div style="display: flex; flex-direction: column; gap: 10px">
+<div aria-label="Hands" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{hands}}" as="h"><div style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<span style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2"><span>{{h.side}}</span><span>{{h.tag}}</span></span>
+<button type="button" onClick="{{h.toggle}}" onMouseEnter="{{h.hover}}" onMouseLeave="{{h.leave}}" onFocus="{{h.hover}}" onBlur="{{h.leave}}" aria-label="{{h.side}}: {{h.name}}" style="{{h.frameStyle}}; padding: 0; font-family: inherit">
+<sc-if value="{{h.hasImg}}"><img src="{{h.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 9px"></sc-if><sc-if value="{{h.noImg}}"><span aria-hidden="true">{{h.glyph}}</span></sc-if>
+<span style="position: absolute; top: 6px; right: 8px; font-size: 11px; color: #E7EBF3; letter-spacing: 0.1em">{{h.marks}}</span>
+</button>
+<span style="{{h.nameStyle}}">{{h.name}}</span>
+<sc-if value="{{h.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{h.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{h.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{h.noActText}}</span></sc-if></div></sc-if>
+</div></sc-for>
+</div>
 <div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <svg viewBox="-4 -4 128 248" width="104" height="200" role="img" aria-label="Body: what is worn in each slot" style="flex: none">
 <sc-if value="{{gearFig.veil}}"><path d="{{gearFig.veilD}}" fill="none" stroke="#AE9BFF" stroke-width="1.5" stroke-dasharray="4 4"></path></sc-if>
@@ -106,24 +117,35 @@
 <sc-if value="{{gearFig.weapon}}"><path d="{{gearFig.weaponD}}" stroke="#E7EBF3" stroke-width="5" stroke-linecap="round" fill="none"></path></sc-if>
 <text x="4" y="6" font-family="Chakra Petch, sans-serif" font-size="10" font-weight="700" fill="#5B6577">R</text><text x="110" y="6" font-family="Chakra Petch, sans-serif" font-size="10" font-weight="700" fill="#5B6577">L</text>
 </svg>
-<div role="list" aria-label="Equipment slots" style="display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1">
-<sc-for list="{{slots}}" as="s"><div role="listitem" onMouseEnter="{{s.hover}}" onMouseLeave="{{s.leave}}" style="{{s.style}}"><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2; padding-top: 2px">{{s.label}}</span><span style="{{s.nameStyle}}">{{s.name}}</span><sc-if value="{{s.note}}"><span style="grid-column: 2; font-size: 11px; color: #A3AEC2">{{s.note}}</span></sc-if><sc-if value="{{s.canRemove}}"><button type="button" onClick="{{s.remove}}" style="grid-column: 2; justify-self: start; min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; cursor: pointer">Take off</button></sc-if></div></sc-for>
+<div role="list" aria-label="Worn" style="display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1">
+<sc-for list="{{bodySlots}}" as="s"><div role="listitem" style="display: flex; flex-direction: column"><button type="button" onClick="{{s.toggle}}" onMouseEnter="{{s.hover}}" onMouseLeave="{{s.leave}}" onFocus="{{s.hover}}" onBlur="{{s.leave}}" style="{{s.style}}; border: 0; font-family: inherit; text-align: left; color: inherit"><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{s.label}}</span><span style="{{s.nameStyle}}">{{s.name}}</span></button>
+<sc-if value="{{s.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{s.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{s.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{s.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="display: flex; align-items: center; gap: 10px">
 <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex: none"><g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M14,12 v-3 a4,4 0 0 1 8,0 v3"></path><path d="M9,12 h18 a3,3 0 0 1 3,3 v15 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-15 a3,3 0 0 1 3,-3 z"></path><path d="M6,19 h24"></path><path d="M12,24 h12 v5 h-12 z"></path></g></svg>
-<span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span><sc-if value="{{canLoad}}"><button type="button" onClick="{{loadMags}}" disabled="{{cantLoad}}" title="Fill empty and part-empty magazines from your loose rounds. Free out of combat." style="flex: none; min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Load mags</button></sc-if>
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span>
 </div>
-<div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
+<div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
 <sc-if value="{{noRig}}"><span style="font-size: 12px; color: #A3AEC2">Empty.</span></sc-if>
-<sc-for list="{{rig}}" as="r"><div role="listitem" style="display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; padding: 7px 8px; border-radius: 8px; background: #0D1119; border: 1px solid #1C2536; font-size: 12px"><span style="justify-self: start; padding: 1px 6px; border-radius: 999px; border: 1px solid #3B475D; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2">{{r.tag}}</span><span style="font-size: 13px; font-weight: 600">{{r.name}} <span style="font-weight: 400; color: #A3AEC2">{{r.qty}}</span></span><span style="color: #A3AEC2">{{r.kg}}</span><sc-if value="{{r.note}}"><span style="grid-column: 2 / 4; font-size: 11px; color: #A3AEC2">{{r.note}}</span></sc-if><sc-if value="{{r.hasActs}}"><span style="grid-column: 2 / 4; display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 28px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for></span></sc-if></div></sc-for>
+<sc-for list="{{rigView}}" as="r"><div role="listitem" style="display: flex; flex-direction: column"><button type="button" onClick="{{r.toggle}}" onMouseEnter="{{r.hover}}" onMouseLeave="{{r.leave}}" onFocus="{{r.hover}}" onBlur="{{r.leave}}" style="{{r.style}}; font-family: inherit; text-align: left; color: inherit">
+<span style="display: grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
+<span style="font-size: 13px; font-weight: 600; min-width: 0">{{r.name}} <span style="font-weight: 400; color: #A3AEC2">{{r.qty}}</span></span>
+<span style="color: #A3AEC2">{{r.kg}}</span></button>
+<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
 <span style="font-size: 12px; line-height: 1.4; color: #7F8BA1; flex: 1 1 160px">{{eoe.why}}</span>
 <button type="button" disabled="{{eoe.locked}}" title="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 12px; font-weight: 600">Crack the Essence</button>
 </div>
 </div>
+<sc-if value="{{tipOpen}}"><div role="tooltip" style="{{tipCard.style}}">
+<div style="display: flex; gap: 10px; align-items: center"><span style="display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; overflow: hidden; font-size: 24px; color: #A3AEC2"><sc-if value="{{tipCard.hasImg}}"><img src="{{tipCard.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{tipCard.noImg}}">{{tipCard.glyph}}</sc-if></span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{tipCard.title}}</span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2; text-transform: uppercase">{{tipCard.sub}}</span></span></div>
+<sc-for list="{{tipCard.lines}}" as="l"><span style="font-size: 12px; line-height: 1.45; color: #C9D3E3">{{l.t}}</span></sc-for>
+<sc-if value="{{tipCard.hasLore}}"><span style="font-family: 'Spectral', serif; font-style: italic; font-size: 13px; color: #A3AEC2">{{tipCard.lore}}</span></sc-if>
+</div></sc-if>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 8px">WEAPON MASTERY</span>
 <sc-if value="{{noMastery}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No kills yet. Weapon mastery grows with kills per weapon family.</span></sc-if>
 <sc-for list="{{mastery}}" as="m" hint-placeholder-count="2">
