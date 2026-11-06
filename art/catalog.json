@@ -5039,6 +5039,32 @@
       },
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    "angel-of-the-trenches": {
+      "label": "Wick — Angel of the Trenches",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/angel-of-the-trenches.png",
+      "sha256": "ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "angel_of_the_trenches",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/angel-of-the-trenches.png",
+        "128": "art/perks/wick/production-v1/exports/128/angel-of-the-trenches.png",
+        "64": "art/perks/wick/production-v1/exports/64/angel-of-the-trenches.png",
+        "56": "art/perks/wick/production-v1/exports/56/angel-of-the-trenches.png",
+        "48": "art/perks/wick/production-v1/exports/48/angel-of-the-trenches.png",
+        "44": "art/perks/wick/production-v1/exports/44/angel-of-the-trenches.png",
+        "40": "art/perks/wick/production-v1/exports/40/angel-of-the-trenches.png"
+      },
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   },
   "illustrations": {

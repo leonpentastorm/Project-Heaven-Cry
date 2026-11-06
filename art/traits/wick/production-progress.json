@@ -152,11 +152,12 @@
     "twin-souls",
     "the-voice",
     "war-footing",
-    "last-charge"
+    "last-charge",
+    "angel-of-the-trenches"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 73
+    "perks": 74
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -209,7 +210,6 @@
     "bite-the-bullet",
     "sixth-sense",
     "what-could-be",
-    "angel-of-the-trenches",
     "every-lie-is-a-door",
     "twin-discipline"
   ]

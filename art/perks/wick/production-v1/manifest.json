@@ -1668,6 +1668,31 @@
       "source_sha256": "c6621c0b2355e5691e0d0d9bc4ff181fceef549552e4bfb3b18d3d2a17ce312e",
       "tier": "ultimate",
       "visibility": "awarded-only"
+    },
+    {
+      "id": "angel-of-the-trenches",
+      "data_id": "angel_of_the_trenches",
+      "name": "Angel of the Trenches",
+      "family": "perks",
+      "order": 73,
+      "mood": "Heroic, Tender",
+      "action": "Wick slides in on its knees through a spray of dirt, catching a limp hand dropping into frame, cape flaring behind like wings.",
+      "screen": "A single heart",
+      "prop": "Limp hand (partial)",
+      "path": "art/perks/wick/production-v1/angel-of-the-trenches.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/angel-of-the-trenches.png",
+        "128": "art/perks/wick/production-v1/exports/128/angel-of-the-trenches.png",
+        "64": "art/perks/wick/production-v1/exports/64/angel-of-the-trenches.png",
+        "56": "art/perks/wick/production-v1/exports/56/angel-of-the-trenches.png",
+        "48": "art/perks/wick/production-v1/exports/48/angel-of-the-trenches.png",
+        "44": "art/perks/wick/production-v1/exports/44/angel-of-the-trenches.png",
+        "40": "art/perks/wick/production-v1/exports/40/angel-of-the-trenches.png"
+      },
+      "batch": "F",
+      "source_sha256": "b48b8a874d81c249ef98241a8377401efefe97b9888dd5021344e7b268db4c6e",
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   ]
 }
