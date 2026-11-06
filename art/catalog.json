@@ -4662,6 +4662,31 @@
         "40": "art/perks/wick/production-v1/exports/40/make-way.png"
       },
       "tier": "achieved"
+    },
+    "just-the-repairman": {
+      "label": "Wick — Just the Repairman",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/just-the-repairman.png",
+      "sha256": "0e94f8cedc2bc2d6d6f9c1f9f1807196118312cff0ecb49b77d2c8438bfd9d76",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "just_the_repairman",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/just-the-repairman.png",
+        "128": "art/perks/wick/production-v1/exports/128/just-the-repairman.png",
+        "64": "art/perks/wick/production-v1/exports/64/just-the-repairman.png",
+        "56": "art/perks/wick/production-v1/exports/56/just-the-repairman.png",
+        "48": "art/perks/wick/production-v1/exports/48/just-the-repairman.png",
+        "44": "art/perks/wick/production-v1/exports/44/just-the-repairman.png",
+        "40": "art/perks/wick/production-v1/exports/40/just-the-repairman.png"
+      },
+      "tier": "achieved"
     }
   },
   "illustrations": {

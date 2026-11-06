@@ -137,11 +137,12 @@
     "outclassed",
     "real-power",
     "charge",
-    "make-way"
+    "make-way",
+    "just-the-repairman"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 58
+    "perks": 59
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -191,7 +192,6 @@
     "judgement-day",
     "foreseen",
     "on-my-mark",
-    "just-the-repairman",
     "spoon-feed",
     "cultured",
     "dance-of-iron",

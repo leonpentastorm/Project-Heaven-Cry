@@ -1306,6 +1306,30 @@
       "batch": "F",
       "source_sha256": "9876d4012f2a0f1837c33df8c532fb1f8bda77855b72a817f84e367922f9b5ad",
       "tier": "achieved"
+    },
+    {
+      "id": "just-the-repairman",
+      "data_id": "just_the_repairman",
+      "name": "Just the Repairman",
+      "family": "perks",
+      "order": 57,
+      "mood": "Comic, Tense",
+      "action": "Caught in a searchlight cone, Wick strolls past waving cheerily, a big toolbox swinging from the other mitten.",
+      "screen": "Innocent smile, sweat drop",
+      "prop": "Toolbox",
+      "path": "art/perks/wick/production-v1/just-the-repairman.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/just-the-repairman.png",
+        "128": "art/perks/wick/production-v1/exports/128/just-the-repairman.png",
+        "64": "art/perks/wick/production-v1/exports/64/just-the-repairman.png",
+        "56": "art/perks/wick/production-v1/exports/56/just-the-repairman.png",
+        "48": "art/perks/wick/production-v1/exports/48/just-the-repairman.png",
+        "44": "art/perks/wick/production-v1/exports/44/just-the-repairman.png",
+        "40": "art/perks/wick/production-v1/exports/40/just-the-repairman.png"
+      },
+      "batch": "F",
+      "source_sha256": "af4917c3c537e80c8bf7f72a950665106ba48ad3276f4d9a7a84cd7c7b0e147a",
+      "tier": "achieved"
     }
   ]
 }
