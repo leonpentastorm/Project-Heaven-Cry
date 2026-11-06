@@ -150,11 +150,12 @@
     "siege-engine",
     "dead-signal",
     "twin-souls",
-    "the-voice"
+    "the-voice",
+    "war-footing"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 71
+    "perks": 72
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -207,7 +208,6 @@
     "bite-the-bullet",
     "sixth-sense",
     "what-could-be",
-    "war-footing",
     "last-charge",
     "angel-of-the-trenches",
     "every-lie-is-a-door",

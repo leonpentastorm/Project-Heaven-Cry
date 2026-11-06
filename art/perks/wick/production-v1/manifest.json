@@ -1618,6 +1618,31 @@
       "batch": "F",
       "source_sha256": "8e28603dfbad59c411e001583f96587bc39a4006e930aa9a9063652056ccd2e6",
       "tier": "achieved"
+    },
+    {
+      "id": "war-footing",
+      "data_id": "war_footing",
+      "name": "War Footing",
+      "family": "perks",
+      "order": 71,
+      "mood": "Grim, Heroic",
+      "action": "Wick stomps down from a high knee and the ground cracks around it into a three-by-three grid of broken slabs, cape snapping.",
+      "screen": "Glowering",
+      "prop": "Cracked slab grid",
+      "path": "art/perks/wick/production-v1/war-footing.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/war-footing.png",
+        "128": "art/perks/wick/production-v1/exports/128/war-footing.png",
+        "64": "art/perks/wick/production-v1/exports/64/war-footing.png",
+        "56": "art/perks/wick/production-v1/exports/56/war-footing.png",
+        "48": "art/perks/wick/production-v1/exports/48/war-footing.png",
+        "44": "art/perks/wick/production-v1/exports/44/war-footing.png",
+        "40": "art/perks/wick/production-v1/exports/40/war-footing.png"
+      },
+      "batch": "F",
+      "source_sha256": "632b5754f940ee5d3f7ea832caa8ed574f3f6918a1fcb84eafa3666b9e4c0c6e",
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   ]
 }

@@ -4987,6 +4987,32 @@
         "40": "art/perks/wick/production-v1/exports/40/the-voice.png"
       },
       "tier": "achieved"
+    },
+    "war-footing": {
+      "label": "Wick — War Footing",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/war-footing.png",
+      "sha256": "4c18229512a4449a2b8a3fe454f2d0d7138a7b74c76be94e8b312fb01c319ae9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "war_footing",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "F",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/war-footing.png",
+        "128": "art/perks/wick/production-v1/exports/128/war-footing.png",
+        "64": "art/perks/wick/production-v1/exports/64/war-footing.png",
+        "56": "art/perks/wick/production-v1/exports/56/war-footing.png",
+        "48": "art/perks/wick/production-v1/exports/48/war-footing.png",
+        "44": "art/perks/wick/production-v1/exports/44/war-footing.png",
+        "40": "art/perks/wick/production-v1/exports/40/war-footing.png"
+      },
+      "tier": "ultimate",
+      "visibility": "awarded-only"
     }
   },
   "illustrations": {
