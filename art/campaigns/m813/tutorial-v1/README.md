@@ -1,6 +1,6 @@
 # M813 tutorial campaign artwork
 
-29 of 52 new images delivered. All are review candidates pending Leon.
+30 of 52 new images delivered. All are review candidates pending Leon.
 
 Original approved M813 paintings, portraits and icon library are preserved. Sources accompany every image; subsequent automated deliveries also retain their generation prompts.
 
@@ -41,3 +41,4 @@ All newly named cast appearances and enemy designs are proposals under the brief
 | `m813-the-choice` | D | [PNG](../../../illustrations/m813/v2/m813-the-choice.png) | mid-campaign |
 | `m813-the-demand` | D | [PNG](../../../illustrations/m813/v2/spoilers/revisions/v2/m813-the-demand.png) | outpost-1-only |
 | `obj-barrier-stakes` | E | [PNG](../../../sprites/objects/v1/revisions/v2/obj-barrier-stakes.png) | opening-safe |
+| `obj-platinum-crates` | E | [PNG](../../../sprites/objects/v1/obj-platinum-crates.png) | opening-safe |

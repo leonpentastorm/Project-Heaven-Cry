@@ -13,10 +13,10 @@ a0673b54f74ce5b2abb7dd3ba377c4c2ec0f5181974ed1c963cdfd24e3c11d4f  art/briefs/m81
 c1d29d935f4b1e0d90fccfb3d76e2a39cad1ddc16158defd404cf99e3452cf30  art/briefs/wick-narrator-3d.md
 67712fd0be0e027620808ca02839d3c8b53f404ce83fac57e238f404e6046a90  art/briefs/wick-production-icons.md
 6019f489bdc53d95a7f9249b717f7a5bc7684665d42c39fc2c8120da005f3ae2  art/briefs/wick-test-icons.md
-424931efff376518d8bea08398807257371b113167531ec722fa7a9feb809c75  art/campaigns/m813/tutorial-v1/README.md
-06e2f4e8acb690ffde75c22ca36d316b46b0bb77f9589314dc17fe7db9b1179c  art/campaigns/m813/tutorial-v1/manifest.json
-07a70037d853e18b1a54bedeacdc1ac1742de83888bbe5220cac437c30e113fb  art/campaigns/m813/tutorial-v1/production-progress.json
-9e9f9fdbaf9ac4bc1c67b0b5fac4de3ca7444a9236033f593b9c5ca01d917c12  art/catalog.json
+f0265da287b04af8f8538da19cf72540655df682cdc3e75b4132b03eb28c919a  art/campaigns/m813/tutorial-v1/README.md
+369432b3790db676e6ea650e0159655ef69cdea9d1ef126b0f22371797d55edf  art/campaigns/m813/tutorial-v1/manifest.json
+8f863bf09f74656578d1f279eb31e76aa258536b1be0e07f057bc53c80845a74  art/campaigns/m813/tutorial-v1/production-progress.json
+7c3e3482489006b10500e9904057c5679c9634198d4a45044835af50c04c464f  art/catalog.json
 74fbdafd3caac60d8158b4f428c01bd2fb5a615e084f15014d7d96bf6f2f2a81  art/character-portraits/README.md
 5e58c3b4918c0b1176707c4eecc5e23b19a83580afda09487359beb779487bdd  art/character-portraits/first-patch-revival/README.md
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/character-portraits/first-patch-revival/body/agility/athletics.png
@@ -1230,9 +1230,13 @@ e8d66aa48566f8ce655dd08f931dc2df72c8d1ba53d29054e92bfdc39127709c  art/skills/poc
 ffa7293de8374ca0cf9c9b0d4e95ed4c182074de86b7033152b2778d3afeca19  art/skills/poc4-palette-v3/soul/virtue/conscience.png
 2f4649acf0426da9472a3a3c87100fd0650f847fe15d8146b4b24f6ae5b53e27  art/skills/poc4-palette-v3/soul/virtue/faith.png
 4f3e85d2eca2a7d3e58683c93ef7197c3f59e10123f8d18a0b59670b52a406f1  art/sprites/objects/v1/obj-barrier-stakes.png
+cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1  art/sprites/objects/v1/obj-platinum-crates.png
 a4ae26aceebf5ed1a2a2744fca8655281496eaae7b2bcef007a1d97116c2b0e8  art/sprites/objects/v1/previews/obj-barrier-stakes-128px.png
 807ee005cb43466af662c5e3219dbe9d495d9a1063228297174980ce962b8c3c  art/sprites/objects/v1/previews/obj-barrier-stakes-46px.png
 096e4a8a92b0a1901e0956d1d06f35a2cfd395f9780cf739f818c43e6870f143  art/sprites/objects/v1/previews/obj-barrier-stakes-64px.png
+80b8ba5c2c508db13dbd6a381404755167cb9ca9086e57ec78d9345f9a5d9430  art/sprites/objects/v1/previews/obj-platinum-crates-128px.png
+59eaf1185397eaeecaa08e9ee9ad14fbf3c8549aaa6ea63bc6b335c50e97fafa  art/sprites/objects/v1/previews/obj-platinum-crates-46px.png
+e5fed85fb07cba43c71e3de07bbb31fbea43f2be943ec3553ba75d7d847ecb05  art/sprites/objects/v1/previews/obj-platinum-crates-64px.png
 883201e6d597efec634f5a331a02ad02f19d6c719aa206c417c5db1aa89b96d1  art/sprites/objects/v1/revisions/v2/obj-barrier-stakes.png
 7cd16deabac02668eca8f8116d51c313f5ee73ffc36c36b876ec4910a08508f9  art/sprites/objects/v1/revisions/v2/previews/obj-barrier-stakes-128px.png
 e2771eefdb8acd6d8621229118ec7cbc852e16062ed0c3a7b6ed0b661d6f25c7  art/sprites/objects/v1/revisions/v2/previews/obj-barrier-stakes-46px.png
@@ -1240,6 +1244,8 @@ e2771eefdb8acd6d8621229118ec7cbc852e16062ed0c3a7b6ed0b661d6f25c7  art/sprites/ob
 3ecbed6cffe8154e0924076f8350174d3ecb165d348a203bc1e5aba883e51b4a  art/sprites/objects/v1/revisions/v2/sources/obj-barrier-stakes.png
 4b4b1a84c0105821a6b66606f293c57c8bbce586a383f2c63f5c12eb07f06dc1  art/sprites/objects/v1/sources/obj-barrier-stakes.png
 46a325a253ec3b974de3c04c38aa521b0a7540ce9050db2b0a95f0a46677a1e3  art/sprites/objects/v1/sources/obj-barrier-stakes.prompt.txt
+4cada19a280d39ad7922dd0bb2f98669e2dd7dd2315fedc3e5237b617576b4c8  art/sprites/objects/v1/sources/obj-platinum-crates.png
+3f69a2052c5bed30cc2e6687ed24c751e27242eda32f2c59eee2a1140939a952  art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt
 9008acaac7adb84e788927f8ae4d981390df28194cbd25944ac048b70d72330f  art/style-guide/v1.2/Abstract-Skills-Style-Bible.md
 5ed44f984a5838ac4cbb140d3ab3d6deb18a4099189bd7b15f28da89d1ff4be2  art/style-guide/v1.2/Approved-Icon-Lock.md
 6ce00bbc3c557fc82d8daa024fdc3a99f26285c536ec40c8ecf531c114e88c31  art/style-guide/v1.2/CHANGELOG.md

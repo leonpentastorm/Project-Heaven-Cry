@@ -7022,6 +7022,42 @@
       "previous_path": "art/sprites/objects/v1/obj-barrier-stakes.png",
       "previous_revision_path": "art/sprites/objects/v1/obj-barrier-stakes.png",
       "revision": 2
+    },
+    "obj-platinum-crates": {
+      "id": "obj-platinum-crates",
+      "group": "E",
+      "order": 2,
+      "name": "Platinum Crates",
+      "family": "sprites",
+      "path": "art/sprites/objects/v1/obj-platinum-crates.png",
+      "dimensions": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "brief_row": "| E2 | `obj-platinum-crates` | Stack of platinum crates, one split showing metal bars (crate) | Rear pad L3–L5 |",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "proposal": true,
+      "width": 256,
+      "height": 256,
+      "sha256": "cfdbbd4b632f90f8e68fc42f4b8e03145d62c51841d4f446c9de89be77a9a3f1",
+      "source_path": "art/sprites/objects/v1/sources/obj-platinum-crates.png",
+      "source_sha256": "4cada19a280d39ad7922dd0bb2f98669e2dd7dd2315fedc3e5237b617576b4c8",
+      "source_dimensions": [
+        1254,
+        1254
+      ],
+      "previews": {
+        "128": "art/sprites/objects/v1/previews/obj-platinum-crates-128px.png",
+        "64": "art/sprites/objects/v1/previews/obj-platinum-crates-64px.png",
+        "46": "art/sprites/objects/v1/previews/obj-platinum-crates-46px.png"
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "collection": "M813 tutorial campaign v1",
+      "brief": "art/briefs/m813-tutorial-campaign.md",
+      "prompt_path": "art/sprites/objects/v1/sources/obj-platinum-crates.prompt.txt"
     }
   }
 }
