@@ -2274,6 +2274,32 @@
       "medallion_safe_circle": 0.9
     },
     {
+      "id": "their-own-idea",
+      "data_id": "their_own_idea",
+      "name": "Their Own Idea",
+      "family": "perks",
+      "order": 96,
+      "mood": "Comic, Eerie",
+      "action": "Wick whispers behind one mitten toward a big ear (partial, from the frame edge), above which a lightbulb has just switched on.",
+      "screen": "Sly",
+      "prop": "Lightbulb",
+      "path": "art/perks/wick/production-v1/their-own-idea.png",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/their-own-idea.png",
+        "128": "art/perks/wick/production-v1/exports/128/their-own-idea.png",
+        "64": "art/perks/wick/production-v1/exports/64/their-own-idea.png",
+        "56": "art/perks/wick/production-v1/exports/56/their-own-idea.png",
+        "48": "art/perks/wick/production-v1/exports/48/their-own-idea.png",
+        "44": "art/perks/wick/production-v1/exports/44/their-own-idea.png",
+        "40": "art/perks/wick/production-v1/exports/40/their-own-idea.png"
+      },
+      "batch": "G",
+      "source_sha256": "b1f0f1ffcc1233444477281bda22ce9a62a990ac1448b9b32b8afcd4f83d5d9a",
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
+    },
+    {
       "id": "bite-the-bullet",
       "data_id": "bite_the_bullet",
       "name": "Bite the Bullet",

@@ -5741,6 +5741,33 @@
       "tier": "mastered",
       "mastered_mark": "four-point star, upper left",
       "medallion_safe_circle": 0.9
+    },
+    "their-own-idea": {
+      "label": "Wick — Their Own Idea",
+      "collection": "wick-production-v1",
+      "path": "art/perks/wick/production-v1/their-own-idea.png",
+      "sha256": "0a793743501ec865ffc8cf44a72ae431c121a35490e397efcfc4b4b5f3704681",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "usage": "perk icon",
+      "data_id": "their_own_idea",
+      "status": "review-candidate",
+      "production_approved": false,
+      "batch": "G",
+      "exports": {
+        "256": "art/perks/wick/production-v1/exports/256/their-own-idea.png",
+        "128": "art/perks/wick/production-v1/exports/128/their-own-idea.png",
+        "64": "art/perks/wick/production-v1/exports/64/their-own-idea.png",
+        "56": "art/perks/wick/production-v1/exports/56/their-own-idea.png",
+        "48": "art/perks/wick/production-v1/exports/48/their-own-idea.png",
+        "44": "art/perks/wick/production-v1/exports/44/their-own-idea.png",
+        "40": "art/perks/wick/production-v1/exports/40/their-own-idea.png"
+      },
+      "tier": "mastered",
+      "mastered_mark": "four-point star, upper left",
+      "medallion_safe_circle": 0.9
     }
   },
   "illustrations": {

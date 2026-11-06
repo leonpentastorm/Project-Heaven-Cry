@@ -178,11 +178,12 @@
     "case-closed",
     "everyones-friend",
     "open-hand",
-    "many-hands"
+    "many-hands",
+    "their-own-idea"
   ],
   "catalog_coverage": {
     "traits": 74,
-    "perks": 99
+    "perks": 100
   },
   "revision_rounds": {
     "field-surgeon": 3,
@@ -208,7 +209,6 @@
     "sworn-sibling"
   ],
   "remaining_new_icons": [
-    "their-own-idea",
     "the-twin-pays",
     "true-name",
     "still-water",
