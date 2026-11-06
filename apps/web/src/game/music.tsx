@@ -4,6 +4,7 @@
 import React from 'react';
 import { musicFor, musicTraitOf, songOf, type GameState } from '@engine';
 import { act, toast } from './store';
+import { onVoice, voiceState, voicePrefs, setVoicePrefs, loadVoice, NARRATOR_VOICES } from './voice';
 
 declare global { interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void } }
 let apiP: Promise<any> | null = null;
@@ -126,6 +127,11 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     if (x.paused === false) { pl.unMute(); pl.setVolume(n.vol); pl.playVideo(); }
   };
 
+  // The Narrator speaks over the music: it ducks to a quarter while the voice plays (spec: The Narrator's voice).
+  const [vs, setVs] = React.useState(voiceState()), [vp, setVp] = React.useState(voicePrefs());
+  React.useEffect(() => onVoice(() => { setVs(voiceState()); setVp(voicePrefs()); }), []);
+  const ducked = !!vs.speaking;
+  React.useEffect(() => { const pl = player.current; if (!pl || !ready.current || p.paused) return; fadeTo(ducked ? Math.round(p.vol * 0.25) : p.vol); }, [ducked]);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;
   const side = game.phase === 'combat' ? 'left' : 'right';
@@ -154,6 +160,15 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             {track && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#7FD4FF' }}>Open on YouTube ↗</a>}
           </div>
           <div style={{ fontSize: 11, color: '#A3AEC2' }}>Pause and volume are yours only: the room's music goes on, and song bonuses still count.</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid #232D3F' }}>
+            <div style={label}>THE NARRATOR'S VOICE</div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}><input type="checkbox" checked={vp.auto} onChange={(e) => { setVoicePrefs({ auto: e.target.checked }); if (e.target.checked) loadVoice(); }} /> Read new lines aloud (otherwise press 🔊 on a line)</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <select aria-label="Narrator voice" value={vp.voice} onChange={(e) => setVoicePrefs({ voice: e.target.value })} style={{ minHeight: 30, borderRadius: 6, border: '1px solid #2E3A50', background: '#0D1119', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12 }}>{NARRATOR_VOICES.map(([id, n]) => <option key={id} value={id}>{n}</option>)}</select>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#A3AEC2' }}>Voice volume <input type="range" min={0} max={100} value={vp.volume} onChange={(e) => setVoicePrefs({ volume: Number(e.target.value) })} aria-label="Voice volume" style={{ width: 100 }} /></label>
+            </div>
+            <span style={{ fontSize: 11, color: '#A3AEC2' }}>{vs.status === 'ready' ? 'Voice ready on this device (free, runs here).' : vs.status === 'loading' ? 'Preparing the voice on this device, once: ' + vs.progress + '%. The browser\'s voice reads until then.' : vs.status === 'failed' ? 'This device can\'t run the voice model: the browser\'s own voice reads instead.' : 'The voice loads the first time it\'s needed.'}</span>
+          </div>
           {mine.map((c) => {
             const isMine = now?.charId === c.id;
             return (

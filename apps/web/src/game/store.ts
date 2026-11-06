@@ -258,3 +258,6 @@ async function carryOutVote() {
     }
   } finally { carrying = false; }
 }
+
+/** Redraw the screens (for things outside the game state, like the voice). */
+export const poke = () => set({});

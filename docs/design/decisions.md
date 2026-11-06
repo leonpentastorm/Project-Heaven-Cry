@@ -205,3 +205,8 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 84. **Rerolls and edits by unanimous vote** (Leon: everyone in the room must accept, or nothing happens; the host starts votes and others suggest; no freehand edits that could break the game, like "Leon handsomely steals 2 million from the ATM").
     - **Reroll:** restores the host's copy of the state from just before that Narrator turn (`rerollFrom`) and asks the Narrator again with the note.
     - **Edit:** a constrained AI rewording of the prose only, which refuses outcome changes; state never changes. Checked in two browsers (`e2e/vote.mjs`): a no changes nothing; a yes rerolls; a rewording passes; a "steal 2 million" rewording is refused even with everyone's yes.
+
+85. **The Narrator's voice: free text to speech in the browser** (Leon: "when the narrator generates a text, wait till the voice is ready then show the text; all players hear it; music blurs a bit; a read-aloud icon in every voice box, skills too; auto is the default and can be turned off").
+    - **Kokoro** (82M, Apache-2.0) through `kokoro-js`: WebGPU at fp32, else WASM at q8; a lazy 2.2 MB chunk plus the cached model. Chosen over paid voices (cost per line) and the browser voice alone (quality varies by device). The browser voice is the fallback.
+    - Sentence streaming: the line is held until its first sentence is ready (at most 15 s for the model, 8 s for the sentence), so slow devices never block the story.
+    - Music ducks to 25%. 🔊 replays any Narrator or skill voice line; skill voices take a voice by core. Settings are per player in localStorage (`phc.voice`). The e2e tests start with auto off.

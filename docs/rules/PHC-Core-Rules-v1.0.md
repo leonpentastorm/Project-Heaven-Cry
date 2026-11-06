@@ -1019,6 +1019,18 @@ The room can redo or reword the AI Narrator's answers, **only if everyone agrees
 - **Reword:** nobody can type into the Narrator's words. The Narrator rewords its own line as asked: wording, tone, emphasis and details that change no outcome. It refuses, keeping its words, any request that would change what happened (items, money, injuries, deaths, positions, who did what, results, new events). The original is kept.
 - **Cost:** a reroll is one Narrator call; a rewording is a small call at low effort.
 
+## The Narrator's voice
+
+The Narrator speaks aloud, free, in each player's own browser. Nothing is paid and nothing leaves the browser except the one-time model download.
+
+- **The voice:** an open voice model (Kokoro, Apache-2.0), run on the device's graphics card where there is one, else on the processor. It downloads once (about 90 MB on the processor, more on the graphics card) and is cached. While it loads, or on a device that can't run it, the browser's own speech voice reads instead.
+- **Auto-read (the default):** a new Narrator line is held back, with "The Narrator gathers their voice…" in its place, until its first sentence is ready; then the text appears as the voice starts. The rest is made while it plays. Every player hears it in their own browser.
+  - A line waits at most 15 s for the voice to load and 8 s for its first sentence; past that the text shows and the browser's voice reads it.
+  - A new line stops the one before. Rerolled and out-of-character lines are not read.
+- **Music ducks** to a quarter of its volume while the Narrator speaks, and comes back after.
+- **Read aloud:** every Narrator line and every skill voice line has a 🔊 button to hear it again (■ stops). Skill voices have their own voice by core: Body low, Mind British, Soul bright.
+- **Settings** (in the music panel, per player): auto-read on or off (off: lines show at once and the voice speaks only when you press 🔊), the Narrator's voice (7 to choose from), and volume.
+
 ## The Narrator's memory
 
 A campaign of 50 hours and four players is far more story than any prompt should carry. Models also get worse as their input grows. So the engine keeps the campaign as data and gives the Narrator only what the moment needs, inside a hard cost ceiling. **The ceiling is $0.50 per Narrator turn**, every round of lookups included. On Sonnet 5.5 at medium effort, a call on a full 50-hour, 4-player save measured **$0.18 with nothing cached and $0.045 warm**.

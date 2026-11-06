@@ -21,6 +21,9 @@ import { UltimateLogic } from './screens/ultimate';
 import { Music } from './game/music';
 import { MemoryPanel } from './game/memory';
 import { VotePanel } from './game/vote';
+import { NarratorVoice } from './game/narratorVoice';
+import { onVoice } from './game/voice';
+import { poke } from './game/store';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: makeScreen(expand(homeT), HomeLogic as any),
@@ -32,6 +35,7 @@ const SCREENS: Record<Screen, React.ComponentType<any>> = {
   ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
 };
 
+onVoice(poke);
 export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
   const Screen = SCREENS[st.screen];
@@ -49,6 +53,7 @@ export function App() {
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
       <Screen key={st.screen + (st.levelupChar || '')} tick={st} />
       {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
+      {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
       {bar && <div role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{bar}</div>}
