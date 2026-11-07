@@ -166,7 +166,8 @@ describe('vision, stances and reactions', () => {
     expect(previewAttack(cb, u, e, 'shot').toHit).toBe(base - 2); expect(previewAttack(cb, u, e, 'melee').toHit).toBeGreaterThan(previewAttack({ ...cb } as any, u, { ...e, prone: false } as any, 'melee').toHit);
     e.prone = false; u.strength = 20; expect(shove(cb, { state: 3 }, u, e)).toBeNull(); expect(e.pos).toBe('3,5');
     u.ap = 9; expect(fireBurst(cb, { state: 9 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6);
-    u.ap = 9; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true);
+    u.ap = 9; expect(brace(cb, u)).toMatch(/nothing to brace/); // weapon-granted (plan 2.9): only heavy weapons brace
+    const w0 = u.weapon; u.weapon = 'hellraiser_lmg'; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true); u.weapon = w0;
     expect(toggleProne(cb, u)).toBeNull(); expect(moveUnit(cb, u, '1,6')).toMatch(/Stand up/); toggleProne(cb, u);
     // overwatch: e moves in sight and takes the shot
     u.ap = 9; e.pos = '8,5'; expect(setOverwatch(cb, u, 'shot')).toBeNull(); e.ap = 9;

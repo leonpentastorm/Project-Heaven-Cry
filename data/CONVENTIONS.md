@@ -46,6 +46,15 @@ Every rule-bearing item carries both:
 - If an effect is pure judgement, `effects` is `[{"op":"narrator","note":"..."}]`.
 - `adjudication`: `"engine"` (fully automatable), `"hybrid"`, or `"narrator"`.
 
+## Weapon handling (weapons.json)
+- `reload`: `"magazine"` (swap a magazine, speedloader, drum or belt: `reload_unit` names it) or `"loose"` (round by round);
+  absent or null: the weapon doesn't reload. `reload_ap`: the reload's AP when it isn't 2 (the breacher tube: 3).
+- The weapon-granted actions (Reload, Load a magazine, Clear jam, Brace, Field Repair, Overwatch) follow from the data
+  (engine `weaponActions`): Clear jam only for weapons with a `heat_limit` (others fumble on a natural 1 instead), Brace only
+  for `requires_braced_or_prone`, `minus2_to_hit_unless_emplaced` or a `braced_bonus` grant, Field Repair only with `durability`.
+- `handling` (optional): `{"grant": ["clear", "brace"], "deny": ["load"]}` overrides that, by action id
+  (`reload`, `load`, `clear`, `brace`, `repair`, `overwatch`, `burst`, `auto`, `skill`).
+
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.

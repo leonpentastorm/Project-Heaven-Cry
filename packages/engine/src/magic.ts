@@ -10,6 +10,9 @@ import {
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
+import { emit } from './effects/hooks';
+import { applyDamage, healUnit } from './effects/damage';
+import { itemWords, wordCostMods } from './effects/core';
 
 type Fam = 'body' | 'brain' | 'heart';
 export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string }
@@ -23,6 +26,8 @@ export interface MagicUnit {
   maxWords: number; glyphAp: number; coreSave: number; rangeBonus: number; durBonus: number;
   soulAp: number; costSave: number; soulRange: number; syphon: number; strainLimit: number;
   saves: Record<Fam, number>; debuff: Record<Fam, number>;
+  /** Items' changes to a word's charge (word_cost), by word. */
+  wordCost?: Record<string, number>;
 }
 
 export const MANA_START = 15;
@@ -40,6 +45,9 @@ const CONDS: Record<string, { name: string; fam: Fam; rounds: number }> = {
   silenced: { name: 'Silenced', fam: 'brain', rounds: 1 }, guarded: { name: 'Guarded (+2 Defense)', fam: 'body', rounds: 2 }, inspired: { name: 'Inspired (+2 to hit)', fam: 'heart', rounds: 2 },
 };
 export const condName = (id: string) => CONDS[id]?.name || id;
+/** Is this a condition the engine knows, and which save family it belongs to. */
+export const isCondition = (id: string) => !!CONDS[id];
+export const condFamily = (id: string): Fam | undefined => CONDS[id]?.fam;
 const BOOST = new Set(['guarded', 'inspired']);
 
 // ---------- the meter ----------
@@ -60,7 +68,7 @@ export function noteDeaths(cb: Combat) {
 
 // ---------- units ----------
 export function magicOf(c: Character): MagicUnit | undefined {
-  const words = c.sigils || [], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c);
+  const words = [...new Set([...(c.sigils || []), ...itemWords(c)])], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c);
   if (!words.length && !designs.length && !evoker && !emanator) return undefined;
   return {
     words: [...words], designs: designs.map((d) => ({ ...d, modules: [...d.modules] })), evoker, emanator,
@@ -70,6 +78,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
     soulAp: soulCastAp(c), costSave: soulCostSaving(c), soulRange: soulRangeBonus(c), syphon: syphonMult(c), strainLimit: strainLimit(c),
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: { body: debuffStrength(c, 'body'), brain: debuffStrength(c, 'brain'), heart: debuffStrength(c, 'heart') },
+    ...(() => { const wc = wordCostMods(c); return Object.keys(wc).length ? { wordCost: wc } : {}; })(),
   };
 }
 /** Write a unit's magic back to its character (after a fight, or after an overworld action). */
@@ -98,12 +107,16 @@ export const condHit = (u: Unit) => (condOn(u, 'shaken') ? -2 : 0) + (condOn(u, 
  * and saves). Boons (Guarded, Inspired) need no save. No stacking: a second dose resets to the longer duration. */
 export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, rounds?: number, fam?: Fam): string {
   const def = CONDS[id]; if (!def || t.dead) return '';
-  const f = fam || def.fam;
-  if (!BOOST.has(id)) {
-    const r = d20(rng), m = saveOf(t, f), tn = 12 + (by ? debuffOf(by, f) : 0), ok = r === 20 || (r !== 1 && r + m >= tn);
+  // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
+  // a perk may skip the save, change the rounds or the save's TN).
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
+  if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
+  const f: Fam = ca.fam || fam || def.fam;
+  if (!BOOST.has(id) && !ca.skipSave) {
+    const r = d20(rng), m = saveOf(t, f) + (ca.saveAdd || 0), tn = 12 + (by ? debuffOf(by, f) : 0) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
     if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
   }
-  const n = rounds || def.rounds, had = condOn(t, id);
+  const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
   emitFx(cb, 'cond', { target: t.id, at: t.pos, id });
   (t.conds ||= {})[id] = Math.max(t.conds[id] || 0, n);
   if (!had) {
@@ -111,9 +124,14 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: st
     if (id === 'blinded') { t.baseVision ??= t.vision || 12; t.vision = 1; }
     if (id === 'guarded') t.def += 2;
   }
+  emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
   return ' · ' + t.name + ' is ' + def.name + ' (' + n + ' round' + (n === 1 ? '' : 's') + ')';
 }
-function endCond(u: Unit, id: string) {
+/** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
+export function endCond(u: Unit, id: string, cb?: Combat) {
+  endCondRaw(u, id); if (cb) emit(cb, 'cond_end', { u, id, cb });
+}
+function endCondRaw(u: Unit, id: string) {
   if (id === 'slowed' && u.baseMove != null) { u.movement = u.baseMove; delete u.baseMove; }
   if (id === 'blinded' && u.baseVision != null) { u.vision = u.baseVision; delete u.baseVision; }
   if (id === 'guarded') u.def -= 2;
@@ -129,22 +147,23 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   let dmg = Math.floor(raw), out = '';
   const arm = type === 'sigil' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
-  if (t.shield && t.shield > 0) { const s = Math.min(t.shield, dmg); t.shield -= s; dmg -= s; out += ' (' + s + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: s }); if (dmg <= 0) return ' · ' + t.name + "'s shield takes it" + out; }
-  if (t.downed) { t.saves.fail += 1; if (t.saves.fail >= 3) t.dead = true; emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
-  t.hp = Math.max(0, t.hp - dmg);
-  let killed = false;
-  if (t.hp === 0) { if (t.side === 'foe') t.dead = true; else t.downed = true; killed = true; }
+  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: type, shield: true, credit: 'hp' } as any);
+  if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
+  if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
+  if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;
+  if (r.prevented || r.amount <= 0) return ' · ' + t.name + ' takes no damage' + out;
+  dmg = r.amount;
+  const killed = r.killed;
   emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg, why: hurtWhy || type, killed }); if (killed) fxFell(cb, t);
-  if (killed && att && att.side !== t.side) att.kills += t.tier === 'boss' ? 3 : 1;
   out = ' · ' + dmg + ' damage to ' + t.name + out + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '');
   if (!t.dead && !t.downed && t.mg?.held) out += slip(cb, rng, t, dmg);
   return out;
 }
-export function heal(t: Unit, n: number, cb?: Combat): string {
+export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null): string {
   if (t.dead) return '';
-  n = Math.floor(n);
-  if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, n)); if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
-  const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + n); if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was }); return ' · ' + t.name + ' heals ' + (t.hp - was);
+  const r = healUnit(cb || null, t, n, by, 'soul');
+  if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
+  if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
 }
 function shove(cb: Combat, t: Unit, from: string, n: number): string {
   if (t.dead || n === 0) return '';
@@ -169,7 +188,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   noteDeaths(cb);
   if (u.conds) for (const id of Object.keys(u.conds)) {
     if (id === 'burning' && !u.downed) cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, null, u, 5, 'true')));
-    u.conds[id]--; if (u.conds[id] <= 0) { endCond(u, id); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
+    u.conds[id]--; if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
   }
   const m = u.mg;
   if (m && !u.downed) {
@@ -219,9 +238,10 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
   if (dist(u.pos, tile) > 1) return 'Draw on your own tile or one next to you.';
   if (!standable(cb.map, tile)) return 'Nothing can be drawn there.';
   if ((cb.glyphs || []).filter((g) => g.pos === tile).length >= 2) return 'A tile holds at most 2 glyphs.';
-  const ap = glyphApOf(u); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  if (m.charge < w.charge) return 'Not enough charge in the core (' + m.charge + ' left, ' + w.word + ' needs ' + w.charge + '): swap a core (2 AP).';
-  u.ap = Math.round((u.ap - ap) * 10) / 10; m.charge -= w.charge;
+  const gc = glyphCost(cb, u, word);
+  const ap = gc.ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  if (m.charge < gc.charge) return 'Not enough charge in the core (' + m.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).';
+  u.ap = Math.round((u.ap - ap) * 10) / 10; m.charge -= gc.charge;
   const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: tile, by: u.id, side: u.side, left: 2 + m.durBonus, who: u.name };
   cb.glyphs = [...(cb.glyphs || []), g];
   emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile, word, side: u.side });
@@ -229,8 +249,14 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
   const mine = cb.glyphs.filter((x) => x.by === u.id);
   let faded = '';
   if (mine.length > m.maxWords) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades: ' + m.maxWords + ' glyphs at most)'; }
-  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(tile) + ' (' + w.charge + ' charge, ' + ap + ' AP)' + faded + '.' + flux(cb, rng, u, 1));
+  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(tile) + ' (' + gc.charge + ' charge, ' + ap + ' AP)' + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   return null;
+}
+/** A glyph's price for this unit: 'glyph_cost' {u, word, ap, charge, flux, preview} (mutable), after word_cost items. */
+export function glyphCost(cb: Combat, u: Unit, word: string, preview = false): { ap: number; charge: number; flux: number } {
+  const w = SIGIL[word], base = { u, word, ap: glyphApOf(u), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: 1, preview, cb };
+  const c: any = emit(cb, 'glyph_cost', base);
+  return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux) };
 }
 function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
   const m = u.mg!; m.flux += n;
@@ -367,19 +393,21 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string): E
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
   const touch = p.shape === 'line' ? dist(u.pos, p.near!) <= 1 : p.tiles.some((k) => dist(u.pos, k) <= 1);
   if (!touch) return no(p.shape === 'line' ? 'Stand behind the near end of the line to fire it.' : 'Stand on or next to the pattern.', { pattern: p });
-  const charge = evokeCharge(p, u); if (u.mg!.charge < charge) return no('Firing needs ' + charge + ' charge (' + u.mg!.charge + ' left): swap a core.', { pattern: p, charge });
-  if (u.ap < SPELL_AP.evoke) return no('Needs 1 AP.', { pattern: p, charge });
+  // 'evoke_cost' {u, pattern, ap, charge, preview} (mutable): items change what firing costs.
+  const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke, charge: evokeCharge(p, u), preview: true, cb });
+  const charge = Math.max(0, ec.charge), eap = Math.max(0, ec.ap); if (u.mg!.charge < charge) return no('Firing needs ' + charge + ' charge (' + u.mg!.charge + ' left): swap a core.', { pattern: p, charge });
+  if (u.ap < eap) return no('Needs ' + eap + ' AP.', { pattern: p, charge });
   const needsAim = p.shape === 'stack';
-  if (p.words.includes('stay')) return { ok: true, pattern: p, charge, ap: SPELL_AP.evoke, targets: [], impact: null, needsAim: false };
+  if (p.words.includes('stay')) return { ok: true, pattern: p, charge, ap: eap, targets: [], impact: null, needsAim: false };
   const path = spellPath(cb, u, p, aim);
-  if (path.why) return { ok: false, why: path.why, pattern: p, charge, ap: SPELL_AP.evoke, targets: [], needsAim, range: p.words.includes('push') ? PUSH_RANGE + (u.mg!.rangeBonus || 0) : 1 };
-  return { ok: true, pattern: p, charge, ap: SPELL_AP.evoke, targets: path.targets.map((t) => t.id), impact: path.impact, needsAim, range: p.shape === 'line' ? (LINE_RANGE[p.tiles.length] || 4) + u.mg!.rangeBonus : undefined };
+  if (path.why) return { ok: false, why: path.why, pattern: p, charge, ap: eap, targets: [], needsAim, range: p.words.includes('push') ? PUSH_RANGE + (u.mg!.rangeBonus || 0) : 1 };
+  return { ok: true, pattern: p, charge, ap: eap, targets: path.targets.map((t) => t.id), impact: path.impact, needsAim, range: p.shape === 'line' ? (LINE_RANGE[p.tiles.length] || 4) + u.mg!.rangeBonus : undefined };
 }
 /** Evoke (spec: Sigils, 6): fire the pattern at that tile. */
 export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string): string | null {
   const pv = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
   const p = pv.pattern!, m = u.mg!, has = (w: string) => p.words.includes(w), name = p.words.map((w) => w.toUpperCase()).join(' · ');
-  u.ap -= SPELL_AP.evoke; m.charge -= pv.charge; m.cast = true;
+  u.ap -= pv.ap; m.charge -= pv.charge; m.cast = true;
   const subjects = p.words.filter((w) => /^subject/.test(cls(w)));
   const head = u.name + ' evokes ' + name + ' (' + p.shape + (p.shape === 'line' ? ' of ' + p.tiles.length : '') + ', ' + pv.charge + ' charge)';
   // STAY: the pattern stands as a wall (Line), a zone at the centre (Ring) or on the tile (Stack); the glyphs remain.
@@ -435,7 +463,7 @@ function manaShort(cb: Combat, rng: Rng, u: Unit) {
   const m = u.mg!, over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
   emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
   if (r === 1) {
-    u.hp = 0; if (u.side === 'foe') u.dead = true; else u.downed = true; fxFell(cb, u);
+    applyDamage(cb, u, u.hp, { type: 'short', shield: false, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
     cb.log.push('MANA SHORT: ' + u.name + "'s heart bursts (d20 1 vs " + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed') + '.');
     m.held = null; return;
   }
@@ -459,23 +487,26 @@ function wildRelease(cb: Combat, rng: Rng, u: Unit): boolean {
   releaseAt(cb, rng, u, d, t.pos, true);
   return true;
 }
-export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number }
+export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number; hp?: number }
 export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: string, release = true): OutburstPreview {
   const m = u.mg, no = (why: string): OutburstPreview => ({ ok: false, why, cost: 0, ap: 0, range: 0, strain: 0, stage: 1 });
   if (!m) return no('You have no Outbursts.');
   const e = canCast(u, cb); if (e) return no(e);
   if (m.held) return no('You are already holding an Outburst: release it first.');
   const d = m.designs.find((x) => x.id === designId); if (!d) return no('No such design.');
-  const cost = designCost(m, d, manaOf(cb)), ap = designAp(m, d), range = designRange(m, d);
-  const strain = (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2);
-  if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 1 };
-  if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 1 };
-  if (release) { const why = aimError(cb, u, d, aim); if (why) return { ok: false, why, cost, ap, range, strain, stage: 1 }; }
-  return { ok: true, cost, ap, range, strain, stage: 1 };
+  // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the price
+  // (pay HP instead of MP, a free cast, more reach). hp > 0 is taken from the caster's HP when the cast is paid.
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)), ap: designAp(m, d), range: designRange(m, d), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), hp: 0, release, preview: true, cb });
+  const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
+  if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 1, hp };
+  if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 1, hp };
+  if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 1, hp };
+  if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 1, hp }; }
+  return { ok: true, cost, ap, range, strain, stage: 1, hp };
 }
-function aimError(cb: Combat, u: Unit, d: OutburstDesign, aim?: string): string | null {
+function aimError(cb: Combat, u: Unit, d: OutburstDesign, aim?: string, range?: number): string | null {
   if (!aim) return 'Pick a target tile.';
-  const r = designRange(u.mg!, d);
+  const r = range ?? designRange(u.mg!, d);
   if (dist(u.pos, aim) > r) return 'Out of reach (' + r + ' tiles).';
   if (!d.modules.includes('ether') && !d.modules.includes('teleport') && aim !== u.pos && !lineOfSight(cb, u.pos, aim)) return 'No line of sight.';
   return null;
@@ -485,6 +516,8 @@ export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, a
   const pv = previewOutburst(cb, u, designId, aim, !hold); if (!pv.ok) return pv.why || 'Can\'t.';
   const m = u.mg!, d = m.designs.find((x) => x.id === designId)!;
   u.ap -= pv.ap; if (m.emanator) m.mp -= pv.cost; m.cast = true;
+  if (pv.hp) applyDamage(cb, u, pv.hp, { by: u, type: 'heart', shield: false, credit: 'none' });
+  emit(cb, 'outburst_begin', { u, design: d, hold, cost: pv.cost, hp: pv.hp || 0, cb, rng }); // 'outburst_begin' {u, design, hold, cost, hp}
   shiftMana(cb, -Math.ceil(pv.cost / 10));
   m.held = { design: d.id, stage: 1, cost: pv.cost };
   emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: d.id, school: d.school, hold, stage: 1 });
@@ -505,7 +538,9 @@ export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): st
   return null;
 }
 function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string, wild: boolean) {
-  const m = u.mg!, stage = m.held?.stage || 1, sm = stageMult(stage), has = (x: string) => d.modules.includes(x);
+  const m = u.mg!, stage = m.held?.stage || 1, has = (x: string) => d.modules.includes(x);
+  // 'outburst_release' {u, design, stage, aim, wild, mult} (mult multiplies the stage multiplier).
+  const orl: any = emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, cb, rng }); const sm = stageMult(stage) * (orl.mult || 1);
   m.held = null;
   const range = designRange(m, d);
   if (has('random') && !wild) { const pool = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= range); if (pool.length) aim = pool[die(rng, pool.length) - 1].pos; }
@@ -526,7 +561,7 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
       const opt = d.option || 'heal';
       if (opt === 'defense') line.push(applyCond(cb, rng, u, t, 'guarded', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
       else if (opt === 'hit') line.push(applyCond(cb, rng, u, t, 'inspired', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
-      else line.push(heal(t, 30 * m.healMult * sm * f, cb).replace(/^ · /, ''));
+      else line.push(heal(t, 30 * m.healMult * sm * f, cb, u).replace(/^ · /, ''));
     } else if (school === 'control') {
       const opt = d.option || 'push';
       if (opt === 'push' || opt === 'pull') { const r = d20(rng), ok = r === 20 || (r !== 1 && r + saveOf(t, 'body') >= 12 + m.debuff.body); line.push(ok ? t.name + ' holds its ground (Body save)' : (shove(cb, t, u.pos, opt === 'push' ? 3 : -3).replace(/^ · /, '') || t.name + ' can\'t be moved')); }

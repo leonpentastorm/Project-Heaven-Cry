@@ -1,0 +1,187 @@
+// The registry and hook dispatch (plan 2.3, 2.4). Lanes call register() from their own files under src/perks/ and
+// src/classes/; the generic core-op handlers (core.ts) register through registerGeneric(). emit() walks units in
+// cb.units order, then items in a fixed order (traits, perks, class moves), then handler priority: dispatch is
+// deterministic.
+import type { Character } from '../character';
+import type { Combat, Unit } from '../combat';
+import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
+import { type Held, itemsOf, heldKey, keyOf } from './collect';
+
+// ---------- the bound game (set by apply() for the length of one action) ----------
+let G: any = null;
+/** Bind a game state while one action runs, so handlers see h.g and h.c (the live character). Returns the previous one. */
+export function bindGame(g: any): any { const was = G; G = g; return was; }
+export const boundGame = (): any => G;
+
+// ---------- registry ----------
+const REG = new Map<string, ItemHandler>();
+/** Register a lane's handler for one item. A second registration for the same item merges into the first (hooks and
+ * actions add up; the later stat/checkMod/brief wins), so a lane can split an item across files. */
+export function register(def: ItemHandler): void {
+  const kind: ItemKind | undefined = def.kind || (def.id.includes('.') ? 'class' : undefined);
+  const key = keyOf(def.id, kind), had = REG.get(key);
+  if (!had) { REG.set(key, { ...def }); dirty(); return; }
+  const on = { ...(had.on || {}) };
+  for (const [k, fn] of Object.entries(def.on || {})) { const a = (on as any)[k]; (on as any)[k] = a ? (ctx: any, h: Holder) => { a(ctx, h); (fn as any)(ctx, h); } : fn; }
+  REG.set(key, { ...had, ...def, on, actions: [...(had.actions || []), ...(def.actions || [])], toggles: [...(had.toggles || []), ...(def.toggles || [])],
+    claims: mergeSel(had.claims, def.claims), narrator: mergeSel(had.narrator, def.narrator) });
+  dirty();
+}
+const mergeSel = (a: any, b: any) => (a == null ? b : b == null ? a : (e: any, i: number, t: string) => sel(a, e, i, t) || sel(b, e, i, t));
+export const handlerOf = (key: string): ItemHandler | undefined => REG.get(key);
+export const registered = () => [...REG.keys()];
+/** For tests: forget every lane registration (generic handlers stay). */
+export function _unregisterAll(keep: (key: string) => boolean = () => false) { for (const k of [...REG.keys()]) if (!keep(k)) REG.delete(k); dirty(); }
+
+/** A generic core-op handler: which effects it claims, and what it does for them. */
+export interface GenericOp {
+  op: string;
+  claim(e: any, info: ItemInfo): boolean;
+  stat?(h: Holder, e: any, stat: string, ctx: any): StatAnswer;
+  on?: Partial<Record<HookName, (ctx: any, h: Holder, e: any) => void>>;
+  checkMod?(h: Holder, e: any, ck: any, ctx: any): CheckMod[] | void;
+  /** Run as part of an action's own effects (cleanse, shield, heal, condition…). Returns a log suffix, or null. */
+  run?(h: Holder, e: any, args: any, rng: { state: number }): string | null;
+  /** Can run() do this one inside an action? (Coverage counts an action whose effects all run as engine-run.) */
+  runs?(e: any, info: ItemInfo): boolean;
+}
+const GEN = new Map<string, GenericOp>();
+export function registerGeneric(op: GenericOp) { GEN.set(op.op, op); dirty(); }
+export const genericOf = (op: string) => GEN.get(op);
+
+const sel = (s: any, e: any, i: number, t: string): boolean =>
+  s == null ? false : s === 'all' ? true : typeof s === 'function' ? !!s(e, i, t) : Array.isArray(s) ? s.some((x: any) => (typeof x === 'number' ? x === i : x === e?.op)) : false;
+
+export type Owner = 'handler' | 'generic' | 'narrator' | 'action' | 'gap';
+/** Who runs one effect of one item: its lane's handler, a generic op, the Narrator (op narrator or listed), the item's
+ * action (an active item's own effects, run when the action runs), or nobody yet (a gap: the Narrator gets the text). */
+export function ownerOf(info: ItemInfo, i: number): Owner {
+  const e = info.effects[i], h = REG.get(info.key), t = info.effTier[i] || info.tier;
+  if (h && sel(h.claims, e, i, t)) return 'handler';
+  if (h && sel(h.narrator, e, i, t)) return 'narrator';
+  if (!e || e.op === 'narrator') return 'narrator';
+  if (e.op === 'grant_action') return h?.actions?.length ? 'handler' : 'action';
+  const g = GEN.get(e.op);
+  if (info.bound) {
+    // An action's own effects run with it: engine-run when a generic runner can do them (or a lane registered the action).
+    if (h?.actions?.length) return 'handler';
+    return g?.runs && g.runs(e, info) ? 'generic' : 'action';
+  }
+  if (g && g.claim(e, info)) return 'generic';
+  return 'gap';
+}
+
+// ---------- holders and the per-holder dispatch index ----------
+interface Slot { info: ItemInfo; fn: (ctx: any, h: Holder) => void; prio: number }
+const indexCache = new Map<string, Record<string, Slot[]>>();
+let version = 0;
+function dirty() { version++; indexCache.clear(); }
+export const registryVersion = () => version;
+
+function buildIndex(held: Held): Record<string, Slot[]> {
+  const k = heldKey(held), hit = indexCache.get(k); if (hit) return hit;
+  const idx: Record<string, Slot[]> = {};
+  const add = (name: string, s: Slot) => (idx[name] ||= []).push(s);
+  for (const info of itemsOf(held)) {
+    const h = REG.get(info.key);
+    if (h?.on) for (const [name, fn] of Object.entries(h.on)) if (fn) add(name, { info, fn: fn as any, prio: h.priority ?? 100 });
+    if (info.bound) continue; // an action's own effects run with the action, not as standing passives
+    info.effects.forEach((e, i) => {
+      if (ownerOf(info, i) !== 'generic') return;
+      const g = GEN.get(e.op); if (!g?.on) return;
+      for (const [name, fn] of Object.entries(g.on)) if (fn) add(name, { info, fn: (ctx, hh) => (fn as any)(ctx, hh, e), prio: 200 });
+    });
+  }
+  for (const list of Object.values(idx)) list.sort((a, b) => a.prio - b.prio); // stable: item order kept within a priority
+  if (indexCache.size > 400) indexCache.clear();
+  indexCache.set(k, idx);
+  return idx;
+}
+
+/** What a character holds (the compact form). Rank comes from the class rules; see character.ts classRank. */
+export function heldOfChar(c: Character | null | undefined): Held {
+  if (!c) return { perks: [], traits: [] };
+  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null };
+}
+let rankHook: ((c: Character) => number) | null = null;
+/** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
+export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
+
+export const heldOfUnit = (u: Unit | null | undefined): Held => (u?.held ? u.held : u?.charId && G?.characters?.[u.charId] ? heldOfChar(G.characters[u.charId]) : { perks: [], traits: [] });
+export const charOfUnit = (u: Unit | null | undefined): Character | null => (u?.charId && G?.characters?.[u.charId]) || null;
+
+function holder(info: ItemInfo, c: Character | null, u: Unit | null, cb: Combat | null): Holder {
+  return { key: info.key, itemId: info.id, kind: info.kind, tier: info.tier, info, c, u, cb, g: G };
+}
+/** Holders of every item a unit or character has (traits, perks, class moves), in order. */
+export function holdersOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }): Holder[] {
+  const c = x.c ?? charOfUnit(x.u), held = x.u ? heldOfUnit(x.u) : heldOfChar(c);
+  return itemsOf(held).map((i) => holder(i, c, x.u || null, x.cb || null));
+}
+/** One item's holder, if this unit or character holds it. */
+export function holderOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, idOrKey: string): Holder | null {
+  const key = keyOf(idOrKey); return holdersOf(x).find((h) => h.key === key) || null;
+}
+
+// ---------- emit ----------
+/** Fire a combat hook: every unit's handlers in cb.units order (an ally's or an enemy's items may react). */
+export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): any {
+  if (!cb) return ctx;
+  for (const u of cb.units) {
+    const held = heldOfUnit(u); if (!held.perks.length && !held.traits.length && !held.cls && !held.adv) continue;
+    const list = buildIndex(held)[name]; if (!list) continue;
+    const c = charOfUnit(u);
+    for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
+  }
+  return ctx;
+}
+/** Fire a story hook for characters (all of them in g.characters order, or the ones given). */
+export function emitStory(g: any, name: HookName, ctx: any, only?: Character[]): any {
+  const chars: Character[] = only || Object.values(g?.characters || {});
+  const was = G; if (g) G = g;
+  try {
+    for (const c of chars) {
+      const list = buildIndex(heldOfChar(c))[name]; if (!list) continue;
+      for (const s of list) { s.fn(ctx, holder(s.info, c, null, null)); if (ctx && ctx.stop) return ctx; }
+    }
+  } finally { G = was; }
+  return ctx;
+}
+/** Does anyone in this fight have a handler on this hook? (Lets costly payloads be skipped: sight diffs.) */
+export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
+  return !!cb && cb.units.some((u) => { const h = heldOfUnit(u); return (h.perks.length || h.traits.length || h.cls || h.adv) && !!buildIndex(h)[name]; });
+}
+
+// ---------- stat and check queries ----------
+/** Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. */
+export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
+  let add = 0, mult = 1;
+  const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
+  if (!held.perks.length && !held.traits.length && !held.cls && !held.adv) return { add, mult };
+  for (const info of itemsOf(held)) {
+    const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
+    if (h?.stat) take(h.stat(hh, stat, ctx));
+    if (info.bound) continue;
+    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.stat && ownerOf(info, i) === 'generic') take(g.stat(hh, e, stat, ctx)); });
+  }
+  return { add, mult };
+  function take(r: StatAnswer) { if (r == null) return; if (typeof r === 'number') add += r; else { add += r.add || 0; mult *= r.mult ?? 1; } }
+}
+/** Modifiers to one d20 check from every item (handler checkMod, then generic skill and roll mods). */
+export function checkQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any = {}): CheckMod[] {
+  const out: CheckMod[] = [], c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
+  for (const info of itemsOf(held)) {
+    const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
+    if (h?.checkMod) out.push(...(h.checkMod(hh, ck, ctx) || []));
+    if (info.bound) continue;
+    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.checkMod && ownerOf(info, i) === 'generic') out.push(...(g.checkMod(hh, e, ck, ctx) || [])); });
+  }
+  return out.filter((m) => m && m.add);
+}
+/** Every effect of every item a holder has whose owner is a generic op (for the generic handlers' own queries). */
+export function genericEffects(x: { u?: Unit | null; c?: Character | null }, op: string): { e: any; info: ItemInfo }[] {
+  const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c), out: { e: any; info: ItemInfo }[] = [];
+  for (const info of itemsOf(held)) { if (info.bound) continue; info.effects.forEach((e, i) => { if (e?.op === op && ownerOf(info, i) === 'generic') out.push({ e, info }); }); }
+  return out;
+}
+export type { ActiveEffect };

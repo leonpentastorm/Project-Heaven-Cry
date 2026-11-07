@@ -156,6 +156,17 @@ if isinstance(wm, dict):
     if kills != sorted(kills) or len(set(kills)) != len(kills):
         errors.append("weapon_mastery: level kill thresholds must rise")
     for w in items("weapons"):
+        hd = w.get("handling")
+        if hd is not None:
+            if not isinstance(hd, dict) or set(hd) - {"grant", "deny"}:
+                errors.append(f"weapons:{w.get('id')}: handling must be {{grant?, deny?}}")
+            else:
+                for k in ("grant", "deny"):
+                    for x in hd.get(k, []) or []:
+                        if x not in ("reload", "load", "clear", "brace", "repair", "overwatch", "burst", "auto", "skill"):
+                            errors.append(f"weapons:{w.get('id')}: handling.{k} has unknown action {x}")
+        if w.get("reload_ap") is not None and not (isinstance(w.get("reload_ap"), (int, float)) and w.get("reload_ap") >= 0):
+            errors.append(f"weapons:{w.get('id')}: reload_ap must be a number")
         if w.get("mastery_family") not in fam_ids:
             errors.append(f"weapons:{w.get('id')}: unknown mastery_family {w.get('mastery_family')}")
         if w.get("category") not in cats:

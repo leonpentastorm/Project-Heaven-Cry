@@ -14,6 +14,9 @@ import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './c
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
+import { bindGame, emit as emitFx2, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import './perks';
+import './classes';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -35,6 +38,11 @@ export interface Check {
   id: string; charId: string; skills: string[]; tn: number; stakes: string; done: boolean;
   /** A try at an object's approach (spec: Points of interest): the result is recorded on the object. */
   poi?: { objId: string; idx: number };
+  /** What kind of check this is, for items that apply only to some (dialogue, crowd, military…; effects/core.ts
+   * TAG_VOCAB), the NPC it is against, and items the Narrator says apply. Optional; the Narrator sets them. */
+  tags?: string[]; target?: string; applies?: string[];
+  /** Item modifiers that went into the roll, by name (shown in the check's head). */
+  mods?: { add: number; label: string }[];
   roll?: { die: number; mod: number; total: number; ok: boolean; crit: boolean; fumble: boolean; rerolled: boolean; first?: number };
 }
 export interface Overreach { id: string; charId: string; skill: string; push: string; choice?: 'indulge' | 'resist' }
@@ -83,6 +91,10 @@ export interface GameState {
     focus?: { charId: string; objId?: string; hover?: number; seq: number } | null;
     /** Presentation events from area-map actions (the same shape as a fight's, see FxEvent), capped at FX_CAP. */
     fx?: FxEvent[]; fxSeq?: number;
+    /** What the Narrator owes or must rule for perks and traits (sent only while non-empty; effects/narrator.ts). */
+    rulings?: PendingRuling[];
+    /** Item state between overworld actions (units are rebuilt every action), by character: uses, per-item state. */
+    ps?: Record<string, any>;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -100,6 +112,9 @@ export interface GameState {
   archive?: Entry[];
   /** The Proving Ground (practice mode): endless waves on one map, no Narrator, no XP, no story (see Sandbox). */
   sandbox?: Sandbox | null;
+  /** Sessions started in this room, and rests taken this session: the stamps of per-session and per-rest item uses
+   * (effects/uses.ts). Old saves: session 1, no rests. */
+  sessionN?: number; restN?: number;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -120,7 +135,9 @@ export function newGame(code: string, host: { id: string; name: string }, seed?:
 export type NarratorTurn = {
   narration: string; sceneTitle?: string;
   hooks?: { skill: string; tn: number; truth: string; line: string }[];
-  checks?: { charId: string; skills: string[]; tn: number; stakes: string }[];
+  checks?: { charId: string; skills: string[]; tn: number; stakes: string; tags?: string[]; target?: string; applies?: string[] }[];
+  /** Answers to Pending rulings (perks and traits): accepted or not; a refused story use is refunded. */
+  perkRulings?: { id: string; accepted: boolean; note?: string }[];
   overreach?: { charId: string; skill: string; push: string }[];
   xp?: { charId: string; source: string; amount: number; reason?: string }[];
   deeds?: { charId: string; perkId: string; deed: string }[];
@@ -166,7 +183,7 @@ export type Action =
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
   | { type: 'levelup/perk'; charId: string; perkId: string }
-  | { type: 'combat/move'; unitId: string; to: string; how?: 'move' | 'sprint' | 'disengage' } | { type: 'combat/attack'; unitId: string; targetId: string; mode: AttackMode }
+  | { type: 'combat/move'; unitId: string; to: string; how?: 'move' | 'sprint' | 'disengage'; mods?: string[] } | { type: 'combat/attack'; unitId: string; targetId: string; mode: AttackMode; mods?: string[] }
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
   | { type: 'gear/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number }
@@ -175,7 +192,7 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; mods?: string[] }
   // Magic (spec: Mana, rules 1.2)
   | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
@@ -187,6 +204,9 @@ export type Action =
   | { type: 'narrator/rewrite'; entryId: string; text: string; refused?: string }
   | { type: 'campaign/refresh' } | { type: 'memory/edit'; edit: MemEdit }
   | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string }
+  // Perks, traits and class moves (effects/actions.ts): id is the item key ("perk:earthbreaker") or a bare id.
+  | ({ type: 'combat/perk'; unitId: string; id: string; actionId?: string } & ActionArgs) | { type: 'combat/decline'; unitId: string }
+  | ({ type: 'story/perk'; charId: string; id: string; actionId?: string } & ActionArgs)
   | SandboxAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
@@ -194,7 +214,7 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
   /** HP carried from a fight it walked away from (the Proving Ground's stopped fight); absent = full. */
   hp?: number }
 
-export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door'
+export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise';
 export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
 export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
@@ -228,7 +248,9 @@ export function roomSheetError(g: GameState, by: string, sheet: Sheet): string |
 
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
-  reduce(g, action, by);
+  // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
+  const was = bindGame(g);
+  try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
   g.v++;
@@ -269,8 +291,9 @@ function reduce(g: GameState, a: Action, by: string) {
       if (!isHost(g, by)) fail('Only the host starts the session.');
       if (g.phase !== 'lobby') fail('Already started.');
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
-      g.phase = 'story';
+      g.phase = 'story'; g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
       for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); if (hasEmanator(c)) c.mp = maxMp(c); }
+      emitStory(g, 'session_start', { g, n: g.sessionN }); // 'session_start' {g, n}: start items, Echo, faction starts (lanes)
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
@@ -350,10 +373,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'story') fail('Ask a skill out of combat.');
       const sk = SKILL[a.skill]; if (!sk) fail('Unknown skill.');
       if ((c!.skills[a.skill] || 0) < 1) fail('Only skills with a point have a voice.');
-      const asked = (g.story.scene.asked[c!.id] ||= []); if (asked.includes(a.skill)) fail('Once per scene per skill.');
+      const asked = (g.story.scene.asked[c!.id] ||= []);
+      // 'ask_limit' {c, skill, limit}: how many times a scene this skill can be asked (Crowded Head: 2).
+      const al: any = emitStory(g, 'ask_limit', { c, skill: a.skill, limit: 1, g });
+      if (asked.filter((x) => x === a.skill).length >= al.limit) fail(al.limit === 1 ? 'Once per scene per skill.' : al.limit + ' times per scene per skill.');
       asked.push(a.skill);
       const hook = g.story.scene.hooks.filter((h) => h.skill === a.skill && !g.story.scene.revealed.includes(c!.id + ':' + h.id)).sort((x, y) => x.tn - y.tn)[0];
-      const m = mod(c!.skills[a.skill] || 0), die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
+      const m = mod(c!.skills[a.skill] || 0) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
       const head = sk.name.toUpperCase() + ' · YOU ASKED · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + total + (hook ? ' vs ' + hook.tn : '') + ' · ' + (ok ? '✓ SPEAKS' : '✕ NOTHING TO SAY');
       if (ok) g.story.scene.revealed.push(c!.id + ':' + hook!.id);
       push(g, { kind: 'voice', skill: a.skill, charId: c!.id, to: by, head, text: ok ? hook!.line : sk.name + ' has nothing to say about this.', ok });
@@ -362,9 +388,10 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'overreach/choose': {
       const o = g.overreach.find((x) => x.id === a.id); if (!o || o.choice) fail('Nothing to choose.');
       const c = g.characters[o!.charId]; if (c.owner !== by) fail('Not your character.');
-      const cost = (c.skills[o!.skill] || 0) >= 10 ? 2 : 1;
+      // 'overreach_cost' {c, skill, cost}: Echo to resist (Crowded Head +1).
+      const oc: any = emitStory(g, 'overreach_cost', { c, skill: o!.skill, cost: (c.skills[o!.skill] || 0) >= 10 ? 2 : 1, g }), cost = Math.max(0, oc.cost);
       const choice = a.choice === 'resist' && c.echo >= cost ? 'resist' : 'indulge';
-      if (choice === 'resist') c.echo -= cost; else c.echo = Math.min(3, c.echo + 1);
+      if (choice === 'resist') gainEcho(c, -cost, 'resisting Overreach', g); else gainEcho(c, 1, 'indulging Overreach', g);
       o!.choice = choice;
       push(g, { kind: 'overreach', charId: c.id, skill: o!.skill, to: by, head: SKILL[o!.skill].name.toUpperCase() + ' · OVERREACH · ' + (choice === 'resist' ? 'RESISTED (−' + cost + ' ECHO)' : 'INDULGED (+1 ECHO)'), text: choice === 'resist' ? 'You hold it back. Nothing happens.' : 'You let it happen.' });
       push(g, { kind: 'system', text: c.name + (choice === 'resist' ? ' resists an urge.' : ' gives in to ' + SKILL[o!.skill].name + '.') });
@@ -530,14 +557,33 @@ function closeRoundIfDone(g: GameState) {
 }
 
 function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
-  // Combined checks (spec): the lowest modifier among the skills, +2 for each other skill with at least 1 point.
-  const mods = ck.skills.map((s) => mod(c.skills[s] || 0) + songMod(g, c, s)), low = Math.min(...mods), lowIx = mods.indexOf(low);
-  const m = low + 2 * ck.skills.filter((s, i) => i !== lowIx && (c.skills[s] || 0) > 0).length;
-  const die = d20(g.rng), total = die + m, crit = die === 20, fumble = die === 1, ok = crit || (!fumble && total >= ck.tn);
+  // Combined checks (spec): the lowest modifier among the skills, +2 for each other skill with at least 1 point. Items'
+  // skill mods go into each skill's own modifier (plan 6a-15: every d20 that uses the skill); whole-check mods after.
+  const tags = [...(ck.tags || []), ...zoneTags(g)], cctx = { tags, check: ck, target: ck.target, applies: ck.applies || [], roll: 'check' };
+  const sk = ck.skills.map((s) => ({ s, m: mod(c.skills[s] || 0) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
+  const mods = sk.map((x) => x.m + x.it.add), low = Math.min(...mods), lowIx = mods.indexOf(low);
+  const whole = checkQuery({ c }, ck, cctx);
+  // 'check_mod' {c, ck, tags, add: CheckMod[], tn}: handlers push { add, label } or change tn (tn_mod, in the ladder).
+  const cm: any = emitStory(g, 'check_mod', { c, ck, tags, add: [] as { add: number; label: string }[], tn: ck.tn, g });
+  const itemMods = [...sk[lowIx].it.labels, ...whole, ...cm.add];
+  const m = low + 2 * ck.skills.filter((s, i) => i !== lowIx && (c.skills[s] || 0) > 0).length + whole.reduce((t, x) => t + x.add, 0) + cm.add.reduce((t: number, x: any) => t + x.add, 0);
+  const tn = Math.max(TN_LADDER[0], Math.min(TN_LADDER[TN_LADDER.length - 1] + 4, cm.tn ?? ck.tn));
+  // 'check_post' {c, ck, die, total, tn, ok, crit, fumble, auto, double}: auto 'success'/'fail', a floor, a reroll.
+  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: null as null | 'success' | 'fail', labels: [] as string[], g });
+  const die = cp.die, total = die + m, crit = die === 20 && cp.auto !== 'fail', fumble = die === 1 && cp.auto !== 'success';
+  const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : crit || (!fumble && total >= tn);
   const first = reroll ? ck.roll!.die : undefined;
   ck.roll = { die, mod: m, total, ok, crit, fumble, rerolled: reroll, first };
+  ck.mods = itemMods.filter((x) => x.add);
   const names = ck.skills.map((s) => SKILL[s].name).join(' + ');
-  push(g, { kind: 'check', charId: c.id, ok, head: names.toUpperCase() + (reroll ? ' · ECHO REROLL' : '') + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + total + ' vs ' + ck.tn + ' · ' + (crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE'), text: c.name + ': ' + ck.stakes });
+  const named = ck.mods.length ? ' (' + ck.mods.map((x) => (x.add > 0 ? '+' : '−') + Math.abs(x.add) + ' ' + x.label).join(', ') + ')' : '';
+  push(g, { kind: 'check', charId: c.id, ok, head: names.toUpperCase() + (reroll ? ' · ECHO REROLL' : '') + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + named + ' = ' + total + ' vs ' + tn + (cp.labels.length ? ' · ' + cp.labels.join(', ') : '') + ' · ' + (cp.auto === 'success' ? '✓ SUCCESS (AUTO)' : cp.auto === 'fail' ? '✕ FAILURE (AUTO)' : crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE'), text: c.name + ': ' + ck.stakes });
+  emitStory(g, 'check_result', { c, ck, roll: ck.roll, g }); // 'check_result' {c, ck, roll}
+}
+/** Tags of the zone the story is in (terrain, in_city, urban…; campaign zones may set them), for items gated on them. */
+export function zoneTags(g: GameState): string[] {
+  const z: any = campaignOf(g)?.zones.find((x) => x.id === g.story.zone); if (!z) return [];
+  return [...(z.tags || []), ...(z.terrain ? ['terrain:' + z.terrain] : []), ...(z.in_city ? ['in_city'] : z.in_city === false ? ['outside_city'] : []), ...(z.urban ? ['urban'] : [])];
 }
 
 function afterPending(g: GameState) {
@@ -556,6 +602,11 @@ function awardAutomatic(g: GameState, c: Character) {
 
 function giveXp(g: GameState, c: Character, source: string, amount: number, reason?: string) {
   if (amount <= 0) return;
+  // Items change XP (xp_mod), then 'xp_grant' {c, source, amount} (mutable amount).
+  const after = xpAfter(c, source, amount); amount = after.amount;
+  const xg: any = emitStory(g, 'xp_grant', { c, source, amount, g }); amount = Math.max(0, Math.round(xg.amount));
+  if (after.labels.length) reason = (reason ? reason + '; ' : '') + after.labels.join(', ');
+  if (amount <= 0) return;
   c.xp += amount; c.xpBySource[source] = (c.xpBySource[source] || 0) + amount;
   push(g, { kind: 'xp', charId: c.id, text: c.name + ' +' + amount + ' XP (' + source + (reason ? ': ' + reason : '') + ')' });
   const before = c.level, gained = applyLevels(c);
@@ -568,7 +619,12 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (t.sceneTitle && t.sceneTitle !== g.story.scene.title) {
     g.story.scene = { title: t.sceneTitle, n: g.story.scene.n + 1, hooks: [], revealed: [], asked: {}, fired: {} };
     push(g, { kind: 'scene', text: t.sceneTitle });
+    emitStory(g, 'scene_change', { g, n: g.story.scene.n, title: t.sceneTitle }); // 'scene_change' {g, n, title}
   }
+  // Pending rulings answered: a refused story use is refunded; every ruling the turn saw is settled.
+  { const list = g.story.rulings || [], answered = new Map((t.perkRulings || []).map((r) => [r.id, r]));
+    for (const r of list) { const ans = answered.get(r.id); if (ans && ans.accepted === false) refundRuling(g, r); }
+    g.story.rulings = []; }
   if (t.narration?.trim()) { push(g, { kind: 'narration', text: t.narration.trim() }); const v = votesOf(g); v.turns = [...v.turns, g.story.entries.at(-1)!.id].slice(-REROLLABLE_TURNS); }
   { const m = momentsOpen(g).find((x) => x.id === t.moment); if (m) { (g.story.moments ||= []).push(m.id); push(g, { kind: 'art', art: m.art, text: m.caption }); } }
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
@@ -590,7 +646,11 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   for (const ck of t.checks || []) {
     const c = g.characters[ck.charId], skills = (ck.skills || []).filter((s) => SKILL[s]).slice(0, 3);
     if (!c || c.dead || !skills.length || !TN_LADDER.includes(ck.tn)) continue;
-    g.checks.push({ id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false });
+    const tags = Array.isArray(ck.tags) ? ck.tags.filter((x) => typeof x === 'string').slice(0, 8).map((x) => x.slice(0, 40)) : undefined;
+    const applies = Array.isArray(ck.applies) ? ck.applies.filter((x) => typeof x === 'string').slice(0, 6) : undefined;
+    const nc: Check = { id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false, ...(tags?.length ? { tags } : {}), ...(ck.target ? { target: String(ck.target).slice(0, 40) } : {}), ...(applies?.length ? { applies } : {}) };
+    emitStory(g, 'check_build', { c, ck: nc, g }); // 'check_build' {c, ck}: items may add tags or flags to a new check
+    g.checks.push(nc);
   }
   for (const o of t.overreach || []) {
     const c = g.characters[o.charId];
@@ -1080,6 +1140,7 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
     if (n.side !== 'hostile') continue;
     const d = dist(n.pos, at), dark = !!cb.map.dark && !litAt(cb, at);
     let range = Math.max(1, 4 + (NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
+    range = Math.max(0, (emitStory(g, 'notice', { c, npc: n, range, dark, g }) as any).range); // 'notice' {c, npc, range, dark}
     const sees = d <= 1 || (d <= range && lineOfSight(cb, n.pos, at));
     if (!sees) continue;
     const key = n.id + '|' + c.id; if ((g.story.noticed ||= {})[key] === g.story.round) continue;
@@ -1089,7 +1150,8 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
 }
 /** The Ingenuity check to stay hidden (spec: Overworld rounds): d20 + Ingenuity vs 10 + the enemy's notice. */
 function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
-  const die = d20(g.rng), m = mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity'), tn = 10 + (NOTICE[n.tier] ?? 0), ok = die === 20 || (die !== 1 && die + m >= tn);
+  const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (NOTICE[n.tier] ?? 0), g });
+  const die = d20(g.rng), m = sh.mod, tn = sh.tn, ok = die === 20 || (die !== 1 && die + m >= tn);
   push(g, { kind: 'check', charId: c.id, ok, head: 'INGENUITY · STAY HIDDEN · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ SUCCESS' : '✗ FAILURE'),
     text: n.name + ' ' + why + ' ' + c.name + (ok ? '; ' + c.name + ' stays hidden.' : ' and spots them.') });
   if (!ok) { g.story.hidden![c.id] = false; g.story.needs = true; }

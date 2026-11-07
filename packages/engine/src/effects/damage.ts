@@ -1,0 +1,99 @@
+// The one damage chokepoint (plan 2.8 item 1, the part the hooks need now): every HP loss in a fight goes through
+// applyDamage, in phases, so perks and traits can reduce it, shield it, stop a drop to 0, and hear about wounds,
+// Downs and kills. Sites still work out their own armour (it differs: attacks, hazards, Sigil, Elemental, Soul, true)
+// and their own presentation events; this does the rest.
+//
+// Phases, each a 'damage_in' emit with ctx.phase set (ctx is mutable: change ctx.dmg):
+//   'reduce'          before the shield (flat and percentage reductions, immunities set ctx.dmg = 0)
+//   'shield'          just before the shield takes its share (a handler may add ctx.t.shield)
+//   'would_drop_to_0' the hit would take the last HP: set ctx.dmg lower, or ctx.floor = 1 (Last Wall, Angel, Bite the Bullet;
+//                     order them with priority)
+//   'after'           HP has been taken (ctx.dealt, ctx.killed)
+// then 'on_damaged' {t, src, dmg, prevHp} when HP was lost, 'on_downed' {victim, by, src, ownTurn} on a Down or a death,
+// and 'on_kill' {victim, by, src} when kill credit is given.
+import type { Combat, Unit } from '../combat';
+import { emit } from './hooks';
+
+export interface DamageSrc {
+  /** Who did it (null: a hazard, a trap, bleeding, burning). */
+  by?: Unit | null;
+  /** 'weapon' (an attack), 'hazard', 'trap', 'explosion', 'bleed', 'burn', 'sigil', 'elemental', 'soul', 'true', 'short', … */
+  type: string;
+  melee?: boolean; ranged?: boolean; crit?: boolean; explosive?: boolean; ambush?: boolean; shared?: boolean;
+  /** The shield takes damage first (attacks and magic: yes; hazards, traps and bleeding: no, as before). */
+  shield?: boolean;
+  /** A hit on a Downed unit: failures it adds (default 1; a critical attack 2). */
+  downedFails?: number;
+  /** Kill credit: 'hp' (only for taking the last HP; magic), 'all' (also a Downed unit finished off; attacks). */
+  credit?: 'hp' | 'all' | 'none';
+  /** The attack or spell's own context, for handlers. */
+  mode?: string; weapon?: string;
+  /** The damage type (physical, elemental, lightning, emp…; plan 2.8 item 2 adds it to weapons). */
+  dmgType?: string;
+}
+export interface DamageResult { dealt: number; shielded: number; killed: boolean; downedHit: boolean; prevented: boolean;
+  /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
+  amount: number }
+
+export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
+
+/** Take damage (already past armour) off a unit's HP. */
+export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
+  const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
+  if (t.dead) return res;
+  const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb };
+  if (cb) { emit(cb, 'damage_in', ctx); ctx.dmg = Math.max(0, Math.floor(ctx.dmg)); }
+  if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
+  if (src.shield !== false && !t.downed) {
+    ctx.phase = 'shield'; if (cb) emit(cb, 'damage_in', ctx);
+    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded = s; }
+  }
+  res.amount = ctx.dmg;
+  if (t.downed) {
+    t.saves.fail += src.downedFails ?? 1; res.downedHit = true;
+    if (t.saves.fail >= 3) { t.dead = true; res.killed = true; dropped(cb, t, src, res, src.credit === 'all'); }
+    return res;
+  }
+  if (ctx.dmg <= 0) return res;
+  if (t.hp - ctx.dmg <= 0 && cb) {
+    ctx.phase = 'would_drop_to_0'; ctx.floor = null; emit(cb, 'damage_in', ctx);
+    if (ctx.floor != null) ctx.dmg = Math.max(0, t.hp - ctx.floor);
+    ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
+    if (ctx.dmg <= 0) { res.prevented = true; return res; }
+  }
+  const prevHp = t.hp; res.amount = ctx.dmg;
+  t.hp = Math.max(0, t.hp - ctx.dmg); res.dealt = prevHp - t.hp;
+  if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
+  if (t.hp === 0) { if (t.side === 'foe') t.dead = true; else t.downed = true; res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
+  if (cb) {
+    ctx.phase = 'after'; ctx.dealt = res.dealt; ctx.killed = res.killed; emit(cb, 'damage_in', ctx);
+    if (res.dealt > 0) emit(cb, 'on_damaged', { t, src, dmg: res.dealt, prevHp, cb });
+  }
+  return res;
+}
+function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, credit: boolean) {
+  const by = src.by || null, ownTurn = !!cb && !!by && cb.order[cb.turn] === by.id;
+  if (credit && by && by.side !== t.side) by.kills += t.tier === 'boss' ? 3 : 1; // friendly fire earns no kills
+  if (!cb) return;
+  emit(cb, 'on_downed', { victim: t, by, src, ownTurn, dead: !!t.dead, cb });
+  if (credit && by && by.side !== t.side) emit(cb, 'on_kill', { victim: t, by, src, ownTurn, cb });
+  void res;
+}
+
+/** Healing a unit through the hooks: 'heal_in' {t, by, n, kind} may change n, then HP; 'heal_given' after. Returns HP
+ * actually restored (a Downed unit is brought back up at max(1, n)). */
+export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string): { restored: number; revived: boolean } {
+  if (t.dead) return { restored: 0, revived: false };
+  const ctx: any = { t, by, n: Math.floor(n), kind, cb };
+  if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
+  let restored = 0, revived = false;
+  if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
+  else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
+  if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });
+  return { restored, revived };
+}
+/** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
+export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
+  const ctx: any = { t, by, n: Math.floor(n), cb }; if (cb) emit(cb, 'shield_grant', ctx);
+  const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v); return v;
+}

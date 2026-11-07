@@ -1,6 +1,8 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
+import { statQuery, setRankRule } from './effects/hooks';
+import { skillRollMod } from './effects/core';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
@@ -36,6 +38,10 @@ export interface Character extends Sheet {
    * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
   outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[] };
   mp?: number; evoCharge?: number; learnedScene?: number;
+  /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). */
+  advancedClass?: string | null;
+  /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
+  uses?: Record<string, { s: string; n: number }>;
 }
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
@@ -194,11 +200,11 @@ export function carriedKg(c: Character) {
     pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
 }
-export const carryLimit = (c: Character) => 20 + 5 * (A(c, 'strength') - 1) + gearBonus(c, 'carry_bonus');
+export const carryLimit = (c: Character) => fx(c, 'carry', 20 + 5 * (A(c, 'strength') - 1) + gearBonus(c, 'carry_bonus'));
 
 // ---------- injuries (spec: Injuries) ----------
 /** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */
-export const injuryResistPct = (c: Character) => 10 * (A(c, 'endurance') - 1) + gearBonus(c, 'injury_resist_bonus');
+export const injuryResistPct = (c: Character) => fx(c, 'injury_resist', 10 * (A(c, 'endurance') - 1) + gearBonus(c, 'injury_resist_bonus'));
 /** One-handed weapons; everything else needs both arms, so any arm injury hurts it (spec: Injuries). */
 export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed'];
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
@@ -207,40 +213,42 @@ export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP nex
 // ---------- derived stats (spec: Derived stats) ----------
 const P = (c: Character, id: string) => c.skills[id] || 0;
 const A = (c: Character, id: string) => c.attrs[id] || 1;
+/** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
+const fx = (c: Character, stat: string, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
-export const hpPerLevel = (c: Character) => 5 + 2 * P(c, 'durability');
-export const maxHp = (c: Character) => 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c);
-export const initiativeBonus = (c: Character) => (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed'));
+export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'durability'));
+export const maxHp = (c: Character) => Math.max(1, Math.round(fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
+export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed')) + skillRollMod({ c }, 'reaction_speed', { roll: 'initiative' }).add);
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
-export const movement = (c: Character) => Math.max(0.5, (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus'));
-export const defense = (c: Character) => 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
-  + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0);
-export const physicalMult = (c: Character) => 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power');
-export const critMult = (c: Character) => 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics');
-export const healingMult = (c: Character) => 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie');
-export const maxMp = (c: Character) => 100 + 100 * (A(c, 'virtue') - 1);
+export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
+export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
+  + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
+export const physicalMult = (c: Character) => fx(c, 'mult_physical', 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power'));
+export const critMult = (c: Character) => fx(c, 'crit_damage', 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics'));
+export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie'));
+export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
 export const soulMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.15 * P(c, 'will_power');
 export const elementalMult = (c: Character) => 1 + 0.2 * (A(c, 'expression') - 1) + 0.1 * P(c, 'visualization');
-export const maxSigilWords = (c: Character) => 2 + Math.floor((A(c, 'intelligence') - 1) / 2);
-export const glyphAp = (c: Character) => Math.max(0.5, Math.round((1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
+export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
+export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power');
 export const soulCastAp = (c: Character) => Math.max(1, Math.ceil(3 - 0.5 * P(c, 'empathy')));
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
-export const soulRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'lore_master'));
+export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'lore_master')));
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
-export const strainLimit = (c: Character) => 3 + Math.floor(P(c, 'will_power') / 2);
-export const moduleSlots = (c: Character) => 1 + Math.floor(P(c, 'will_power') / 3);
-export const readyDesigns = (c: Character) => 2 + Math.floor(P(c, 'empathy') / 2);
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', 3 + Math.floor(P(c, 'will_power') / 2));
+export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', 2 + Math.floor(P(c, 'empathy') / 2));
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
-export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => mod(P(c, fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'));
-export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication')));
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
+export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));
 const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
 export const hasEvoker = (c: Character) => carries(c, ['evoker', 'evoker_blade', 'spellslinger_pistol']);
 export const hasEmanator = (c: Character) => carries(c, ['emanator', 'emanator_gauntlet']);
@@ -249,7 +257,7 @@ export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item ||
 export const mpNow = (c: Character) => (hasEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (hasEvoker(c) ? c.evoCharge ?? 10 : 0);
-export const passive = (c: Character, skill: string) => 10 + mod(P(c, skill));
+export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + mod(P(c, skill)) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 export const masteryOf = (p: number) => (p >= 10 ? 5 : p >= 9 ? 4 : p >= 7 ? 3 : p >= 5 ? 2 : p >= 3 ? 1 : 0);
 
 // ---------- levels (spec: Levels and XP) ----------
@@ -305,11 +313,12 @@ export function eligibleClasses(skills: Record<string, number>) {
   const top = [...new Set(t.map((x) => x.total))].sort((a, b) => b - a).slice(0, 2);
   return t.filter((x) => top.includes(x.total)).sort((a, b) => b.total - a.total);
 }
-export function classRank(c: Character): number {
+export function classRank(c: Pick<Character, 'classId' | 'skills'>): number {
   if (!c.classId) return 0;
-  const t = classTotals(c.skills).find((x) => x.id === c.classId)!.total;
+  const t = classTotals(c.skills).find((x) => x.id === c.classId)?.total; if (t == null) return 1;
   return t >= 18 ? 3 : t >= 13 ? 2 : 1;
 }
+setRankRule((c) => classRank(c));
 
 // ---------- perk steps (spec: Perks) ----------
 /** Perk steps earned in a skill: one per Mastery level 1–4 (3/5/7/9 points). */
