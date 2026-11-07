@@ -30,7 +30,8 @@ function soulFight(perks: Record<string, string>, extra: any = {}, foes = [{ at:
 }
 const draw = (f: any, word: string, tile: string) => { f.pc.pos = tile; return f.act({ type: 'combat/draw', unitId: f.pc.id, word, tile }); };
 const mine = (cb: Combat, u: Unit) => (cb.glyphs || []).filter((g) => g.by.split('#')[0] === u.id).length;
-const stay = (u: Unit) => ({ id: 'zt', kind: 'wall' as const, tiles: ['9,9'], words: ['fire'], by: u.id, side: 'pc' as const, left: 4, mult: 0.5, who: u.name });
+/** A STAY field of this caster's (rules 1.4: a placed spell is what "still active" means for Parallel Thought). */
+const stay = (u: Unit) => ({ id: 'zt', kind: 'field' as const, tiles: ['9,9'], words: ['fire', 'stay'], by: u.id, side: 'pc' as const, left: 4, mult: 0.5, who: u.name });
 const charOf = (g: GameState, u: Unit) => g.characters[u.charId!];
 
 describe('Hold the Stroke', () => {
@@ -176,15 +177,15 @@ describe('Twin Souls', () => {
 });
 
 describe('Twin Discipline', () => {
-  // TODO(sigil-1.4): the Fused Evoke reads a 1.2 Stack (perks/d.ts twin_discipline); the perk lane rewrites it for Lines.
-  it.skip('a Fused Evoke: the Stack sets who is hit, the held Outburst what happens; the glyphs fade and the hold is spent', () => {
+  // Rules 1.4 (more in sigil14-perks.test.ts): a Line's Reach and Burst set who is covered, the Outburst what happens.
+  it('a Fused Evoke: the Line sets who is hit, the held Outburst what happens; the glyphs fade and the hold is spent', () => {
     const f = soulFight({ twin_discipline: 'ultimate' }), m = f.pc.mg!;
-    m.evoker = true; m.charge = 10; m.words = ['fire', 'push']; m.maxWords = 3;
+    m.evoker = true; m.charge = 10; m.words = ['spark', 'seek']; m.maxWords = 3;
     f.act({ type: 'combat/outburst', unitId: f.pc.id, design: m.designs[0].id, hold: true });
-    draw(f, 'fire', '3,4'); draw(f, 'push', '3,4');
+    draw(f, 'spark', '3,4'); draw(f, 'seek', '2,4'); // walked west: the Line fires east, past SPARK
     const hp = f.foe.hp; f.foe.pos = '7,4'; f.g.rng.state = rngFor(15).state;
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'twin_discipline', actionId: 'fused', tile: '3,4', choice: '7,4' } as any);
-    expect(logHas(f.cb, /fuses/)).toBe(true); expect(logHas(f.cb, /FIRE hits/)).toBe(false);
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'twin_discipline', actionId: 'fused', tile: '2,4', choice: '7,4' } as any);
+    expect(logHas(f.cb, /fuses/)).toBe(true); expect(logHas(f.cb, /SPARK hits/)).toBe(false);
     expect(f.foe.hp).toBeLessThan(hp); expect(f.pc.mg!.held).toBeNull(); expect(f.cb.glyphs!.length).toBe(0);
   });
 });

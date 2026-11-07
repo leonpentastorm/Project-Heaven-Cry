@@ -60,8 +60,9 @@ export function glyphsPerTile(cb: Combat, u: Unit, tile: string): number {
   const r: any = emit(cb, 'glyphs_per_tile', { u, tile, n: (u.mg as any)?.glyphsPerTile ?? G.draw?.glyphs_per_tile ?? 1, cb });
   return Math.max(1, Math.floor(r.n || 1));
 }
-/** Glyphs of yours the ground holds at most: Max Sigil words (Hold the Stroke pools its own, tagged by '#pool'). */
-export const groundCap = (u: Unit) => u.mg?.maxWords || 2;
+/** Glyphs of yours the ground holds at most: Max Sigil words, which items may raise ('ground_cap' {u, n}: Hold the
+ * Stroke; additive hook, lane perks). Without a fight to ask, Max Sigil words alone. */
+export const groundCap = (u: Unit, cb?: Combat | null) => { const n = u.mg?.maxWords || 2; return cb ? Math.max(1, Math.floor((emit(cb, 'ground_cap', { u, n, cb }) as any).n ?? n)) : n; };
 const myGlyphs = (cb: Combat, u: Unit) => (cb.glyphs || []).filter((g) => g.by === u.id);
 export const evokeCharge = (p: { glyphs: Glyph[] }, u: Unit) => Math.max(1, p.glyphs.length - (u.mg?.coreSave || 0));
 
@@ -495,7 +496,7 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string): D
   } else if (comp.length > MAX_GLYPHS) effect = 'breaks';
   if (u.ap < gc.ap) return no('Needs ' + gc.ap + ' AP.', { cost, effect, words });
   if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', { cost, effect, words });
-  const mine = myGlyphs(cb, u), capG = groundCap(u), fades = mine.length + 1 > capG ? mine[0] : null;
+  const mine = myGlyphs(cb, u), capG = groundCap(u, cb), fades = mine.length + 1 > capG ? mine[0] : null;
   return { ok: true, tile: at, cost, effect, words, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
 }
 /** Draw one glyph on your own tile (spec: Drawing): Glyph AP, the word's charge, its Flux. The oldest of yours fades past
@@ -510,7 +511,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: st
   emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: pv.tile, word, side: u.side, group: w.group, cls: w.class, element: isElement(word) ? word : null, effect: pv.effect, words: pv.words });
   let faded = '';
   const mine = myGlyphs(cb, u);
-  if (mine.length > groundCap(u)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u) + ' glyphs at most)'; }
+  if (mine.length > groundCap(u, cb)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u, cb) + ' glyphs at most)'; }
   cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.effect === 'extends' ? ', the Line reads ' + pv.words.map((x) => x.toUpperCase()).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : '') + ')' + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
   return null;
@@ -878,7 +879,7 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null) {
   return {
     words, shape: typeof p === 'string' ? (comp.length ? 'none' : null) : p.shape, tiles: typeof p === 'string' ? comp : p.tiles, valid: !why, why: why || null,
     side: start?.side || null, readable: !!u && words.every((w) => u.mg?.words.includes(w)),
-    capLeft: u ? Math.max(0, groundCap(u) - mine) : 0, lineLeft: Math.max(0, Math.min(MAX_GLYPHS, m?.maxWords ?? MAX_GLYPHS) - words.length),
+    capLeft: u ? Math.max(0, groundCap(u, cb) - mine) : 0, lineLeft: Math.max(0, Math.min(MAX_GLYPHS, m?.maxWords ?? MAX_GLYPHS) - words.length),
     costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { charge: (m?.charge ?? 0) - charge, ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
     overloadWarning: !!m && m.flux >= FLUX_MAX ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),

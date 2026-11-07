@@ -166,23 +166,8 @@ describe('Verse of War on the area map (item 31)', () => {
 });
 
 describe('Twin Discipline on the area map (item 32)', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('a fused cast whose Stack finds a token opens the fight with the cast; the hold is spent and the glyphs fade', () => {
-    const { s, c } = soulStory({ twin_discipline: 'ultimate' }); const ch = s.g.characters[c.id];
-    ch.pack = [...(ch.pack || []), { id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'tool' } as any];
-    ch.sigils = ['fire', 'push']; ch.evoCharge = 10; s.g.characters[c.id].skills.brain_power = 5;
-    const here = positionsOf(s.g)[c.id], gl = freeAt(s.g, here, 1);
-    fullAp(s, c.id); s.act({ type: 'world/act', charId: c.id, act: 'outburst', design: ch.outbursts![0].id, hold: true } as any);
-    fullAp(s, c.id); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'fire', tile: gl } as any);
-    fullAp(s, c.id); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'push', tile: gl } as any);
-    const n = place(s, freeAt(s.g, gl, 2), { name: 'Scavenger' }); place(s, freeAt(s.g, here, 7), { name: 'Watcher', weapon: 'fists' });
-    fullAp(s, c.id); s.g.rng.state = seedFor(15, 15, 15, 15);
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'twin_discipline', actionId: 'fused', tile: gl, choice: n.pos } as any);
-    expect(s.g.phase).toBe('combat');
-    const cb = s.g.combat!; expect(logHas(cb, /fuses .* \(Twin Discipline/)).toBe(true);
-    const u = cb.units.find((x) => x.charId === c.id)!; expect(u.mg!.held).toBeNull();
-    expect((cb.glyphs || []).length).toBe(0);
-  });
+  // Rules 1.4: the fused Line on the area map is tested in sigil14-perks.test.ts ("Twin Discipline on the area map").
+  it('is covered under the 1.4 rules in sigil14-perks.test.ts', () => { expect(true).toBe(true); });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------

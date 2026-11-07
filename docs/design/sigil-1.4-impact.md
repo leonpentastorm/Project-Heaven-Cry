@@ -47,7 +47,7 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 | Spellslinger · Inscribed Rounds | One-word effect on up to 6 rounds | Unchanged: Elements and Afflictions only (Boons and Workings make no sense on a bullet). | unchanged |
 | Spellslinger · Spell Magazine | A full spell fires at the shot's target | Words only; the spell goes off at the hit target as if Touch-cast on it: its Burst centres there, CHAIN jumps from it, Reach words are ignored. STAY/WAIT/WATCH place their magic on the target's tile. | unchanged |
 | Spellslinger · Ricochet Glyph | Missed shot glances | Not a Sigil rule. | unchanged |
-| Stroke Gambler · Half-Sigil | Random half-glyph on your tile or next to it; two complete as a Stack; 2 a tile | On **your own tile** only, one a tile. Half-glyphs make a Line of half-glyphs like any Line; the "second half-glyph on a tile completes the Stack" rule goes (the two-glyph hook isn't granted). | updated |
+| Stroke Gambler · Half-Sigil | Random half-glyph on your tile or next to it; two complete as a Stack; 2 a tile | On **your own tile** only, one a tile. Half-glyphs make a Line of half-glyphs like any Line. **Engine (lane classes-k, item 464):** the half-glyphs are the two-glyph hook's first holder after all (the orchestrator's call): a second half-glyph may go on a tile holding one half-glyph of yours, a Stack; ordinary glyphs keep one a tile. | updated |
 | Stroke Gambler · Stitch | Evoke a half-glyph-only pattern, d20 gamble | Same, on a Line of half-glyphs; the 1.4 grammar decides whether it fizzles. | unchanged |
 | Stroke Gambler · House Edge | Reroll a Stitch | Unchanged. | unchanged |
 | Circuit Mage · Closed Loop / Self-Crystallise | Vent and cores | Unchanged. | unchanged |
@@ -55,7 +55,7 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 | Glyph Mason · Keystone | Cut on your tile or next to it; tile holds 2 | Cut on **your own tile**, one a tile. It counts as a glyph of the Line it sits in, survives being Evoked, isn't removed by NULL (item 430), can't be scuffed. | updated |
 | Glyph Mason · Survey | Evoke a pattern with your Keystone from 2 tiles away | Evoke a Line holding your Keystone from up to 2 tiles from any of its glyphs; the facing rule reads from where you stand (along if you're beyond an end, else across). −1 charge stays. | updated |
 | Glyph Mason · Foundation | 0 AP draws within 2 tiles of the Keystone | Unchanged (you still draw on your own tile). | unchanged |
-| Grand Sigilist · Enlarge | 24 Grand forms; staff on own or adjacent tile | 23 Grand forms (RETURN's Sanctuary is gone). The 16 new words have no Grand form; Enlarge can't pick them (item 449). The words keep their 1.2 Grand texts even where the word's 1.4 meaning moved (PUSH Rampart wind, CONDENSE Gravity well, SPREAD Bloom, SEEK Hunting ground). | unchanged |
+| Grand Sigilist · Enlarge | 24 Grand forms; staff on own or adjacent tile | 23 Grand forms (RETURN's Sanctuary is gone), plus provisional forms for the 17 new words (item 468; the 16 was a miscount), all engine-run but Bloom and Echo field. The words keep their 1.2 Grand texts even where the word's 1.4 meaning moved (PUSH Rampart wind, CONDENSE Gravity well, SPREAD Bloom, SEEK Hunting ground). | unchanged |
 | Grand Sigilist · Empty Hand / Earthed | Unarmed, Grand form immunity | Unchanged. | unchanged |
 | Heartbinder / Heartfed / Vessel / Twinbound | Soul | Unchanged. | unchanged |
 
@@ -63,10 +63,10 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 
 | Item | Today | Under 1.4 | Text |
 |---|---|---|---|
-| Hold the Stroke | +1 / +2 glyphs on the ground (`#pool` tag) | Unchanged: glyphs on the ground is still Max Sigil words + this (item 443). | unchanged |
-| Parallel Thought | While a STAY zone of yours stands, the next Sigil costs 1 / 2 AP less | "Still active" = one of your fields (STAY), traps (WAIT) or turrets (WATCH) stands (spec updated). Workings' smoke, light and walls don't count. | spec updated |
-| Clean Draw | Once a fight, a Sigil of any length with no charge and no Flux | Unchanged; "any length" is at most 4 glyphs. | unchanged |
-| Twin Discipline | The Sigil sets the shape, the Outburst the school | The Sigil's words set where it reaches (Reach, facing) and what it covers (Burst); same model as Fusion. | updated |
+| Hold the Stroke | +1 / +2 glyphs on the ground (`#pool` tag) | Unchanged: glyphs on the ground is still Max Sigil words + this (item 443). Engine now uses the `ground_cap` hook, no tags (item 463). | updated, built |
+| Parallel Thought | While a STAY zone of yours stands, the next Sigil costs 1 / 2 AP less | "Still active" = one of your fields (STAY), traps (WAIT) or turrets (WATCH) stands (spec updated). Workings' smoke, light and walls don't count (item 460). | updated, built |
+| Clean Draw | Once a fight, a Sigil of any length with no charge and no Flux | Unchanged; "any length" is at most 4 glyphs; only a glyph that lands is clean (item 461). | updated, built |
+| Twin Discipline | The Sigil sets the shape, the Outburst the school | The Sigil's words set where it reaches (Reach, facing) and what it covers (Burst); same model as Fusion; each creature covered once, at the Sigil's multiplier capped at ×1 (item 462). | updated, built |
 | Rite in the Field | Wards = a WARD glyph drawn | Unchanged. | unchanged |
 | Spoon Feed | Deed: teach someone a Sigil | Unchanged. | unchanged |
 | Bulwark (a.ts) | Ranged = Sigil damage from a caster not adjacent | Touch spells can hit from a caster who isn't adjacent (the caster stands by the Line, the target past it). Read "ranged" from the spell's travel: Touch counts as melee when the caster is adjacent to the target, ranged otherwise (PROVISIONAL, lane A). | unchanged |
@@ -76,7 +76,7 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 
 | Item | Today | Under 1.4 | Text |
 |---|---|---|---|
-| Sigil Savant · Muscle Memory | One Sigil costs 0 charge and 1 AP less | "One Sigil" = one word (its glyphs). Unchanged otherwise. Rigid's practice list is still capped at Max Sigil words. | unchanged |
+| Sigil Savant · Muscle Memory | One Sigil costs 0 charge and 1 AP less | "One Sigil" = one word (its glyphs). Unchanged otherwise. Rigid's practice list is still capped at Max Sigil words. | updated ("one Sigil word"), tested |
 | Drill Echo · The Count | d6 before drawing a glyph | Unchanged. | unchanged |
 | Old School · Analog | No Evoker-linked guns | Unchanged. | unchanged |
 

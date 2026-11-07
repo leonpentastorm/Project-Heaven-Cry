@@ -135,7 +135,7 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
     const f = fightWith([adv('glyph_mason'), MIND], [{}]);
     const [m, ally] = f.pcs; caster(f.unit(m.id), ['fire', 'push']); caster(f.unit(ally.id), ['fire', 'push']);
     at(f, m, '3,2'); at(f, ally, '2,4'); at(f, f.foe, '9,2');
-    f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' });
+    f.turn(m); at(f, m, '4,2'); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' }); at(f, m, '3,2'); // rules 1.4: cut on your own tile
     glyph(f.cb, f.unit(ally.id), 'push', '4,3');
     const pv = withGame(f.g, () => previewEvoke(f.cb, f.unit(ally.id), '4,2', '9,2'));
     expect(pv.why || '').not.toMatch(/^Stand /);
@@ -145,7 +145,7 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
   });
   it('Keystone survives its Evoke and never fades', () => {
     const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push']); at(f, f.foe, '6,2'); f.unit(f.foe.id).def = -40;
-    act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' });
+    at(f, u, '4,2'); act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' }); at(f, u, '3,2'); // rules 1.4: cut on your own tile
     glyph(f.cb, f.unit(u.id), 'push', '4,3');
     try { act(f, f.unit(u.id), { type: 'combat/evoke', tile: '4,2', aim: '6,2' }); } catch { /* the pattern may not form: the keystone check still holds */ }
     expect((f.cb.glyphs || []).some((g) => g.id === 'ks-' + u.id)).toBe(true);

@@ -2245,14 +2245,14 @@
       "cost": null,
       "flavour": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.",
       "upsides": [
-        "Muscle Memory: choose one Sigil. It always costs 0 Core and 1 AP less."
+        "Muscle Memory: choose one Sigil word. Its glyph always costs 0 Core and 1 AP less."
       ],
       "downsides": [
         "Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission."
       ],
       "notes": [],
       "narrator_hook": "the problem only an unpractised Sigil solves.",
-      "text": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.\n+ Muscle Memory: choose one Sigil. It always costs 0 Core and 1 AP less.\n− Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission.",
+      "text": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.\n+ Muscle Memory: choose one Sigil word. Its glyph always costs 0 Core and 1 AP less.\n− Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission.",
       "effects": [
         {
           "op": "choose",

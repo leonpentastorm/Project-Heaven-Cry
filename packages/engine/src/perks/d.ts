@@ -13,11 +13,11 @@ import {
 } from '../effects';
 import { SKILLS, SCHOOL } from '../data';
 import {
-  type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable,
+  type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable, emitFx,
 } from '../combat';
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
-  condSkillMod, condHit, SPELL_AP, unitSave,
+  condSkillMod, condHit, SPELL_AP, unitSave, groundCap, type Affected,
 } from '../magic';
 import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
 import { type Character, mod, prayerCooldown, maxSigilWords } from '../character';
@@ -37,11 +37,14 @@ const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
 const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
 const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side === u.side && alive(v));
-/** Whose glyph this is (Hold the Stroke tags pooled glyphs "<unitId>#pool" so the engine's fade check skips them). */
+/** Whose glyph this is (a 1.3 save's Hold the Stroke tagged pooled glyphs "<unitId>#pool"; rules 1.4 asks 'ground_cap'). */
 const glyphOwner = (g: { by: string }) => String(g.by).split('#')[0];
 const myZones = (cb: Combat, u: Unit) => (cb.zones || []).filter((z) => z.by === u.id);
-/** A standing STAY zone of this caster (STAY walls, smoke and light stand at half power; impact smoke and light don't). */
-const stayStanding = (cb: Combat, u: Unit) => myZones(cb, u).some((z) => z.mult === 0.5 && z.left > 0);
+/** Placed spells (rules 1.4): a STAY field, a WAIT trap, a WATCH turret (a 1.2 'wall' from an old save counts as a field). */
+const PLACED_KINDS = new Set(['field', 'trap', 'turret', 'wall']);
+/** "Still active" (spec: Perks in play, Parallel Thought): one of your placed spells stands. Unfired glyphs, VEIL smoke,
+ * LIGHT and RAISE walls don't count. */
+const placedStanding = (cb: Combat, u: Unit) => myZones(cb, u).some((z: any) => PLACED_KINDS.has(z.kind) && z.left > 0 && (z.kind !== 'turret' || z.hp == null || z.hp > 0));
 const tiles = (h: Holder) => (h.tier === 'II' ? 2 : 1);
 /** The design heals or shields (Buff heal, or Damage with Inverse on allies). */
 const mends = (d: any) => [d.school, d.school2, d.school3].some((s, i) => (s === 'buff' && ((i === 0 ? d.option : i === 1 ? d.option2 : d.option3) || d.option || 'heal') === 'heal')) || (d.modules || []).includes('inverse');
@@ -56,64 +59,60 @@ function sayLine(h: Holder): string | null {
 }
 
 // =====================================================================================================================
-// Hold the Stroke (Brain Power). I: 1 extra stroke in your Sigil pool, II: 2. The stroke pool (spec item 15, proposed):
-// how many of your glyphs may stand on the map at once before the oldest fades; Max Sigil words still caps the words
-// in one spell. The engine fades your oldest glyph past Max Sigil words, so the extra glyphs are tagged "#pool" (not
-// counted by that check) and re-tagged before every draw.
+// Hold the Stroke (Brain Power). I: 1 more glyph of yours on the ground at once, II: 2 (spec: Glyphs on the ground;
+// item 443). Rules 1.4: the engine asks 'ground_cap' {u, n} for how many of your glyphs stand before the oldest fades,
+// so the extra glyphs are plain glyphs (every Line reader, the preview's "fades" and "glyphs left" see them). Max Sigil
+// words still caps the words in one spell, and no spell passes 4 glyphs. A 1.3 save's "#pool" tags are cleared on
+// your next draw.
 // =====================================================================================================================
 register({
   id: 'hold_the_stroke', claims: 'all', priority: 300,
   on: {
+    ground_cap: (ctx, h) => { if (me(h, ctx.u)) ctx.n += tiles(h); },
     glyph_cost: (ctx, h) => {
-      if (ctx.preview || !me(h, ctx.u) || !h.u!.mg) return;
-      const cb: Combat = ctx.cb, u = h.u!, m = u.mg!, extra = tiles(h);
-      const list = (cb.glyphs || []).filter((g) => glyphOwner(g) === u.id);
-      for (const g of list) g.by = u.id;
-      const n = list.length, pool = m.maxWords + extra;
-      // After this draw there are n + 1. Within the pool nothing fades; past it, the true oldest fades and `pool` stand.
-      const tag = n + 1 <= pool ? Math.max(0, n + 1 - m.maxWords) : extra;
-      for (let i = 0; i < tag && i < n; i++) list[n - 1 - i].by = u.id + '#pool';
+      if (!me(h, ctx.u)) return;
+      for (const g of ctx.cb?.glyphs || []) if (g.by === h.u!.id + '#pool') g.by = h.u!.id; // a 1.3 save's tags
     },
   },
   brief: () => null,
 });
-/** Glyphs of this caster on the ground, and the pool (for the UI and tests). */
+/** Glyphs of this caster on the ground, and the cap (for the UI and tests). */
 export function strokePool(cb: Combat, u: Unit): { n: number; pool: number } {
-  const t = (u.held?.perks || []).find((p: any) => p.id === 'hold_the_stroke') as any;
-  const c = charOfUnit(u), tier = t?.tier || (c?.perks || []).find((p) => p.id === 'hold_the_stroke')?.tier;
-  return { n: (cb.glyphs || []).filter((g) => glyphOwner(g) === u.id).length, pool: (u.mg?.maxWords || 0) + (tier === 'II' ? 2 : tier ? 1 : 0) };
+  return { n: (cb.glyphs || []).filter((g) => glyphOwner(g) === u.id).length, pool: groundCap(u, cb) };
 }
 
 // =====================================================================================================================
-// Parallel Thought (Brain Power). While one of your STAY zones stands, your next Sigil costs 1 AP less (II: 2): the
-// discount covers that spell's glyph draws and then its Evoke, floor 0; it ends when you Evoke. Once per turn, STAY
-// zones only (plan 6a-9: the 99-round LIGHT impact zone would make every Sigil cheaper all fight).
+// Parallel Thought (Brain Power). While one of your Sigils is still active, your next Sigil costs 1 AP less (II: 2).
+// Rules 1.4: "still active" = one of your placed spells stands (a STAY field, a WAIT trap, a WATCH turret); unfired
+// glyphs, smoke, light and RAISE walls don't count. The discount covers that spell's glyph draws first, then its Evoke,
+// never below 0; it ends with your Evoke (anything left is lost). Once per turn.
 // =====================================================================================================================
 function ptState(h: Holder, cb: Combat) {
   const s = stateOf(h), t = turnStamp(h);
-  if (s.turn !== t) { s.turn = t; s.left = tiles(h); s.pend = null; }
-  if (s.pend) { // did the Evoke we discounted happen? (its glyphs are gone, or a STAY zone appeared)
-    const gone = s.pend.ids.some((id: string) => !(cb.glyphs || []).some((g) => g.id === id)), z = myZones(cb, h.u!).length;
-    if (gone || z > s.pend.zones) { s.left = 0; s.pend = null; }
-  }
+  if (s.turn !== t) { s.turn = t; s.left = tiles(h); s.spent = false; s.pend = null; }
   return s;
 }
+/** Your Evoke ends the turn's discount once any of it was used (an Evoke, or a fused cast: Twin Discipline). */
+function ptEvoked(h: Holder, cb: Combat) { const s = ptState(h, cb); if (s.pend || s.spent) { s.left = 0; s.pend = null; } }
 register({
   id: 'parallel_thought', claims: 'all', priority: 250,
   on: {
     glyph_cost: (ctx, h) => {
       if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = ptState(h, cb);
-      if (!s.left || !stayStanding(cb, h.u!)) return;
+      if (!s.left || !placedStanding(cb, h.u!)) return;
       const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
       ctx.ap -= d;
-      if (!ctx.preview && h.u!.ap >= ctx.ap && (h.u!.mg?.charge ?? 0) >= ctx.charge) { s.left = Math.round((s.left - d) * 10) / 10; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
+      if (!ctx.preview && h.u!.ap >= ctx.ap && (h.u!.mg?.charge ?? 0) >= ctx.charge) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
     },
+    // planEvoke is pure (every evoke_cost is a preview): the discount is shown here and taken up at 'evoked'.
     evoke_cost: (ctx, h) => {
       if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = ptState(h, cb);
-      if (!s.left || !stayStanding(cb, h.u!)) return;
+      s.pend = null;
+      if (!s.left || !placedStanding(cb, h.u!)) return;
       const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
-      ctx.ap -= d; s.pend = { ids: ctx.pattern.glyphs.map((g: any) => g.id), zones: myZones(cb, h.u!).length };
+      ctx.ap -= d; s.pend = true;
     },
+    evoked: (ctx, h) => { if (me(h, ctx.u)) ptEvoked(h, ctx.cb); },
     turn_end: (ctx, h) => { if (me(h, ctx.u)) ptState(h, ctx.cb); },
   },
   brief: () => null,
@@ -209,36 +208,46 @@ register({
 
 // =====================================================================================================================
 // Clean Draw (Mastered, Brain Power 10). Once per combat, 0 AP to arm: while armed, the glyphs you draw cost no charge
-// and add no Flux; Evoking a pattern made only of those clean glyphs costs no charge. The Evoke disarms it; if the
-// clean glyphs fade or are scuffed first, the use is spent. Max Sigil words still limits the spell.
+// and add no Flux (TWICE's 2 included); Evoking a spell made only of those clean glyphs costs no charge. Rules 1.4: "a
+// Sigil of any length" is at most 4 glyphs (Max Sigil words still limits it), drawn one a tile as you walk. The Evoke
+// (or a fused cast) disarms it; if the clean glyphs all fade, are scuffed or NULLed first, the use is spent. A refused
+// draw (Rigid, a second Reach word, the cap) records nothing: only a glyph that lands is clean.
 // =====================================================================================================================
 function cleanSettle(h: Holder, cb: Combat, s: any) {
   if (!s.clean) return;
   const live = (id: string) => (cb.glyphs || []).some((g) => g.id === id);
-  if (s.pend) { if (s.pend.ids.some((id: string) => !live(id)) || myZones(cb, h.u!).length > s.pend.zones) { s.clean = false; s.pend = null; log(cb, 'Clean Draw is spent.'); } return; }
-  if ((s.ids || []).length && !(s.ids as string[]).some(live)) { s.clean = false; log(cb, 'The clean glyphs are gone: Clean Draw is spent.'); }
+  if ((s.ids || []).length && !(s.ids as string[]).some(live)) { s.clean = false; s.ids = []; log(cb, 'The clean glyphs are gone: Clean Draw is spent.'); }
 }
+/** Did this Evoke (its pattern's glyphs) use the clean glyphs? Then Clean Draw is spent. */
+function cleanEvoked(h: Holder, cb: Combat, glyphs: any[]) {
+  const s = stateOf(h); if (!s.clean) return;
+  if (glyphs.some((g) => (s.ids || []).includes(g.id))) { s.clean = false; s.ids = []; log(cb, 'Clean Draw is spent.'); }
+}
+const allClean = (s: any, u: Unit, gl: any[]) => gl.length > 0 && gl.every((g) => (s.ids || []).includes(g.id) && glyphOwner(g) === u.id);
 register({
   id: 'clean_draw', claims: 'all', priority: 400,
   actions: [{
     id: 'arm', label: 'Clean Draw', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none',
-    text: 'Once a fight: the glyphs you draw next cost no charge and no Flux, and firing a pattern of only those glyphs costs no charge.',
+    text: 'Once a fight: the glyphs you draw next cost no charge and no Flux, and firing a spell of only those glyphs costs no charge.',
     available: (h) => (!h.u?.mg?.evoker ? false : stateOf(h).clean ? 'Armed: your next Sigil draws clean.' : true),
-    run: (h) => { const s = stateOf(h); s.clean = true; s.ids = []; s.pend = null; log(h.cb, h.u!.name + ' steadies the hand: the next Sigil draws clean (Clean Draw).'); },
+    run: (h) => { const s = stateOf(h); s.clean = true; s.ids = []; log(h.cb, h.u!.name + ' steadies the hand: the next Sigil draws clean (Clean Draw).'); },
   }],
   on: {
     glyph_cost: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = stateOf(h); cleanSettle(h, cb, s);
-      if (!s.clean || s.pend) return;
+      if (!me(h, ctx.u)) return; const s = stateOf(h); cleanSettle(h, ctx.cb, s);
+      if (!s.clean) return;
       ctx.charge = 0; ctx.flux = 0;
-      if (!ctx.preview) (s.ids ||= []).push('gl' + ((cb.glyphSeq || 0) + 1)); // drawGlyph's next id
+    },
+    // Only a glyph that lands on the ground is clean (glyph_drawn after the draw; Drill Echo's wiped glyph isn't there).
+    glyph_drawn: (ctx, h) => {
+      if (!me(h, ctx.u)) return; const s = stateOf(h), cb: Combat = ctx.cb;
+      if (s.clean && ctx.glyph && (cb.glyphs || []).some((g) => g.id === ctx.glyph.id)) (s.ids ||= []).push(ctx.glyph.id);
     },
     evoke_cost: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = stateOf(h); cleanSettle(h, cb, s);
-      if (!s.clean) return;
-      const gl: any[] = ctx.pattern.glyphs || [];
-      if (gl.length && gl.every((g) => (s.ids || []).includes(g.id) && glyphOwner(g) === h.u!.id)) { ctx.charge = 0; s.pend = { ids: gl.map((g) => g.id), zones: myZones(cb, h.u!).length }; }
+      if (!me(h, ctx.u)) return; const s = stateOf(h); cleanSettle(h, ctx.cb, s);
+      if (s.clean && allClean(s, h.u!, ctx.pattern?.glyphs || [])) ctx.charge = 0;
     },
+    evoked: (ctx, h) => { if (me(h, ctx.u)) cleanEvoked(h, ctx.cb, ctx.pattern?.glyphs || []); },
     turn_start: (ctx, h) => { if (me(h, ctx.u)) cleanSettle(h, ctx.cb, stateOf(h)); },
   },
   brief: () => null,
@@ -334,60 +343,88 @@ register({
 });
 
 // =====================================================================================================================
-// Twin Discipline (Ultimate: Twin Souls + Spoon-Feed). Fused Evoke: while holding a Begun Outburst, Evoke a pattern you
-// touch as fused. The pattern's shape decides who is hit (Stack: the aimed tile, Line: its path, Ring: around the
-// centre, ×0.8); the held Outburst's school, modules and stage decide what happens to them. Pay both: the Evoke's
-// charge and AP now, the Outburst's MP and Strain already paid at Begin. The pattern's own Subject words don't fire;
-// the glyphs fade (a STAY pattern can't carry an Outburst; provisional). Args: tile = a glyph of the pattern, choice =
-// the aim tile for a Stack.
+// Twin Discipline (Ultimate: Twin Souls + Spoon-Feed). Fused Evoke: while holding a Begun Outburst, Evoke a Line you
+// can fire as fused. Rules 1.4: the Sigil's words set where it reaches (its Reach word and the facing rule, from where
+// you stand) and what it covers (its Burst, TWICE's missiles, CHAIN's jumps), with friendly fire (KIN spares your side);
+// the held Outburst's school, modules and stage decide what happens to each creature it covers, released at them
+// (Rain, Size, Random and Move are ignored, Ether is implied). Each one is hit once, at the Sigil's multiplier for its
+// tile capped at ×1 (a Burst's edge or a chain jump weakens it; CONDENSE and repeats never grow an Outburst; PROVISIONAL).
+// The Sigil's own Subject words, PULL, STEP and LEECH don't fire; the glyphs fade (a Keystone stays). A placed spell
+// (STAY, WAIT, WATCH) can't carry an Outburst. Pay both: the Evoke's charge and AP now, the Outburst's MP and Strain
+// already paid at Begin. Args: tile = a glyph of the Line, choice = the aim (as an Evoke's), aims = TWICE's others.
 // =====================================================================================================================
+function fusedPlan(h: Holder, args: any) {
+  const u = h.u!, cb = h.cb!, opts = args?.aims?.length ? { aims: args.aims as string[] } : {};
+  const pv = previewEvoke(cb, u, args.tile, args.choice, opts);
+  if (!pv.ok) return { pv, why: pv.why || 'Can\'t fire that.' };
+  const sp: any = pv.spell;
+  if (sp?.stay || sp?.wait || sp?.watch) return { pv, why: 'A placed spell (STAY, WAIT, WATCH) can\'t carry an Outburst.' };
+  // Who it covers: everyone the plan affects, once each, at the best multiplier (never above ×1).
+  const by: Record<string, number> = {};
+  for (const a of (pv.affected || []) as Affected[]) {
+    if (a.kinSpared || a.skipped) continue;
+    const t = cb.units.find((x) => x.id === a.unit); if (!t || t.dead) continue;
+    by[a.unit] = Math.max(by[a.unit] ?? 0, Math.min(1, a.mult));
+  }
+  return { pv, why: null as string | null, hits: Object.entries(by).map(([id, mult]) => ({ unit: cb.units.find((x) => x.id === id)!, mult })) };
+}
 register({
   id: 'twin_discipline', claims: 'all',
   actions: [{
     id: 'fused', label: 'Fused Evoke', scope: ['combat', 'world'], target: 'tile',
     ap: (h, args) => { const u = h.u, cb = h.cb; if (!u || !cb || !args?.tile) return SPELL_AP.evoke; const pv = previewEvoke(cb, u, args.tile, args.choice); return pv.ap ?? SPELL_AP.evoke; },
-    text: 'Fire a Sigil pattern you touch with your held Outburst inside it: the pattern sets the shape, the Outburst the school. Evoke charge and 1 AP.',
+    text: 'Fire a Sigil Line with your held Outburst inside it: the Sigil\'s words set where it reaches and what it covers, the Outburst the school. Evoke charge and AP.',
     available: (h) => { const m = h.u?.mg; if (!m || !m.evoker || !m.emanator) return false; return m.held ? true : 'Begin and hold an Outburst first.'; },
     preview: (h, args) => {
-      const u = h.u!, cb = h.cb!; if (!args.tile) return { ok: false, why: 'Pick a glyph of the pattern.' };
-      const pv = previewEvoke(cb, u, args.tile, args.choice);
-      if (!pv.ok) return { ok: false, why: pv.why, ap: pv.ap };
-      if (pv.pattern!.words.includes('stay')) return { ok: false, why: 'A STAY pattern stands: it can\'t carry an Outburst.', ap: pv.ap };
-      return { ap: pv.ap, targets: pv.targets, lines: ['Fused: ' + pv.pattern!.shape + ', ' + pv.charge + ' charge, ' + pv.targets.length + ' target(s)'] };
+      if (!args.tile) return { ok: false, why: 'Pick a glyph of the Line.' };
+      if (!args.choice) return { ok: false, why: 'Pick a target in the area (or yourself).' };
+      const r = fusedPlan(h, args);
+      if (r.why) return { ok: false, why: r.why, ap: r.pv.ap };
+      const pv = r.pv, hits = r.hits!;
+      return { ap: pv.ap, targets: hits.map((x) => x.unit.id), lines: ['Fused: ' + pv.pattern!.words.map((w) => w.toUpperCase()).join(' · ') + ', ' + pv.charge + ' charge, ' + hits.length + ' creature(s): ' + hits.map((x) => x.unit.name + (x.mult < 1 ? ' ×' + x.mult : '')).join(', ')] };
     },
     run: (h, args, rng) => {
-      const u = h.u!, cb = h.cb!, m = u.mg!, pv = previewEvoke(cb, u, args.tile!, args.choice);
-      if (!pv.ok || !m.held) return pv.why || 'Nothing held.';
+      const u = h.u!, cb = h.cb!, m = u.mg!;
+      if (!m.held) return 'Nothing held.';
+      const r = fusedPlan(h, args); if (r.why) return r.why;
       // On the area map a fused cast that finds an NPC token opens the fight (as an Evoke there does), and the cast is
       // the opening move, its Evoke AP paid from the character's AP.
       if (ow(cb)) {
-        const npc = pv.targets.map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
-        if (npc) { const g = h.g || boundGame(); strikeFromWorld(npc.id, pv.ap ?? SPELL_AP.evoke, (cbx, att) => fusedCast({ ...(holderOf({ u: att, cb: cbx, c: h.c }, 'twin_discipline') || h), u: att, cb: cbx, g: h.g }, args, g.rng)); return null; }
+        const npc = r.hits!.map((x) => x.unit).find((x) => x.side === 'foe');
+        if (npc) { const g = h.g || boundGame(); strikeFromWorld(npc.id, r.pv.ap ?? SPELL_AP.evoke, (cbx, att) => fusedCast({ ...(holderOf({ u: att, cb: cbx, c: h.c }, 'twin_discipline') || h), u: att, cb: cbx, g: h.g }, args, g.rng)); return null; }
       }
       return fusedCast(h, args, rng);
     },
   }],
-  on: { outburst_release: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.u) && s.fusing?.ring) ctx.mult = (ctx.mult || 1) * 0.8; } },
+  on: { outburst_release: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.u) && s.fusing && s.fusing.mult !== 1) ctx.mult = (ctx.mult || 1) * s.fusing.mult; } },
   brief: () => null,
 });
 function fusedCast(h: Holder, args: any, rng: Rng): string | null {
-      const u = h.u!, cb = h.cb!, m = u.mg!, pv = previewEvoke(cb, u, args.tile!, args.choice);
-      if (!pv.ok || !m.held) return pv.why || 'Nothing held.';
-      const p = pv.pattern!, held = { ...m.held }, d = m.designs.find((x) => x.id === held.design); if (!d) return 'That design is gone.';
-      m.charge -= pv.charge; m.cast = true;
-      const targets = pv.targets.map((id) => cb.units.find((x) => x.id === id)!).filter(Boolean);
-      log(cb, u.name + ' fuses ' + d.name + ' into the ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' ' + p.shape + ' (Twin Discipline, ' + pv.charge + ' charge)' + (targets.length ? '' : ': it finds no one') + '.');
-      const s = stateOf(h), mods0 = [...d.modules], range0 = m.soulRange;
-      s.fusing = { ring: p.shape === 'ring' };
-      try {
-        for (const t of targets) {
-          if (t.dead) continue;
-          m.held = { ...held }; d.modules = [...mods0.filter((x) => !['rain', 'size', 'random', 'move'].includes(x)), 'ether']; m.soulRange = range0 + 99;
-          u.ap += SPELL_AP.release; const err = releaseOutburst(cb, rng, u, t.pos); if (err) { u.ap -= SPELL_AP.release; break; }
-        }
-      } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
-      const used = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
-      return null;
+  const u = h.u!, cb = h.cb!, m = u.mg!;
+  if (!m.held) return 'Nothing held.';
+  const r = fusedPlan(h, args); if (r.why) return r.why;
+  const pv = r.pv, p = pv.pattern!, hits = r.hits!, held = { ...m.held }, d = m.designs.find((x) => x.id === held.design); if (!d) return 'That design is gone.';
+  m.charge -= pv.charge; m.cast = true;
+  const name = p.words.map((w) => w.toUpperCase()).join(' · ');
+  emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, words: p.words, element: (pv.spell as any)?.element ?? null, side: u.side, facing: pv.facing?.mode, dir: pv.facing?.dir, area: pv.area,
+    src: pv.missiles[0]?.origin, impact: pv.missiles[0]?.impact ?? null, targets: hits.map((x) => x.unit.id), targetAt: hits.map((x) => x.unit.pos),
+    missiles: pv.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })),
+    fused: true, design: d.id, school: d.school, fizzle: !hits.length });
+  log(cb, u.name + ' fuses ' + d.name + ' into ' + name + ' (Twin Discipline, a Line of ' + p.tiles.length + ', ' + (pv.facing?.mode || 'along') + ', ' + pv.charge + ' charge)' + (hits.length ? '' : ': it finds no one') + '.');
+  const s = stateOf(h), mods0 = [...d.modules], range0 = m.soulRange;
+  try {
+    for (const x of hits) {
+      const t = x.unit; if (t.dead) continue;
+      s.fusing = { mult: x.mult };
+      m.held = { ...held }; d.modules = [...mods0.filter((y) => !['rain', 'size', 'random', 'move'].includes(y)), 'ether']; m.soulRange = range0 + 99;
+      u.ap += SPELL_AP.release; const err = releaseOutburst(cb, rng, u, t.pos); if (err) { u.ap -= SPELL_AP.release; break; }
+    }
+  } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
+  // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Parallel Thought and Clean Draw.
+  const used = new Set(p.glyphs.filter((g: any) => !g.keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
+  const pt = holderOf({ u, cb, c: h.c }, 'parallel_thought'); if (pt) ptEvoked({ ...pt, u, cb }, cb);
+  const cd = holderOf({ u, cb, c: h.c }, 'clean_draw'); if (cd) cleanEvoked({ ...cd, u, cb }, cb, p.glyphs);
+  return null;
 }
 
 // =====================================================================================================================

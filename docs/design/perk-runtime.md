@@ -226,6 +226,7 @@ Hooks (all through `emit`; mutable fields marked *):
 |---|---|---|
 | `glyph_cost` | {u, word, tile, ap*, charge*, flux*, preview, fail*} | unchanged; flux is the word's (TWICE 2) |
 | `glyphs_per_tile` | {u, tile, n*} | the two-glyph hook: set n = 2 (a Stack becomes possible) |
+| `ground_cap` | {u, n*} | how many of your glyphs stand on the ground before the oldest fades (Max Sigil words; Hold the Stroke adds 1 / 2; item 463) |
 | `glyph_drawn` | {u, glyph, cb, rng} | after a glyph is on the ground |
 | `evoke_reach` | {u, pattern, reach*} | unchanged: stand that far from a glyph (past 1 needs sight) |
 | `evoke_cost` | {u, pattern, ap*, charge*, preview, fail*} | unchanged (emitted by the planner) |

@@ -343,7 +343,7 @@ function joinCheck(cb: Combat, u: Unit, t: string, word: string, extra: Record<s
   if (c.watch && c.stay) return 'WATCH and STAY are refused together: a turret already lasts.';
   return null;
 }
-// Half-Sigil (K7, PROVISIONAL, audit 1-5; rules 1.4, item 460): 1 AP, an Evoker in hand: the engine draws a random word
+// Half-Sigil (K7, PROVISIONAL, audit 1-5; rules 1.4, item 464): 1 AP, an Evoker in hand: the engine draws a random word
 // you know as a half-glyph on your own tile (rules 1.4: never on a tile next to you). GAMEBREAKING fix: a half-glyph costs
 // 1 charge (not the word's; never free), and +1 Flux as normal. The Stroke Gambler's half-glyphs are the first holder of
 // the two-glyph hook (sigils.json grammar.draw.two_glyph_hook; 'glyphs_per_tile'): a tile that holds one half-glyph of
@@ -373,7 +373,7 @@ function halfWhy(cb: Combat, u: Unit, t: string | null): string | null {
 register({
   id: 'stroke_gambler.half_sigil', claims: 'all',
   actions: [{
-    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'tile', ap: 1,
+    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'none', ap: 1,
     text: 'Draw a random word you know as a half-glyph on your own tile (1 charge, +1 Flux). Two on one tile make a Stack for Stitch.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!h.u.mg!.words.length ? 'You know no words.' : true)),
     preview: (h, a) => {
@@ -410,7 +410,7 @@ register({
 });
 /** The victim of a Stitch that goes wrong: the nearest creature on your side, you included (ties go to you). */
 const backlashTarget = (cb: Combat, u: Unit) => [...cb.units.filter((v) => v.side === u.side && !v.dead)].sort((a, b) => dist(a.pos, u.pos) - dist(b.pos, u.pos) || (a === u ? -1 : b === u ? 1 : 0))[0];
-/** A Stitch's backlash (rules 1.4, item 461): the spell goes off on the victim's tile as Touch at full strength, no roll
+/** A Stitch's backlash (rules 1.4, item 465): the spell goes off on the victim's tile as Touch at full strength, no roll
  * (castAt): its Subjects, Burst and CHAIN as written (friendly fire), so a SPREAD backlash catches whoever stands near.
  * The spell has turned on its maker, so KIN spares no one, and what would stay (STAY, WAIT, WATCH) goes off once instead;
  * STEP finds no landing tile and does nothing. */
@@ -420,7 +420,7 @@ function backlash(cb: Combat, rng: Rng, u: Unit, v: Unit, p: Pattern): string {
   const r = castAt(cb, rng, u, words, v.pos, { origin: v.pos, roll: false, victim: v });
   return r.ok ? r.line : ' · it finds no hold (' + (r.why || 'nothing happens') + ')';
 }
-// Stitch (K8, PROVISIONAL, audit 1-6; rules 1.4, item 461): Evoke a pattern of half-glyphs only (a Line of them, or a
+// Stitch (K8, PROVISIONAL, audit 1-6; rules 1.4, item 465): Evoke a pattern of half-glyphs only (a Line of them, or a
 // Stack of two on one tile) by the 1.4 rules (where you stand, the facing rule, the aim), then the d20 gamble: 1-5 the
 // spell lands on you or your nearest ally instead (the nearest creature on your side, you included; ties to you), 16-20
 // its damage doubles (damage only: shields and heals don't), 6-15 normal. A natural 20 on the Brain Power roll stacks
@@ -632,83 +632,86 @@ register({
   ],
   brief: () => 'Self-Crystallise: self-made cores can\'t be sold; a pile of them draws Celestial eyes.',
 });
-// Fusion (K15, PROVISIONAL, audit 1-5: Leon's sign-off needed): draw a pattern of only Form or Motion glyphs (no
-// Subject) and fire it with a ready Outburst in the Subject's place. You pay everything a normal pattern costs (the
-// draws, then the Evoke's AP and charge) plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. The
-// pattern delivers it (a Line's reach by length, a Ring's burst at ×0.8, a Stack next to it or 8 tiles with PUSH,
-// SPREAD a cone or a 2-tile spread at ×0.6, TWICE a second enemy) and every target gets the Outburst's school at stage 1,
-// or at its held stage if you were holding it. Every Fusion is a fight note for the Narrator (a Knowing risk).
+// Fusion (K15, PROVISIONAL, audit 1-5: Leon's sign-off needed; rules 1.4, item 466): draw a Line of only non-Subject
+// words (Reach, Delivery, Burst, Filter: no Subject) and fire it with a ready Outburst in the Subject's place. The
+// Outburst counts toward the spell's 4 words (so a Fusion Line holds 3 glyphs at most) but not toward Max Sigil words or
+// the charge. The 1.4 rules deliver it exactly as they would a Sigil Subject (planEvoke with opts.subject): where you
+// stand and the facing rule set the area, the Reach word where you may aim (and its ×0.8 / ×0.6), the Burst what it
+// covers (and its multipliers), TWICE more missiles, CHAIN its jumps, KIN who is spared, PULL drags each one it reached
+// toward you afterwards, LEECH heals you from the Outburst's damage. STAY, WAIT and WATCH are refused: no standing
+// Outbursts. Every creature the plan affects takes the Outburst's school at stage 1 (or its held stage), at the plan's
+// multiplier for that creature. You pay everything a normal pattern costs (the draws, then the Evoke's AP and charge)
+// plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Every Fusion is a fight note for the
+// Narrator (a Knowing risk).
 let FUSION: { u: string; mult: number } | null = null;
-function fusionTargets(cb: Combat, u: Unit, p: Pattern, aim: string | null): { targets: Unit[]; mult: number; why?: string; impact: string | null } {
-  const hasW = (w: string) => p.words.includes(w), live = (k: string) => cb.units.find((x) => x.pos === k && !x.dead && x !== u);
-  const within = (k: string, r: number) => cb.units.filter((x) => !x.dead && x !== u && dist(x.pos, k) <= r);
-  if (p.shape === 'ring') return { targets: within(p.centre!, 1), mult: 0.8, impact: p.centre! };
-  if (p.shape === 'line') {
-    const [dx, dy] = p.dir!, range = (LINE_RANGE[p.tiles.length] || 4) + (u.mg?.rangeBonus || 0);
-    if (hasW('spread')) {
-      const t = cb.units.filter((v) => { if (v.dead || v === u) return false; const [vx, vy] = xy(v.pos), [fx, fy] = xy(p.far!), ax = vx - fx, ay = vy - fy, l = Math.hypot(ax, ay); return l > 0 && l <= 3.5 && (ax * dx + ay * dy) / (l * Math.hypot(dx, dy)) >= 0.7; });
-      return { targets: t, mult: 0.6, impact: p.far! };
-    }
-    let [x, y] = xy(p.far!);
-    for (let i = 1; i <= range; i++) { x += dx; y += dy; const k = key(x, y); if (!standable(cb.map, k)) break; const v = live(k); if (v) return { targets: [v], mult: 1, impact: k }; }
-    return { targets: [], mult: 1, impact: key(x, y) };
-  }
-  const s = p.tiles[0], r = hasW('push') ? PUSH_RANGE + (u.mg?.rangeBonus || 0) : 1;
-  if (!aim) return { targets: [], mult: 1, why: hasW('push') ? 'Pick a tile within ' + r + ' of the stack.' : 'Pick a tile next to the stack.', impact: null };
-  if (dist(s, aim) > r) return { targets: [], mult: 1, why: 'Out of reach: ' + r + ' tiles from the stack.', impact: null };
-  if (aim !== s && !hasW('seek') && !lineOfSight(cb, s, aim)) return { targets: [], mult: 1, why: 'The stack has no line of sight there.', impact: null };
-  return hasW('spread') ? { targets: within(aim, 2), mult: 0.6, impact: aim } : { targets: [live(aim)].filter(Boolean) as Unit[], mult: 1, impact: aim };
-}
-function fusionCheck(h: Holder, a: ActionArgs): { ok: false; why: string } | { ok: true; p: Pattern; d: OutburstDesign; aim: string | null; ap: number; charge: number; held: boolean; cost: number; strain: number } {
+/** The stand-in Subject the plan reads: a Boon for a buff design (allies are its natural targets), else an Affliction. */
+const fusionStandIn = (d: OutburstDesign) => (d.school === 'buff' ? 'ward' : 'blind');
+const STANDING = ['stay', 'wait', 'watch'];
+function fusionCheck(h: Holder, a: ActionArgs): { ok: false; why: string } | { ok: true; p: Pattern; d: OutburstDesign; aim: string | null; ap: number; charge: number; held: boolean; cost: number; strain: number; plan: ReturnType<typeof planEvoke> } {
   const u = h.u!, cb = h.cb!, m = u.mg; const no = (why: string) => ({ ok: false as const, why });
   if (!m?.evoker || !m.emanator) return no('Fusion needs an Evoker and an Emanator.');
   const sb = sigilBlock(cb, u); if (sb) return no(sb);
   const t = aimOf(cb, a, 'tile'); if (!t) return no('Pick a glyph of the pattern.');
   const p = findPattern(cb, t, u.pos); if (typeof p === 'string') return no(p);
-  if (p.words.some(isSubject)) return no('A Fusion pattern holds only Form and Motion words: the Outburst is its Subject.');
-  if (!p.words.some(isFM)) return no('The pattern needs a Form or a Motion word.');
-  if (p.words.includes('stay')) return no('STAY in a Fusion isn\'t defined yet: no standing Outbursts.');
-  const touch = p.shape === 'line' ? dist(u.pos, p.near!) <= 1 : p.tiles.some((k) => dist(u.pos, k) <= 1); if (!touch) return no(p.shape === 'line' ? 'Stand behind the near end of the line.' : 'Stand on or next to the pattern.');
+  if (p.words.some(isSubject)) return no('A Fusion takes only Form and Motion words, the non-Subjects (Reach, Delivery, Burst, Filter): the Outburst is its Subject.');
+  if (p.words.some((w) => STANDING.includes(w))) return no('No standing Outbursts: STAY, WAIT and WATCH can\'t carry one.');
+  if (p.words.length >= MAX_GLYPHS) return no('The Outburst takes a word\'s place: a Fusion Line holds ' + (MAX_GLYPHS - 1) + ' glyphs at most.');
   const held = !!m.held && (!a.choice || a.choice === m.held.design);
   const d = m.designs.find((x) => x.id === (held ? m.held!.design : a.choice)); if (!d) return no('Pick a ready design (choice: its id).');
   if (m.held && !held) return no('You are holding another Outburst: fuse that one, or release it first.');
-  const charge = evokeCharge(p, u); if (m.charge < charge) return no('Firing needs ' + charge + ' charge (' + m.charge + ' left).');
-  let ap = 1, cost = 0, strain = 1;
+  const aim = aimOf(cb, a), pl = planEvoke(cb, u, t, aim || undefined, { ...stitchOpts(cb, a), subject: fusionStandIn(d) });
+  if (!pl.ok) return no(pl.why || 'Can\'t fire that.');
+  let ap = pl.ap, cost = 0, strain = 1;
   if (!held) { const pv = previewOutburst(cb, u, d.id, undefined, false); if (!pv.ok) return no(pv.why || 'Can\'t cast that.'); ap += pv.ap; cost = pv.cost; strain += pv.strain; }
   if (u.ap < ap) return no('Needs ' + ap + ' AP.');
-  const aim = aimOf(cb, a); const ft = fusionTargets(cb, u, p, aim); if (ft.why) return no(ft.why);
-  return { ok: true, p, d, aim, ap, charge, held, cost, strain };
+  return { ok: true, p, d, aim, ap, charge: pl.charge, held, cost, strain, plan: pl };
 }
 register({
   id: 'circuit_mage.fusion', claims: 'all',
   actions: [{
     id: 'fusion', label: 'Fusion', scope: ['combat', 'world'], target: 'tile', ap: (h, a) => { const r = h.u && h.cb ? fusionCheck(h, a) : null; return r && r.ok ? r.ap : 1; },
-    text: 'Fire a Form/Motion pattern with an Outburst as its Subject: both costs, +1 Strain, +2 Flux. Celestials notice.',
+    text: 'Fire a Line of non-Subject words (Reach, Delivery, Burst, Filter) with an Outburst as its Subject: both costs, +1 Strain, +2 Flux. Celestials notice.',
     available: (h) => (!h.u ? false : !h.u.mg?.evoker || !h.u.mg.emanator ? 'Needs an Evoker and an Emanator.' : true),
-    preview: (h, a) => { const r = fusionCheck(h, a); if (!r.ok) return { ok: false, why: r.why }; return { ap: r.ap, lines: [r.d.name + ' through ' + r.p.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + r.ap + ' AP, ' + r.charge + ' charge, ' + r.cost + ' MP, +' + r.strain + ' Strain, +2 Flux.'] }; },
+    preview: (h, a) => {
+      const r = fusionCheck(h, a); if (!r.ok) return { ok: false, why: r.why };
+      const live = r.plan.affected.filter((x) => !x.kinSpared && !x.skipped);
+      return { ap: r.ap, lines: [r.d.name + ' through ' + r.p.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + r.ap + ' AP, ' + r.charge + ' charge, ' + r.cost + ' MP, +' + r.strain + ' Strain, +2 Flux.',
+        live.length ? 'It reaches ' + live.map((x) => x.name + ' ×' + x.mult).join(', ') + '.' : 'Nothing it may affect: it will fizzle.'] };
+    },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, m = u.mg!, r = fusionCheck(h, { ...a }); if (!r.ok) return r.why;
-      // The runtime took r.ap; the Outburst's own AP is paid inside it: give that back first.
-      const ft = fusionTargets(cb, u, r.p, r.aim), name = r.p.words.map((w) => w.toUpperCase()).join(' · ');
-      m.charge -= r.charge;
-      const ids = new Set(r.p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id));
+      // The runtime took r.ap (the Evoke's and the Outburst's); the Outburst's own AP is paid inside it, so it runs free.
+      const pl = r.plan, sp = pl.spell!, name = r.p.words.map((w) => w.toUpperCase()).join(' · ');
+      m.charge -= r.charge; m.cast = true;
+      const ids = new Set(r.p.glyphs.filter((g) => !(g as any).keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id));
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
+        src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
+        missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
       let stage = m.held?.stage || 1, cost = m.held?.cost || 0;
       if (!r.held) {
         const e = freeAp(u, () => beginOutburst(cb, rng, u, r.d.id, undefined, true)); if (e) return e;
         stage = m.held?.stage || 1; cost = m.held?.cost || 0;
       }
-      say(cb, u.name + ' fuses ' + r.d.name + ' into ' + name + ' (' + r.p.shape + ', ' + r.charge + ' charge).' + fluxUp(cb, rng, u, 2));
+      say(cb, u.name + ' fuses ' + r.d.name + ' into ' + name + ' (' + (r.p.shape === 'stack' ? 'a Stack' : 'a Line of ' + r.p.tiles.length + ', ' + (pl.facing?.mode || '')) + ', ' + r.charge + ' charge).' + fluxUp(cb, rng, u, 2));
       strainUp(cb, rng, u, 1, 'Fusion');
       if (u.dead || u.downed || !m.held) return null;
-      const targets = [...ft.targets];
-      if (r.p.words.includes('twice')) { const first = targets[0], at0 = ft.impact || u.pos, second = cb.units.filter((v) => !v.dead && v.side !== u.side && v !== first && v !== u && dist(v.pos, at0) <= 6 && lineOfSight(cb, at0, v.pos)).sort((x, y) => dist(x.pos, at0) - dist(y.pos, at0))[0]; if (second) targets.push(second); }
-      if (!targets.length) { m.held = null; say(cb, 'The Fusion strikes ' + (ft.impact ? refOf(ft.impact) : 'nothing') + ' and finds no one.'); }
-      for (const t of targets) {
-        if (t.dead) continue; m.held = { design: r.d.id, stage, cost };
-        FUSION = { u: u.id, mult: ft.mult };
+      const live: Affected[] = pl.affected.filter((x) => !x.kinSpared && !x.skipped);
+      for (const x of pl.affected.filter((y) => y.kinSpared)) say(cb, 'KIN spares ' + x.name + ' from the Fusion.');
+      if (!live.length) { m.held = null; say(cb, 'The Fusion strikes ' + (pl.impact ? refOf(pl.impact) : 'nothing') + ' and finds no one: it fizzles.'); }
+      let dealt = 0; const done = new Set<string>();
+      for (const x of live) {
+        const t = unitById(cb, x.unit); if (!t || t.dead || done.has(t.id + ':' + x.missile + ':' + (x.jump || 0))) continue; done.add(t.id + ':' + x.missile + ':' + (x.jump || 0));
+        if (x.via === 'chain') emitFx(cb, 'chain', { from: pl.missiles[x.missile]?.chain[(x.jump || 1) - 1]?.from, to: t.pos, target: t.id, jump: x.jump, mult: x.mult, element: null });
+        m.held = { design: r.d.id, stage, cost };
+        const hp0 = t.hp + (t.shield || 0);
+        FUSION = { u: u.id, mult: x.mult };
         try { reach(u, r.d, () => freeAp(u, () => releaseOutburst(cb, rng, u, t.pos))); } finally { FUSION = null; }
+        if (t.side !== u.side) dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
       }
       m.held = null;
+      // PULL: each one it reached is dragged toward you afterwards (the plan's tiles); LEECH heals you from the damage.
+      for (const mp of pl.missiles) for (const pu of mp.pull) { const t = unitById(cb, pu.unit); if (t && !t.dead) { const l = nudge(cb, t, u.pos, sp.pull); if (l) say(cb, 'PULL' + l + '.'); } }
+      if (sp.leech && dealt > 0 && !u.dead) { const n = Math.floor(dealt * sp.leech), hr = healUnit(cb, u, n, u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: pl.missiles.map((x) => x.impact), amount: hr.restored, element: null }); say(cb, u.name + ' drinks ' + hr.restored + ' HP from the Fusion (LEECH).'); }
       note(h, 'FUSION seen: ' + u.name + ' joined ' + name + ' to ' + r.d.name + '. Does a Celestial take an interest? (a Knowing risk)');
       checkOver(cb); return null;
     },
@@ -721,41 +724,51 @@ register({
 const KS = (u: Unit) => 'ks-' + u.id;
 const ksOf = (cb: Combat, u: Unit) => (cb.glyphs || []).find((g) => g.id === KS(u)) || null;
 const ksOwner = (g: Glyph) => (g.id.startsWith('ks-') ? g.id.slice(3) : null);
-// Keystone (K16, PROVISIONAL, audit 1-5): 2 AP + 1 standard core (the core replaces the word's charge; +1 Flux still,
-// it's a glyph), on your tile or one next to you, an Evoker ready (the mason's chisel item doesn't exist yet: any Evoker
-// cuts). It never fades, can't be scuffed (the engine puts it back), doesn't count toward your glyph limit, and survives
-// being Evoked (magic.ts honours the glyph's keystone flag in the fade, Scuff and Evoke; the restore at turn and round
-// boundaries stays as a guard). One at a time. It stays in that map zone for the session. GAMEBREAKING fix: a STAY zone that holds
-// a Keystone lasts as long as an ordinary glyph would (the Keystone's own count is always a fresh glyph's).
+// Keystone (K16, PROVISIONAL, audit 1-5; rules 1.4, item 467): 2 AP + 1 standard core (the core replaces the word's
+// charge; +1 Flux still, it's a glyph), cut on your own tile (rules 1.4: never next to you) where no glyph lies (one a
+// tile), an Evoker ready (the mason's chisel item doesn't exist yet: any Evoker cuts). The draw's refusals hold (a second
+// Reach word, a second KIN, WATCH with STAY, past 4 glyphs or your Max Sigil words in the Line it joins). It counts as a
+// glyph of the Line it sits in, never fades, can't be scuffed (the engine puts it back), isn't wiped by NULL (item 430),
+// doesn't count toward your glyphs on the ground, and survives being Evoked (sigil.ts honours the glyph's keystone flag
+// in the fade, Scuff, NULL and Evoke; the restore at turn and round boundaries stays as a guard). One at a time. It stays
+// in that map zone for the session.
 function ksRestore(h: Holder) {
   const u = h.u, cb = h.cb, c = h.c; if (!u || !cb || !c) return;
   const s = cs(c).keystone; if (!s) return;
   if (s.zone !== cb.map.id || (s.session ?? 1) !== (h.g?.sessionN ?? 1)) return;
-  const left = 2 + (u.mg?.durBonus || 0), g = ksOf(cb, u);
-  if (g) { g.left = left; g.pos = s.pos; g.word = s.word; return; }
-  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true } as any];
+  const left = 2 + Math.floor(u.mg?.durBonus || 0), g = ksOf(cb, u);
+  if (g) { g.left = left; g.pos = s.pos; g.word = s.word; (g as any).v = SIGIL_REV; return; }
+  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV } as any];
+}
+function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null {
+  if (!SIGIL[w] || !u.mg!.words.includes(w)) return 'Pick a word you know (choice).';
+  if (!t) return 'Pick a tile.'; if (t !== u.pos) return 'Cut it on your own tile (rules 1.4): step onto it first.';
+  if (!standable(cb.map, t)) return 'Nothing can be cut there.';
+  const here = (cb.glyphs || []).filter((g) => g.pos === t && g.id !== KS(u));
+  if (here.length >= glyphsPerTile(cb, u, t)) return 'One glyph per tile: this tile already holds ' + here.map((g) => g.word.toUpperCase()).join(', ') + '.';
+  const old = ksOf(cb, u), keep = cb.glyphs; if (old) cb.glyphs = (cb.glyphs || []).filter((g) => g !== old);
+  try { return joinCheck(cb, u, t, w, { keystone: true }); } finally { cb.glyphs = keep; }
 }
 register({
   id: 'glyph_mason.keystone', claims: 'all',
   actions: [{
-    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 2,
-    text: 'Cut a word you know as a Keystone (2 AP + 1 spare core): it never fades, can\'t be scuffed and survives being Evoked. One at a time.',
+    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 2,
+    text: 'Cut a word you know as a Keystone on your own tile (2 AP + 1 spare core): it never fades, can\'t be scuffed and survives being Evoked. One at a time.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (h.u.mg!.cores < 1 ? 'Needs a spare standard core.' : true)),
     preview: (h, a) => {
-      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'), w = a.choice || '';
-      if (!SIGIL[w] || !u.mg!.words.includes(w)) return { ok: false, why: 'Pick a word you know (choice).' };
-      if (!t) return { ok: false, why: 'Pick a tile.' }; if (dist(u.pos, t) > 1) return { ok: false, why: 'Your tile or one next to you.' };
-      if (!standable(cb.map, t)) return { ok: false, why: 'Nothing can be cut there.' };
-      if ((cb.glyphs || []).filter((g) => g.pos === t && g.id !== KS(u)).length >= 2) return { ok: false, why: 'A tile holds at most 2 glyphs.' };
-      return { lines: [SIGIL[w].word + ' cut at ' + refOf(t) + (ksOf(cb, u) ? ' (the old Keystone is lost)' : '') + '.'] };
+      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile') || u.pos, w = a.choice || '', why = ksWhy(cb, u, t, w); if (why) return { ok: false, why };
+      return { lines: [SIGIL[w].word + ' cut at ' + refOf(t) + (ksOf(cb, u) ? ' (the old Keystone is lost)' : '') + ' (1 core, +1 Flux).'] };
     },
     run: (h, a, rng) => {
-      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, w = a.choice!, old = ksOf(cb, u);
-      cb.glyphs = (cb.glyphs || []).filter((g) => g.id !== KS(u)); u.mg!.cores -= 1;
+      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile') || u.pos, w = a.choice!, why = ksWhy(cb, u, t, w); if (why) return why;
+      const old = ksOf(cb, u);
+      cb.glyphs = (cb.glyphs || []).filter((g) => g.id !== KS(u)); u.mg!.cores -= 1; (cb as any).sigilV = SIGIL_REV;
       charState(h.c).keystone = { word: w, pos: t, zone: cb.map.id, session: h.g?.sessionN ?? 1 };
       ksRestore(h);
-      emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word: w, side: u.side, keystone: true });
+      emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word: w, side: u.side, keystone: true, group: SIGIL[w]?.group, cls: SIGIL[w]?.class, element: SIGIL[w]?.class === 'subject_element' ? w : null });
+      if (old && old.pos !== t) emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'keystone' });
       say(cb, u.name + ' cuts ' + SIGIL[w].word + ' into ' + refOf(t) + ' as a Keystone (1 core)' + (old ? '; the old Keystone at ' + refOf(old.pos) + ' crumbles' : '') + '.' + fluxUp(cb, rng, u, 1));
+      const g = ksOf(cb, u); if (g) emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
       return null;
     },
   }],
@@ -767,32 +780,35 @@ register({
   },
   brief: () => 'Keystone: NPC Sigil users can read a cut glyph (Analysis TN 12) and Evoke a pattern holding it.',
 });
-// Survey (K17, PROVISIONAL, audit 1-3): a pattern that holds your Keystone costs 1 charge less to fire (1 at least)
-// for you and your allies, and you and your allies can Evoke it from up to 2 tiles away (with sight of it: the
-// 'evoke_reach' hook; the Class tab's action stays as the explicit form). Enemy Sigil users who fire it get neither.
-function surveyFrom(cb: Combat, u: Unit, tile: string): { p: Pattern; at: string } | string {
+// Survey (K17, PROVISIONAL, audit 1-3; rules 1.4, item 467): a Line (or Stack) that holds your Keystone costs 1 charge
+// less to fire (1 at least) for you and your allies, and you and your allies can Evoke it from up to 2 tiles from any of
+// its glyphs, with sight of one (the 'evoke_reach' hook; the plain Evoke reaches it, the Class tab's action is the
+// explicit form). The facing rule reads from where you stand: further along the Line than an end, it fires along, past
+// the far end; beside it, across and away from you; a middle glyph is still refused. Enemy Sigil users who fire it get
+// neither.
+function surveyWhy(cb: Combat, u: Unit, tile: string): string | null {
   const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return p;
   if (!p.glyphs.some((g) => g.id === KS(u))) return 'Survey reaches only a pattern that holds your Keystone.';
-  const near = p.shape === 'line' ? [p.near!] : [...p.tiles].sort((a, b) => dist(a, u.pos) - dist(b, u.pos));
-  const at = near[0]; if (dist(u.pos, at) > 2) return 'Within 2 tiles of the pattern.';
-  if (!lineOfSight(cb, u.pos, at) && u.pos !== at) return 'You can\'t see the pattern.';
-  return { p, at };
+  if (!p.tiles.some((k) => dist(u.pos, k) <= 2)) return 'Within 2 tiles of a glyph of the pattern.';
+  if (!p.tiles.some((k) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= 2 && lineOfSight(cb, u.pos, k)))) return 'You can\'t see the pattern.';
+  return null;
 }
 register({
   id: 'glyph_mason.survey', claims: 'all',
   actions: [{
     id: 'survey_evoke', label: 'Evoke from afar (Survey)', scope: ['combat', 'world'], target: 'tile', ap: 0,
-    text: 'Evoke a pattern that holds your Keystone from up to 2 tiles away.',
+    text: 'Evoke a pattern that holds your Keystone from up to 2 tiles away (1 charge less).',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : true)),
     preview: (h, a) => {
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return { ok: false, why: 'Pick a glyph of the pattern.' };
-      const s = surveyFrom(cb, u, t); if (typeof s === 'string') return { ok: false, why: s };
-      const was = u.pos; u.pos = s.at; let pv; try { pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined); } finally { u.pos = was; }
-      return pv.ok ? { lines: [pv.ap + ' AP, ' + pv.charge + ' charge (Survey: −1).'] } : { ok: false, why: pv.why };
+      const why = surveyWhy(cb, u, t); if (why) return { ok: false, why };
+      const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a));
+      return pv.ok ? { lines: [pv.ap + ' AP, ' + pv.charge + ' charge (Survey: −1), firing ' + (pv.facing?.mode || '') + ' from ' + refOf(u.pos) + '.'] } : { ok: false, why: pv.why };
     },
     run: (h, a, rng) => {
-      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, s = surveyFrom(cb, u, t) as { p: Pattern; at: string };
-      const was = u.pos; u.pos = s.at; let e: string | null; try { e = evokeSpell(cb, rng, u, t, aimOf(cb, a) || undefined); } finally { u.pos = was; }
+      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return 'Pick a glyph of the pattern.';
+      const why = surveyWhy(cb, u, t); if (why) return why;
+      const e = evokeSpell(cb, rng, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a));
       if (e) return e; ksRestore(h); checkOver(cb); return null;
     },
   }],
@@ -806,10 +822,10 @@ register({
   },
   brief: () => null,
 });
-// Foundation (K18, PROVISIONAL, audit 1-3): once per scene, 0 AP: for the rest of this turn, glyphs you draw within 2
-// tiles of your Keystone cost 0 AP (charge and Flux still paid). MISSING FIELD: glyph_cost has no tile, so the 0-AP draws
-// go through the "Draw near the Keystone" action that Foundation opens.
-let FOUND: string | null = null;
+// Foundation (K18, PROVISIONAL, audit 1-3; rules 1.4, item 467): once per scene, 0 AP: for the rest of this turn,
+// glyphs you draw within 2 tiles of your Keystone cost 0 AP (charge and Flux still paid). You still draw only on your own
+// tile, so it prices the steps of a Line walked around the Keystone. The 'glyph_cost' hook now carries the tile, so the
+// ordinary Draw gets it; the "Draw near the Keystone" action stays as the explicit form.
 const foundOn = (h: Holder) => { const st = stateOf(h); return !!h.cb && st.found === h.cb.round + '.' + h.cb.turn; };
 register({
   id: 'glyph_mason.foundation', claims: 'all',
@@ -818,18 +834,19 @@ register({
       text: 'This turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.',
       available: (h) => (!h.u ? false : !ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : foundOn(h) ? 'Already laid this turn.' : true),
       run: (h) => { stateOf(h).found = h.cb!.round + '.' + h.cb!.turn; say(h.cb, h.u!.name + ' lays the Foundation: glyphs near the Keystone cost no AP this turn.'); return null; } },
-    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Draw a word within 2 tiles of your Keystone for 0 AP (charge and Flux paid).',
+    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 0,
+      text: 'Draw a word on your own tile, within 2 tiles of your Keystone, for 0 AP (charge and Flux paid).',
       available: (h) => (!h.u || !h.cb ? false : foundOn(h) && ksOf(h.cb, h.u) ? true : false),
       preview: (h, a) => {
-        const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'), ks = ksOf(cb, u); if (!t || !ks) return { ok: false, why: 'Pick a tile.' };
+        const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile') || u.pos, ks = ksOf(cb, u); if (!ks) return { ok: false, why: 'Cut a Keystone first.' };
+        if (t !== u.pos) return { ok: false, why: 'Draw on your own tile (rules 1.4).' };
         if (dist(t, ks.pos) > 2) return { ok: false, why: 'Within 2 tiles of the Keystone.' };
         if (!a.choice || !u.mg!.words.includes(a.choice)) return { ok: false, why: 'Pick a word you know (choice).' };
         return {};
       },
-      run: (h, a, rng) => { const u = h.u!, cb = h.cb!; FOUND = u.id; try { return drawGlyph(cb, rng, u, a.choice!, aimOf(cb, a, 'tile')!); } finally { FOUND = null; } } },
+      run: (h, a, rng) => { const u = h.u!, cb = h.cb!, ks = ksOf(cb, u); if (!ks || dist(u.pos, ks.pos) > 2) return 'Within 2 tiles of the Keystone.'; return drawGlyph(cb, rng, u, a.choice!, u.pos); } },
   ],
-  on: { glyph_cost: (ctx, h) => { if (ctx.u === h.u && FOUND === h.u!.id) ctx.ap = 0; } },
+  on: { glyph_cost: (ctx, h) => { const u = h.u; if (ctx.u !== u || !u || !h.cb || !foundOn({ ...h, cb: ctx.cb || h.cb })) return; const ks = ksOf(ctx.cb || h.cb, u); if (ks && dist(ctx.tile || u.pos, ks.pos) <= 2) ctx.ap = 0; } },
   brief: () => null,
 });
 
@@ -839,8 +856,9 @@ register({
 // While the staff stands you can't draw or Evoke; pulling it out (1 AP, next to it) ends the form, and the staff comes
 // back when the form runs out. Grand damage is flat (10 lava, 15 storm). Harmful forms hit everyone inside but you
 // (Earthed); the ones that say enemies or allies keep to them. The staff item doesn't exist yet (any Evoker plants).
-// The 24 forms (sigils.json 'grand') run on the hooks below; SPREAD (Bloom) and TWICE (Echo field) have no hook into a
-// spell's area or a repeat yet: the Narrator rules them (a fight note when the form goes up).
+// The forms (sigils.json 'grand': the 23 that survive 1.2, RETURN's Sanctuary gone, and the 17 words new in 1.4, item
+// 468) run on the hooks below; SPREAD (Bloom) and TWICE (Echo field) have no hook into a spell's landing tile or a repeat
+// yet: the Narrator rules them (a fight note when the form goes up).
 const grandZones = (cb: Combat, u?: Unit) => (cb.zones || []).filter((z) => (z.kind as string) === 'grand' && (!u || z.by === u.id));
 const inZ = (z: Zone, k: string) => z.tiles.includes(k);
 const zWord = (z: Zone) => z.words[0];
@@ -885,6 +903,13 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
+    // The 1.4 words (item 468).
+    case 'acid': return me ? '' : ' · the mire corrodes ' + t.name + harm(cb, rng, o, t, 5, 'elemental', 'acid') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'corroded', undefined, undefined, { skipSave: true }));
+    case 'command': return ally || t.prone || bodySave(rng, o, t, 'brain') ? '' : ' · the Court bends ' + t.name + ' to its knees' + applyCond(cb, rng, o, t, 'prone', undefined, undefined, { skipSave: true });
+    case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; t.ap = Math.min(9, t.ap + 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
+    case 'cleanse': { if (!ally) return ''; const id = newestCondition(t); if (!id) return ''; endCond(t, id, cb); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); return ' · clear water washes ' + id + ' off ' + t.name; }
+    case 'mask': if (ally && !t.hidden && !condOn(t, 'marked')) { t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; return ' · the Shroud hides ' + t.name; } return '';
+    case 'leech': { if (ally || me) return ''; const hp0 = t.hp + (t.shield || 0), l = harm(cb, rng, o, t, 5, 'sigil'), lost = Math.max(0, hp0 - (t.hp + (t.shield || 0))); const hr = lost && !o.dead ? healUnit(cb, o, lost, o, 'leech') : null; return ' · the Bloodwell drinks from ' + t.name + l + (hr?.restored ? ' (' + o.name + ' heals ' + hr.restored + ')' : ''); }
   }
   return '';
 }
@@ -899,9 +924,25 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
+    case 'acid': return ' · the mire corrodes ' + t.name + harm(cb, rng, o, t, 5, 'elemental', 'acid') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'corroded', undefined, undefined, { skipSave: true }));
+    case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
   }
   return '';
 }
+/** Grand NULL (Clean ground): wipe the placed Sigil magic inside (glyphs, fields, traps, turrets, smoke, light, RAISE
+ * walls; never Keystones, Grand forms or class zones: item 430). */
+function cleanGround(cb: Combat, z: Zone): string {
+  const T = new Set(z.tiles), gl = (cb.glyphs || []).filter((g) => T.has(g.pos) && !(g as any).keystone);
+  const zs = (cb.zones || []).filter((x) => x !== z && ['field', 'trap', 'turret', 'wall', 'veil', 'light'].includes(x.kind) && x.tiles.some((k) => T.has(k)));
+  const walls = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && T.has(o.pos));
+  if (!gl.length && !zs.length && !walls.length) return '';
+  cb.glyphs = (cb.glyphs || []).filter((g) => !gl.includes(g)); for (const g of gl) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'null' });
+  for (const x of zs) { if (['field', 'trap', 'turret', 'wall'].includes(x.kind)) destroyPlaced(cb, x, 'Clean ground (Grand NULL)'); else cb.zones = (cb.zones || []).filter((y) => y !== x); }
+  if (walls.length) { cb.objects = objectsOf(cb).filter((o) => !walls.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: walls.map((o) => o.pos), why: 'null' }); }
+  emitFx(cb, 'null_wave', { at: zCentre(z), tiles: z.tiles, n: gl.length + zs.length + walls.length });
+  return ' · the clean ground wipes ' + (gl.length + zs.length + walls.length) + ' piece' + (gl.length + zs.length + walls.length === 1 ? '' : 's') + ' of Sigil magic';
+}
+let ARCING = false;
 /** Tiles a straight shot crosses (for GALE's -5). */
 function segTiles(a: string, b: string): string[] {
   const [x0, y0] = xy(a), [x1, y1] = xy(b), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
@@ -942,6 +983,8 @@ register({
         }
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
         if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && !condOn(x, 'marked')) { x.hidden = true; line += ' · ' + x.name + ' vanishes in the smoke'; }
+        if (w === 'null') line += cleanGround(cb, z);
+        if (w === 'sense') for (const x of cb.units) if (x.hidden && !x.dead && x.side !== u.side && dist(x.pos, t) <= 4) line += reveal(cb, x, 'Second sight');
         fogSync(cb);
         say(cb, u.name + ' plants the staff at ' + refOf(t) + ' and ' + SIGIL[w].word + ' swells into its Grand form for ' + left + ' rounds: ' + SIGIL[w].grand + line);
         if (w === 'spread' || w === 'twice') note(h, 'GRAND ' + SIGIL[w].word + ' (' + u.name + ', centre ' + refOf(t) + ', ' + left + ' rounds): ' + SIGIL[w].grand + ' The engine has no hook for it: rule each spell inside.');
@@ -956,13 +999,24 @@ register({
       run: (h, a) => { postStory(h, (a.text || '').slice(0, 200)); if (h.g && h.c) pendRuling(h.g, h.c, h.key, h.c.name + ' plants the staff and lays a Grand form: "' + (a.text || '').slice(0, 160) + '". Rule its effect (Grand forms: sigils.json) for the scene.'); return null; } },
   ],
   on: {
-    glyph_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).staff) ctx.fail ||= 'Your staff is planted: pull it out first.'; },
+    glyph_cost: (ctx, h) => {
+      if (ctx.u === h.u && stateOf(h).staff) ctx.fail ||= 'Your staff is planted: pull it out first.';
+      const o = h.u, cb = h.cb; if (!o || !cb || !stateOf(h).staff) return;
+      if (grandZones(cb, o).some((z) => zWord(z) === 'null' && inZ(z, ctx.tile || ctx.u.pos))) ctx.fail ||= 'Clean ground (Grand NULL): no glyph can be drawn here.';
+    },
     evoke_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).staff) ctx.fail ||= 'Your staff is planted: pull it out first.'; },
+    // RELAY (Switchboard): an ally inside may Evoke a pattern lying inside from anywhere inside.
+    evoke_reach: (ctx, h) => {
+      const o = h.u, cb = h.cb; if (!o || !cb || !stateOf(h).staff || ctx.u === o || ctx.u.side !== o.side) return;
+      if (grandZones(cb, o).some((z) => zWord(z) === 'relay' && inZ(z, ctx.u.pos) && ctx.pattern?.tiles?.some((k: string) => inZ(z, k)))) ctx.reach = Math.max(ctx.reach, 4);
+    },
     turn_start: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || t.dead) return; if (!staffOf(h)) return;
       let line = '';
       for (const z of grandZones(cb, o)) {
         if (zWord(z) === 'pull') { if (t.side !== o.side && dist(t.pos, zCentre(z)) <= 4) line += nudge(cb, t, zCentre(z), 1); continue; }
+        if (zWord(z) === 'sense') { for (const x of cb.units) if (x.hidden && !x.dead && x.side !== o.side && dist(x.pos, zCentre(z)) <= 4) line += reveal(cb, x, 'Second sight'); continue; }
+        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 10, 'sigil'); } } continue; }
         if (inZ(z, t.pos)) line += grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g);
       }
       if (line) say(cb, SIGIL[zWord(grandZones(cb, o)[0])]?.word + ' (Grand)' + line + '.');
@@ -982,10 +1036,15 @@ register({
       for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) { if (!bodySave(rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); }
     },
     move_cost: (ctx, h) => {
-      const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff || earthed(o, t)) return;
-      // FREEZE (difficult ground) and SLOW (Movement halved): each tile inside costs double.
-      const n = (ctx.route || []).filter((k: string) => grandZones(cb, o).some((z) => (zWord(z) === 'freeze' || zWord(z) === 'slow') && inZ(z, k))).length;
+      const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
+      // FREEZE (difficult ground) and SLOW (Movement halved): each tile inside costs double (not for the Earthed owner).
+      const n = earthed(o, t) ? 0 : (ctx.route || []).filter((k: string) => grandZones(cb, o).some((z) => (zWord(z) === 'freeze' || zWord(z) === 'slow') && inZ(z, k))).length;
       if (n) ctx.ap += Math.ceil(n / Math.max(0.5, t.movement));
+      // STEP (Fold): for allies, each tile of the move inside costs half (rounded down in the mover's favour).
+      if (t.side === o.side && ctx.how === 'move') {
+        const f = (ctx.route || []).filter((k: string) => grandZones(cb, o).some((z) => zWord(z) === 'step' && inZ(z, k))).length;
+        if (f) { const mv = Math.max(0.5, t.movement), ap = (n: number) => Math.ceil(Math.max(0, n - (t.bank || 0)) / mv - 1e-9); ctx.ap = Math.max(0, ctx.ap - Math.max(0, ap(ctx.tiles) - ap(ctx.tiles - f / 2))); }
+      }
     },
     attack_preview: (ctx, h) => {
       const o = h.u, cb = h.cb!; if (!o || !onGrid(h) || !stateOf(h).staff) return; const att: Unit = ctx.att, tgt: Unit = ctx.tgt;
@@ -995,6 +1054,9 @@ register({
         if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || segTiles(att.pos, tgt.pos).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
         if (w === 'push' && !ctx.melee && !aIn && tIn) ctx.terms.push({ v: -3, label: 'Rampart wind (Grand PUSH)' });
         if (w === 'seek' && tIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
+        if (w === 'sharpen' && aIn && att.side === o.side) ctx.terms.push({ v: 2, label: 'Whetstone (Grand SHARPEN)' });
+        if (w === 'raise' && !ctx.melee && !aIn && tIn && tgt.side === o.side && att.side !== o.side) ctx.terms.push({ v: -5, label: 'Bastion (Grand RAISE)' });
+        if (w === 'arc' && !ctx.melee && aIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
       }
     },
     attack_roll: (ctx, h) => {
@@ -1002,11 +1064,28 @@ register({
       if (ctx.die <= 3 && canJam(att) && !earthed(o, att) && grandZones(cb, o).some((z) => zWord(z) === 'spark' && inZ(z, att.pos))) (stateOf(h).sparkJam ||= []).push(att.id);
     },
     on_hit: (ctx, h) => sparkJam(ctx, h), on_miss: (ctx, h) => sparkJam(ctx, h),
+    // KIN (Sanctum): allies inside take no damage from your side's spells and attacks (hazards still hurt).
     damage_in: (ctx, h) => {
-      const o = h.u, cb = h.cb!, t: Unit = ctx.t; if (!o || !onGrid(h) || ctx.phase !== 'would_drop_to_0' || t.side !== o.side || !stateOf(h).staff) return;
-      const z = grandZones(cb, o).find((x) => zWord(x) === 'return' && inZ(x, t.pos)); if (!z) return;
-      const done: string[] = ((z as any).saved ||= []); if (done.includes(t.id)) return; done.push(t.id);
-      ctx.floor = 1; say(cb, 'Sanctuary holds ' + t.name + ' at 1 HP (Grand RETURN, once each).');
+      const o = h.u, cb = h.cb!, t: Unit = ctx.t; if (!o || !onGrid(h) || ctx.phase !== 'reduce' || t.side !== o.side || !stateOf(h).staff) return;
+      const by: Unit | null | undefined = ctx.src?.by; if (!by || by.side !== o.side) return;
+      if (!grandZones(cb, o).some((x) => zWord(x) === 'kin' && inZ(x, t.pos))) return;
+      if (ctx.dmg > 0) say(cb, 'Sanctum: ' + t.name + ' takes no harm from ' + (by === t ? 'their own' : by.name + '\'s') + ' blow (Grand KIN).');
+      ctx.dmg = 0;
+    },
+    // CHAIN (Conductor): when your side hurts an enemy inside, 5 lightning arcs to the nearest other enemy inside within
+    // 3 tiles (once a round for each enemy it reaches; an arc doesn't arc again).
+    on_damaged: (ctx, h) => {
+      const o = h.u, cb = h.cb, t: Unit = ctx.t; if (!o || !cb || ARCING || !onGrid(h) || !stateOf(h).staff || t.side === o.side) return;
+      const by: Unit | null | undefined = ctx.src?.by; if (!by || by.side !== o.side) return;
+      for (const z of grandZones(cb, o)) {
+        if (zWord(z) !== 'chain' || !inZ(z, t.pos)) continue;
+        const arced = ((z as any).arced ||= {});
+        const v = cb.units.filter((x) => x !== t && !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos) && dist(x.pos, t.pos) <= 3 && arced[x.id] !== cb.round).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
+        if (!v) continue; arced[v.id] = cb.round;
+        emitFx(cb, 'chain', { from: t.pos, to: v.pos, target: v.id, jump: 1, mult: 1, element: 'shock', grand: true });
+        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, 5, 'elemental', 'lightning'); } finally { ARCING = false; }
+        say(cb, 'Conductor (Grand CHAIN): the hit on ' + t.name + ' arcs to ' + v.name + l + '.');
+      }
     },
     turn_end: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff || !t.conds) return;
@@ -1015,7 +1094,11 @@ register({
       const fresh = new Set(t.condFresh || []);
       for (const id of Object.keys(t.conds)) if (t.conds[id] > 0 && t.conds[id] < 99 && !fresh.has(id)) t.conds[id]++;
     },
-    round_start: (ctx, h) => { if (h.u && onGrid(h)) staffOf(h); },
+    round_start: (ctx, h) => {
+      if (!h.u || !onGrid(h) || !staffOf(h)) return;
+      let line = ''; for (const z of grandZones(h.cb!, h.u)) if (zWord(z) === 'null') line += cleanGround(h.cb!, z);
+      if (line) say(h.cb, 'NULL (Grand)' + line + '.');
+    },
     combat_end: (ctx, h) => { if (h.u && stateOf(h).staff) clearGrand({ ...h, cb: ctx.cb }); },
   },
   brief: () => 'Enlarge: rule Grand forms the engine doesn\'t run (Bloom, Echo field) and story uses.',
@@ -1048,7 +1131,8 @@ register({
 // element word (FIRE, FREEZE, SHOCK, SPARK) makes them Elemental (half armour), with FIRE's Burning on a critical and
 // FREEZE's Slowed on a hit (save); STONE and GALE strikes stay Physical. Other words add nothing (the Narrator may rule a
 // DREAD fist).
-const EARTH_EL: Record<string, string> = { fire: 'fire', freeze: 'frost', shock: 'lightning', spark: 'elemental' };
+// Rules 1.4 (item 468): ACID joins them (Elemental, Corroded on a hit, Body save).
+const EARTH_EL: Record<string, string> = { fire: 'fire', freeze: 'frost', shock: 'lightning', spark: 'elemental', acid: 'acid' };
 register({
   id: 'grand_sigilist.earthed', claims: 'all',
   on: {
@@ -1062,6 +1146,7 @@ register({
       const z = formsAt(h.cb, u, u.pos).find((x) => EARTH_EL[zWord(x)]); if (!z) return; const rng = rngOf(h, ctx);
       if (zWord(z) === 'fire' && ctx.crit) say(h.cb, 'Earthed fire' + applyCond(h.cb, rng, u, ctx.tgt, 'burning', undefined, 'body', { skipSave: true }) + '.');
       if (zWord(z) === 'freeze') say(h.cb, 'Earthed frost' + applyCond(h.cb, rng, u, ctx.tgt, 'slowed') + '.');
+      if (zWord(z) === 'acid') say(h.cb, 'Earthed acid' + applyCond(h.cb, rng, u, ctx.tgt, 'corroded', undefined, 'body') + '.');
     },
   },
   brief: () => 'Earthed: rule what a non-element Grand form adds to the Sigilist\'s fists, if asked.',

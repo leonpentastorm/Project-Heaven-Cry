@@ -131,52 +131,7 @@ describe('Lumeri Templar', () => {
 });
 
 // ============================================================ Stroke Gambler
-describe('Stroke Gambler', () => {
-  it('Half-Sigil: 1 AP, a random known word as a half-glyph for 1 charge and +1 Flux; the second completes the grammar', () => {
-    const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
-    const u = f.turn(f.pc); at(f, u, '3,2'); const m = f.unit(u.id).mg!; m.words = ['fire', 'push']; const ap = f.unit(u.id).ap, ch = m.charge;
-    perk(f, f.unit(u.id), 'stroke_gambler.half_sigil', { tile: '4,2' });
-    perk(f, f.pc, 'stroke_gambler.half_sigil', { tile: '4,2' });
-    const gl = (f.cb.glyphs || []).filter((g) => g.pos === '4,2');
-    expect(gl.length).toBe(2); expect(gl.every((g: any) => g.half)).toBe(true);
-    expect(new Set(gl.map((g) => g.word))).toEqual(new Set(['fire', 'push']));
-    expect(f.pc.ap).toBe(ap - 2); expect(f.pc.mg!.charge).toBe(ch - 2); expect(f.pc.mg!.flux).toBe(2);
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Stitch: a half-glyph pattern only fires through Stitch; 16-20 doubles the damage', () => {
-    const run = (n: number) => {
-      const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
-      const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '9,2')); caster(f.unit(u.id), ['fire', 'push']);
-      glyph(f, f.unit(u.id), 'fire', '4,2', { half: true }); glyph(f, f.unit(u.id), 'push', '4,2', { half: true });
-      expect(withGame(f.g, () => previewEvoke(f.cb, f.unit(u.id), '4,2', '9,2')).ok).toBe(false); // the plain Evoke refuses
-      seed(f, n, 15);
-      perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '4,2', targetId: foe.id });
-      return { f, dmg: 999 - f.unit(foe.id).hp };
-    };
-    const mid = run(10), hi = run(18);
-    expect(logHas(mid.f.cb, /STITCH d20 10/)).toBe(true); expect(mid.dmg).toBeGreaterThan(0);
-    expect(hi.dmg).toBe(2 * mid.dmg);
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Stitch: 1-5 turns on its maker (House Edge off)', () => {
-    const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
-    const u = f.turn(f.pc); at(f, u, '3,2'); tough(at(f, f.foe, '9,2')); caster(f.unit(u.id), ['fire', 'push']); f.unit(u.id).hp = 200;
-    glyph(f, f.unit(u.id), 'fire', '4,2', { half: true }); glyph(f, f.unit(u.id), 'push', '4,2', { half: true });
-    seed(f, 3);
-    perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '4,2', targetId: f.foe.id, mods: ['!class:stroke_gambler.house_edge#reroll'] });
-    expect(f.pc.hp).toBeLessThan(200); expect(f.unit(f.foe.id).hp).toBe(999); expect(f.cb.glyphs!.length).toBe(0);
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('House Edge: a Stitch of 1-5 is rerolled once a fight (on by default)', () => {
-    const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
-    const u = f.turn(f.pc); at(f, u, '3,2'); tough(at(f, f.foe, '9,2')); caster(f.unit(u.id), ['fire', 'push']);
-    glyph(f, f.unit(u.id), 'fire', '4,2', { half: true }); glyph(f, f.unit(u.id), 'push', '4,2', { half: true });
-    seed(f, 2, 12, 15);
-    perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '4,2', targetId: f.foe.id });
-    expect(logHas(f.cb, /House Edge: Tester 1 rerolls the Stitch \(2 → 12\)/)).toBe(true);
-    expect(f.unit(f.foe.id).hp).toBeLessThan(999);
-  });
-});
+// Rules 1.4: the Stroke Gambler's Half-Sigil, Stitch and House Edge are tested in sigil14-classes-k.test.ts.
 
 // ============================================================ Devoted
 describe('Devoted', () => {
@@ -231,17 +186,6 @@ describe('Circuit Mage', () => {
     s.act({ type: 'story/perk', charId: c.id, id: 'circuit_mage.self_crystallise', actionId: 'self_crystallise_story' } as any);
     const cc = s.g.characters[c.id]; expect(cc.mp).toBe(50); expect((cc.pack || []).find((x) => x.id === 'standard_core')!.qty).toBeGreaterThanOrEqual(1); expect((cc as any).state.selfCores).toBe(1);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Fusion: a Form/Motion pattern carries an Outburst; both costs, +1 Strain, +2 Flux, a fight note', () => {
-    const f = fightWith([adv('circuit_mage')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '9,2'));
-    caster(f.unit(u.id), ['push', 'seek']); f.unit(u.id).ap = 9; glyph(f, f.unit(u.id), 'push', '4,2'); glyph(f, f.unit(u.id), 'seek', '4,2');
-    const mp = f.unit(u.id).mg!.mp; seed(f, 15);
-    perk(f, f.unit(u.id), 'circuit_mage.fusion', { tile: '4,2', choice: 'o1', targetId: foe.id });
-    const m = f.pc.mg!;
-    expect(f.unit(foe.id).hp).toBeLessThan(999); expect(m.mp).toBeLessThan(mp); expect(m.flux).toBe(2); expect(m.strain).toBeGreaterThanOrEqual(2);
-    expect(m.charge).toBe(8); expect(f.cb.glyphs!.length).toBe(0); expect(f.pc.ap).toBe(9 - 3);
-    expect((f.cb.notes || []).some((n) => /FUSION seen/.test(n))).toBe(true);
-  });
   it('Fusion: refuses a pattern that holds a Subject', () => {
     const f = fightWith([adv('circuit_mage')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push']);
     glyph(f, f.unit(u.id), 'fire', '4,2'); glyph(f, f.unit(u.id), 'push', '4,2');
@@ -250,41 +194,7 @@ describe('Circuit Mage', () => {
 });
 
 // ============================================================ Glyph Mason
-describe('Glyph Mason', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Keystone: 2 AP and a core; never fades, can\'t be scuffed, and doesn\'t count toward the glyph limit', () => {
-    const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push', 'condense'], { maxWords: 1 }); const ap = f.unit(u.id).ap;
-    perk(f, f.unit(u.id), 'glyph_mason.keystone', { tile: '3,2', choice: 'fire' });
-    expect(f.pc.ap).toBe(ap - 2); expect(f.pc.mg!.cores).toBe(1);
-    const ks = () => (f.cb.glyphs || []).find((g) => g.id === 'ks-' + f.pc.id);
-    expect(ks()!.word).toBe('fire');
-    act(f, f.pc, { type: 'combat/draw', word: 'push', tile: '4,2' }); // the one ordinary glyph allowed (Max Sigil words 1)
-    expect((f.cb.glyphs || []).filter((g) => g.word === 'push').length).toBe(1); expect(ks()).toBeTruthy();
-    expect(() => act(f, f.pc, { type: 'combat/scuff' })).toThrow(/Keystone can't be scuffed/); expect(ks()).toBeTruthy(); // it can't be scuffed at all now
-    for (let i = 0; i < 6; i++) withGame(f.g, () => endTurn(f.cb, f.g.rng)); // rounds pass
-    expect(ks()).toBeTruthy(); expect(ks()!.pos).toBe('3,2');
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Survey: Evoke a Keystone pattern from 2 tiles away, 1 charge cheaper', () => {
-    const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '9,2')); caster(f.unit(u.id), ['fire', 'push']);
-    perk(f, f.unit(u.id), 'glyph_mason.keystone', { tile: '4,2', choice: 'fire' }); glyph(f, f.pc, 'push', '4,2');
-    at(f, f.pc, '2,2'); const ch = f.pc.mg!.charge; seed(f, 15);
-    expect(withGame(f.g, () => previewEvoke(f.cb, f.pc, '4,2', foe.pos)).ok).toBe(true) // the reach is the evoke_reach hook now: a plain Evoke reaches it too; // too far by the plain rule
-    perk(f, f.pc, 'glyph_mason.survey', { tile: '4,2', targetId: foe.id });
-    expect(f.unit(foe.id).hp).toBeLessThan(999); expect(f.pc.mg!.charge).toBe(ch - 1); expect(f.pc.pos).toBe('2,2');
-    expect((f.cb.glyphs || []).some((g) => g.id === 'ks-' + f.pc.id)).toBe(true); // survives being Evoked
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Foundation: once a scene, this turn\'s glyphs near the Keystone cost 0 AP', () => {
-    const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push']);
-    perk(f, f.unit(u.id), 'glyph_mason.keystone', { tile: '3,2', choice: 'fire' });
-    perk(f, f.pc, 'glyph_mason.foundation'); const ap = f.pc.ap, ch = f.pc.mg!.charge;
-    perk(f, f.pc, 'glyph_mason.foundation', { actionId: 'foundation_draw', tile: '4,2', choice: 'push' });
-    expect(f.pc.ap).toBe(ap); expect(f.pc.mg!.charge).toBeLessThanOrEqual(ch);
-    expect((f.cb.glyphs || []).some((g) => g.word === 'push' && g.pos === '4,2')).toBe(true);
-    expect(() => perk(f, f.pc, 'glyph_mason.foundation')).toThrow(/Used|Already/);
-  });
-});
+// Rules 1.4: the Glyph Mason's Keystone, Survey and Foundation are tested in sigil14-classes-k.test.ts.
 
 // ============================================================ Grand Sigilist
 function grand(word: string, foePos = '6,2', spec: CharSpec = {}) {
@@ -323,14 +233,6 @@ describe('Grand Sigilist', () => {
       withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '6,2', f.g.rng)); return 6 - f.unit(foe.id).ap;
     };
     expect(walk('slow')).toBeGreaterThan(walk(null));
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('RETURN (sanctuary): an ally inside who would drop to 0 stays at 1, once', () => {
-    const f = grand('return'); const ally = f.unit(f.pcs[1].id); ally.hp = 10;
-    withGame(f.g, () => applyDamage(f.cb, ally, 50, { by: f.foe, type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(ally.id).hp).toBe(1);
-    withGame(f.g, () => applyDamage(f.cb, f.unit(ally.id), 50, { by: f.foe, type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(ally.id).hp).toBe(0);
   });
   it('STAY (stasis): conditions inside don\'t tick down; DREAD shakes enemies; SILENCE silences everyone inside', () => {
     const f = grand('stay', '5,2'); const foe = f.unit(f.foe.id);

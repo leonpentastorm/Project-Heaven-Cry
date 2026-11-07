@@ -2046,7 +2046,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: hold 1 extra stroke in your Sigil pool. II: 2 extra.",
+      "text": "I: 1 more of your glyphs can stand on the ground at once before the oldest fades. II: 2 more.",
       "effects": [
         {
           "op": "stat_mod",
@@ -2063,7 +2063,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "hold 1 extra stroke in your Sigil pool.",
+          "text": "1 more of your glyphs can stand on the ground at once before the oldest fades.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2116,7 +2116,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: while one of your Sigils is still active, your next Sigil costs 1 AP less. II: 2 AP less.",
+      "text": "I: while one of your Sigils is still active (a field, trap or turret of yours stands), your next Sigil costs 1 AP less. II: 2 AP less.",
       "effects": [
         {
           "op": "cost_mod",
@@ -2135,7 +2135,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "while one of your Sigils is still active, your next Sigil costs 1 AP less.",
+          "text": "while one of your Sigils is still active (a field, trap or turret of yours stands), your next Sigil costs 1 AP less.",
           "effects": [
             {
               "op": "cost_mod",
@@ -5086,7 +5086,7 @@
       "ap_cost": null,
       "uses": "per_combat",
       "flavour": "No charge, no smoke, no Flux. Just the shape, perfectly.",
-      "text": "Once per combat, draw a Sigil of any length you can draw with no Core charge and no Flux.",
+      "text": "Once per combat, draw a Sigil of any length you can draw (up to 4 glyphs) with no Core charge and no Flux.",
       "effects": [
         {
           "op": "cost_mod",

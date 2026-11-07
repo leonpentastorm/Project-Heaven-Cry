@@ -160,32 +160,31 @@ describe('Inspire on Sigil and Soul strikes (item 69)', () => {
 });
 
 describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes in a turn (items 70, 71)', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('an ally Evokes the Keystone pattern from 2 tiles (combat/evoke); without a Keystone the plain rule refuses', () => {
+  // Rules 1.4 (lane classes-k): the Keystone is cut on the mason's own tile; the ally stands 2 tiles beyond the Line's end.
+  it('an ally Evokes the Keystone pattern from 2 tiles (combat/evoke); without a Keystone the plain rule refuses', () => {
     const run = (mason: boolean) => {
-      const f = fightWith([mason ? adv('glyph_mason') : {}, MIND], [{}]); open(f.cb);
+      const f = fightWith([mason ? adv('glyph_mason') : {}, MIND], [{}]); open(f.cb); (f.cb as any).sigilV = 14;
       const [m, ally] = f.pcs; caster(f.unit(m.id), ['fire', 'push']); caster(f.unit(ally.id), ['fire', 'push']);
-      at(f, m, '3,2'); at(f, ally, '2,4'); const foe = at(f, f.foe, '9,2'); foe.def = -40; foe.hp = foe.maxHp = 999;
-      if (mason) { f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' }); }
+      at(f, m, '4,2'); at(f, ally, '4,5'); const foe = at(f, f.foe, '4,1'); foe.def = -40; foe.hp = foe.maxHp = 999;
+      if (mason) { f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', choice: 'fire' }); at(f, m, '8,8'); }
       else glyph(f.cb, f.unit(ally.id), 'fire', '4,2');
       glyph(f.cb, f.unit(ally.id), 'push', '4,3');
       const a = f.turn(ally); const ch = f.unit(ally.id).mg!.charge;
-      act(f, a, { type: 'combat/evoke', tile: '4,2', aim: '9,2' });
-      return { f, ch, ally };
+      act(f, a, { type: 'combat/evoke', tile: '4,2', aim: '4,1' });
+      return { f, ch, ally, foe };
     };
-    const { f, ch, ally } = run(true);
-    expect(f.unit(ally.id).pos).toBe('2,4'); expect(f.unit(ally.id).mg!.charge).toBeLessThan(ch);
+    const { f, ch, ally, foe } = run(true);
+    expect(f.unit(ally.id).pos).toBe('4,5'); expect(f.unit(ally.id).mg!.charge).toBe(ch - 1); expect(f.unit(foe.id).hp).toBeLessThan(999);
     expect((f.cb.glyphs || []).some((g) => g.id.startsWith('ks-'))).toBe(true);
-    expect(() => run(false)).toThrow(/Stand /);
+    expect(() => run(false)).toThrow(/Stand within 1 tile/);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('the Keystone stays through an Evoke: a second Evoke the same turn finds it; rounds and scuffs don\'t take it', () => {
-    const f = fightWith([adv('glyph_mason')], [{}]); open(f.cb); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push']);
-    const foe = at(f, f.foe, '6,2'); foe.def = -40; foe.hp = foe.maxHp = 999; f.unit(u.id).ap = 9;
-    act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' });
+  it('the Keystone stays through an Evoke: a second Evoke the same turn finds it; rounds and scuffs don\'t take it', () => {
+    const f = fightWith([adv('glyph_mason')], [{}]); open(f.cb); const u = f.turn(f.pc); at(f, u, '4,2'); caster(f.unit(u.id), ['fire', 'seek']);
+    const foe = at(f, f.foe, '1,2'); foe.def = -40; foe.hp = foe.maxHp = 999; f.unit(u.id).ap = 9;
+    act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', choice: 'fire' });
     for (let i = 0; i < 2; i++) {
-      act(f, f.unit(u.id), { type: 'combat/draw', word: 'push', tile: '4,2' });
-      act(f, f.unit(u.id), { type: 'combat/evoke', tile: '4,2', aim: '6,2' });
+      at(f, f.unit(u.id), '5,2'); act(f, f.unit(u.id), { type: 'combat/draw', word: 'seek', tile: '5,2' });
+      act(f, f.unit(u.id), { type: 'combat/evoke', tile: '5,2', aim: '1,2' });
       const ks = (f.cb.glyphs || []).find((g) => g.id === 'ks-' + u.id); expect(ks).toBeTruthy(); expect(ks!.word).toBe('fire');
     }
     expect(f.unit(foe.id).hp).toBeLessThan(999);

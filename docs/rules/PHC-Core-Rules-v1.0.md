@@ -1152,7 +1152,7 @@ An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0 and 
 Six new advanced classes join the 15 (21 in all). The rules for learning one don't change: 15 in one parent's signature skills, 9 in the other's, and a tutor.
 
 **Glyph Mason** (Mage + Warden; tutor: the scholar halls). *"The old masons cut words that are still burning."* Draws with a mason's chisel that counts as an Evoker.
-- **Keystone** (2 AP + 1 standard core): cut a glyph instead of drawing it. It never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. It stays in that zone until you cut another (one at a time).
+- **Keystone** (2 AP + 1 standard core): cut a glyph on your own tile instead of drawing it. It never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. It stays in that zone until you cut another (one at a time).
 - **Survey:** you and your allies can Evoke a pattern that holds your Keystone from up to 2 tiles away, and it costs 1 charge less.
 - **Foundation** (once per scene): this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.
 
@@ -1176,7 +1176,19 @@ Six new advanced classes join the 15 (21 in all). The rules for learning one don
 | STAY | Stasis: conditions inside don't tick down | SEEK | Hunting ground: allies' attacks on enemies inside ignore half cover |
 | TWICE | Echo field: the first spell each round cast by an ally inside repeats at half effect | | |
 
-Rules 1.4: RETURN is gone, and so is its Grand form (Sanctuary). The 16 words new in 1.4 have no Grand form yet, so Enlarge can't pick them (item 449).
+Rules 1.4: RETURN is gone, and so is its Grand form (Sanctuary). The 17 words new in 1.4 have provisional Grand forms (item 468):
+
+| Word | Grand form | Word | Grand form |
+|---|---|---|---|
+| ACID | Corroding mire: 5 acid damage on entering (once a round) or starting a turn inside; Corroded on a failed Body save | ARC | Plunging fire: allies' shots from inside ignore half cover |
+| COMMAND | Court: enemies starting a turn inside make a Brain save or kneel (fall Prone) | SENSE | Second sight: Hidden enemies within 4 tiles of the staff are revealed at each turn start |
+| QUICKEN | Quickstep: allies (not you) starting a turn inside get +1 AP that turn, within the AP ceiling of 9 | RELAY | Switchboard: an ally inside may Evoke any pattern lying inside from anywhere inside |
+| SHARPEN | Whetstone: allies attacking from inside +2 to hit | WAIT | Tripwire: the first time each round an enemy enters, it takes 10 Sigil damage and its walk stops |
+| CLEANSE | Clear water: allies starting a turn inside lose their newest harmful condition | WATCH | Sentinel: at the start of each of your turns the staff strikes the nearest enemy inside for 10 Sigil damage |
+| STEP | Fold: for allies, each tile of a move inside costs half | CHAIN | Conductor: when your side hurts an enemy inside, 5 lightning damage arcs to the nearest other enemy inside within 3 tiles (once a round for each enemy it reaches) |
+| RAISE | Bastion: shots from outside at allies inside −5, as half cover | LEECH | Bloodwell: enemies starting a turn inside lose 5 HP (Sigil) and you heal what they lose |
+| NULL | Clean ground: placed Sigil magic inside (not Keystones) is wiped when it goes up and at each round start, and no glyph can be drawn inside, yours included | KIN | Sanctum: allies inside take no damage from your side's spells and attacks |
+| MASK | Shroud: allies starting a turn inside are Hidden (an attack still gives them away) | | |
 
 **Heartfed** (Channeler + Hexer; tutor: Arkvelton). *"Every feeling in this room is fuel. Yours too."*
 - **Four hearts:** you carry four gauges, 0 to 5: **Rage** (+1 per 20 damage you take), **Grief** (+2 when an ally is Downed, +5 when one dies), **Fear** (+1 at the start of a fight with an Elite or Boss, +2 when you're Shaken), **Devotion** (+1 when an ally heals or buffs you). Each design you make is keyed to one of them.
@@ -1199,7 +1211,7 @@ Rules 1.4: RETURN is gone, and so is its Grand form (Sanctuary). The 16 words ne
 - **Bond:** if the Twin drops to 0 HP it vanishes and you take 3 Strain; call it again next scene.
 - In game text it is only ever *the twin*. It never speaks of the upper realm (the Knowing).
 
-**The old classes under the new Sigil rules (rules 1.4; full list and engine notes in `docs/design/sigil-1.4-impact.md`).** Every glyph is drawn on its caster's own tile, one to a tile, and spells are Lines. Blade Scribe's Sword Form and the Evoker blade's Edge Word draw their glyph on your own tile as part of the strike. Siege Engineer's barricade becomes full cover with a STAY glyph on a tile next to it. Warden's cover rune is still a lone STAY glyph Evoked on its own (the class's exception to the Line), from a tile next to it. Spellslinger's and the Scribe's stored spells hold words, not shapes: a stored spell goes off at the shot's target (Spellslinger) or from the object's tile with its own Reach, all around (Scribe). Stroke Gambler's half-glyphs fall on your own tile and complete as a Line of half-glyphs. Glyph Mason's Keystone is cut on your own tile and counts as a glyph of the Line it sits in. Mage's Barrage still cuts element words' charge; Overcharge lets one spell hold a word beyond your Max Sigil words, never beyond 4 glyphs. Circuit Mage's Fusion joins the non-Subject words (Reach, Delivery, Burst, Filter) to a Soul school.
+**The old classes under the new Sigil rules (rules 1.4; full list and engine notes in `docs/design/sigil-1.4-impact.md`).** Every glyph is drawn on its caster's own tile, one to a tile, and spells are Lines. Blade Scribe's Sword Form and the Evoker blade's Edge Word draw their glyph on your own tile as part of the strike. Siege Engineer's barricade becomes full cover with a STAY glyph on a tile next to it. Warden's cover rune is still a lone STAY glyph Evoked on its own (the class's exception to the Line), from a tile next to it. Spellslinger's and the Scribe's stored spells hold words, not shapes: a stored spell goes off at the shot's target (Spellslinger) or from the object's tile with its own Reach, all around (Scribe). Stroke Gambler's half-glyphs fall on your own tile and complete as a Line of half-glyphs, or as a Stack of two on one tile (the two-glyph hook's first holder, item 464). Glyph Mason's Keystone is cut on your own tile and counts as a glyph of the Line it sits in. Mage's Barrage still cuts element words' charge; Overcharge lets one spell hold a word beyond your Max Sigil words, never beyond 4 glyphs. Circuit Mage's Fusion joins the non-Subject words (Reach, Delivery, Burst, Filter) to a Soul school (item 466). The Grand Sigilist's Enlarge reaches all 40 words (item 468).
 
 ### Patrons and prayer
 
@@ -2388,8 +2400,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 *Sigil, Soul, prayer and music*
 
-162. *(D1)* **Hold the Stroke** (spec item 15). +1 / +2 stroke pool. It doesn't change words per spell.
-163. *(D2)* **Parallel Thought** (plan 6a-9, PROVISIONAL). Once per turn, and only while a STAY zone of yours stands. The
+162. *(D1)* **Hold the Stroke** (spec item 15). +1 / +2 stroke pool (rules 1.4: glyphs on the ground, item 443). It doesn't change words per spell.
+163. *(D2)* **Parallel Thought** (plan 6a-9, PROVISIONAL). Once per turn, and only while a placed spell of yours stands (rules 1.4: a STAY field, a WAIT trap or a WATCH turret; item 460). The
     discount (1 / 2 AP) covers the glyph draws first, then the Evoke, never below 0. It ends with the Evoke, and
     anything left over is lost.
 164. *(D3)* **Heart Overload** (plan 6a-4, PROVISIONAL). It's a toggle on Begin ("Pay with HP"), 2 / 1 HP per point of mana,
@@ -2411,6 +2423,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Evoking a pattern made only of your clean glyphs costs no charge.
     - The Evoke disarms it, and so does losing the clean glyphs.
     - An enemy evoking them pays as normal.
+    - Rules 1.4: "any length" is at most 4 glyphs; only a glyph that lands is clean (a refused draw records nothing),
+      and an Evoke that uses any clean glyph spends it (item 461).
 168. *(D7)* **The Twin Pays** (PROVISIONAL). A toggle on Begin, once per fight: 0 MP, no meter drop, no Strain on the cast or
     while it is held (Right Brain Debuff's +20% included).
 169. *(D8)* **Twin Souls** (PROVISIONAL). "Mid-level" is dropped: any design may carry a third school, at +20 MP before the
@@ -2423,9 +2437,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     How it works:
     - The pattern's shape decides the targets.
     - Rain, Size, Random and Move are ignored, and Ether is implied.
-    - A Ring is ×0.8.
-    - The pattern's Subject words don't fire, and its glyphs fade.
-    - A STAY pattern can't be fused.
+    - Rules 1.4 (item 462): the Line's Reach word and the facing rule set where it reaches, its Burst (and TWICE,
+      CHAIN) what it covers; each creature covered is hit once, allies too (KIN spares your side), at the Sigil's
+      multiplier for it capped at ×1 (the Ring's ×0.8 is gone with the Ring).
+    - The pattern's Subject words don't fire (nor PULL, STEP or LEECH), and its glyphs fade (a Keystone stays).
+    - A placed spell (STAY, WAIT, WATCH) can't be fused.
 171. *(D10)* **Verse of War** (plan 4.3). It applies only when the player has Said a line that round (on the area map, the
     toggle alone). +1 range on Begin, and on Release through "Release in verse". ×1.1 on the Soul damage of that
     release.
@@ -3233,8 +3249,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 341. *(K7)* **Half-Sigil** (audit 1-5, GAMEBREAKING). A half-glyph costs **1 charge** (never free; the word's charge is
     skipped), +1 Flux, Glyph-limit and 2-per-tile rules as normal, an Evoker needed. Half-glyphs pair as a Stack: the
     second on a tile is drawn from the words that complete the grammar (a Subject with a Form/Motion word you know, and
-    back). PROVISIONAL.
-342. *(K8)* **Stitch** (audit 1-6). A pattern of only half-glyphs fires only through Stitch (the plain Evoke refuses it). The
+    back). Rules 1.4: item 464. PROVISIONAL.
+342. *(K8; rules 1.4: item 465)* **Stitch** (audit 1-6). A pattern of only half-glyphs fires only through Stitch (the plain Evoke refuses it). The
     d20: 1-5 the spell's Subjects land at full strength, no roll, on the nearest creature on your side, you included
     (ties to you); 16-20 damage doubles (damage only, after armour); 6-15 normal. A natural 20 on the hit roll stacks.
     Words that make no spell fizzle (the glyphs fade, the Flux stays). Echo rerolls of the Stitch d20 are not wired
@@ -3259,14 +3275,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     cores per long rest, and self-made cores **can't be sold** (counted in `c.state.selfCores`; MISSING: the shop
     must refuse them). Works out of combat too (the story strip), with a ruling: a pile of self-made cores is
     conspicuous. PROVISIONAL.
-349. *(K15)* **Fusion** (audit 1-5; needs Leon's sign-off). The model: a pattern of only Form/Motion glyphs fired with a ready
+349. *(K15)* **Fusion** (audit 1-5; needs Leon's sign-off; rules 1.4: item 466). The model: a pattern of only Form/Motion glyphs fired with a ready
     Outburst in the Subject's place. Costs: the draws as normal, then the Evoke's AP (1) and charge, plus the
     Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Delivery: a Line's reach by length (SPREAD: a
     cone ×0.6), a Ring's burst ×0.8, a Stack next to it (PUSH: 8 tiles; SPREAD: within 2, ×0.6), TWICE adds the
     nearest other enemy within 6. Every target gets the school at stage 1, or the held stage when you fuse an Outburst
     you were holding. STAY isn't allowed (no standing Outbursts yet). Each Fusion is a fight note (Knowing risk).
     Data fix: `ap_cost 0` vs the expression: unify. PROVISIONAL.
-350. *(K16)* **Keystone** (audit 1-5, GAMEBREAKING STAY wall). 2 AP + 1 spare standard core (in place of the word's charge),
+350. *(K16; rules 1.4: item 467)* **Keystone** (audit 1-5, GAMEBREAKING STAY wall). 2 AP + 1 spare standard core (in place of the word's charge),
     +1 Flux, own or adjacent tile, any Evoker (the mason's chisel item doesn't exist yet: data delta `mason_chisel`,
     1H tool, counts as an Evoker; price and weight provisional). Never fades, can't be scuffed, doesn't count toward
     the glyph limit, survives being Evoked, one at a time. It stays in that map zone for the session (lost on leaving
@@ -3546,7 +3562,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 446. **Harmful effects skip the Downed and the surrendered;** Boons reach them. PROVISIONAL.
 447. **A refused glyph costs nothing:** a second different Reach word, a second KIN, WATCH with STAY, or a glyph past your cap is refused before any AP, charge or Flux is spent. PROVISIONAL.
 448. **Payload under 1.4:** doubles a SPREAD radius or a PUSH cone's length, or adds one target to a single-target spell (as TWICE does); a STAY, WAIT or WATCH spell can't carry it. PROVISIONAL.
-449. **Grand forms** stay for the 23 old words that remain (RETURN's Sanctuary is gone); the 16 new words have none yet. OPEN: Leon to write them or leave them out.
+449. **Grand forms** stay for the 23 old words that remain (RETURN's Sanctuary is gone); the new words (17, not 16) have provisional forms in item 468. OPEN: Leon to rewrite them or leave them out.
 450. **Visualization's Paint the Field (Mastery 2)** (was: pick line, cone or circle for free) becomes: once per Evoke, add SPREAD or PUSH to a spell that has no Burst, free (no glyph, no charge, not counted toward 4). PROVISIONAL.
 451. **Brain Power's Overclock (Mastery 1)** (a spell one word longer than Max Sigil words, +2 charge) never passes 4 glyphs, so it does nothing from Intelligence 5. PROVISIONAL.
 452. **Two-glyph hook:** no perk, trait or skill allows a second glyph on a tile yet; the Stack (two glyphs on a tile, area all around out to the range) exists only for one. OPEN: which item gets it.
@@ -3557,3 +3573,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 457. **A trap that goes off mid-walk ends the walk there**, and so does a field that moves you (a whirlpool). Traps and turrets don't act on the area map (no fight is running); fields bite the squad at the overworld round's start. *Engine: combat.ts moveUnit, sigil.ts sigilEnter.* PROVISIONAL.
 458. **Turret reach:** a WATCH turret uses its spell's Reach from its own tile (Touch: 1 tile all around; SEEK needs sight and is blocked like a bolt; ARC needs sight; SENSE none); with RELAY it reaches as Touch. A hit destroys it: a weapon attack at its tile (the weapon's attack AP, d20 + attack against Defense 10; *engine: combat/strike-turret*). PROVISIONAL.
 459. **Old saves (engine detail of item 441):** a 1.2 RETURN that was one of exactly two starting words becomes SEEK (item 438's swap); otherwise it is removed and owed back as one free word at the next rest (`sigilFree`). PROVISIONAL.
+460. **Parallel Thought under 1.4:** "still active" is one of your fields (STAY), traps (WAIT) or turrets (WATCH) standing; your unfired glyphs, VEIL smoke, LIGHT, RAISE walls and an ally's placed spells don't count. The discount (1 / 2 AP, once a turn) covers glyphs first, then the Evoke, and ends with any Evoke (a fused cast included) once some of it was used. PROVISIONAL. *Engine: perks/d.ts.*
+461. **Clean Draw under 1.4:** a Sigil of any length is at most 4 glyphs. A glyph is clean only if it lands (a draw refused by Rigid, a second Reach word or the cap records nothing). An Evoke made only of clean glyphs costs no charge; any Evoke or fused cast that uses a clean glyph spends Clean Draw; if every clean glyph fades, is scuffed or is NULLed first, it is spent too. PROVISIONAL. *Engine: perks/d.ts (glyph_drawn, evoked).*
+462. **Twin Discipline under 1.4:** the fused Line covers whom its Evoke would (Reach, facing, Burst, TWICE's missiles, CHAIN's jumps, friendly fire, KIN); each creature covered takes the held Outburst once, released at it (Ether implied; Rain, Size, Random, Move ignored), at the Sigil's multiplier for that creature capped at ×1, so a Burst's edge or a chain jump weakens it and CONDENSE or repeats never grow it. The Sigil's Subjects, PULL, STEP and LEECH don't fire; STAY, WAIT and WATCH Lines can't be fused. PROVISIONAL. *Engine: perks/d.ts.*
+463. **Hold the Stroke under 1.4:** the engine asks the `ground_cap` hook how many of your glyphs stand (Max Sigil words + 1 / + 2), so the extra glyphs are ordinary glyphs (the 1.3 "#pool" tags are cleared at your next draw). PROVISIONAL. *Engine: sigil.ts groundCap, perks/d.ts.*
+464. **Half-Sigil under 1.4** (lane classes-k): a half-glyph goes on your own tile only (1 AP, 1 charge, +1 Flux). The Stroke Gambler's half-glyphs are the first holder of the two-glyph hook (item 452): a tile holding one half-glyph of yours, and nothing else, takes a second half-glyph (a Stack, area all around out to the range); no ordinary glyph goes on a half-glyph or a half-glyph on an ordinary one. The second half on a tile is drawn from the words that complete the grammar (a Subject with a non-Subject, and back). The random word is drawn only from words the draw wouldn't refuse (a second Reach word, a second KIN, WATCH with STAY, past your cap); with none left, Half-Sigil is refused and costs nothing. Half-glyphs make Lines like any glyph and count toward your glyphs on the ground. *Engine: classes/k.ts.* PROVISIONAL.
+465. **Stitch under 1.4:** a Line or Stack of only half-glyphs is Evoked by the 1.4 rules (where you stand, the facing rule, the aim) and only through Stitch; the gamble (1-5 backlash, 6-15 holds, 16-20 double damage) is rolled after the Evoke is checked, so a refused Evoke rolls nothing. Words that make no spell fizzle: the strokes fade, no AP or roll (the Flux was paid on drawing). **The backlash** goes off on the victim's tile as Touch at full strength with no roll: its Subjects, Burst and CHAIN as written (friendly fire); KIN spares no one (the spell has turned on its maker), STAY, WAIT and WATCH go off once instead of standing, and its Reach word adds nothing. The Evoke's AP and charge are spent. *Engine: classes/k.ts (sigil.ts castAt).* PROVISIONAL.
+466. **Fusion under 1.4:** the Line holds only non-Subject words (Reach, Delivery, Burst, Filter) and the Outburst stands in the Subject's place: it counts toward the 4 words of a spell (so a Fusion Line is 3 glyphs at most) but not toward Max Sigil words or the charge. The Evoke plan delivers it as it would a Sigil Subject (where you stand, the facing rule, the Reach word's area and ×0.8 / ×0.6, the Burst's tiles and multipliers, TWICE's missiles, CHAIN's jumps, friendly fire, KIN); each creature it covers takes the Outburst's school at its multiplier there; PULL drags them toward you afterwards; LEECH heals you half the Outburst damage dealt to the other side. STAY, WAIT and WATCH are refused (no standing Outbursts). A buff design is planned as a Boon (allies its natural picks), any other as an Affliction. Costs are unchanged (the Evoke's AP and charge, the Outburst's AP, MP and Strain, +1 Strain, +2 Flux). *Engine: classes/k.ts; sigil.ts planEvoke `opts.subject` (additive).* PROVISIONAL.
+467. **Glyph Mason under 1.4:** the Keystone is cut on your own tile, on a tile that holds no glyph, and the draw's refusals hold (a second Reach word, a second KIN, WATCH with STAY, past 4 glyphs or Max Sigil words in the Line it joins), checked before the core is spent. It counts as a glyph of its Line (or Stack) and is never wiped by NULL (item 430). **Survey:** you and your allies Evoke a Line holding your Keystone from up to 2 tiles of any of its glyphs, with sight of one; the facing rule reads from where you stand (beyond an end: along; beside the Line: across, away from you; a middle glyph still refused); the plain Evoke reaches it (the `evoke_reach` hook), and the Survey action is the explicit form. **Foundation:** the 0-AP draws are the ordinary Draw on your own tile within 2 tiles of the Keystone (the `glyph_cost` hook now carries the tile), so it prices the steps of a Line walked around the Keystone. *Engine: classes/k.ts.* PROVISIONAL.
+468. **Grand forms for the words new in 1.4** (lane classes-k; closes item 449's "none yet"). The count is **17**, not 16: the 9 new Subjects, ARC, SENSE, RELAY, WAIT, WATCH, CHAIN, LEECH and KIN (24 old words − RETURN = 23, + 17 = 40). Same frame as the 23 old forms (radius 2 round the staff, 3 rounds + duration bonus, flat numbers, the Earthed owner unharmed): ACID *Corroding mire* (5 acid on entering, once a round, or starting a turn inside; Corroded on a failed Body save) · COMMAND *Court* (enemies starting a turn inside: Brain save or kneel, Prone) · QUICKEN *Quickstep* (allies, not you, starting a turn inside +1 AP, ceiling 9) · SHARPEN *Whetstone* (allies attacking from inside +2 to hit) · CLEANSE *Clear water* (allies starting a turn inside lose their newest harmful condition) · STEP *Fold* (for allies, each tile of a move inside counts as half a tile) · RAISE *Bastion* (shots from outside at allies inside −5, as half cover) · NULL *Clean ground* (placed Sigil magic inside wiped when it goes up and at each round start, never Keystones; no glyph drawn inside, yours included) · MASK *Shroud* (allies starting a turn inside are Hidden) · ARC *Plunging fire* (allies' shots from inside ignore half cover) · SENSE *Second sight* (Hidden enemies within 4 tiles of the staff revealed at each turn start) · RELAY *Switchboard* (an ally inside Evokes a pattern lying inside from anywhere inside: reach 4) · WAIT *Tripwire* (the first time each round an enemy enters: 10 Sigil damage, its walk stops) · WATCH *Sentinel* (at the start of each of your turns, 10 Sigil damage to the nearest enemy inside) · CHAIN *Conductor* (your side hurts an enemy inside: 5 lightning arcs to the nearest other enemy inside within 3, once a round for each enemy it reaches; an arc doesn't arc) · LEECH *Bloodwell* (enemies starting a turn inside lose 5, Sigil, and you heal what they lose) · KIN *Sanctum* (allies inside take no damage from your side's spells and attacks; hazards still hurt). Earthed: ACID joins the element words (Elemental fists, Corroded on a hit, Body save). OPEN: Leon to rewrite any of them; the old 23 keep their 1.2 texts even where the word's 1.4 meaning moved. *Engine: classes/k.ts; data: sigils.json `grand` (`grand_provisional: true` on the 17).* PROVISIONAL.
