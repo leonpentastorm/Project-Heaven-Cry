@@ -94,13 +94,15 @@ export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
   for (const h of holdersOf(x)) { h.g = x.g ?? boundGame(); for (const d of actionDefs(h.info)) { const e = entryOf(h, d, scope); if (e) out.push(e); } }
   return out;
 }
+/** Why a spent action can't be used, by its use window. */
+const USED_WHY: Partial<Record<UseScope, string>> = { per_rest: 'Used until the next rest.', per_scene: 'Used until the next scene.', per_session: 'Used until the next session.', per_combat: 'Used this fight.', per_turn: 'Used this turn.', per_round: 'Used this round.', reaction: 'Used this round.', per_campaign: 'Used for this campaign.' };
 function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry | null {
   if (!d.scope.includes(scope)) return null;
   const av = d.available ? d.available(h) : true; if (av === false) return null;
   const ap = typeof d.ap === 'function' ? d.ap(h, {}) : d.ap, per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
   const left = uses(h).left(per, n, h.key + '#' + d.id);
   let why: string | null = typeof av === 'string' ? av : null;
-  if (!why && left <= 0) why = 'Used (' + usesLabel(per, n, 0) + ').';
+  if (!why && left <= 0) why = USED_WHY[per] || 'Used (' + usesLabel(per, n, 0) + ').';
   if (!why && per === 'out_of_combat' && h.cb && !overworld(h.cb)) why = 'Out of combat only.';
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
   if (!why && scope !== 'story' && h.u && h.u.ap < ap) why = 'Needs ' + ap + ' AP.';

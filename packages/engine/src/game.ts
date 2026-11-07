@@ -254,7 +254,7 @@ export type Action =
   | { type: 'combat/pray'; unitId: string; choice?: string; targetId?: string; miracle?: boolean }
   | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
   | { type: 'combat/hide'; unitId: string } | { type: 'combat/extinguish'; unitId: string; targetId?: string } | { type: 'combat/escape'; unitId: string } | { type: 'combat/recover'; unitId: string }
-  | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string }
+  | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
   | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
@@ -521,9 +521,22 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'rest': {
-      if (!isHost(g, by)) fail('Only the host calls a rest.');
-      if (g.phase !== 'story') fail('Rest out of combat.');
+      // The host calls it (the Narrator grants one with a turn's rest field); the Proving Ground allows it while gearing up.
+      if (!isHost(g, by)) fail('Only the host calls a rest: ask for one instead.');
+      if (g.phase === 'lobby') fail('The session hasn\'t started.');
+      if (g.phase !== 'story') fail(g.sandbox ? 'No resting in a fight: stop the fight (or clear the wave) first.' : 'No resting in a fight: win it, or get out of it, first.');
       applyRest(g, a.kind === 'long' ? 'long' : 'short'); return;
+    }
+    case 'story/ask-rest': {
+      // A player asks for a rest (spec: Rest): a line the host and the Narrator see; the Narrator grants it (rest) or not.
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase !== 'story') fail('No resting in a fight: win it, or get out of it, first.');
+      if (g.story.await !== 'players') fail('Wait for the round to open.');
+      const kind = a.kind === 'long' ? 'long' : 'short';
+      const tag = '[rest:' + kind + ']', E = g.story.entries;
+      for (let i = E.length - 1; i >= 0 && E[i].kind !== 'narration'; i--) if (E[i].who === by && String(E[i].text).includes(tag)) fail('Already asked: the Narrator answers it this round.');
+      g.story.needs = true; push(g, { kind: 'player', who: by, text: c!.name + ' asks for a ' + kind + ' rest (' + REST_INFO[kind] + ') ' + tag + '.', head: c!.name });
+      return;
     }
     case 'story/pray': {
       // A prayer in the story (spec: Patrons and prayer): the patron is the Narrator's to play, so it is a ruling.
@@ -831,6 +844,11 @@ export function applyKarma(g: GameState, c: Character, amount: number, opts: { u
   return d;
 }
 export const karmaBand = (k: number) => (k <= -30 ? 'Chaotic' : k >= 30 ? 'Lawful' : 'Neutral');
+/** What each rest gives back, in a line (spec: Rest), for the Rest buttons and the request line. */
+export const REST_INFO: Record<'short' | 'long', string> = {
+  short: '1 hour: 25% of max HP back; Heat, Flux and Strain reset; once-per-rest uses come back',
+  long: '8 hours: all HP; MP full if the air is Normal or richer; Supplies and toxins restocked; once-per-rest uses come back',
+};
 /** Rest (spec: Rest): short (1 hour: 25% of max HP back; Heat, Flux and Strain reset) or long (8 hours: all HP, MP
  * full if the air is Normal or richer, Supplies and toxins restocked). Each rest starts a new per-rest window for item
  * uses. 'rest' {g, kind, chars} lets items change it (Insomniac, Old Timer…). */

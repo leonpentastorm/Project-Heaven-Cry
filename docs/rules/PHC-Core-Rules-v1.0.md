@@ -1505,7 +1505,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
 | Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Medic can treat injuries |
 
-The Narrator calls a rest (or the host does, from the Room). The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3).
+The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3).
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 

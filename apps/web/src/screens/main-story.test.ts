@@ -75,3 +75,26 @@ describe('story screen', () => {
     expect(r.areaCells.filter((x: any) => x.hasPlan).length).toBeGreaterThan(melee.length);
   });
 });
+
+describe('story uses on the sheet cards, and rest', () => {
+  it('Infuse on the class card: chips, confirm, used until the next rest; the host rests and it is back', async () => {
+    const { c, L } = story();
+    G.characters[c.id].classId = 'medic'; G.characters[c.id].advancedClass = 'storm_hand';
+    L.state.tab = 'perks';
+    const card = () => L.renderVals().classMoves.find((m: any) => m.key === 'class:storm_hand.gauntlet_infusion');
+    let a = card().acts[0];
+    expect(a).toMatchObject({ label: 'Infuse…', off: false });
+    a.click(); await tick(); a = card().acts[0];
+    expect(a.open).toBe(true); expect(a.opts.map((o: any) => o.label)).toEqual(['Fire', 'Freeze', 'Shock', 'Spark']);
+    a.opts.find((o: any) => o.label === 'Shock').pick(); await tick(); a = card().acts[0];
+    expect(a.cantConfirm).toBe(false); a.confirm(); await tick();
+    expect(G.characters[c.id].state!['class:storm_hand.gauntlet_infusion'].element).toBe('shock');
+    expect(card().acts[0]).toMatchObject({ off: true, why: 'Used until the next rest.' });
+    // The Perks strip shows it too (with chips when open).
+    expect(L.renderVals().storyPerks.some((p: any) => /Gauntlet Infusion/.test(p.label))).toBe(true);
+    const r = L.renderVals(); expect(r.restLabel).toBe('Rest…'); r.toggleRest(); await tick();
+    const opts = L.renderVals().restOpts; expect(opts.map((o: any) => o.label)).toEqual(['Short rest', 'Long rest']); expect(opts[1].text).toMatch(/all HP/);
+    opts[1].pick(); await tick();
+    expect(card().acts[0]).toMatchObject({ off: false });
+  });
+});

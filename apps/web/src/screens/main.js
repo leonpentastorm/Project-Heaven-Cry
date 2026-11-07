@@ -11,7 +11,7 @@ import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, 
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, wantsDetail } from '../game/commands';
-import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS } from '@engine';
+import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, signatureOf, classLabel } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
@@ -874,6 +874,47 @@ export class MainLogic extends DCLogic {
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const storyPk = g.phase === 'story' && c && !c.dead ? storyPerkEntries(g, c) : [];
+    // ---------- story and area-map uses of perks, traits and class moves, on their sheet cards ----------
+    // The story's (story/perk) and the area map's that the story doesn't take (world/act perk); the Proving Ground has no
+    // story, so only the area map's there. Each shows the engine's reason when it can't be used now ("Used until the next rest").
+    const usablePk = !c || c.dead || g.phase !== 'story' ? [] : SB ? wPk.map((e) => ({ e, how: 'world' }))
+      : [...storyPk.map((e) => ({ e, how: 'story' })), ...wPk.filter((e) => !(e.scope || []).includes('story')).map((e) => ({ e, how: 'world' }))];
+    const ON_MAP = ['unit', 'enemy', 'ally', 'tile', 'object'];
+    const runPk = (e, how, det) => { if (!c) return;
+      const pick = det ? { text: det, npc: det, choice: pickChoice(e, det) } : {};
+      act(how === 'world' ? { type: 'world/act', charId: c.id, act: 'perk', id: e.id, actionId: e.actionId, ...pick } : { type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...pick });
+      this.setState({ pkOpen: null, pkPick: '' }); };
+    const verbOf = (e) => (/^[a-z]+$/.test(e.actionId) ? e.actionId.charAt(0).toUpperCase() + e.actionId.slice(1) : e.label);
+    const pkBtn = (on) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
+    /** One action's button, and its picker when open (option chips, or a typed detail), then Confirm. where: 'card' or 'strip'. */
+    const pkView = ({ e, how }, where) => {
+      const key = where + ':' + pkId(e), open = S.pkOpen === key, det = open ? String(S.pkPick || '') : '';
+      const why = e.why || (how === 'world' && !SB && !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.') : null);
+      const opts0 = e.options || [], typed = !opts0.length ? ['text', 'npc'].includes(e.target) || !!e.pickLabel : /\btype\b/i.test(e.pickLabel || '');
+      const onMap = ON_MAP.includes(e.target), needs = !onMap && (opts0.length > 0 || typed);
+      const multi = (e.pickMulti || 1) > 1, chosen = new Set(String(det ? pickChoice(e, det) : '').split(' ').filter(Boolean)), setDet = (v) => this.setState({ pkPick: v });
+      const opts = opts0.map((o) => ({ key: o.id, label: o.label, pressed: chosen.has(o.id) ? 'true' : 'false', style: pkBtn(chosen.has(o.id)),
+        pick: () => { if (!multi) return setDet(chosen.has(o.id) ? '' : o.label); const now = [...chosen], nx = chosen.has(o.id) ? now.filter((x) => x !== o.id) : [...now, o.id].slice(-(e.pickMulti || 1)); setDet(nx.map((id) => (opts0.find((p) => p.id === id) || { label: id }).label).join(' ')); } }));
+      const ready = !!det.trim();
+      return { key, label: verbOf(e) + (onMap ? ' on the map…' : needs ? '…' : ''), aria: e.label + (needs ? ': choose, then confirm' : ''), title: (why ? why + ' · ' : '') + pkText(e), off: !!why, why: why || '', hasWhy: !!why, open: open && !why,
+        click: () => { if (why) return toast(why); if (onMap) return this.setState({ area: true, wAct: pkId(e), wTarget: null, wTile: null, wAim: null }); if (needs) return this.setState({ pkOpen: open ? null : key, pkPick: '' }); runPk(e, how, ''); },
+        style: 'min-height: 30px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (why ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : open ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
+        pickHead: (e.pickLabel || (e.target === 'npc' ? 'Who' : e.target === 'text' ? 'What you say or do' : 'Pick')) + (multi ? ' (up to ' + e.pickMulti + ')' : ''), hasOpts: opts.length > 0, opts, hasText: typed, text: det, onText: (ev) => setDet(ev.target.value),
+        textHolder: e.target === 'npc' ? 'A name' : opts.length ? 'Or type it' : 'Type it', confirm: () => { if (!ready) return toast((e.pickLabel || 'Pick one') + ' first.'); runPk(e, how, det.trim()); },
+        cantConfirm: !ready, confirmLabel: ready ? 'Confirm · ' + det.trim().toUpperCase().slice(0, 40) : 'Pick first', cancel: () => this.setState({ pkOpen: null, pkPick: '' }) };
+    };
+    const actsOf = (key) => { const L = usablePk.filter((x) => x.e.id === key).map((x) => pkView(x, 'card')); return { acts: L, hasActs: L.length > 0 }; };
+    for (const k of perks) Object.assign(k, actsOf('perk:' + k.key));
+    for (const t of traits) Object.assign(t, actsOf('trait:' + t.key));
+    for (const m of classMoves) Object.assign(m, m.locked ? { acts: [], hasActs: false } : actsOf(m.key));
+    // The Perks strip: the same actions; one with a pick opens its chips under the strip.
+    const stripPk = usablePk.map((x) => ({ x, v: pkView(x, 'strip') })), stripOpen = stripPk.find((y) => y.v.open);
+    // ---------- rest (spec: Rest): the host calls it, a player asks for it (the Narrator can grant one too) ----------
+    const restWhy = g.phase === 'lobby' ? 'The session hasn\'t started.' : g.phase !== 'story' ? 'No resting in a fight: win it, or get out of it, first.' : !isHost && g.story.await !== 'players' ? 'Wait for the round to open.' : !isHost && !c ? 'You have no character to ask with.' : '';
+    const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party' : 'Ask the Narrator for a rest: your request goes in the story'),
+      restOpen: !!S.restOpen && !restWhy, toggleRest: () => this.setState({ restOpen: !S.restOpen }), restPressed: S.restOpen ? 'true' : 'false',
+      restOpts: ['short', 'long'].map((k) => ({ key: k, label: (isHost ? '' : 'Ask for a ') + (k === 'short' ? (isHost ? 'Short rest' : 'short rest') : (isHost ? 'Long rest' : 'long rest')), text: REST_INFO[k] + '.',
+        pick: () => { if (isHost) act({ type: 'rest', kind: k }); else act({ type: 'story/ask-rest', charId: c.id, kind: k }); this.setState({ restOpen: false }); } })) };
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {
@@ -927,18 +968,21 @@ export class MainLogic extends DCLogic {
       ...(() => { const mb = missionsButton(g); return { hasMissions: !!mb, missionsLabel: mb ? mb.label : '', missionsTitle: mb ? mb.title : '', openMissions: () => openMissionBoard(),
         missionsStyle: 'min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
       // The Perks strip (plan 3): story uses of perks, traits and class moves. Text-taking ones use what is in the Say box.
-      get hasStoryPerks() { return this.storyPerks.length > 0; },
+      get hasStoryPerks() { return this.storyPerks.length > 0; }, ...restVals,
+      stripOpen: !!stripOpen, stripPick: stripOpen ? stripOpen.v : { opts: [] },
       pkDetail: S.pkDetail || '', onPkDetail: (e) => this.setState({ pkDetail: e.target.value }),
       pkDetailOpts: [...new Set(storyPk.flatMap((e) => (e.options || []).map((o) => o.label)))].map((l) => ({ key: l, value: l })),
       // The Say box is the text (what you say or do); the Perks detail field is the pick (a name, a squadmate, a γ skill,
       // words): it rides as npc and as choice (an option's id when it names one).
-      storyPerks: storyPk.map((e) => ({ key: pkId(e), label: e.label + (e.uses.label ? ' · ' + e.uses.label : ''), title: (e.why ? e.why + ' · ' : '') + pkText(e) + (e.target === 'text' ? ' (uses the text in the Say box)' : e.target === 'npc' ? ' (name them in the Perks detail field, or the Say box)' : '') + (e.pickLabel ? ' · Detail: ' + e.pickLabel : '') + (e.options && e.options.length ? ' (' + e.options.map((o) => o.label).join(', ') + ')' : ''), off: !!e.why,
-        pick: () => { const text = (this.state.draft || '').trim(), det = String(this.state.pkDetail || '').trim();
+      // An action with option chips (Gauntlet Infusion's fire / freeze / shock / spark) opens them under the strip; the
+      // Proving Ground runs these as area-map actions.
+      storyPerks: stripPk.map(({ x: { e, how }, v }) => ({ key: pkId(e), label: e.label + (v.hasOpts ? '…' : '') + (e.uses.label ? ' · ' + e.uses.label : ''), title: (v.why ? v.why + ' · ' : '') + pkText(e) + (e.target === 'text' ? ' (uses the text in the Say box)' : e.target === 'npc' ? ' (name them in the Perks detail field, or the Say box)' : '') + (e.pickLabel ? ' · Detail: ' + e.pickLabel : '') + (e.options && e.options.length ? ' (' + e.options.map((o) => o.label).join(', ') + ')' : ''), off: !!v.why,
+        pick: () => { if (v.hasOpts || how === 'world') return v.click(); const text = (this.state.draft || '').trim(), det = String(this.state.pkDetail || '').trim();
           if (e.target === 'text' && !text) return toast('Write it in the Say box first, then press ' + e.label + '.');
           if (e.options && e.options.length && !det) return toast((e.pickLabel || 'Pick one') + ': type it in the Perks detail field (' + e.options.map((o) => o.label).join(', ') + ').');
           act({ type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...(text ? { text } : {}), ...(det ? { npc: det, choice: pickChoice(e, det) } : {}) });
           if (['text', 'npc'].includes(e.target) && text) this.setState({ draft: '', polished: false }); if (det) this.setState({ pkDetail: '' }); },
-        style: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3' + (e.why ? '; opacity: 0.45' : '') })),
+        style: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid ' + (v.open ? '#FFFFFF' : '#2E3A50') + '; background: #10151F; color: #E7EBF3' + (v.why ? '; opacity: 0.45' : '') })),
       cantSpeak, turnText: why, turnStyle: 'font-size: 13px; color: ' + (cantSpeak ? '#A3AEC2' : myColor),
       pass: () => act({ type: 'story/pass' }),
       endTurn: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'end' }); if (this.state.area) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); else this.setState({ wTarget: null }); },
