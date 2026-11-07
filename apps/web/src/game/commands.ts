@@ -109,8 +109,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
     const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;
     const MG: ActionGroup[] = [];
     if (sig) MG.push(['MAGIC · SIGILS', [
-      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then your own tile or one next to you. It costs the word\'s charge from your Evoker and adds 1 Flux.'],
-      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a pattern of glyphs: a Stack (2 on one tile), a Line (a straight row, fired from its far end) or a Ring (around one empty tile). Stand on or next to it. Charge ' + mg.charge + '/' + CORE_CHARGE + '.'],
+      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile: one glyph a tile. Step and draw again to walk a Line (2 to 4 in a straight row). It costs the word\'s charge from your Evoker and adds its Flux.'],
+      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs (a Subject and another word). Where you stand sets the way it opens: behind an end, it fires along the Line; beside it, across. Charge ' + mg.charge + '/' + CORE_CHARGE + '.'],
       ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
       ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, SPELL_AP.vent + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.'],
       ['core', 'Swap core', SPELL_AP.core + ' AP', 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);

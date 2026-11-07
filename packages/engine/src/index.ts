@@ -12,3 +12,4 @@ export * from './magic';
 export * from './tactics';
 export * from './effects';
 export * from './missions';
+export * from './ai-sigil';

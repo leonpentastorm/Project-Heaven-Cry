@@ -17,7 +17,16 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
-  | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent';
+  | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
+  | ElementSfx | WordSfx;
+/** Element impacts and field loops (game/fx/elements.ts; shared by Sigils now and Soul Outbursts later). */
+export type ElementSfx = 'el_fire' | 'el_freeze' | 'el_shatter' | 'el_shock' | 'el_zap' | 'el_stone' | 'el_stone_rise' | 'el_stone_crumble' | 'el_gale' | 'el_spark' | 'el_acid'
+  | 'el_fire_loop' | 'el_freeze_loop' | 'el_shock_loop' | 'el_gale_loop' | 'el_acid_loop';
+/** Sigil word cues (rules 1.4): STEP, MASK, LEECH, NULL, the boons, traps, turrets, a fizzle. */
+export type WordSfx = 'sg_blink' | 'sg_mask' | 'sg_leech' | 'sg_null' | 'sg_quicken' | 'sg_sharpen' | 'sg_mend' | 'sg_ward' | 'sg_command' | 'sg_trap_set' | 'sg_trap_sprung'
+  | 'sg_light' | 'sg_turret' | 'sg_turret_break' | 'sg_fizzle' | 'sg_cleanse';
+/** The looping sounds (a field's bed under the fight); they play through setSfxLoops, never through sfx(). */
+export const LOOP_SFX: Sfx[] = ['el_fire_loop', 'el_freeze_loop', 'el_shock_loop', 'el_gale_loop', 'el_acid_loop'];
 const CB = (...n: string[]) => n.map((x) => '/sfx/cb/' + x + '.ogg');
 
 /** The chosen files (public/sfx/…, CC0; credits in game/sfxCredits.ts). A list plays one at random. Missing means the
@@ -37,6 +46,12 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   explosion: CB('explosion_1', 'explosion_2'), explosion_boom: CB('explosion_boom'), door_open: CB('door_open'), door_close: CB('door_close'), stim: CB('stim_hiss'),
   sigil_draw: CB('sigil_draw'), sigil_evoke: CB('sigil_evoke'), sigil_core: CB('sigil_core'), sigil_overload: CB('sigil_overload'),
   soul_hold: CB('soul_hold'), heartbeat: CB('heartbeat'), soul_release: CB('soul_release'), crystal: CB('crystal'), vent: CB('vent'),
+  el_fire: CB('el_fire_1', 'el_fire_2'), el_freeze: CB('el_freeze_1', 'el_freeze_2'), el_shatter: CB('el_shatter_1', 'el_shatter_2'), el_shock: CB('el_shock_1', 'el_shock_2'), el_zap: CB('el_zap'),
+  el_stone: CB('el_stone_1', 'el_stone_2'), el_stone_rise: CB('el_stone_rise'), el_stone_crumble: CB('el_stone_crumble'), el_gale: CB('el_gale_1'), el_spark: CB('el_spark_1', 'el_spark_2'), el_acid: CB('el_acid_1', 'el_acid_2'),
+  el_fire_loop: CB('el_fire_loop'), el_freeze_loop: CB('el_freeze_loop'), el_shock_loop: CB('el_shock_loop'), el_gale_loop: CB('el_gale_loop'), el_acid_loop: CB('el_acid_loop'),
+  sg_blink: CB('sg_blink'), sg_mask: CB('sg_mask'), sg_leech: CB('sg_leech'), sg_null: CB('sg_null'), sg_quicken: CB('sg_quicken'), sg_sharpen: CB('sg_sharpen'), sg_mend: CB('sg_mend'),
+  sg_ward: CB('sg_ward'), sg_command: CB('sg_command'), sg_trap_set: CB('sg_trap_set'), sg_trap_sprung: CB('sg_trap_sprung'), sg_light: CB('sg_light'), sg_turret: CB('sg_turret'),
+  sg_turret_break: CB('sg_turret_break'), sg_fizzle: CB('sg_fizzle'), sg_cleanse: CB('sg_cleanse'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -45,6 +60,9 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   reload_pistol: 'reload', reload_mag: 'reload', reload_rifle: 'reload', reload_shells: 'reload', rack: 'reload', jam_clear: 'reload', round_in: 'reload', mag_in: 'reload',
   hit_flesh: 'hit', hit_heavy: 'hit', hit_metal: 'hit', hit_wood: 'hit', body_fall: 'down', swish: 'melee', slice: 'melee', chop: 'melee', whiz: 'miss',
   explosion: 'shot', explosion_boom: 'hit', sigil_draw: 'draw', sigil_evoke: 'evoke', sigil_overload: 'overload', soul_hold: 'outburst', soul_release: 'release',
+  el_fire: 'hit', el_freeze: 'hit', el_shatter: 'miss', el_shock: 'evoke', el_zap: 'draw', el_stone: 'hit', el_stone_rise: 'hit', el_stone_crumble: 'down', el_gale: 'miss', el_spark: 'draw', el_acid: 'hit',
+  sg_blink: 'evoke', sg_mask: 'release', sg_leech: 'outburst', sg_null: 'overload', sg_quicken: 'start', sg_sharpen: 'melee', sg_mend: 'start', sg_ward: 'draw', sg_command: 'evoke',
+  sg_trap_set: 'draw', sg_trap_sprung: 'evoke', sg_light: 'start', sg_turret: 'draw', sg_turret_break: 'hit', sg_fizzle: 'error', sg_cleanse: 'draw',
 };
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
@@ -53,6 +71,10 @@ const MIX: Partial<Record<Sfx, number>> = {
   reload_pistol: 0.45, reload_mag: 0.45, reload_rifle: 0.45, reload_shells: 0.45, rack: 0.45, jam_clear: 0.5, round_in: 0.35, mag_in: 0.4, dry_click: 0.35,
   hit_flesh: 0.45, hit_heavy: 0.5, hit_metal: 0.35, hit_wood: 0.35, body_fall: 0.5, step: 0.2, swish: 0.4, whiz: 0.25, slice: 0.4, chop: 0.45,
   explosion: 0.65, explosion_boom: 0.6, door_open: 0.4, door_close: 0.4, stim: 0.35,
+  el_fire: 0.45, el_freeze: 0.4, el_shatter: 0.35, el_shock: 0.4, el_zap: 0.35, el_stone: 0.5, el_stone_rise: 0.45, el_stone_crumble: 0.4, el_gale: 0.35, el_spark: 0.3, el_acid: 0.4,
+  el_fire_loop: 0.16, el_freeze_loop: 0.08, el_shock_loop: 0.07, el_gale_loop: 0.12, el_acid_loop: 0.12,
+  sg_blink: 0.4, sg_mask: 0.35, sg_leech: 0.4, sg_null: 0.45, sg_quicken: 0.35, sg_sharpen: 0.35, sg_mend: 0.35, sg_ward: 0.35, sg_command: 0.35,
+  sg_trap_set: 0.2, sg_trap_sprung: 0.45, sg_light: 0.3, sg_turret: 0.35, sg_turret_break: 0.4, sg_fizzle: 0.35, sg_cleanse: 0.35,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
@@ -105,7 +127,7 @@ let lastHover = 0;
  *  audio clock), pan (−1 left … 1 right, from where it happens on screen). */
 export interface SfxOpts { rate?: number; gain?: number; delay?: number; pan?: number }
 export function sfx(name: Sfx, o: SfxOpts = {}) {
-  if (!unlocked || level() <= 0) return;
+  if (!unlocked || level() <= 0 || LOOP_SFX.includes(name)) return;
   if (name === 'hover') { const t = performance.now(); if (t - lastHover < 60) return; lastHover = t; }
   try {
     const ac = audio(); if (!ac || !out) return;
@@ -121,6 +143,42 @@ export function sfx(name: Sfx, o: SfxOpts = {}) {
     if (o.delay) setTimeout(() => synth(ac, g, stand), o.delay); else synth(ac, g, stand);
   } catch { /* sound must never break the game */ }
 }
+
+// ---------- loops (a field's bed: fire crackle, storm static, wind, bubbling) ----------
+interface Loop { src: AudioBufferSourceNode; gain: GainNode; want: number }
+const loops = new Map<Sfx, Loop>();
+let loopWant: Partial<Record<Sfx, number>> = {};
+/** Which loops should be playing and how loud (0 … 1 × their mix): the effects layer calls this from the game state
+ *  (the fields on the map), so a loop never outlives what makes it. Missing names fade out. Silent until sound is
+ *  allowed and the file has loaded; follows the volume, mute and the Narrator's ducking on each call. */
+export function setSfxLoops(want: Partial<Record<Sfx, number>>) {
+  loopWant = want;
+  const ac = unlocked ? audio() : null;
+  for (const [name, l] of [...loops]) if (!(want[name]! > 0) || !ac) { fadeLoop(l, 0, true); loops.delete(name); }
+  if (!ac || !out) return;
+  for (const [name, w] of Object.entries(want) as [Sfx, number][]) {
+    if (!(w > 0)) continue;
+    const target = Math.min(1, level() * (MIX[name] ?? 0.1) * 2 * w), had = loops.get(name);
+    if (had) { if (Math.abs(had.want - target) > 0.005) { had.want = target; fadeLoop(had, target); } continue; }
+    const file = files(name)[0], buf = file ? buffers.get(file) : null;
+    if (!buf) { if (file && !buffers.has(file)) load(file).then(() => { if ((loopWant[name] || 0) > 0 && !loops.has(name)) setSfxLoops(loopWant); }); continue; }
+    try {
+      const src = ac.createBufferSource(), g = ac.createGain(); src.buffer = buf; src.loop = true; g.gain.value = 0.0001;
+      src.connect(g); g.connect(out); src.start(ac.currentTime, Math.random() * Math.max(0, buf.duration - 0.1));
+      const l = { src, gain: g, want: target }; loops.set(name, l); fadeLoop(l, target);
+    } catch { /* never break the game */ }
+  }
+}
+/** The loops playing now and their target gains (for tests and the Proving Ground). */
+export const sfxLoopsPlaying = () => Object.fromEntries([...loops].map(([k, l]) => [k, l.want]));
+function fadeLoop(l: Loop, to: number, stop = false) {
+  try {
+    const ac = ctx!; const t = ac.currentTime;
+    l.gain.gain.cancelScheduledValues(t); l.gain.gain.setValueAtTime(Math.max(0.0001, l.gain.gain.value), t); l.gain.gain.linearRampToValueAtTime(Math.max(0.0001, to), t + 0.6);
+    if (stop) l.src.stop(t + 0.65);
+  } catch { /* */ }
+}
+if (typeof window !== 'undefined') onUiPrefs(() => { if (loops.size || Object.keys(loopWant).length) setSfxLoops(loopWant); });
 
 /** Stand-ins: a few oscillator blips, quiet and short. */
 function synth(ac: AudioContext, dest: GainNode, name: Sfx) {

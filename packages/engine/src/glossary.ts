@@ -7,6 +7,7 @@ import { OBJECT_KINDS } from './objects';
 import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
+import sigilsJ from '../../../data/sigils.json';
 import { verdictFor } from './effects/coverage';
 
 export interface WikiEntry { key: string; name: string; text: string }
@@ -35,8 +36,22 @@ function build(): WikiEntry[] {
   for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Tenets: ' + (p.tenets || []).join('; ') + '.', 'Taboos: ' + (p.taboos || []).join('; ') + '.', 'Blessings: ' + (p.blessings || []).map((b: any) => b.name).join(', ') + '.'));
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));
-  // Magic (spec: Magic, rules 1.2): Sigil words, Soul schools and modules.
-  for (const w of SIGILS as any[]) add('sigil:' + w.id, w.word, line(w.word + ' (Sigil word, ' + String(w.class).replace('_', ', ') + '; ' + w.charge + ' charge to draw).', w.text, w.grand ? 'Grand form: ' + w.grand : ''));
+  // Magic (spec: Magic; Sigils rules 1.4, Soul rules 1.2): Sigil words by group, the grammar, Soul schools and modules.
+  const sg: any = (sigilsJ as any).grammar || {}, els: any = (sigilsJ as any).elements || {};
+  for (const w of SIGILS as any[]) {
+    const kind = w.group === 'subject' ? 'Subject, ' + String(w.class).replace('subject_', '') : String(w.group), el = w.element ? els[w.element] : null;
+    add('sigil:' + w.id, w.word, line(w.word + ' (Sigil word, ' + kind + '; ' + w.charge + ' charge to draw' + (w.max_copies === 1 ? '; one copy a spell' : '') + ').', w.text,
+      el ? 'Looks: ' + el.look + ' Sounds: ' + el.sound : '', w.grand ? 'Grand form: ' + w.grand : ''));
+  }
+  // The grammar in one entry (sigil:grammar), so the prompt carries one line of it.
+  const groups = ['subject', 'reach', 'delivery', 'burst', 'filter'].map((gr) => gr[0].toUpperCase() + gr.slice(1) + ': ' + (SIGILS as any[]).filter((w) => w.group === gr).map((w) => w.word).join(', ')).join('. ');
+  add('sigil:grammar', 'Sigil grammar', line('How Sigil words make a spell (rules 1.4).', groups + '.',
+    'A spell is 2 to 4 glyphs: one or more Subjects plus at least one other word; at most one Reach word (none = Touch, 1 tile deep); KIN once. Words may repeat (each repeated glyph x0.9 to damage, healing and shields).',
+    'Drawing: one glyph on the caster\'s own tile; step and draw again to walk a Line, 2 to 4 tiles in a straight row (diagonals too). Glyphs fade after a few rounds.',
+    'Evoking (1 AP): stand at an end or behind it to fire along the Line, beside it to fire across; the Line\'s length is the spell\'s width, the Reach its depth. A finished Line fires back the way the caster walked. Middle glyphs can\'t fire.',
+    'Reach: SEEK a straight bolt (cover stops it), ARC a lob over everything, SENSE appears with no sight, RELAY casts from an ally. Delivery: STAY a field, WAIT a hidden trap, WATCH a turret, TWICE two missiles, PULL, CHAIN, LEECH. Burst: CONDENSE one target, SPREAD 5x5, PUSH a cone.',
+    'Spells hit friends too unless KIN is in them; a spell that finds nothing it may affect fizzles. Refused: ' + (sg.refused || []).map((r: any) => r.why).join(' ') ,
+    'Starting magic: ' + (sg.starting?.words ?? 2) + ' words that make a spell, one of them a Reach word. Retired 1.2 words and shapes (RETURN, Rings, Stacks) are gone.'));
   for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
   for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
   return out;
@@ -50,6 +65,6 @@ export function wikiLookup(key: string): WikiEntry | null {
 /** The wiki's index: the kinds and how to name an entry (the long id lists live in the entries, not the prompt). */
 export function wikiKinds(): Record<string, string[]> {
   const kinds: Record<string, string[]> = {};
-  for (const e of wikiEntries()) if (!(e.key.startsWith('class:') && e.key.includes('.'))) (kinds[e.key.split(':')[0]] ||= []).push(e.key.split(':')[1]);
+  for (const e of wikiEntries()) if (!(e.key.startsWith('class:') && e.key.includes('.')) && e.key !== 'sigil:grammar') (kinds[e.key.split(':')[0]] ||= []).push(e.key.split(':')[1]);
   return kinds;
 }

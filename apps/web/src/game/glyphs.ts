@@ -1,7 +1,8 @@
-// The 24 Sigil glyphs (docs/design/magic-presentation.md): our own geometric strokes, straight lines, circles and right
-// angles, drawn in a 24 × 24 box. One set serves as map glyphs and as the Sigil icons. Each word's class gets a frame
-// mark so a glance tells subject from form from motion: elements sit on a bar, effects in a corner bracket, forms and
-// motions stand bare, the one modifier in a ring.
+// The 40 Sigil glyphs of rules 1.4 (docs/design/magic-presentation.md): our own geometric strokes, straight lines,
+// circles and right angles, drawn in a 24 × 24 box. One set serves as map glyphs and as the Sigil icons. Each word's
+// class gets a frame mark so a glance tells one group from another: elements sit on a bar, afflictions and boons in
+// opposite corner brackets, Workings under a lid, Reach words between two side posts, Delivery and Burst words stand
+// bare, the Filter (KIN) in a ring. RETURN (retired in 1.4) keeps its path so old logs and plates still draw.
 import { SIGIL } from '@engine';
 
 /** Stroke paths for each word (24 × 24, round caps). */
@@ -30,13 +31,39 @@ export const GLYPH_PATHS: Record<string, string> = {
   return: 'M18 8 H8 A4 4 0 0 0 8 16 H16 M11 5 L8 8 L11 11',
   pull: 'M20 12 H6 M11 7 L6 12 L11 17 M20 8 V16',
   twice: 'M8 6 V18 M16 6 V18 M5 12 H19',
+  // rules 1.4: the 17 new words
+  acid: 'M12 4 L17 12 A5 5 0 1 1 7 12 Z M10 14 H11 M13 16.5 H14',
+  command: 'M5 5 H19 M12 5 V19 M8 15 L12 19 L16 15',
+  quicken: 'M5 6 L11 12 L5 18 M12 6 L18 12 L12 18',
+  sharpen: 'M12 3 L16 13 L12 21 L8 13 Z M12 9 V15',
+  cleanse: 'M4 9 H20 M6 13 H18 M9 17 H15 M12 3 V6',
+  step: 'M4 14 H9 V19 H4 Z M15 5 H20 V10 H15 Z M9 14 L15 10',
+  raise: 'M4 19 H20 M6 19 V10 H18 V19 M6 14.5 H18 M12 10 V14.5 M9 14.5 V19 M15 14.5 V19',
+  null: 'M12 12 m-7 0 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M7 12 H17',
+  mask: 'M6 6 H18 V12 C18 16 15 19 12 19 C9 19 6 16 6 12 Z M8.5 11 H10.5 M13.5 11 H15.5',
+  arc: 'M4 18 Q12 2 20 18 M16.5 16 L20 18 L20.5 14',
+  sense: 'M10.5 10.5 H13.5 V13.5 H10.5 Z M7 7 H17 V17 H7 Z M4 4 H7 M17 4 H20 M4 20 H7 M17 20 H20',
+  relay: 'M3 12 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M17 12 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M7 12 H17 M11 8 L15 12 L11 16',
+  wait: 'M7 4 H17 M7 20 H17 M8 4 L16 20 M16 4 L8 20',
+  watch: 'M7 20 H17 M9 20 V12 H15 V20 M12 12 V7 M12 7 L19 4',
+  chain: 'M3 15 H6 V18 H3 Z M10.5 8 H13.5 V11 H10.5 Z M18 13 H21 V16 H18 Z M6 15 L10.5 11 M13.5 11 L18 13',
+  leech: 'M6 5 L9 12 L12 5 L15 12 L18 5 M7 17 Q12 21 17 17',
+  kin: 'M7 9 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M13 9 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M5 17 V14 H11 V17 M13 17 V14 H19 V17',
 };
 /** The frame mark by word class. */
 const FRAME: Record<string, string> = {
   subject_element: 'M3 22 H21',
+  subject_affliction: 'M2 6 V2 H6 M18 22 H22 V18',
+  subject_boon: 'M18 2 H22 V6 M2 18 V22 H6',
+  subject_working: 'M3 2 H21',
+  reach: 'M1.5 9 V15 M22.5 9 V15',
+  filter: 'M12 12 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0',
+  // 1.2 classes, for old data
   subject_effect: 'M2 6 V2 H6 M18 22 H22 V18',
   modifier: 'M12 12 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0',
 };
+/** Does this word have a glyph of its own (every 1.4 word does)? */
+export const hasGlyph = (word: string) => !!GLYPH_PATHS[word];
 
 /** Sigil ink: Intelligence ink for glyph strokes, Mind cyan for the glow (never Soul violet). */
 export const SIGIL_INK = '#8BDEEE', SIGIL_GLOW = '#4FC8DF', SOUL_INK = '#AE9BFF', SOUL_WARM = '#F2C46A';

@@ -18,6 +18,7 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
+import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
 import { oocOf } from '@engine';
@@ -54,7 +55,9 @@ const savePref = (k, v) => { try { localStorage.setItem('phc.' + k, v); } catch 
 // ---------- magic (spec: Mana, rules 1.2): the MAGIC tab ----------
 // Sigils are Mind cyan and square; Outbursts are Soul violet warming to gold (docs/design/magic-presentation.md). Never mixed.
 const SIG_CYAN = '#4FC8DF', SOUL_VIOLET = '#AE9BFF', MP_BLUE = '#5C9EFF';
-const WORD_CLASS = { subject_element: 'SUBJECT · ELEMENT', subject_effect: 'SUBJECT · EFFECT', form: 'FORM', motion: 'MOTION', modifier: 'MODIFIER' };
+const WORD_CLASS = { subject_element: 'SUBJECT · ELEMENT', subject_affliction: 'SUBJECT · AFFLICTION', subject_boon: 'SUBJECT · BOON', subject_working: 'SUBJECT · WORKING', reach: 'REACH', delivery: 'DELIVERY', burst: 'BURST', filter: 'FILTER' };
+/** Sigil words on the MAGIC tab in grammar order (rules 1.4): Subjects, Reach, Delivery, Burst, Filter. */
+const WORD_ORDER = Object.keys(WORD_CLASS);
 const OPT_LABEL = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal 30', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
   fear: 'Afraid', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
 /** The option value the engine reads on release (data 'push_3' → 'push', 'to_hit_2' → 'hit'). */
@@ -94,11 +97,11 @@ function magicVals(self, g, c) {
   const N = magicNow(g, c), fight = N.inFight, mana = N.mana, m = soulM(c);
   const showSigil = words.length > 0 || evo, showSoul = designs.length > 0 || known.schools.length > 0 || known.modules.length > 0 || ema || !!N.held;
   // Sigils: the words known, as glyph cards (click for the Grand form).
-  const wordCards = words.filter((id) => SIGIL[id]).map((id) => { const w = SIGIL[id], open = S.mgWord === id;
+  const wordCards = words.filter((id) => SIGIL[id]).sort((a, b) => WORD_ORDER.indexOf(SIGIL[a].class) - WORD_ORDER.indexOf(SIGIL[b].class)).map((id) => { const w = SIGIL[id], open = S.mgWord === id;
     return { key: id, img: glyphUri(id, SIGIL_INK, { glow: true }), word: w.word, cls: WORD_CLASS[w.class] || '', charge: 'CHARGE ' + w.charge, text: w.text, title: w.grand ? 'Grand form (Grand Sigilist): ' + w.grand : '',
       open: open ? 'true' : 'false', toggle: () => self.setState({ mgWord: open ? null : id }), hasGrand: open && !!w.grand, grand: w.grand || '', hint: w.grand ? (open ? '▾' : '▸') : '',
       style: 'display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 10px; align-items: start; width: 100%; padding: 8px 10px; border-radius: 10px; text-align: left; font-family: inherit; color: inherit; cursor: pointer; background: #10151F; border: 1px solid ' + (open ? SIG_CYAN : '#232D3F') + '; border-left: 3px solid ' + SIG_CYAN }; });
-  const sigStats = [['Words on the ground at once', String(maxSigilWords(c))], ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker charge', evo ? N.charge + ' / ' + CORE_CHARGE : '—'],
+  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (old words retired in rules 1.4)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker charge', evo ? N.charge + ' / ' + CORE_CHARGE : '—'],
     ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
@@ -520,16 +523,13 @@ export class MainLogic extends DCLogic {
     // This round's paths, in each player's colour (spec: Overworld rounds): everyone sees where everyone went.
     const trailAt = {}; if (!inFight) for (const [cid, ks] of Object.entries(g.story.trail || {})) { const col = playerOf(charOf(cid)?.owner)?.color || '#FFFFFF'; ks.forEach((k) => { trailAt[k] = col; }); }
     const moveTo = (k) => () => { if (!mover) return toast(inFight ? 'A fight is on: move on the combat grid.' : 'You have no character to move.'); act({ type: 'story/move', charId: mover.id, to: k }); };
-    // ---------- magic on the area map (spec: Mana, rules 1.2): glyphs, standing zones, held hearts, and the spell actions ----------
+    // ---------- magic on the area map (spec: Mana; Sigils rules 1.4): glyphs, placed magic, held hearts, and the spell actions ----------
     const MN = magicNow(g, c), myWords = c ? (c.sigils || []).filter((w) => SIGIL[w]) : [], myDesigns = c ? c.outbursts || [] : [];
     const evoW = !!c && hasEvoker(c), emaW = !!c && hasEmanator(c), hasMagic = !!c && (myWords.length > 0 || myDesigns.length > 0 || !!MN.held || evoW || emaW);
     const MAGIC_W = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'], M_INSTANT = ['scuff', 'vent', 'core', 'syphon', 'crystallise'], isMagicW = MAGIC_W.includes(W);
     const sameMap = !g.story.glyphMap || g.story.glyphMap === map.id;
     const GLY = inFight ? g.combat?.glyphs || [] : sameMap ? g.story.glyphs || [] : [], ZON = inFight ? g.combat?.zones || [] : sameMap ? g.story.zones || [] : [];
     const glAt = {}; GLY.forEach((x) => { (glAt[x.pos] ||= []).push(x); });
-    const znAt = {}; ZON.forEach((z) => z.tiles.forEach((k) => { if (!znAt[k] || z.kind === 'wall') znAt[k] = z; }));
-    const ZONE_STYLE = { wall: 'background: ' + epRgba(SIG_CYAN, 0.16) + '; border: 1px dashed ' + SIG_CYAN, veil: 'background: rgba(120, 128, 142, 0.42)', light: 'background: rgba(255, 246, 220, 0.13)' };
-    const ZONE_WORD = { wall: 'standing wall', veil: 'smoke', light: 'light' };
     const heldOf = (u) => (u.side !== 'pc' ? null : inFight ? (g.combat?.units.find((x) => x.id === u.id)?.mg?.held || null) : (g.story.magic || {})[u.charId]?.held || null);
     // The story map as a throwaway fight, for the engine's previews (built only when a spell is being lined up).
     let scbMemo; const scb = () => { if (scbMemo === undefined) { try { scbMemo = storyCb({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } }); } catch { scbMemo = null; } } return scbMemo; };
@@ -538,7 +538,10 @@ export class MainLogic extends DCLogic {
     const myComp = (kind) => { if (inFight || !c) return null; const x = scb(); return x ? x.units.find((u) => u.companion === kind && u.ctrl === c.id) || null : null; };
     const myDrone = () => myComp('drone'), myBeast = () => myComp('beast'), myTwin = () => myComp('twin');
     const mHi = { pattern: new Set(), aim: null, reach: new Set(), reachCol: '' };
-    let mHint = '', mReady = false, mLabel = 'Confirm';
+    // Placed magic the party can see (fields tinted by element, your traps, spotted ones, turrets, RAISE walls, smoke, light).
+    const placedW = ZON.length || (inFight && cb) ? (() => { try { const x = inFight ? cb : scb(); return x ? placedView(x, 'pc') : null; } catch { return null; } })() : null;
+    let mHint = '', mReady = false, mLabel = 'Confirm', drawInfo = null, evW = null;
+    const knowsW = (w) => !!(c && (c.sigils || []).includes(w));
     const myAt = c ? pos[c.id] : null, mOpen = !!(S.area && mover && isMagicW && !inFight);
     const wordSel = S.wWord && myWords.includes(S.wWord) ? S.wWord : myWords[0] || null, designSel = myDesigns.find((d) => d.id === S.wDesign) || myDesigns[0] || null;
     const touches = (cbx, ids) => { const ns = ids.map((id) => cbx.units.find((x) => x.id === id)).filter(Boolean), foe = ns.find((x) => x.side === 'foe');
@@ -550,27 +553,21 @@ export class MainLogic extends DCLogic {
       const cbx = scb(), u = sU(cbx);
       if (!cbx || !u) mHint = 'Magic can\'t be lined up here right now.';
       else if (W === 'draw') {
-        reachAround(1, SIG_CYAN);
-        const w = wordSel && SIGIL[wordSel];
-        // The engine's own answer: try the word on your tile and each one next to you (a full tile isn't the reason).
-        let okAt = null, why = null;
-        if (w) for (let dy = -1; dy <= 1 && !okAt && !why; dy++) for (let dx = -1; dx <= 1 && !okAt && !why; dx++) { const [mx, my] = myAt.split(',').map(Number), k = (mx + dx) + ',' + (my + dy);
-          const r = dryMagic(cbx, u.id, (cc, uu, rng) => drawGlyph(cc, rng, uu, wordSel, k)).err; if (!r) okAt = k; else if (!/own tile or one next to you|Nothing can be drawn|at most 2 glyphs/.test(r)) why = r; }
-        mHint = !w ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : why ? 'Draw ' + w.word + ': ' + why : !okAt ? 'No free tile next to you: a tile holds at most 2 glyphs.'
-          : 'Click your tile or one next to it to draw ' + w.word + ' (' + w.charge + ' charge, ' + glyphApOf(u) + ' AP). The Evoker holds ' + MN.charge + ' charge.'
-            + ' Two glyphs on a tile make a Stack; a straight row makes a Line; three or four around one tile make a Ring.';
+        // Rules 1.4: on your own tile only; the engine says the cost and whether it starts, extends or breaks a Line.
+        if (myAt) { mHi.reach.add(myAt); mHi.reachCol = SIG_CYAN; }
+        const dw = wordSel ? drawStrip(cbx, u).words.find((x) => x.id === wordSel) : null; drawInfo = dw;
+        mHint = !dw ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : !dw.ok ? 'Draw ' + dw.word + ': ' + dw.why
+          : 'Click your own tile (' + refOf(myAt) + ') to draw ' + dw.word + ' (' + dw.cost.charge + ' charge, ' + dw.cost.ap + ' AP): it ' + dw.effectText + '.' + (dw.fades ? ' ' + dw.fades + ' fades (your cap).' : '')
+            + ' The Evoker holds ' + MN.charge + ' charge. A spell is a straight Line of 2–4 glyphs: step to the next tile and draw again.' + (dw.overload ? ' WARNING: this glyph overloads your Evoker.' : '');
       } else if (W === 'evoke') {
-        if (!S.wTile) mHint = 'Click a glyph of a pattern you stand on or next to.';
+        // Rules 1.4: the Line, where to stand (arrows), the tinted area, the hovered delivery and who it affects.
+        if (!S.wTile || !glAt[S.wTile]) { const hp = S.hoverTile && glAt[S.hoverTile] ? patternPanel(cbx, S.hoverTile, u, knowsW) : null; mHint = 'Click a glyph of a Line.' + (hp ? ' ' + hp.text : ''); }
         else {
-          const pv = previewEvoke(cbx, u, S.wTile, S.wAim || undefined);
-          if (pv.pattern) pv.pattern.tiles.forEach((k) => mHi.pattern.add(k)); if (S.wAim) mHi.aim = S.wAim;
-          // An aimed preview drops its range: read it from the unaimed one.
-          // A Stack's reach is measured from the stack, not from you (you may stand next to it).
-          if (pv.pattern && pv.needsAim) reachAround(pv.range || (S.wAim ? previewEvoke(cbx, u, S.wTile).range : 0) || 1, SIG_CYAN, pv.pattern.tiles[0]);
-          const name = pv.pattern ? pv.pattern.glyphs.map((x) => (readW(x) ? x.word.toUpperCase() : 'an unreadable glyph')).join(' · ') + ' (' + pv.pattern.shape + ')' : '';
-          if (pv.ok) { mReady = true; mLabel = 'Evoke · ' + pv.ap + ' AP · ' + pv.charge + ' charge';
-            mHint = 'Evoke ' + name + (pv.impact ? ' at ' + refOf(pv.impact) : '') + '.' + (pv.range ? ' Range ' + pv.range + ' tiles.' : '') + touches(cbx, pv.targets) + (pv.needsAim ? ' Click another tile to aim elsewhere.' : ''); }
-          else mHint = (name ? name + ': ' : '') + (pv.why || 'It can\'t fire.');
+          evW = evokeView(cbx, u, S.wTile, S.wEvc || {}, S.hoverTile, knowsW);
+          const foe = evW.affected.map((a) => cbx.units.find((x) => x.id === a.unit)).find((x) => x && x.side === 'foe' && !/SPARED|SKIPPED/.test((evW.affected.find((a) => a.unit === x.id) || {}).tag || ''));
+          mReady = evW.ok; mLabel = evW.ok ? 'Evoke · ' + evW.ap + ' AP · ' + evW.charge + ' charge' : 'Confirm';
+          mHint = (evW.pattern ? evW.pattern.text + ' ' : '') + (evW.facing && evW.stage !== 'stand' ? 'Fires ' + evW.facing + '. ' : '') + evW.hint + (evW.fizzle ? ' ' + evW.fizzleText : '')
+            + (evW.affected.length ? ' ' + evW.affected.map((a) => a.name + ' (' + a.tag.toLowerCase() + ': ' + a.text + ')').join('; ') + '.' : '') + (foe ? ' ' + foe.name + ' is a person on the map: this starts a fight.' : '');
         }
       } else if (W === 'outburst') {
         if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
@@ -600,7 +597,7 @@ export class MainLogic extends DCLogic {
     }
     const wMagic = {
       showWords: !!(mOpen && W === 'draw' && myWords.length), showDesigns: !!(mOpen && W === 'outburst' && myDesigns.length),
-      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w]; return { key: w, img: glyphUri(w, SIGIL_INK, { glow: on }), word: def.word, charge: String(def.charge), title: def.word + ' · ' + def.text, pressed: on ? 'true' : 'false',
+      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w]; return { key: w, img: glyphUri(w, SIGIL_INK, { glow: on }), word: def.word, charge: String(def.charge), title: on && drawInfo ? drawInfo.title : def.word + ' · ' + def.text, pressed: on ? 'true' : 'false',
         pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px solid ' + (on ? SIG_CYAN : '#232D3F') + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') }; }),
       designs: myDesigns.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.modules.length ? ' · ' + d.modules.map((x) => MODULE[x]?.name || x).join(', ') : ''),
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? SOUL_VIOLET : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') }; }),
@@ -610,14 +607,12 @@ export class MainLogic extends DCLogic {
     const magicClick = (k) => {
       if (W === 'draw') { if (!wordSel) return toast('You know no words.'); act({ type: 'world/act', charId: mover.id, act: 'draw', word: wordSel, tile: k }); return; }
       if (W === 'evoke') {
-        // A glyph of ours outside the chosen pattern picks that pattern; otherwise a Stack takes the click as its aim.
-        const ownHere = (glAt[k] || []).some((x) => x.side === 'pc');
-        if (ownHere && !mHi.pattern.has(k)) return this.setState({ wTile: k, wAim: null });
-        if (S.wTile) { const cbx = scb(), u = sU(cbx), pv = cbx && u ? previewEvoke(cbx, u, S.wTile) : null;
-          if (pv && pv.pattern && pv.needsAim) return this.setState({ wAim: k });
-          return toast(pv && pv.pattern ? 'A ' + pv.pattern.shape + ' fires on its own: Confirm.' : 'Click a glyph of the pattern.'); }
-        if ((glAt[k] || []).length) return this.setState({ wTile: k, wAim: null });
-        return toast('Click a glyph of the pattern.');
+        const cbx = scb(), u = sU(cbx);
+        const v = S.wTile && cbx && u && glAt[S.wTile] ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW) : null;
+        const r = evokeClick(v, cbx || { glyphs: GLY }, u, k, S.wEvc || {});
+        if (r.pattern !== undefined) return this.setState({ wTile: r.pattern, wEvc: {} });
+        if (r.choice) return this.setState({ wEvc: r.choice });
+        return toast(r.toast || 'Click a glyph of a Line.');
       }
       if (W === 'outburst') { if (S.wHold) return toast('Holding needs no target: Confirm to begin.'); return this.setState({ wAim: k }); }
       if (W === 'release') return this.setState({ wAim: k });
@@ -625,11 +620,11 @@ export class MainLogic extends DCLogic {
     };
     const magicConfirm = () => {
       const base = { type: 'world/act', charId: c.id, act: W };
-      if (W === 'evoke') act({ ...base, tile: S.wTile, ...(S.wAim ? { aim: S.wAim } : {}) });
+      if (W === 'evoke') { const cbx = scb(), u = sU(cbx), v = cbx && u && S.wTile ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW) : null; if (v && v.payload) act({ ...base, ...v.payload }); }
       else if (W === 'outburst') act({ ...base, design: designSel.id, hold: !!S.wHold, ...(!S.wHold && S.wAim ? { aim: S.wAim } : {}) });
       else if (W === 'release') act({ ...base, aim: S.wAim });
       else act(base);
-      this.setState({ wTile: null, wAim: null });
+      this.setState({ wTile: null, wAim: null, wEvc: null });
       if (getState().game?.phase === 'combat') { this.setState({ area: false }); go('combat'); }
     };
     // ---------- planning on the area map, as on the combat grid (Leon, combat feel v1) ----------
@@ -677,6 +672,7 @@ export class MainLogic extends DCLogic {
         plan.reachText = (melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (melee ? (plan.red.size ? 'the tiles next to you' : 'none') : 'up to ' + Math.round(effectiveRange(useW) * (3 + ((u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0))) + ' tiles in sight (−2 to hit per range band past ' + effectiveRange(useW) + ')') + '.';
       }
     }
+    const sgTiles = evW ? mergeTiles((placedW && placedW.tiles) || {}, evW.tiles) : (placedW && placedW.tiles) || {};
     const cellsFor = (labels, onClick) => {
       const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
       if (labels) { out.push(lab('h-', '')); for (let x = 0; x < map.w; x++) out.push(lab('h' + x, refOf(x + ',0').replace(/\d+$/, ''))); }
@@ -685,9 +681,10 @@ export class MainLogic extends DCLogic {
         for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k], p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null, ref = refOf(k), note = notesAt(map, k)[0] || '', o = objAt[k];
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
           const spr = o ? spriteOf(g, o) : '';
-          const gl = glAt[k] || [], zn = znAt[k], held = u ? heldOf(u) : null;
-          const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => (x.side === 'pc' || (c && (c.sigils || []).includes(x.word)) ? x.word.toUpperCase() : 'unread scratches') + ' (' + x.who + ', ' + x.left + ' rd)').join(', ') : '')
-            + (zn ? ' · ' + ZONE_WORD[zn.kind] + (zn.words.length ? ' of ' + zn.words.map((x) => x.toUpperCase()).join('+') : '') + (zn.left < 90 ? ' (' + zn.left + ' rd)' : '') : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
+          const gl = glAt[k] || [], held = u ? heldOf(u) : null, sgT = sgTiles[k];
+          const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && k !== myAt;
+          const sgLayer = [sgT && sgT.layer, sgDim ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
+          const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
           const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');
           const glyph = o && !u && !spr && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
           // The planning layer (area map only): reachable tiles and the path; an attack's red reach and its targets.
@@ -706,10 +703,11 @@ export class MainLogic extends DCLogic {
             t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
-            glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc', read = ours || !!(c && (c.sigils || []).includes(x.word));
-              return { key: x.id, src: read ? glyphUri(x.word, ours ? SIGIL_INK : '#F65157', { glow: ours }) : scratchUri('#F65157'),
+            glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc';
+              return { key: x.id, src: glyphMark(x, 'pc', knowsW).src,
                 style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; }),
-            hasZone: !!zn, zoneStyle: zn ? 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + ZONE_STYLE[zn.kind] : '',
+            hasZone: !!sgLayer, zoneStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + sgLayer,
+            hasSg: labels && !!(sgT && sgT.marks.length), sg: labels && sgT ? sgT.marks : [],
             hasHeart: !!held, heart: held ? heartUri(held.stage) : '', heartStyle: 'position: absolute; z-index: 4; right: -6%; top: -6%; width: 40%; height: 40%; pointer-events: none; filter: drop-shadow(0 0 3px ' + SOUL_VIOLET + ')',
             label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat, title: u ? '' : ref + ' · ' + what + mWhat + (note ? '\n' + note : ''),
             style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle + tgtMark });
@@ -842,7 +840,7 @@ export class MainLogic extends DCLogic {
     ];
     const canAct = !!mover && mover.hp > 0 && g.story.await === 'players' && !(g.story.ended || {})[c.id];
     const wGroups = W_ITEMS.map(([name, items, ink]) => ({ name, style: 'margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (ink || '#A3AEC2'), items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
-      pick: () => this.setState({ wAct: id, wTarget: null, wTile: null, wAim: null }),
+      pick: () => this.setState({ wAct: id, wTarget: null, wTile: null, wAim: null, wEvc: null }),
       style: 'display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: 13px; cursor: pointer; color: #E7EBF3; ' + (W === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') })) }));
     const pkTargeted = !!wPkE && ['unit', 'enemy', 'ally', 'npc'].includes(wPkE.target);
     const pkTile = !!wPkE && wPkE.target === 'tile', pkObj = !!wPkE && wPkE.target === 'object';
@@ -952,9 +950,7 @@ export class MainLogic extends DCLogic {
       objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby, hasNearby: nearby.length > 0,
       areaMagic: { has: GLY.length + ZON.length > 0 || Object.values(g.story.magic || {}).some((x) => x && x.held), legend: [
         ...(GLY.some((x) => x.side === 'pc') ? [{ key: 'g', img: glyphUri('fire', SIGIL_INK), swatch: '', text: 'Squad glyph' }] : []), ...(GLY.some((x) => x.side !== 'pc') ? [{ key: 'f', img: scratchUri('#F65157'), swatch: '', text: 'Enemy glyph' }] : []),
-        ...(ZON.some((z) => z.kind === 'wall') ? [{ key: 'w', img: '', swatch: 'width: 12px; height: 12px; box-sizing: border-box; ' + ZONE_STYLE.wall, text: 'Standing wall' }] : []),
-        ...(ZON.some((z) => z.kind === 'veil') ? [{ key: 'v', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; ' + ZONE_STYLE.veil, text: 'Smoke (blocks sight)' }] : []),
-        ...(ZON.some((z) => z.kind === 'light') ? [{ key: 'l', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; background: rgba(255, 246, 220, 0.4)', text: 'Light' }] : []),
+        ...placedLegend((placedW && placedW.kinds) || new Set(), false).map((l) => ({ key: l.key, img: l.img || '', swatch: l.box || '', text: l.name })),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
       wGroups, wHint: wHintFull, ...wDetailVals, wHasConfirm: canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',

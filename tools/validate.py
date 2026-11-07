@@ -374,6 +374,30 @@ for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(dat
     for f in ("hp", "defense", "attack_bonus", "armour", "movement"):
         if not isinstance(k.get(f), (int, float)):
             errors.append(f"enemies.companions:{k.get('id')}: {f} must be a number")
+# Enemy Sigil casters (rules 1.4, ai-sigil.ts): a known tier and weapon, known words that make a spell, a Reach word.
+_smap = {w.get("id"): w for w in items("sigils")}
+_cids = set()
+for k in (data.get("enemies", {}) or {}).get("casters", []) if isinstance(data.get("enemies"), dict) else []:
+    cid = k.get("id"); where = f"enemies.casters:{cid}"
+    if not cid or cid in _cids or cid in ids_of(items("enemies")):
+        errors.append(f"{where}: needs a unique id (not a tier id)")
+    _cids.add(cid)
+    if k.get("tier") not in ids_of(items("enemies")):
+        errors.append(f"{where}: unknown tier {k.get('tier')}")
+    if k.get("weapon") not in wids:
+        errors.append(f"{where}: unknown weapon {k.get('weapon')}")
+    ws = k.get("sigils") or []
+    for x in ws:
+        if x not in _smap:
+            errors.append(f"{where}: unknown word {x}")
+    if not any(_smap.get(x, {}).get("group") == "subject" for x in ws) or not any(_smap.get(x, {}).get("group") != "subject" for x in ws):
+        errors.append(f"{where}: its words can't make a spell")
+    if not any(_smap.get(x, {}).get("group") == "reach" for x in ws):
+        warns.append(f"{where}: no Reach word (it can only cast by Touch)")
+    if not isinstance(k.get("spell_bias", 1), (int, float)) or k.get("spell_bias", 1) <= 0:
+        errors.append(f"{where}: spell_bias must be a positive number")
+    if k.get("provisional") is not True:
+        warns.append(f"{where}: new numbers should be provisional")
 tmap = {t.get("id"): t for t in items("traits")}
 for t in items("traits"):
     for x in t.get("excludes", []) or []:

@@ -265,9 +265,9 @@
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
 <img src="{{sigilHead}}" alt="" style="width: 28px; height: 28px">
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #8BDEEE">SIGIL WORDS · MIND · PICK 2</span>
-<button type="button" onClick="{{resetSigils}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Back to SPARK + CONDENSE</button>
+<button type="button" onClick="{{resetSigils}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{resetSigilsLabel}}</button>
 </div>
-<span style="font-size: 13px; line-height: 1.45; color: #A3AEC2">Two words drawn on one tile make a Stack, your first spell. It needs one Subject (an element or an effect) and one Form or Motion. Picking a third word swaps out the one doing the same job.</span>
+<span style="font-size: 13px; line-height: 1.45; color: #A3AEC2">Two words drawn in a Line, one tile after the other, make your first spell. It takes one Subject (what it does) and one Reach word (how far and how it flies), so you can hit past the next tile. Picking a third word swaps out the one doing the same job; the rest you learn in play.</span>
 <span role="status" aria-live="polite" style="{{sigilVerdictStyle}}">{{sigilVerdict}}</span>
 <sc-for list="{{sigilGroups}}" as="g" hint-placeholder-count="5">
 <div style="display: flex; flex-direction: column; gap: 6px">

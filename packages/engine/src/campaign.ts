@@ -6,6 +6,7 @@ import { OBJ } from './objects';
 import type { Track } from './music';
 import { type Mission, type BoardNpc, validateMissions } from './missions';
 import { SKILL, TN_LADDER, ENEMY, WEAPON } from './data';
+import { CASTER } from './ai-sigil';
 import m813J from '../../../data/campaigns/m813.json';
 import godplotJ from '../../../data/campaigns/godplot.json';
 import curseJ from '../../../data/campaigns/curse.json';
@@ -128,7 +129,9 @@ export function validateCampaign(c: any): string[] {
   for (const e of c.encounters || []) {
     need(ids.has(e.zone), 'Encounter "' + e.name + '" is in unknown zone "' + e.zone + '".');
     for (const f of e.enemies || []) need(ENEMY[f.tier] && WEAPON[f.weapon], 'Encounter "' + e.name + '": enemy "' + f.name + '" needs a known tier and weapon.');
+    for (const f of e.enemies || []) if ((f as any).caster) need(!!CASTER[(f as any).caster] && CASTER[(f as any).caster].tier === f.tier, 'Encounter "' + e.name + '": enemy "' + f.name + '" names an unknown Sigil caster, or one of another tier (enemies.json casters).');
   }
+  for (const z of c.zones || []) for (const n of z.npcs || []) if ((n as any)?.caster) need(!!CASTER[(n as any).caster] && CASTER[(n as any).caster].tier === n.tier, z.id + ': npc "' + n.name + '" names an unknown Sigil caster, or one of another tier (enemies.json casters).');
   for (const z of c.zones || []) for (const n of z.npcs || []) need(n && n.name && ['hostile', 'neutral'].includes(n.side) && ENEMY[n.tier] && WEAPON[n.weapon] && n.at, z.id + ': npc "' + (n?.name || '?') + '" needs name, side (hostile or neutral), a known tier and weapon, and at.');
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
   errs.push(...validateMissions(c));

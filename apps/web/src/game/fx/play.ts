@@ -4,7 +4,7 @@
 import { type FxEvent, type GameState, visibility } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
-import { type Pt, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
+import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
@@ -58,10 +58,6 @@ const visible = (k: string | null | undefined) => !k || !seenTiles || seenTiles.
 const tokOf = (id: string | null | undefined, fallback?: string) => tokenEl(tileEl(unit(id)?.pos || fallback));
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
 const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number } = {}) => sfx(s, { ...o, pan: panOf(p) });
-/** Bumped by clearFx: a handler's own later step (an impact after the flight time, a volley's tracers) is dropped when
- *  the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
-let gen = 0;
-const after = (f: () => void, ms: number) => { const g0 = gen; setTimeout(() => { if (g0 === gen) f(); }, ms); };
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
 
 // ---------- weapons ----------
@@ -439,10 +435,6 @@ const condBoon = (id: string) => id === 'guarded' || id === 'inspired';
 function mix(a: string, b: string, t: number) { const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16)), pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16)); return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * Math.max(0, Math.min(1, t))).toString(16).padStart(2, '0')).join(''); }
 
 // ---------- particles: Sigil squares, Soul motes, heal pluses ----------
-function particle(p: { x: number; y: number }, size: number, css: string, frames: Keyframe[], ms: number, delay = 0) {
-  const run = () => { const d = document.createElement('div'); d.style.cssText = 'width:100%;height:100%;' + css; const box = put(d, p, size, size, ms); anim(box, frames, { duration: ms, easing: 'ease-out', fill: 'forwards' }); };
-  if (delay) after(run, delay); else run();
-}
 function squares(p: Pt, color: string, n: number, spread: number, ms: number, delay = 0) {
   if (reducedMotion()) n = Math.min(n, 3);
   for (let i = 0; i < n; i++) {
@@ -543,6 +535,6 @@ export function queueFx(evs: FxEvent[], stream?: string) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden). */
-export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; volley = null; gen++; }
+export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; volley = null; bumpGen(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();

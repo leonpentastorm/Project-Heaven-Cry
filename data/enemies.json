@@ -114,5 +114,68 @@
       "provisional": true,
       "text": "A Twinbound's twin, called on the area map: a token with its own 4 AP a round, spent only on moves, never more than 6 tiles from its owner. HP half its owner's maximum and its owner's Defense (the numbers here are stand-ins the engine replaces). A fight opened on the area map starts with it beside its owner as the called twin."
     }
-  ]
+  ],
+  "casters": [
+    {
+      "id": "sigil_novice",
+      "name": "Sigil novice",
+      "tier": "minion",
+      "weapon": "combat_knife",
+      "sigils": [
+        "spark",
+        "seek",
+        "mend"
+      ],
+      "spell_bias": 1.3,
+      "text": "A drill-yard Evoker with a knife for when the words run out: SPARK at range, MEND on a hurt ally (two-word spells; Max Sigil words 2).",
+      "provisional": true
+    },
+    {
+      "id": "sigil_adept",
+      "name": "Sigil adept",
+      "tier": "soldier",
+      "weapon": "combat_knife",
+      "sigils": [
+        "fire",
+        "spark",
+        "seek",
+        "arc",
+        "spread",
+        "kin",
+        "bind",
+        "slow",
+        "mend",
+        "step"
+      ],
+      "spell_bias": 1.3,
+      "text": "A soldier who writes rather than shoots: FIRE lobbed into a cluster (KIN when its own stand there too), BIND or SLOW on whoever charges in, MEND on the hurt, STEP out of a melee. Max Sigil words 3.",
+      "provisional": true
+    },
+    {
+      "id": "sigil_warden",
+      "name": "Sigil warden",
+      "tier": "elite",
+      "weapon": "sabre",
+      "sigils": [
+        "shock",
+        "freeze",
+        "seek",
+        "arc",
+        "chain",
+        "spread",
+        "condense",
+        "kin",
+        "ward",
+        "mend",
+        "slow",
+        "step",
+        "null",
+        "wait"
+      ],
+      "spell_bias": 1.25,
+      "text": "An elite Evoker with a sabre: CHAIN lightning through a squad, FREEZE and SLOW on the fast ones, WARD and MEND on its line, NULL on the fields, turrets, traps and walls you leave in its way, a hidden trap on the tiles you'll cross, STEP out of reach. Max Sigil words 4.",
+      "provisional": true
+    }
+  ],
+  "casters_note": "Enemy Sigil casters (rules 1.4, spec 14 item 460): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Evoker with these words (Max Sigil words by tier, sigils.json enemy_ai.max_words). spell_bias multiplies the value the AI puts on a spell when it weighs it against its weapon. Provisional."
 }

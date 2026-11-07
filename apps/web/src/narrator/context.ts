@@ -67,6 +67,8 @@ function sectorFor(g: GameState): string {
 
 const TRAIT = Object.fromEntries(TRAITS.map((t: any) => [t.id, t]));
 
+/** The Sigil words by group (rules 1.4), for the MAGIC section: one line, from the data. */
+const SIGIL_GROUPS = ['subject', 'reach', 'delivery', 'burst', 'filter'].map((gr) => gr[0].toUpperCase() + gr.slice(1) + ' ' + Object.values(SIGIL).filter((w: any) => w.group === gr).map((w: any) => w.word).join(' ')).join('; ');
 export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
 
 THE SPLIT
@@ -103,9 +105,11 @@ FIGHTS
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
 MAGIC (the engine runs every number)
-- Sigil magic (Mind; needs an Evoker and mana cores): a caster draws word glyphs on map tiles (draw: word + tile); glyphs that touch form a pattern (Stack: 2 on one tile; Line: 2 to 4 tiles in a row; Ring: around an empty tile) and Evoke fires it (evoke: tile of any glyph + aim). A pattern needs a subject word (FIRE, SPARK, SHIELD…) and a form or motion (CONDENSE, PUSH, STAY, SPREAD…). Glyphs stay on the ground until fired, scuffed or faded: anyone may use or scuff them, enemies too. Firing builds Flux; vent clears it (raising the mana meter).
+- Sigil magic (Mind; needs an Evoker and mana cores). Words (id = the word in lower case): ${SIGIL_GROUPS}.
+- A spell is a Line of 2 to 4 glyphs: a Subject and another word, at most one Reach word (none = Touch, 1 tile). The caster draws one glyph on their own tile, steps, draws again; Evoke fires the Line from where they stand: from an end it fires along, from beside it across. It hits friends unless KIN is in it. Anyone may scuff a glyph, enemies too. Firing builds Flux; vent clears it (raising the mana meter). Details: sigil:grammar and each word's entry.
+- Describe Sigils as cyan, square, snapping strokes, each element as its entry says; describe fields, traps and turrets as the engine reports them. Never decide a hit, a number or who a spell touched.
 - Soul magic (Soul; needs an Emanator and MP): an Outburst is a ready design (school + modules); begin it now or hold it (it grows each turn, Strain rises), then release. Too much Strain is a Mana Short. A heart burst Downs, never kills. Syphon draws ambient mana into MP; crystallise turns 10 mana into a core.
-- Players' spell words map to actions[]: draw (word, tile), evoke (tile, aim), scuff, vent, core, outburst (design id, aim, hold), release (aim), syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
+- Players' spell words map to actions[]: draw (word, on their own tile), evoke (tile: a glyph of the Line, aim; aims for TWICE, dest for STEP, order and orderTo for COMMAND), scuff, vent, core, outburst (design id, aim, hold), release (aim), syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
 - The mana meter (0 to 40; thin, normal, rich, flooded) is in PARTY CONDITION. Deaths, venting and Grand forms raise it; Soul casting, syphon and crystallise lower it. Set mana only when the story changes the place itself (a ley spring, a dead zone); null otherwise. Flooded places strain Soul casters; thin places starve them.
 - Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school or module id, and a reason. Rare: a word is a reward, at most one per character per scene.
 
@@ -174,7 +178,7 @@ WORLD RULES THAT NEVER BREAK
 
 THE WIKI (wiki_lookup)
 - You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
-- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.\n- Sigil words: ${wikiKinds().sigil.join(', ')}. Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
+- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.\n- Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
 - Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
 
@@ -269,7 +273,7 @@ export function turnPrompt(g: GameState): string {
     : w.kind === 'epilogue' ? epilogueJob(g)
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
-  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}${c.dead ? '' : liveMagic(g, c)}`).join('; ') + `. Mana here: ${g.story.mana ?? 15} (${manaBand(g.story.mana ?? 15).id})`;
+  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}${c.dead ? '' : liveMagic(g, c)}`).join('; ') + `. Mana here: ${g.story.mana ?? 15} (${manaBand(g.story.mana ?? 15).id})` + sigilsOnMap(g);
   const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
   const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
   const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
@@ -292,6 +296,21 @@ export function turnPrompt(g: GameState): string {
   return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
 }
 
+/** Sigil magic standing on the area map, for PARTY CONDITION (only when there is some): glyphs by who drew them, and
+ * fields, traps and turrets with their words, so the Narrator describes what the engine placed (an enemy's trap is
+ * marked unseen: the players don't know it is there). */
+export function sigilsOnMap(g: GameState): string {
+  const W = (ws: string[]) => ws.map((w) => SIGIL[w]?.word || w.toUpperCase()).join('·');
+  const by: Record<string, string[]> = {};
+  for (const gl of g.story.glyphs || []) (by[gl.who] ||= []).push((SIGIL[gl.word]?.word || gl.word) + ' ' + refOf(gl.pos));
+  const out = Object.entries(by).map(([who, l]) => who + "'s glyphs " + l.join(', '));
+  for (const z of (g.story.zones || []) as any[]) {
+    const kind = z.kind === 'wall' ? 'field' : z.kind; if (!['field', 'trap', 'turret', 'veil', 'light'].includes(kind)) continue;
+    const t = z.tiles || [], where = t.length ? refOf(t[0]) + (t.length > 1 ? ' +' + (t.length - 1) + ' tiles' : '') : '';
+    out.push(z.who + "'s " + kind + (z.words?.length ? ' ' + W(z.words) : '') + ' at ' + where + (z.left != null ? ', ' + z.left + ' rounds' : '') + (z.side === 'foe' && z.kind === 'trap' && !(z.spotted || []).includes('pc') ? ' (unseen by the players)' : ''));
+  }
+  return out.length ? '. Sigils on the map: ' + out.join('; ') : '';
+}
 /** A caster's live magic for PARTY CONDITION: MP, Evoker charge and cores, Flux, Strain, a held Outburst. */
 function liveMagic(g: GameState, c: Character): string {
   const m = g.story.magic?.[c.id], out: string[] = [];
@@ -374,7 +393,9 @@ export function submitTool(g: GameState) {
     charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'] },
     to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id or exact name, or a charId or character name' },
     mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'An object id: a door for door; anything to attack' },
-    word: { type: 'string', description: 'A Sigil word id, for draw' }, tile: { type: 'string', description: 'A grid reference: where to draw, or a glyph of the pattern to evoke' },
+    word: { type: 'string', description: 'A Sigil word id, for draw (on the caster\'s own tile)' }, tile: { type: 'string', description: 'A grid reference: for evoke, a glyph of the Line' },
+    aims: { type: 'array', items: { type: 'string' }, description: 'evoke TWICE: the other missiles\' aims' }, dest: { type: 'string', description: 'evoke STEP: where they land' },
+    order: { type: 'string', enum: ['halt', 'kneel', 'drop', 'move'], description: 'evoke COMMAND' }, orderTo: { type: 'string', description: 'COMMAND move: the tile' },
     aim: { type: 'string', description: 'A grid reference or token id, for evoke, outburst and release' }, design: { type: 'string', description: 'An Outburst design id, for outburst' }, hold: { type: 'boolean', description: 'outburst: hold it to grow' },
   }, required: ['charId', 'act'] } };
   schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school or module each', items: { type: 'object', properties: {

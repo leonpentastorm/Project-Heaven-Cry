@@ -5,7 +5,7 @@ import { validateSheet, newCharacter, startingMagicError } from '@engine';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
-const { CreateLogic } = await import('./create.js');
+const { CreateLogic, _draftSigils } = await import('./create.js');
 
 /** A Create screen with a legal build (a 10-point preset), on the given kit. */
 function screen(skills: Record<string, number>, kit: string) {
@@ -16,36 +16,46 @@ function screen(skills: Record<string, number>, kit: string) {
 }
 
 describe('starting magic on the Create screen', () => {
-  it('a caster gets the defaults preselected, shown and legal', () => {
+  it('a caster gets the defaults preselected (SPARK · SEEK: a Reach word), shown with the engine\'s verdict and legal', () => {
     const l = screen({ brain_power: 3, will_power: 3, rumination: 2, empathy: 2 }, 'sigil');
     const v = l.renderVals();
     expect(v.canSigil && v.canSoul && v.hasMagic).toBe(true);
-    expect(v.sigilVerdict).toMatch(/^✓ SPARK \+ CONDENSE: A bolt of sparks/);
+    expect(v.sigilVerdict).toMatch(/^✓ SPARK \+ SEEK: SPARK, a bolt, range 8/);
+    expect(v.resetSigilsLabel).toBe('Back to SPARK + SEEK');
     expect(v.obVerdict).toMatch(/^✓ Damage Outburst: Damage · Move/);
     const s = l.sheet();
-    expect(s.sigils).toEqual(['spark', 'condense']);
+    expect(s.sigils).toEqual(['spark', 'seek']);
     expect(s.outburst).toEqual({ school: 'damage', modules: ['move'] });
   });
-  it('the Stack summary reads its numbers from the engine: PUSH reach and STAY on the stack\'s own tile', () => {
+  it('the summary reads the range from the engine: SEEK reach plus this build\'s range bonus', () => {
     const l = screen({ brain_power: 3, rumination: 2 }, 'sigil');
     let v = l.renderVals();
     const word = (id: string) => v.sigilGroups.flatMap((g: any) => g.words).find((w: any) => w.id === id);
-    word('push').pick(); v = l.renderVals();
-    expect(v.sigilVerdict).toMatch(/up to 9 tiles from the stack/); // 8 + floor(Rumination 2 / 2)
-    word('stay').pick(); v = l.renderVals();
-    expect(v.sigilVerdict).toMatch(/standing on the stack's own tile.*for up to 3 rounds/); // 2 + floor(Brain Power 3 / 2)
-    expect(v.sigilVerdict).not.toMatch(/next to the stack/);
+    word('arc').pick(); v = l.renderVals();
+    expect(l.state.sigils).toEqual(['spark', 'arc']);
+    expect(v.sigilVerdict).toMatch(/a lob, range 6.*\(\+1 range from your skills\)/); // floor(Rumination 2 / 2)
   });
-  it('picking a third word swaps the one doing the same job; TWICE is off the board', () => {
+  it('picking a third word swaps the one doing the same job; only Subjects and Reach words start; a pair needs a Reach word', () => {
     const l = screen({ brain_power: 1 }, 'sigil');
     let v = l.renderVals();
     const word = (id: string) => v.sigilGroups.flatMap((g: any) => g.words).find((w: any) => w.id === id);
-    word('ward').pick(); v = l.renderVals(); expect(l.state.sigils).toEqual(['ward', 'condense']);
-    word('return').pick(); v = l.renderVals(); expect(l.state.sigils).toEqual(['ward', 'return']);
-    expect(v.sigilVerdict).toMatch(/^✓ WARD \+ RETURN/);
-    expect(word('twice').disabled).toBe(true);
-    word('ward').pick(); v = l.renderVals(); expect(v.sigilVerdict).toMatch(/^◆ Pick 1 more word/);
+    word('ward').pick(); v = l.renderVals(); expect(l.state.sigils).toEqual(['ward', 'seek']);
+    word('relay').pick(); v = l.renderVals(); expect(l.state.sigils).toEqual(['ward', 'relay']);
+    expect(v.sigilVerdict).toMatch(/^✓ WARD \+ RELAY/);
+    for (const id of ['twice', 'condense', 'stay', 'kin']) expect(word(id).disabled, id).toBe(true);
+    expect(word('condense').title).toMatch(/learned in play/);
+    expect(v.sigilGroups.map((g: any) => g.label)).toEqual(['ELEMENTS · SUBJECT', 'AFFLICTIONS · SUBJECT', 'BOONS · SUBJECT', 'WORKINGS · SUBJECT', 'REACH · ONE OF YOUR TWO', 'DELIVERY · LEARNED IN PLAY', 'BURST · LEARNED IN PLAY', 'FILTER · LEARNED IN PLAY']);
+    word('relay').pick(); v = l.renderVals(); expect(v.sigilVerdict).toMatch(/^◆ Pick 1 more word: one Subject and one Reach word/);
     expect(v.cantLock).toBe(true);
+    // a pair with no Reach word is refused by the engine, and the screen says the engine's reason
+    l.state.sigils = ['fire', 'condense']; v = l.renderVals();
+    expect(v.sigilVerdict).toMatch(/^◆ One of your 2 Sigil words must be a Reach word/);
+  });
+  it('an old draft\'s 1.2 Stack comes back legal under 1.4 (its Form becomes SEEK); a legal pair is kept', () => {
+    expect(_draftSigils(['fire', 'condense'])).toEqual(['fire', 'seek']);
+    expect(_draftSigils(['ward', 'return'])).toEqual(['ward', 'seek']);
+    expect(_draftSigils(['shock', 'arc'])).toEqual(['shock', 'arc']);
+    expect(_draftSigils(undefined)).toEqual(['spark', 'seek']);
   });
   it('Outburst: school options, exactly one module to start (spec), and a name', () => {
     const l = screen({ will_power: 3 }, 'soul');
@@ -85,7 +95,7 @@ describe('starting magic on the Create screen', () => {
       const s = l.sheet();
       expect(validateSheet(s)).toBeNull();
       const c = newCharacter('c1', 'p1', s);
-      if (v.canSigil) expect(c.sigils).toEqual(['fire', 'condense']);
+      if (v.canSigil) expect(c.sigils).toEqual(['fire', 'seek']);
       if (v.canSoul) expect(c.outbursts?.[0]).toMatchObject({ school: 'status', option: 'shaken', modules: ['move'] });
     }
   });

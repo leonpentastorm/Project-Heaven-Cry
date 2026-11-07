@@ -5,6 +5,7 @@ import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, p
 import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, type FoeTraits } from './tactics';
+import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
 import type { Held } from './effects/collect';
@@ -793,7 +794,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 // ---------- turns ----------
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
 /** sigils: an Evoker and its words (true: the tier's default set; sigils.json enemy_ai), rules 1.4. */
-export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true }
+export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true;
+  /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string }
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
@@ -806,7 +808,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   foes.slice(0, Math.max(map.foeStart.length, 8)).forEach((f, i) => {
     const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng);
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
-    if (f.sigils) u.mg = enemyMagic(u, f.sigils);
+    armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     units.push(u);
   });
@@ -1333,8 +1335,9 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
     if (enemyScuff(cb, u)) continue;
     // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
-    if (!order && u.mg?.evoker && enemyAvoidMagic(cb, rng, u)) continue;
-    if (!order && u.mg?.evoker && enemyCast(cb, rng, u)) { checkOver(cb); continue; }
+    // Sigil magic (rules 1.4, ai-sigil.ts): any enemy steps out of a field of yours and scuffs a turret underfoot; a caster
+    // then weighs a spell against its weapon.
+    if (!order && aiSigilStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
     if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2 && !condOn(u, 'disarmed')) { reload(cb, u); continue; }
@@ -1346,6 +1349,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
       .filter((x) => x.pv.ok)
       .sort((a, b) => (b.t.id === tauntBy ? 1 : 0) - (a.t.id === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
     if (targets.length) { resolveAttack(cb, rng, u, targets[0].t, mode, null); checkOver(cb); continue; }
+    if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     // close in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never nearer the
     // source; fleeing: the tile farthest from every PC)
@@ -1358,7 +1362,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
       if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
       const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
       const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
-      const score = order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1;
+      const score = (order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
       if (score < bestScore) { bestScore = score; best = k; }
     }
     if (!best || moveUnit(cb, u, best, rng)) break;

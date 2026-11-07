@@ -7,6 +7,16 @@ import { reducedMotion } from '../sfx';
 let layer: HTMLDivElement | null = null;
 export const setLayer = (el: HTMLDivElement | null) => { layer = el; };
 export const hasLayer = () => !!layer && layer.isConnected;
+/** The layer node itself (the ambient field and turret looks keep their own nodes on it). */
+export const layerEl = () => layer;
+
+// ---------- later steps ----------
+/** Bumped by play.ts's clearFx: a handler's own later step (an impact after the flight time, a volley's tracers) is
+ *  dropped when the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
+let gen = 0;
+export const bumpGen = () => { gen++; };
+/** Run f after ms, unless the effects were cleared meanwhile. */
+export const after = (f: () => void, ms: number) => { const g0 = gen; setTimeout(() => { if (g0 === gen) f(); }, ms); };
 
 // ---------- finding tiles and tokens ----------
 /** The on-screen tile for a grid key ("x,y"): a button.phc-tok whose aria-label starts with its reference ("C7 · …" or
@@ -99,6 +109,12 @@ export function floatText(text: string, p: { x: number; y: number; s: number }, 
       { duration: ms, easing: 'ease-out', fill: 'forwards' });
   };
   if (o.delay) setTimeout(run, o.delay); else run();
+}
+
+/** One small particle at a point: a box of size px styled by css, animated through frames over ms (after delay). */
+export function particle(p: { x: number; y: number }, size: number, css: string, frames: Keyframe[], ms: number, delay = 0, easing = 'ease-out') {
+  const run = () => { const d = document.createElement('div'); d.style.cssText = 'width:100%;height:100%;' + css; const box = put(d, p, size, size, ms); anim(box, frames, { duration: ms, easing, fill: 'forwards' }); };
+  if (delay) after(run, delay); else run();
 }
 
 // ---------- effects that follow a tile (rings, decals) ----------

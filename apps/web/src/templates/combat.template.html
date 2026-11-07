@@ -27,6 +27,7 @@
 <sc-if value="{{t.hasZone}}"><span aria-hidden="true" style="{{t.zoneStyle}}"></span></sc-if>
 <sc-if value="{{t.hasPlan}}"><span aria-hidden="true" class="phc-plan" style="{{t.planStyle}}"></span></sc-if>
 <sc-if value="{{t.hasMark}}"><span aria-hidden="true" class="phc-plan" style="{{t.markStyle}}"></span></sc-if>
+<sc-if value="{{t.hasSg}}"><sc-for list="{{t.sg}}" as="sm"><span aria-hidden="true" class="phc-plan" title="{{sm.title}}" style="{{sm.style}}">{{sm.text}}</span></sc-for></sc-if>
 <sc-if value="{{t.hasSprite}}" hint-placeholder-val="{{false}}"><img src="{{t.sprite}}" alt="" style="{{t.spriteStyle}}"></sc-if>
 <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
@@ -173,12 +174,24 @@
 <button type="button" class="phc-cb-act" data-act="{{a.key}}" onClick="{{a.pick}}" disabled="{{a.locked}}" aria-pressed="{{a.pressed}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
 <sc-if value="{{a.padW}}">
 <div aria-label="Glyph keyboard" class="{{T.padWCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">GLYPH KEYBOARD · PICK A WORD, THEN A TILE</span>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">GLYPH KEYBOARD · PICK A WORD, THEN CLICK YOUR OWN TILE</span>
 <div style="display: flex; flex-wrap: wrap; gap: 6px">
 <sc-for list="{{T.padW.wordList}}" as="w"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="width: 26px; height: 26px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em">{{w.word}}</span><span style="{{w.subStyle}}">{{w.sub}}</span></button></sc-for>
 </div>
 </div>
 </sc-if>
+<sc-if value="{{a.padE}}"><sc-if value="{{T.pad.sgShow}}">
+<div aria-label="The Line" class="phc-m-rise" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 4px; background: #0B1519; border: 1px solid #1F4A55">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">{{T.pad.sgShape}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{T.pad.sgWords}}" as="sw"><span title="{{sw.cls}}" style="display: flex; flex-direction: column; align-items: center; gap: 1px; width: 52px; padding: 4px 2px; border-radius: 2px; border: 1px solid #1F4A55; background: #0D1119; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #E7EBF3"><img src="{{sw.img}}" alt="" style="width: 22px; height: 22px">{{sw.word}}</span></sc-for></div>
+<span style="{{T.pad.sgVerdictStyle}}">{{T.pad.sgVerdict}}</span>
+<sc-if value="{{T.pad.sgCap}}"><span style="font-size: 11px; color: #A3AEC2">{{T.pad.sgCap}}</span></sc-if>
+<sc-if value="{{T.pad.sgHasStats}}"><div style="display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; font-weight: 700; color: #C9D3E3"><sc-for list="{{T.pad.sgStats}}" as="ss"><span>{{ss.text}}</span></sc-for></div></sc-if>
+<sc-if value="{{T.pad.sgHasOrders}}"><div role="group" aria-label="COMMAND order" style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{T.pad.sgOrders}}" as="so"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{so.pick}}" aria-pressed="{{so.pressed}}" style="{{so.style}}">{{so.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{T.pad.sgHasAffected}}"><div aria-label="Who it affects" style="display: flex; flex-direction: column; gap: 3px"><sc-for list="{{T.pad.sgAffected}}" as="sa"><span style="display: flex; gap: 6px; align-items: baseline; font-size: 11px; line-height: 1.35; color: #E7EBF3"><span style="{{sa.tagStyle}}">{{sa.tag}}</span><span><b>{{sa.name}}</b> · {{sa.text}}</span></span></sc-for></div></sc-if>
+<sc-if value="{{T.pad.sgHasWarn}}"><span role="alert" style="font-size: 12px; font-weight: 700; color: #FFFFFF">{{T.pad.sgWarn}}</span></sc-if>
+</div>
+</sc-if></sc-if>
 <sc-if value="{{a.padE}}"><button type="button" class="phc-cb-act phc-m-rise" onClick="{{T.pad.repickFn}}" style="min-height: 34px; border-radius: 8px; border: 1px solid #1F4A55; background: transparent; color: #8BDEEE; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">‹ Pick another pattern</button></sc-if>
 <sc-if value="{{a.padD}}">
 <div aria-label="Your Outbursts" class="{{T.padDCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #120E1E; border: 1px solid #3A2E5C">

@@ -24,6 +24,7 @@ import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoar
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
+import { CASTER } from './ai-sigil';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -192,7 +193,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean }[];
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string }[];
   /** Place, move, update or remove people and enemies on the overworld map. */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[]; hidden?: boolean }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
@@ -282,6 +283,7 @@ export type Action =
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
+  /** A Sigil caster archetype (enemies.json `casters`; rules 1.4, ai-sigil.ts): it fights with an Evoker. */ caster?: string;
   /** What it is and its tags (rules 1.3: human, robot, crawler…; military, hunter, no_surrender…); a prisoner who gave up. */
   kind?: string; tags?: string[]; prisoner?: boolean;
   /** Its scene conditions out of combat (Shaken for the rest of the scene…): id → the scene number it lasts through. */
@@ -1034,11 +1036,11 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (t.combat && t.combat.enemies?.length) {
     const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-    let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
+    let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
     // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
     if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
       const used = new Set<number>();
-      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait, kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])] }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait, caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])] }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
       g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
     g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined, { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}) }); magicIn(g, g.combat);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
@@ -1466,7 +1468,7 @@ const FACE: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], E: [1, 0
 export function initialNpcs(g: GameState): Npc[] {
   const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
   const seen: Record<string, number> = {};
-  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
+  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, ...((n as any).caster ? { caster: (n as any).caster } : {}), pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
     ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}) }));
 }
 export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
@@ -1598,10 +1600,11 @@ function storyFx(g: GameState, cb: Combat) {
 /** Learn a word, a school or a module (spec: The Magic panel). */
 function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string }, why: string): string {
   if (m.word) {
-    if (!SIGIL[m.word]) return 'No such word.';
-    const known = (c.sigils ||= []); if (known.includes(m.word)) return c.name + ' already knows ' + SIGIL[m.word].word + '.';
+    const word = m.word.trim().toLowerCase(); // the Narrator may write the word as it is drawn (FIRE)
+    if (!SIGIL[word]) return 'No such word.';
+    const known = (c.sigils ||= []); if (known.includes(word)) return c.name + ' already knows ' + SIGIL[word].word + '.';
     if (known.length >= wordsKnownCap(c)) return c.name + ' knows ' + known.length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').';
-    known.push(m.word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[m.word].word + ' (' + why + ').' }); return '';
+    known.push(word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[word].word + ' (' + why + ').' }); return '';
   }
   const k = (c.soulKnown ||= { schools: [], modules: [] });
   if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
@@ -1854,7 +1857,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id], comp: pos }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
   if (!wasHostile) cbx.noXp = true;
@@ -2135,7 +2138,7 @@ const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, bos
  * elites from wave 4, a champion every 5th wave; at most 8. Provisional: tuned by play.
  * party: the players with a fighter; the budget and the soldier and elite caps take × (0.6 + 0.4 × party) (multiplayer,
  * provisional; 1 player: × 1, the solo waves). */
-export function sandboxWave(n: number, party = 1): { name: string; tier: string; weapon: string }[] {
+export function sandboxWave(n: number, party = 1): { name: string; tier: string; weapon: string; caster?: string }[] {
   n = Math.max(1, Math.floor(n));
   const scale = sandboxScale(party);
   let pts = Math.floor((2 + Math.floor(n * 1.5)) * scale); const tiers: string[] = [];
@@ -2145,7 +2148,18 @@ export function sandboxWave(n: number, party = 1): { name: string; tier: string;
   while (pts > 0 && tiers.length < 8) { tiers.push('minion'); pts--; }
   if (!tiers.length) tiers.push('minion');
   const count: Record<string, number> = {};
-  return tiers.map((t) => { const i = (count[t] = (count[t] || 0) + 1), T = SANDBOX_TIERS[t]; return { name: T.name + ' ' + i, tier: t, weapon: T.weapons[(i - 1 + n) % T.weapons.length] }; });
+  const out: { name: string; tier: string; weapon: string; caster?: string }[] = tiers.map((t) => { const i = (count[t] = (count[t] || 0) + 1), T = SANDBOX_TIERS[t]; return { name: T.name + ' ' + i, tier: t, weapon: T.weapons[(i - 1 + n) % T.weapons.length] }; });
+  return sandboxCasters(n, out);
+}
+/** Sigil casters in the wave pool (rules 1.4; provisional): wave 2 and every third wave after it, the first drill drone is a
+ * Sigil novice; from wave 3, on odd waves, the first sparring trooper is a Sigil adept; from wave 6, on even waves, the
+ * first range warden is a Sigil warden (enemies.json `casters`). Same tier and points; deterministic. */
+function sandboxCasters(n: number, wave: { name: string; tier: string; weapon: string; caster?: string }[]) {
+  const swap = (tier: string, id: string) => { const f = wave.find((x) => x.tier === tier && !x.caster), c = CASTER[id]; if (!f || !c || c.tier !== tier) return; f.caster = id; f.weapon = c.weapon; f.name = c.name + ' ' + (wave.filter((x) => x.caster === id).length); };
+  if (n >= 2 && n % 3 === 2) swap('minion', 'sigil_novice');
+  if (n >= 3 && n % 2 === 1) swap('soldier', 'sigil_adept');
+  if (n >= 6 && n % 2 === 0) swap('elite', 'sigil_warden');
+  return wave;
 }
 /** The wave the next fight is: the one after a cleared wave, else the current one (a fallen wave is fought again). */
 export const sandboxNext = (sb: Sandbox) => (sb.state === 'cleared' ? Math.min(99, sb.wave + 1) : sb.wave);
@@ -2307,11 +2321,11 @@ function sbPlace(g: GameState, n: number) {
   sb.placed = { wave: n, party: sbParty(g) };
   g.story.npcs = sandboxWave(n, sb.placed.party).map((f) => {
     const at = map.foeStart.find(free) || anyFree() || map.foeStart[0]; taken.add(at);
-    return { id: 'foe-s' + (++sb.spawned), name: f.name, side: 'hostile', tier: f.tier, weapon: f.weapon, pos: at, portrait: portraitFor(g, f.name, seen) || undefined, facing: facingToward(at, centre) } as Npc;
+    return { id: 'foe-s' + (++sb.spawned), name: f.name, side: 'hostile', tier: f.tier, weapon: f.weapon, pos: at, portrait: portraitFor(g, f.name, seen) || undefined, facing: facingToward(at, centre), ...(f.caster ? { caster: f.caster } : {}) } as Npc;
   });
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string }[], pos: Record<string, string>, objects?: MapObject[]) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
@@ -2485,7 +2499,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
       sbAttempt(sb, n);
       g.story.npcs = stay;
-      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x })), { ...positionsOf(g) }, storyObjects(g));
+      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster })), { ...positionsOf(g) }, storyObjects(g));
       return;
     }
     case 'sandbox/stage': {

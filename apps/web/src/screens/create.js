@@ -2,10 +2,11 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
+import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
+import { spellSummary } from '../game/sigilView';
 import { sfx, reducedMotion } from '../game/sfx';
 
 // ---------- the lock-in stamp ----------
@@ -115,33 +116,26 @@ const STAND_IN = (() => {
 const cardFor = (arch) => (arch && STAND_IN[arch.id]) || '';
 const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
 
-// Starting magic (spec: The Magic panel and learning): Brain Power 1+ or the Sigil student kit picks 2 Sigil words that
-// make a Stack; Will Power 1+ or the Soul initiate kit makes 1 Outburst design. The engine's defaults are preselected
-// (SPARK + CONDENSE; Damage + Move) so a player who skips this is still legal. The engine decides what's legal.
-const DEFAULT_SIGILS = ['spark', 'condense'], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '' };
+// Starting magic (spec: The Magic panel and learning, rules 1.4): Brain Power 1+ or the Sigil student kit picks 2 Sigil
+// words that make a spell, one of them a Reach word (so a new mage can hit past one tile): a Subject and a Reach word.
+// Will Power 1+ or the Soul initiate kit makes 1 Outburst design. The engine's defaults are preselected (SPARK · SEEK;
+// Damage + Move) so a player who skips this is still legal. The engine decides what's legal (startingWordsError).
+/** A draft's starting words under 1.4: kept when legal, else converted the engine's way (a 1.2 Stack's Form becomes
+ * SEEK), else the defaults. */
+export const _draftSigils = (ws) => { if (!Array.isArray(ws) || !ws.length) return [...DEFAULT_SIGILS]; if (!startingWordsError(ws)) return [...ws]; const m = migrateWords(ws).words; return m.length === 2 && !startingWordsError(m) ? m : [...DEFAULT_SIGILS]; };
+const DEFAULT_SIGILS = [...STARTING_DEFAULT], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '' };
 const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1 || S.kit === 'sigil';
 const canSoulOf = (S) => (S.skills.will_power || 0) >= 1 || S.kit === 'soul';
 const slotsOf = (S) => moduleSlots({ skills: S.skills });
-const WORD_CLASS = [['subject_element', 'ELEMENTS · SUBJECT'], ['subject_effect', 'EFFECTS · SUBJECT'], ['form', 'FORMS'], ['motion', 'MOTIONS'], ['modifier', 'MODIFIER']];
-const isSubject = (w) => /^subject/.test(SIGIL[w]?.class || ''), isShape = (w) => ['form', 'motion'].includes(SIGIL[w]?.class || '');
-// Each Subject as a phrase, for the Stack summary.
-const STACK_SUBJ = { fire: 'a bolt of fire', freeze: 'a bolt of frost', shock: 'a bolt of lightning', stone: 'a bolt of stone', gale: 'a gust of wind', spark: 'a bolt of sparks',
-  ward: 'a shield', mend: 'healing', bind: 'a binding', blind: 'blinding light', slow: 'a slowing', muddle: 'a muddling', dread: 'dread', veil: 'smoke', light: 'light', silence: 'silence' };
-const STACK_SHAPE = { condense: '{s} at one target next to the stack', spread: '{s} bursting over radius 2, next to the stack', push: '{s} sent out up to {push} tiles from the stack',
-  seek: '{s} that curves round cover (it reaches past the next tile only once you learn PUSH)',
-  return: '{s} on yourself or an ally you touch', pull: '{s} that drags its target 3 tiles toward the stack' };
-// STAY stands on the stack's own tile (smoke spreads 1 tile round it, light 4) for as long as its glyphs last, at half strength.
-const STAY_LINE = { veil: 'Smoke over the stack and every tile next to it', light: 'Light over the stack and 4 tiles round it' };
-/** What a 2-word Stack does, in a line. The numbers come from the engine: PUSH reach and glyph life, with this build's bonuses. */
+const WORD_CLASS = [['subject_element', 'ELEMENTS · SUBJECT'], ['subject_affliction', 'AFFLICTIONS · SUBJECT'], ['subject_boon', 'BOONS · SUBJECT'], ['subject_working', 'WORKINGS · SUBJECT'],
+  ['reach', 'REACH · ONE OF YOUR TWO'], ['delivery', 'DELIVERY · LEARNED IN PLAY'], ['burst', 'BURST · LEARNED IN PLAY'], ['filter', 'FILTER · LEARNED IN PLAY']];
+const isSubject = (w) => SIGIL[w]?.group === 'subject', isReachW = (w) => SIGIL[w]?.group === 'reach';
+/** The starting pair in a line: the engine's compiled spell, with this build's range bonus. */
 function stackLine(words, skills = {}) {
-  const subj = words.find(isSubject), shape = words.find(isShape);
   const head = words.map((w) => SIGIL[w]?.word || w).join(' + ');
-  if (!subj || !shape) return head;
-  const c = { skills }, sName = STACK_SUBJ[subj] || SIGIL[subj].word.toLowerCase();
-  if (shape === 'stay') { const n = 2 + sigilDurationBonus(c);
-    return head + ': ' + (STAY_LINE[subj] || sName.charAt(0).toUpperCase() + sName.slice(1) + ' standing on the stack\'s own tile, at half strength to whoever enters,') + ' for up to ' + n + ' rounds (as long as its glyphs last), ready to fire.'; }
-  const t = (STACK_SHAPE[shape] || '{s}').replace('{s}', sName).replace('{push}', String(PUSH_RANGE + sigilRangeBonus(c)));
-  return head + ': ' + t.charAt(0).toUpperCase() + t.slice(1) + ', ready to fire.';
+  if (startingWordsError(words)) return head;
+  const bonus = sigilRangeBonus({ skills }), dur = sigilDurationBonus({ skills });
+  return head + ': ' + spellSummary(words) + (bonus ? ' (+' + bonus + ' range from your skills)' : '') + (dur && words.includes('stay') ? ' (+' + dur + ' rounds)' : '') + '. Draw them in a Line of two tiles, step behind it, Evoke.';
 }
 // A school's options as the engine stores them (buff to_hit_2 → hit, control push_3 → push, status as they are).
 const optId = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
@@ -168,7 +162,7 @@ export class CreateLogic extends DCLogic {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
-        sigils: Array.isArray(d.sigils) && d.sigils.length ? [...d.sigils] : [...DEFAULT_SIGILS],
+        sigils: _draftSigils(d.sigils),
         ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '' } : { ...DEFAULT_OB } });
     }
   }
@@ -316,19 +310,19 @@ export class CreateLogic extends DCLogic {
 
     // kit: starting magic (only for a build that can cast)
     const canSigil = canSigilOf(S), canSoul = canSoulOf(S), hasMagic = canSigil || canSoul;
-    const sig = S.sigils || [], sigErr = sig.length < 2 ? 'Pick ' + (2 - sig.length) + ' more word' + (sig.length === 1 ? '' : 's') + ': one Subject and one Form or Motion.' : startingMagicError({ sigils: sig, skills: S.skills });
+    const sig = S.sigils || [], sigErr = sig.length < 2 ? 'Pick ' + (2 - sig.length) + ' more word' + (sig.length === 1 ? '' : 's') + ': one Subject and one Reach word.' : startingMagicError({ sigils: sig, skills: S.skills });
     const pickWord = (w) => () => {
       const cur = this.state.sigils || [];
       if (cur.includes(w)) return this.setState({ sigils: cur.filter((x) => x !== w) });
       if (cur.length < 2) return this.setState({ sigils: [...cur, w] });
-      // Two picked: the new word takes the place of the one doing the same job, so the Stack stays whole.
-      const same = cur.findIndex((x) => (isSubject(w) && isSubject(x)) || (isShape(w) && isShape(x)));
+      // Two picked: the new word takes the place of the one doing the same job (Subject or Reach), so the spell stays whole.
+      const same = cur.findIndex((x) => (isSubject(w) && isSubject(x)) || (isReachW(w) && isReachW(x)));
       this.setState({ sigils: same >= 0 ? cur.map((x, i) => (i === same ? w : x)) : [cur[1], w] });
     };
     const sigilGroups = WORD_CLASS.map(([cls, label]) => ({ label, words: SIGILS.filter((w) => w.class === cls).map((w) => {
-      const on = sig.includes(w.id), isMod = w.class === 'modifier';
+      const on = sig.includes(w.id), isMod = !isSubject(w.id) && !isReachW(w.id); // a starting pair is a Subject and a Reach word
       return { id: w.id, word: w.word, img: glyphUri(w.id, on ? SIGIL_GLOW : SIGIL_INK, { glow: on }), charge: 'CHARGE ' + w.charge, text: w.text,
-        pick: pickWord(w.id), pressed: on ? 'true' : 'false', disabled: isMod && !on, title: isMod ? 'TWICE repeats a whole spell, so it can\'t be one of your 2 starting words.' : w.word + ': ' + w.text,
+        pick: pickWord(w.id), pressed: on ? 'true' : 'false', disabled: isMod && !on, title: isMod ? w.word + ' is learned in play: your 2 starting words are a Subject and a Reach word (rules 1.4). ' + w.text : w.word + ': ' + w.text,
         style: 'display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 10px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: ' + (isMod ? 'not-allowed' : 'pointer') + '; ' +
           (on ? 'background: #1C2536; border: 1px solid ' + SIGIL_GLOW : 'background: #10151F; border: 1px solid #232D3F') + (isMod ? '; opacity: 0.55' : '') };
     }) }));
@@ -408,7 +402,7 @@ export class CreateLogic extends DCLogic {
       kitCards, hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
       schoolCards, obOpts, hasOpts: obOpts.length > 0, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
-      resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetOb: set({ ob: { ...DEFAULT_OB } }),
+      resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
       magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
       summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),
       trainedSkills, traitNames, leanText: der.leans.length ? der.leans.map((l) => l.name).join(' or ') : 'Place some points first',
