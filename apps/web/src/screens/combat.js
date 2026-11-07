@@ -12,7 +12,8 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
-import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, pickChoice, wantsDetail } from '../game/commands';
+import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf } from '../game/commands';
+import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
 const SELF_TEXT = { reload2: 'Confirm to reload both guns.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
@@ -162,16 +163,32 @@ let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hi
 const ZOOM_MAX_WIDE = 1.4;
 /** About how tall the hidden-panel turn mini-bar is (the grid keeps clear of it). */
 const MINI_H = 196;
-/** The detail field and its chips for the chosen perk action (combat panel). */
-function pickVals(self, e, pv, det) {
-  if (!wantsDetail(e, pv)) return { hasPick: false, pickOpts: [], hasPickOpts: false };
-  const S = self.state, multi = (e.pickMulti || 1) > 1, chosen = new Set(String(pickChoice(e, det) || '').split(' ').filter(Boolean));
-  const setDet = (v) => self.setState({ pkDetail: v, pkDetailFor: S.action });
-  const pickOpts = (e.options || []).map((o) => ({ key: o.id, label: o.label, pressed: chosen.has(o.id) ? 'true' : 'false',
-    pick: () => { if (!multi) return setDet(chosen.has(o.id) ? '' : o.label); const now = [...chosen]; const next = chosen.has(o.id) ? now.filter((x) => x !== o.id) : [...now, o.id].slice(-(e.pickMulti || 1)); setDet(next.map((id) => (e.options.find((p) => p.id === id) || { label: id }).label).join(' ')); },
-    style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (chosen.has(o.id) ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }));
-  return { hasPick: true, pickValue: det, pickLabel: e.pickLabel || (e.target === 'text' ? 'What you say or do' : e.target === 'npc' ? 'What you suggest (click the listener)' : 'Detail: a word, a name, a pick'),
-    onPick: (ev) => setDet(ev.target.value), pickOpts, hasPickOpts: pickOpts.length > 0 };
+const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
+/** The chosen perk or class move's picker in the combat footer (game/actionPickers.ts): option chips, a second pick on
+ *  the grid (shown as chips you can clear), and a prose box only where the move needs words. Never a typed detail. */
+function pickerVals(self, cb, P, V) {
+  if (!P) return { hasPick: false, pickFields: [] };
+  const key = self.state.action, form = () => (self.state.pkForm && self.state.pkForm.key === key ? self.state.pkForm.v : {});
+  const setV = (patch) => self.setState({ pkForm: { key, v: { ...form(), ...patch } } });
+  const ids = (k) => (Array.isArray(V[k]) ? V[k] : V[k] ? [V[k]] : []);
+  const pickFields = P.fields.map((f) => {
+    const base = { key: f.key, head: f.head, isChips: false, opts: [], isEmpty: false, emptyText: '', isProse: false, text: '', holder: '', onText: undefined, isGrid: false, picked: [], hasPicked: false, gridHint: '' };
+    if (f.kind === 'chips') {
+      const on = ids(f.key), multi = f.multi || 1;
+      const opts = f.options.map((o) => ({ key: o.id, label: o.label, title: o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', style: CHIP(on.includes(o.id)),
+        pick: () => { const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }));
+      return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.' };
+    }
+    if (f.kind === 'prose') return { ...base, isProse: true, text: V[f.key] || '', holder: f.holder, onText: (ev) => setV({ [f.key]: ev.target.value }) };
+    if (f.kind === 'unit' || f.kind === 'tile') {
+      const now = ids(f.key), name = (id) => (f.kind === 'unit' ? (cb.units.find((x) => x.id === id) || { name: id }).name : refOf(id));
+      const picked = now.map((id, i) => ({ key: id + '-' + i, label: (f.multi > 1 ? i + 1 + '. ' : '') + name(id) + ' ✕', title: 'Clear this pick', style: CHIP(true), clear: () => setV({ [f.key]: (Array.isArray(form()[f.key]) ? form()[f.key] : []).filter((_, j) => j !== i) }) }));
+      const room = now.length < (f.multi || 1);
+      return { ...base, isGrid: true, picked, hasPicked: picked.length > 0, gridHint: room ? (f.kind === 'unit' ? 'Click a token on the grid.' : 'Click a tile on the grid.') : '' };
+    }
+    return base;
+  });
+  return { hasPick: true, pickHead: P.head, pickFields, pickWarn: P.warn || '', hasPickWarn: !!P.warn };
 }
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
@@ -463,13 +480,14 @@ export class CombatLogic extends DCLogic {
     const pkSel = parsePk(S.action), pkList = mineTurn ? perkEntries(g, cb, cur, ch, 'combat') : [];
     const pkE = pkSel ? pkList.find((e) => e.id === pkSel.id && e.actionId === pkSel.actionId) || null : null;
     const pkT = pkE ? (pkE.target === 'ally' ? cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead) || null : ['unit', 'enemy', 'npc'].includes(pkE.target) ? cb.units.find((u) => u.id === S.target && !u.dead && u.id !== cur.id) || tgtUnit : null) : null;
-    // The move's detail (a pick, words, what you say): chips from the engine's options, or typed. It rides as choice
-    // (an option's id when it names one), text and npc; handlers read what they need.
-    const pkDet = pkE && S.pkDetailFor === S.action ? String(S.pkDetail || '').trim() : '';
-    const pkChoice = pkE && pkDet ? pickChoice(pkE, pkDet) : '';
-    const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkDet ? { text: pkDet, npc: pkDet, choice: pkChoice } : {}) } : null;
-    const pkPv = pkE ? (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })() : null;
-    this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT } : null;
+    // What the move asks for beyond its grid target (game/actionPickers.ts): option chips, a second click on the grid,
+    // a prose box only for words. The picks build the args the engine reads; its preview is the verdict.
+    const pkX = pkE ? { g, c: ch, how: 'combat', cb, u: cur } : null, pkP = pkE ? pickerFor(pkE, pkX) : null;
+    const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
+    const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
+    const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
+    const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })()) : null;
+    this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
     // Toggles items put on the chosen action (Ricochet, Nonlethal…): chips under the action; their ids ride as mods.
     const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', evoke: 'combat/evoke' };
     const tgls = mineTurn && TOGGLE_ON[S.action] ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, TOGGLE_ON[S.action], { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
@@ -614,7 +632,7 @@ export class CombatLogic extends DCLogic {
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise' }[S.action];
     const sel = { name: actName + (isMove ? ' · ' + (hv ? moveAp + ' AP for ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : pv ? ' · ' + pv.ap + ' AP' : ''),
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? 'Hover a highlighted tile to see the path and its AP cost; click to move.' : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? (pickSel ? 'Pick up: ' + (cb.floor || []).filter((f) => f.pos === pickSel).map((f) => f.text).join(', ') + '.' : 'Click your tile or an adjacent tile marked ▪.') : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile.') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
-      extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
+      hasPick: false, pickFields: [], extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
     if (isMagic && mineTurn) {
       const names = (ids) => ids.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean).map((x) => x.name + (x.side === 'pc' ? (x.id === cur.id ? ' (you!)' : ' (ally!)') : ''));
       const hits = (ids) => (ids.length ? ' It touches ' + names(ids).join(', ') + '.' : ' Nobody is there.');
@@ -652,7 +670,7 @@ export class CombatLogic extends DCLogic {
       const need = pkE.target === 'ally' ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click an ally. ') : ['unit', 'enemy'].includes(pkE.target) ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click a target. ') : pkE.target === 'tile' ? (S.tile ? 'Tile ' + refOf(S.tile) + '. ' : 'Click a tile. ') : '';
       sel.text = need + (pkPv && !pkPv.ok ? pkPv.why : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
       sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkE.why ? ' ' + pkE.why : '');
-      Object.assign(sel, pickVals(this, pkE, pkPv, pkDet));
+      Object.assign(sel, pickerVals(this, cb, pkP, pkV));
     }
     sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: (t.preview || t.label) + (t.why ? ' · ' + t.why : ''), off: !!t.why,
       pick: () => { const m = new Set(this.state.mods || []); if (t.on) { m.delete(t.id); if (t.defaultOn) m.add('!' + t.id); } else { m.add(t.id); m.delete('!' + t.id); } this.setState({ mods: [...m] }); },
@@ -752,7 +770,7 @@ export class CombatLogic extends DCLogic {
     const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot'));
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
-    const cantConfirm = !mineTurn || isMove || magicCant || (pkSel ? !pkPv || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && !pickSel) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+    const cantConfirm = !mineTurn || isMove || magicCant || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && !pickSel) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
     const apNow = mineTurn ? (ap - cost < 0 ? 'needs ' + cost + ' · ' + ap + ' left' : Math.round((ap - cost) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
@@ -853,7 +871,15 @@ export class CombatLogic extends DCLogic {
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
-    if (this._pk && cur) { const t = this._pk.e.target; if (t === 'tile') { this.setState({ tile: k }); return; } if (u && u.id !== cur.id && (t === 'unit' || t === 'enemy' || t === 'npc' || (t === 'ally' && u.side === 'pc'))) { this.setState({ target: u.id }); return; } }
+    // Its own target first; then a picker's grid field (a second tile, another unit); else the click re-aims the target.
+    if (this._pk && cur) {
+      const p = this._pk, t = p.e.target, other = !!u && u.id !== cur.id, primary = other && (t === 'unit' || t === 'enemy' || t === 'npc' || (t === 'ally' && u.side === 'pc'));
+      if (primary && !p.target) return this.setState({ target: u.id });
+      if (t === 'tile' && !S.tile) return this.setState({ tile: k });
+      if (p.P) { const nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k); if (nv) return this.setState({ pkForm: { key: S.action, v: nv } }); }
+      if (primary) return this.setState({ target: u.id });
+      if (t === 'tile') return this.setState({ tile: k });
+    }
     if (u && u.side === 'foe') { const a = ['shot', 'aimed', 'melee', 'burst', 'auto', 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : (WEAPON[cur?.weapon] && isMelee(WEAPON[cur.weapon]) ? 'melee' : 'shot'); this.setState({ target: u.id, action: a, ...this.tabFor(a) }); return; }
     if (u && u.side === 'pc' && S.action === 'stim') { this.setState({ target: u.id }); return; }
     // Anyone is a target (spec: Anyone is a target): an ally under an attack action is friendly fire.
@@ -889,7 +915,7 @@ export class CombatLogic extends DCLogic {
     }
     if (MAGIC.includes(a)) return; // a spell for a unit with no magic is never an attack
     const pk = parsePk(a);
-    if (pk) { const p = this._pk; return act({ type: 'combat/perk', unitId: cur.id, id: pk.id, ...(p && p.args ? p.args : { actionId: pk.actionId }), ...(p && p.e.arm ? { arm: true } : {}) }); }
+    if (pk) { const p = this._pk; act({ type: 'combat/perk', unitId: cur.id, id: pk.id, ...(p && p.args ? p.args : { actionId: pk.actionId }), ...(p && p.e.arm ? { arm: true } : {}) }); return this.setState({ pkForm: null }); }
     if (a === 'reload') return act({ type: 'combat/reload', unitId: cur.id });
     if (a === 'reload2') return act({ type: 'combat/reload', unitId: cur.id, hand: 'both' });
     if (a === 'hide') return act({ type: 'combat/hide', unitId: cur.id });

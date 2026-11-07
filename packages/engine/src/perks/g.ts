@@ -745,7 +745,7 @@ register({
   claims: (e) => e?.op === 'choose_bonus' || (e?.op === 'skill_mod' && e?.context === 'others_targeting_you'),
   actions: [{
     id: 'adaptable', label: 'Adaptable', pick: 'gamma', pickLabel: 'The γ skill you play', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Pick the γ skill you play this scene (choice: a skill id): +2 to it for the scene.',
+    text: 'Pick the γ skill you play this scene: +2 to it for the scene.',
     preview: (h, a) => (a.choice && GAMMA.includes(a.choice) ? { lines: ['+2 ' + SKILL[a.choice].name + ' for the rest of the scene.'] } : { ok: false, why: 'Pick a γ skill: ' + GAMMA.map((s) => SKILL[s].name).join(', ') + '.' }),
     run: (h, a) => { sst(h).pick = { scene: sceneN(h), skill: a.choice, auto: false }; postStory(h, 'plays ' + SKILL[a.choice!].name + ' this scene.', { private: true }); },
   }],

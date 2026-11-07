@@ -32,6 +32,8 @@ export interface Entry {
   /** For kind art: the asset id of a story moment (spec: Campaigns, moments). */
   art?: string;
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
+  /** The item key of a perk, trait or class use ("class:twinbound.manifest"): for the Narrator and the engine, never shown to players. */
+  ref?: string;
   /** An action someone took on the area map (a shot, a reload, a door): shown as an action line and in the map's log. */
   act?: boolean;
   /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */

@@ -256,7 +256,7 @@ export function partyPrompt(g: GameState): string {
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
   const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$|^Round \d+\.$| (moves|sprints) to [A-Z]+\d+ \(/.test(e.text))/* the last 40 lines, inside a character budget (oldest dropped first) */.slice(-40).map((e) => {
-    if (e.kind === 'player') return `[${e.head}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
+    if (e.kind === 'player') return `[${e.head}${e.ref ? ' · ' + e.ref : ''}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
     if (e.kind === 'narration') return `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
     if (e.kind === 'scene') return `[New scene] ${e.text}`;

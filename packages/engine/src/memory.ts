@@ -194,7 +194,7 @@ export function recall(g: GameState, query: string, k = 8): RecallHit[] {
     ...m.scenes.map((s) => ({ id: 'S' + s.n, kind: 'scene', text: `Scene ${s.n}, ${s.title} (${s.zone}): ${s.summary}` })),
     ...m.chapters.map((c) => ({ id: 'C' + c.n, kind: 'chapter', text: `Chapter ${c.n}, ${c.title} (scenes ${c.scenes[0]}–${c.scenes[1]}): ${c.summary}` })),
     // The whole transcript, archived lines included: what was actually said, word for word.
-    ...[...(g.archive || []), ...g.story.entries].filter((e) => !e.to && !e.ooc && (e.kind === 'narration' || e.kind === 'player' || e.kind === 'check')).map((e) => ({ id: e.id, kind: 'log', text: (e.head ? '[' + e.head + '] ' : '') + e.text.slice(0, 600) })),
+    ...[...(g.archive || []), ...g.story.entries].filter((e) => !e.to && !e.ooc && (e.kind === 'narration' || e.kind === 'player' || e.kind === 'check')).map((e) => ({ id: e.id, kind: 'log', text: (e.head ? '[' + e.head + (e.ref ? ' · ' + e.ref : '') + '] ' : '') + e.text.slice(0, 600) })),
   ];
   const tok = (s: string) => norm(s).split(' ').filter((w) => w.length > 1);
   const q = [...new Set(tok(query))]; if (!q.length || !docs.length) return [];

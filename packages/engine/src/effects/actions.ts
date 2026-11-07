@@ -15,7 +15,7 @@ import { handlerOf, holdersOf, genericOf, boundGame } from './hooks';
 import { keyOf } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
-import { note, postStory, pendRuling } from './narrator';
+import { note, postStory, pendRuling, actingAs } from './narrator';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -180,7 +180,8 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   if (h.u && sc !== 'story') h.u.ap = Math.round((h.u.ap - pv.ap) * 10) / 10;
   if (!uses(h).take(per, n, h.key + '#' + d.id)) return 'Used.';
   const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
-  const err = d.run(h, args, rng);
+  const wasActing = actingAs(d.label); let err: string | null | void;
+  try { err = d.run(h, args, rng); } finally { actingAs(wasActing); }
   // Rulings this use opened carry it, so a refusal gives it back.
   for (const r of (g?.story?.rulings || []).slice(had)) if (!r.use && r.charId === (h.c?.id || h.u?.charId)) r.use = { per, key: h.key + '#' + d.id };
   return err || null;

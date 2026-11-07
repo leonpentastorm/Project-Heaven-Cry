@@ -485,7 +485,7 @@ register({
       preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return dist(h.u!.pos, t) > 6 ? { ok: false, why: 'Within 6 tiles.' } : !standable(cb.map, t) || moveBlockers(cb).has(t) ? { ok: false, why: 'The crate needs open ground.' } : { tiles: [t] }; },
       run: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile)!; if (!spendCredits(h.c, 100)) return 'Not enough credits.'; stateOf(h).due = t; say(cb, h.u!.name + ' calls a supply drop on ' + refOf(t) + ' (100 credits; ' + creditsOf(h.c) + ' left).'); note(h, 'Supply drop called on ' + refOf(t) + '. ' + SIGNAL); return null; } },
     { id: 'take_from_crate', label: 'Take from the crate', pick: ['supply', 'magazine'], pickLabel: 'A supply or a magazine', scope: ['combat'], ap: 1, target: 'none',
-      text: 'Next to the crate: take 1 Supply (choice "supply") or a magazine for your gun (choice "magazine"); with an ally\'s id, hand it to an ally next to the crate.',
+      text: 'Next to the crate: take 1 Supply or a magazine for your gun, or hand it to an ally next to the crate.',
       available: (h) => { const c = stateOf(h).crate; if (!c || !h.cb) return false; const o = objectsOf(h.cb).find((x) => x.id === c.id); if (!o) return false; return c.left <= 0 ? 'The crate is empty.' : true; },
       preview: (h, a) => {
         const c = stateOf(h).crate, o = objectsOf(h.cb!).find((x) => x.id === c.id)!, who = a.targetId ? unitById(h.cb!, a.targetId) : h.u!;
@@ -870,7 +870,7 @@ register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
   actions: [{
     id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word (type how many rounds, 1–6, as the detail)', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-    text: 'Out of combat: inscribe up to 6 rounds with an element or a condition word (choice: the word; text: how many), 1 charge per round.',
+    text: 'Out of combat: inscribe up to 6 rounds with an element or a condition word, 1 charge per round.',
     available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
     preview: (h, a) => {
       const m = magicOf(h.c!)!, w = String(a.choice || '').toLowerCase(), n = Math.max(1, Math.min(6, Number(a.text) || 6));
@@ -923,7 +923,7 @@ register({
   id: 'spellslinger.spell_magazine', claims: 'all',
   actions: [
     { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 3, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-      text: 'Out of combat: store a whole Sigil spell (choice: its words, "fire,condense") in a magazine, paying its charge now.',
+      text: 'Out of combat: store a whole Sigil spell in a magazine, paying its charge now.',
       available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
       preview: (h, a) => {
         const m = magicOf(h.c!)!, words = String(a.choice || '').split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
@@ -1004,7 +1004,7 @@ register({
   id: 'storm_hand.gauntlet_infusion', claims: 'all',
   actions: [{
     id: 'infuse', label: 'Gauntlet Infusion', pick: ['fire', 'freeze', 'shock', 'spark'], pickLabel: 'The element', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-    text: 'Choose the element your melee hits carry until the next rest: fire, freeze, shock or spark (choice).',
+    text: 'Choose the element your melee hits carry until the next rest: fire, freeze, shock or spark.',
     preview: (_h, a) => (INFUSE.includes(String(a.choice || '').toLowerCase()) ? { lines: ['Infused: ' + String(a.choice).toUpperCase() + '.'] } : { ok: false, why: 'Pick fire, freeze, shock or spark.' }),
     run: (h, a) => { const el = String(a.choice).toLowerCase(); charState(h.c)[h.key] = { element: el }; const line = 'infuses the gauntlet with ' + el.toUpperCase() + '.'; if (h.cb) say(h.cb, h.c!.name + ' ' + line); else postStory(h, line, { private: true }); return null; },
   }],

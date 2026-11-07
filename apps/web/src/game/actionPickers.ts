@@ -1,4 +1,4 @@
-// What a story or area-map action of a perk, trait or class move asks for, as buttons (Leon: "if it does not have a
+// What a story, area-map or combat action of a perk, trait or class move asks for, as buttons (Leon: "if it does not have a
 // button it does not work"). Every input is a picker built from the engine's data (option chips, the party, the people
 // on the map, your pack's mods, your designs, a patron's Blessings, a Soul design builder); the only typed input is the
 // prose an action genuinely needs (an Established Fact, a cover story), in a small box under that action's own button.
@@ -6,7 +6,10 @@
 //
 // pickerFor(entry, ctx) gives the fields; buildArgs(picker, values) turns the picks into the action's args in the
 // format the engine already reads (choice / npc / text / targetId; the twin's designs as JSON {designs:[…]}).
-import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, packOf, moduleSlots, maxSigilWords, itemWords, type PerkActionEntry } from '@engine';
+// In a fight (ctx.how 'combat') the action's own target is still a click on the grid (a token or a tile); a second
+// pick on the grid (where a run ends, where a thrown crate lands, the enemy an ally attacks) is a 'unit' or 'tile'
+// field the next grid click fills (combat.js).
+import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, WEAPON, packOf, moduleSlots, maxSigilWords, itemWords, debuffsOf, condName, isMelee, type PerkActionEntry } from '@engine';
 
 export interface Opt { id: string; label: string; title?: string; off?: string }
 /** A design being built in the picker (as the MAGIC tab's Outburst workshop holds it). */
@@ -14,7 +17,11 @@ export interface DesignDraft { school: string; school2?: string; option?: string
 export type Field =
   | { key: string; kind: 'chips'; head: string; options: Opt[]; multi?: number; optional?: boolean; empty?: string }
   | { key: string; kind: 'prose'; head: string; holder: string; optional?: boolean; max?: number }
-  | { key: string; kind: 'designs'; head: string; n: number; extra: number };
+  | { key: string; kind: 'designs'; head: string; n: number; extra: number }
+  /** A token on the combat grid (the next click on one fills it): its unit id. side: whose tokens it takes. */
+  | { key: string; kind: 'unit'; head: string; side: 'foe' | 'ally' | 'any'; optional?: boolean; multi?: number; repeat?: boolean }
+  /** A tile on the combat grid (the next click on a tile fills it): "x,y". */
+  | { key: string; kind: 'tile'; head: string; optional?: boolean; multi?: number };
 export interface Picker {
   head: string; hint: string; warn?: string; fields: Field[];
   /** At least one of these fields must be filled (e.g. "who": a token on the map, or described in words). */
@@ -22,8 +29,9 @@ export interface Picker {
   build?: (v: Values, x: PickCtx) => Args | string;
 }
 export type Values = Record<string, any>;
-export interface Args { choice?: string; npc?: string; text?: string; targetId?: string }
-export interface PickCtx { g: any; c: any; how: 'story' | 'world' }
+export interface Args { choice?: string; npc?: string; text?: string; targetId?: string; targetIds?: string[]; tile?: string }
+/** cb and u: the fight and the acting unit (how 'combat'). */
+export interface PickCtx { g: any; c: any; how: 'story' | 'world' | 'combat'; cb?: any; u?: any }
 
 // ---------- the Soul schools' options (the Outburst workshop on the MAGIC tab uses the same) ----------
 export const OPT_LABEL: Record<string, string> = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal 30', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
@@ -169,6 +177,76 @@ const SPECIAL: Record<string, Maker> = {
   'perk:lab_coat#neutralise_agent': (e, x) => ({ head: 'Which agent', hint: e.text + ' Pick one, or none for every agent you identified.', fields: [chipsF('choice', 'The agent', CHEM_OPTS, 1, true)] }),
 };
 
+// ---------- combat: what a fight action asks for beyond its grid target ----------
+const unitF = (key: string, head: string, side: 'foe' | 'ally' | 'any', optional = false, multi = 1, repeat = false): Field => ({ key, kind: 'unit', head, side, optional, multi, repeat });
+const tileF = (key: string, head: string, optional = false, multi = 1): Field => ({ key, kind: 'tile', head, optional, multi });
+const optsOf = (ids: string[], label: (id: string) => string = human): Opt[] => ids.map((id) => ({ id, label: label(id) }));
+const condOpts = (ids: string[]): Opt[] => [...new Set(ids)].map((id) => ({ id, label: condName(id).replace(/ \(.*\)$/, '') }));
+/** The grenades and charges a unit carries (a thrown weapon's id is what the engine takes). */
+const throwOpts = (u: any, only?: string[]): Opt[] => Object.entries(u?.throwables || {}).filter(([id, n]) => (n as number) > 0 && (WEAPON as any)[id] && (!only || only.includes(id)))
+  .map(([id, n]) => ({ id, label: (WEAPON as any)[id].name + ((n as number) > 1 ? ' ×' + n : '') }));
+/** The demolitionist's charges (engine perks/c.ts EXPLOSIVES). */
+const EXPLOSIVES = ['satchel_charge', 'frag_grenade', 'incendiary_grenade'];
+const SHOT_OPTS: Opt[] = [{ id: 'shot', label: 'Shot' }, { id: 'aimed', label: 'Aimed shot' }];
+const all = (v: Values, k: string): string[] => (Array.isArray(v[k]) ? v[k] : v[k] ? [v[k]] : []);
+const COMBAT: Record<string, Maker> = {
+  // ---- which of your own debuffs ----
+  'perk:shrug_it_off#shrug_it_off': (e, x) => ({ head: 'Shrug It Off', hint: e.text, fields: [chipsF('choice', 'Which Body debuff (none: the worst first)', condOpts(x.u ? debuffsOf(x.u, 'body') : []), 1, true, 'No Body debuff on you.')] }),
+  'trait:daggerfall_veteran#shake_it_off': (e, x) => ({ head: 'Shake It Off', hint: e.text, fields: [chipsF('choice', 'Which Heart debuff (none: the first)', condOpts(x.u ? debuffsOf(x.u, 'heart') : []), 1, true, 'No Heart debuff on you.')] }),
+  // ---- how you shoot ----
+  'perk:jury_rig#one_more': (e, x) => ({ head: 'One more time', hint: e.text, fields: x.u && isMelee((WEAPON as any)[x.u.weapon]) ? [] : [chipsF('choice', 'Shot or aimed shot (none: a shot)', SHOT_OPTS, 1, true)] }),
+  'perk:nothing_gets_past#hold_line': (e) => ({ head: 'Hold the line', hint: e.text, fields: [chipsF('choice', 'Shots or aimed shots (none: shots)', SHOT_OPTS, 1, true)] }),
+  // ---- a second pick on the grid ----
+  'perk:wall_run#wall_strike': (e) => ({ head: 'Wall Run strike', hint: 'Click the enemy, then the tile you strike from (it may be on the wall), then, if you like, where the run ends.',
+    fields: [tileF('tile', 'The tile you strike from'), tileF('end', 'Where the run ends (optional)', true)],
+    build: (v) => ({ tile: all(v, 'tile')[0], ...(all(v, 'end')[0] ? { choice: all(v, 'end')[0] } : {}) }) }),
+  'trait:grenadiers_arm#hurl': (e) => ({ head: 'Throw them', hint: 'Click the ally or enemy next to you, then the tile where they land.', fields: [tileF('tile', 'Where they land')] }),
+  'class:gunslinger.six_for_six#fan_fire': (e) => ({ head: 'Six for Six', hint: 'All six at the enemy you click; or split them: click an enemy for each shot (repeats allowed).', fields: [unitF('targetIds', 'Shot by shot (optional, up to 6)', 'foe', true, 6, true)] }),
+  'trait:grenadiers_arm#hurl_object': (e) => ({ head: 'Throw an object', hint: 'Click the object next to you, then the tile where it lands.', fields: [tileF('land', 'Where it lands')], build: (v) => ({ choice: all(v, 'land')[0] }) }),
+  'perk:twin_discipline#fused': (e) => ({ head: 'Fused Evoke', hint: e.text, fields: [tileF('aim', 'Aim (only if the pattern needs one)', true)], build: (v) => (all(v, 'aim')[0] ? { choice: all(v, 'aim')[0] } : {}) }),
+  'class:mage.payload#payload': (e) => ({ head: 'Evoke with Payload', hint: e.text, fields: [tileF('aim', 'Aim (only if the pattern needs one)', true)], build: (v) => (all(v, 'aim')[0] ? { choice: all(v, 'aim')[0] } : {}) }),
+  'trait:born_officer#command': (e) => ({ head: 'Command', hint: 'Click the ally, pick the order, then click where they move or whom they attack.',
+    fields: [chipsF('choice', 'The order', [{ id: 'move', label: 'A free move' }, { id: 'attack', label: 'A free Shoot or Strike' }]), tileF('tile', 'For a move: the tile', true), unitF('foe', 'For an attack: the enemy', 'foe', true)],
+    build: (v) => { const o = one(v, 'choice'); if (o === 'move') return all(v, 'tile')[0] ? { choice: 'move', tile: all(v, 'tile')[0] } : 'Click the tile they move to.';
+      return all(v, 'foe')[0] ? { choice: 'attack', targetIds: [all(v, 'foe')[0]] } : 'Click the enemy they attack.'; } }),
+  'perk:origami_hands#improvise': (e) => ({ head: 'Improvise', hint: 'One spare-parts charge.',
+    fields: [chipsF('choice', 'What you make', [{ id: 'trap', label: 'A tripwire' }, { id: 'sling', label: 'A sling shot' }, { id: 'tool', label: 'A one-use tool' }]), tileF('tile', 'For a tripwire: a free tile next to you', true), unitF('targetId', 'For a sling shot: the enemy', 'foe', true), prose('For a tool: what it is (optional)', 'A grappling hook, a lockpick…', true)],
+    build: (v) => { const o = one(v, 'choice');
+      if (o === 'trap') return all(v, 'tile')[0] ? { choice: 'trap', tile: all(v, 'tile')[0] } : 'Click a free tile next to you.';
+      if (o === 'sling') return all(v, 'targetId')[0] ? { choice: 'sling', targetId: all(v, 'targetId')[0] } : 'Click the enemy.';
+      return { choice: 'tool', ...(txt(v) ? { text: txt(v) } : {}) }; } }),
+  'class:heartbinder.through#begin_through': (e, x) => ({ head: 'Cast through a link', hint: 'Pick the design, click the tile you aim at; the first link casts unless you click another linked ally.',
+    fields: [chipsF('choice', 'The design', ((x.u?.mg?.designs || x.c?.outbursts || []) as any[]).map((d) => ({ id: d.id, label: d.name })), 1, false, 'You have no designs.'), unitF('targetIds', 'Through whom (optional: your first link)', 'ally', true)] }),
+  'class:grand_sigilist.enlarge#enlarge': (e) => ({ head: 'Enlarge (Grand form)', hint: e.text,
+    fields: [chipsF('choice', 'The word', e.options || [], 1, false, 'No word known.'), tileF('walls', 'For STONE: where the walls rise (optional, up to 4)', true, 4)],
+    build: (v) => ({ choice: one(v, 'choice'), ...(all(v, 'walls').length ? { text: all(v, 'walls').join(' ') } : {}) }) }),
+  'class:rtc_contractor.supply_drop#take_from_crate': (e) => ({ head: 'Take from the crate', hint: 'Next to the crate.', fields: [chipsF('choice', 'A Supply or a magazine', e.options || []), unitF('targetId', 'Hand it to (optional: yourself)', 'ally', true)] }),
+  // ---- what you plant, set or take over ----
+  'perk:sleight_of_hand#plant': (e, x) => ({ head: 'Plant an item', hint: e.text, fields: [chipsF('choice', 'What you plant', [...throwOpts(x.u).map((o) => ({ ...o, label: 'Primed ' + o.label })), ...packItems(x.c)], 1, false, 'Nothing to plant: no grenade, nothing small in your pack.')] }),
+  'trait:demolitionist#set_explosive': (e, x) => ({ head: 'Set explosive', hint: 'Click your tile or one next to you, then shape the blast.',
+    fields: [chipsF('shape', 'The blast', optsOf(['circle', 'line', 'cone'])), chipsF('item', 'The charge (none: the first you carry)', throwOpts(x.u, EXPLOSIVES), 1, true, 'No explosive in your kit.'), chipsF('when', 'When it goes off', [{ id: 'now', label: 'Now' }, { id: 'remote', label: 'On my trigger' }])],
+    build: (v) => ({ choice: [one(v, 'shape'), one(v, 'item'), one(v, 'when') === 'remote' ? 'remote' : ''].filter(Boolean).join(' ') }) }),
+  'trait:slicer#backdoor': (e) => ({ head: 'Backdoor', hint: 'Click a door, terminal, camera, alarm or turret within 5 tiles.', fields: [chipsF('choice', 'For a door (none: open it if shut, shut it if open)', optsOf(['open', 'close', 'lock']), 1, true)] }),
+  'perk:many_hands#hand_off': (e) => ({ head: 'Hand-Off', hint: e.text, fields: [chipsF('choice', 'How many AP', optsOf(['1', '2', '3'], (n) => n + ' AP'))] }),
+  // ---- faith ----
+  'trait:heretic#stolen_fire': (e, x) => ({ head: 'Stolen Fire', hint: e.text.replace(/\s*choice:.*$/, ''), fields: [chipsF('choice', 'A patron\'s Blessing', (PATRONS as any[]).flatMap((p) => (p.blessings || []).map((b: any) => ({ id: p.id + ':' + b.id, label: p.name + ' · ' + b.name, title: b.text || '' })))), unitF('targetId', 'Who it is for (optional)', 'any', true)] }),
+  // ---- orders, pleas and words ----
+  'perk:the_voice#the_voice': (e) => ({ head: 'The Voice', hint: e.text,
+    fields: [chipsF('order', 'The order', [['halt', 'Halt'], ['hold', 'Hold fire'], ['drop', 'Drop it'], ['kneel', 'Kneel'], ['flee', 'Fall back'], ['other', 'Something else']].map(([id, label]) => ({ id, label }))), prose('Your words (optional; needed for “Something else”)', 'What you shout', true)],
+    build: (v) => (one(v, 'order') === 'other' ? (txt(v) ? { text: txt(v) } : 'Write the order you give.') : { choice: one(v, 'order'), ...(txt(v) ? { text: txt(v) } : {}) }) }),
+  'perk:lay_down_arms#lay_down_arms': (e) => ({ head: 'Lay Down Arms', hint: e.text, fields: [...(e.tier === 'II' ? [unitF('targetIds', 'Others who hear you (optional, up to 2 more)', 'foe', true, 2)] : []), prose('Your plea (optional)', 'What you say', true)] }),
+  'perk:bone_talk#bone_talk': (e) => ({ head: 'Bone Talk', hint: e.text, fields: [prose('The physical detail', 'One specific detail')] }),
+  'trait:trench_poet#verse': (e) => ({ head: 'Verse', hint: e.text, fields: [prose('Your metaphor', 'Answer in metaphor')] }),
+  'perk:footnote#cite_fight': (e) => ({ head: 'Footnote', hint: e.text, fields: [prose('The fact you cite (optional)', 'A fact about it', true)] }),
+  'perk:double_meaning#hint_fight': (e) => ({ head: 'Double Meaning', hint: e.text, fields: [prose('Your sentence (optional)', 'One sentence, two meanings', true)] }),
+  'perk:old_tongue#speak_fight': (e) => ({ head: 'Speak the Old Tongue', hint: e.text, fields: [prose('What you say (optional)', 'In its own tongue', true)] }),
+  'perk:fire_sermon#preach': (e) => ({ head: 'Preach', hint: e.text, fields: [prose('What you preach (optional)', 'Your sermon', true)] }),
+  'trait:holo_drama_addict#drama': (e) => ({ head: 'Play it as a holo-drama', hint: e.text, fields: [prose('The scene (optional)', 'Cue the music…', true)] }),
+  'perk:their_own_idea#suggest': (e) => ({ head: 'Their Own Idea', hint: 'Click the listener; hide the suggestion inside a sentence.', fields: [prose('The suggestion', 'Hidden inside a sentence')] }),
+  'trait:occultist#weakness': (e) => ({ head: 'Look it up', hint: 'Click the creature on the grid, or name it.', oneOf: ['targetId', 'text'], fields: [unitF('targetId', 'The creature here', 'any', true), prose('Or name the creature', 'What it is', true)] }),
+  'perk:lab_coat#neutralise_agent': (e) => ({ head: 'Neutralise agent', hint: e.text + ' Pick one, or none for the first identified here.', fields: [chipsF('choice', 'The agent', [...CHEM_OPTS, { id: 'toxic', label: 'Toxic hazard' }], 1, true)] }),
+};
+
 /** The key a picker is filed under: "itemKey#actionId", else the bare action id (shared ones like extra_mod). */
 const keyOf = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => e.id + '#' + e.actionId;
 /** Targets picked on the area map (a token, a tile, an object): no picker here. */
@@ -176,6 +254,13 @@ export const ON_MAP = ['unit', 'enemy', 'ally', 'tile', 'object'];
 
 /** The picker for this action, or null when it is a plain button (or picked on the map). */
 export function pickerFor(e: PerkActionEntry, x: PickCtx): Picker | null {
+  if (x.how === 'combat') {
+    // A fight: the grid gives the action's own target; the picker the rest. A picker with no field is a plain button.
+    const cp = COMBAT[keyOf(e)]; if (cp) { const P = cp(e, x); return P.fields.length ? P : null; }
+    if (e.options) { const multi = e.pickMulti || 1; return { head: e.pickLabel || e.label, hint: e.text, fields: [chipsF('choice', e.pickLabel || 'Pick', e.options, multi, false, 'Nothing to pick.')] }; }
+    if (e.target === 'text') { const [head, holder] = PROSE[e.actionId] || ['What you say or do', 'Type it']; return { head: e.label, hint: e.text, fields: [prose(head, holder, /optional/.test(head))] }; }
+    return null;
+  }
   const sp = SPECIAL[keyOf(e)] || SPECIAL[e.actionId];
   if (sp) return sp(e, x);
   if (ON_MAP.includes(e.target)) return null;
@@ -196,6 +281,7 @@ export function buildArgs(p: Picker, v: Values, x: PickCtx): Args | string {
     const val = v[f.key];
     if (f.kind === 'chips' && !f.optional && !(Array.isArray(val) ? val.length : val)) return f.options.length ? 'Pick ' + lower(f.head) + '.' : f.empty || 'Nothing to pick.';
     if (f.kind === 'prose' && !f.optional && !String(val || '').trim()) return 'Write ' + lower(f.head) + '.';
+    if ((f.kind === 'unit' || f.kind === 'tile') && !f.optional && !all(v, f.key).length) return 'Click ' + lower(f.head) + ' on the grid.';
   }
   if (p.oneOf && !p.oneOf.some((k) => (Array.isArray(v[k]) ? v[k].length : String(v[k] || '').trim()))) return 'Pick someone, or say who.';
   if (p.build) return p.build(v, x);
@@ -206,6 +292,8 @@ export function buildArgs(p: Picker, v: Values, x: PickCtx): Args | string {
     if (f.kind === 'chips' && f.key === 'squad' && one(v, 'squad')) out.choice = one(v, 'squad');
     if (f.kind === 'chips' && f.key === 'npc') Object.assign(out, npcArgs(v, x));
     if (f.kind === 'prose' && txt(v, f.key)) out.text = txt(v, f.key).slice(0, f.max || 240);
+    if (f.kind === 'unit' && all(v, f.key).length) { if (f.key === 'targetIds') out.targetIds = all(v, f.key); else out.targetId = all(v, f.key)[0]; }
+    if (f.kind === 'tile' && all(v, f.key).length) { if (f.key === 'choice') out.choice = all(v, f.key)[0]; else out.tile = all(v, f.key)[0]; }
   }
   return out;
 }
@@ -231,4 +319,18 @@ export function pickInDraft(c: any, d: DesignDraft, what: 'school' | 'school2' |
   const on = d.modules.includes(id);
   if (!on && d.modules.length >= designSlots(c, extra)) return d;
   return { ...d, modules: on ? d.modules.filter((m) => m !== id) : [...d.modules, id] };
+}
+
+/** A click on the combat grid for a picker's 'unit' or 'tile' field: the values with it added to the first field that
+ *  takes it (a unit of the field's side; a tile), or null when no field wants it (the click aims the action instead). */
+export function gridPick(P: Picker, V: Values, unit: { id: string; side: string } | null, tile: string): Values | null {
+  for (const f of P.fields) {
+    if (unit ? f.kind !== 'unit' : f.kind !== 'tile') continue;
+    if (f.kind === 'unit' && unit && !(f.side === 'any' || (f.side === 'foe' ? unit.side !== 'pc' : unit.side === 'pc'))) continue;
+    const id = unit ? unit.id : tile, now = all(V, f.key);
+    if (now.includes(id) && !(f as any).repeat) return V;
+    if (now.length >= ((f as any).multi || 1)) continue;
+    return { ...V, [f.key]: [...now, id] };
+  }
+  return null;
 }

@@ -1059,7 +1059,7 @@ register({
   id: 'heartfed.four_hearts', claims: 'all',
   actions: [
     { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'designId:rage|grief|fear|devotion', scope: ['world', 'story'], target: 'none', ap: 0,
-      text: 'Key one of your designs to Rage, Grief, Fear or Devotion (choice: "designId:gauge").',
+      text: 'Key one of your designs to Rage, Grief, Fear or Devotion.',
       preview: (h, a) => { const [id, k] = String(a.choice || '').split(':'); return !(h.c?.outbursts || []).some((d) => d.id === id) || !GAUGES.includes(k as Gauge) ? { ok: false, why: 'Choose "designId:rage|grief|fear|devotion".' } : {}; },
       run: (h, a) => { const [id, k] = String(a.choice).split(':'); (charState(h.c).heartKeys ||= {})[id] = k; const d = h.c!.outbursts!.find((x) => x.id === id)!; const line = d.name + ' is keyed to ' + k + '.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
     { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
@@ -1134,7 +1134,7 @@ register({
       preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Link to someone else.' }; if (!unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: [links(h).length >= maxLinks(h.c) ? 'Replaces your oldest link.' : 'Linked for the scene.'] }; },
       run: (h, a) => { const t = unitById(h.cb!, a.targetId)!; addLink(h, linkId(t)); emitFx(h.cb!, 'stance', { unit: h.u!.id, at: h.u!.pos, what: 'link', target: t.id }); say(h.cb, h.u!.name + ' binds their heart to ' + t.name + ' (Link).'); return null; } },
     { id: 'link_story', label: 'Link', pick: 'squad', pickLabel: 'The squadmate', scope: ['story'], target: 'none', ap: 0,
-      text: 'Bind your heart to another character here (choice: their id) for the scene.',
+      text: 'Bind your heart to another character here for the scene.',
       preview: (h, a) => (!a.choice || !h.g?.characters?.[a.choice] || a.choice === h.c?.id ? { ok: false, why: 'Pick another character (choice).' } : {}),
       run: (h, a) => { addLink(h, a.choice!); const t = h.g.characters[a.choice!]; postStory(h, h.c!.name + ' binds their heart to ' + t.name + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Link in the story: is ' + t.name + ' close enough to bind to? (refuse to undo)'); return null; } },
   ],
@@ -1153,7 +1153,7 @@ register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
     { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Begin and release an Outburst from a linked ally\'s place (choice: the design; targetIds[0]: which link).',
+      text: 'Begin and release an Outburst from a linked ally\'s place.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
@@ -1189,7 +1189,7 @@ register({
 register({
   id: 'heartbinder.share', claims: 'all',
   actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
-    text: 'Choose whether you take half of a linked ally\'s wounds automatically (choice: always or never).',
+    text: 'Choose whether you take half of a linked ally\'s wounds automatically: always or never.',
     preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
     run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } }],
   on: {
@@ -1237,7 +1237,7 @@ register({
   id: 'vessel.inner_charge', claims: 'all',
   actions: [
     { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: (h) => Math.max(1, h.u?.mg?.soulAp ?? 2),
-      text: 'Take a body form (choice: iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
+      text: 'Take a body form (iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
       available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= maxForms(h.c) ? 'You hold ' + maxForms(h.c) + ' forms already.' : true),
       preview: (h, a) => {
         const f = a.choice as Form; if (!FORMS[f]) return { ok: false, why: 'Choose iron, surge, swift, pain, steady or heartbeat.' };
