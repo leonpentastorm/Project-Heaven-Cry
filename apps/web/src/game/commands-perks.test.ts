@@ -3,7 +3,7 @@
 // moves the rank has unlocked.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, newCharacter, startCombat, MAPS, type Character } from '@engine';
-import { actionGroups, catalogue, pkId, classOf } from './commands';
+import { actionGroups, catalogue, pkId, classOf, pickChoice, wantsDetail, perkEntries } from './commands';
 
 const charWith = (o: Partial<Character> = {}): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
@@ -61,5 +61,18 @@ describe('the Perks and Class tabs', () => {
     expect(cl[1].map((i: any) => i[1])).toEqual(expect.arrayContaining(['Six for Six', 'Called Shot']));
     expect(cl[1].map((i: any) => i[1])).not.toContain('The Draw'); // automatic at the fight's start: no dead button
     const k = classOf(c)!; expect(k.icon).toMatch(/^data:image\/svg\+xml/); expect(k.ink).toBe('#F2A54A');
+  });
+});
+
+describe('a perk action\'s detail (picks, words, names)', () => {
+  it('maps a typed option label to its id; a multi pick keeps each word', () => {
+    const e = { options: [{ id: 'head', label: 'Head' }, { id: 'arm', label: 'Arm' }], pickMulti: 1 };
+    expect(pickChoice(e, 'Head')).toBe('head'); expect(pickChoice(e, 'somewhere')).toBe('somewhere');
+    expect(pickChoice({ options: [{ id: 'fire', label: 'FIRE' }, { id: 'push', label: 'PUSH' }], pickMulti: 3 }, 'FIRE, push')).toBe('fire push');
+  });
+  it('Called Shot offers head, arm or leg in the Class tab and wants a detail', () => {
+    const c = charWith({ classId: 'gunslinger' as any }); c.classId = 'marksman'; c.advancedClass = 'gunslinger';
+    const f = fight(c), e = perkEntries(f.g, f.cb, f.u, c, 'combat').find((x: any) => x.actionId === 'called_shot')!;
+    expect(e.options!.map((o: any) => o.id)).toEqual(['head', 'arm', 'leg']); expect(wantsDetail(e, null)).toBe(true);
   });
 });

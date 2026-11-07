@@ -34,7 +34,8 @@ await host.getByLabel('What do you do?').fill('I walk up the ramp with 4-Ten on 
 await guest.getByLabel('What do you do?').fill('I cover him from the wreck line.'); await click(guest, 'Send', { exact: true }); await click(guest, 'End turn', { exact: true });
 await host.waitForSelector('text=CLICK TO ROLL', { timeout: 10000 });
 await shot(host, '13-check-called');
-await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
+await host.waitForTimeout(300); // a new check of yours opens the dice table by itself; else open it from its line
+if (!(await host.locator('div[aria-label="Dice table"]').count())) await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
 await click(host, /Throw/);
 await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
 await shot(host, '14-dice');
