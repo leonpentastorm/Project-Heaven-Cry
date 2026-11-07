@@ -1885,7 +1885,7 @@
           "name": "Overclock",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Draw a spell one word longer than your Max Sigil words, for +2 Core charge.",
+          "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +2 Core charge.",
           "effects": [
             {
               "op": "grant_action",
@@ -1911,7 +1911,7 @@
           "name": "Twin Draw",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "Once per combat, draw two Sigil spells with one action; pay the AP of the longer spell only.",
+          "text": "Once per combat, draw the glyphs of two Sigil spells and pay the Glyph AP of the longer spell only.",
           "effects": [
             {
               "op": "grant_action",
@@ -2367,7 +2367,7 @@
           "name": "Paint the Field",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "When you draw a Sigil spell, choose its shape for free: line, cone or circle (no Form word needed).",
+          "text": "Once per Evoke, give a Sigil spell with no Burst word a free SPREAD or PUSH (no glyph, no charge, not counted toward 4 glyphs).",
           "effects": [
             {
               "op": "stat_mod",

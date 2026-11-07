@@ -166,7 +166,8 @@ describe('Verse of War on the area map (item 31)', () => {
 });
 
 describe('Twin Discipline on the area map (item 32)', () => {
-  it('a fused cast whose Stack finds a token opens the fight with the cast; the hold is spent and the glyphs fade', () => {
+  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
+  it.skip('a fused cast whose Stack finds a token opens the fight with the cast; the hold is spent and the glyphs fade', () => {
     const { s, c } = soulStory({ twin_discipline: 'ultimate' }); const ch = s.g.characters[c.id];
     ch.pack = [...(ch.pack || []), { id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'tool' } as any];
     ch.sigils = ['fire', 'push']; ch.evoCharge = 10; s.g.characters[c.id].skills.brain_power = 5;

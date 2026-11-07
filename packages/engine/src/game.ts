@@ -7,7 +7,8 @@ import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone } from './magic';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { migrateCharacterSigils } from './character';
 import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -262,9 +263,9 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/forget'; charId: string; designId: string }
@@ -331,6 +332,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
+  for (const c of Object.values(g.characters || {})) { const notes = migrateCharacterSigils(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441)
   try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
@@ -1115,7 +1117,8 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
-    case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined); break;
+    case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
+    case 'combat/strike-turret': err = strikeTurret(cb!, g.rng, u, tileKey(g, a.tile)); break;
     case 'combat/scuff': err = scuffGlyph(cb!, u); break;
     case 'combat/vent': err = ventFlux(cb!, u); break;
     case 'combat/core': err = swapCore(cb!, u); break;
@@ -1377,6 +1380,9 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
+  // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
+  if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, 'pc')), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === 'pc') };
+  if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, 'pc'));
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
 }
@@ -1510,10 +1516,14 @@ const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard cap
 const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'];
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean }, tile?: string, aim?: string): string | null {
+/** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
+function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string }) {
+  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}) };
+}
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
-    case 'draw': return a.word && tile ? drawGlyph(cb, rng, u, a.word, tile) : 'Pick a word and a tile.';
-    case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim) : 'Pick a glyph of the pattern.';
+    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
+    case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
     case 'scuff': return scuffGlyph(cb, u);
     case 'vent': return ventFlux(cb, u);
     case 'core': return swapCore(cb, u);
@@ -1528,6 +1538,7 @@ function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act
  * the same zone), and each character's Flux, Strain, held Outburst, conditions and shield. */
 function magicIn(g: GameState, cb: Combat) {
   cb.mana = g.story.mana ?? MANA_START;
+  migrateStorySigil(g.story as any); cb.sigilV = SIGIL_REV; // 1.2 glyphs go, 1.2 walls become fields (item 441)
   if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
   cb.glyphSeq = Math.max(0, ...[...(cb.glyphs || []), ...(cb.zones || [])].map((x) => +String(x.id).replace(/\D/g, '') || 0));
   for (const u of cb.units) {
@@ -1569,7 +1580,7 @@ function storyMagicRound(g: GameState) {
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
-  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u); if (u.mg) u.mg.cast = false; }
+  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u, g.rng); if (u.mg) u.mg.cast = false; }
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
   magicOut(g, cb, false);
   storyFx(g, cb);
@@ -1761,12 +1772,12 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   else if (MAGIC_ACTS.includes(a.act)) {
     const tile = a.tile ? tileKey(g, a.tile) : undefined, aim = a.aim ? tileKey(g, a.aim) : undefined;
     // The action's toggles (Verse of War's "In verse"…) ride on the map the spell runs on, the fight's too.
-    const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => { (cbx as any).mods = a.mods || []; try { return performMagic(cbx, rng, uu, a, tile, aim); } finally { delete (cbx as any).mods; } };
+    const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => { (cbx as any).mods = a.mods || []; try { return performMagic(cbx, rng, uu, a, tile, aim, g); } finally { delete (cbx as any).mods; } };
     // A spell that would touch a person on the map starts a fight, as an attack does (spec: Overworld rounds).
     if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !a.hold)) {
       // Check it would work at all (on a copy, without touching the dice), then see whether it aims at anyone on the map.
       const dry: Combat = JSON.parse(JSON.stringify(cb)), e0 = run(dry, dry.units.find((x) => x.id === u.id)!, { state: g.rng.state }); if (e0) fail(e0);
-      const npc = spellTargets(cb, u, a.act, tile, aim, a.design).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
+      const npc = (a.act === 'evoke' && tile ? evokeTargets(cb, u, tile, aim, evokeOptsOf(g, a)) : spellTargets(cb, u, a.act, tile, aim, a.design)).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
       if (npc) { overworldAttack(g, cb, c!, u, npc, 'shot', (cbx, att) => run(cbx, att, g.rng)); return; }
     }
     err = run(cb, u, g.rng);

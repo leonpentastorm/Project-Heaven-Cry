@@ -611,7 +611,7 @@
         ]
       },
       "role": "offense",
-      "tagline": "FIRE - CONDENSE - PUSH, at range, as often as the cores hold out.",
+      "tagline": "FIRE - SEEK - SPREAD, at range, as often as the cores hold out.",
       "signature": [
         "brain_power",
         "visualization",
@@ -660,7 +660,7 @@
               "name": "Overcharge",
               "ap_cost": 0,
               "uses": "per_combat",
-              "text": "Once per combat, add one word to a spell beyond your Max Sigil words, for no charge and no AP. It still adds Flux.",
+              "text": "Once per combat, add one word to a spell beyond your Max Sigil words (never past 4 glyphs), for no charge and no AP. It still adds Flux.",
               "effects": [
                 {
                   "op": "word_cost",
@@ -740,7 +740,7 @@
               "name": "Raise Cover",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "You can Evoke a lone STAY glyph with no Subject as a cover rune: full cover on its tile and one tile next to it for 2 rounds + your Sigil duration bonus.",
+              "text": "You can Evoke a lone STAY glyph with no Subject as a cover rune, from a tile next to it: full cover on its tile and one tile next to it for 2 rounds + your Sigil duration bonus.",
               "effects": [
                 {
                   "op": "unlock_word",
@@ -899,7 +899,7 @@
               "name": "Stored Spell",
               "ap_cost": 0,
               "uses": "per_rest",
-              "text": "Out of combat, write a whole Sigil spell onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
+              "text": "Out of combat, write a whole Sigil spell (its words) onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP: it goes off from the object's tile with its own Reach, all around. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1931,7 +1931,7 @@
           "name": "Sword Form",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Each melee attack can also draw one Sigil word for no extra AP. It still costs charge and adds Flux.",
+          "text": "Each melee attack can also draw one Sigil glyph on your own tile for no extra AP. It still costs charge and adds Flux.",
           "effects": [
             {
               "op": "action_cost",
@@ -2010,7 +2010,7 @@
           "name": "Deploy Cover",
           "ap_cost": 2,
           "uses": "at_will",
-          "text": "Place a portable barricade on an adjacent tile: half cover, 40 HP. Draw a STAY glyph on it to make it full cover.",
+          "text": "Place a portable barricade on an adjacent tile: half cover, 40 HP. Draw a STAY glyph on a tile next to it to make it full cover.",
           "effects": [
             {
               "op": "state",
@@ -2509,7 +2509,7 @@
           "name": "Half-Sigil",
           "ap_cost": 1,
           "uses": "at_will",
-          "text": "Draw a random word from those you know (the engine rolls). It costs no charge but still adds Flux.",
+          "text": "Draw a random word from those you know (the engine rolls) as a half-glyph on your own tile. It costs 1 charge and adds Flux.",
           "effects": [
             {
               "op": "grant_action",
@@ -2709,7 +2709,7 @@
           "name": "Fusion",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Cast a spell that joins Sigil Form or Motion words to a Soul school. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
+          "text": "Cast a spell that joins Sigil words that aren't Subjects (Reach, Delivery, Burst, Filter) to a Soul school. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
           "effects": [
             {
               "op": "grant_action",
@@ -2759,7 +2759,7 @@
           "name": "Keystone",
           "ap_cost": 2,
           "uses": "at_will",
-          "text": "Cut a glyph instead of drawing it (2 AP + 1 standard core): it never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. One at a time; it stays in that zone until you cut another.",
+          "text": "Cut a glyph on your own tile instead of drawing it (2 AP + 1 standard core): it never fades, can't be scuffed, doesn't count toward your glyph limit and survives being Evoked. One at a time; it stays in that zone until you cut another.",
           "effects": [
             {
               "op": "keystone",
@@ -2774,7 +2774,7 @@
           "name": "Survey",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "You and your allies can Evoke a pattern that holds your Keystone from up to 2 tiles away, and it costs 1 charge less to fire.",
+          "text": "You and your allies can Evoke a Line that holds your Keystone from up to 2 tiles away, and it costs 1 charge less to fire.",
           "effects": [
             {
               "op": "keystone_reach",

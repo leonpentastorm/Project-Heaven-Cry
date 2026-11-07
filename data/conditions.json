@@ -447,7 +447,8 @@
         "you attack"
       ],
       "stacks": false,
-      "adjudication": "hybrid"
+      "adjudication": "hybrid",
+      "notes": "MASK (rules 1.4) sets Hidden for 2 rounds or until the target attacks; it can't hide a Marked target."
     },
     {
       "id": "marked",
@@ -641,7 +642,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly.",
+      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly. The Sigil word COMMAND gives the orders halt, kneel, drop its weapon, or move up to 3 tiles (rules 1.4).",
       "effects": [
         {
           "op": "narrator",
@@ -886,6 +887,95 @@
       ],
       "adjudication": "engine",
       "stacks": false,
+      "provisional": true
+    },
+    {
+      "id": "corroded",
+      "name": "Corroded",
+      "kind": "debuff",
+      "family": "body",
+      "save": false,
+      "text": "5 damage at the start of each turn; Defense −2. A Body save at the end of each of your turns ends it early.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hp",
+          "value": -5,
+          "when": "turn_start"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "rounds": 3
+      },
+      "ends_on": [
+        "duration",
+        "body save at the end of each of your turns (12 + the source's Body debuff strength)"
+      ],
+      "stacks": false,
+      "set_by": "sigils:acid",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "quickened",
+      "name": "Quickened",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "+2 AP on your next turn, within the AP ceiling of 9. At most once a round; never self-cast.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": 2,
+          "duration": "next_turn"
+        }
+      ],
+      "duration": {
+        "until": "your next turn starts"
+      },
+      "ends_on": [
+        "used at your next turn start"
+      ],
+      "stacks": false,
+      "set_by": "sigils:quicken",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "sharpened",
+      "name": "Sharpened",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Your next attack gets +3 to hit and ×1.25 damage.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 3,
+          "context": "next_attack"
+        },
+        {
+          "op": "damage_mult",
+          "value": 1.25,
+          "context": "next_attack"
+        }
+      ],
+      "duration": {
+        "until": "your next attack, or the end of your next turn"
+      },
+      "ends_on": [
+        "you attack",
+        "the end of your next turn"
+      ],
+      "stacks": false,
+      "set_by": "sigils:sharpen",
+      "adjudication": "engine",
       "provisional": true
     }
   ],

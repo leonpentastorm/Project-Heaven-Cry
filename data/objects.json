@@ -253,6 +253,18 @@
       "electronic": true,
       "provisional": true,
       "text": "A fixed gun on a mount. The Narrator runs it as an enemy; Slicers can take it over (a static device)."
+    },
+    {
+      "id": "sigil_wall",
+      "name": "RAISE wall",
+      "glyph": "▩",
+      "blocks_move": true,
+      "blocks_sight": true,
+      "cover": "full",
+      "hp": 30,
+      "text": "A wall of packed bots raised by a RAISE Sigil (rules 1.4): blocks movement and sight, 30 HP, crumbles after 3 rounds + the caster's Sigil duration bonus; NULL unmakes it.",
+      "adjudication": "engine",
+      "provisional": true
     }
   ]
 }

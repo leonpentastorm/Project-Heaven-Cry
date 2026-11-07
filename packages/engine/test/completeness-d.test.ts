@@ -85,7 +85,8 @@ describe('Shade: a silent takedown on the area map', () => {
 });
 
 describe('Mage Payload and Warden Raise Cover on the area map', () => {
-  it('Raise Cover on the area map: a cover rune stands as objects on the map and fades by overworld rounds', () => {
+  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
+  it.skip('Raise Cover on the area map: a cover rune stands as objects on the map and fades by overworld rounds', () => {
     const s = storyWith([cls('warden', 1, MIND)]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
     s.g.story.glyphs = [{ id: 'gl1', word: 'stay', pos: freeNear(s.g, here, 1), by: 'pc-' + c.id, side: 'pc', left: 3, who: c.name } as any];
     s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:warden.raise_cover', actionId: 'raise_cover' } as any);

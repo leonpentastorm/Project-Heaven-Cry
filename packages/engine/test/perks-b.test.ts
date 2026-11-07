@@ -390,7 +390,7 @@ describe('Drill Echo', () => {
   });
   it('The Count on a glyph: on a 1 the AP is spent, no glyph, no charge', () => {
     const f = fightWith([{ traits: ['drill_echo'], archetype: 'sigilist', kit: 'sigil' }], [{ at: 'O10' }]);
-    const u = f.turn(f.pc), [x, y] = u.pos.split(',').map(Number), tile = (x + 1) + ',' + y;
+    const u = f.turn(f.pc), tile = u.pos; // rules 1.4: on your own tile
     for (let s = 1; s < 500; s++) { if (die({ state: s }, 6) === 1) { f.g.rng.state = s; break; } }
     const ap0 = u.ap, ch0 = u.mg!.charge;
     withGame(f.g, () => expect(drawGlyph(f.cb, { state: 5 }, u, u.mg!.words[0], tile)).toBeNull());

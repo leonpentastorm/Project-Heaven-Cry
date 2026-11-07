@@ -6728,7 +6728,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "The Science Team says it can't be done. The Institute says it shouldn't be. You do it anyway.",
-      "text": "Fuse a Sigil and an Outburst into one cast: the Sigil sets the shape, the Outburst sets the school. Pay both costs.",
+      "text": "Fuse a Sigil and an Outburst into one cast: the Sigil's words set where it reaches and what it covers, the Outburst sets the school. Pay both costs.",
       "effects": [
         {
           "op": "fused_cast",

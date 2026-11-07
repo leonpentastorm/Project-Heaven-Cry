@@ -56,6 +56,7 @@ describe('Rounding Up', () => {
     const pc = evoker(f); f.turn(pc); evoker(f);
     f.act({ type: 'combat/draw', unitId: f.pc.id, word: 'fire', tile: refOf(f.pc.pos) } as any);
     expect(f.pc.ap).toBe(6); expect(logHas(f.cb, /Rounding Up/)).toBe(true);
+    f.pc.pos = f.pc.pos.split(',').map((v, i) => (i ? +v + 1 : +v)).join(','); // rules 1.4: one glyph a tile, so step first
     f.act({ type: 'combat/draw', unitId: f.pc.id, word: 'fire', tile: refOf(f.pc.pos) } as any);
     expect(f.pc.ap).toBe(5.2);
     const g = fightWith([{ kit: 'sigil' }], [{ at: 'O10' }]); evoker(g); g.turn(g.pc); evoker(g);

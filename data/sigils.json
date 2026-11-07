@@ -1,358 +1,1088 @@
 {
   "$schema_version": "1.0",
   "kind": "sigils",
-  "source": "PHC Core Rules v1.0 (grammar, cost, Flux) + new word list",
+  "source": "PHC Core Rules v1.0, rules revision 1.4 (Sigil magic; docs/design/sigil-1.4-proposal.md and decision 98)",
   "grammar": {
-    "requires_one_of": [
-      "subject_element",
-      "subject_effect"
-    ],
-    "and_one_of": [
-      "form",
-      "motion"
-    ],
+    "revision": "1.4",
+    "groups": {
+      "subject": [
+        "subject_element",
+        "subject_affliction",
+        "subject_boon",
+        "subject_working"
+      ],
+      "reach": [
+        "reach"
+      ],
+      "delivery": [
+        "delivery"
+      ],
+      "burst": [
+        "burst"
+      ],
+      "filter": [
+        "filter"
+      ]
+    },
+    "needs": {
+      "subject": 1,
+      "other": 1,
+      "other_means": "any word that isn't a Subject"
+    },
+    "min_glyphs": 2,
+    "max_glyphs": 4,
     "max_words": "sigil_max_words",
-    "shapes": {
-      "stack": "2 glyphs on one tile: lands on an adjacent tile (with PUSH: 8 tiles + range bonus from the stack)",
-      "line": "2-4 tiles in a straight row: fires from the far end along the row; range 4 / 8 / 12 by length + range bonus; hits the first creature",
-      "ring": "3-4 tiles around a centre tile: radius 1 around the centre, or support words on whoever stands on it"
+    "glyphs_on_ground": "sigil_max_words (+ Hold the Stroke)",
+    "shape": {
+      "kind": "line",
+      "min": 2,
+      "max": 4,
+      "directions": [
+        "horizontal",
+        "vertical",
+        "diagonal"
+      ],
+      "bends": false,
+      "group": "glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape"
     },
-    "draw_cost": "each word's charge, Glyph AP, 1 Flux",
-    "evoke_cost": "1 AP; 1 charge per glyph minus Sigil Core saving, min 1",
-    "shape_words": {
-      "stay": "in a Line: the line itself becomes a wall for as long as the glyphs last; in a Ring: the centre",
-      "spread": "in a Line: a 3-tile cone from the far end"
+    "draw": {
+      "where": "own_tile",
+      "glyphs_per_tile": 1,
+      "cost": "the word's charge + Glyph AP + 1 Flux (TWICE 2)",
+      "two_glyph_hook": "a perk, trait or skill may let its caster put a second glyph on a tile (none does yet); two on a tile alone are a Stack"
     },
-    "multiple_subjects": "allowed if length permits; damage sums, each element's own rider applies"
+    "glyph_lasts": "2 + floor(sigil_duration_bonus) rounds",
+    "evoke": {
+      "ap": 1,
+      "charge": "1 per glyph - sigil_core_saving, min 1",
+      "stand": "within 1 tile of any glyph of the Line; not on a middle glyph"
+    },
+    "facing": {
+      "along": "on an end glyph, or next to an end and further along the Line than it: the area runs past the far end, as wide as the Line (lanes centred on its axis; for an even count the extra lane on the right of the firing direction)",
+      "across": "next to the glyphs from the side: row k is the Line moved k steps away from you (perpendicular; for a diagonal Line the orthogonal step away, north or south when both lead away)",
+      "width": "the whole Line (one lane per glyph)",
+      "depth": "the Reach range (+ range bonus), or 1 for Touch",
+      "finished_line": "you stand on the last glyph drawn, so a finished Line fires back the way you came; the preview draws it",
+      "stack": "with the two-glyph hook only: all around the Stack, out to the range, in sight"
+    },
+    "touch": {
+      "depth": 1,
+      "range_bonus": false,
+      "blocked": false
+    },
+    "self_target": "always allowed (your own tile), whatever the Reach: Touch's one exception; PUSH refused there; QUICKEN skips you",
+    "range_bonus": "floor(0.5 x Rumination) + perks, added once to a Reach word's range, never to Touch",
+    "one_reach_word": true,
+    "repeats": {
+      "allowed": true,
+      "mult_per_repeated_glyph": 0.9,
+      "applies_to": [
+        "damage",
+        "heal",
+        "shield"
+      ],
+      "subjects": "repeated Subjects sum their damage, healing and shields; each copy's rider applies once",
+      "except": [
+        "kin",
+        "a second, different Reach word"
+      ]
+    },
+    "refused": [
+      {
+        "words": [
+          "watch",
+          "stay"
+        ],
+        "why": "A turret already lasts."
+      },
+      {
+        "rule": "different_reach",
+        "why": "One Reach word per spell."
+      },
+      {
+        "words": [
+          "kin",
+          "kin"
+        ],
+        "why": "KIN takes one copy."
+      },
+      {
+        "word": "push",
+        "on_own_tile": true,
+        "why": "A cone needs a way to face."
+      }
+    ],
+    "resolve_order": [
+      "how_many",
+      "travel",
+      "cover",
+      "after",
+      "stays"
+    ],
+    "multipliers": "Subjects' sum x Reach x Burst x Delivery (field/turret 0.5, chain 0.75 a jump) x 0.9 per repeated glyph x Sigil multiplier (x Elemental for Elemental; x Healing given for MEND and WARD) x critical; then armour",
+    "mixes": {
+      "condense+spread": "x1.5 on the landing tile, x0.6 around it",
+      "condense+push": "x1.5 on the landing tile, x0.7 in the cone",
+      "spread+push": "the radius and the cone; anyone in both is hit once, at the better multiplier",
+      "stay+pull": "whirlpool: the field drags everyone in it toward you each round",
+      "wait+watch": "a hidden turret",
+      "watch+chain": "the Tesla tower"
+    },
+    "workings_with_burst": "RAISE and NULL cover the Burst's tiles; VEIL and LIGHT cover their own radius or the Burst's, whichever is larger; STEP shifts everyone caught by the same offset",
+    "limits": {
+      "traps_per_caster": 2,
+      "turrets_per_caster": 1,
+      "raise_per_caster": 1,
+      "quicken_per_target_per_round": 1
+    },
+    "fizzle": "the spell goes off but finds nothing it may affect: nothing happens; charge, AP and Flux are spent and its glyphs fade",
+    "skips": "harmful effects skip the Downed and the surrendered; Boons don't",
+    "friendly_fire": true,
+    "starting": {
+      "words": 2,
+      "must_make_spell": true,
+      "needs_group": "reach",
+      "default": [
+        "spark",
+        "seek"
+      ]
+    },
+    "known_max": "4 + brain_power",
+    "retired": [
+      {
+        "id": "return",
+        "why": "Targeting yourself is Touch's exception (decision 98).",
+        "migrate": "drop it; one free word of the player's choice at the next rest"
+      },
+      {
+        "id": "ring",
+        "why": "The Line is the only shape."
+      },
+      {
+        "id": "stack",
+        "why": "Two glyphs on one tile need the two-glyph hook."
+      }
+    ]
+  },
+  "elements": {
+    "fire": {
+      "rider": "A critical sets Burning.",
+      "look": "A white-hot core flaring orange at the edges, embers lifting off the tile, a scorch left for a beat.",
+      "sound": "A dry whoomph, then crackle.",
+      "motion": "flare"
+    },
+    "freeze": {
+      "rider": "Slowed (Body save).",
+      "look": "Pale blue-white frost spreading in sharp crystals from the impact, a breath of mist, the target rimed.",
+      "sound": "A glassy crack and a high ring.",
+      "motion": "crystallise"
+    },
+    "shock": {
+      "rider": "Ignores half cover.",
+      "look": "A jagged blue-white arc with branches, a hard flicker of the tile, a jump between targets for CHAIN.",
+      "sound": "A sharp snap and electric buzz.",
+      "motion": "arc"
+    },
+    "stone": {
+      "rider": "Sigil damage: armour applies.",
+      "look": "Grey-brown shards and dust bursting up from the ground, a short heavy shake.",
+      "sound": "A deep thud and grinding crunch.",
+      "motion": "erupt"
+    },
+    "gale": {
+      "rider": "Pushes the target 2 tiles.",
+      "look": "Pale curved streaks sweeping through, dust and debris swept along the push.",
+      "sound": "A rising whoosh.",
+      "motion": "sweep"
+    },
+    "spark": {
+      "rider": "None: the cheap attack.",
+      "look": "A small bright pinpoint flash and a few scattered sparks.",
+      "sound": "A quick tick-snap.",
+      "motion": "pop"
+    },
+    "acid": {
+      "rider": "Corroded: 5 a turn and Defense -2, 3 rounds (a Body save ends it early).",
+      "look": "Sickly yellow-green droplets that hiss and pit the target, a thin smoke while it burns.",
+      "sound": "A wet splash, then a long hiss.",
+      "motion": "splash"
+    }
+  },
+  "enemy_ai": {
+    "text": "Enemies with an Evoker know their stat block's words, or their tier's default set. They weigh a spell against their weapon by expected damage, walk the Line on their own tiles, avoid hitting their own side (KIN, or target choice), hold a spell that would hit more allies than enemies, set traps where players will cross, and NULL or scuff the player magic they have spotted when it threatens them.",
+    "default_words": {
+      "minion": [
+        "spark",
+        "seek"
+      ],
+      "soldier": [
+        "fire",
+        "seek",
+        "spread",
+        "bind"
+      ],
+      "elite": [
+        "shock",
+        "seek",
+        "chain",
+        "ward",
+        "kin",
+        "bind"
+      ],
+      "boss": [
+        "fire",
+        "shock",
+        "seek",
+        "arc",
+        "spread",
+        "chain",
+        "kin",
+        "ward",
+        "null"
+      ]
+    },
+    "provisional": true
   },
   "example": {
     "words": [
-      "fire",
-      "condense",
-      "push"
+      "spark",
+      "seek"
     ],
-    "shape": "line of 3",
-    "draw_charge": 4,
-    "evoke_charge": 3,
-    "damage": 30,
+    "shape": "line of 2",
+    "draw_charge": 3,
+    "evoke_charge": 2,
+    "damage": 15,
     "range_tiles": 8,
-    "ap_at_expression_1": 4
+    "ap_at_agility_1_expression_1": 4
   },
-  "notes": "Rules 1.2 (Sigils on the map). LINE, WALL and CONE became shapes; SPARK, PULL and SILENCE replace them. Every number is provisional.",
+  "notes": "Rules 1.4: 40 words in five groups (group + class). Subjects carry their effect fields; Reach, Delivery and Burst words carry their numbers and per_copy (what each extra copy adds); every repeated glyph also multiplies the spell's damage, healing and shields by grammar.repeats.mult_per_repeated_glyph. grand is the Grand Sigilist's Grand form (the 23 words kept from 1.2). Every number is provisional.",
   "items": [
     {
       "id": "fire",
       "word": "FIRE",
+      "name": "Fire",
+      "group": "subject",
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Heat. Damage 30, Elemental; on a critical the target is Burning.",
-      "provisional": true,
+      "text": "Heat. 30 Elemental damage; on a critical the target is Burning.",
       "damage": 30,
       "damage_type": "elemental",
-      "on_crit": "burning",
-      "grand": "Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save."
+      "element": "fire",
+      "on_crit": {
+        "condition": "burning"
+      },
+      "new": false,
+      "grand": "Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "freeze",
       "word": "FREEZE",
+      "name": "Freeze",
+      "group": "subject",
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Cold. Damage 25, Elemental; target is Slowed (Body save).",
-      "provisional": true,
+      "text": "Cold. 25 Elemental damage; the target is Slowed (Body save).",
       "damage": 25,
       "damage_type": "elemental",
+      "element": "freeze",
       "applies": {
         "condition": "slowed",
         "save": "body"
       },
-      "name": "Freeze",
-      "grand": "Ice sheet: difficult ground; a Body save each move or fall Prone."
+      "new": false,
+      "grand": "Ice sheet: difficult ground; a Body save each move or fall Prone.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "shock",
       "word": "SHOCK",
+      "name": "Shock",
+      "group": "subject",
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Lightning. Damage 30, Elemental; ignores half cover.",
-      "provisional": true,
+      "text": "Lightning. 30 Elemental damage; ignores half cover.",
       "damage": 30,
       "damage_type": "elemental",
+      "element": "shock",
       "ignores": "half_cover",
-      "name": "Shock",
-      "grand": "Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned."
+      "new": false,
+      "grand": "Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "stone",
       "word": "STONE",
+      "name": "Stone",
+      "group": "subject",
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Earth. Damage 35, Sigil (physical-like, armour applies).",
-      "provisional": true,
+      "text": "Earth. 35 Sigil damage; armour applies.",
       "damage": 35,
       "damage_type": "sigil",
-      "grand": "Earthworks: up to 4 half-cover pillars rise where you choose."
+      "element": "stone",
+      "new": false,
+      "grand": "Earthworks: up to 4 half-cover pillars rise where you choose.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "gale",
       "word": "GALE",
+      "name": "Gale",
+      "group": "subject",
       "class": "subject_element",
       "charge": 1,
       "flux": 1,
-      "text": "Wind. Damage 15, Sigil; pushes the target 2 tiles.",
-      "provisional": true,
+      "text": "Wind. 15 Sigil damage; pushes the target 2 tiles away from where the spell came from.",
       "damage": 15,
       "damage_type": "sigil",
+      "element": "gale",
       "push_tiles": 2,
-      "grand": "Cyclone: anyone entering is pushed 2 tiles outward; shots through it -5."
+      "new": false,
+      "grand": "Cyclone: anyone entering is pushed 2 tiles outward; shots through it -5.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "spark",
       "word": "SPARK",
+      "name": "Spark",
+      "group": "subject",
       "class": "subject_element",
       "charge": 1,
       "flux": 1,
-      "text": "A snap of current. Damage 15, Elemental. The cheapest attack.",
-      "provisional": true,
+      "text": "A snap of current. 15 Elemental damage. The cheapest attack.",
       "damage": 15,
       "damage_type": "elemental",
-      "name": "Spark",
-      "grand": "Static: attack rolls of 1-3 inside jam the weapon."
+      "element": "spark",
+      "new": false,
+      "grand": "Static: attack rolls of 1-3 inside jam the weapon.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
-      "id": "ward",
-      "word": "WARD",
-      "class": "subject_effect",
+      "id": "acid",
+      "word": "ACID",
+      "name": "Acid",
+      "group": "subject",
+      "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "A shield of 30 on the target (x Sigil multiplier), until the end of combat.",
+      "text": "Corrosion. 15 Elemental damage, and the target is Corroded (no save to land it): 5 damage at the start of each of its turns and Defense -2, for 3 rounds; a Body save at the end of each of its turns ends it early.",
+      "damage": 15,
+      "damage_type": "elemental",
+      "element": "acid",
+      "applies": {
+        "condition": "corroded",
+        "save": null,
+        "save_ends": "body"
+      },
+      "new": true,
+      "max_copies": null,
       "provisional": true,
-      "shield": 30,
-      "grand": "Dome: allies inside +2 Defense and a 20 shield at each turn start (does not stack)."
-    },
-    {
-      "id": "mend",
-      "word": "MEND",
-      "class": "subject_effect",
-      "charge": 3,
-      "flux": 1,
-      "text": "Heals 25 (x Sigil multiplier x Healing given).",
-      "provisional": true,
-      "heal": 25,
-      "grand": "Spring: allies starting a turn inside heal 10 x Healing multiplier."
+      "adjudication": "engine"
     },
     {
       "id": "bind",
       "word": "BIND",
-      "class": "subject_effect",
+      "name": "Bind",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "Target is Pinned (Body save).",
-      "provisional": true,
+      "text": "The target is Pinned (Body save).",
       "applies": {
         "condition": "pinned",
         "save": "body"
       },
-      "grand": "Tar: Pinned on entering (Body save)."
+      "new": false,
+      "grand": "Tar: Pinned on entering (Body save).",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "blind",
       "word": "BLIND",
-      "class": "subject_effect",
+      "name": "Blind",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 1,
       "flux": 1,
-      "text": "Target is Blinded (Body save).",
-      "provisional": true,
+      "text": "The target is Blinded (Body save).",
       "applies": {
         "condition": "blinded",
         "save": "body"
       },
-      "name": "Blind",
-      "grand": "Fog: no one inside sees beyond 1 tile."
+      "new": false,
+      "grand": "Fog: no one inside sees beyond 1 tile.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "slow",
       "word": "SLOW",
-      "class": "subject_effect",
+      "name": "Slow",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 1,
       "flux": 1,
-      "text": "Target is Slowed (Body save). No damage.",
-      "provisional": true,
+      "text": "The target is Slowed (Body save). No damage.",
       "applies": {
         "condition": "slowed",
         "save": "body"
       },
-      "name": "Slow",
-      "effects": [
-        {
-          "op": "condition",
-          "condition": "slowed",
-          "target": "target",
-          "save": "body"
-        }
-      ],
-      "grand": "Mire: Movement halved inside."
+      "new": false,
+      "grand": "Mire: Movement halved inside.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "muddle",
       "word": "MUDDLE",
-      "class": "subject_effect",
+      "name": "Muddle",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "Target gets a Left Brain Debuff (Brain save).",
-      "provisional": true,
+      "text": "The target gets a Left Brain Debuff (Brain save).",
       "applies": {
         "condition": "left_brain_debuff",
         "save": "brain"
       },
-      "grand": "Maze: Brain save at turn start or stagger 1 tile in a random direction."
+      "new": false,
+      "grand": "Maze: Brain save at turn start or stagger 1 tile in a random direction.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "dread",
       "word": "DREAD",
-      "class": "subject_effect",
+      "name": "Dread",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "Target is Shaken (Heart save).",
-      "provisional": true,
+      "text": "The target is Shaken (Heart save).",
       "applies": {
         "condition": "shaken",
         "save": "heart"
       },
-      "grand": "Haunting: enemies inside are Shaken (Heart save each turn)."
-    },
-    {
-      "id": "veil",
-      "word": "VEIL",
-      "class": "subject_effect",
-      "charge": 2,
-      "flux": 1,
-      "text": "The target tile fills with smoke-bots: blocks sight in radius 1.",
+      "new": false,
+      "grand": "Haunting: enemies inside are Shaken (Heart save each turn).",
+      "max_copies": null,
       "provisional": true,
-      "blocks_sight_radius": 1,
-      "grand": "Smoke field: blocks all sight; everyone inside counts as Hidden."
-    },
-    {
-      "id": "light",
-      "word": "LIGHT",
-      "class": "subject_effect",
-      "charge": 1,
-      "flux": 1,
-      "text": "Lights radius 4 for the scene; reveals Hidden within it.",
-      "provisional": true,
-      "reveals_hidden_radius": 4,
-      "grand": "Noon: Hidden revealed; enemies inside -2 to hit."
+      "adjudication": "engine"
     },
     {
       "id": "silence",
       "word": "SILENCE",
-      "class": "subject_effect",
+      "name": "Silence",
+      "group": "subject",
+      "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
       "text": "No Sigils, Outbursts or prayers for 1 round (Brain save).",
-      "provisional": true,
       "applies": {
         "condition": "silenced",
         "save": "brain",
         "rounds": 1
       },
-      "name": "Silence",
-      "grand": "Dead zone: no Sigils, Outbursts or prayers inside, yours included."
-    },
-    {
-      "id": "condense",
-      "word": "CONDENSE",
-      "class": "form",
-      "charge": 1,
-      "flux": 1,
-      "text": "Single target. Damage x1.",
+      "new": false,
+      "grand": "Dead zone: no Sigils, Outbursts or prayers inside, yours included.",
+      "max_copies": null,
       "provisional": true,
-      "form_mult": 1.0,
-      "area": "single",
-      "grand": "Gravity well: everything inside is pulled 1 tile toward the staff at turn start."
+      "adjudication": "engine"
     },
     {
-      "id": "spread",
-      "word": "SPREAD",
-      "class": "form",
+      "id": "command",
+      "word": "COMMAND",
+      "name": "Command",
+      "group": "subject",
+      "class": "subject_affliction",
+      "charge": 3,
+      "flux": 1,
+      "text": "Brain save, or the target obeys one order on its next turn: halt, kneel, drop its weapon, or move up to 3 tiles where you choose (never into harm).",
+      "applies": {
+        "condition": "commanded",
+        "save": "brain"
+      },
+      "orders": [
+        "halt",
+        "kneel",
+        "drop",
+        "move"
+      ],
+      "move_tiles": 3,
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "ward",
+      "word": "WARD",
+      "name": "Ward",
+      "group": "subject",
+      "class": "subject_boon",
       "charge": 2,
       "flux": 1,
-      "text": "Burst of radius 2 at the point of impact. Damage x0.6.",
+      "text": "A shield of 30 (x Sigil multiplier x Healing given) until the end of the fight; the higher shield stands.",
+      "shield": 30,
+      "new": false,
+      "grand": "Dome: allies inside +2 Defense and a 20 shield at each turn start (does not stack).",
+      "max_copies": null,
       "provisional": true,
-      "form_mult": 0.6,
-      "area": "radius_2",
-      "grand": "Bloom: any spell landing inside spreads 1 more radius."
+      "adjudication": "engine"
     },
     {
-      "id": "push",
-      "word": "PUSH",
-      "class": "motion",
-      "charge": 1,
+      "id": "mend",
+      "word": "MEND",
+      "name": "Mend",
+      "group": "subject",
+      "class": "subject_boon",
+      "charge": 3,
       "flux": 1,
-      "text": "Sends the spell out to 8 tiles. Without it, a spell reaches only an adjacent tile.",
+      "text": "Heals 25 (x Sigil multiplier x Healing given).",
+      "heal": 25,
+      "new": false,
+      "grand": "Spring: allies starting a turn inside heal 10 x Healing multiplier.",
+      "max_copies": null,
       "provisional": true,
-      "range_tiles": 8,
-      "grand": "Rampart wind: shots from outside into it -3."
+      "adjudication": "engine"
     },
     {
-      "id": "stay",
-      "word": "STAY",
-      "class": "motion",
-      "charge": 1,
+      "id": "quicken",
+      "word": "QUICKEN",
+      "name": "Quicken",
+      "group": "subject",
+      "class": "subject_boon",
+      "charge": 3,
       "flux": 1,
-      "text": "The spell holds its tile for 2 rounds (plus the Sigil duration bonus).",
+      "text": "The target is Quickened: +2 AP on its next turn, within the ceiling of 9. At most once per target per round, and never on yourself.",
+      "applies": {
+        "condition": "quickened",
+        "save": null
+      },
+      "ap": 2,
+      "not_self": true,
+      "once_per_target_per_round": true,
+      "new": true,
+      "max_copies": null,
       "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "sharpen",
+      "word": "SHARPEN",
+      "name": "Sharpen",
+      "group": "subject",
+      "class": "subject_boon",
+      "charge": 2,
+      "flux": 1,
+      "text": "The target is Sharpened: its next attack gets +3 to hit and x1.25 damage (until that attack or the end of its next turn).",
+      "applies": {
+        "condition": "sharpened",
+        "save": null
+      },
+      "to_hit": 3,
+      "damage_mult": 1.25,
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "cleanse",
+      "word": "CLEANSE",
+      "name": "Cleanse",
+      "group": "subject",
+      "class": "subject_boon",
+      "charge": 2,
+      "flux": 1,
+      "text": "Ends one condition on the target, the newest first.",
+      "cleanse": 1,
+      "cleanse_order": "newest",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "veil",
+      "word": "VEIL",
+      "name": "Veil",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 2,
+      "flux": 1,
+      "text": "Smoke-bots fill radius 1 around the target: blocks sight, 2 rounds + the Sigil duration bonus.",
+      "blocks_sight_radius": 1,
       "lasts_rounds": 2,
-      "grand": "Stasis: conditions inside do not tick down."
+      "duration_bonus": true,
+      "new": false,
+      "grand": "Smoke field: blocks all sight; everyone inside counts as Hidden.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "light",
+      "word": "LIGHT",
+      "name": "Light",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 1,
+      "flux": 1,
+      "text": "Lights radius 4 for the scene; reveals the Hidden in it.",
+      "reveals_hidden_radius": 4,
+      "lasts": "scene",
+      "new": false,
+      "grand": "Noon: Hidden revealed; enemies inside -2 to hit.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "step",
+      "word": "STEP",
+      "name": "Step",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 2,
+      "flux": 1,
+      "text": "Teleport: whoever it affects moves to a free tile you pick, up to 4 tiles from where they stand, past anything in between. An enemy resists with a Body save. On yourself it's a blink.",
+      "teleport_tiles": 4,
+      "save_enemy": "body",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "raise",
+      "word": "RAISE",
+      "name": "Raise",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 3,
+      "flux": 1,
+      "text": "A solid barrier on each empty tile it covers: blocks movement and sight, 30 HP a tile, 3 rounds + the Sigil duration bonus. One RAISE working per caster.",
+      "barrier": {
+        "hp": 30,
+        "rounds": 3,
+        "duration_bonus": true,
+        "blocks": [
+          "move",
+          "sight"
+        ]
+      },
+      "empty_tiles_only": true,
+      "one_per_caster": true,
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "null",
+      "word": "NULL",
+      "name": "Null",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 3,
+      "flux": 1,
+      "text": "Dispel: removes the placed Sigil magic on the tiles it covers: glyphs (anyone's), fields, traps, turrets, and the smoke, light and walls of Workings. Keystones, Grand forms and class zones stay.",
+      "dispel": [
+        "glyph",
+        "field",
+        "trap",
+        "turret",
+        "veil",
+        "light",
+        "raise"
+      ],
+      "dispel_spares": [
+        "keystone",
+        "grand",
+        "class_zone"
+      ],
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "mask",
+      "word": "MASK",
+      "name": "Mask",
+      "group": "subject",
+      "class": "subject_working",
+      "charge": 2,
+      "flux": 1,
+      "text": "The target is Hidden until it attacks, or for 2 rounds. A Marked target can't be hidden.",
+      "applies": {
+        "condition": "hidden",
+        "save": null,
+        "rounds": 2
+      },
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
     },
     {
       "id": "seek",
       "word": "SEEK",
-      "class": "motion",
+      "name": "Seek",
+      "group": "reach",
+      "class": "reach",
       "charge": 2,
       "flux": 1,
-      "text": "The spell curves around cover: ignores half and full cover against one target. Needs PUSH.",
+      "text": "A bolt, flying straight: range 8. The first creature or full cover in its way takes it or stops it; needs sight of the target.",
+      "missile": "bolt",
+      "range": 8,
+      "mult": 1.0,
+      "blocked": true,
+      "needs_sight": true,
+      "per_copy": {
+        "range": 4
+      },
+      "order": "travel",
+      "new": false,
+      "grand": "Hunting ground: allies' attacks on enemies inside ignore half cover.",
+      "max_copies": null,
       "provisional": true,
-      "ignores": "cover",
-      "requires_word": "push",
-      "grand": "Hunting ground: allies' attacks on enemies inside ignore half cover."
+      "adjudication": "engine"
     },
     {
-      "id": "return",
-      "word": "RETURN",
-      "class": "motion",
-      "charge": 1,
+      "id": "arc",
+      "word": "ARC",
+      "name": "Arc",
+      "group": "reach",
+      "class": "reach",
+      "charge": 2,
       "flux": 1,
-      "text": "Targets yourself or an ally you touch; replaces PUSH for support words.",
+      "text": "A lob over everything: range 6, x0.8. Nothing blocks it; needs sight of the tile it lands on.",
+      "missile": "lob",
+      "range": 6,
+      "mult": 0.8,
+      "blocked": false,
+      "needs_sight": true,
+      "per_copy": {
+        "range": 3
+      },
+      "order": "travel",
+      "new": true,
+      "max_copies": null,
       "provisional": true,
-      "target": "self_or_adjacent_ally",
-      "grand": "Sanctuary: an ally inside who would drop to 0 HP stays at 1 instead (once each)."
+      "adjudication": "engine"
     },
     {
-      "id": "pull",
-      "word": "PULL",
-      "class": "motion",
+      "id": "sense",
+      "word": "SENSE",
+      "name": "Sense",
+      "group": "reach",
+      "class": "reach",
+      "charge": 3,
+      "flux": 1,
+      "text": "It appears at the target: range 8, x0.6, no sight needed. Nothing blocks it.",
+      "missile": "appear",
+      "range": 8,
+      "mult": 0.6,
+      "blocked": false,
+      "needs_sight": false,
+      "per_copy": {
+        "range": 4
+      },
+      "order": "travel",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "relay",
+      "word": "RELAY",
+      "name": "Relay",
+      "group": "reach",
+      "class": "reach",
+      "charge": 2,
+      "flux": 1,
+      "text": "Cast from an ally's tile, as if you stood where they stand: an ally within 8 in your sight; the spell reaches that ally and the tiles next to them.",
+      "missile": "relay",
+      "range": 8,
+      "mult": 1.0,
+      "blocked": false,
+      "needs_sight": true,
+      "area": "relay_adjacent",
+      "per_copy": {
+        "allies": 1
+      },
+      "order": "travel",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "stay",
+      "word": "STAY",
+      "name": "Stay",
+      "group": "delivery",
+      "class": "delivery",
       "charge": 1,
       "flux": 1,
-      "text": "Drags the target 3 tiles toward the pattern.",
+      "text": "Field: the spell stands on what it covers for 2 rounds (+ the Sigil duration bonus) at x0.5, on whoever enters it or starts a turn in it. It doesn't strike when Evoked.",
+      "placed": "field",
+      "lasts_rounds": 2,
+      "duration_bonus": true,
+      "mult": 0.5,
+      "per_copy": {
+        "rounds": 2
+      },
+      "order": "stays",
+      "refuses": [
+        "watch"
+      ],
+      "new": false,
+      "grand": "Stasis: conditions inside do not tick down.",
+      "max_copies": null,
       "provisional": true,
-      "pull_tiles": 3,
-      "name": "Pull",
-      "grand": "Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start."
+      "adjudication": "engine"
     },
     {
       "id": "twice",
       "word": "TWICE",
-      "class": "modifier",
+      "name": "Twice",
+      "group": "delivery",
+      "class": "delivery",
       "charge": 3,
       "flux": 2,
-      "text": "Repeat the spell at a second target within range. Counts as 1 word for length, 1 Flux extra.",
+      "text": "Two missiles at two targets you pick, each with its own Burst. The glyph adds 1 extra Flux.",
+      "missiles": 2,
+      "per_copy": {
+        "missiles": 1,
+        "flux": 1
+      },
+      "order": "how_many",
+      "new": false,
+      "grand": "Echo field: the first spell each round cast by an ally inside repeats at half effect.",
+      "max_copies": null,
       "provisional": true,
-      "extra_target": 1,
-      "grand": "Echo field: the first spell each round cast by an ally inside repeats at half effect."
+      "adjudication": "engine"
+    },
+    {
+      "id": "pull",
+      "word": "PULL",
+      "name": "Pull",
+      "group": "delivery",
+      "class": "delivery",
+      "charge": 1,
+      "flux": 1,
+      "text": "After the hit, drags each target it affected 3 tiles toward you (a turret's, toward the turret).",
+      "pull_tiles": 3,
+      "per_copy": {
+        "pull_tiles": 3
+      },
+      "order": "after",
+      "new": false,
+      "grand": "Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "wait",
+      "word": "WAIT",
+      "name": "Wait",
+      "group": "delivery",
+      "class": "delivery",
+      "charge": 2,
+      "flux": 1,
+      "text": "Trap: set on the tile you aim at, hidden from the other side (they can spot it). It goes off once when someone of the other side steps on it or starts a turn on it; 3 rounds (+ the Sigil duration bonus). Your side never sets it off.",
+      "placed": "trap",
+      "lasts_rounds": 3,
+      "duration_bonus": true,
+      "triggers": 1,
+      "hidden": true,
+      "per_copy": {
+        "triggers": 1
+      },
+      "order": "stays",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "watch",
+      "word": "WATCH",
+      "name": "Watch",
+      "group": "delivery",
+      "class": "delivery",
+      "charge": 3,
+      "flux": 1,
+      "text": "Turret: on the tile you aim at, it casts the spell at the nearest creature it can reach (allies too) at the start of each of your turns, x0.5, for 2 rounds (+ the Sigil duration bonus). 10 HP; Scuff or a hit destroys it.",
+      "placed": "turret",
+      "lasts_rounds": 2,
+      "duration_bonus": true,
+      "mult": 0.5,
+      "hp": 10,
+      "defense": 10,
+      "per_copy": {
+        "rounds": 2
+      },
+      "order": "stays",
+      "refuses": [
+        "stay"
+      ],
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "chain",
+      "word": "CHAIN",
+      "name": "Chain",
+      "group": "delivery",
+      "class": "delivery",
+      "charge": 2,
+      "flux": 1,
+      "text": "After the hit, the spell jumps forward to the next creature within 3 tiles that is no closer to you (or the turret), x0.75 of the last hit; never back to one it hit; jumps can't be blocked. Allies too.",
+      "jumps": 1,
+      "jump_radius": 3,
+      "jump_mult": 0.75,
+      "per_copy": {
+        "jumps": 1
+      },
+      "order": "after",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "leech",
+      "word": "LEECH",
+      "name": "Leech",
+      "group": "delivery",
+      "class": "delivery",
+      "charge": 2,
+      "flux": 1,
+      "text": "Life drain: after the hit you heal half the damage the spell dealt, in all.",
+      "leech": 0.5,
+      "per_copy": {
+        "leech": 0.25
+      },
+      "order": "after",
+      "new": true,
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "condense",
+      "word": "CONDENSE",
+      "name": "Condense",
+      "group": "burst",
+      "class": "burst",
+      "charge": 1,
+      "flux": 1,
+      "text": "One target, x1.5.",
+      "area": "single",
+      "mult": 1.5,
+      "per_copy": {
+        "mult": 0.5
+      },
+      "order": "cover",
+      "new": false,
+      "grand": "Gravity well: everything inside is pulled 1 tile toward the staff at turn start.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "spread",
+      "word": "SPREAD",
+      "name": "Spread",
+      "group": "burst",
+      "class": "burst",
+      "charge": 2,
+      "flux": 1,
+      "text": "Everyone within 2 tiles of where it lands (5 x 5), x0.6. It can land on empty ground.",
+      "area": "radius",
+      "radius": 2,
+      "mult": 0.6,
+      "empty_ground": true,
+      "per_copy": {
+        "radius": 1,
+        "mult": -0.1
+      },
+      "order": "cover",
+      "new": false,
+      "grand": "Bloom: any spell landing inside spreads 1 more radius.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "push",
+      "word": "PUSH",
+      "name": "Push",
+      "group": "burst",
+      "class": "burst",
+      "charge": 1,
+      "flux": 1,
+      "text": "A cone from where it lands, carrying on the way the spell faced, 3 tiles long and widening, x0.7. It can land on empty ground. Refused on your own tile.",
+      "area": "cone",
+      "cone_length": 3,
+      "mult": 0.7,
+      "empty_ground": true,
+      "not_on_own_tile": true,
+      "per_copy": {
+        "cone_length": 2,
+        "mult": -0.1
+      },
+      "order": "cover",
+      "new": false,
+      "grand": "Rampart wind: shots from outside into it -3.",
+      "max_copies": null,
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "kin",
+      "word": "KIN",
+      "name": "Kin",
+      "group": "filter",
+      "class": "filter",
+      "charge": 2,
+      "flux": 1,
+      "text": "Your side is never affected: you and your allies can't be picked and nothing in the spell touches you. It backfires on Boons. It changes who the spell affects, not how it flies.",
+      "filter": "spare_own_side",
+      "max_copies": 1,
+      "new": true,
+      "provisional": true,
+      "adjudication": "engine"
     }
   ]
 }

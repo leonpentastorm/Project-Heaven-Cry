@@ -3,7 +3,7 @@ import { ENEMY, WEAPON, COMBAT_XP, SKILLS, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
-import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths } from './magic';
+import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, type FoeTraits } from './tactics';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
@@ -97,6 +97,9 @@ export interface Unit {
   /** Combat Hidden (spec: Helpful states): hidden now; how many times it has hidden this fight (each entry gives one
    * ambush); the entry whose ambush was used. */
   hidden?: boolean; hideEntry?: number; ambushUsed?: number;
+  /** Sigil 1.4: MASK's rounds left (and set on the bearer's own turn), the round it was last Quickened, when each
+   * condition landed (CLEANSE ends the newest). */
+  maskLeft?: number; maskFresh?: boolean; quickRound?: number; condAt?: Record<string, number>;
   /** What it is (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret, celestial…) and its tags
    * (military, hunter, humanoid, unaware, no_surrender, lawful, prisoner…). */
   kind?: string; tags?: string[];
@@ -144,6 +147,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
    * meter, and the dead already counted toward it. */
   glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number;
+  /** The Sigil rules revision this fight's glyphs follow (14 = rules 1.4; absent: a 1.2 save, migrated on first use); the
+   * order conditions landed in. */
+  sigilV?: number; condSeq?: number;
   /** Hostiles the party has seen at least once this fight (shared sight: visibility(cb, 'pc')), kept as they come into view.
    * The fight music reads it, so an elite or boss in the fog of war changes nothing until it is seen (spec: Music). */
   sighted?: string[];
@@ -632,6 +638,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (o.crit) M(critM, 'critical');
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(0.75, 'Weakened');
+  if (condOn(att, 'sharpened')) M(1.25, 'Sharpened'); // SHARPEN (rules 1.4)
   if (tgt.weakPoint && att.side === 'pc') vs.push({ v: 0.15, label: 'Weak Point' });
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
@@ -718,6 +725,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   if (ambush) injury += ' · AMBUSH';
   if (att.hidden && !isSilent(att)) injury += reveal(cb, att, 'attacked');
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
+  if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
   // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
   const stopped = !hit && !fumble && !!pv.coverTile && total + pv.cover >= pv.need;
   ev.dmg = damage; ev.killed = killed; if (stopped) ev.cover = pv.coverTile;
@@ -772,7 +780,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 
 // ---------- turns ----------
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
-export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number }
+/** sigils: an Evoker and its words (true: the tier's default set; sigils.json enemy_ai), rules 1.4. */
+export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true }
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
@@ -785,12 +794,13 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   foes.slice(0, Math.max(map.foeStart.length, 8)).forEach((f, i) => {
     const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng);
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
+    if (f.sigils) u.mg = enemyMagic(u, f.sigils);
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
-  cb.objects = objs;
+  cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -842,15 +852,23 @@ export function beginTurn(cb: Combat, rng: Rng) {
   }
   // Commanded (spec; rules 1.3 engine menu): an enemy obeys the order it was given: halt (no moving), hold (no
   // attacks), drop (Disarmed), kneel (prone), flee (it spends the turn getting away). Anything else goes to the Narrator.
-  if (!u.dead && condOn(u, 'commanded') && u.side === 'foe') { const o = u.condArg?.commanded || 'halt'; if (o === 'drop') applyCond(cb, rng, null, u, 'disarmed', undefined, undefined, { skipSave: true }); if (o === 'kneel') { u.prone = true; u.braced = false; } cb.log.push(u.name + ' obeys: ' + o + '.'); }
+  // COMMAND (rules 1.4) gives any side's unit one of four orders: halt, kneel, drop, or move up to 3 tiles ("move:x,y"),
+  // which it walks at the start of its turn (its own AP; never into harm the caster knows of: the caster picked it).
+  if (!u.dead && condOn(u, 'commanded') && (u.side === 'foe' || u.condBy?.commanded)) {
+    const o = u.condArg?.commanded || 'halt';
+    if (o === 'drop') applyCond(cb, rng, null, u, 'disarmed', undefined, undefined, { skipSave: true }); if (o === 'kneel') { u.prone = true; u.braced = false; }
+    if (o.startsWith('move:')) { const to = o.slice(5), P = paths(cb, u.pos, u.id); endCond(u, 'commanded', cb); if (P.dist[to] !== undefined && P.dist[to] <= 3 && !u.prone) moveUnit(cb, u, to, rng); }
+    cb.log.push(u.name + ' obeys: ' + o.split(':')[0] + (o.startsWith('move:') ? ' to ' + refOf(o.slice(5)) : '') + '.');
+  }
   // 'turn_start' {u}: after AP, conditions, hazards, bleeding and death saves.
   if (!u.dead) emit(cb, 'turn_start', { u, cb, rng });
 }
 /** What happens as a unit's turn ends (rules 1.3): its timed conditions tick, it looks for Hidden enemies, and a Fighter
  * who didn't attack this turn loses its Momentum. */
 export function closeTurn(cb: Combat, rng: Rng | null, u: Unit) {
-  condTurnEnd(cb, u);
+  condTurnEnd(cb, u, rng);
   if (rng && !u.skipTurn) spotHidden(cb, rng, u);
+  if ((cb.zones || []).length) sigilSpot(cb, u); // hidden Sigil traps and turrets nearby (rules 1.4)
   if (u.res && u.res.momentum && !u.shotsThisTurn && !u.attackedTurn) u.res.momentum = 0;
   u.attackedTurn = false; delete u.skipTurn;
 }
@@ -891,7 +909,7 @@ export function moveBlock(u: Unit): string | null {
   if (u.prone) return 'Stand up first (1 AP).';
   if (condOn(u, 'pinned')) return 'Pinned: you can\'t move this round.';
   if (condOn(u, 'grappled')) return 'Grappled: break free first (2 AP).';
-  if (condOn(u, 'commanded') && ['halt', 'kneel'].includes(u.condArg?.commanded || 'halt') && u.side === 'foe') return 'Commanded to halt.';
+  if (condOn(u, 'commanded') && ['halt', 'kneel'].includes(u.condArg?.commanded || 'halt') && (u.side === 'foe' || (u.condBy?.commanded && !u.condArg?.commanded?.startsWith('move')))) return 'Commanded to halt.';
   return null;
 }
 /** Move (spec: Moving; Sprint; Disengage), walked tile by tile (rules 1.3): each step fires 'move_step' {u, from, at,
@@ -956,6 +974,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   if (how === 'move' && !mc.free) u.bank = bank0 + ap * u.movement - walked;
   cb.log.push(u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l));
+  if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);
   // 'moved' {u, from, to, tiles, how, forced:false, route}
   emit(cb, 'moved', { u, from, to: end, tiles: walked, how, forced: false, route: route.slice(0, route.indexOf(end) + 1), stopped: stopped || null, cb, rng });
   sightCheck(cb);
@@ -1301,6 +1320,9 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (u.prone && u.ap >= 1 && order !== 'kneel') { toggleProne(cb, u); continue; }
     if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
     if (enemyScuff(cb, u)) continue;
+    // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
+    if (!order && u.mg?.evoker && enemyAvoidMagic(cb, rng, u)) continue;
+    if (!order && u.mg?.evoker && enemyCast(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
     if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2 && !condOn(u, 'disarmed')) { reload(cb, u); continue; }

@@ -169,10 +169,11 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Stat | Formula |
 |---|---|
-| Max Sigil words per spell | 2 + floor((Intelligence − 1) ÷ 2) |
+| Max Sigil words per spell | 2 + floor((Intelligence − 1) ÷ 2); a spell never holds more than 4 glyphs (rules 1.4) |
+| Glyphs on the ground at once | Max Sigil words (+ Hold the Stroke); it keeps growing above Intelligence 5 (rules 1.4) |
 | Glyph AP cost (draft 1.2) | 1 − 0.1 × (Expression − 1) per glyph, minimum 0.5 (was: Sigil AP cost) |
 | Sigil Core saving | floor(Proficiency ÷ 3) per spell, minimum cost 1 |
-| Sigil range bonus | +0.5 tile × Rumination |
+| Sigil range bonus | +0.5 tile × Rumination, rounded down; added once to a Reach word's range, never to Touch (rules 1.4) |
 | Sigil duration bonus | +0.5 round × Brain Power |
 | Max MP (Emanator charge) | 100 + 100 × (Virtue − 1) |
 | Soul cast AP | 3 − 0.5 × Empathy, minimum 1 |
@@ -289,8 +290,8 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Use an item, draw or swap a weapon, open a door | 1 |
 | Analyze an enemy (reveals HP, armour, resistances, weak points) | 2 |
 | Overwatch: hold AP for one shot at the first enemy that moves into your line | AP of the shot |
-| Draw a Sigil glyph | Glyph AP cost, see Derived stats (draft 1.2) |
-| Evoke a Sigil pattern | 1 (draft 1.2) |
+| Draw a Sigil glyph (on your own tile only, rules 1.4) | Glyph AP cost, see Derived stats (draft 1.2) |
+| Evoke a Sigil Line (within 1 tile of a glyph, not on a middle one; rules 1.4) | 1 (draft 1.2) |
 | Begin an Outburst / Release one | Soul cast AP / 1, free on the turn you Begin (draft 1.2) |
 | Cast a Soul spell | Soul cast AP |
 | Syphon (refill MP from the air) | 1 |
@@ -848,6 +849,7 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
 | Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
+| Corroded | Body | 5 damage at the start of each turn; Defense −2. Set by ACID with no save to land it; a Body save at the end of each of your turns ends it early (rules 1.4, provisional) | 3 rounds |
 
 **Helpful states**
 
@@ -859,6 +861,8 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Withdrawing | +2 Defense until the end of your next turn (a fighting retreat) |
 | Overwatch | AP held for one reaction shot before your next turn |
 | Witnessed | your patron is watching (see Mana) |
+| Quickened | +2 AP on your next turn, within the ceiling of 9; at most once a round; never self-cast (QUICKEN, rules 1.4, provisional) |
+| Sharpened | your next attack: +3 to hit and ×1.25 damage; lasts until that attack or the end of your next turn (SHARPEN, rules 1.4, provisional) |
 
 ## Mana
 
@@ -888,48 +892,239 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 **Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
 
-> **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76).
+> **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). **Its Sigil part is replaced by rules revision 1.4** (below); its Soul part stands.
+
+> **Rules revision 1.4: Sigil magic (accepted 7 Nov 2026, with Leon's answers; decision 98).** It replaces the 1.2 Sigil rules: 40 words in five groups, the Line as the only shape, glyphs drawn only on your own tile, Reach words for range and the facing rule for aim. The mana meter, cores, Flux, the Evoker and Soul magic (rules 1.2, items 68–76) are unchanged. Every new number is provisional (items 415–452). The design is in `docs/design/sigil-1.4-proposal.md`; what it changes in classes, perks and traits is in `docs/design/sigil-1.4-impact.md`.
 
 ### The Magic panel and learning
 
 Magic has its own tab on the character sheet, **MAGIC**. It lists the Sigil words you know and your Outburst designs, and it is where you learn new ones and make designs. It shows for any character with Brain Power 1+, Will Power 1+, an Evoker or an Emanator.
 
-- **Starting magic.** A character with Brain Power 1+ picks **2 Sigil words** at creation. They must make a working Stack: one Subject plus one Form or Motion (FIRE + CONDENSE, SPARK + CONDENSE, WARD + RETURN). A character with Will Power 1+ makes **1 Outburst design** from one school and one module. A character with both gets both.
-- **Learning Sigil words is study.** Each new word takes one long rest with a source: a tutor the Narrator places, a **Sigil plate** (loot: a slate with one word cut into it, used up), or an ally who knows the word. You know at most 4 + Brain Power words.
+- **Starting magic.** A character with Brain Power 1+ picks **2 Sigil words** at creation. Together they must make a spell (one Subject and one other word), and **one of them must be a Reach word** (Leon, rules 1.4): SPARK · SEEK (the default), FIRE · ARC, MEND · RELAY, BIND · SEEK. A new caster can always hit something more than one tile away. A character with Will Power 1+ makes **1 Outburst design** from one school and one module. A character with both gets both.
+- **Learning Sigil words is study.** Each new word takes one long rest with a source: a tutor the Narrator places, a **Sigil plate** (loot: a slate with one word cut into it, used up), or an ally who knows the word. You know at most **4 + Brain Power** words, out of 40, so every Sigil user is a specialist.
 - **Learning Outbursts is living.** New schools and modules come from tutors, and from experience: after a moment that shakes a character (a death, a vow, a betrayal), the Narrator may grant one module that fits it, like an Achieved perk. Designs are made out of combat; you keep 2 + floor(Empathy ÷ 2) ready.
 
-### Sigil magic: words written on the map (Mind, through an Evoker)
+### Sigil magic: commands written on the map (Mind, through an Evoker)
 
-A Sigil is a command word drawn as a glowing glyph **onto a tile**. A spell exists when glyphs on the ground make a valid **pattern**. The shape is part of the spell, and a big shape costs you the walk. The words are in sigils.json.
+Sigils are **commands to the bots in the air**. Each glyph is one command word drawn onto a tile; a spell is the sentence a row of glyphs makes. The words are in sigils.json. Every word works by the general rules below; no word needs a rule of its own.
 
-1. **Draw** a glyph on your own tile or an adjacent one. Cost: Glyph AP (Derived stats), **the word's charge** from your Evoker's core, and 1 Flux. An Evoker must be in a hand. A tile holds at most 2 glyphs.
-2. **Glyphs last** 2 rounds + your Sigil duration bonus (round down). Out of combat they last the same number of overworld rounds. You can have at most your **Max Sigil words** glyphs on the ground; drawing one more fades your oldest.
-3. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
-4. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
-5. **Patterns.** After every draw the engine looks for patterns among glyphs that are yours or an ally's. A pattern needs at least one **Subject** word and one **Form** or **Motion** word, and holds at most your Max Sigil words.
+#### 1. The words
 
-| Shape | Glyphs | Where the spell goes |
+Every word answers one question:
+
+| Group | Question | Words |
 |---|---|---|
-| **Stack** | 2 on one tile | The cantrip: onto one tile adjacent to the stack. With PUSH: out to 8 tiles + range bonus from the stack. |
-| **Line** | 2–4 on adjacent tiles in a straight row (across or diagonal) | Fires out of the far end along the line's direction, hitting the first creature in its path. **Range by length** (Leon: two-tile lines were too cheap): 2 tiles reach 4, 3 reach 8, 4 reach 12, + range bonus. You Evoke it from behind its near end. |
-| **Ring** | 3–4 on tiles around one centre tile | Bursts in radius 1 around the centre, or (support words) lands on whoever stands on the centre. |
+| **Subjects** | What happens to the target? | 25 in four kinds: **Elements** (damage), **Afflictions** (debuffs and control), **Boons** (support), **Workings** (the world) |
+| **Reach** | Where may I pick the target? | 4: SEEK, ARC, SENSE, RELAY |
+| **Delivery** | What flies out, how does it act, what happens after, what stays? | 7: STAY, TWICE, PULL, WAIT, WATCH, CHAIN, LEECH |
+| **Burst** | What does it cover where it lands? | 3: CONDENSE, SPREAD, PUSH |
+| **Filter** | Who may it affect? | 1: KIN |
 
-   A tile in a Line or Ring may hold a Stack: both glyphs count as words. **Shape and word change each other:**
-   - **STAY** in a Line turns the line itself into a wall: anyone entering a tile takes the effect, for as long as the glyphs last. In a Ring it fills the centre the same way.
-   - **SPREAD** in a Line fires a 3-tile cone from the far end instead of a bolt.
-   - **TWICE**, **SEEK** and **RETURN** work as written in any shape.
-6. **Evoke** (1 AP): fire a pattern. You must touch it (stand on or next to one of its tiles; behind the near end for a Line), and and firing costs **more charge on top of the drawing**: 1 per glyph in the pattern, minus your Sigil Core saving, minimum 1 (Leon: charge paid on drawing, firing costs even more). A finished pattern can wait: Evoke it on a later turn while its glyphs last (traps and set-ups). The glyphs fade when the spell fires, unless the pattern holds STAY.
-7. **Co-op.** Two Sigil users can build one pattern together, each drawing their own glyphs. Whoever Evokes pays the charge and rolls. **Enemy Sigil users** can Evoke any pattern they can read, yours included.
-8. **Flux, overload and Vent** work as before: each glyph drawn adds 1 Flux; above 6 the Evoker overloads (10 damage per Flux over 6, it locks for 1 turn, all the Flux bursts into the air); Vent (1 AP) dumps it into the air.
-9. **Hitting and damage:** damaging spells roll Brain Power against Defense; condition words call for the target's save against 12 + your debuff strength. Damage: the Subject's damage × the Form multiplier (CONDENSE ×1, SPREAD ×0.6) × Sigil multiplier × Elemental multiplier.
+**Elements: damage**
 
-**Words.** 24, as before, but LINE, WALL and CONE became shapes (above), so three new words take their places: **SPARK** (Subject, element, 1 charge: 15 Elemental damage; the cheapest attack), **PULL** (Motion, 1 charge: drags the target 3 tiles toward the pattern) and **SILENCE** (Subject, effect, 2 charge: no Sigils, Outbursts or prayers for 1 round, Brain save).
+| Word | Effect | Charge |
+|---|---|---|
+| FIRE | 30, Elemental; a critical sets Burning | 2 |
+| FREEZE | 25, Elemental; Slowed (Body save) | 2 |
+| SHOCK | 30, Elemental; ignores half cover | 2 |
+| STONE | 35, Sigil (armour applies) | 2 |
+| GALE | 15, Sigil; pushes the target 2 tiles away from where the spell came from | 1 |
+| SPARK | 15, Elemental; the cheapest attack | 1 |
+| ACID | 15, Elemental, and the target is **Corroded** (no save to land it): 5 damage at the start of each of its turns and Defense −2, 3 rounds; a Body save at the end of each of its turns ends it early | 2 |
 
-Examples:
-- **Starter cantrip:** SPARK + CONDENSE stacked beside you. 2 glyphs, Evoke: 3 AP at Expression 1, 2 charge to draw + 2 to fire, 15 damage to one adjacent tile.
-- **Bolt:** FIRE · CONDENSE · PUSH in a Line of 3, Evoked from behind: 4 AP, 4 charge to draw + 3 to fire, 30 damage to the first creature along the line, up to 8 tiles. A Line of 2 (FIRE · CONDENSE) reaches only 4.
-- **Firewall:** FIRE · SPREAD · STAY in a Line of 3 across a corridor: anyone crossing burns (×0.6) until the glyphs fade.
-- **Trap:** BIND · CONDENSE · RETURN in a Ring around a doorway tile, left unevoked; when the guard steps onto the centre, the Sigil user next to it Evokes.
+**Afflictions: debuffs and control** (no hit roll: the target saves against 12 + your debuff strength for that family)
+
+| Word | Effect | Charge |
+|---|---|---|
+| BIND | Pinned (Body save) | 2 |
+| BLIND | Blinded (Body save) | 1 |
+| SLOW | Slowed (Body save) | 1 |
+| MUDDLE | Left Brain Debuff (Brain save) | 2 |
+| DREAD | Shaken (Heart save) | 2 |
+| SILENCE | Silenced: no Sigils, Outbursts or prayers for 1 round (Brain save) | 2 |
+| COMMAND | Brain save, or **Commanded**: the target obeys one order on its next turn, picked by you from the menu: halt, kneel (Prone), drop its weapon (Disarmed), or move up to 3 tiles where you choose (never into harm: a field, a trap you know of, a ledge) | 3 |
+
+**Boons: support** (no hit roll, no save)
+
+| Word | Effect | Charge |
+|---|---|---|
+| WARD | A shield of 30 until the end of the fight (the higher shield stands) | 2 |
+| MEND | Heals 25 (× Healing given) | 3 |
+| QUICKEN | **Quickened:** +2 AP on the target's next turn (within the AP ceiling of 9). At most once per target per round, and **never on yourself** (Leon): with a Burst that covers you, you are skipped | 3 |
+| SHARPEN | **Sharpened:** the target's next attack gets +3 to hit and ×1.25 damage (it lasts until that attack, or the end of its next turn) | 2 |
+| CLEANSE | Ends **one condition** on the target, the newest first | 2 |
+
+**Workings: the world** (no hit roll; a Working may aim at an empty tile)
+
+| Word | Effect | Charge |
+|---|---|---|
+| VEIL | Smoke in radius 1 around the target: blocks sight, 2 rounds + the Sigil duration bonus | 2 |
+| LIGHT | Lights radius 4 for the scene; reveals the Hidden in it | 1 |
+| STEP | **Teleport:** whoever it affects moves to a free tile you pick, up to 4 tiles from where they stand, past anything in between. It isn't movement: no Overwatch, no difficult ground, nothing on the way. An enemy resists with a Body save. On yourself it's a **blink** | 2 |
+| RAISE | **A solid barrier** on each **empty** tile it covers (no creature, object, glyph or placed magic on it): blocks movement and sight, 30 HP a tile, 3 rounds + the Sigil duration bonus. **One RAISE working per caster** (Leon): a new one takes down the old | 3 |
+| NULL | **Dispel:** removes the placed Sigil magic on the tiles it covers: glyphs (anyone's, yours too), fields, traps (hidden ones too), turrets, and the smoke, light and walls of Workings. Keystones, Grand forms and class zones are not Sigil spells and stay | 3 |
+| MASK | The target is **Hidden** until it attacks, or for 2 rounds. A Marked target can't be hidden (the spell fizzles on it) | 2 |
+
+**Reach: where you may pick the target**
+
+| Word | Missile | Range | Multiplier | What can stop it | Charge | Each extra copy |
+|---|---|---|---|---|---|---|
+| *(none)* | **Touch:** nothing flies | 1 tile deep | ×1 | nothing | | |
+| SEEK | A **bolt**, straight | 8 | ×1 | the first creature or full cover in its way takes it or stops it; needs sight of the target | 2 | +4 range |
+| ARC | A **lob**, over everything | 6 | ×0.8 | nothing; needs sight of the tile it lands on | 2 | +3 range |
+| SENSE | It **appears** at the target | 8 | ×0.6 | nothing; no sight needed | 3 | +4 range |
+| RELAY | **Cast from an ally's tile**: the spell works as if you stood where they stand | an ally within 8, in your sight | ×1 | nothing between you and the ally | 2 | through one more ally (within 8 of the last, in its sight) |
+
+- **One Reach word per spell.** You may repeat it for more range; a second, different Reach word is refused when you draw it.
+- **The Sigil range bonus** (Derived stats) is added **once** to SEEK, ARC, SENSE and RELAY, however many copies, and **never to Touch**.
+- **RELAY's area** is the relaying ally's own tile and every tile next to it (all around; the facing rule doesn't apply). The ally can't be you.
+- **Cover.** A SEEK bolt takes cover like a shot (half cover −5 to hit; SHOCK ignores it). Touch, ARC and SENSE don't fly through cover, so it doesn't apply.
+
+**Delivery: what flies out and how it acts**
+
+| Word | 1 copy | Each extra copy | Charge |
+|---|---|---|---|
+| STAY | **Field:** the spell doesn't strike when Evoked; it stands on what it covers for 2 rounds + the Sigil duration bonus, at ×0.5, on whoever enters it or starts a turn in it (once per creature per round) | +2 rounds | 1 |
+| TWICE | **2 missiles** at 2 targets you pick in the area, each with its own Burst; the glyph adds +1 Flux | +1 missile, +1 Flux | 3 |
+| PULL | After the hit, drags each target it affected **3 tiles toward you** (a turret's, toward the turret) | +3 tiles | 1 |
+| WAIT | **Trap** on the tile you aim at: hidden from the other side (they can spot it like any hidden trap), it goes off once when someone of the other side steps on it or starts a turn on it; 3 rounds + the Sigil duration bonus. Your side never sets it off (its Burst can still hit them) | goes off once more | 2 |
+| WATCH | **Turret** on the tile you aim at: at the start of each of your turns it casts the spell at the **nearest creature it can reach** (allies too: add KIN), from its own tile with the spell's Reach, all around, ×0.5, for 2 rounds + the Sigil duration bonus. 10 HP and Defense 10; it doesn't block movement; Scuff (1 AP on its tile) or a hit destroys it | +2 rounds | 3 |
+| CHAIN | After the hit, **jumps forward** to the next creature within 3 tiles of the last one hit (allies too: add KIN) that is no closer to you (or the turret), at ×0.75 of the last hit; never back to one it hit; jumps can't be blocked | +1 jump | 2 |
+| LEECH | **Life drain:** after the hit you heal **half the damage** the spell dealt, in all (not × Healing given) | +25% (of the damage) | 2 |
+
+- **Order.** A spell resolves **how many** (TWICE) → **how it travels** (Reach) → **what it covers** (Burst) → **what happens after** (PULL, CHAIN, LEECH) → **what stays** (STAY, WAIT, WATCH).
+- **Mixes follow from the words:** STAY + PULL is a *whirlpool* (the field drags everyone in it 3 tiles toward you each round) · STAY + TWICE, two fields · WAIT + STAY, a hidden field that appears when set off · WAIT + TWICE, two traps · WAIT + WATCH, a hidden turret (hidden until it first fires or is spotted) · WATCH + TWICE, two shots a round (the two nearest) · WATCH + CHAIN, the *Tesla tower* · CHAIN + LEECH, you heal from every jump.
+- **Refused:** WATCH + STAY (a turret already lasts).
+- **Limits:** at most **2 traps and 1 turret** per caster; another removes your oldest.
+- **Who places it:** fields, traps and turrets belong to whoever Evoked the spell, use that caster's numbers when they go off, and count toward that caster's limits.
+
+**Burst: what it covers where it lands**
+
+| Word | 1 copy | Each extra copy | Charge |
+|---|---|---|---|
+| *(none)* | The one target you pick, ×1 | | |
+| CONDENSE | One target, **×1.5** | +0.5 | 1 |
+| SPREAD | Everyone within **2 tiles** of where it lands (5 × 5), ×0.6; it can land on empty ground | +1 radius, −0.1 | 2 |
+| PUSH | A **cone** from where it lands, carrying on the way the spell faced (a bolt: the way it flew), 3 tiles long and widening like the full-auto cone, ×0.7; it can land on empty ground. Refused on your own tile | +2 length, −0.1 | 1 |
+
+- **Mixes:** CONDENSE + SPREAD is *core and splash* (×1.5 on the landing tile, ×0.6 around it) · CONDENSE + PUSH (×1.5 on the landing tile, ×0.7 in the cone) · SPREAD + PUSH (the radius and the cone; anyone in both is hit once, at the better multiplier).
+- **With the Workings, a Burst widens what the Working covers:** RAISE walls every empty tile in it (SPREAD: a 5 × 5 block; PUSH: a fan of wall); NULL cleans the whole area; VEIL's smoke and LIGHT's light cover their own radius or the Burst's area, whichever is larger; STEP moves everyone caught the same way and the same distance (you pick one tile for the landing tile; everyone shifts alike; anyone whose new tile isn't free stays; each enemy saves on its own).
+
+**Filter: KIN** (charge 2, **one copy**: a second KIN adds nothing and is refused). **Your side is never affected:** you and your allies can't be picked and nothing in the spell touches you. "Your side" is whoever Evokes it. It works the same for every Subject, so it **backfires** on Boons (MEND · RELAY · KIN can only heal an enemy). It changes who the spell affects, **not how it flies**: an ally in a SEEK bolt's way still stops it, and the bolt fizzles.
+
+#### 2. Grammar and cost
+
+1. **A spell needs at least 1 Subject and at least 1 other word** (a non-Subject word). A Subject on its own is not a spell: the cheapest second word is CONDENSE (1 charge), so a blink is STEP · CONDENSE on yourself.
+2. **A spell holds at most 4 glyphs**, whatever it holds. Below that, your **Max Sigil words** (2 + floor((Intelligence − 1) ÷ 2)) limits you: 2 at Intelligence 1–2, 3 at 3–4, 4 from 5. Rules that add a word past Max Sigil words (Brain Power's Overclock, the Mage's Overcharge) never pass 4.
+3. **Glyphs on the ground.** You can have at most your Max Sigil words glyphs on the ground at once (Hold the Stroke adds to it); drawing one more fades your oldest. Above Intelligence 5 it no longer grows a spell, but it still grows this number, so a high-Intelligence caster keeps more Lines and traps ready.
+4. **Cost.** Drawing a glyph costs the Glyph AP (Derived stats), **the word's charge** from your Evoker's core, and **1 Flux** (TWICE: 2). Evoking costs **1 AP** and **1 charge per glyph** in the spell, minus your Sigil Core saving, minimum 1.
+5. **Repeats** (Leon). **Any word may repeat**, Subjects too, except KIN and a second Reach word of another kind. A repeated non-Subject word gives its "each extra copy" line. Repeated Subjects add up: their damage, healing and shields sum, and each copy's rider applies once (a condition never stacks: a second BIND adds nothing). **Every repeated glyph** (each copy past the first of a word) **multiplies the spell's final numbers by ×0.9**. FIRE · CONDENSE · CONDENSE · CONDENSE: 30 × 2.5 × 0.9 × 0.9 = **61** (raw 75; about 20% weaker). FIRE · FIRE · CONDENSE: 60 × 1.5 × 0.9 = **81**. The final numbers are the spell's direct damage, healing and shields; never ranges, tiles, rounds, AP, HP of walls and turrets, or the numbers of the conditions it sets (Burning's 10, Corroded's 5).
+6. **The multipliers stack by product:** the Subjects' sum × the Reach multiplier × the Burst multiplier × the Delivery multiplier (field or turret ×0.5, each CHAIN jump ×0.75) × 0.9 per repeated glyph × the Sigil multiplier (× the Elemental multiplier for Elemental damage; × Healing given for MEND and WARD) × a critical. Then armour (Sigil damage takes full armour, Elemental half).
+7. **Hitting.** A spell that deals damage rolls Brain Power against each target's Defense (a natural 20 is a critical: × the Critical multiplier; a natural 1 misses). Conditions a damage word sets (FREEZE's Slowed) still call for their save on a hit. Afflictions don't roll to hit: the target saves against 12 + your debuff strength. Boons and Workings neither roll nor allow a save, except STEP on an enemy (Body save).
+8. **Fizzle.** A spell that goes off but finds nothing it may affect **fizzles**: nothing happens, and the charge, AP and Flux are still spent and its glyphs fade. The screen says so before you confirm.
+9. **Harmful effects skip the Downed and those who surrendered**; Boons don't.
+
+#### 3. Drawing a spell
+
+1. **You draw a glyph only on the tile you stand on**, with an Evoker in hand (Glyph AP, the word's charge, 1 Flux).
+2. **One glyph per tile.** A tile that holds any glyph (yours, an ally's or an enemy's) takes no other, unless a perk, trait or skill lets that caster put a second glyph there. None does yet: this is the hook for one (the **two-glyph hook**). With it, two glyphs on one tile on their own are a **Stack**; on a tile of a Line, both count as words of that Line. A spell still holds at most 4 glyphs.
+3. **The only shape is the Line:** 2 to 4 glyphs of your side (yours and your allies') on neighbouring tiles in one straight row, **horizontal, vertical or diagonal**. The glyphs that touch each other make one group; a group that isn't one straight row of 2–4 (a bend, an L, a cluster, a row of 5) is **no shape** and can't be Evoked until a glyph is scuffed or fades. An enemy's glyph never joins your group. **The Ring and the old Stack are gone.**
+4. **So you walk a spell:** draw, step, draw. A 4-word spell is a Line of 4 tiles: 3 steps, 4 glyphs, then Evoke. At Agility 1 and Expression 1 that's 3 + 4 + 1 = 8 AP, more than one turn's 6, so you finish it next turn. A Line can't cross a tile you can't stand on (walls, cover, deep water), and walking it can draw Overwatch.
+5. **Glyphs last** 2 rounds + your Sigil duration bonus (rounded down); out of combat, the same number of overworld rounds. They fade when the spell is Evoked (Keystones excepted).
+6. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
+7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
+8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs. Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
+
+#### 4. Evoking: the facing rule
+
+**You fire away from yourself.** To Evoke (1 AP) you stand **within 1 tile of any glyph** of the Line; standing on a **middle glyph** is refused. Where you stand sets which way the spell's **area** opens:
+
+- **Along the Line:** you stand on an **end glyph**, or next to an end and further along the Line than it (*beyond the line*). The area runs **past the far end**, the way the Line points from your end. It is **as wide as the Line** (one lane per glyph, lanes side by side, the middle lane on the Line's own axis; for an even number of glyphs the extra lane is on the right of the way it fires) and as deep as the range.
+- **Across the Line:** you stand next to the glyphs **from the side** (not beyond either end). The area runs **straight across**, away from you, covering **the whole Line**: row 1 is the Line moved one step away from you, row 2 two steps, and so on, as deep as the range. The step is the perpendicular for a horizontal or vertical Line; for a diagonal Line it is the step north, south, east or west that leads away from you (the north or south one when both do), so the band has no gaps.
+- **The area is as wide as the whole Line** (Leon: even lengths included) and **as deep as the range**: the Reach word's range (+ the range bonus), or **1 tile for Touch**. Example: a Line on N15–Q15, standing on Q14: with SEEK, pick any target in N16–Q23; with no Reach word (Touch), only in N16–Q16.
+- **When you finish a Line you stand on the last glyph you drew**, an end, so the spell runs along the Line past the first glyph: **back the way you came**. To fire across it, or the other way, step off first. The preview draws the direction before you Evoke (Leon).
+- **You can always target yourself** (your own tile), whatever the Reach, even though your tile is never in the area: to heal, shield, blink or hide yourself, or to centre a burst on yourself. This is Touch's one exception (Leon: no RETURN word). A Burst centred on you covers you too: add KIN to keep yourself and your allies out of it (and QUICKEN always skips you). PUSH is refused on your own tile.
+- **Picking the target.** Inside the area you pick a creature (or yourself); a Working, SPREAD or PUSH may pick an empty tile. A SEEK bolt leaves from the Line (from the far-end glyph when the area runs along it, from the glyph in the target's lane when it runs across) and stops at the first creature or full cover on its way: that is where it hits or bursts. The area only limits where you aim; a Burst may reach past it.
+- **On a Stack** (only with the two-glyph hook): the area is all around the Stack, out to the range, in sight.
+
+#### 5. Flux, overload and Vent
+
+As before: each glyph drawn adds 1 Flux (TWICE 2); above 6 the Evoker overloads (10 damage per Flux over 6, it locks for 1 turn, all the Flux bursts into the air); Vent (1 AP) dumps it into the air.
+
+#### 6. What you can make
+
+All numbers before the Sigil multiplier; they assume no armour.
+
+| Spell | Pattern | Result |
+|---|---|---|
+| Starter bolt | SPARK · SEEK | 15 at up to 8, blockable. Draw, step, draw, Evoke: 4 AP at Agility 1 and Expression 1; 3 charge to draw + 2 to fire |
+| Firebolt | FIRE · SEEK | 30 at up to 8 |
+| Fireball | FIRE · SEEK · SPREAD | 18 to everyone within 2 of a tile up to 8 away |
+| Grenade | FIRE · ARC · SPREAD | 14 to everyone within 2, lobbed over cover |
+| Shotgun | FIRE · PUSH | From the tile touching your Line on the far side, a cone fans out away from you, 21 each |
+| Nova | FIRE · SPREAD · KIN, on your own tile | 18 to every enemy within 2 of you |
+| Burning ground | FIRE · STAY · SPREAD · KIN, on your own tile | A 5 × 5 burning field around you, 9 to every enemy entering or starting a turn in it, harmless to your side |
+| Wall of fire | FIRE · ARC · STAY · SPREAD | A 5 × 5 burning patch up to 6 away, 7 a time, 2 rounds |
+| Chain lightning | SHOCK · SEEK · CHAIN · CHAIN | 27 → 20 → 15 along a line of creatures (one repeat: ×0.9) |
+| Tesla tower | SHOCK · SEEK · WATCH · CHAIN | 15 then 11 to the nearest creatures within 8 of it, each round for 2 rounds; it zaps allies too |
+| Safe Tesla post | SHOCK · WATCH · CHAIN · KIN | Zaps an enemy next to it (15), then chains forward (11); never your side |
+| Heavy hit | FIRE · CONDENSE · CONDENSE · CONDENSE | 61 to one creature next to the Line (two repeats) |
+| Heaviest hit | FIRE · FIRE · FIRE · CONDENSE | 90 × 1.5 × 0.81 = 109 to one creature next to the Line; 7 charge to draw + 4 to fire, more than one standard core holds, so you swap cores between draws (item 418) |
+| Fire mine | FIRE · WAIT · SPREAD | Hidden; 18 to everyone within 2 when set off |
+| Snare | BIND · WAIT · PULL | Pinned and dragged toward you |
+| Acid rain | ACID · ARC · STAY · SPREAD | A 5 × 5 field that corrodes everyone in it |
+| Blink | STEP · CONDENSE, on yourself | You jump to a free tile within 4 |
+| Swap a friend to safety | STEP · RELAY | Your relay, or someone next to it, jumps 4 tiles |
+| Haste | QUICKEN · RELAY | +2 AP for your relay or someone next to it |
+| Bless the squad | SHARPEN · SPREAD, on your own tile | Everyone within 2 of you, you too, gets the bonus on their next attack, enemies standing there too (never add KIN: it would bless only the enemies) |
+| Cleanse | CLEANSE · SEEK | Ends one condition on someone up to 8 away |
+| Charm | COMMAND · SEEK | An enemy halts, kneels, drops its weapon or walks where you say |
+| Stone wall | RAISE · SEEK · PUSH | A fan of wall across a corridor |
+| Fortress | RAISE · SPREAD, on your own tile | Walls on every empty tile within 2 of you (your own tile is taken, so it stays open) |
+| Dispel | NULL · SEEK · SPREAD | Wipes every glyph, field, trap and turret within 2 of a tile |
+| Invisibility | MASK · CONDENSE, on yourself | You're Hidden for 2 rounds, or until you attack |
+| Vampiric bolt | FIRE · SEEK · LEECH | 30 to the target; you heal 15 |
+| Healing post | MEND · WATCH | Heals whoever stands nearest it (next to it) 12 a round |
+
+#### 7. Friendly fire
+
+Bursts, cones, fields, chains and turrets **hit allies** (Leon), and so does a bolt with an ally in its way. **KIN** keeps your side out. A single-target spell hits only the one you pick.
+
+#### 8. Enemy casters
+
+Enemies with an Evoker use the 40 words by the same rules (Leon). In short: an enemy knows the words its stat block lists, or its tier's default set (sigils.json `enemy_ai`). On its turn it weighs a spell it can finish this turn (or a Line it started) against its weapon by expected damage, walks the Line on its own tiles, steps to the side it needs, and Evokes. It adds KIN or picks targets so that its burst, cone, chain or turret hits as few of its own side as it can, and holds a spell that would hit more allies than enemies. It sets traps on the tiles players are likely to cross, NULLs or scuffs the player traps, turrets and glyphs it has spotted when they threaten it, steps out of fields, and can still Evoke a player's Line it can read. The AI only chooses; the engine resolves everything.
+
+#### 9. What the player must see
+
+**Every Sigil spell shows everything it will do before it is Evoked, and everything it is doing while it lasts.** No rule the player can't see decides a Sigil spell. Each colour on screen is paired with a word or glyph (docs/design/colour-system.md). The client must show:
+
+1. **Before drawing:** the tile you'll draw on (yours), the word's cost, and whether this glyph extends a Line, starts a new one, or breaks a shape (a bend).
+2. **While building:** the Line's words in order and its shape; whether it's a valid spell yet ("needs a Subject", "needs another word", "a second Reach word is refused"); glyphs left before your cap; charge, AP and Flux now and after Evoke; an overload warning.
+3. **Where to stand:** the tiles you can Evoke from, each with the direction its area opens; refused tiles say why (a middle glyph, too far).
+4. **Targeting:** the area you may pick from, tinted; out-of-reach tiles dimmed; the direction it fires, drawn before you Evoke.
+5. **Delivery (on hover):** a bolt's path and the tile where it would be stopped; a lob's arc; where SENSE appears; RELAY's hop; every TWICE missile; CHAIN's jumps in their order, each with its multiplier; where PULL and STEP would leave a creature.
+6. **Burst (on hover):** the exact tiles of the radius or cone, and CONDENSE's core tile.
+7. **Who is affected:** every creature that would be hit, marked; allies marked apart from enemies; those KIN spares, and the Downed or surrendered that are skipped; for each, the expected damage, healing or shield after multipliers, and the roll or save TN it takes.
+8. **Fizzle:** "Nothing it may affect: this spell will fizzle", before you confirm.
+9. **Placed magic:** fields, traps, turrets and RAISE walls show their tiles or reach, the rounds left and whose they are. Your traps show to your side only; an enemy's shows once spotted.
+10. **Other casters' Lines:** every glyph glows for everyone. Words you know are readable; a Line you can read shows its area the same way as your own.
+11. **Afterwards:** the log lists every target, roll, save and number.
+
+#### 10. Elements: their riders and how they look and sound
+
+Each element has one identity, used by every spell that carries it. Sigil magic draws it inside its own frame: Mind cyan (#4FC8DF, ink #8BDEEE), square glyphs, hard snapping strokes. **Soul Outbursts will reuse the same element bodies** inside the Soul frame (violet, round, swelling) when Outbursts gain elements: the frame says which magic it is, the body says which element. Element hues are for effects only, never for UI meaning, and always come with the element's word or glyph.
+
+| Element | Rider | Look | Sound |
+|---|---|---|---|
+| FIRE | A critical sets Burning | A white-hot core flaring orange at the edges, embers lifting off the tile, a scorch left for a beat | A dry whoomph, then crackle |
+| FREEZE | Slowed (Body save) | Pale blue-white frost spreading in sharp crystals from the impact, a breath of mist, the target rimed | A glassy crack and a high ring |
+| SHOCK | Ignores half cover | A jagged blue-white arc with branches, a hard flicker of the tile, a jump between targets for CHAIN | A sharp snap and electric buzz |
+| STONE | Sigil damage, armour applies | Grey-brown shards and dust bursting up from the ground, a short heavy shake | A deep thud and grinding crunch |
+| GALE | Pushes 2 tiles | Pale curved streaks sweeping through, dust and debris swept along the push | A rising whoosh |
+| SPARK | The cheap attack | A small bright pinpoint flash and a few scattered sparks | A quick tick-snap |
+| ACID | Corroded (5 a turn, Defense −2) | Sickly yellow-green droplets that hiss and pit the target, a thin smoke while it burns | A wet splash, then a long hiss |
+
+Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per kind: Afflictions bind and cage, Boons rise, Workings build or unbuild the ground.
 
 ### Soul magic: Outbursts, charged and released (Soul, through an Emanator)
 
@@ -979,7 +1174,9 @@ Six new advanced classes join the 15 (21 in all). The rules for learning one don
 | BIND | Tar: Pinned on entering (Body save) | SPREAD | Bloom: any spell landing inside spreads 1 more radius |
 | PUSH | Rampart wind: shots from outside into it −3 | PULL | Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start |
 | STAY | Stasis: conditions inside don't tick down | SEEK | Hunting ground: allies' attacks on enemies inside ignore half cover |
-| RETURN | Sanctuary: an ally inside who would drop to 0 HP stays at 1 instead (once each) | TWICE | Echo field: the first spell each round cast by an ally inside repeats at half effect |
+| TWICE | Echo field: the first spell each round cast by an ally inside repeats at half effect | | |
+
+Rules 1.4: RETURN is gone, and so is its Grand form (Sanctuary). The 16 words new in 1.4 have no Grand form yet, so Enlarge can't pick them (item 449).
 
 **Heartfed** (Channeler + Hexer; tutor: Arkvelton). *"Every feeling in this room is fuel. Yours too."*
 - **Four hearts:** you carry four gauges, 0 to 5: **Rage** (+1 per 20 damage you take), **Grief** (+2 when an ally is Downed, +5 when one dies), **Fear** (+1 at the start of a fight with an Elite or Boss, +2 when you're Shaken), **Devotion** (+1 when an ally heals or buffs you). Each design you make is keyed to one of them.
@@ -1002,7 +1199,7 @@ Six new advanced classes join the 15 (21 in all). The rules for learning one don
 - **Bond:** if the Twin drops to 0 HP it vanishes and you take 3 Strain; call it again next scene.
 - In game text it is only ever *the twin*. It never speaks of the upper realm (the Knowing).
 
-**The old classes under the new Sigil rules.** Blade Scribe's Sword Form draws its glyph on the target's tile. Siege Engineer's WALL sigils become a Line with STAY. Spellslinger's stored spell is a whole pattern drawn into the magazine out of combat. Stroke Gambler draws random half-glyphs that complete as a Stack. Mage's Barrage still cuts element words' charge; Overcharge lets one pattern hold a word beyond your Max Sigil words.
+**The old classes under the new Sigil rules (rules 1.4; full list and engine notes in `docs/design/sigil-1.4-impact.md`).** Every glyph is drawn on its caster's own tile, one to a tile, and spells are Lines. Blade Scribe's Sword Form and the Evoker blade's Edge Word draw their glyph on your own tile as part of the strike. Siege Engineer's barricade becomes full cover with a STAY glyph on a tile next to it. Warden's cover rune is still a lone STAY glyph Evoked on its own (the class's exception to the Line), from a tile next to it. Spellslinger's and the Scribe's stored spells hold words, not shapes: a stored spell goes off at the shot's target (Spellslinger) or from the object's tile with its own Reach, all around (Scribe). Stroke Gambler's half-glyphs fall on your own tile and complete as a Line of half-glyphs. Glyph Mason's Keystone is cut on your own tile and counts as a glyph of the Line it sits in. Mage's Barrage still cuts element words' charge; Overcharge lets one spell hold a word beyond your Max Sigil words, never beyond 4 glyphs. Circuit Mage's Fusion joins the non-Subject words (Reach, Delivery, Burst, Filter) to a Soul school.
 
 ### Patrons and prayer
 
@@ -1272,8 +1469,8 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 
 - **Sigil stroke pool.** How many of your glyphs may stand on the map at once before the oldest fades. It equals Max
   Sigil words; Hold the Stroke adds to it. Max Sigil words still caps the words in one spell.
-- **"Still active" Sigil** (Parallel Thought): one of your STAY zones (wall, smoke or light made with STAY) is standing.
-  Unfired glyphs and impact smoke or light don't count.
+- **"Still active" Sigil** (Parallel Thought): one of your placed spells stands: a field (STAY), a trap (WAIT) or a
+  turret (WATCH) (rules 1.4). Unfired glyphs, Workings' smoke, light and walls don't count.
 - **Wards and rituals** (Rite in the Field): wards are drawing a WARD glyph, Begin on a Buff (Guarded) Outburst and the
   Warden's Ward move; rituals are Pray and Crystallise.
 - **Upper-realm beings** are enemies with `kind: upper_realm` (or the tag `upper_realm`) on the Narrator's start_fight
@@ -1776,7 +1973,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | weapons.json | 20 | Starter weapons, each with its mastery family |
 | weapon_mastery.json | 10 + 30 | Weapon mastery families and levels, and 30 weapon perks (3 per family) |
 | items.json | 1 | Items with rules of their own: Essence of Experience |
-| sigils.json | 24 | Sigil words and grammar (provisional numbers) |
+| sigils.json | 40 | Sigil words (five groups), grammar, element identities and the enemy casters' default words (rules 1.4; provisional numbers) |
 | soul_modules.json | 4 + 20 | Soul schools and modules (provisional numbers) |
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
 | effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
@@ -1823,7 +2020,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Added in the data; fold into this spec**
 
 26. **Eight new conditions:** Grappled, Taunted, Commanded, Puppeted, Disarmed, Injured (by location), Emplaced and Augment Offline.
-27. **Sigil word list** (24 words). It keeps the 2020 Roster's names: FIRE, FREEZE, SHOCK, BIND, BLIND, SLOW, MUDDLE, WALL.
+27. **Sigil word list** (24 words; 40 from rules 1.4, items 415–452). It keeps the 2020 Roster's names: FIRE, FREEZE, SHOCK, BIND, BLIND, SLOW, MUDDLE, WALL.
 
 **Balance and design passes**
 
@@ -1873,16 +2070,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 65. **The Narrator's memory:** the $0.50 ceiling, 6 scenes per chapter, the 9,000-character budgets for active memory and transcript, the ledger caps (300 people, 200 threads, 1,500 facts), the forgetting curve (scenes/10).
 66. **Anyone is a target:** a point-of-interest person fights as a minion with fists; attacking something without HP costs 2 AP; Downed outside a fight lasts until a stim or treatment.
 67. **Rerolls and edits:** the last 5 turns can be rerolled; 3 waiting suggestions per player; only online players vote.
-68. **Rules 1.2: Sigils on the map** (Leon). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, word charge on drawing plus 1 a glyph on firing, Line range 4 / 8 / 12 by length, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
+68. **Rules 1.2: Sigils on the map** (Leon; superseded by rules 1.4 where it names shapes, Line range or 2 glyphs a tile: items 415–452). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, word charge on drawing plus 1 a glyph on firing, Line range 4 / 8 / 12 by length, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
 69. **The three new words** (SPARK 15 damage at 1 charge, PULL 3 tiles, SILENCE 1 round) replacing LINE, WALL and CONE.
-70. **Learning magic:** 2 starting words that must make a Stack, 1 starting design, 4 + Brain Power words known, one word per long rest, Sigil plates, Narrator-granted modules.
+70. **Learning magic:** 2 starting words that must make a Stack (rules 1.4: a spell with a Reach word, item 438), 1 starting design, 4 + Brain Power words known, one word per long rest, Sigil plates, Narrator-granted modules.
 71. **Charge and release:** stages up to 4 (×1 to ×2.5), 1 Strain per held turn, the slip check (10 + damage ÷ 10), wild release.
 72. **Heart burst Downs, never kills** (Leon), using the existing death saves.
 73. **Glyph Mason and Grand Sigilist:** the Keystone's cost (2 AP + a core), Survey's 2 tiles, Enlarge (3 AP + 3 charge, once a combat, radius 2) and all 24 Grand forms.
 74. **Heartfed and Heartbinder:** the four gauges and what fills them, 10% per point, Link range 6, Share half, 2 Strain when a link is Downed.
 75. **Vessel:** the six body forms and their numbers, 2 held forms (3 at Will Power 5), +15 per stage on Release.
 76. **Twinbound:** the Twin's HP 50%, 4 AP, 6-tile leash, 3 Strain on its loss, three fixed built-in Outbursts.
-77. **Magic in the engine (first build):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); the Evoker and Emanator count when carried, not only in hand; learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.
+77. **Magic in the engine (first build; the Ring and Stack parts superseded by rules 1.4):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); the Evoker and Emanator count when carried, not only in hand; learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.
 78. **The perk, trait and class-move runtime (first build, provisional):** item skill modifiers reach every d20 that uses the skill (checks, passives, saves, weapon attacks, initiative), never derived per-point stats; an active perk's or class move's other effects run only when its action runs, while a trait's effects always stand; story hooks reach every character; a per-scene use spans a fight in that scene; a story use the Narrator refuses is refunded.
 79. **Weapon-granted actions (provisional):** a weapon shows only the actions it grants (Reload by its own name: Swap magazine, Speedloader, Swap drum, Feed belt, Nock an arrow, Load a bolt…; Load a magazine; Clear jam; Brace; Field Repair; Overwatch or Hold a strike). Only weapons with a Heat limit jam; the rest fumble on a natural 1 (−1 AP next turn) and build no Heat. Brace only for weapons that need or reward it. The breacher tube reloads for 3 AP (data `reload_ap`).
 80. **Holding an advanced class (provisional):** held alongside the base class, with all three moves at once; it doesn't replace the base class's moves.
@@ -3312,3 +3509,44 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 412. **Wave scaling by party size.** With friends the wave budget and the soldier and elite caps take × (0.6 + 0.4 × players with a fighter); the unit cap stays 8 (the map seats 9). One player: × 1. *Engine: game.ts sandboxWave, sandboxScale.* PROVISIONAL.
 413. **Downed is out in a team fight.** Both teams: a Downed fighter is out at once (no death saves, no stims), so Team A (on the fight's PC side) and Team B (on its foe side, where 0 HP is already out) are alike. *Engine: game.ts sandboxAfter.* PROVISIONAL.
 414. **Team B's side-bound rules.** Team B fights from the engine's foe side, so the few rules still written for the PC side don't reach it yet: Analyze (only foes can be analyzed), Weak Point (only PC attackers) and spotting traps while moving; several perk and trait handlers that check the PC side also skip Team B (a would-drop-to-0 save in Lane A, two Lane G story-side checks, Still Water's foe-attacker test and one more in Lane F, one in Lane H); perk combat_start handlers run before Team B is seated on the foe side; and a Team B player at 0 HP goes through the foe kill path ("Downed is out"). Stims follow the stimmer's own side. Fix when team fights are played for real. *Engine: combat.ts analyze, previewAttack, moveUnit.* PROVISIONAL.
+
+*Sigil magic, rules revision 1.4 (7 Nov 2026; decision 98). All PROVISIONAL until playtests (Leon, answer 6). Items 27, 68, 69, 70 and 77 are superseded where they name Stacks, Rings, RETURN, Line range by length, 2 glyphs a tile or drawing on a next tile; the class, perk and trait items that read those (Payload, Stored Spell, Half-Sigil, Keystone, Fusion, Sword Form and others) are re-read under 1.4 in `docs/design/sigil-1.4-impact.md`.*
+
+415. **The word list:** 40 words (25 Subjects: 7 Elements, 7 Afflictions, 5 Boons, 6 Workings; 4 Reach; 7 Delivery; 3 Burst; 1 Filter) and every charge in sigils.json. The 9 new Subjects' numbers: ACID 15 + Corroded (5 a turn, Defense −2, 3 rounds), COMMAND's 3 charge and its four orders (move up to 3 tiles), QUICKEN +2 AP, SHARPEN +3 to hit and ×1.25, CLEANSE one condition, STEP 4 tiles, RAISE 30 HP a tile for 3 rounds, NULL's list, MASK 2 rounds. PROVISIONAL.
+416. **Reach numbers:** SEEK 8 (+4 a copy), ARC 6 ×0.8 (+3), SENSE 8 ×0.6 (+4), RELAY an ally within 8 (+1 ally a copy); the range bonus once, never on Touch; Touch 1 tile deep. ARC needs sight of its landing tile and SENSE needs none (the proposal only said SENSE reaches a target you can't see). PROVISIONAL.
+417. **Delivery numbers:** STAY ×0.5 for 2 rounds (+2), TWICE 2 missiles (+1) and +1 Flux a glyph, PULL 3 tiles (+3), WAIT 3 rounds and 1 trigger (+1), WATCH ×0.5 for 2 rounds (+2), 10 HP and Defense 10, CHAIN 1 jump (+1) within 3 at ×0.75, LEECH 50% (+25%); 2 traps and 1 turret per caster. PROVISIONAL.
+418. **Repeats** (Leon): any word may repeat except KIN and a second, different Reach word; every repeated glyph multiplies the spell's direct damage, healing and shields by ×0.9 (FIRE · CONDENSE ×3: 61). **Pushback:** repeated Subjects sum before the Burst, so FIRE · FIRE · FIRE · CONDENSE is 109 at Touch (raw 135), well past the old ceiling of 75 and above a fresh character's 100 HP. It costs 11 charge (more than one standard core, so a core swap between draws) and two turns of walking, which may be enough of a brake; if it plays too hot, the suggested fix is ×0.75 for each repeated Subject (FIRE ×3 · CONDENSE → 76). PROVISIONAL.
+419. **A Subject alone is not a spell.** The proposal's examples cast STEP and MASK alone "on yourself", but its grammar asks for a Subject and another word and a Line is 2–4 glyphs, so self-casts take a second word (CONDENSE, 1 charge: Blink is STEP · CONDENSE). Alternative: let a lone Subject glyph on your own tile be a spell. PROVISIONAL.
+420. **Burst numbers:** CONDENSE ×1.5 (+0.5), SPREAD radius 2 ×0.6 (+1 radius, −0.1), PUSH a 3-tile cone ×0.7 (+2 length, −0.1), using the full-auto cone's shape; SPREAD + PUSH hits anyone in both once, at the better multiplier. PROVISIONAL.
+421. **The facing rule's details:** "beyond the line" means further along the Line's axis than the end you're next to; the along band is centred on the Line's axis with the extra lane on the right of the firing direction for even lengths; for a diagonal Line the across step is the orthogonal step away from you (the north or south one when both lead away) and the along lanes sit side by side one step east or west apart, so no band has gaps. A SEEK bolt leaves from the far-end glyph (along) or the glyph in the target's lane (across). PROVISIONAL.
+422. **STAY fields don't strike when Evoked:** the field is the spell, at ×0.5 on entering or starting a turn in it, once per creature per round. Alternative: the spell strikes once at full and then leaves the field. PROVISIONAL.
+423. **Turrets:** cast at the start of the caster's turns at the nearest creature in reach (ties: the lowest HP, then the engine's order), with the caster's numbers at that moment, for no charge; they don't block movement; Scuff or any hit destroys one at 10 HP. Traps and hidden turrets are spotted like hidden traps. PROVISIONAL.
+424. **CHAIN:** the next creature within 3 tiles of the last one hit and no closer to the caster (or turret); nearest first, ties the engine's order; it skips the Downed and surrendered. PROVISIONAL.
+425. **LEECH** heals from the spell's direct damage after armour, in all, not × Healing given and not from conditions it sets. PROVISIONAL.
+426. **KIN** is 2 charge and one copy. PROVISIONAL.
+427. **Cover against Sigils:** a SEEK bolt takes cover like a shot (−5 for half cover, SHOCK ignores it; full cover stops it); Touch, ARC and SENSE ignore cover. PROVISIONAL.
+428. **The strongest words' limits** (Leon): COMMAND as written (Brain save, one order); QUICKEN at most once per target per round and never on yourself; RAISE only on empty tiles (no creature, object, glyph or placed magic), 30 HP a tile, one RAISE working per caster. Whether the Scribe's Quicken class move (+1 AP) counts toward QUICKEN's once a round is OPEN; until settled they're separate. PROVISIONAL.
+429. **COMMAND's save is Brain** (the word's rule), though Commanded sits in the Heart family in conditions.json for CLEANSE and debuff strength; the engine's order menu gains *move up to 3 tiles* (never into a known harm). PROVISIONAL.
+430. **NULL's reach:** glyphs of every side, fields, traps (hidden ones too), turrets, and VEIL smoke, LIGHT and RAISE walls; never Keystones, Grand forms or class zones (Seal, Sanctuary). PROVISIONAL.
+431. **STEP isn't movement:** no Overwatch, no difficult ground, no traps on the way (landing on one sets it off); with a Burst everyone shifts by the same offset and anyone whose new tile isn't free stays. PROVISIONAL.
+432. **MASK** lasts 2 rounds flat (no duration bonus), ends on an attack, and fizzles on a Marked target. PROVISIONAL.
+433. **Corroded:** 5 damage at turn start, Defense −2, 3 rounds, a Body save at the end of each of the bearer's turns ends it early (against 12 + the caster's Body debuff strength). PROVISIONAL.
+434. **Quickened and Sharpened** are helpful states: Quickened is used at the bearer's next turn start; Sharpened lasts until the next attack or the end of the bearer's next turn and doesn't stack. PROVISIONAL.
+435. **Workings with a Burst:** VEIL and LIGHT cover their own radius or the Burst's, whichever is larger; RAISE and NULL cover exactly the Burst's tiles. PROVISIONAL.
+436. **Groups and shapes:** glyphs of one side that touch (diagonals too) are one group; a group that isn't a single straight row of 2–4 is no shape. An enemy glyph next to your Line doesn't break it. PROVISIONAL.
+437. **The 4-glyph cap holds over every bonus** (Brain Power's Overclock, Overcharge, Three-Cut Script). PROVISIONAL.
+438. **Starting magic** (Leon): 2 words making a spell, one of them a Reach word; the default is SPARK · SEEK (replacing SPARK · CONDENSE; old characters whose two starting words hold no Reach word swap their non-Subject word for SEEK when loaded). PROVISIONAL.
+439. **Enemy casters** (Leon: build it): enemies with an Evoker use the 40 words; tier default words in sigils.json `enemy_ai` (minion SPARK · SEEK; soldier FIRE, SEEK, SPREAD, BIND; elite SHOCK, SEEK, CHAIN, WARD, KIN, BIND; boss nine words); they avoid hitting their own side, hold a spell that would hit more allies than enemies, and NULL or scuff the player magic they have spotted. PROVISIONAL.
+440. **Friendly fire** (Leon): bursts, cones, fields, chains, turrets and a bolt's path hit allies; KIN keeps your side out. Settled.
+441. **Old saves:** 1.2 glyphs are dropped when a 1.2 fight loads (their charge isn't refunded), 1.2 zones of kind wall become STAY fields where they can, others are dropped; the word RETURN is removed from known words and replaced by one free word of the player's choice at the next rest. PROVISIONAL.
+442. **Element identities** (Leon): each element has one look and sound (the table in Mana), drawn in the Sigil frame now and reusable in the Soul frame when Outbursts gain elements. The hues are effect colours only. PROVISIONAL.
+443. **Glyphs on the ground** stays Max Sigil words (+ Hold the Stroke) and keeps growing above Intelligence 5. PROVISIONAL.
+444. **Evoking from the side** needs you next to a glyph; standing on a middle glyph is refused, but standing beside one from the side fires across. PROVISIONAL.
+445. **RELAY's area** is the relaying ally's tile and the tiles next to it, all around; each extra copy passes through one more ally within 8 of the last, in its sight. PROVISIONAL.
+446. **Harmful effects skip the Downed and the surrendered;** Boons reach them. PROVISIONAL.
+447. **A refused glyph costs nothing:** a second different Reach word, a second KIN, WATCH with STAY, or a glyph past your cap is refused before any AP, charge or Flux is spent. PROVISIONAL.
+448. **Payload under 1.4:** doubles a SPREAD radius or a PUSH cone's length, or adds one target to a single-target spell (as TWICE does); a STAY, WAIT or WATCH spell can't carry it. PROVISIONAL.
+449. **Grand forms** stay for the 23 old words that remain (RETURN's Sanctuary is gone); the 16 new words have none yet. OPEN: Leon to write them or leave them out.
+450. **Visualization's Paint the Field (Mastery 2)** (was: pick line, cone or circle for free) becomes: once per Evoke, add SPREAD or PUSH to a spell that has no Burst, free (no glyph, no charge, not counted toward 4). PROVISIONAL.
+451. **Brain Power's Overclock (Mastery 1)** (a spell one word longer than Max Sigil words, +2 charge) never passes 4 glyphs, so it does nothing from Intelligence 5. PROVISIONAL.
+452. **Two-glyph hook:** no perk, trait or skill allows a second glyph on a tile yet; the Stack (two glyphs on a tile, area all around out to the range) exists only for one. OPEN: which item gets it.

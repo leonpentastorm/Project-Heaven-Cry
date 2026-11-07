@@ -1047,9 +1047,9 @@
     "sigil": {
       "tool": "evoker",
       "core_slots": 1,
-      "grammar": "at least one subject word (element or effect) + whatever form/motion it needs; without PUSH reach is adjacent only",
+      "grammar": "rules 1.4: at least 1 Subject and 1 other word; 2-4 glyphs in a straight Line (the only shape); one Reach word per spell; with no Reach word the spell is Touch (1 tile deep); full grammar in sigils.json",
       "max_words": "sigil_max_words",
-      "cost": "sum(word charge) - sigil_core_saving, min 1",
+      "cost": "draw: each word's charge + Glyph AP + 1 Flux; evoke: 1 AP + 1 charge per glyph - sigil_core_saving, min 1",
       "flux": {
         "per_word": 1,
         "safe_max": 6,
@@ -1063,20 +1063,21 @@
         "ap": 1,
         "effect": "all flux to the air"
       },
-      "hit": "damage spells: brain_power vs defense; condition words: target save vs 12 + debuff_strength",
-      "damage": "element damage x form multiplier x sigil multiplier x elemental multiplier",
+      "hit": "damage spells: brain_power vs defense; Afflictions: target save vs 12 + debuff_strength; Boons and Workings: no roll",
+      "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x sigil multiplier x elemental multiplier (elemental damage)",
       "example": {
         "words": [
-          "fire",
-          "condense",
-          "push"
+          "spark",
+          "seek"
         ],
-        "charge": 4,
-        "ap_at_expression_1": 3,
-        "damage": 30,
+        "charge": 5,
+        "ap_at_agility_1_expression_1": 4,
+        "damage": 15,
         "range_tiles": 8
       },
-      "data": "sigils.json"
+      "data": "sigils.json",
+      "max_glyphs": 4,
+      "revision": "1.4"
     },
     "soul": {
       "tool": "emanator",

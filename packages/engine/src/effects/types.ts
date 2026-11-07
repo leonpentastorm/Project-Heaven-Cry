@@ -61,6 +61,8 @@ export type HookName =
   | 'stim_start' | 'volley_end' | 'weapon_actions'
   // rules 1.3 shared subsystems (lane 0B)
   | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung'
+  // Sigil rules 1.4 (sigil.ts)
+  | 'glyphs_per_tile' | 'evoke_area' | 'spell_mult' | 'glyph_drawn' | 'spell_fizzle' | 'sigil_placed' | 'sigil_trap_sprung' | 'turret_shot'
   // story
   | 'check_build' | 'check_mod' | 'check_post' | 'check_result' | 'passive'
   | 'voice_cap' | 'ask_limit' | 'overreach_cost' | 'echo_gain'

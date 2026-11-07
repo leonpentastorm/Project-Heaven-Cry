@@ -2394,7 +2394,7 @@
       "properties": [
         "counts_as_evoker"
       ],
-      "text": "After a hit, draw one Sigil word for 0 AP (with the magic pass). Counts as an Evoker.",
+      "text": "After a hit, draw one Sigil word on your own tile for 0 AP (with the magic pass). Counts as an Evoker.",
       "mastery_family": "mana_arms",
       "hands": "1H",
       "durability": 250,
@@ -2404,7 +2404,7 @@
       ],
       "grants": {
         "name": "Edge Word",
-        "text": "After a hit, draw one Sigil word for 0 AP (with the magic pass). Counts as an Evoker.",
+        "text": "After a hit, draw one Sigil word on your own tile for 0 AP (with the magic pass). Counts as an Evoker.",
         "effect": {
           "op": "narrator"
         }

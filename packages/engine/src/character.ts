@@ -3,6 +3,7 @@
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
 import { statQuery, setRankRule } from './effects/hooks';
 import { skillRollMod } from './effects/core';
+import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
@@ -13,7 +14,9 @@ export interface Sheet {
   /** Race, as free text (rules 1.3; The Old Blood reads it): human unless the player says otherwise. */
   race?: string;
   /** Starting magic chosen at creation (spec: The Magic panel): 2 Sigil words that make a Stack, and 1 Outburst design. */
-  sigils?: string[]; outburst?: { name?: string; school: string; modules: string[]; option?: string } | null;
+  sigils?: string[];
+  /** Sigil rules revision the words were checked under (14 = rules 1.4); free words owed from retired ones (RETURN). */
+  sigilRev?: number; sigilFree?: number; outburst?: { name?: string; school: string; modules: string[]; option?: string } | null;
 }
 
 export interface Character extends Sheet {
@@ -151,13 +154,12 @@ export function validateSheet(s: Sheet): string | null {
   if (d.attrLeft !== 0 || d.coreLeft !== 0) return 'Place every Attribute and Core point.';
   return startingMagicError(s, d);
 }
-/** Starting magic (spec: The Magic panel): 2 Sigil words making a Stack (a Subject and a Form or Motion); 1 Outburst
- * design from one school and one module. Both optional: a caster without a choice gets the defaults. */
+/** Starting magic (spec: The Magic panel, rules 1.4): 2 Sigil words making a spell, one of them a Reach word (default
+ * SPARK · SEEK); 1 Outburst design from one school and one module. Both optional: a caster without a choice gets the
+ * defaults. */
 export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skills'>, d?: unknown): string | null {
   if (s.sigils && s.sigils.length) {
-    if (s.sigils.length !== 2 || new Set(s.sigils).size !== 2) return 'Pick exactly 2 different Sigil words.';
-    const w = s.sigils.map((x) => SIGIL[x]); if (w.some((x) => !x)) return 'Unknown Sigil word.';
-    if (!w.some((x) => /^subject/.test(x.class)) || !w.some((x) => x.class === 'form' || x.class === 'motion')) return 'Your 2 Sigil words must make a Stack: one Subject and one Form or Motion.';
+    const e = startingWordsError(s.sigils); if (e) return e;
   }
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
@@ -170,13 +172,25 @@ export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skill
 /** The magic a new character starts with: their picks, or a default cantrip for anyone with the skill or the kit. */
 function startingMagic(c: Character) {
   const bp = c.skills.brain_power || 0, wp = c.skills.will_power || 0;
-  c.sigils = c.sigils && c.sigils.length ? [...c.sigils] : bp >= 1 || c.kit === 'sigil' ? ['spark', 'condense'] : [];
+  c.sigils = c.sigils && c.sigils.length ? [...c.sigils] : bp >= 1 || c.kit === 'sigil' ? [...STARTING_DEFAULT] : [];
+  c.sigilRev = SIGIL_REV;
   const o = c.outburst || (wp >= 1 || c.kit === 'soul' ? { school: 'damage', modules: ['move'] } : null);
   c.outbursts = o ? [{ id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}) }] : [];
   c.soulKnown = o ? { schools: [o.school], modules: [...(o.modules || [])] } : { schools: [], modules: [] };
   delete c.outburst;
 }
 
+/** An old character's Sigil words under rules 1.4 (item 441, 438): RETURN and unknown words go (one free word each at
+ * the next rest: c.sigilFree), and two starting words with no Reach word swap the non-Subject one for SEEK. Runs once
+ * (c.sigilRev). Returns the notes for the log, or [] when nothing changed. */
+export function migrateCharacterSigils(c: Character): string[] {
+  if (c.sigilRev === SIGIL_REV) return [];
+  c.sigilRev = SIGIL_REV;
+  if (!c.sigils || !c.sigils.length) return [];
+  const m = migrateWords(c.sigils); if (!m.notes.length) return [];
+  c.sigils = m.words; if (m.free) c.sigilFree = (c.sigilFree || 0) + m.free;
+  return m.notes.map((n) => c.name + ': ' + n);
+}
 /** The highest armour Class a character's traits allow (armor_class_max), or null for none. */
 export function armourCap(c: { traits?: string[] }): number | null {
   let cap: number | null = null;

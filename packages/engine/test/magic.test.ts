@@ -1,4 +1,4 @@
-// Magic, rules 1.2 (spec: Mana): Sigil glyphs and patterns, Evoke, Flux, Outbursts held and released, Strain, the meter.
+// Magic (spec: Mana): Sigil glyphs and Lines (rules 1.4; the full word set is in sigil14.test.ts), Evoke, Flux, Outbursts held and released, Strain, the meter.
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, MAPS, newCharacter, validateSheet, startCombat, apply, newGame, positionsOf, zoneMap, npcsOf, refOf, keyOf,
@@ -17,59 +17,50 @@ function fight(s: Sheet, foeAt = '6,5', seed = 7) {
   return { c, cb, u, e, rng: { state: seed } };
 }
 
-describe('starting magic (spec: The Magic panel)', () => {
-  it('a Sigil student starts with SPARK + CONDENSE and a loaded Evoker; a Soul initiate with one Outburst and full MP', () => {
+describe('starting magic (spec: The Magic panel, rules 1.4)', () => {
+  it('a Sigil student starts with SPARK + SEEK (a spell with a Reach word) and a loaded Evoker; a Soul initiate with one Outburst', () => {
     const s = newCharacter('a', 'p', sheet('sigilist', 'S', { kit: 'sigil' }));
-    expect(s.sigils).toEqual(['spark', 'condense']); expect(s.outbursts!.length).toBe(0);
+    expect(s.sigils).toEqual(['spark', 'seek']); expect(s.outbursts!.length).toBe(0);
     const w = newCharacter('b', 'p', sheet('stormcaller', 'W', { kit: 'soul' }));
     expect(w.outbursts!.map((d) => d.school)).toEqual(['damage']); expect(w.soulKnown!.schools).toEqual(['damage']);
   });
-  it('picked words must make a Stack; an Outburst fits the module slots', () => {
-    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'freeze'] }))).toMatch(/Stack/);
-    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'push'] }))).toBeNull();
+  it('picked words must make a spell with a Reach word; an Outburst fits the module slots', () => {
+    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'freeze'] }))).toMatch(/must make a spell/);
+    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'push'] }))).toMatch(/Reach word/);
+    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'arc'] }))).toBeNull();
+    expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['seek', 'arc'] }))).toMatch(/Subject|Reach/);
     expect(validateSheet(sheet('stormcaller', 'W', { kit: 'soul', outburst: { school: 'damage', modules: ['move', 'homing', 'swift', 'rain'] } }))).toMatch(/slot/);
   });
 });
 
-describe('Sigils on the map (spec: Sigils)', () => {
-  it('a Stack: draw two words beside you, Evoke at an adjacent foe; charge on drawing and more on firing', () => {
-    const { cb, u, e, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil' }), '4,5');
-    expect(drawGlyph(cb, rng, u, 'spark', '3,5')).toBeNull();
-    expect(drawGlyph(cb, rng, u, 'condense', '3,5')).toBeNull();
-    expect(u.mg!.charge).toBe(10 - 2); expect(u.mg!.flux).toBe(2);
-    const p = findPattern(cb, '3,5', u.pos); expect(typeof p === 'object' && p.shape).toBe('stack');
-    expect(previewEvoke(cb, u, '3,5').ok).toBe(false); // a stack needs a tile to land on
+describe('Sigils on the map (spec: Sigils, rules 1.4)', () => {
+  it('SPARK · SEEK: draw, step, draw on your own tiles; Evoke from the end fires back the way you came; charge on drawing and firing', () => {
+    const { cb, u, e, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil' }), '0,5');
+    u.pos = '3,5'; expect(drawGlyph(cb, rng, u, 'spark', '3,5')).toBeNull();
+    expect(drawGlyph(cb, rng, u, 'seek', '3,5')).toMatch(/One glyph per tile/);
+    u.pos = '4,5'; expect(drawGlyph(cb, rng, u, 'seek')).toBeNull();
+    expect(u.mg!.charge).toBe(10 - 1 - 2); expect(u.mg!.flux).toBe(2);
+    const p = findPattern(cb, '3,5', u.pos); expect(typeof p === 'object' && p.shape).toBe('line');
+    const pv = previewEvoke(cb, u, '3,5', e.pos); expect(pv.ok).toBe(true); expect(pv.facing!.mode).toBe('along'); expect(pv.facing!.dir).toEqual([-1, 0]);
     const hp = e.hp; expect(evoke(cb, rng, u, '3,5', e.pos)).toBeNull();
-    expect(u.mg!.charge).toBe(8 - 2); expect(cb.glyphs!.length).toBe(0); expect(cb.log.at(-1)).toMatch(/evokes SPARK · CONDENSE/);
+    expect(u.mg!.charge).toBe(7 - 2); expect(cb.glyphs!.length).toBe(0); expect(cb.log.at(-1)).toMatch(/evokes SPARK · SEEK/);
     expect(e.hp < hp || /misses/.test(cb.log.at(-1)!)).toBe(true);
   });
-  it('a Line fires from its far end; its range grows with its length (2 tiles reach 4)', () => {
-    const { cb, u, e, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'condense'] }), '9,5');
-    u.mg!.words.push('push');
-    drawGlyph(cb, rng, u, 'fire', '3,5'); u.pos = '3,5'; drawGlyph(cb, rng, u, 'condense', '4,5'); u.pos = '2,5';
-    let p = findPattern(cb, '3,5', u.pos); expect(typeof p === 'object' && p.shape).toBe('line');
-    expect(previewEvoke(cb, u, '3,5').targets).toEqual([]); // the foe at J6 is 5 tiles past the end: out of a 2-tile line's reach
-    u.pos = '4,5'; drawGlyph(cb, rng, u, 'push', '5,5'); u.pos = '2,5';
-    p = findPattern(cb, '3,5', u.pos); expect(typeof p === 'object' && p.tiles.length).toBe(3);
-    expect(previewEvoke(cb, u, '3,5').targets).toEqual([e.id]); // a 3-tile line reaches 8
+  it('drawing is refused off your own tile; a bend is no shape and can\'t be Evoked', () => {
+    const { cb, u, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'seek'] }), '9,5');
+    u.mg!.words.push('condense'); u.mg!.maxWords = 4;
+    expect(drawGlyph(cb, rng, u, 'fire', '9,9')).toMatch(/own tile/);
+    u.pos = '3,5'; drawGlyph(cb, rng, u, 'fire'); u.pos = '4,5'; drawGlyph(cb, rng, u, 'condense'); u.pos = '4,6'; drawGlyph(cb, rng, u, 'seek');
+    expect(findPattern(cb, '3,5')).toMatch(/No shape/);
+    expect(previewEvoke(cb, u, '3,5', '9,5').ok).toBe(false);
   });
-  it('a Ring of 3 around a centre; STAY makes the wall stand; walking through it burns', () => {
-    const { cb, u, e, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'stay'] }), '9,5');
-    u.mg!.maxWords = 3; u.mg!.words.push('condense');
-    drawGlyph(cb, rng, u, 'fire', '3,4'); drawGlyph(cb, rng, u, 'stay', '3,6'); u.pos = '2,6'; drawGlyph(cb, rng, u, 'condense', '2,5'); u.pos = '1,5';
-    expect(drawGlyph(cb, rng, u, 'fire', '9,9')).toMatch(/own tile or one next to you/);
-    const p = findPattern(cb, '3,4', '2,5'); expect(typeof p === 'object' && p.shape).toBe('ring');
-    u.pos = '2,4'; expect(evoke(cb, rng, u, '3,4')).toBeNull(); expect(cb.zones!.length).toBe(1); expect(cb.glyphs!.length).toBe(3); // the glyphs stay
-    e.pos = '3,3'; const hp = e.hp; e.ap = 9; moveUnit(cb, e, '3,5', rng);
-    expect(e.hp).toBeLessThan(hp); expect(cb.log.join(' ')).toMatch(/crosses the FIRE wall/);
-  });
-  it('Flux past 6 overloads the Evoker; Vent dumps Flux into the air; foes scuff glyphs they stand on', () => {
+  it('Flux past 6 overloads the Evoker; Vent dumps Flux into the air; scuff wipes your tile', () => {
     const { cb, u, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil' }), '9,9');
-    u.mg!.flux = 6; u.mg!.charge = 10; const m0 = manaOf(cb), hp = u.hp;
-    drawGlyph(cb, rng, u, 'spark', '3,5');
-    expect(u.hp).toBeLessThan(hp); expect(u.mg!.flux).toBe(0); expect(manaOf(cb)).toBe(m0 + 7); expect(drawGlyph(cb, rng, u, 'spark', '3,5')).toMatch(/locked/);
+    u.mg!.flux = 6; u.mg!.charge = 10; u.hp = u.maxHp = 200; const m0 = manaOf(cb), hp = u.hp;
+    drawGlyph(cb, rng, u, 'spark', u.pos);
+    expect(u.hp).toBeLessThan(hp); expect(u.mg!.flux).toBe(0); expect(manaOf(cb)).toBe(m0 + 7); u.pos = '3,5'; expect(drawGlyph(cb, rng, u, 'spark')).toMatch(/locked/);
     u.mg!.lockRound = -1; u.mg!.flux = 3; expect(vent(cb, u)).toBeNull(); expect(manaOf(cb)).toBe(m0 + 10);
-    expect(scuff(cb, u)).toMatch(/No glyphs/); u.pos = '3,5'; expect(scuff(cb, u)).toBeNull(); expect(cb.glyphs!.length).toBe(0);
+    expect(scuff(cb, u)).toMatch(/No glyphs/); u.pos = '2,5'; expect(scuff(cb, u)).toBeNull(); expect(cb.glyphs!.length).toBe(0);
   });
 });
 
@@ -102,16 +93,18 @@ describe('Outbursts (spec: Soul magic)', () => {
 describe('magic in the story (spec: Overworld rounds, Mana)', () => {
   const open = () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'magic');
-    g = apply(g, { type: 'char/add', sheet: sheet('sigilist', 'Ilse', { kit: 'sigil', sigils: ['fire', 'condense'] }) }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheet('sigilist', 'Ilse', { kit: 'sigil', sigils: ['fire', 'seek'] }) }, 'host');
     g = apply(g, { type: 'session/start' }, 'host');
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'Open.' } as any }, 'host');
     return { g, id: Object.keys(g.characters)[0] };
   };
   it('glyphs drawn on the area map stay there between actions and run down with the rounds', () => {
-    let { g, id } = open(); const at = positionsOf(g)[id], [x, y] = at.split(',').map(Number), t = (x + 1) + ',' + y;
-    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'fire', tile: t }, 'host');
+    let { g, id } = open(); const at = positionsOf(g)[id];
+    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'fire', tile: at }, 'host');
     expect(g.story.glyphs!.map((gl) => gl.word)).toEqual(['fire']); expect(g.characters[id].evoCharge).toBe(8);
-    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'condense', tile: t }, 'host');
+    const [x, y] = at.split(',').map(Number), next = (x + 1) + ',' + y;
+    g = apply(g, { type: 'world/act', charId: id, act: 'move', to: next, how: 'move' }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'seek', tile: next }, 'host');
     expect(new Set(g.story.glyphs!.map((gl) => gl.id)).size).toBe(2); // ids stay unique between actions
     const left = g.story.glyphs![0].left;
     g = apply(g, { type: 'world/act', charId: id, act: 'end' }, 'host');
@@ -119,20 +112,23 @@ describe('magic in the story (spec: Overworld rounds, Mana)', () => {
   });
   it('a spell at a person on the map starts the fight', () => {
     let { g, id } = open(); const at = positionsOf(g)[id], [x, y] = at.split(',').map(Number);
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf((x + 2) + ',' + y) }] } as any }, 'host');
+    // FIRE at x+1, SEEK at x: standing on SEEK (the last drawn) it fires along, past FIRE, toward the drone.
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf((x + 4) + ',' + y) }] } as any }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'move', to: (x + 1) + ',' + y, how: 'move' }, 'host');
     g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'fire', tile: (x + 1) + ',' + y }, 'host');
-    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'condense', tile: (x + 1) + ',' + y }, 'host');
-    g = apply(g, { type: 'world/act', charId: id, act: 'evoke', tile: (x + 1) + ',' + y, aim: (x + 2) + ',' + y }, 'host');
-    expect(g.story.entries.some((e) => /^Combat: Fight at/.test(e.text))).toBe(true); expect(g.combat!.log.join(' ')).toMatch(/evokes FIRE · CONDENSE/);
+    g = apply(g, { type: 'world/act', charId: id, act: 'move', to: at, how: 'move' }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'draw', word: 'seek', tile: at }, 'host');
+    g = apply(g, { type: 'world/act', charId: id, act: 'evoke', tile: at, aim: (x + 4) + ',' + y }, 'host');
+    expect(g.story.entries.some((e) => /^Combat: Fight at/.test(e.text))).toBe(true); expect(g.combat!.log.join(' ')).toMatch(/evokes FIRE · SEEK|evokes SEEK · FIRE/);
   });
   it('learning from the squad and designing Outbursts within the limits', () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'learn');
-    g = apply(g, { type: 'char/add', sheet: sheet('sigilist', 'A', { kit: 'sigil', sigils: ['fire', 'push'] }) }, 'host');
-    g = apply(g, { type: 'char/add', sheet: sheet('stormcaller', 'B', { kit: 'soul', sigils: ['spark', 'condense'] }) }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheet('sigilist', 'A', { kit: 'sigil', sigils: ['fire', 'arc'] }) }, 'host');
+    g = apply(g, { type: 'char/add', sheet: sheet('stormcaller', 'B', { kit: 'soul', sigils: ['spark', 'seek'] }) }, 'host');
     const [a, b] = Object.keys(g.characters);
     expect(() => apply(g, { type: 'magic/learn', charId: a, word: 'freeze', from: 'ally' }, 'host')).toThrow(/Nobody in the squad/);
-    g = apply(g, { type: 'magic/learn', charId: a, word: 'condense', from: 'ally' }, 'host');
-    expect(g.characters[a].sigils).toContain('condense');
+    g = apply(g, { type: 'magic/learn', charId: a, word: 'spark', from: 'ally' }, 'host');
+    expect(g.characters[a].sigils).toContain('spark');
     expect(() => apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Hush', school: 'status', modules: [] } }, 'host')).toThrow(/haven't learned/);
     expect(() => apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Big', school: 'damage', modules: ['move', 'rain'] } }, 'host')).toThrow(/module|know/);
     g = apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Spark of Grief', school: 'damage', modules: ['move'] } }, 'host');

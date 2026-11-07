@@ -133,6 +133,124 @@ def words(o):
 for d in data.values():
     words(d)
 
+# sigils.json, rules revision 1.4: 40 words in five groups, the grammar block, element identities, enemy defaults
+DMG_TYPES_SIGIL = {"physical", "elemental", "fire", "lightning", "emp", "sigil", "soul", "true"}
+sg = data.get("sigils")
+if isinstance(sg, dict):
+    SG_GROUPS = {"subject": {"subject_element", "subject_affliction", "subject_boon", "subject_working"},
+                 "reach": {"reach"}, "delivery": {"delivery"}, "burst": {"burst"}, "filter": {"filter"}}
+    SG_COUNTS = {"subject_element": 7, "subject_affliction": 7, "subject_boon": 5, "subject_working": 6,
+                 "reach": 4, "delivery": 7, "burst": 3, "filter": 1}
+    SG_ORDER = {"how_many", "travel", "cover", "after", "stays"}
+    SG_PER_COPY = {"range", "allies", "rounds", "missiles", "flux", "pull_tiles", "triggers", "jumps", "leech",
+                   "mult", "radius", "cone_length"}
+    SG_SAVES = {None, "body", "brain", "heart"}
+    sw = items("sigils")
+    smap = {w.get("id"): w for w in sw}
+    els = sg.get("elements") or {}
+    seen = collections.Counter()
+    for w in sw:
+        wid, g, c = w.get("id"), w.get("group"), w.get("class")
+        where = f"sigils:{wid}"
+        if g not in SG_GROUPS:
+            errors.append(f"{where}: group {g} is not one of {sorted(SG_GROUPS)}")
+            continue
+        if c not in SG_GROUPS[g]:
+            errors.append(f"{where}: class {c} doesn't belong to group {g}")
+        seen[c] += 1
+        if not isinstance(w.get("charge"), int) or w["charge"] < 1:
+            errors.append(f"{where}: charge must be a whole number of at least 1")
+        if not isinstance(w.get("flux"), int) or w["flux"] < 1:
+            errors.append(f"{where}: flux must be a whole number of at least 1")
+        if w.get("word") != str(wid).upper():
+            errors.append(f"{where}: word must be the id in capitals")
+        if not w.get("text"):
+            errors.append(f"{where}: missing text")
+        if w.get("provisional") is not True:
+            errors.append(f"{where}: every 1.4 number is provisional (provisional: true)")
+        mc = w.get("max_copies")
+        if mc is not None and (not isinstance(mc, int) or mc < 1):
+            errors.append(f"{where}: max_copies must be null or a whole number of at least 1")
+        ap = w.get("applies")
+        if ap is not None:
+            if not isinstance(ap, dict) or not ap.get("condition"):
+                errors.append(f"{where}: applies needs a condition")
+            elif ap.get("save") not in SG_SAVES or ap.get("save_ends", None) not in SG_SAVES:
+                errors.append(f"{where}: applies.save must be body, brain, heart or null")
+        if c == "subject_element":
+            if not isinstance(w.get("damage"), (int, float)) or w.get("damage_type") not in DMG_TYPES_SIGIL:
+                errors.append(f"{where}: an Element needs damage and a damage_type")
+            if w.get("element") not in els:
+                errors.append(f"{where}: element {w.get('element')} has no identity in sigils.elements")
+        if g != "subject":
+            if g != "filter" and w.get("order") not in SG_ORDER:
+                errors.append(f"{where}: order must be one of {sorted(SG_ORDER)}")
+            pc = w.get("per_copy")
+            if g != "filter":
+                if not isinstance(pc, dict) or not pc:
+                    errors.append(f"{where}: per_copy (what each extra copy adds) is missing")
+                else:
+                    for k, v in pc.items():
+                        if k not in SG_PER_COPY or not isinstance(v, (int, float)):
+                            errors.append(f"{where}: per_copy.{k} is not a known number field")
+                        elif k not in w and k not in ("flux",) and not (k == "rounds" and "lasts_rounds" in w) \
+                                and not (k == "allies" and g == "reach") and not (k == "cone_length" and "cone_length" in w):
+                            errors.append(f"{where}: per_copy.{k} has no base value on the word")
+            if g == "reach" and not isinstance(w.get("range"), (int, float)):
+                errors.append(f"{where}: a Reach word needs a range")
+            if "mult" in w and not isinstance(w["mult"], (int, float)):
+                errors.append(f"{where}: mult must be a number")
+        for r in w.get("refuses", []) or []:
+            if r not in smap:
+                errors.append(f"{where}: refuses unknown word {r}")
+    for c, n in SG_COUNTS.items():
+        if seen[c] != n:
+            errors.append(f"sigils: {seen[c]} words of class {c}, expected {n}")
+    if len(sw) != 40:
+        errors.append(f"sigils: {len(sw)} words, expected 40 (rules 1.4)")
+    for e, v in els.items():
+        for k in ("rider", "look", "sound"):
+            if not (isinstance(v, dict) and v.get(k)):
+                errors.append(f"sigils.elements.{e}: missing {k}")
+    gr = sg.get("grammar") or {}
+    for k in ("needs", "min_glyphs", "max_glyphs", "shape", "draw", "evoke", "facing", "touch", "repeats", "refused",
+              "resolve_order", "limits", "starting", "known_max"):
+        if k not in gr:
+            errors.append(f"sigils.grammar: missing {k}")
+    if gr.get("max_glyphs") != 4 or gr.get("min_glyphs") != 2:
+        errors.append("sigils.grammar: a spell is 2 to 4 glyphs (rules 1.4)")
+    if (gr.get("draw") or {}).get("glyphs_per_tile") != 1:
+        errors.append("sigils.grammar.draw: one glyph per tile (rules 1.4)")
+    if set(gr.get("resolve_order") or []) != SG_ORDER:
+        errors.append("sigils.grammar.resolve_order must list how_many, travel, cover, after, stays")
+    rp = (gr.get("repeats") or {}).get("mult_per_repeated_glyph")
+    if not isinstance(rp, (int, float)) or not 0 < rp <= 1:
+        errors.append("sigils.grammar.repeats.mult_per_repeated_glyph must be a number in (0, 1]")
+    for r in gr.get("refused", []) or []:
+        for x in (r.get("words") or []) + ([r["word"]] if r.get("word") else []):
+            if x not in smap:
+                errors.append(f"sigils.grammar.refused: unknown word {x}")
+    st = gr.get("starting") or {}
+    dflt = st.get("default") or []
+    if len(dflt) != st.get("words", 2) or any(x not in smap for x in dflt):
+        errors.append("sigils.grammar.starting.default must be known words, as many as starting.words")
+    else:
+        if not any(smap[x].get("group") == "subject" for x in dflt) or not any(smap[x].get("group") != "subject" for x in dflt):
+            errors.append("sigils.grammar.starting.default must make a spell (a Subject and another word)")
+        if st.get("needs_group") and not any(smap[x].get("group") == st["needs_group"] for x in dflt):
+            errors.append(f"sigils.grammar.starting.default needs a {st['needs_group']} word")
+    for tier, ws in ((sg.get("enemy_ai") or {}).get("default_words") or {}).items():
+        if tier not in ids_of(items("enemies")):
+            errors.append(f"sigils.enemy_ai: unknown enemy tier {tier}")
+        for x in ws:
+            if x not in smap:
+                errors.append(f"sigils.enemy_ai.{tier}: unknown word {x}")
+        if ws and (not any(smap.get(x, {}).get("group") == "subject" for x in ws) or not any(smap.get(x, {}).get("group") != "subject" for x in ws)):
+            errors.append(f"sigils.enemy_ai.{tier}: its words can't make a spell")
+    for x in gr.get("retired", []) or []:
+        if x.get("id") in smap:
+            errors.append(f"sigils.grammar.retired: {x.get('id')} is still a word")
+
 # weapon mastery: families, levels, perks, and every weapon's family
 wm = data.get("weapon_mastery")
 if isinstance(wm, dict):

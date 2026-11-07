@@ -526,7 +526,7 @@
       "name": "Sigilist",
       "family": "sigils",
       "role": "Sigil blaster",
-      "blurb": "Draws FIRE · CONDENSE · PUSH faster than most people draw breath. Smells faintly of scorched Evoker.",
+      "blurb": "Draws FIRE · SEEK · SPREAD faster than most people draw breath. Smells faintly of scorched Evoker.",
       "preset": {
         "brain_power": 4,
         "visualization": 3,
