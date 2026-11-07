@@ -1059,7 +1059,8 @@ register({
       run: (h, args) => {
         const list = storedOf(h), sp = list[0]!; keep(h).spells = list.slice(1);
         const eid = postStory(h, (h.c?.name || '') + ' sets off a stored ' + sp.words.map((w) => w.toUpperCase()).join(' · ') + '.');
-        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' set off out of combat, from the object, with its own Reach, all around' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + sp.debuff.body) + '. Rule what it hits.', eid || undefined);
+        // "(stack)": a stored spell reads as a Stack does under 1.4, all around its tile (the 1.2 saves' word kept).
+        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' (stack) set off out of combat: it goes off from the object with its own Reach, all around' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + sp.debuff.body) + '. Rule what it hits.', eid || undefined);
       },
     },
   ],

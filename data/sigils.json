@@ -398,6 +398,8 @@
         "save_ends": "body"
       },
       "new": true,
+      "grand": "Corroding mire: 5 acid damage on entering (once a round) or starting a turn inside; Corroded on a failed Body save.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -538,6 +540,8 @@
       ],
       "move_tiles": 3,
       "new": true,
+      "grand": "Court: enemies starting a turn inside make a Brain save or kneel (fall Prone).",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -591,6 +595,8 @@
       "not_self": true,
       "once_per_target_per_round": true,
       "new": true,
+      "grand": "Quickstep: allies (not you) starting a turn inside get +1 AP that turn, within the AP ceiling of 9.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -611,6 +617,8 @@
       "to_hit": 3,
       "damage_mult": 1.25,
       "new": true,
+      "grand": "Whetstone: allies attacking from inside +2 to hit.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -627,6 +635,8 @@
       "cleanse": 1,
       "cleanse_order": "newest",
       "new": true,
+      "grand": "Clear water: allies starting a turn inside lose their newest harmful condition.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -678,6 +688,8 @@
       "teleport_tiles": 4,
       "save_enemy": "body",
       "new": true,
+      "grand": "Fold: for allies, each tile of a move inside costs half.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -703,6 +715,8 @@
       "empty_tiles_only": true,
       "one_per_caster": true,
       "new": true,
+      "grand": "Bastion: shots from outside at allies inside -5, as half cover.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -731,6 +745,8 @@
         "class_zone"
       ],
       "new": true,
+      "grand": "Clean ground: placed Sigil magic inside (glyphs, fields, traps, turrets, smoke, light, walls; not Keystones) is wiped when it goes up and at each round start, and no glyph can be drawn inside, yours included.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -750,6 +766,8 @@
         "rounds": 2
       },
       "new": true,
+      "grand": "Shroud: allies starting a turn inside are Hidden (an attack still gives them away).",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -797,6 +815,8 @@
       },
       "order": "travel",
       "new": true,
+      "grand": "Plunging fire: allies' shots from inside ignore half cover.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -820,6 +840,8 @@
       },
       "order": "travel",
       "new": true,
+      "grand": "Second sight: Hidden enemies within 4 tiles of the staff are revealed at each turn start.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -844,6 +866,8 @@
       },
       "order": "travel",
       "new": true,
+      "grand": "Switchboard: an ally inside may Evoke any pattern lying inside from anywhere inside.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -934,6 +958,8 @@
       },
       "order": "stays",
       "new": true,
+      "grand": "Tripwire: the first time each round an enemy enters, it takes 10 Sigil damage and its walk stops.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -961,6 +987,8 @@
         "stay"
       ],
       "new": true,
+      "grand": "Sentinel: at the start of each of your turns the staff strikes the nearest enemy inside for 10 Sigil damage.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -982,6 +1010,8 @@
       },
       "order": "after",
       "new": true,
+      "grand": "Conductor: when your side hurts an enemy inside, 5 lightning damage arcs to the nearest other enemy inside within 3 tiles (once a round for each enemy it reaches).",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -1001,6 +1031,8 @@
       },
       "order": "after",
       "new": true,
+      "grand": "Bloodwell: enemies starting a turn inside lose 5 HP (Sigil) and you heal what they lose.",
+      "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine"
@@ -1085,6 +1117,8 @@
       "flux": 1,
       "text": "Your side is never affected: you and your allies can't be picked and nothing in the spell touches you. It backfires on Boons. It changes who the spell affects, not how it flies.",
       "filter": "spare_own_side",
+      "grand": "Sanctum: allies inside take no damage from your side's spells and attacks.",
+      "grand_provisional": true,
       "max_copies": 1,
       "new": true,
       "provisional": true,

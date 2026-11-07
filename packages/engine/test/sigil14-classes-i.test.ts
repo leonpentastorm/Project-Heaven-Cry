@@ -110,14 +110,13 @@ describe('Mage under 1.4', () => {
     full(); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'spread', tile: here } as any);
     full(); s.act({ type: 'world/act', charId: c.id, act: 'move', to: gl } as any);
     full(); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'spark', tile: gl } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Someone.', npcs: [{ action: 'place', name: 'Scavenger', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf(tgt) }] } } as any);
-    const npc: any = npcsOf(s.g).find((n) => n.name === 'Scavenger'); npc.hp = 999; // so the opening spell doesn't end the fight
+    s.act({ type: 'narrator/turn', turn: { narration: 'Someone.', npcs: [{ action: 'place', name: 'Scavenger', side: 'hostile', tier: 'boss', weapon: 'service_pistol', at: refOf(tgt) }] } } as any);
     full(); s.g.rng.state = plain();
     s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:mage.payload', actionId: 'payload_world', tile: gl, choice: tgt } as any);
     // The fight opens on this map with the Payload as its first move.
     expect(s.g.phase).toBe('combat');
     expect(s.g.combat!.log.some((l) => /PAYLOAD: SPREAD radius 2 → 4/.test(l))).toBe(true);
-    expect(s.g.combat!.units.find((x) => x.name === 'Scavenger')!.hp).toBeLessThan(999);
+    const sc = s.g.combat!.units.find((x) => x.name === 'Scavenger')!; expect(sc.hp).toBeLessThan(sc.maxHp); // a boss, so the spell doesn't end the fight
   });
 });
 

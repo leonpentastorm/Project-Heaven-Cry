@@ -287,7 +287,8 @@ function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[
 }
 
 // ---------- planning (the preview and the real Evoke share it) ----------
-export interface EvokeOpts { /** TWICE: the tiles of the second and later missiles (aims[0] = aim). */ aims?: string[]; /** STEP: where the target lands. */ dest?: string; /** COMMAND: halt | kneel | drop | move. */ order?: string; /** COMMAND move: the tile. */ orderTo?: string }
+export interface EvokeOpts { /** TWICE: the tiles of the second and later missiles (aims[0] = aim). */ aims?: string[]; /** STEP: where the target lands. */ dest?: string; /** COMMAND: halt | kneel | drop | move. */ order?: string; /** COMMAND move: the tile. */ orderTo?: string;
+  /** A stand-in Subject a class move puts in the spell's Subject place (the Circuit Mage's Fusion: the Outburst). It counts toward the 4-glyph cap but not Max Sigil words or the charge, and only shapes the plan (additive, lane classes-k). */ subject?: string }
 export interface MissilePlan {
   i: number; aim: string; kind: Spell['missile']; origin: string; impact: string; dir: Dir;
   path: string[]; blockedAt: string | null; stoppedBy: 'creature' | 'cover' | null; arc: { from: string; to: string } | null; hops: string[];
@@ -343,11 +344,12 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const no = (why: string, extra: Partial<EvokePreview> = {}): EvokePreview => ({ ok: false, why, charge: 0, ap: SPELL_AP.evoke, flux: 0, targets: [], needsAim: false, area: [], pickable: [], missiles: [], affected: [], fizzle: false, ...extra });
   const e = sigilReady(cb, u); if (e) return no(e);
   const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return no(p);
-  const ge = grammarError(p.words, u.mg!.maxWords); if (ge) return no(ge, { pattern: p });
+  const words = opts.subject ? [...p.words, opts.subject] : p.words;
+  const ge = grammarError(words, u.mg!.maxWords + (opts.subject ? 1 : 0)); if (ge) return no(ge, { pattern: p });
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
   // 'spell_shape' {u, pattern, spell, cb} (mutable spell: a fresh copy per plan): items that reshape the compiled spell
   // before it is aimed (the Mage's Payload). Additive hook (lane classes-i).
-  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(p.words), cb }) as any).spell || compileSpell(p.words)) as Spell;
+  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(words), cb }) as any).spell || compileSpell(words)) as Spell;
   // Where you stand: within reach of a glyph, not on a middle glyph (the facing rule).
   const er: any = emit(cb, 'evoke_reach', { u, pattern: p, reach: 1, cb }), reach = Math.max(1, er.reach || 1);
   const near = p.tiles.some((k) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= reach && lineOfSight(cb, u.pos, k)));

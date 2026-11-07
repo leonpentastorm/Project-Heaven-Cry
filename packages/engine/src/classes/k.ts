@@ -7,7 +7,7 @@
 // with its number (K1…) in the spec (section 14, tags K…) and docs/design/perk-runtime.md. Where a hook the engine lacks would
 // be the clean way, the move works through what exists now and the missing hook is listed there too.
 import {
-  register, emit, stateOf, uses, note, has, modOn, applyDamage, grantShield, pendRuling, postStory, holderOf,
+  register, emit, stateOf, uses, note, has, modOn, applyDamage, grantShield, healUnit, pendRuling, postStory, holderOf,
   type Holder, type ActionDef, type ActionArgs,
 } from '../effects';
 import type { Combat, Unit, Term } from '../combat';
@@ -19,10 +19,12 @@ import {
 import { WEAPON, SIGIL, SCHOOL, MODULE } from '../data';
 import { mod, moduleSlots, packOf, maxHp } from '../character';
 import {
-  applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, evoke as evokeSpell,
+  applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, manaBand, manaOf,
-  flux as engineFlux, LINE_RANGE, PUSH_RANGE, FLUX_MAX, CORE_CHARGE, isBoon, type Glyph, type Pattern, type MagicUnit, type Zone,
+  flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
+  type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
+import { castAt, compileSpell } from '../sigil';
 import { d20, die } from '../rng';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
 import { makeObject } from '../objects';
@@ -324,43 +326,83 @@ const halfOnly = (p: Pattern) => p.glyphs.length > 0 && p.glyphs.every(half);
 let STITCHING: string | null = null;
 const wordCls = (w: string) => SIGIL[w]?.class || '';
 const isSubject = (w: string) => /^subject/.test(wordCls(w));
-const isFM = (w: string) => wordCls(w) === 'form' || wordCls(w) === 'motion';
-// Half-Sigil (K7, PROVISIONAL, audit 1-5): 1 AP, an Evoker in hand: the engine draws a random word you know as a
-// half-glyph on your tile or an adjacent one. GAMEBREAKING fix: a half-glyph costs 1 charge (not the word's; never free),
-// and +1 Flux as normal. Half-glyphs complete as a Stack on one tile: the second half-glyph on a tile is drawn from the
-// words that complete the grammar (a Subject pairs with a Form or Motion word you know, and back), so a random pair is
-// rarely dead. 2 per tile and the Max Sigil words limit apply as for any glyph.
+/** A non-Subject word (rules 1.4: Reach, Delivery, Burst or Filter; the 1.2 Form and Motion words). */
+const isFM = (w: string) => !!SIGIL[w] && !isSubject(w);
+const isReachW = (w: string) => SIGIL[w]?.group === 'reach';
+/** The words of the Line or Stack a glyph of `word` on tile t would join (null when it joins none), with the refusals a
+ * draw has (spec: Drawing; item 447): a second different Reach word, a second KIN, WATCH with STAY, past 4 glyphs or
+ * past Max Sigil words. Pure: the glyph list is restored. */
+function joinCheck(cb: Combat, u: Unit, t: string, word: string, extra: Record<string, any> = {}): string | null {
+  const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...extra } as any;
+  cb.glyphs = [...keep, fake]; let p: Pattern | string; try { p = findPattern(cb, t, u.pos); } finally { cb.glyphs = keep; }
+  if (typeof p === 'string') return null;
+  const c: Record<string, number> = {}; for (const w of p.words) c[w] = (c[w] || 0) + 1;
+  if (p.words.length > Math.min(MAX_GLYPHS, u.mg?.maxWords || 2)) return 'Past your cap: ' + p.words.length + ' glyphs (Max Sigil words ' + (u.mg?.maxWords || 2) + ', ' + MAX_GLYPHS + ' at most).';
+  if (Object.keys(c).filter(isReachW).length > 1) return 'A second Reach word is refused: one Reach word per spell.';
+  if ((c.kin || 0) > 1) return 'KIN takes one copy.';
+  if (c.watch && c.stay) return 'WATCH and STAY are refused together: a turret already lasts.';
+  return null;
+}
+// Half-Sigil (K7, PROVISIONAL, audit 1-5; rules 1.4, item 460): 1 AP, an Evoker in hand: the engine draws a random word
+// you know as a half-glyph on your own tile (rules 1.4: never on a tile next to you). GAMEBREAKING fix: a half-glyph costs
+// 1 charge (not the word's; never free), and +1 Flux as normal. The Stroke Gambler's half-glyphs are the first holder of
+// the two-glyph hook (sigils.json grammar.draw.two_glyph_hook; 'glyphs_per_tile'): a tile that holds one half-glyph of
+// yours takes a second half-glyph (a Stack; ordinary glyphs keep one a tile, and no ordinary glyph goes on a half-glyph
+// or back). The second half on a tile is drawn from the words that complete the grammar (a Subject pairs with a
+// non-Subject word you know, and back), so a random pair is rarely dead. Half-glyphs also make Lines like any glyph. The
+// random word is drawn only from words the draw wouldn't refuse (a second Reach word, a second KIN, WATCH with STAY,
+// past your cap). Your glyphs on the ground (Max Sigil words) count them.
+let HALF: string | null = null;
+const halfCap = (cb: Combat, u: Unit, t: string) => { HALF = u.id; try { return glyphsPerTile(cb, u, t); } finally { HALF = null; } };
+function halfPool(cb: Combat, u: Unit, t: string): string[] {
+  const here = (cb.glyphs || []).filter((g) => g.pos === t), m = u.mg!;
+  let pool = m.words.filter((w) => !!SIGIL[w] && !joinCheck(cb, u, t, w, { half: true }));
+  if (here.length) { const fit = isSubject(here[0].word) ? pool.filter(isFM) : pool.filter(isSubject); if (fit.length) pool = fit; }
+  return pool;
+}
+function halfWhy(cb: Combat, u: Unit, t: string | null): string | null {
+  if (!t) return 'Pick a tile.';
+  if (t !== u.pos) return 'Your own tile: step onto it first (rules 1.4).';
+  if (!standable(cb.map, t)) return 'Nothing can be drawn there.';
+  const here = (cb.glyphs || []).filter((g) => g.pos === t), cap = halfCap(cb, u, t);
+  if (here.length >= cap) return cap === 1 ? 'One glyph per tile: a second half-glyph goes only on a tile holding one half-glyph of yours.' : 'This tile holds ' + cap + ' glyphs at most.';
+  if (u.mg!.charge < 1) return 'Needs 1 charge: swap a core.';
+  if (!halfPool(cb, u, t).length) return 'No word you know fits here (a second Reach word, KIN or WATCH with STAY would be refused).';
+  return null;
+}
 register({
   id: 'stroke_gambler.half_sigil', claims: 'all',
   actions: [{
     id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'tile', ap: 1,
-    text: 'Draw a random word you know as a half-glyph (1 charge, +1 Flux). Two on one tile make a Stack for Stitch.',
+    text: 'Draw a random word you know as a half-glyph on your own tile (1 charge, +1 Flux). Two on one tile make a Stack for Stitch.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!h.u.mg!.words.length ? 'You know no words.' : true)),
     preview: (h, a) => {
-      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return { ok: false, why: 'Pick a tile.' };
-      if (dist(u.pos, t) > 1) return { ok: false, why: 'Your tile or one next to you.' };
-      if (!standable(cb.map, t)) return { ok: false, why: 'Nothing can be drawn there.' };
-      if ((cb.glyphs || []).filter((g) => g.pos === t).length >= 2) return { ok: false, why: 'A tile holds at most 2 glyphs.' };
-      if (u.mg!.charge < 1) return { ok: false, why: 'Needs 1 charge: swap a core.' };
-      return { lines: ['A random word of the ' + u.mg!.words.length + ' you know (1 charge, +1 Flux).'] };
+      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile') || u.pos, why = halfWhy(cb, u, t); if (why) return { ok: false, why };
+      const pool = halfPool(cb, u, t), here = (cb.glyphs || []).filter((g) => g.pos === t);
+      return { lines: ['A random word of ' + pool.map((w) => w.toUpperCase()).join(', ') + ' (1 charge, +1 Flux)' + (here.length ? ': it stacks on ' + here[0].word.toUpperCase() : '') + '.'] };
     },
     run: (h, a, rng) => {
-      const u = h.u!, cb = h.cb!, m = u.mg!, t = aimOf(cb, a, 'tile')!;
-      const here = (cb.glyphs || []).filter((g) => g.pos === t && half(g));
-      let pool = m.words;
-      if (here.length) { const fit = isSubject(here[0].word) ? m.words.filter(isFM) : isFM(here[0].word) ? m.words.filter(isSubject) : []; if (fit.length) pool = fit; }
-      const word = pool[die(rng as any, pool.length) - 1];
+      const u = h.u!, cb = h.cb!, m = u.mg!, t = aimOf(cb, a, 'tile') || u.pos, why = halfWhy(cb, u, t); if (why) return why;
+      const pool = halfPool(cb, u, t), word = pool[die(rng as any, pool.length) - 1];
       m.charge -= 1;
-      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + m.durBonus, who: u.name, half: true };
-      cb.glyphs = [...(cb.glyphs || []), g];
-      emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word, side: u.side, half: true });
+      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV };
+      cb.glyphs = [...(cb.glyphs || []), g]; (cb as any).sigilV = SIGIL_REV;
+      const stacks = (cb.glyphs || []).filter((x) => x.pos === t).length > 1;
+      emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word, side: u.side, half: true, group: SIGIL[word]?.group, cls: SIGIL[word]?.class, element: SIGIL[word]?.class === 'subject_element' ? word : null, effect: stacks ? 'stacks' : 'starts' });
       const mine = cb.glyphs.filter((x) => x.by === u.id); let faded = '';
-      if (mine.length > m.maxWords) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades)'; }
-      say(cb, u.name + ' scratches a half-sigil at ' + refOf(t) + ': the stroke falls as ' + (SIGIL[word]?.word || word.toUpperCase()) + ' (1 charge)' + faded + '.' + fluxUp(cb, rng, u, 1));
+      if (mine.length > groundCap(u)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades)'; }
+      say(cb, u.name + ' scratches a half-sigil at ' + refOf(t) + ': the stroke falls as ' + (SIGIL[word]?.word || word.toUpperCase()) + ' (1 charge' + (stacks ? ', a Stack' : '') + ')' + faded + '.' + fluxUp(cb, rng, u, 1));
+      emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
       return null;
     },
   }],
   on: {
+    // The two-glyph hook, for half-glyphs only: a tile holding one half-glyph of yours (and nothing else) takes a second.
+    glyphs_per_tile: (ctx, h) => {
+      const u = h.u; if (!u || ctx.u !== u || HALF !== u.id || !h.cb) return;
+      const here = (h.cb.glyphs || []).filter((g) => g.pos === ctx.tile);
+      if (here.length && here.every((g) => half(g) && g.by === u.id)) ctx.n = Math.max(ctx.n || 1, 2);
+    },
     // A pattern made only of half-glyphs fires only through Stitch (the gamble is not optional).
     evoke_cost: (ctx, h) => { if (STITCHING === ctx.u.id || !halfOnly(ctx.pattern) || !ctx.pattern.glyphs.some((g: Glyph) => g.by === h.u?.id)) return; ctx.fail ||= 'A half-Sigil pattern only fires through Stitch.'; },
   },
@@ -368,22 +410,22 @@ register({
 });
 /** The victim of a Stitch that goes wrong: the nearest creature on your side, you included (ties go to you). */
 const backlashTarget = (cb: Combat, u: Unit) => [...cb.units.filter((v) => v.side === u.side && !v.dead)].sort((a, b) => dist(a.pos, u.pos) - dist(b.pos, u.pos) || (a === u ? -1 : b === u ? 1 : 0))[0];
-/** A Stitch's backlash: the pattern's Subjects land on the victim at full strength, no roll. */
+/** A Stitch's backlash (rules 1.4, item 461): the spell goes off on the victim's tile as Touch at full strength, no roll
+ * (castAt): its Subjects, Burst and CHAIN as written (friendly fire), so a SPREAD backlash catches whoever stands near.
+ * The spell has turned on its maker, so KIN spares no one, and what would stay (STAY, WAIT, WATCH) goes off once instead;
+ * STEP finds no landing tile and does nothing. */
 function backlash(cb: Combat, rng: Rng, u: Unit, v: Unit, p: Pattern): string {
-  const m = u.mg!; let line = '';
-  for (const w of p.words.filter(isSubject)) {
-    const s = SIGIL[w]; if (!s || v.dead) continue;
-    if (s.class === 'subject_element') line += ' · ' + s.word + harm(cb, rng, u, v, (s.damage || 0) * m.sigilMult * (s.damage_type === 'elemental' ? m.elemMult : 1), s.damage_type === 'elemental' ? 'elemental' : 'sigil');
-    else if (w === 'ward') line += ' · ' + v.name + ' is warded (' + grantShield(cb, v, 30 * m.sigilMult, u) + ')';
-    else if (w === 'mend') line += heal(v, 25 * m.sigilMult * m.healMult, cb, u);
-    else { const id = ({ bind: 'pinned', blind: 'blinded', slow: 'slowed', muddle: 'ldebuff', dread: 'shaken', silence: 'silenced' } as Record<string, string>)[w]; if (id) line += applyCond(cb, rng, u, v, id); }
-  }
-  return line;
+  const words = p.words.filter((w) => !['kin', 'stay', 'wait', 'watch'].includes(w) && SIGIL[w]?.group !== 'reach');
+  if (!words.some(isSubject)) return ' · it finds nothing to do';
+  const r = castAt(cb, rng, u, words, v.pos, { origin: v.pos, roll: false, victim: v });
+  return r.ok ? r.line : ' · it finds no hold (' + (r.why || 'nothing happens') + ')';
 }
-// Stitch (K8, PROVISIONAL, audit 1-6): Evoke a pattern of half-glyphs only, then the d20 gamble: 1-5 the spell lands
-// on you or your nearest ally instead (the nearest creature on your side, you included; ties to you), 16-20 its damage
-// doubles (damage only: shields and heals don't), 6-15 normal. A natural 20 on the Brain Power roll stacks (×4). Random
-// words that make no grammar fizzle: the glyphs fade, the Flux stays. House Edge rerolls a 1-5 once a fight.
+// Stitch (K8, PROVISIONAL, audit 1-6; rules 1.4, item 461): Evoke a pattern of half-glyphs only (a Line of them, or a
+// Stack of two on one tile) by the 1.4 rules (where you stand, the facing rule, the aim), then the d20 gamble: 1-5 the
+// spell lands on you or your nearest ally instead (the nearest creature on your side, you included; ties to you), 16-20
+// its damage doubles (damage only: shields and heals don't), 6-15 normal. A natural 20 on the Brain Power roll stacks
+// (×4). Random words that make no grammar fizzle: the glyphs fade, the Flux stays (no roll, no AP). House Edge rerolls a
+// 1-5 once a fight.
 register({
   id: 'stroke_gambler.stitch', claims: 'all',
   actions: [{
@@ -394,31 +436,32 @@ register({
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return { ok: false, why: 'Pick a glyph of the pattern.' };
       const p = findPattern(cb, t, u.pos); if (typeof p === 'string') return { ok: false, why: p };
       if (!halfOnly(p)) return { ok: false, why: 'Stitch fires a pattern made only of half-glyphs.' };
-      if (grammarError(p.words, 99)) return { ap: 0, lines: ['These words make no spell: it fizzles (the glyphs fade).'] };
-      STITCHING = u.id; try { const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined); return pv.ok ? { ap: 0, lines: [pv.ap + ' AP, ' + pv.charge + ' charge · d20: 1-5 backlash, 16-20 double damage'] } : { ok: false, why: pv.why }; } finally { STITCHING = null; }
+      if (grammarError(p.words, u.mg!.maxWords)) return { ap: 0, lines: ['These words make no spell: it fizzles (the glyphs fade).'] };
+      STITCHING = u.id; try { const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a)); return pv.ok ? { ap: 0, lines: [pv.ap + ' AP, ' + pv.charge + ' charge · ' + pv.targets.length + ' affected · d20: 1-5 backlash, 16-20 double damage'] } : { ok: false, why: pv.why }; } finally { STITCHING = null; }
     },
     run: (h, a, rng) => {
-      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, aim = aimOf(cb, a) || undefined, p = findPattern(cb, t, u.pos) as Pattern;
-      if (grammarError(p.words, 99)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
+      const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, aim = aimOf(cb, a) || undefined, opts = stitchOpts(cb, a), p = findPattern(cb, t, u.pos);
+      if (typeof p === 'string') return p;
+      if (!halfOnly(p)) return 'Stitch fires a pattern made only of half-glyphs.';
+      if (grammarError(p.words, u.mg!.maxWords)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); for (const g of p.glyphs) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'fizzle' }); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
+      let pv; STITCHING = u.id; try { pv = previewEvoke(cb, u, t, aim, opts); } finally { STITCHING = null; }
+      if (!pv.ok) return pv.why || 'Can\'t fire that.';
       let g = d20(rng as any); const first = g;
       const he = holderOf({ u, cb }, 'stroke_gambler.house_edge');
       if (g <= 5 && he && modOn({ ...he, cb, g: h.g }, 'reroll') && uses({ ...he, cb, g: h.g }).take('per_combat', 1)) { g = d20(rng as any); say(cb, 'House Edge: ' + u.name + ' rerolls the Stitch (' + first + ' → ' + g + ').'); }
       say(cb, 'STITCH d20 ' + g + (g <= 5 ? ': it turns on its maker' : g >= 16 ? ': the house pays double' : ': it holds'));
       const st = stateOf(h);
       if (g <= 5) {
-        STITCHING = u.id; let pv; try { pv = previewEvoke(cb, u, t, aim); } finally { STITCHING = null; }
-        const ap = pv.ok ? pv.ap : 1, charge = pv.ok ? pv.charge : evokeCharge(p, u);
-        if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (u.mg!.charge < charge) return 'Firing needs ' + charge + ' charge.';
-        u.ap -= ap; u.mg!.charge -= charge; u.mg!.cast = true;
-        const ids = new Set(p.glyphs.map((x) => x.id)); cb.glyphs = (cb.glyphs || []).filter((x) => !ids.has(x.id));
+        u.ap = Math.round((u.ap - pv.ap) * 10) / 10; u.mg!.charge -= pv.charge; u.mg!.cast = true;
+        const ids = new Set(p.glyphs.filter((x) => !(x as any).keystone).map((x) => x.id)); cb.glyphs = (cb.glyphs || []).filter((x) => !ids.has(x.id));
         const v = backlashTarget(cb, u);
-        emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find(isSubject) || null, side: u.side });
+        emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find((w) => wordCls(w) === 'subject_element') || null, side: u.side, backlash: true });
         say(cb, u.name + ' evokes ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' and the Stitch tears: it lands on ' + (v === u ? u.name + ' instead' : v.name) + backlash(cb, rng, u, v, p) + '.');
         checkOver(cb); return null;
       }
       st.double = g >= 16;
       STITCHING = u.id;
-      try { const e = evokeSpell(cb, rng, u, t, aim); if (e) return e; } finally { STITCHING = null; st.double = false; }
+      try { const e = evokeSpell(cb, rng, u, t, aim, opts); if (e) return e; } finally { STITCHING = null; st.double = false; }
       checkOver(cb); return null;
     },
   }],
@@ -430,6 +473,12 @@ register({
   },
   brief: () => null,
 });
+/** The Evoke options a Stitch passes on (STEP's landing tile in `text`, TWICE's extra aims in `tiles`). */
+function stitchOpts(cb: Combat, a: ActionArgs): EvokeOpts {
+  const o: EvokeOpts = {}, dest = tileOf(cb, (a as any).dest || null); if (dest) o.dest = dest;
+  const more = ((a as any).aims || []).map((x: string) => tileOf(cb, x)).filter(Boolean); if (more.length) o.aims = more;
+  return o;
+}
 // House Edge (K9, PROVISIONAL, audit 1-2): once per fight (the data's per_scene reads per_combat, as the text says),
 // reroll a Stitch roll. The reducer has no mid-action prompt, so it's a toggle on Stitch, on by default: a 1-5 is
 // rerolled automatically (the new roll stands).
