@@ -318,15 +318,130 @@
           "sha256": "2287f323d3ae42740121dc0dfb83c1f334e44f409c9d7b66be0dd3793d219820"
         }
       ]
+    },
+    "stop": {
+      "count": 4,
+      "fps": 12,
+      "loop": false,
+      "facing": "right",
+      "baseline_y": 240,
+      "footfalls_1based": [],
+      "footfalls_0based": [],
+      "root_motion_y": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "frames": [
+        {
+          "path": "art/mascot/wick-anim/stop/stop_00.png",
+          "sha256": "7b3c8b3781ca72ad1a7a47101f2335196f32071b5a4b5c25895e38e8dc0e078e",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/stop/stop_00.png",
+            "sha256": "7b3c8b3781ca72ad1a7a47101f2335196f32071b5a4b5c25895e38e8dc0e078e"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/stop/stop_01.png",
+          "sha256": "c82daf51c8f1fc4126a7968528f4f117ae7a69613a74e8fd347a01253e5722a4",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/stop/stop_01.png",
+            "sha256": "c82daf51c8f1fc4126a7968528f4f117ae7a69613a74e8fd347a01253e5722a4"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/stop/stop_02.png",
+          "sha256": "25d2cbfe78a42cf6f41765c9ff904ba6a32a92b107555c313770ea46dd273318",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/stop/stop_02.png",
+            "sha256": "25d2cbfe78a42cf6f41765c9ff904ba6a32a92b107555c313770ea46dd273318"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/stop/stop_03.png",
+          "sha256": "60c4944295cb0f81320b45a6d0fc68fd66177bd84dc792feaecdc738a7834dae",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/stop/stop_03.png",
+            "sha256": "60c4944295cb0f81320b45a6d0fc68fd66177bd84dc792feaecdc738a7834dae"
+          },
+          "root_motion_y": 0,
+          "alias_of": "art/mascot/wick-anim/idle/idle_00.png"
+        }
+      ],
+      "strip": {
+        "path": "art/mascot/wick-anim/stop.png",
+        "sha256": "ed6c15712867f731a85207c577c46ca7b1f49463eefac0cc1f13b5c844022950"
+      },
+      "presentation_strip": {
+        "path": "art/mascot/wick-anim/presentation/stop.png",
+        "sha256": "ed6c15712867f731a85207c577c46ca7b1f49463eefac0cc1f13b5c844022950"
+      },
+      "preview": {
+        "path": "art/mascot/wick-anim/previews/stop.gif",
+        "sha256": "c476d88e2295d332b66997ba2c36c4aec8690df777e6fe4f1aacaa363c4acc38"
+      },
+      "provenance": {
+        "path": "art/mascot/wick-anim/sources/v1/stop-sheet.png",
+        "sha256": "a89c7da0f6c1f5e15b7940287288c9094942026a7b016436b2fabf032ae11072",
+        "grid": [
+          2,
+          2
+        ],
+        "order": "row-major",
+        "cell_boxes": [
+          [
+            0,
+            0,
+            627,
+            627
+          ],
+          [
+            627,
+            0,
+            1254,
+            627
+          ],
+          [
+            0,
+            627,
+            627,
+            1254
+          ],
+          [
+            627,
+            627,
+            1254,
+            1254
+          ]
+        ],
+        "uniform_scale": 0.3992015968063872,
+        "ink_separation": "luminance>=128 and source alpha>=128; white plate with antialiased export edges",
+        "creative_method": "image_gen; technical crop, ink separation, uniform scale and sole registration only"
+      },
+      "reviews": [
+        {
+          "path": "art/mascot/wick-anim/previews/stop-48px-dark.png",
+          "sha256": "402dfd96a13979306c5d804e3fab092d1bdc6f73a083c6001c3ee06e2a7a02b3"
+        },
+        {
+          "path": "art/mascot/wick-anim/previews/stop-48px-light.png",
+          "sha256": "f231c58255b422b42c2ed7eb862436629cabbcb11cf6b2d114376d4940bace9a"
+        }
+      ]
     }
   },
   "preview": {
     "path": "art/mascot/wick-anim/preview.gif",
-    "sha256": "e2cc7a662997d1335c12e7d49109b775d20d9fbf09f2ea43e4bc68559056c462"
+    "sha256": "0e29eda05184324a558e40e00f9e6b68cd991f2ed59d46a53f07075a3688d4cf"
   },
   "playback_order": [
     "run",
+    "stop",
     "idle"
   ],
-  "delivered_frames": 12
+  "delivered_frames": 16
 }
