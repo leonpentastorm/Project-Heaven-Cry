@@ -388,7 +388,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
 /** Once per round: glyphs, fields, traps, turrets, smoke and RAISE walls run down (sigil.ts). */
 export function magicRoundTick(cb: Combat) { sigilRoundTick(cb); }
 /** Moving onto a tile: fields bite and traps go off (sigil.ts sigilEnter). */
-export function zoneEnter(cb: Combat, rng: Rng, u: Unit, k: string) { sigilEnter(cb, rng, u, k); }
+export function zoneEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean { return sigilEnter(cb, rng, u, k); }
 /** Sight blockers and light from magic (VEIL smoke, LIGHT). */
 export const veilTiles = (cb: Combat) => (cb.zones || []).filter((z) => z.kind === 'veil').flatMap((z) => z.tiles);
 export const magicLit = (cb: Combat, k: string) => (cb.zones || []).some((z) => z.kind === 'light' && z.tiles.includes(k));

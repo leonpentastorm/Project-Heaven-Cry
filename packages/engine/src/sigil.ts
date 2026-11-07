@@ -740,8 +740,9 @@ function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
   const f: Dir = zz.dir || [0, 1];
   if (sp.stay) { const bt = burstTiles(cb, sp, z.tiles[0], f); placeField(cb, z.by, z.who, z.side, sp, bt, f, Math.floor(by?.mg?.durBonus || 0), zz.reachMult ?? 1); cb.log.push(head + ': a field springs up.'); }
   else {
-    const mp = missileEffects(cb, by, z.side, sp, { i: 0, aim: z.tiles[0], origin: z.tiles[0], impact: z.tiles[0], f, self: false, kind: sp.missile, source: z.tiles[0], deliveryMult: 1, roll: !!by, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: {}, reachMult: zz.reachMult ?? 1, via: 'trap', victim: t });
-    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: z.tiles[0], opts: {} })); cb.log.push(head + (r.line || ': it finds no one') + '.'); }
+    const src = by && !by.dead ? by.pos : z.tiles[0]; // PULL and CHAIN measure from the trap's owner (Snare: dragged toward you)
+    const mp = missileEffects(cb, by, z.side, sp, { i: 0, aim: z.tiles[0], origin: z.tiles[0], impact: z.tiles[0], f, self: false, kind: sp.missile, source: src, deliveryMult: 1, roll: !!by, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: {}, reachMult: zz.reachMult ?? 1, via: 'trap', victim: t });
+    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: src, opts: {} })); cb.log.push(head + (r.line || ': it finds no one') + '.'); }
   }
   if (zz.triggers <= 0) cb.zones = (cb.zones || []).filter((x) => x !== z);
 }
@@ -783,13 +784,15 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
 }
 /** Moving onto a tile: fields bite, traps of the other side go off (spec: STAY, WAIT). Called on each step of a walk and
  * after a teleport. */
-export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string) {
+export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean {
   migrateSigil(cb);
+  let stop = false;
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(k)) continue;
     if (z.kind === 'field' || z.kind === 'wall') fieldBite(cb, rng, z, u);
-    else if (z.kind === 'trap' && z.side !== u.side && !cb.overworld) springTrap(cb, rng, z, u);
+    else if (z.kind === 'trap' && z.side !== u.side && !cb.overworld) { springTrap(cb, rng, z, u); stop = true; }
   }
+  return stop || u.pos !== k; // a trap went off, or the field moved them: the walk ends here
 }
 /** The start of a unit's turn for Sigil magic: Quickened's AP, Corroded's bite, fields and traps on its tile, and its
  * turrets fire (spec: Mana; conditions). */
