@@ -31,9 +31,13 @@ await page.keyboard.press('ArrowUp');
 await page.waitForTimeout(400);
 ok('arrow keys move the selection', (await page.locator('.phc-item.on .phc-label').textContent()) !== 'SETTINGS');
 await page.getByRole('button', { name: 'CHARACTERS', exact: true }).click();
-await page.waitForTimeout(200);
+await page.waitForTimeout(60);
+// hover keeps working on other rows while Wick says hello (the press still opens the pressed row)
+await page.locator('[data-item="settings"]').hover({ force: true, timeout: 1000 });
+await page.waitForTimeout(100);
 ok('the press shows Wick saying hello', await page.locator('.phc-bubble').count() === 1);
 await page.screenshot({ path: SHOTS + '/title-hello.png' });
+ok('hover during hello highlights another row', (await page.locator('.phc-item.on').getAttribute('data-item')) === 'settings' && (await page.locator('.phc-item.pressed').getAttribute('data-item')) === 'chars');
 await page.waitForSelector('text=Your characters', { timeout: 3000 });
 ok('then the Characters screen slides in', true);
 await page.screenshot({ path: SHOTS + '/title-characters.png' });
