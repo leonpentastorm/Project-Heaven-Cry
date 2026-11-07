@@ -300,6 +300,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const was = bindGame(g);
   try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
+  if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
   g.v++;
   return g;
@@ -1048,7 +1049,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
     case 'combat/clear': err = clearJam(cb!, u); break;
-    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
+    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined); break;
@@ -1141,6 +1142,7 @@ function runEnemies(g: GameState) {
   for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
     const u = active(cb)!;
     if (u.side !== 'foe') break;
+    if (u.charId) break; // a player's fighter on the foe side (the Proving Ground's team fight): its player acts
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
@@ -1267,10 +1269,10 @@ export function viewFor(g: GameState, playerId: string): GameState {
   const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
-  if (g.sandbox) v.sandbox = { ...g.sandbox, saved: { characters: {}, campaign: null, story: null, music: null } };
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
+  if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
 }
 
@@ -1830,11 +1832,35 @@ export interface Sandbox {
   /** The mana meter when this wave began (Retry puts it back). */
   waveMana: number;
   spawned: number;
-  saved: { characters: Record<string, Character>; campaign: Campaign | null; story: any; music: any; memory?: any; archive?: number };
+  saved: { characters: Record<string, Character>; campaign: Campaign | null; story: any; music: any; memory?: any; archive?: number;
+    /** The room's players before it began (multiplayer: sandbox/end puts the roster back). Old saves: none. */
+    players?: Player[] };
+  // Multiplayer (see the "Proving Ground multiplayer" block at the end of this file). All optional: old saves load.
+  /** Opened from the title (not from a room): leaving closes the room. */
+  standalone?: boolean;
+  /** Co-op waves, or a team fight (players against players, no drill units). */
+  mode?: 'coop' | 'teams';
+  /** Everyone can use the field tools (spawn, clear, place and jump waves, the mana meter). Off by default. */
+  spawnAll?: boolean;
+  /** Guests may Retry a fallen wave (on by default). */
+  guestRetry?: boolean;
+  /** READY, by player id (cleared when a fight begins). */
+  ready?: Record<string, boolean>;
+  /** Team fight: each player's team (A by default). */
+  team?: Record<string, 'A' | 'B'>;
+  /** Best wave cleared, by player id; team-fight wins, by player id. */
+  bestBy?: Record<string, number>; wins?: Record<string, number>;
+  /** Players the host removed (they don't come back with the room's roster). */
+  kicked?: string[];
+  /** The wave the tools placed on the map and the party size it was built for (re-placed when the party changes). */
+  placed?: { wave: number; party: number } | null;
+  /** The last team fight's winner. */
+  lastWin?: 'A' | 'B';
 }
 export type MagicKit = 'both' | 'sigil' | 'soul';
 export type SandboxAction =
-  | { type: 'sandbox/start'; archetype?: string; kit?: string } | { type: 'sandbox/end' }
+  | { type: 'sandbox/start'; archetype?: string; kit?: string; standalone?: boolean } | { type: 'sandbox/end' }
+  | SandboxMpAction
   | { type: 'sandbox/fight' } | { type: 'sandbox/stage'; wave?: number } | { type: 'sandbox/stop' }
   | { type: 'sandbox/wave'; wave?: number } | { type: 'sandbox/retry'; restart?: boolean }
   | { type: 'sandbox/give'; charId: string; item: string; qty?: number; rarity?: Rarity; equip?: boolean }
@@ -1868,12 +1894,15 @@ const isMedicChar = (c: Character) => c.classId === 'medic' || (!!c.advancedClas
 export const ADVANCED_CLASSES: { id: string; name: string; parents: string[]; summary?: string }[] = ((classesJ as any).advanced || []).map((x: any) => ({ id: x.id, name: x.name, parents: x.parents || [], summary: x.summary }));
 const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, boss: 8 };
 /** Wave n's drill units (deterministic, so a wave can be replayed): a point budget of 2 + 1.5n; soldiers from wave 2,
- * elites from wave 4, a champion every 5th wave; at most 8. Provisional: tuned by play. */
-export function sandboxWave(n: number): { name: string; tier: string; weapon: string }[] {
+ * elites from wave 4, a champion every 5th wave; at most 8. Provisional: tuned by play.
+ * party: the players with a fighter; the budget and the soldier and elite caps take × (0.6 + 0.4 × party) (multiplayer,
+ * provisional; 1 player: × 1, the solo waves). */
+export function sandboxWave(n: number, party = 1): { name: string; tier: string; weapon: string }[] {
   n = Math.max(1, Math.floor(n));
-  let pts = 2 + Math.floor(n * 1.5); const tiers: string[] = [];
+  const scale = sandboxScale(party);
+  let pts = Math.floor((2 + Math.floor(n * 1.5)) * scale); const tiers: string[] = [];
   if (n % 5 === 0) for (let i = 0; i < Math.min(2, n / 5) && pts >= TIER_COST.boss; i++) { tiers.push('boss'); pts -= TIER_COST.boss; }
-  const caps: [string, number][] = [['elite', n >= 4 ? Math.floor(n / 4) : 0], ['soldier', n >= 2 ? Math.ceil(n / 2) : 0]];
+  const caps: [string, number][] = [['elite', n >= 4 ? Math.floor(n / 4 * scale) : 0], ['soldier', n >= 2 ? Math.ceil(n / 2 * scale) : 0]];
   for (const [t, cap] of caps) for (let i = 0; i < cap && pts > TIER_COST[t] && tiers.length < 7; i++) { tiers.push(t); pts -= TIER_COST[t]; }
   while (pts > 0 && tiers.length < 8) { tiers.push('minion'); pts--; }
   if (!tiers.length) tiers.push('minion');
@@ -2036,7 +2065,8 @@ function sbPlace(g: GameState, n: number) {
   const taken = new Set<string>([...Object.values(pos), ...storyObjects(g).filter(blocksMove).map((o) => o.pos)]);
   const free = (k: string) => standable(map, k) && !taken.has(k);
   const anyFree = () => { for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) if (free(x + ',' + y)) return x + ',' + y; return null; };
-  g.story.npcs = sandboxWave(n).map((f) => {
+  sb.placed = { wave: n, party: sbParty(g) };
+  g.story.npcs = sandboxWave(n, sb.placed.party).map((f) => {
     const at = map.foeStart.find(free) || anyFree() || map.foeStart[0]; taken.add(at);
     return { id: 'foe-s' + (++sb.spawned), name: f.name, side: 'hostile', tier: f.tier, weapon: f.weapon, pos: at, portrait: portraitFor(g, f.name, seen) || undefined, facing: facingToward(at, centre) } as Npc;
   });
@@ -2055,6 +2085,7 @@ function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; we
   g.story.npcs = [...(g.story.npcs || []).filter((x) => !foes.some((f) => f.npc === x)), ...(foes.slice(seated.length).map((f) => f.npc).filter(Boolean) as Npc[])];
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
   sb.wave = n; sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START; sb.fights = (sb.fights || 0) + 1;
+  sbFightBegun(g);
   if (!wasLive) musicOf(g).fight++;
   syncSong(g);
   runEnemies(g);
@@ -2070,7 +2101,7 @@ function sbStartWave(g: GameState, n: number, fresh: boolean, mana?: number, ret
   if (fresh) { g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; for (const c of Object.values(g.characters)) sbRefill(c); g.story.positions = {}; }
   g.story.npcs = [];
   sbAttempt(sb, n, retry);
-  sbBegin(g, n, sandboxWave(n), pos);
+  sbBegin(g, n, sandboxWave(n, sbParty(g)), pos);
 }
 /** Back to gearing up: after a fight (won or lost) or when the host stops it. Won or stopped: the squad stays where it
  * stood with what it carried, the arena as the fight left it, enemies still standing back on the map. Lost: nothing is
@@ -2106,6 +2137,8 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
 /** A fight ends: cleared or the squad fell. The Proving Ground is gearing up again (the wave card offers the next fight). */
 function sandboxOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won = cb.over === 'win';
+  if (sb.mode === 'teams') { sbTeamsOver(g); return; }
+  if (won) sbNoteBest(g, sb.wave);
   if (won) { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); cb.log.push('WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
   else { sb.state = 'fallen'; cb.log.push('The squad falls on wave ' + sb.wave + '. Everyone is back up: retry the wave, or gear up first.'); }
   cb.summary = (won ? 'Cleared' : 'Fell on') + ' wave ' + sb.wave + '.';
@@ -2138,6 +2171,7 @@ function sandboxWorld(g: GameState, a: Action, by: string) {
       const foes = cb.units.filter((u) => u.side === 'foe').length;
       cb.log.unshift('WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + foes + ' drill unit' + (foes === 1 ? '' : 's'));
     }
+    sbAttackStarted(g, w.charId, by);
     return;
   }
   Object.assign(sb, before);
@@ -2164,8 +2198,9 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     hostOnly();
     if (g.phase !== 'lobby') fail('Open the Proving Ground from the room, before the session starts.');
     const saved = { characters: JSON.parse(JSON.stringify(g.characters)), campaign: g.campaign ? JSON.parse(JSON.stringify(g.campaign)) : null, story: JSON.parse(JSON.stringify(g.story)), music: g.music ? JSON.parse(JSON.stringify(g.music)) : null,
-      memory: g.memory ? JSON.parse(JSON.stringify(g.memory)) : null, archive: (g.archive || []).length };
-    const sb: Sandbox = { wave: 1, best: 0, attempt: 1, ai: true, auto: false, state: 'ready', fights: 0, advanced: {}, temp: [], waveMana: MANA_START, spawned: 0, saved };
+      memory: g.memory ? JSON.parse(JSON.stringify(g.memory)) : null, archive: (g.archive || []).length, players: JSON.parse(JSON.stringify(g.players)) };
+    const sb: Sandbox = { wave: 1, best: 0, attempt: 1, ai: true, auto: false, state: 'ready', fights: 0, advanced: {}, temp: [], waveMana: MANA_START, spawned: 0, saved,
+      mode: 'coop', ready: {}, team: {}, bestBy: {}, wins: {}, ...(a.standalone ? { standalone: true } : {}) };
     g.sandbox = sb;
     if (!charsOf(g, by).length && (a.archetype || !Object.keys(g.characters).length)) {
       const c = newCharacter(id(g, 'c'), by, sbTestSheet(g, a.archetype, a.kit)); c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id);
@@ -2186,6 +2221,9 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     return;
   }
   const sb = sbOf(g), cb = liveFight(g), gearing = g.phase === 'story';
+  if (SB_MP_ACTIONS.has(a.type)) { sandboxMp(g, a as SandboxMpAction, by); return; }
+  /** The field tools: the host's, or everyone's with "Everyone can spawn" on. */
+  const fieldOnly = () => { if (!host && !(sb.spawnAll && inRoom)) fail('Only the host does that in the Proving Ground (the host can turn on "Everyone can spawn").'); };
   switch (a.type) {
     case 'sandbox/end': {
       hostOnly();
@@ -2195,11 +2233,14 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       if (s.memory) g.memory = s.memory; else if (s.memory === null) delete g.memory;
       if (s.archive != null && g.archive && g.archive.length > s.archive) g.archive = g.archive.slice(0, s.archive);
       g.combat = null; g.phase = 'lobby'; g.sandbox = null; g.checks = []; g.overreach = []; g.awards = [];
+      sbRestoreRoster(g, sb);
       return;
     }
     case 'sandbox/fight': {
       if (!inRoom) fail('Join the room first.');
       if (!gearing) fail('The fight is already on.');
+      if (!host && !sbAllReady(g)) fail('The host starts the fight. Press READY (or attack a drill unit to start it at once).');
+      if (sb.mode === 'teams') { sbBeginTeams(g); return; }
       const n = sandboxNext(sb);
       if (!npcsOf(g).some((x) => x.side === 'hostile')) sbPlace(g, n);
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
@@ -2209,7 +2250,8 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/stage': {
-      hostOnly(); if (!gearing) fail('Stop the fight first.');
+      fieldOnly(); if (!gearing) fail('Stop the fight first.');
+      if (sb.mode === 'teams') fail('Team fight: no drill units (switch the mode to Co-op waves).');
       const n = Math.max(1, Math.min(99, Math.round(a.wave ?? sandboxNext(sb))));
       sbPlace(g, n); sb.wave = n; sb.state = 'ready';
       sbLog(g, 'Wave ' + n + ' stands on the map: ' + npcsOf(g).length + ' drill unit' + (npcsOf(g).length === 1 ? '' : 's') + '.');
@@ -2222,7 +2264,8 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/wave': {
-      if (a.wave != null) hostOnly(); else if (!inRoom) fail('Join the room first.');
+      if (a.wave != null) fieldOnly(); else if (!inRoom) fail('Join the room first.');
+      if (sb.mode === 'teams') fail('Team fight: no waves (switch the mode to Co-op waves).');
       if (a.wave == null && sb.state !== 'cleared') fail(sb.state === 'fallen' ? 'The squad is down: retry the wave.' : 'Clear this wave first.');
       const n = Math.max(1, Math.min(99, Math.round(a.wave ?? sb.wave + 1)));
       sbStartWave(g, n, sb.state === 'fallen');
@@ -2230,19 +2273,21 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     }
     case 'sandbox/retry': {
       // Anyone may retry once the squad has fallen; otherwise only the host resets the room's run.
-      if (sb.state === 'fallen') { if (!inRoom) fail('Join the room first.'); } else hostOnly();
+      if (sb.state === 'fallen') { if (!inRoom) fail('Join the room first.'); if (!host && sb.guestRetry === false) fail('The host has Retry for guests turned off.'); } else hostOnly();
+      if (sb.mode === 'teams') fail('Team fight: no waves (switch the mode to Co-op waves).');
       sbStartWave(g, a.restart ? 1 : sb.wave, true, a.restart ? MANA_START : sb.waveMana, true);
       return;
     }
     case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
     case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
     case 'sandbox/mana': {
-      hostOnly(); const v = Math.max(0, Math.min(40, Math.round(Number(a.value) || 0)));
+      fieldOnly(); const v = Math.max(0, Math.min(40, Math.round(Number(a.value) || 0)));
       g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }
       sbLog(g, 'The mana meter is set to ' + v + '.'); return;
     }
     case 'sandbox/spawn': {
-      hostOnly();
+      fieldOnly();
+      if (sb.mode === 'teams') fail('Team fight: no drill units (switch the mode to Co-op waves).');
       if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
       if (!WEAPON[a.weapon]) fail('No such weapon.');
       const name = (a.name || '').trim().slice(0, 40);
@@ -2266,7 +2311,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/clear': {
-      hostOnly();
+      fieldOnly();
       if (gearing) { g.story.npcs = npcsOf(g).filter((n) => n.side !== 'hostile'); sbLog(g, 'The map is cleared. Spawn drill units, or start the fight for a wave.'); return; }
       if (!cb) fail('No fight is on.');
       const cur = cb!.order[cb!.turn];
@@ -2419,4 +2464,236 @@ function sandboxGear(g: GameState, a: Action, by: string) {
   if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
   const to = m[a.type]; if (!to) fail('Unknown action.');
   sandboxAction(g, to(), by);
+}
+
+// ---------- the Proving Ground multiplayer ----------
+// Friends join the room and each gets a fighter: a test Recruit (Wick's face), or a copy of one of their saved
+// characters. They gear up together, press READY, and the host starts the fight (anyone can, once everyone is ready;
+// attacking a drill unit starts it at once, as solo). Co-op waves scale with the party; or the host sets the mode to a
+// team fight: Team A against Team B on the same map, no drill units. Team B's fighters stand on the fight's foe side
+// but are players' units (charId set): no enemy AI runs them, and each Team B player's view is turned around
+// (sandboxView) so their client sees their own team as the squad and fogs the map from their side.
+// Spec: Proving Ground, multiplayer. Nothing here ever sets story.work: the Narrator is never called.
+
+export type SandboxMpAction =
+  | { type: 'sandbox/ready'; on?: boolean }
+  | { type: 'sandbox/settings'; spawnAll?: boolean; mode?: 'coop' | 'teams'; guestRetry?: boolean }
+  | { type: 'sandbox/team'; team: 'A' | 'B'; playerId?: string }
+  | { type: 'sandbox/recruit'; archetype?: string }
+  | { type: 'sandbox/bring'; sheet: Sheet }
+  | { type: 'sandbox/leave' };
+const SB_MP_ACTIONS = new Set(['sandbox/ready', 'sandbox/settings', 'sandbox/team', 'sandbox/recruit', 'sandbox/bring', 'sandbox/leave']);
+
+/** The wave budget's party multiplier: × (0.6 + 0.4 × players), provisional (spec 14). One player: × 1. */
+export const sandboxScale = (party: number) => 0.6 + 0.4 * Math.max(1, Math.min(4, Math.round(party) || 1));
+/** Players with a fighter in the Proving Ground (at least 1). */
+export function sbParty(g: GameState): number { return Math.max(1, new Set(Object.values(g.characters).map((c) => c.owner)).size); }
+/** The players who have a fighter, and how many of them pressed READY. */
+export function sandboxReady(g: GameState): { ready: number; of: number; ids: string[] } {
+  const ids = [...new Set(Object.values(g.characters).map((c) => c.owner))].filter((pid) => g.players.some((p) => p.id === pid));
+  const r = g.sandbox?.ready || {};
+  return { ready: ids.filter((pid) => r[pid]).length, of: ids.length, ids };
+}
+const sbAllReady = (g: GameState) => { const r = sandboxReady(g); return r.of > 0 && r.ready === r.of; };
+/** A player's team in a team fight (A unless they picked B). */
+export const sandboxTeam = (sb: Sandbox, pid: string): 'A' | 'B' => (sb.team?.[pid] === 'B' ? 'B' : 'A');
+
+/** A fight began: READY clears, and the wave on the map is no longer the tools' to re-place. */
+function sbFightBegun(g: GameState) { const sb = sbOf(g); sb.ready = {}; sb.placed = null; }
+/** Gearing up, the squad attacked a drill unit: the fight starts at once whoever was ready (said in the log). */
+function sbAttackStarted(g: GameState, charId: string | undefined, by: string) {
+  const sb = sbOf(g), cb = g.combat; if (!cb) return;
+  const r = sandboxReady(g), who = (charId && g.characters[charId]?.name) || g.players.find((p) => p.id === by)?.name || 'Someone';
+  if (r.of > 1) cb.log.splice(1, 0, who + ' attacked a drill unit: the fight starts at once (' + r.ready + ' / ' + r.of + ' were ready).');
+  sbFightBegun(g); void sb;
+}
+/** A cleared wave counts for every player with a fighter in it. */
+function sbNoteBest(g: GameState, wave: number) {
+  const sb = sbOf(g), by = (sb.bestBy ||= {});
+  for (const u of g.combat?.units || []) { const c = u.charId ? g.characters[u.charId] : null; if (c) by[c.owner] = Math.max(by[c.owner] || 0, wave); }
+}
+
+/** Remove fighters: their characters, their tokens, and their units in a fight that is on (the turn passes on if it was theirs). */
+function sbRemoveChars(g: GameState, ids: string[]) {
+  const sb = sbOf(g), cb = liveFight(g);
+  if (cb) {
+    const gone = new Set(cb.units.filter((u) => (u.charId && ids.includes(u.charId)) || (u.ctrl && ids.includes(u.ctrl))).map((u) => u.id));
+    if (gone.size) {
+      const cur = cb.order[cb.turn], wasTheirs = gone.has(cur), before = cb.order.slice(0, cb.turn).filter((x) => !gone.has(x)).length;
+      cb.units = cb.units.filter((u) => !gone.has(u.id)); cb.order = cb.order.filter((x) => !gone.has(x));
+      if (sb.mode === 'teams' && !cb.units.some((u) => u.side === 'foe')) cb.over = 'win'; // Team B has nobody left
+      if (cb.order.length && wasTheirs) {
+        cb.turn = before % cb.order.length;
+        const u = active(cb)!; if (u.dead || u.surrendered || (u.side === 'foe' && u.downed && !u.charId)) endTurn(cb, g.rng); else beginTurn(cb, g.rng);
+      } else if (cb.order.length) cb.turn = Math.max(0, cb.order.indexOf(cur));
+    }
+  }
+  for (const id of ids) { delete g.characters[id]; if (g.story.positions) delete g.story.positions[id]; if (g.story.magic) delete g.story.magic[id]; }
+  sb.temp = sb.temp.filter((x) => !ids.includes(x));
+  if (g.story.focus && ids.includes(g.story.focus.charId)) g.story.focus = null;
+  if (cb && g.combat === cb) runEnemies(g); // the fight may be over now (nobody left on a side), or it is a drill unit's turn
+}
+/** A player is gone from the Proving Ground (left, or removed by the host): their fighters with them. */
+function sbPlayerGone(g: GameState, pid: string) {
+  const sb = sbOf(g);
+  sbRemoveChars(g, Object.values(g.characters).filter((c) => c.owner === pid).map((c) => c.id));
+  if (sb.ready) delete sb.ready[pid];
+  if (sb.team) delete sb.team[pid];
+}
+/** A test fighter for a player who has none: "Recruit 2", "Recruit 3"…, Wick's face, refilled, on a free start tile. */
+function sbRecruit(g: GameState, pid: string, archetype?: string): Character {
+  const sb = sbOf(g), c = newCharacter(id(g, 'c'), pid, sbTestSheet(g, archetype, undefined));
+  c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id); sbRefill(c);
+  if (g.phase === 'story') positionsOf(g);
+  return c;
+}
+/** Leaving the Proving Ground puts the room's roster back: who was in the room before (online as they are now, or offline
+ * if they left), plus anyone who joined during it; players the host removed stay out. */
+function sbRestoreRoster(g: GameState, sb: Sandbox) {
+  const was = sb.saved.players; if (!was) return;
+  const now = g.players, kicked = new Set(sb.kicked || []);
+  g.players = [...was.filter((p) => !kicked.has(p.id)).map((p) => ({ ...p, online: now.find((x) => x.id === p.id)?.online ?? false })),
+    ...now.filter((p) => !was.some((x) => x.id === p.id))];
+  for (const c of Object.values(g.characters)) if (kicked.has(c.owner)) delete g.characters[c.id];
+}
+/** Re-place the tools' wave when the party size changed (a friend joined or left while gearing up). */
+function sbReplace(g: GameState) {
+  const sb = g.sandbox; if (!sb || g.phase !== 'story' || sb.mode === 'teams' || !sb.placed) return;
+  if (sb.placed.party !== sbParty(g)) sbPlace(g, sb.placed.wave);
+}
+
+function sandboxMp(g: GameState, a: SandboxMpAction, by: string) {
+  const sb = sbOf(g), host = isHost(g, by), gearing = g.phase === 'story';
+  if (!g.players.some((p) => p.id === by)) fail('Join the room first.');
+  switch (a.type) {
+    case 'sandbox/ready': {
+      if (!charsOf(g, by).length) fail('Get a fighter first: a Recruit, or one of your characters.');
+      if (!gearing) fail('The fight is already on.');
+      (sb.ready ||= {})[by] = a.on ?? !sb.ready[by];
+      return;
+    }
+    case 'sandbox/settings': {
+      if (!host) fail('Only the host changes the Proving Ground\'s settings.');
+      if (a.spawnAll != null) { sb.spawnAll = !!a.spawnAll; sbLog(g, 'Everyone can spawn: ' + (sb.spawnAll ? 'on.' : 'off (the host only).')); }
+      if (a.guestRetry != null) sb.guestRetry = !!a.guestRetry;
+      if (a.mode && a.mode !== (sb.mode || 'coop')) {
+        if (!gearing) fail('Stop the fight first.');
+        if (a.mode !== 'coop' && a.mode !== 'teams') fail('Pick Co-op waves or Team fight.');
+        sb.mode = a.mode; sb.ready = {}; sb.state = 'ready';
+        if (a.mode === 'teams') {
+          // Two teams from the players with a fighter, alternating (each can switch on the Squad tab).
+          g.story.npcs = npcsOf(g).filter((n) => n.side !== 'hostile'); sb.placed = null;
+          const ids = sandboxReady(g).ids, t = (sb.team ||= {});
+          ids.forEach((pid, i) => { if (!t[pid]) t[pid] = i % 2 ? 'B' : 'A'; });
+          if (ids.length > 1 && ids.every((pid) => t[pid] === t[ids[0]])) t[ids[ids.length - 1]] = t[ids[0]] === 'A' ? 'B' : 'A';
+          sbLog(g, 'Mode: Team fight. Pick Team A or Team B on the Squad tab; the host starts the fight.');
+        } else { sbPlace(g, sandboxNext(sb)); sbLog(g, 'Mode: Co-op waves.'); }
+      }
+      return;
+    }
+    case 'sandbox/team': {
+      const pid = a.playerId || by;
+      if (pid !== by && !host) fail('Pick your own team.');
+      if (!gearing) fail('Teams change between fights.');
+      if (a.team !== 'A' && a.team !== 'B') fail('Team A or Team B.');
+      if (!g.players.some((p) => p.id === pid)) fail('No such player.');
+      (sb.team ||= {})[pid] = a.team; if (sb.ready) delete sb.ready[pid];
+      return;
+    }
+    case 'sandbox/recruit': {
+      if (!gearing) fail('Between fights.');
+      if (charsOf(g, by).length) fail('You already have a fighter.');
+      const c = sbRecruit(g, by, a.archetype); sbReplace(g);
+      sbLog(g, c.name + ' joins the Proving Ground.');
+      return;
+    }
+    case 'sandbox/bring': {
+      // A copy of a saved character: its own id, removed on leaving; the player's library is never touched.
+      if (!gearing) fail('Bring a character between fights.');
+      const temps = Object.values(g.characters).filter((c) => c.owner === by && sb.temp.includes(c.id));
+      const keep = Object.values(g.characters).filter((c) => c.owner === by && !sb.temp.includes(c.id));
+      if (keep.length >= 2) fail('Two characters per player at most.');
+      const err = validateSheet(a.sheet) || (typeof a.sheet.portrait === 'string' && a.sheet.portrait.length > PORTRAIT_MAX ? 'That portrait is too big for a room.' : null)
+        || (JSON.stringify({ ...a.sheet, portrait: '' }).length > SHEET_MAX ? 'That character carries too much text for a room.' : null);
+      if (err) fail(err);
+      if (temps.length) sbRemoveChars(g, temps.map((c) => c.id));
+      const c = newCharacter(id(g, 'c'), by, JSON.parse(JSON.stringify(a.sheet)));
+      c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id); sbRefill(c); positionsOf(g); sbReplace(g);
+      sbLog(g, (g.players.find((p) => p.id === by)?.name || 'A player') + ' brings ' + c.name + ' (a copy: the saved character stays as it was).');
+      return;
+    }
+    case 'sandbox/leave': {
+      if (host) fail('The host ends the Proving Ground for everyone (Leave the Proving Ground).');
+      const p = g.players.find((x) => x.id === by)!;
+      sbPlayerGone(g, by);
+      g.players = g.players.filter((x) => x.id !== by);
+      sbReplace(g);
+      push(g, { kind: 'system', text: p.name + ' left the Proving Ground.', ooc: true });
+      return;
+    }
+  }
+  fail('Unknown action.');
+}
+
+/** A team fight: Team A at the map's squad start, Team B at the far side, everyone refilled; no drill units. */
+function sbBeginTeams(g: GameState) {
+  const sb = sbOf(g), map = zoneMap(g);
+  const live = Object.values(g.characters).filter((c) => !c.dead && g.players.some((p) => p.id === c.owner));
+  const A = live.filter((c) => sandboxTeam(sb, c.owner) === 'A'), B = live.filter((c) => sandboxTeam(sb, c.owner) === 'B');
+  if (!A.length || !B.length) fail('Each team needs a fighter: pick Team A or Team B on the Squad tab.');
+  for (const c of live) sbRefill(c);
+  g.story.npcs = []; g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.positions = {};
+  const pcs = [...A.map((c) => ({ c })), ...B.map((c, i) => ({ c, pos: map.foeStart[i % map.foeStart.length] }))];
+  const cb = startCombat('Proving Ground · Team fight', map, pcs, [], 'standard', g.rng, defaultObjects(map));
+  const bIds = new Set(B.map((c) => c.id));
+  for (const u of cb.units) if ((u.charId && bIds.has(u.charId)) || (u.ctrl && bIds.has(u.ctrl))) u.side = 'foe';
+  for (const e of cb.fx || []) if (e.unit && e.side) { const u = cb.units.find((x) => x.id === e.unit); if (u) e.side = u.side; }
+  magicIn(g, cb);
+  cb.noXp = true;
+  cb.log.unshift('TEAM FIGHT · Team A (' + A.map((c) => c.name).join(', ') + ') against Team B (' + B.map((c) => c.name).join(', ') + '). Downed is out.');
+  g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
+  sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START; sb.fights = (sb.fights || 0) + 1; sb.lastWin = undefined;
+  sbFightBegun(g);
+  musicOf(g).fight++;
+  syncSong(g);
+  runEnemies(g);
+}
+/** A team fight ends: the winners counted, everyone back to gearing up with full HP at the start tiles. */
+function sbTeamsOver(g: GameState) {
+  const sb = sbOf(g), cb = g.combat!, won: 'A' | 'B' = cb.over === 'win' ? 'A' : 'B', w = (sb.wins ||= {});
+  const owners = new Set(cb.units.filter((u) => u.charId && (u.side === 'pc') === (won === 'A')).map((u) => g.characters[u.charId!]?.owner).filter(Boolean) as string[]);
+  for (const pid of owners) w[pid] = (w[pid] || 0) + 1;
+  cb.log.push('TEAM ' + won + ' WINS in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '. Everyone is back up for the next one.');
+  cb.summary = 'Team ' + won + ' wins.';
+  sb.lastWin = won;
+  sbToNeutral(g, 'fell');
+  sb.state = 'ready';
+}
+
+/** After every action in the Proving Ground: a friend who joined gets a fighter, a removed player's fighters go, the
+ * tools' wave follows the party size, and in a team fight Downed is out (no death saves, no stims) on both sides. */
+export function sandboxAfter(g: GameState, a: Action, by: string) {
+  const sb = g.sandbox; if (!sb) return;
+  if (a.type === 'player/join' && isHost(g, by) && g.players.some((p) => p.id === a.id) && !Object.values(g.characters).some((c) => c.owner === a.id)) {
+    const c = sbRecruit(g, a.id); sbReplace(g);
+    sbLog(g, c.name + ' joins the Proving Ground' + (liveFight(g) ? ': in the next fight.' : '.'));
+  }
+  if (a.type === 'player/kick' && isHost(g, by)) {
+    (sb.kicked ||= []).includes(a.id) || sb.kicked.push(a.id);
+    sbPlayerGone(g, a.id); sbReplace(g);
+  }
+  const cb = liveFight(g);
+  if (sb.mode === 'teams' && cb) for (const u of cb.units) if (u.charId && u.downed && !u.dead) { u.downed = false; u.dead = true; u.hp = 0; cb.log.push(u.name + ' is out.'); }
+}
+/** A player's view of the Proving Ground: no saved room; in a team fight Team B sees the fight from its side. */
+function sandboxView(g: GameState, v: GameState, playerId: string) {
+  const sb = g.sandbox!;
+  v.sandbox = { ...sb, saved: { characters: {}, campaign: null, story: null, music: null } };
+  if (sb.mode !== 'teams' || !v.combat || sandboxTeam(sb, playerId) !== 'B') return;
+  const flip = <T extends { side?: any }>(x: T): T => (x.side === 'pc' || x.side === 'foe' ? { ...x, side: x.side === 'pc' ? 'foe' : 'pc' } : x);
+  const cb = v.combat;
+  v.combat = { ...cb, units: cb.units.map(flip), glyphs: cb.glyphs?.map(flip), zones: cb.zones?.map(flip), fx: cb.fx?.map((e) => flip(e as { side?: any }) as typeof e),
+    over: cb.over === 'win' ? 'loss' : cb.over === 'loss' ? 'win' : cb.over,
+    ...(cb.lastSeen ? { lastSeen: { pc: cb.lastSeen.foe, foe: cb.lastSeen.pc } as any } : {}),
+    ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}) };
 }

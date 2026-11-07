@@ -65,7 +65,8 @@ describe('waves', () => {
     expect(foes.every((n) => n.side === 'hostile' && !Object.values(pos).includes(n.pos))).toBe(true);
   });
   it('the fight starts from the map: Start the fight, wave 1, no XP, the Narrator never called', () => {
-    const g0 = apply(open(), { type: 'sandbox/ai', on: false }, HOST), g = apply(g0, { type: 'sandbox/fight' }, GUEST); // anyone in the room can start it
+    // The host's button; a guest can start it once every player with a fighter is READY (multiplayer).
+    const g0 = apply(apply(open(), { type: 'sandbox/ai', on: false }, HOST), { type: 'sandbox/ready', on: true }, HOST), g = apply(g0, { type: 'sandbox/fight' }, GUEST);
     expect(g.phase).toBe('combat');
     expect(g.sandbox).toMatchObject({ wave: 1, state: 'fighting', attempt: 1, fights: 1 });
     expect(g.story.work).toBeNull(); expect(g.combat!.noXp).toBe(true);
@@ -189,7 +190,7 @@ describe('waves', () => {
     // Nothing is lost: everyone is back up and refilled at the start, the field empty; the next fight is the same wave.
     const c = charOf(g); expect(c.dead).toBe(false); expect(c.hp).toBe(maxHp(c)); expect(npcsOf(g).length).toBe(0);
     expect(sandboxNext(g.sandbox!)).toBe(1);
-    const again = apply(g, { type: 'sandbox/fight' }, GUEST);
+    const again = apply(g, { type: 'sandbox/fight' }, HOST);
     expect(again.sandbox).toMatchObject({ wave: 1, attempt: 2, state: 'fighting', fights: 2 });
     expect(again.combat!.units.filter((u) => u.side === 'foe').length).toBe(sandboxWave(1).length);
   });
