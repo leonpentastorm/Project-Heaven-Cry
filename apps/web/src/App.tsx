@@ -32,6 +32,7 @@ import { TurnIntro, cue } from './game/turnIntro';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
+import { MissionLayer } from './game/missionBoard';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -97,6 +98,7 @@ export function App() {
       {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
       {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
       {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
+      {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
       <Tips />
       {barP.shown && <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{barP.shown}</div>}

@@ -49,7 +49,9 @@ export class RoomLogic extends DCLogic {
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: hostPick({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
     // Start: host only, at least one locked-in character, and (AI) a key.
     const offline = g.players.filter((p) => p.online && !Object.values(g.characters).some((c) => c.owner === p.id) && p.id !== g.hostId);
-    const why = !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
+    // A finished campaign (spec: OOC, missions and end states): the save is complete; the room says so.
+    const why = g.story && g.story.complete ? 'Campaign complete ✓ · ' + ((g.campaign && g.campaign.title) || 'the story') + ' is finished'
+      : !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
       : g.phase !== 'lobby' ? 'In session' : !squad.length ? 'Lock in a character to start'
       : !st.narrator.key && !st.narrator.scripted ? 'Add your Anthropic API key to start' : null;
     const notReady = !!why;
