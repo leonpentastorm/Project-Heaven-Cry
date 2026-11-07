@@ -319,6 +319,10 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
     Object.assign(u, { side: 'pc', tier: undefined, hp: Math.min(k.hp, comp.hp ?? k.hp), maxHp: k.hp, def: k.defense, armour: k.armour, attack: k.attack_bonus, movement: k.movement, strength: k.attack_bonus,
       init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: k.portrait || undefined });
     u.mags = undefined; // unlimited spares, as enemies carry
+    // A fixed action list and a gun that never runs dry (the drone: move and shoot, no reload, no Heat or jams; spec §14
+    // item 370), from the stat block.
+    if (Array.isArray(k.actions) && k.actions.length) u.allowedActions = [...k.actions];
+    if (k.infinite_ammo) u.infiniteAmmo = true;
     // The twin (Twinbound's Call on the area map): half its owner's maximum HP, the owner's Defense, tied to the owner.
     if (comp.kind === 'twin') Object.assign(u, { hp: comp.hp ?? Math.floor(0.5 * owner.maxHp), maxHp: comp.maxHp ?? Math.floor(0.5 * owner.maxHp), def: owner.def, attack: owner.mg?.will ?? 0, init: owner.init - 0.4, short: 'TW', img: comp.img || owner.img, twinOf: owner.id });
     out.push(u);

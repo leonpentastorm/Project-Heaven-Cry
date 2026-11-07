@@ -13,7 +13,7 @@ import {
   weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees,
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
-import { mod, packOf, physicalMult, carryLimit, hasMod } from '../character';
+import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
 import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
@@ -577,10 +577,11 @@ register({
 // ---------- Gun Nut ----------
 // Clearing a jam costs 0 AP (the data's action_cost) and doesn't reset Heat (plan 6a-29; PROVISIONAL). Every gun gets
 // +1 mod slot (a second slot of a type it has: "Fit a second mod", out of combat). Know Your Iron: in a fight the engine
-// names each enemy's weapon and calibre as the squad first sees it; in the story, identifications are Narrator facts. Collector:
-// at session start, fewer than 3 guns carried goes to the Narrator; selling or abandoning a gun (Dexterity TN 12,
-// PROVISIONAL) and the −50% sale price are the Narrator's until the engine has sell and drop actions.
-const gunsOf = (c: Character) => (isGun(WEAPON[c.weapon]) ? 1 : 0) + (c.offHand && isGun(WEAPON[c.offHand.id]) ? 1 : 0) + packOf(c).filter((p) => p.kind === 'weapon' && isGun(WEAPON[p.weapon || p.id])).reduce((t, p) => t + p.qty, 0);
+// names each enemy's weapon and calibre as the squad first sees it; in the story, identifications are Narrator facts. Collector
+// (spec §14 item 369, Leon 7 Nov 2026): no guns at creation; the first 3 guns the character gets are the collection
+// (character.ts collectGuns). Parting with one is the Narrator's Dexterity check (TN 12, PROVISIONAL) and the brief names
+// the collection; an engine path that removes a collection gun refuses it (partError). The −50% sale price is the
+// Narrator's: the engine has no sell action.
 /** Know Your Iron in a fight: name the weapon and calibre of enemies the squad can see, once each. */
 function knowIron(h: Holder, seen: Unit[]) {
   const cb = h.cb, u = h.u; if (!cb || !u || overworld(cb)) return;
@@ -596,9 +597,9 @@ register({
     jam_clear: (ctx, h) => { if (ctx.u === h.u && ctx.ap === 0) ctx.keepHeat = true; },
     combat_start: (ctx, h) => knowIron(h, h.cb ? h.cb.units.filter((v) => h.u && v.side !== h.u.side && !v.hidden && sideSees(h.cb!, h.u.side, v)) : []),
     sight_change: (ctx, h) => { if (h.u && h.cb && ctx.side === h.u.side) knowIron(h, (ctx.gained || []).map((id: string) => unitById(h.cb!, id)).filter((v: Unit | null): v is Unit => !!v && v.side !== h.u!.side)); },
-    session_start: (ctx, h) => { const c = h.c; if (!c) return; const n = gunsOf(c); if (n < 3) note(h, 'Collector: ' + c.name + ' carries ' + n + (n === 1 ? ' gun' : ' guns') + ', wants at least 3 (the Narrator decides what that costs them)'); },
   },
-  brief: () => 'identify any gun or round (Narrator facts); selling a gun: Dex TN 12 or keep it until rest; sells guns at −50%',
+  brief: (h) => { const col = h.c ? collectionOf(h.c).map((id) => WEAPON[id]?.name || id) : [];
+    return 'identify any gun or round (Narrator facts); collection: ' + (col.length ? col.join(', ') : 'none yet (the first 3 guns gained)') + '; parting with a collection gun (sell, abandon, give away): Dex TN 12 or keep it until rest; sells guns at −50%'; },
 });
 
 // ---------- Old School ----------

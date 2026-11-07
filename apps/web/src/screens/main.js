@@ -11,7 +11,7 @@ import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, 
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, wantsDetail } from '../game/commands';
-import { weaponActions, verdictFor, ADVANCED } from '@engine';
+import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, signatureOf, classLabel } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
@@ -293,9 +293,10 @@ export class MainLogic extends DCLogic {
     const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧' })[wd.category] || '⚔';
       return it.category === 'shield' ? '⛉' : it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
     const tips = {};
+    const colIds = c ? collectionOf(c) : []; // Gun Nut's collection (spec 14 item 369): tagged on its guns' tooltips
     const weaponTip = (id, st = {}) => { const wd = WEAPON[id]; if (!wd) return null; const r = st.rarity || 'standard', m = maxDurOf(id, r), d = st.dur ?? m;
       return { title: st.name || wd.name, sub: (RW(r) + ' ' + marks(r)).trim() + ' · ' + (wd.hands || '') + ' · ' + wd.category.replace('_', ' '), img: artOf(id), glyph: glyphOf(id),
-        lines: [(typeof wd.damage === 'number' ? wd.damage : typeof wd.damage === 'object' && wd.damage ? Object.values(wd.damage).join(' / ') : wd.damage) + ' damage' + (typeof wd.range_tiles === 'number' && wd.range_tiles > 1 ? ' · ' + wd.range_tiles + ' tiles' : '') + (wd.magazine ? ' · ' + wd.magazine + ' rounds' + (wd.ammo ? ' (' + wd.ammo + ')' : '') : ''),
+        lines: [colIds.includes(id) ? 'Collection (Gun Nut): parting with it takes a Dexterity check.' : '', (typeof wd.damage === 'number' ? wd.damage : typeof wd.damage === 'object' && wd.damage ? Object.values(wd.damage).join(' / ') : wd.damage) + ' damage' + (typeof wd.range_tiles === 'number' && wd.range_tiles > 1 ? ' · ' + wd.range_tiles + ' tiles' : '') + (wd.magazine ? ' · ' + wd.magazine + ' rounds' + (wd.ammo ? ' (' + wd.ammo + ')' : '') : ''),
           m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : d <= m * 0.25 ? ' · worn' : '') : '', (st.mods || []).length ? 'Mods: ' + st.mods.map((x) => ITEM[x]?.name || x).join(', ') : '', wd.mod_slots && wd.mod_slots.length ? 'Mod slots: ' + wd.mod_slots.join(', ') : '',
           wd.grants ? wd.grants.name + ': ' + wd.grants.text : '', wd.requires ? 'Needs ' + Object.entries(wd.requires).map(([k, v]) => SK[k]?.name + ' ' + v).join(', ') : '',
           wd.weight_kg + ' kg · ' + Math.round((wd.price_credits || 0) * (RARITY[r]?.price || 1)) + ' credits'].filter(Boolean), lore: wd.lore || '' }; };
@@ -503,7 +504,7 @@ export class MainLogic extends DCLogic {
         .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden), faces = castMany(g, ns.map((n) => ({ key: n.id, current: ART(n.portrait) || null, tags: npcTags(n.name, n.tier, n.weapon) })), taken); return ns.map((n) => ({ id: n.id, side: 'foe', npc: n, name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: faces.get(n.id) || '',
           pos: n.pos, hp: ENEMY[n.tier]?.hp || 30, maxHp: ENEMY[n.tier]?.hp || 30, analyzedBy: n.analyzed ? 'party' : undefined, injuries: [], downed: false, dead: false })); })());
     // Drones stand on the area map as tokens of their own (Drone Handler): the engine places them (positionsOf).
-    if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : k.kind === 'beast' ? 50 : 40; units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
+    if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : (COMPANION_KINDS[k.kind]?.hp ?? 30); units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
     const objs = (inFight && cb ? cb.objects : g.story.objects) || defaultObjects(map), objAt = {};
     objs.forEach((o) => { if (!objAt[o.pos] || kindOf(o).blocks_move) objAt[o.pos] = o; });

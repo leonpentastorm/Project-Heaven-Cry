@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyCond, condOn, condSource, condTurnEnd, unitSave, previewAttack, resolveAttack, attackDamage, stackDamage, moveUnit, endTurn, beginTurn, active, checkOver,
   hideAction, hide, spotHidden, canReact, maxReactions, useReaction, trySurrender, parley, throwItem, applyDamage, register, holderOf, statQuery,
-  WEAPON, d20, validateSheet, newCharacter, enemyTurn, type Unit, type Combat, type Character,
+  WEAPON, d20, validateSheet, newCharacter, enemyTurn, weaponActions, COMPANION_KINDS, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng, sheetOf } from './helpers/perkfight';
 
@@ -199,6 +199,36 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
     expect(drone.name).toBe('Pip'); expect(drone.side).toBe('pc'); expect(drone.ctrl).toBe(pc.charId);
     withGame(s.g, () => { applyDamage(cb, drone, 999, { type: 'weapon', by: cb.units.find((u) => u.side === 'foe') }); });
     expect(drone.dead).toBe(true);
+  });
+  it('the drone (item 370): 30 HP; move and a plain shot only; its service pistol never runs dry, never heats or jams', () => {
+    const f = fightWith([{ traits: ['drone_handler'] }], [{ at: 'H6', tier: 'boss' }]);
+    const d0 = f.cb.units.find((u) => u.companion === 'drone')!;
+    expect(COMPANION_KINDS.drone.hp).toBe(30); expect(d0.hp).toBe(30); expect(d0.maxHp).toBe(30); expect(d0.weapon).toBe('service_pistol');
+    expect(d0.allowedActions).toEqual(['move', 'shot']); expect(d0.infiniteAmmo).toBe(true);
+    const offered = weaponActions(d0).map((x) => x.id);
+    for (const x of ['reload', 'load', 'clear', 'overwatch', 'burst', 'auto', 'skill', 'brace']) expect(offered, x).not.toContain(x);
+    const foe = f.foe; foe.hp = foe.maxHp = 1e6; foe.def = 0;
+    // Put the foe two tiles from the drone, on its row (the yard's open ground).
+    const [x, y] = d0.pos.split(',').map(Number); foe.pos = (x + 2) + ',' + y;
+    const d = f.turn(d0), mag = d.ammo;
+    expect(() => f.act({ type: 'combat/attack', unitId: d.id, targetId: foe.id, mode: 'aimed' } as any)).toThrow(/can only move, shoot/);
+    expect(() => f.act({ type: 'combat/reload', unitId: d.id } as any)).toThrow(/can only/);
+    expect(() => f.act({ type: 'combat/overwatch', unitId: d.id } as any)).toThrow(/can only/);
+    expect(() => f.act({ type: 'combat/attack', unitId: d.id, targetId: foe.id, mode: 'melee' } as any)).toThrow(/can only/);
+    let fired = 0;
+    for (let i = 0; i < 25; i++) {
+      const u = f.unit(d.id); u.ap = 6; u.stunnedNext = 0;
+      f.act({ type: 'combat/attack', unitId: d.id, targetId: foe.id, mode: 'shot' } as any); fired++;
+      const after = f.unit(d.id); expect(after.ammo).toBe(mag); expect(after.heat).toBe(0); expect(after.jammed).toBe(false);
+    }
+    expect(fired).toBe(25);
+    expect(f.cb.log.filter((l) => /^Pip|fires at/.test(l)).length).toBeGreaterThanOrEqual(20);
+  });
+  it('the beast (item 370): 60 HP, as the trait says', () => {
+    const f = fightWith([{ traits: ['beast_handler'] }], [{ at: 'H6' }]);
+    const b = f.cb.units.find((u) => u.companion === 'beast')!;
+    expect(COMPANION_KINDS.beast.hp).toBe(60); expect(b.hp).toBe(60); expect(b.maxHp).toBe(60);
+    expect(b.allowedActions).toBeUndefined(); expect(b.infiniteAmmo).toBeUndefined();
   });
   it('prayer: Faith 3 and a patron, 3 AP, a Blessing × Blessing power, then the cooldown', () => {
     const f = fightWith([{ skills: { faith: 3 } }], [{ at: 'F6' }]);

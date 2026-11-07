@@ -61,6 +61,10 @@ export interface Character extends Sheet {
   loadedType?: string | null;
   /** Item and trait state the Narrator sets (traitState: a grudge, a cover identity, a rival…), by key. */
   state?: Record<string, any>;
+  /** Gun Nut's collection (spec §14 item 369): weapon ids of the first guns the character got (the kit's gun counts),
+   * at most the trait's count (3), in the order they came; an id twice for two of the same gun. Set at creation and
+   * when a gun is gained; old saves without it fill it from what they carry (collectionOf). */
+  collection?: string[];
 }
 export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | string; name: string; hp?: number; /** The twin's: half its owner's maximum when called. */ maxHp?: number; img?: string }
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
@@ -195,30 +199,18 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   c.hp = maxHp(c);
   startingMagic(c);
   grantStartItems(c);
+  startCollection(c);
   if (!c.race) c.race = 'human';
   return c;
 }
 /** Items traits start you with (op start_item; rules 1.3): into the pack, and worn at once when the item has an armour
- * slot (prescription glasses, the smiling mask). An item already carried isn't doubled. */
+ * slot (prescription glasses, the smiling mask). An item already carried isn't doubled. Gun Nut grants no guns: its
+ * collection is the first guns the character gets (spec §14 item 369; startCollection). */
 export function grantStartItems(c: Character) {
-  const want: string[] = [], fill: { count: number; guns: string[] }[] = [];
-  for (const t of c.traits || []) for (const e of (TRAITS.find((x) => x.id === t)?.effects || []) as any[]) {
-    if (e.op === 'start_item' && e.item) want.push(e.item);
-    // Gun Nut's Collector (spec §14 item 369, PROVISIONAL): a kit gives one gun, so the start fills the pack up to the
-    // trait's minimum from its start_fill list (guns only, no extra ammo), skipping a gun already carried.
-    if (e.op === 'min_carry' && e.item_tag === 'gun' && Array.isArray(e.start_fill)) fill.push({ count: e.count || 0, guns: e.start_fill });
-  }
-  if (!want.length && !fill.length) return;
+  const want: string[] = [];
+  for (const t of c.traits || []) for (const e of (TRAITS.find((x) => x.id === t)?.effects || []) as any[]) if (e.op === 'start_item' && e.item) want.push(e.item);
+  if (!want.length) return;
   const pack = packOf(c).map((x) => ({ ...x })), worn = { ...(c.worn || {}) };
-  const gunOf = (id?: string) => { const w: any = id ? WEAPON[id] : null; return !!w && w.magazine != null && !/melee|unarmed/.test(w.category) && w.category !== 'thrown' && w.category !== 'bow'; };
-  for (const f of fill) {
-    const held = () => [c.weapon, c.offHand?.id, ...pack.filter((p) => p.kind === 'weapon').map((p) => p.weapon || p.id)].filter((id): id is string => gunOf(id));
-    for (const id of f.guns) {
-      const have = held(); if (have.length >= f.count) break;
-      if (!WEAPON[id] || have.includes(id)) continue;
-      pack.push({ id, name: WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id });
-    }
-  }
   for (const id of want) {
     const it: any = ITEM[id]; if (!it) continue;
     if (Object.values(worn).includes(id) || pack.some((x) => (x.item || x.id) === id)) continue;
@@ -226,6 +218,49 @@ export function grantStartItems(c: Character) {
     pack.push({ id, item: id, name: it.name, qty: 1, kind: 'tool' });
   }
   c.pack = pack; c.worn = worn;
+}
+
+// ---------- Gun Nut's collection (spec §14 item 369; Leon, 7 Nov 2026) ----------
+/** A gun as Gun Nut counts one: a firearm with a magazine (no melee, thrown weapon or bow). */
+export const isGunId = (id: string | null | undefined): boolean => { const w: any = id ? WEAPON[id] : null; return !!w && w.magazine != null && !/melee|unarmed/.test(w.category || '') && w.category !== 'thrown' && w.category !== 'bow'; };
+/** How many guns a character's collection holds (the trait's min_carry count for guns), 0 without such a trait. */
+export function collectionSize(c: Pick<Character, 'traits'>): number {
+  let n = 0;
+  for (const t of c.traits || []) for (const e of ((TRAITS.find((x) => x.id === t) as any)?.effects || [])) if (e?.op === 'min_carry' && e.item_tag === 'gun') n = Math.max(n, e.count || 0);
+  return n;
+}
+/** Every gun the character carries, one entry per gun: the main hand, the off hand, then the pack in order. */
+export function gunsCarried(c: Character): string[] {
+  const out: string[] = [];
+  if (isGunId(c.weapon)) out.push(c.weapon);
+  if (c.offHand && isGunId(c.offHand.id)) out.push(c.offHand.id);
+  for (const p of packOf(c)) { const id = p.weapon || p.id; if (p.kind === 'weapon' && isGunId(id)) for (let i = 0; i < Math.max(1, p.qty || 1); i++) out.push(id); }
+  return out;
+}
+/** The collection, read only: the stored list, or for an old save (or a trait gained later) the first guns it carries. */
+export function collectionOf(c: Character): string[] {
+  const n = collectionSize(c); if (!n) return [];
+  return c.collection ? c.collection.slice(0, n) : gunsCarried(c).slice(0, n);
+}
+/** Start the collection at creation: the kit's gun (and anything else carried) counts. */
+export function startCollection(c: Character) { if (collectionSize(c)) c.collection = collectionOf(c); }
+/** Guns just came into the character's hands or pack (loot, a gift, a purchase, the Proving Ground's give): each joins
+ * the collection while it has room. Call after the guns are in the pack. */
+export function collectGuns(c: Character, ids: string[]) {
+  const n = collectionSize(c); if (!n) return;
+  if (!c.collection) { c.collection = collectionOf(c); return; } // an old save: what it carries now, the new guns included
+  const col = c.collection.slice(0, n);
+  for (const id of ids) if (col.length < n && isGunId(id)) col.push(id);
+  c.collection = col;
+}
+/** Why this pack entry can't leave the character (null: it can). Collector: a collection gun goes only on the
+ * Narrator's Dexterity check (TN 12), unless the character carries more of that gun than the collection holds. */
+export function partError(c: Character, idx: number, qty = 1): string | null {
+  const it = packOf(c)[idx]; if (!it || it.kind !== 'weapon') return null;
+  const id = it.weapon || it.id, col = collectionOf(c).filter((x) => x === id).length; if (!col) return null;
+  const have = gunsCarried(c).filter((x) => x === id).length;
+  if (have - Math.min(qty, it.qty || 1) >= col) return null;
+  return 'Collector (Gun Nut): the ' + (it.name || WEAPON[id]?.name || id) + ' is in ' + c.name + '\'s collection. Parting with it takes a Dexterity check (TN 12), the Narrator\'s call; on a fail it stays until the next rest.';
 }
 
 /** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */

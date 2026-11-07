@@ -65,9 +65,9 @@ describe('Beast Handler: the beast is a token on the area map (item 40)', () => 
     expect(s.g.phase).toBe('combat');
     const b = s.g.combat!.units.find((u) => u.id === id)!; expect(b.pos).toBe(to); expect(b.maxHp).toBe(COMPANION_KINDS.beast.hp);
   });
-  it('the trait\'s companion op carries the spec\'s 50 HP (item 96), flagged provisional; a dead beast leaves the map', () => {
+  it('the trait\'s companion op and the stat block agree on 60 HP (item 370, settled); a dead beast leaves the map', () => {
     const eff = (TRAITS as any[]).find((t) => t.id === 'beast_handler').effects.find((e: any) => e.op === 'companion');
-    expect(eff.hp).toBe(COMPANION_KINDS.beast.hp); expect(eff.hp).toBe(50); expect(eff.provisional).toBe(true);
+    expect(eff.hp).toBe(COMPANION_KINDS.beast.hp); expect(eff.hp).toBe(60); expect(eff.provisional).toBeUndefined();
     const s = storyWith([{ traits: ['beast_handler'] }]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'On.', sceneTitle: 'Scene two' } } as any);
     const ch = s.g.characters[c.id], comp = ch.companions!.find((k) => k.kind === 'beast')!, id = companionId(ch, comp);

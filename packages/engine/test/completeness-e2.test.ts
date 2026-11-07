@@ -1,4 +1,4 @@
-// The completeness pass, batch 5 (items 53-65): through the reducer (apply). Gun Nut's start guns; the data of Spray and
+// The completeness pass, batch 5 (items 53-65): through the reducer (apply). Gun Nut's collection (item 369); the data of Spray and
 // Pray, Ace Pilot and Daggerfall Veteran brought in line with the spec; Daggerfall's Flashback on a missed launcher
 // shell; Lowland Born in the story and the fight; Raised by Orks' parley on an enemy's turn and its end; Paper's derived
 // penalties and the Masterpiece save; start items for every trait that grants one; and the class moves' other sides
@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, newGame, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, packOf, applyCond, WEAPON, TRAITS, CLASS,
-  holdersOf, briefOf, designBan,
+  holdersOf, briefOf, designBan, collectionOf, collectGuns, partError,
   type GameState, type Combat, type Unit,
 } from '../src';
 import { fightWith, storyWith, withGame, sheetOf, type CharSpec } from './helpers/perkfight';
@@ -51,25 +51,71 @@ const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('Gun Nut: Collector at creation (item 53)', () => {
-  it('every kit starts with at least 3 guns (the start fill, flagged provisional); no Collector note at session start', () => {
+describe('Gun Nut: the collection is the first 3 guns gained (item 369, Leon 7 Nov 2026)', () => {
+  const KIT_GUN: Record<string, string> = { soldier: 'hellraiser_service_rifle', medic: 'service_pistol', sigil: 'service_pistol', soul: 'drifter_revolver' };
+  const loot = (g: GameState, charId: string, item: string, qty = 1) => apply(g, { type: 'narrator/turn', turn: { narration: 'Loot.', loot: [{ charId, item, qty }] } } as any, 'host');
+  it('no guns are granted at creation: the kit\'s gun is the collection\'s first; no Collector note at session start', () => {
     for (const kit of ['soldier', 'medic', 'sigil', 'soul']) {
       const { g, c } = created(['gun_nut'], kit);
-      const guns = gunIds(c);
-      expect(guns.length, kit).toBeGreaterThanOrEqual(3);
-      expect(new Set(guns).size, kit + ': no gun twice').toBe(guns.length);
+      expect(gunIds(c), kit).toEqual([KIT_GUN[kit]]);
+      expect(c.collection, kit).toEqual([KIT_GUN[kit]]);
       expect((g.story.rulings || []).some((r) => /Collector/.test(r.text)), kit).toBe(false);
     }
     const mc = traitOf('gun_nut').effects.find((e: any) => e.op === 'min_carry');
-    expect(mc.start_fill.every((id: string) => !!WEAPON[id])).toBe(true); expect(mc.provisional).toBe(true);
+    expect(mc.count).toBe(3); expect(mc.start_fill).toBeUndefined(); expect(mc.provisional).toBeUndefined();
   });
-  it('without the trait the kit is unchanged (one gun)', () => {
-    expect(gunIds(created([], 'medic').c).length).toBe(1);
+  it('without the trait there is no collection (and the kit is unchanged: one gun)', () => {
+    const { c } = created([], 'medic');
+    expect(gunIds(c).length).toBe(1); expect(c.collection).toBeUndefined(); expect(collectionOf(c)).toEqual([]);
+  });
+  it('the next two guns gained join the collection, a fourth doesn\'t; a knife never does', () => {
+    let { g, c } = created(['gun_nut'], 'soldier');
+    g = loot(g, c.id, 'combat_knife');
+    g = loot(g, c.id, 'drifter_revolver');
+    g = loot(g, c.id, 'service_pistol');
+    g = loot(g, c.id, 'legion_bullpup');
+    const ch = g.characters[c.id];
+    expect(ch.collection).toEqual(['hellraiser_service_rifle', 'drifter_revolver', 'service_pistol']);
+    expect(gunIds(ch)).toContain('legion_bullpup');
+    const h = holdersOf({ c: ch }).find((x) => x.key === 'trait:gun_nut')!;
+    expect(briefOf(h)).toMatch(/collection: Hellraiser[^;]*, Drifter[^;]*, Service pistol/i);
+  });
+  it('two of the same gun: both can be in the collection; a spare copy beyond it can go', () => {
+    let { g, c } = created(['gun_nut'], 'medic');
+    g = loot(g, c.id, 'service_pistol', 3);
+    const ch = g.characters[c.id];
+    expect(ch.collection).toEqual(['service_pistol', 'service_pistol', 'service_pistol']);
+    const isPistol = (p: any) => p.kind === 'weapon' && p.weapon === 'service_pistol';
+    const idx = packOf(ch).findIndex(isPistol);
+    expect(partError(ch, idx)).toBeNull(); // four carried (one in hand), three in the collection
+    const two = { ...ch, pack: packOf(ch).filter((p, i) => !isPistol(p) || i === idx) }; // two carried now
+    expect(partError(two as any, packOf(two as any).findIndex(isPistol))).toMatch(/Collector.*Dexterity check \(TN 12\)/);
+  });
+  it('an old save without the field fills it from what it carries, first three in order (main hand, off hand, pack)', () => {
+    const { c } = created(['gun_nut'], 'soldier');
+    const old: any = JSON.parse(JSON.stringify(c)); delete old.collection;
+    const gun = (id: string) => ({ id, name: WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id });
+    old.pack = [...packOf(old), gun('service_pistol'), gun('combat_knife'), gun('drifter_revolver'), gun('legion_bullpup')];
+    expect(collectionOf(old)).toEqual(['hellraiser_service_rifle', 'service_pistol', 'drifter_revolver']);
+    collectGuns(old, ['service_pistol']); // the first write stores it (a gun gained now joins only if there's room)
+    expect(old.collection).toEqual(['hellraiser_service_rifle', 'service_pistol', 'drifter_revolver']);
+  });
+  it('the Proving Ground: a given gun joins; dropping a collection gun is refused with the Collector\'s reason', () => {
+    let g = newGame('E2G', { id: 'host', name: 'Host' });
+    g = apply(g, { type: 'char/add', sheet: { ...sheetOf({ kit: 'medic' }), kit: 'medic', traits: ['gun_nut'] } }, 'host');
+    g = apply(g, { type: 'sandbox/start' }, 'host');
+    const id = Object.keys(g.characters)[0];
+    g = apply(g, { type: 'sandbox/give', charId: id, item: 'drifter_revolver' } as any, 'host');
+    expect(g.characters[id].collection).toEqual(['service_pistol', 'drifter_revolver']);
+    const idx = packOf(g.characters[id]).findIndex((p) => p.kind === 'weapon' && p.weapon === 'drifter_revolver');
+    expect(() => apply(g, { type: 'sandbox/drop', charId: id, idx } as any, 'host')).toThrow(/Collector \(Gun Nut\)/);
+    const mag = packOf(g.characters[id]).findIndex((p) => !!p.mags);
+    expect(() => apply(g, { type: 'sandbox/drop', charId: id, idx: mag } as any, 'host')).not.toThrow();
   });
   it('the sell or drop gate is the Narrator\'s: Dex TN 12 in the brief and in the data', () => {
     const { c } = created(['gun_nut'], 'medic');
     const h = holdersOf({ c }).find((x) => x.key === 'trait:gun_nut')!;
-    expect(briefOf(h)).toMatch(/Dex TN 12/);
+    expect(briefOf(h)).toMatch(/Dex TN 12/); expect(briefOf(h)).toMatch(/collection: Service pistol/i);
     expect(traitOf('gun_nut').effects.find((e: any) => e.op === 'gate_check').tn).toBe(12);
   });
 });
@@ -101,10 +147,10 @@ describe('data matches the spec: Spray and Pray, Ace Pilot, Daggerfall Veteran (
     };
     expect(mv(true)).toBeCloseTo(Math.max(0.5, mv(false) - 0.5));
   });
-  it('Daggerfall Veteran: the Flashback gate is TN 12 in the data (provisional), and its text says so', () => {
+  it('Daggerfall Veteran: the Flashback gate is TN 12 in the data (settled, item 368), and its text says so', () => {
     const t = traitOf('daggerfall_veteran'), gc = t.effects.find((e: any) => e.op === 'gate_check');
-    expect(gc.tn).toBe(12); expect(gc.provisional).toBe(true);
-    expect(t.text).not.toMatch(/target 13/);
+    expect(gc.tn).toBe(12); expect(gc.provisional).toBeUndefined();
+    expect(t.text).toMatch(/Composure check \(target 12\)/); expect(t.text).not.toMatch(/target 13/);
   });
   it('Daggerfall Veteran: an enemy\'s launcher shell that misses still calls the Flashback (shelling) on its turn; a pistol miss doesn\'t', () => {
     const run = (weapon: string) => {

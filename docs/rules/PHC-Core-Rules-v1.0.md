@@ -1068,7 +1068,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Burning, grapples and dropped weapons.** Putting out Burning is 1 AP (yourself or someone next to you). Breaking a grapple is 2 AP. Recovering a weapon is 2 AP (1 for a lowered one).
 
-**Companions.** A drone or a beast fights beside its owner: it acts right after the owner in the order, on the owner's player's orders (move, attack, Overwatch, reload, end its turn), with its own numbers (enemies.json `companions`). At 0 HP it is destroyed, not Downed; its HP carries between fights, and a destroyed one is out until the story repairs or heals it.
+**Companions.** A drone or a beast fights beside its owner: it acts right after the owner in the order, on the owner's player's orders (move, attack, Overwatch, reload, end its turn), with its own numbers (enemies.json `companions`). The drone (30 HP) only moves and shoots: a plain shot with its service pistol, which never runs dry, never needs reloading and never jams; it has no aimed shot, burst, Overwatch or other weapon action. The beast has 60 HP. At 0 HP it is destroyed, not Downed; its HP carries between fights, and a destroyed one is out until the story repairs or heals it.
 
 **Prayer** (see Patrons and prayer): 3 AP; not while Silenced; the roll is d20 + Faith modifier + half your Devotion against the patron's mood. A Blessing's numbers × Blessing power; what the engine can't run of a Blessing goes to the Narrator with its text. The cooldown counts rounds.
 
@@ -1904,7 +1904,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 93. **Surrender** (plan 6a-3, the fix for The Name They Whisper): one surrender save per enemy per fight, Heart save vs 12 + the speaker's Heart debuff strength, only at half HP or less or alone; Bosses, machines and no_surrender never. Surrendered and subdued foes count as defeated (XP too) but give no kill credit and no meter rise; they stay as neutral prisoners.
 94. **Talking in a fight:** 2 AP, within 8 tiles; Persuade (Eloquence → Left Brain Debuff, Brain save), Threaten (Intimidation → Shaken, Body save), Parley (the surrender save).
 95. **Throwing and blasts:** Throwing range 6 + 0.5 × Dexterity (Derived stats; item 17 settles on it); the six thrown items as listed (an incendiary burns only its centre tile); explosive weapons splash their radius on a hit; the flamer's cone attacks everyone in 3 tiles. Enemies don't throw yet.
-96. **Swaps and companions:** 1 AP a hand; a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 40, Defense 12, +3, armour 5, Movement 2, a service pistol) and beast (HP 50, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP. One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
+96. **Swaps and companions:** 1 AP a hand; a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 30, Defense 12, +3, armour 5, Movement 2, a service pistol with only a plain shot and unlimited ammo) and beast (HP 60, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP (HP and the drone's gun settled in item 370). One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
 97. **Prayer in the engine:** the cooldown counts rounds; a Blessing's hp numbers heal (positive) or deal Soul damage (negative), its shield numbers shield, all × Blessing power; a Miracle is a guaranteed success at ×3. Out of combat a heard prayer goes to the Narrator.
 98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks.
 99. **Story plumbing:** Narrator-set conditions on NPCs (scene) and characters (scene, session or arc); Karma awards capped at 30 a turn, Conscience added; rests from the Narrator or the host; the voice cap per character, not per player; private perk lines outside the voice cap; Narrator-set item state (traitState).
@@ -2132,13 +2132,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - PROVISIONAL.
 154. *(C13)* **Gun Nut (6a-29).**
     - The 0-AP clear doesn't reset Heat.
-    - The Collector check (fewer than 3 guns) is a Narrator note at session start.
-    - The sell and drop Dexterity check is TN 12, and the −50% sale price is the Narrator's to apply. Both stay that
-      way until the engine has sell and drop actions.
-    - Kits give one gun, so creation fills the pack up to 3 guns from the trait's `start_fill` list (a service pistol,
-      a drifter revolver, a Hellraiser service rifle, in that order, skipping a gun already carried; no extra ammo).
-      Item 369.
-    - PROVISIONAL.
+    - Collector: no guns are granted at creation. The collection is the first 3 guns the character gets (the kit's
+      gun, then loot, gifts, purchases, the Proving Ground's give), kept as the character's `collection`. Old saves fill
+      it from the first 3 guns they carry. Item 369 (settled, Leon, 7 Nov 2026).
+    - Parting with a collection gun (sell, abandon, drop, give away) is the Dexterity check, TN 12, or the gun stays
+      until the next rest; the −50% sale price is the Narrator's. Both stay that way until the engine has sell and drop
+      actions; an engine path that removes a gun from the pack refuses a collection gun.
+    - PROVISIONAL (the 0-AP clear and the TN 12).
 155. *(C14)* **Old School.**
     - Fan the Hammer fires every loaded round, each at −2 plus Recoil (−1 per earlier shot past ⌊Dexterity ÷ 2⌋).
       It is once per turn and costs 3 AP.
@@ -2200,8 +2200,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - An HP-paid cast can't heal or shield: its heal and shield come to 0.
     - It can't be held to grow: a held Outburst pays mana.
     - You can't pay into Downed.
-    - Without an Emanator the toggle is off, because you already pay from the air. **Leon to decide** whether it should
-      waive the +2 Strain instead.
+    - Without an Emanator it does nothing: the toggle stays off and isn't offered (Leon, 7 Nov 2026; item 371).
 165. *(D4)* **Resonance.** Allies only. The best discount you've been given waits for your next Begin, and that Begin uses it
     up.
 166. *(D5)* **Rite in the Field** (PROVISIONAL mapping, needs Leon's OK). −1 / −2 AP, in combat only, with these floors:
@@ -2582,8 +2581,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - **PROVISIONAL** (arm-then-auto).
 230. *(F20)* **Drone Handler.**
     - The drone joins at session start and when the scene changes (`c.companions`).
-    - Its stat block comes from enemies.json: HP 40, a service pistol (spec item 96). That contradicts the trait text
-      (30 HP, no attack). **Leon to decide**: the code follows the spec.
+    - Its stat block comes from enemies.json: HP 30 (the trait's), a service pistol with only a plain shot (no aimed
+      shot, burst, auto, reload, Overwatch or jam clearing) and unlimited ammo: no reloads, no Heat, no jams (item 370,
+      settled, Leon, 7 Nov 2026).
     - 3 AP a turn. +5 kg carry while it stands.
     - Repair drone: 2 AP, adjacent, one spare-parts charge, 10 HP × Proficiency Mastery level (minimum 1).
     - Out of a fight, Rebuild drone repairs it to full for 1 spare part. A destroyed drone needs a rest since it was
@@ -2591,8 +2591,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Tethered: Shaken (story scope arc) until it's rebuilt, and in every fight.
     - **PROVISIONAL** (repair numbers, materials).
 231. *(F21)* **Beast Handler.**
-    - The stat block comes from enemies.json: HP 50 and bite 18 (spec item 96), against the trait's 60 HP. **Leon to
-      decide.**
+    - The stat block comes from enemies.json: HP 60 (the trait's) and bite 18 (item 370, settled, Leon, 7 Nov 2026).
     - 4 AP a turn.
     - Each of its turns is an order: d20 + Empathy mod against TN 8. On a fail it acts on instinct: it bites an adjacent
       enemy, or holds, and its turn is spent. It also fails if the handler is down.
@@ -3184,10 +3183,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 *Waiting on Leon*
 
-368. **Daggerfall Veteran's Flashback TN.** The trait said 13; the story can only call 8 / 12 / 16 / 20. The data now says 12 (the `gate_check` and the trait text, flagged provisional) to match the engine; Leon can still put it back. *Engine: 12 (lane F).*
-369. **Gun Nut's extra guns.** The trait grants 3 guns at creation; kits give one. The audit's proposal is in: the `min_carry` op's `start_fill` (service pistol, drifter revolver, Hellraiser service rifle; the first ones the kit doesn't already carry, guns only, no extra ammo), flagged provisional. Leon to confirm the guns. A later session start with fewer than 3 is still a Narrator note. The sell and drop gate (Dexterity TN 12) and the −50% price stay the Narrator's: the engine has no sell action, and `gear/drop` only takes plot items. *Engine: character.ts grantStartItems.*
-370. **Companion numbers disagree.** The traits say the drone has 30 HP and no attack, the beast 60 HP; enemies.json and item 96 say 40 HP with a service pistol and 50 HP. Beast Handler's `companion` op in traits.json now carries the spec's 50 HP (flagged provisional); its upside text still says 60 until Leon decides. *Engine: item 96.*
-371. **Heart Overload without an Emanator.** A caster who already pays from the air: what does "Pay with HP" do? *Engine: the toggle is off for them.*
+368. ~~Daggerfall Veteran's Flashback TN.~~ *Settled (Leon, 7 Nov 2026): TN 12. The trait's text says "Composure check (target 12)" and the `gate_check` carries tn 12 with no provisional flag. Engine: 12 (lane F).*
+369. ~~Gun Nut's extra guns.~~ *Settled (Leon, 7 Nov 2026: "the 3 first gun you look/buy/get"): no extra guns at creation. The collection is the first 3 guns the character gets: the kit's gun counts, then loot, gifts, purchases, the Proving Ground's give, in the order they come (the character's `collection`, weapon ids, at most 3; an old save without it takes the first 3 guns it carries: main hand, off hand, then the pack in order). A gun after the third doesn't join; parting with a collection gun doesn't open a place (a reading of "the first 3", PROVISIONAL). Collector's drawback applies to the collection: selling, abandoning, dropping or giving one away needs the Dexterity check (TN 12, still provisional) or the character keeps it until the next rest. That check and the −50% sale price are the Narrator's (the engine has no sell action; the brief names the collection); an engine path that takes a gun out of the pack (the Proving Ground's drop) refuses a collection gun with the Collector's reason. The `min_carry` op lost its `start_fill`; there is no session-start note. Engine: character.ts collectionOf, collectGuns, partError.*
+370. ~~Companion numbers disagree.~~ *Settled (Leon, 7 Nov 2026): the drone has 30 HP and the beast 60 HP, as the traits say (enemies.json companions and the traits' `companion` ops agree; HP no longer provisional). The drone keeps its service pistol but has only a plain shot: no aimed shot, burst, full auto, reload, magazine loading, jam clearing, Overwatch or other weapon action, and its ammo is unlimited (it never runs dry, never reloads, takes no Heat and never jams; a natural 1 costs it 1 AP next turn instead). Its other numbers (Defense 12, +3, armour 5, Movement 2) and the beast's stay provisional. Engine: enemies.json companions `actions` and `infinite_ammo` → the unit's `allowedActions` and `infiniteAmmo` (tactics.ts companionUnits).*
+371. ~~Heart Overload without an Emanator.~~ *Settled (Leon, 7 Nov 2026): it does nothing. The Pay with HP toggle stays off and isn't offered (no greyed entry); a `pay_hp` sent anyway costs no HP. Engine: perks/d.ts heart_overload.*
 372. **Beast Handler's grapple is always on.** Every melee hit of the beast's bite carries the grapple (a Body save or Grappled); there is no attack mod to pick, since the beast's turns (ordered or on instinct) have no attack chips. *Engine: perks/f.ts beast_handler.*
 373. **Story conditions coming into a fight.** Only Shaken, Fear, the Brain debuffs, Weakened, Nausea, Bleeding, an injury and an augment offline come in, each for its own combat duration and with no save (they used to come in for 99 rounds). A story Stun, Pin or Blind stays in the story, with a line in the fight's notes. *Engine: game.ts magicIn, STORY_CARRY.*
 374. **A partial Extraction.** When some PCs are lifted out and everyone left behind is Downed, dead or surrendered, the fight ends as extracted (no win, no loss). If nobody was lifted, it is a loss. *Engine: combat.ts checkOver.*
@@ -3287,12 +3286,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 403. **Quicken on the area map.** The audit proposed combat and overworld rounds. An overworld round is everyone's turn
     at once, so 1 charge gives an ally within 6 +1 AP on this round's AP straight away (the ceiling of 9 holds), once a
     round, not on yourself, not on an ally who has ended the turn. PROVISIONAL (a proposal, not a firm rule).
-404. **The twin on the area map (Twinbound's Call).** The audit proposed the twin as a token in overworld rounds. Call
+404. **The twin on the area map (Twinbound's Call).** *Settled (Leon, 7 Nov 2026): the twin stays on the area map until it is let go or a fight starts; it doesn't leave on a scene or zone change (after travel it stands beside you again).* The audit proposed the twin as a token in overworld rounds. Call
     on the area map (2 AP, a free tile within 3): the twin is a token with HP half your maximum and its own 4 AP each
     overworld round, spent only on moves (world/act move with its unit id); your AP is untouched. It stays within 6
     tiles of you (it follows when you walk away). "Let the twin go" (0 AP) sends it back. A fight opened on the area
     map starts with it beside you as the called twin (right after you in the order, its HP carried in); in the story
-    its presence is narration. PROVISIONAL (a proposal, not a firm rule). *Engine: classes/k.ts, game.ts
+    its presence is narration. The token, its 4 AP and its leash stay PROVISIONAL; that it stays is settled. *Engine: classes/k.ts, game.ts
     COMPANION_ROUND_AP, enemies.json companions.twin (stand-in numbers the engine replaces).*
 405. **Four Hearts' story points.** The Narrator writes `traitState heartfed_add {rage|grief|fear|devotion: n}` (in
     answer to "Let it fill a gauge" or on its own): the points are added to the scene's gauges at the next round or

@@ -121,8 +121,11 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
         ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.'] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
   }
-  if (opts.noNarrator) return ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
-  return ITEMS;
+  // A unit with a fixed action list (the drone: move and a plain shot; spec 14 item 370) shows only those.
+  const allowed: string[] | undefined = cur && cur.allowedActions;
+  const LIST = allowed ? ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => allowed.includes(it[0])), ink, tab] as ActionGroup).filter((gr) => gr[1].length) : ITEMS;
+  if (opts.noNarrator) return LIST.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
+  return LIST;
 }
 
 // ---------- the turn card's four commands ----------
@@ -184,6 +187,8 @@ export function smartCommands(u: any): Command[] {
   else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
   else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every adjacent enemy'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });
   else cmds.push({ action: 'overwatch', label: 'Overwatch', sub: 'Hold a shot for their move', key: '4' });
+  // A unit with a fixed action list (the drone, item 370) keeps only those commands, renumbered.
+  if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
   return cmds;
 }
 

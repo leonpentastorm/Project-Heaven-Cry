@@ -861,14 +861,14 @@ register({
       text: 'Out of a fight: repair the drone with one spare part, or rebuild a destroyed one after a rest with a drone frame or 3 spare parts.',
       available: (h) => {
         const d = compOf(h.c, 'drone'); if (!d || !h.c) return false;
-        const max = COMPANION_KINDS.drone?.hp ?? 40;
+        const max = COMPANION_KINDS.drone?.hp ?? 30;
         if ((d.hp ?? max) >= max) return 'The drone is fine.';
         if ((d.hp ?? 0) > 0) return partsOf(h.c) >= 1 ? true : 'Needs a spare part.';
         if (restN(h.g) <= (ro(h.c).drone_lost_rest ?? -1)) return 'Rest first.';
         return hasFrame(h.c) || partsOf(h.c) >= 3 ? true : 'Needs a drone frame or 3 spare parts.';
       },
       run: (h) => {
-        const c = h.c!, d = compOf(c, 'drone')!, max = COMPANION_KINDS.drone?.hp ?? 40, rebuilt = (d.hp ?? 0) <= 0;
+        const c = h.c!, d = compOf(c, 'drone')!, max = COMPANION_KINDS.drone?.hp ?? 30, rebuilt = (d.hp ?? 0) <= 0;
         if (rebuilt) { if (hasFrame(c)) takeItem(c, 'drone_frame', 1); else takeItem(c, 'spare_parts', 3); setStoryCond(h.g, c, 'shaken', 'arc', true); }
         else takeItem(c, 'spare_parts', 1);
         d.hp = max; postStory(h, rebuilt ? 'rebuilds the drone. It complains about nothing, as always.' : 'repairs the drone.');

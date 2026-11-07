@@ -120,3 +120,16 @@ describe('turn banners', () => {
     C.writePrefs(g, 'c1', [null, null, null, null]);
   });
 });
+
+describe('the drone\'s commands (spec 14 item 370)', () => {
+  it('a drone offers only Move and Shot: no aimed shot, reload, Overwatch or other weapon actions', () => {
+    const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id, 'Vale'));
+    c.companions = [{ id: 'd1', kind: 'drone', name: 'Pip' }];
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+    const drone = cb.units.find((x: any) => x.companion === 'drone')!;
+    expect(drone.maxHp).toBe(30);
+    const acts = C.actionGroups(cb, drone, null).flatMap(([, items]) => items.map((it) => it[0]));
+    expect([...new Set(acts)].sort()).toEqual(['move', 'shot']);
+    expect(C.smartCommands(drone).map((x) => x.action)).toEqual(['shot', 'move']);
+  });
+});
