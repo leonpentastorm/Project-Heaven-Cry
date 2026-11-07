@@ -11,6 +11,7 @@ export const CREDITS: { group: string; items: Credit[] }[] = [
   ] },
   { group: 'Music', items: [
     { what: 'Heaven Cry (title theme)', who: 'Leon, made with Suno', licence: 'Project Heaven Cry' },
+    { what: 'Intake (character creation)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     // The game's own fight music (Project Heaven Cry OST): made by Leon with Suno on the Pro plan, which licenses
     // commercial use. Masters in audio/music/ (see audio/README.md).
     { what: 'Gunline (fight theme)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },

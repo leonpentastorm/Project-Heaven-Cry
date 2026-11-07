@@ -31,6 +31,7 @@ import { FxLayer } from './game/fx/FxLayer';
 import { TurnIntro, cue } from './game/turnIntro';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
+import { playCreateMusic, stopCreateMusic } from './game/createMusic';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -70,6 +71,8 @@ export function App() {
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
   React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
+  // Character creation has its own theme, "Intake" (fades in on arrival, out on leaving).
+  React.useEffect(() => { if (st.screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [st.screen]);
   const n = st.game?.story.entries.length || 0;
   const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   const barP = usePresence(bar), toastP = usePresence(st.toast);
