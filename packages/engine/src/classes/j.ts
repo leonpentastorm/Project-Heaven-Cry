@@ -674,7 +674,8 @@ register({
 // Flux are paid as it's cut (an overload ends the script: audit 6); the cuts leave no glyph on the ground. After the
 // third cut the words resolve as one spell aimed at the last target struck as Touch (it's next to you), whatever Reach
 // words are among them (1.4: sigil.ts castAt): Bursts and Delivery apply as written (a CONDENSE core on the target, a
-// SPREAD ring around it, CHAIN jumps from it; STAY / WAIT / WATCH place their magic on its tile), repeated glyphs take
+// SPREAD ring around it, CHAIN jumps from it; TWICE's other missiles at the other targets you cut, then the nearest of the
+// right kind next to the last one; STAY / WAIT / WATCH place their magic on its tile), repeated glyphs take
 // ×0.9 each, and Elements roll Brain Power against Defense. The 1.4 grammar holds (a Subject and another word; one
 // Reach word; at most 4, and the script's 3 never pass it); the third word may go over your Max Sigil words
 // (PROVISIONAL, audit 3). The Evoke charge is paid (3 less your Sigil Core saving, at least 1: audit 2). Misses still
@@ -700,7 +701,7 @@ register({
       const u = h.u!, cb = h.cb!, words = wordsOf(a.choice);
       const picks = a.targetIds?.length ? a.targetIds : [a.targetId, a.targetId, a.targetId];
       say(cb, u.name + ' begins the Three-Cut Script: ' + words.map((w) => w.toUpperCase()).join(' · ') + '.');
-      let last: Unit | null = null;
+      let last: Unit | null = null; const cut: Unit[] = [];
       for (let i = 0; i < 3; i++) {
         let t = unitById(cb, picks[i] || picks[0]);
         if (!t || !alive(t) || !adj(t.pos, u.pos)) t = foesOf(cb, u).filter((v) => adj(v.pos, u.pos)).sort((x, y) => x.hp - y.hp)[0] || null;
@@ -710,7 +711,7 @@ register({
         const p = payWord(cb, rng, u, words[i]);
         if (p.why) { say(cb, '(The script breaks off: ' + p.why + '.)'); return null; }
         say(cb, 'Cut ' + (i + 1) + ': ' + words[i].toUpperCase() + '.' + p.line);
-        last = t;
+        last = t; if (!cut.includes(t)) cut.push(t);
         if (u.mg?.lockRound === cb.round) { say(cb, '(The script breaks off: the Evoker overloads.)'); return null; }
       }
       const ec = Math.max(1, 3 - (u.mg?.coreSave || 0));
@@ -718,9 +719,11 @@ register({
       if (!last || last.dead) { say(cb, '(The script resolves on nobody: the last target fell.)'); u.mg!.charge -= ec; u.mg!.cast = true; return null; }
       u.mg!.charge -= ec; u.mg!.cast = true;
       const dest = a.tile ? tileOf(cb, a.tile) || undefined : undefined;
-      const r = castAt(cb, rng as any, u, words, last.pos, { victim: last, roll: true, opts: { dest, order: (a as any).order, orderTo: (a as any).orderTo } });
-      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [u.pos], src: u.pos, impact: last.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: r.plan?.burst.tiles || [last.pos],
-        missiles: r.plan ? [{ origin: u.pos, kind: 'touch', path: [], blockedAt: null, impact: last.pos, arc: null, hops: [], burst: r.plan.burst.tiles, core: r.plan.burst.core, chain: r.plan.chain, placed: r.plan.placed }] : [], placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'three_cut_script' });
+      // TWICE: its missiles past the first go to the other targets you cut (the targets you picked), then castAt's nearest.
+      const extra = cut.filter((v) => v !== last && alive(v)).map((v) => v.pos);
+      const r = castAt(cb, rng as any, u, words, last.pos, { victim: last, roll: true, extra, opts: { dest, order: (a as any).order, orderTo: (a as any).orderTo } });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [u.pos], src: u.pos, impact: last.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: (r.plans || []).flatMap((x) => x.burst.tiles).filter((k, i, all) => all.indexOf(k) === i).concat(r.plans?.length ? [] : [last.pos]),
+        missiles: (r.plans || []).map((x) => ({ origin: u.pos, kind: 'touch', path: [], blockedAt: null, impact: x.impact, arc: null, hops: [], burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: x.placed })), placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'three_cut_script' });
       say(cb, 'The script resolves on ' + last.name + ' (' + ec + ' charge)' + (r.ok ? r.line : ' · it can\'t: ' + r.why) + '.');
       checkOver(cb); return null;
     },
@@ -922,7 +925,8 @@ register({
 // charge plus the Evoke charge now (the Flux vents into the air out of a fight). 1.4: words only, no shape; the 1.4
 // grammar and your Max Sigil words hold. In a fight, "Load the spell magazine" (reload AP) swaps it in; its first hit
 // fires the stored spell at the target as if Touch-cast on it (sigil.ts castAt): Reach words are ignored, a Burst
-// centres on the target (PUSH's cone points on from you through it), CHAIN jumps from it, PULL drags toward you, and
+// centres on the target (PUSH's cone points on from you through it), CHAIN jumps from it, TWICE's other missiles go to
+// the nearest creature of the right kind next to it (none there: lost), PULL drags toward you, and
 // STAY / WAIT / WATCH place their field, trap or turret on its tile. Damage words hit without a roll (the bullet already
 // hit); conditions still saved against; repeats ×0.9; KIN spares your side, friendly fire otherwise. An unfired spell
 // fades at the next rest. A 1.2 magazine whose words no longer make a spell fires nothing (the round is a plain one).
@@ -967,9 +971,10 @@ register({
       const words: string[] = st.loaded, cb = h.cb!, u = h.u!, t = ctx.tgt as Unit; st.loaded = null;
       const name = words.map((w) => w.toUpperCase()).join(' · '), ge = grammarError(words, 4);
       if (ge) { say(cb, 'The spell magazine\'s ' + name + ' doesn\'t hold under the new grammar (' + ge + '): nothing fires.'); return; }
-      const r = castAt(cb, rngOf(h, ctx) as any, u, words, t.pos, { victim: t, roll: false, origin: u.pos });
-      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [t.pos], src: t.pos, impact: t.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: r.plan?.burst.tiles || [t.pos],
-        missiles: r.plan ? [{ origin: t.pos, kind: 'touch', path: [], blockedAt: null, impact: t.pos, arc: null, hops: [], burst: r.plan.burst.tiles, core: r.plan.burst.core, chain: r.plan.chain, placed: r.plan.placed }] : [], placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'spell_magazine' });
+      // TWICE: its missiles past the first go to the nearest creature of the right kind next to the target (castAt).
+      const r = castAt(cb, rngOf(h, ctx) as any, u, words, t.pos, { victim: t, roll: false, origin: u.pos, extra: true });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [t.pos], src: t.pos, impact: t.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: (r.plans || []).flatMap((x) => x.burst.tiles).filter((k, i, all) => all.indexOf(k) === i).concat(r.plans?.length ? [] : [t.pos]),
+        missiles: (r.plans || []).map((x) => ({ origin: t.pos, kind: 'touch', path: [], blockedAt: null, impact: x.impact, arc: null, hops: [], burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: x.placed })), placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'spell_magazine' });
       say(cb, 'The spell magazine fires ' + name + ' into ' + t.name + (r.ok ? r.line : ' · it can\'t: ' + r.why) + '.');
       shiftMana(cb, 1, 'a spell round');
     },

@@ -107,11 +107,14 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 export interface EvokeChoice { aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null }
 export interface SgMark { key: string; text: string; style: string; title: string }
 export interface SgTile { layer: string; marks: SgMark[]; note: string }
-export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string }
+export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string; /** A summary row (LEECH's heal, NULL's catch), not a creature the spell affects. */ extra?: boolean }
 export interface EvokeView {
   tile: string; stage: 'none' | 'stand' | 'aim' | 'dest' | 'order' | 'ready'; ok: boolean; why: string; hint: string;
   pattern: PatternPanel | null; origins: { tile: string; ok: boolean; why?: string; arrow: string }[]; hereOk: boolean;
   area: Set<string>; pickable: Set<string>; stepTo: Set<string>; missilesNeeded: number; aims: string[];
+  /** COMMAND · move: the tiles the main target may be sent to (the engine's 3-tile walk). */ orderTo: Set<string>;
+  /** LEECH: the caster's heal if every hit lands (engine plan.leech), or null. */ leech: { heal: number; restored: number; expected: number } | null;
+  /** NULL: what it would unmake that this viewer may know of (never the other side's unspotted traps). */ nulls: { kind: string; tiles: string[]; mine: boolean }[];
   facing: string; range: number | null; ap: number; charge: number; fizzle: boolean; fizzleText: string;
   affected: AffectedRow[]; tiles: Record<string, SgTile>; orders: string[] | null; order: string; payload: any | null; plan: any;
 }
@@ -131,7 +134,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   const c = view(cb), aims = [...(choice.aims || [])];
   const pat: any = findPattern(c as any, tile, u?.pos);
   const panel = patternPanel(cb, tile, u, knows);
-  const out: EvokeView = { tile, stage: 'none', ok: false, why: '', hint: '', pattern: panel, origins: [], hereOk: false, area: new Set(), pickable: new Set(), stepTo: new Set(), missilesNeeded: 1, aims,
+  const out: EvokeView = { tile, stage: 'none', ok: false, why: '', hint: '', pattern: panel, origins: [], hereOk: false, area: new Set(), pickable: new Set(), stepTo: new Set(), missilesNeeded: 1, aims, orderTo: new Set(), leech: null, nulls: [],
     facing: '', range: null, ap: 0, charge: 0, fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null };
   const T = (k: string) => (out.tiles[k] ||= { layer: '', marks: [], note: '' });
   const mark = (k: string, m: SgMark, note?: string) => { const t = T(k); if (!t.marks.some((x) => x.key === m.key)) t.marks.push(m); if (note) t.note += (t.note ? ' · ' : '') + note; };
@@ -200,10 +203,28 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
     if (m.why && m.stepTo.length) for (const k of m.stepTo) { out.stepTo.add(k); mark(k, { key: 'stepto', text: '', style: 'position: absolute; inset: 30%; z-index: 4; pointer-events: none; border: 2px dashed #FFFFFF', title: 'STEP may land here' }, 'STEP may land here'); }
     if (m.veil.length) for (const k of m.veil) T(k).layer = 'background: rgba(120, 128, 142, 0.45)';
     if (m.raise.length) for (const k of m.raise) mark(k, { key: 'raise', text: '▇ WALL', style: badge('#C9D3E3') + '; ' + CORNER.tl, title: 'RAISE puts a wall here' }, 'RAISE puts a wall here');
+    // LIGHT: its radius, lit before you Evoke; your side's Hidden in it would be revealed.
+    if (m.light && m.light.length) {
+      for (const k of m.light) { const t = T(k); if (!t.layer) t.layer = LIGHT_LAYER; mark(k, { key: 'lit', text: '', style: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 0 10px rgba(255, 248, 225, 0.45)', title: 'LIGHT: lit for the scene' }, 'LIGHT lights this tile (reveals the Hidden here)'); }
+      for (const x of cb.units || []) if (!x.dead && x.hidden && x.side === u.side && m.light.includes(x.pos)) mark(x.pos, { key: 'reveal', text: '☀ REVEALED', style: badge('#FFFFFF') + '; ' + CORNER.bl, title: 'LIGHT reveals ' + x.name }, 'LIGHT reveals ' + x.name);
+    }
+    // NULL: every glyph, field, trap, turret and wall it would unmake (the other side's unspotted traps stay unknown).
+    for (const h of m.nullHits || []) {
+      const z = (cb.zones || []).find((x: any) => x.id === h.id); if (z && secretFrom(z, u.side)) continue;
+      const mine = h.side === u.side; out.nulls.push({ kind: h.kind, tiles: h.tiles, mine });
+      for (const k of h.tiles) mark(k, { key: 'null' + h.id, text: '⊘ ' + (NULL_NAME[h.kind] || h.kind.toUpperCase()), style: badge(mine ? '#FFFFFF' : SIGIL_GLOW) + '; ' + CORNER.tr, title: 'NULL unmakes ' + (mine ? 'your side\'s ' : 'the hostile ') + (NULL_NAME[h.kind] || h.kind).toLowerCase() }, 'NULL unmakes ' + (mine ? 'your side\'s ' : 'the hostile ') + (NULL_NAME[h.kind] || h.kind).toLowerCase() + ' here');
+    }
+    if (sp?.workings?.includes('null') && !(m.nullHits || []).length) for (const k of m.burst.tiles) mark(k, { key: 'null0', text: '', style: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; border: 1px dashed ' + SIGIL_GLOW, title: 'NULL cleans here' }, 'NULL cleans here (nothing to unmake)');
+    // WATCH: the turret's reach and who it would fire at now.
+    if (m.turret) turretMarks(mark, cb, m.turret, 'tp' + m.i, true);
+    // COMMAND · move: where the order may send them.
+    for (const k of m.orderTo || []) out.orderTo.add(k);
   }
   // 7. who is affected: every creature, with its tag, numbers and the roll or save it takes.
   const rows = new Map<string, any>();
-  for (const a of show.affected) { const r = rows.get(a.unit); if (!r) rows.set(a.unit, { ...a, saves: [...a.saves], hits: 1 }); else { r.dmg += a.dmg; r.dmgAfterArmour += a.dmgAfterArmour; r.heal += a.heal; r.shield += a.shield; r.hits++; r.saves.push(...a.saves); if (!r.roll) r.roll = a.roll; r.kinSpared = r.kinSpared && a.kinSpared; r.skipped = r.skipped && a.skipped; } }
+  for (const a of show.affected) { const r = rows.get(a.unit); if (!r) rows.set(a.unit, { ...a, saves: [...a.saves], notes: [...(a.notes || [])], hits: 1 }); else { r.dmg += a.dmg; r.dmgAfterArmour += a.dmgAfterArmour; r.heal += a.heal; r.shield += a.shield; r.hits++; r.saves.push(...a.saves); for (const n of a.notes || []) if (!r.notes.includes(n)) r.notes.push(n); if (!r.roll) r.roll = a.roll; r.kinSpared = r.kinSpared && a.kinSpared; r.skipped = r.skipped && a.skipped; } }
+  const cmd = sp && sp.uniqueSubjects.includes('command') ? (choice.order || 'halt') : null;
+  const cmdText = cmd ? 'if it fails: ' + (cmd === 'move' ? (choice.orderTo ? 'walks to ' + refOf(choice.orderTo) : 'walks where you pick (up to ' + ((SIGIL.command as any)?.move_tiles ?? 3) + ' tiles)') : ORDER_TEXT[cmd] || cmd) : '';
   const SKIP: Record<string, string> = { downed: 'Downed: skipped', surrendered: 'surrendered: skipped', quicken_self: 'QUICKEN can\'t target you', quicken_round: 'already Quickened this round', marked: 'Marked: MASK fizzles on them' };
   for (const a of rows.values()) {
     const tag = a.kinSpared ? 'SPARED (KIN)' : a.skipped ? 'SKIPPED' : a.self ? 'YOU' : a.ally ? 'ALLY' : 'ENEMY', ink = a.kinSpared ? SPARED_INK : a.skipped ? MUTED_INK : a.ally ? ALLY_INK : HOSTILE_INK;
@@ -213,6 +234,8 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
       if (a.heal) nums.push('+' + a.heal + ' HP'); if (a.shield) nums.push('shield ' + a.shield);
       if (a.roll) nums.push(a.roll.pct + '% to hit (d20 +' + a.roll.bonus + ' vs Defense ' + a.roll.need + (a.roll.cover ? ', cover' : '') + ')');
       const seen = new Set<string>(); for (const s of a.saves) { const t = (FAM[s.fam] || s.fam) + ' save TN ' + s.tn + ' vs ' + (s.cond === 'teleport' ? 'the teleport' : condName(s.cond)); if (!seen.has(t)) { seen.add(t); nums.push(t); } }
+      for (const n of a.notes) nums.push(n);
+      if (cmdText && a.saves.some((s: any) => s.cond === 'commanded')) nums.push(cmdText);
       if (a.jump) nums.push('CHAIN jump ' + a.jump); if (a.hits > 1) nums.push(a.hits + ' hits');
       if (!nums.length) nums.push('affected');
     } else nums.push(a.kinSpared ? 'KIN spares them' : SKIP[a.skipped] || a.skipped);
@@ -221,6 +244,16 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
     mark(a.at, { key: 'who', text: tag === 'SPARED (KIN)' ? 'SPARED' : tag, style: badge(ink) + '; left: 50%; top: -1px; transform: translateX(-50%)', title: a.name + ': ' + text }, tag.toLowerCase() + ': ' + text);
     const t = T(a.at); t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px ' + (a.kinSpared || a.skipped ? 'dashed ' : 'solid ') + ink + '; outline-offset: -2px';
   }
+  // LEECH: the caster's heal, shown before the Evoke (engine plan.leech).
+  if (show.leech) {
+    out.leech = show.leech;
+    const text = 'LEECH: +' + show.leech.heal + ' HP if every hit lands' + (show.leech.restored !== show.leech.heal ? ' (restores ' + show.leech.restored + ', your HP is near full)' : '') + ' · about ' + show.leech.expected + ' expected';
+    out.affected.push({ key: 'leech', unit: u.id, name: u.name, tag: 'YOU', ink: ALLY_INK, text, at: u.pos, extra: true });
+    mark(u.pos, { key: 'leech', text: '+' + show.leech.heal + ' HP', style: badge('#6FEA77') + '; ' + CORNER.bl, title: text }, text);
+  }
+  if (out.nulls.length) out.affected.push({ key: 'null', unit: '', name: 'NULL', tag: 'UNMAKES', ink: SIGIL_GLOW, text: out.nulls.map((n) => (n.mine ? 'your ' : 'hostile ') + (NULL_NAME[n.kind] || n.kind).toLowerCase() + ' at ' + n.tiles.map(refOf).join(', ')).join(' · '), at: '', extra: true });
+  if (cmd === 'move' && !choice.orderTo) for (const k of out.orderTo) mark(k, { key: 'orderto', text: '', style: 'position: absolute; inset: 30%; z-index: 4; pointer-events: none; border: 2px dashed #E3BF51', title: 'COMMAND may send them here' }, 'COMMAND may send them here');
+  if (cmd === 'move' && choice.orderTo) mark(choice.orderTo, { key: 'orderat', text: '⚑ GO', style: badge('#E3BF51') + '; ' + CORNER.br, title: 'COMMAND: they walk here' }, 'COMMAND: they walk here');
   // 8. fizzle
   out.fizzle = !!show.ok && !!show.fizzle;
   out.fizzleText = out.fizzle ? 'Nothing it may affect: this spell will fizzle (its charge, AP and Flux are spent and its glyphs fade).' : '';
@@ -242,6 +275,15 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   if (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded && base.ok) { out.stage = 'ready'; out.ok = true; out.hint = 'Confirm: the engine aims the other missile' + (out.missilesNeeded - aims.length > 1 ? 's' : '') + ' at the nearest target, or pick ' + (out.missilesNeeded - aims.length > 1 ? 'them' : 'it') + '.'; }
   return out;
 }
+const LIGHT_LAYER = 'background: rgba(255, 248, 225, 0.08)';
+const NULL_NAME: Record<string, string> = { glyph: 'GLYPH', field: 'FIELD', trap: 'TRAP', turret: 'TURRET', veil: 'SMOKE', light: 'LIGHT', raise: 'WALL' };
+const ORDER_TEXT: Record<string, string> = { halt: 'halts (no move, no attack)', kneel: 'kneels (falls Prone)', drop: 'drops its weapon' };
+/** A turret's reach (dotted cyan) and the creatures it would fire at now ("NEXT"), on a tile overlay. */
+function turretMarks(mark: (k: string, m: SgMark, note?: string) => void, cb: any, t: { reach: string[]; range: number; next: string[] }, key: string, preview: boolean) {
+  const what = preview ? 'the turret will reach' : 'in the turret\'s reach';
+  for (const k of t.reach) mark(k, { key: key + 'r', text: '', style: 'position: absolute; inset: 2px; z-index: 1; pointer-events: none; border: 1px dotted ' + SIGIL_GLOW, title: what + ' (range ' + t.range + ')' }, what + ' (range ' + t.range + ')');
+  t.next.forEach((id, i) => { const x = (cb.units || []).find((y: any) => y.id === id); if (x) mark(x.pos, { key: key + 'n' + i, text: '▲ NEXT', style: badge(SIGIL_GLOW) + '; ' + CORNER.br, title: 'the turret would fire at ' + x.name + ' now (the nearest it may affect)' }, 'the turret would fire at ' + x.name + ' now'); });
+}
 const nameOf = (cb: any, id: string) => cb.units.find((x: any) => x.id === id)?.name || 'them';
 /** What a click on a tile does while Evoking: the next choice, a new pattern, or a message for the player. */
 export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choice: EvokeChoice): { pattern?: string; choice?: EvokeChoice; toast?: string } {
@@ -251,7 +293,10 @@ export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choi
   if (ownGlyph && !inPattern && !v.pickable.has(k)) return { pattern: k, choice: {} };
   if (v.stage === 'stand') { const o = v.origins.find((x) => x.tile === k); return { toast: o ? (o.ok ? 'Move onto ' + refOf(k) + ' first: from there it fires ' + o.arrow + '.' : 'Not from ' + refOf(k) + ': ' + o.why) : v.hint } }
   if (v.stepTo.has(k) && (v.stage === 'dest' || choice.dest)) return { choice: { ...choice, dest: k } };
-  if (v.stage === 'order' || (choice.order === 'move' && v.orders && !choice.orderTo && (choice.aims || []).length)) return { choice: { ...choice, orderTo: k } };
+  if (v.stage === 'order' || (choice.order === 'move' && v.orders && !choice.orderTo && (choice.aims || []).length)) {
+    if (v.orderTo.size && !v.orderTo.has(k)) return { toast: 'COMMAND sends them at most ' + ((SIGIL.command as any)?.move_tiles ?? 3) + ' tiles: pick a dashed tile.' };
+    return { choice: { ...choice, orderTo: k } };
+  }
   if (v.pickable.has(k) || v.area.has(k)) {
     const aims = [...(choice.aims || [])], i = aims.indexOf(k);
     if (i >= 0) { aims.splice(i, 1); return { choice: { ...choice, aims, dest: null } }; }
@@ -282,6 +327,11 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<
     else if (z.kind === 'veil') { label = 'Smoke'; layer = 'background: rgba(120, 128, 142, 0.55)'; text = 'smoke (blocks sight), ' + rounds; }
     else if (z.kind === 'light') { label = 'Light'; layer = 'background: rgba(255, 248, 225, 0.08); box-shadow: inset 0 0 12px rgba(255, 248, 225, 0.3)'; text = 'magic light (reveals the Hidden), ' + rounds; }
     else continue;
+    if (z.kind === 'turret' && z.reach) {
+      const nx = (z.next || []).map((id: string) => nameOf(cb, id));
+      text += '; reach ' + z.range + (z.range === 1 ? ' tile' : ' tiles') + (nx.length ? ', would fire at ' + nx.join(', ') + ' now' : ', nobody in reach now');
+      turretMarks((k, m, note) => { const t = T(k); if (!t.marks.some((x) => x.key === m.key)) t.marks.push(m); if (note) t.note += (t.note ? ' · ' : '') + note; }, cb, { reach: z.reach, range: z.range ?? 1, next: z.next || [] }, 'pr' + z.id, false);
+    }
     rows.push({ key: z.id, kind: z.kind, label, who: z.who || '', mine: !!z.mine, tiles: z.tiles, text });
     const first = z.kind === 'field' || z.kind === 'veil' || z.kind === 'light' ? z.tiles[0] : null;
     for (const k of z.tiles) {

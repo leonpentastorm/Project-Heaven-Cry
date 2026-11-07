@@ -713,11 +713,17 @@ function payloadWhat(words: string[]): string {
   if (!sp.spread && !sp.push) out.push('one more missile (' + sp.missiles + ' → ' + (sp.missiles + 1) + ')');
   return out.join(', ');
 }
-/** The aim when the player gave none: the nearest enemy in the area (the planner tells us the area). */
+/** The aim when the player gave none, by the spell's kind (as the planner's own auto-aim): a spell that harms goes to the
+ * nearest enemy in the area; a Boon or a Working (nothing in it harms) goes on the caster's own tile, the self-target rule
+ * (PUSH can't face from there: the nearest ally in the area instead). The planner tells us the area. */
 function payloadAim(cb: Combat, u: Unit, tile: string, choice?: string): string | undefined {
   const c = tileOf(cb, choice); if (c) return c;
+  const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return undefined;
+  const sp = compileSpell(p.words);
   const pv = withPayload(u, () => previewEvoke(cb, u, tile));
-  return cb.units.filter((v) => !v.dead && v.side !== u.side && pv.pickable.includes(v.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || a.id.localeCompare(b.id))[0]?.pos;
+  const near = (mine: boolean) => cb.units.filter((v) => !v.dead && (mine ? v.side === u.side && v !== u : v.side !== u.side) && pv.pickable.includes(v.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || a.id.localeCompare(b.id))[0]?.pos;
+  if (sp.harmful) return near(false);
+  return sp.push ? near(true) : u.pos;
 }
 function payloadPlan(cb: Combat, u: Unit, args: ActionArgs): { pv?: EvokePreview; tile?: string; aim?: string; why?: string } {
   const tile = tileOf(cb, args.tile); if (!tile) return { why: 'Pick a glyph of the Line.' };

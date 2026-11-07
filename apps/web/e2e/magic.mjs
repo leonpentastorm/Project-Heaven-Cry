@@ -137,11 +137,21 @@ await dlg.getByRole('button', { name: 'Close', exact: true }).first().click();
 await dlg.waitFor({ state: 'hidden' }); // let the closing dialog leave first, or the next Area map press lands on it as it goes
 
 // ---------- 5. An Outburst let go at a hostile on the area map starts the fight ----------
+// The Narrator's turn below opens a fresh round (full AP on the area map): narratorTurn ends with a new round when no
+// checks are pending. Checked, so a change there shows up here and not as a refused core swap further on.
+const round0 = (await G()).story.round;
 const cAt = (await G()).story.positions[me], [cx, cy] = cAt.split(',').map(Number);
 const free = await host.evaluate(([cx, cy]) => { const g = window.__phc.getState().game, occ = new Set([...Object.values(g.story.positions), ...(g.story.npcs || []).map((n) => n.pos), ...(g.story.objects || []).map((o) => o.pos)]);
   const out = []; for (const [dx, dy] of [[4, 0], [4, 1], [-4, 0], [0, 4], [3, 2], [-3, 2], [2, 3], [7, 0], [-7, 0], [6, 3], [-6, 3], [7, 5], [-7, 5]]) { const k = (cx + dx) + ',' + (cy + dy); if (!occ.has(k) && cx + dx >= 0 && cy + dy >= 0 && cx + dx < 16 && cy + dy < 11) out.push(k); } return out; }, [cx, cy]);
 await act({ type: 'narrator/turn', turn: { narration: 'Two raiders step out of the smoke, fists up.', npcs: [{ action: 'place', name: 'Raider', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free[0]) }, { action: 'place', name: 'Raider Two', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free.find((k) => Math.abs(k.split(',')[0] - cx) + Math.abs(k.split(',')[1] - cy) >= 7) || free[1]) }] } });
 await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+ok('the Narrator\'s turn opens a fresh round (' + round0 + ' → ' + (await G()).story.round + ')', (await G()).story.round > round0);
+// The Line spent most of the core (3 glyphs + the Evoke): load a fresh one on the area map, so the fight below opens
+// with charge for its own Line (a core swap mid-fight costs the turn the raiders use to close in).
+const ev0 = await host.evaluate((id) => window.__phc.getState().game.characters[id].evoCharge, me);
+const coreErr = await act({ type: 'world/act', charId: me, act: 'core' }).then(() => '', (e) => String(e.message || e));
+const ev1 = await host.evaluate((id) => window.__phc.getState().game.characters[id].evoCharge, me);
+ok('a fresh core on the area map (charge ' + ev0 + ' → ' + ev1 + ')' + (coreErr ? ': ' + coreErr : ''), ev1 > ev0);
 const raider = (await G()).story.npcs.find((n) => n.name === 'Raider');
 ok('a hostile raider stands on the area map at ' + (raider && ref(raider.pos)), !!raider);
 await click(host, 'Area map');

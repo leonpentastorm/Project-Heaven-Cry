@@ -682,7 +682,7 @@ export class MainLogic extends DCLogic {
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
           const spr = o ? spriteOf(g, o) : '';
           const gl = glAt[k] || [], held = u ? heldOf(u) : null, sgT = sgTiles[k];
-          const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && k !== myAt;
+          const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && !evW.orderTo.has(k) && k !== myAt;
           const sgLayer = [sgT && sgT.layer, sgDim ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
           const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
           const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');

@@ -457,7 +457,7 @@ export class CombatLogic extends DCLogic {
       if (S.action === 'draw') { const d = drawDiff(k); return d ? word.toUpperCase() + ' · −' + d.ap + ' AP · −' + d.charge + ' charge' + (d.over ? ' · OVERLOAD' : '') : ''; }
       if (S.action === 'evoke') {
         if (evV && evV.stage === 'stand') { const o = evV.origins.find((x) => x.tile === k); return o ? (o.ok ? 'Fires ' + o.arrow : 'Not from here') : ''; }
-        if (evV && evV.plan && (evV.pickable.has(k) || evV.area.has(k))) { if (evV.fizzle) return 'FIZZLE'; const n = evV.affected.filter((a) => !/SPARED|SKIPPED/.test(a.tag)).length; return n ? n + ' affected' : 'no one'; }
+        if (evV && evV.plan && (evV.pickable.has(k) || evV.area.has(k))) { if (evV.fizzle) return 'FIZZLE'; const n = evV.affected.filter((a) => !a.extra && !/SPARED|SKIPPED/.test(a.tag)).length; return n ? n + ' affected' : 'no one'; }
         return hoverPanel ? hoverPanel.shape : '';
       }
       // A refusal shows its own reason, cut to its first clause ("You are already holding an Outburst"), not always "Can't reach".
@@ -546,7 +546,7 @@ export class CombatLogic extends DCLogic {
       if (x < 0) { tiles.push(axis('r' + y, String(y + 1))); continue; }
       const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k), note = notesAt(cb.map, k)[0];
       const gls = (glyphAt[k] || []).filter((gl) => gl.side === 'pc' || vis.tiles.has(k)), sgT = sgTiles[k], mk = markStyle(k, u), mTag = magicTag(k);
-      const sgLayer = [sgT && sgT.layer, sgDim && !evV.area.has(k) && !evV.pickable.has(k) && !evV.stepTo.has(k) && k !== cur.pos ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
+      const sgLayer = [sgT && sgT.layer, sgDim && !evV.area.has(k) && !evV.pickable.has(k) && !evV.stepTo.has(k) && !evV.orderTo.has(k) && k !== cur.pos ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
       const magicNote = (gls.length ? ' · glyphs: ' + gls.map(glyphName).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (u && u.mg && u.mg.held ? ' · holding an Outburst (stage ' + u.mg.held.stage + ')' : '') + (u && (u.side === 'pc' || u.analyzedBy) ? condChips(u).map((c) => ' · ' + c.k.toLowerCase()).join('') : '');
       let bg = '#0D1119', border = '1px solid #151C29';
       if (solid.has(k)) { bg = '#1C2536'; border = '1px solid #232D3F'; }

@@ -209,6 +209,9 @@ export function burstTiles(cb: Combat, sp: Spell, impact: string, f: Dir): { til
 export interface Affected {
   unit: string; name: string; at: string; ally: boolean; enemy: boolean; self: boolean; mult: number; via: 'burst' | 'direct' | 'chain' | 'field' | 'turret' | 'trap';
   kinSpared?: boolean; skipped?: string; missile: number; jump?: number;
+  /** What a Boon or MASK would do to this creature, in words with the engine's numbers ("+2 AP on their next turn",
+   * "ends Slowed"): the preview's who-is-affected row (spec: Mana, Sigils 9.7). */
+  notes?: string[];
   dmg: number; dmgAfterArmour: number; heal: number; shield: number;
   roll: { bonus: number; need: number; pct: number; cover: boolean } | null; saves: { cond: string; fam: Fam; tn: number }[];
 }
@@ -242,11 +245,27 @@ function affectedOn(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spe
     else if (self && sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken') a.skipped = 'quicken_self';
     else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken' && t.quickRound === cb.round) a.skipped = 'quicken_round';
     else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'mask' && condOn(t, 'marked')) a.skipped = 'marked';
+    if (counts(a)) { const n = boonNotes(cb, caster, sp, t); if (n.length) a.notes = n; }
     out.push(a);
   }
   return out;
 }
-const counts = (a: Affected) => !a.kinSpared && !a.skipped;
+function counts(a: Affected) { return !a.kinSpared && !a.skipped; }
+/** The conditions CLEANSE would end on a creature, newest first (as many as its copies). */
+export function cleanseList(t: Unit, n = 1): string[] {
+  const at = t.condAt || {};
+  const ids = [...Object.keys(t.conds || {}).filter((id) => (t.conds![id] || 0) > 0 && !isBoon(id)), ...(t.bleed ? ['bleeding'] : []), ...(t.prone ? ['prone'] : []), ...(t.dazedNext ? ['dazed'] : [])];
+  return ids.sort((a, b) => (at[b] || 0) - (at[a] || 0)).slice(0, Math.max(1, n));
+}
+/** The Boons' and MASK's effect on one creature, in words with the data's numbers (the preview's rows). */
+function boonNotes(cb: Combat, caster: Unit | null, sp: Spell, t: Unit): string[] {
+  const out: string[] = [], U = sp.uniqueSubjects;
+  if (U.includes('quicken') && !(caster && t === caster) && t.quickRound !== cb.round) out.push('+' + ((W('quicken') as any)?.ap ?? 2) + ' AP on their next turn (ceiling ' + AP_MAX + ')');
+  if (U.includes('sharpen')) { const d: any = W('sharpen') || {}; out.push('next attack +' + (d.to_hit ?? 3) + ' to hit, ×' + (d.damage_mult ?? 1.25) + ' damage'); }
+  if (U.includes('cleanse')) { const l = cleanseList(t, sp.counts.cleanse || 1); out.push(l.length ? 'ends ' + l.map(condName).join(', ') : 'nothing to cleanse'); }
+  if (U.includes('mask') && !condOn(t, 'marked')) out.push('Hidden until they attack, or ' + ((W('mask') as any)?.applies?.rounds ?? 2) + ' rounds');
+  return out;
+}
 /** CHAIN's jumps (spec: Delivery): the next creature within 3 tiles of the last hit, no closer to the source, never one
  * already hit; nearest first, ties by the engine's order; skips the Downed, the surrendered and (with KIN) your side. */
 function chainJumps(cb: Combat, sp: Spell, side: 'pc' | 'foe', source: string, first: Unit | null, hit: Set<string>): { unit: Unit; from: string; mult: number }[] {
@@ -296,6 +315,12 @@ export interface MissilePlan {
   burst: { tiles: string[]; mult: Record<string, number>; core: string }; chain: { unit: string; from: string; to: string; mult: number }[];
   pull: { unit: string; from: string; to: string }[]; step: { unit: string; from: string; to: string }[]; stepTo: string[]; placed: 'field' | 'trap' | 'turret' | null;
   raise: string[]; nulls: number; veil: string[]; light: string[]; mainTarget: string | null; self: boolean;
+  /** NULL: what it would unmake, each with its tiles and side (a view hides the other side's unspotted traps). */
+  nullHits: { kind: string; id: string; tiles: string[]; side: 'pc' | 'foe' }[];
+  /** WATCH: the tiles the turret could fire into from where it stands, and who it would fire at first if it fired now. */
+  turret: { reach: string[]; range: number; next: string[] } | null;
+  /** COMMAND with the move order: the tiles the main target could be sent to (a walk of up to move_tiles). */
+  orderTo: string[];
   /** Why this missile can't go yet (STEP needs a landing tile). */ why?: string;
 }
 export interface EvokePreview {
@@ -305,6 +330,10 @@ export interface EvokePreview {
   facing?: Facing; area: string[]; pickable: string[]; missiles: MissilePlan[]; affected: Affected[]; fizzle: boolean; refusedAim?: string;
   /** The expected direct damage to the other side and to yours (the AI weighs these). */
   value?: { foe: number; own: number; boon: number; nulls: number };
+  /** LEECH (spec: Delivery): what the caster heals if every hit lands (half the direct damage dealt, +25% a copy, in all;
+   * each hit capped at what the target has left), what that restores under the caster's max HP, and the heal weighted
+   * by each hit's chance. Null without LEECH or a strike now (a placed field, trap or turret drains when it bites). */
+  leech?: { heal: number; restored: number; expected: number } | null;
 }
 /** The relay allies a caster may hop through (spec: RELAY): an ally within range, in sight; each extra copy one more ally
  * within range of the last, in its sight. Returns ally ids with their hop chains. */
@@ -370,7 +399,9 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
     for (const r of relays) for (const k of around(r.ally.pos, 1)) if (onMap(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
   } else { const a = areaTiles(cb, p, facing, depth); area = a.tiles; laneOf = a.lane; }
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
-  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !(sp.push && k === u.pos));
+  // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
+  const kinBars = (k: string) => sp.kin && k !== u.pos && cb.units.some((x) => x.pos === k && !x.dead && x.side === u.side);
+  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !(sp.push && k === u.pos) && !kinBars(k));
   const aims = [aim, ...(opts.aims || []).slice(aim && opts.aims?.[0] === aim ? 1 : 0)].filter(Boolean) as string[];
   const needsAim = true;
   if (!aims.length) return { ...base, ok: false, why: 'Pick a target in the area (or yourself).', targets: [], needsAim, area, pickable, missiles: [], affected: [], fizzle: false };
@@ -381,6 +412,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   for (let i = 0; i < Math.min(nMiss, aims.length); i++) {
     const a = aims[i], self = a === u.pos;
     if (self && sp.push) return { ...base, ok: false, why: 'PUSH is refused on your own tile: a cone needs a way to face.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
+    if (!self && kinBars(a)) return { ...base, ok: false, why: 'KIN: you and your allies can\'t be picked (only your own tile).', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !laneOf[a]) return { ...base, ok: false, why: 'Out of the area: pick a tinted tile' + (sp.reach ? '' : ' (Touch reaches 1 tile)') + ', or yourself.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !emptyOk && !cb.units.some((x) => x.pos === a && !x.dead)) return { ...base, ok: false, why: 'Pick a creature: only a Working, SPREAD or PUSH may land on empty ground.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     let origin = self ? u.pos : laneOf[a], impact = a, path: string[] = [], blockedAt: string | null = null, stoppedBy: MissilePlan['stoppedBy'] = null, arc: MissilePlan['arc'] = null, hops: string[] = [];
@@ -405,12 +437,24 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const targets = [...new Set(live.map((a) => a.unit))];
   const value = { foe: 0, own: 0, boon: 0, nulls: missiles.reduce((t, m) => t + m.nulls, 0) };
   for (const a of live) { const exp = a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour; if (a.ally) value.own += exp; else value.foe += exp; if (a.ally) value.boon += a.heal + a.shield; }
-  return { ...base, ok: true, targets, impact: missiles[0]?.impact ?? null, needsAim, area, pickable, missiles, affected, fizzle, value };
+  return { ...base, ok: true, targets, impact: missiles[0]?.impact ?? null, needsAim, area, pickable, missiles, affected, fizzle, value, leech: leechPlan(cb, u, sp, live) };
+}
+/** LEECH's preview: the same sum the Evoke heals from (direct damage after armour, capped at each target's HP and shield). */
+function leechPlan(cb: Combat, u: Unit, sp: Spell, live: Affected[]): EvokePreview['leech'] {
+  if (!sp.leech || !live.some((a) => a.dmg)) return null;
+  const left: Record<string, number> = {}; let all = 0, exp = 0;
+  for (const a of live) {
+    const t = cb.units.find((x) => x.id === a.unit); if (!t || !a.dmgAfterArmour) continue;
+    const room = left[t.id] ?? (t.hp + (t.shield || 0)), d = Math.min(room, a.dmgAfterArmour); left[t.id] = room - d;
+    all += d; exp += d * (a.roll ? a.roll.pct / 100 : 1);
+  }
+  const heal = Math.floor(all * sp.leech);
+  return { heal, restored: Math.max(0, Math.min(heal, u.maxHp - u.hp)), expected: Math.floor(exp * sp.leech) };
 }
 /** The best tile for an extra missile nobody picked (TWICE): the nearest creature of the right kind in the area not already
  * picked (an enemy for harm, an ally for Boons). */
 function autoAim(cb: Combat, u: Unit, sp: Spell, pickable: string[], taken: string[]): string | null {
-  const boon = sp.subjects.every((w) => isBoonWord(w));
+  const boon = sp.subjects.every((w) => isBoonWord(w)) && !sp.kin; // KIN: your side can't be picked
   const c = cb.units.filter((x) => !x.dead && pickable.includes(x.pos) && !taken.includes(x.pos) && (boon ? x.side === u.side : x.side !== u.side)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos))[0];
   return c ? c.pos : null;
 }
@@ -421,7 +465,8 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   // A trap or turret going off strikes now: only an Evoke places (fields, traps, turrets).
   const placed: MissilePlan['placed'] = c.via === 'trap' || c.via === 'turret' ? null : sp.watch ? 'turret' : sp.wait ? 'trap' : sp.stay ? 'field' : null;
   const plan: MissilePlan = { i: c.i, aim: c.aim, kind: c.kind, origin: c.origin, impact: c.impact, dir: c.f, path: c.path, blockedAt: c.blockedAt, stoppedBy: c.stoppedBy, arc: c.arc, hops: c.hops,
-    burst: bt, chain: [], pull: [], step: [], stepTo: [], placed, raise: [], nulls: 0, veil: [], light: [], mainTarget: null, self: c.self };
+    burst: bt, chain: [], pull: [], step: [], stepTo: [], placed, raise: [], nulls: 0, veil: [], light: [], mainTarget: null, self: c.self, nullHits: [], turret: null, orderTo: [] };
+  if (placed === 'turret') { const ta = turretAim(cb, sp, c.impact, side, caster); plan.turret = { reach: ta.reach, range: ta.range, next: ta.targets.map((t) => t.id) }; }
   if (placed) return { plan, affected: [] }; // fields, traps and turrets don't strike when Evoked (item 422)
   const base = c.reachMult * c.deliveryMult * sp.repMult;
   let aff = affectedOn(cb, caster, side, sp, bt.mult, base, c.via || (sp.burst ? 'burst' : 'direct'), c.i, c.origin, c.roll);
@@ -444,7 +489,15 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.workings.includes('veil')) plan.veil = [...new Set([...around(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
   if (sp.workings.includes('light')) plan.light = [...new Set([...around(c.impact, (W('light') as any)?.reveals_hidden_radius ?? 4), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
   if (sp.workings.includes('raise')) plan.raise = (sp.burst ? tiles : [c.impact]).filter((k) => emptyForRaise(cb, k));
-  if (sp.workings.includes('null')) { const n = nullCatch(cb, sp.burst ? tiles : [c.impact]); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length; }
+  if (sp.workings.includes('null')) {
+    const T = sp.burst ? tiles : [c.impact], n = nullCatch(cb, T), S = new Set(T); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length;
+    plan.nullHits = [...n.glyphs.map((g) => ({ kind: 'glyph', id: g.id, tiles: [g.pos], side: g.side })), ...n.zones.map((z) => ({ kind: z.kind === 'wall' ? 'field' : z.kind, id: z.id, tiles: z.tiles.filter((k) => S.has(k)), side: z.side })),
+      ...n.walls.map((o: any) => ({ kind: 'raise', id: o.id, tiles: [o.pos], side: (o.side || 'pc') as 'pc' | 'foe' }))];
+  }
+  if (sp.uniqueSubjects.includes('command') && c.opts.order === 'move' && main && plan.mainTarget) {
+    const P = paths(cb, main.pos, main.id), max = (W('command') as any)?.move_tiles ?? 3;
+    plan.orderTo = Object.keys(P.dist).filter((k) => k !== main.pos && P.dist[k] <= max);
+  }
   if (sp.workings.includes('step')) {
     const movers = live.map((a) => cb.units.find((x) => x.id === a.unit)!).filter(Boolean);
     const dest = c.opts.dest, max = (W('step') as any)?.teleport_tiles ?? 4;
@@ -621,7 +674,7 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
       else if (w === 'quicken') {
         if (by && t === by) { line += ' · QUICKEN never takes its caster'; continue; }
         if (t.quickRound === cb.round) { line += ' · ' + t.name + ' was already Quickened this round'; continue; }
-        t.quickRound = cb.round; line += applyCond(cb, rng, by, t, 'quickened', 99, undefined, { skipSave: true }); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'quicken', amount: d.ap ?? 2 });
+        t.quickRound = cb.round; const q = applyCond(cb, rng, by, t, 'quickened', undefined, undefined, { skipSave: true }); line += q + (condOn(t, 'quickened') && /Quickened$/.test(q) ? ' (+' + (d.ap ?? 2) + ' AP on their next turn)' : ''); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'quicken', amount: d.ap ?? 2 });
       } else if (w === 'sharpen') { line += applyCond(cb, rng, by, t, 'sharpened', 1, undefined, { skipSave: true }); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'sharpen' }); }
       else if (w === 'cleanse') { for (let i = 0; i < (sp.counts.cleanse || 1); i++) { const id = newestCondition(t); if (!id) { if (!i) line += ' · ' + t.name + ' has nothing to cleanse'; break; } endCond(t, id, cb); line += ' · ' + t.name + ' is cleansed of ' + condName(id); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); } }
       continue;
@@ -634,11 +687,7 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
   return line;
 }
 /** CLEANSE's pick: the newest condition on the creature (a debuff; boons and states stay). */
-export function newestCondition(t: Unit): string | null {
-  const at = t.condAt || {};
-  const ids = [...Object.keys(t.conds || {}).filter((id) => (t.conds![id] || 0) > 0 && !isBoon(id)), ...(t.bleed ? ['bleeding'] : []), ...(t.prone ? ['prone'] : []), ...(t.dazedNext ? ['dazed'] : [])];
-  return ids.sort((a, b) => (at[b] || 0) - (at[a] || 0))[0] || null;
-}
+export function newestCondition(t: Unit): string | null { return cleanseList(t, 1)[0] || null; }
 /** A missile that strikes: every affected creature, then the chain, pull and step, then the Workings on the ground. */
 function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, mp: MissilePlan, aff: Affected[], o: { roll: boolean; source: string; opts: EvokeOpts }): { line: string; dealt: number; hit: string[] } {
   let line = '', dealt = 0; const hit: string[] = [];
@@ -761,10 +810,7 @@ function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
  * 423: ties the lowest HP, then the engine's order), for no charge, with the owner's numbers. */
 function turretFire(cb: Combat, rng: Rng, z: Zone) {
   const zz: any = z, sp = compileSpell(z.words), by = ownerOf(cb, z); if (!by) return;
-  const at = z.tiles[0], range = sp.reach && sp.missile !== 'relay' ? sp.range + (by.mg?.rangeBonus || 0) : 1;
-  const reach = (t: Unit) => dist(at, t.pos) <= range && (sp.missile === 'appear' || dist(at, t.pos) <= 1 || lineOfSight(cb, at, t.pos));
-  const pool = cb.units.map((v, i) => ({ v, i })).filter(({ v }) => !v.dead && v.pos !== at && !(sp.kin && v.side === z.side) && !(sp.harmful && (v.downed || v.surrendered) && !sp.subjects.some(isBoonWord)) && !(v.hidden && v.side !== z.side) && reach(v))
-    .sort((a, b) => dist(at, a.v.pos) - dist(at, b.v.pos) || a.v.hp - b.v.hp || a.i - b.i).slice(0, sp.missiles);
+  const at = z.tiles[0], pool = turretAim(cb, sp, at, z.side, by).targets.map((v) => ({ v }));
   if (!pool.length) return;
   if (zz.hidden) { zz.hidden = false; } // a hidden turret shows when it first fires
   let line = '';
@@ -780,6 +826,18 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
     if (sp.leech && r.dealt > 0 && !by.dead) { const h = healUnit(cb, by, Math.floor(r.dealt * sp.leech), by, 'leech'); line += ' · ' + by.name + ' drinks ' + h.restored + ' HP'; }
   }
   cb.log.push((z.who ? z.who + '\'s ' : 'A ') + 'turret at ' + refOf(at) + ' fires (' + z.words.map((w) => w.toUpperCase()).join(' · ') + ')' + (line || ': nothing') + '.');
+}
+/** A turret's reach (spec: WATCH; the screen shows it, spec 9.9): its range (a Reach word's, + the owner's range bonus;
+ * Touch or RELAY 1), the tiles within it it can fire into (in sight, or any with SENSE), and the creatures it would fire
+ * at now: the nearest it may affect (KIN spares its side; the Downed and surrendered skipped by harm; never a Hidden
+ * creature of the other side), ties the lowest HP, then the engine's order; one per missile. */
+export function turretAim(cb: Combat, sp: Spell, at: string, side: 'pc' | 'foe', by: Unit | null): { range: number; reach: string[]; targets: Unit[] } {
+  const range = sp.reach && sp.missile !== 'relay' ? sp.range + (by?.mg?.rangeBonus || 0) : 1;
+  const sees = (k: string) => dist(at, k) <= range && (sp.missile === 'appear' || dist(at, k) <= 1 || lineOfSight(cb, at, k));
+  const reach = around(at, range).filter((k) => k !== at && onMap(cb, k) && sees(k));
+  const targets = cb.units.map((v, i) => ({ v, i })).filter(({ v }) => !v.dead && v.pos !== at && !(sp.kin && v.side === side) && !(sp.harmful && (v.downed || v.surrendered) && !sp.subjects.some(isBoonWord)) && !(v.hidden && v.side !== side) && sees(v.pos))
+    .sort((a, b) => dist(at, a.v.pos) - dist(at, b.v.pos) || a.v.hp - b.v.hp || a.i - b.i).slice(0, sp.missiles).map((x) => x.v);
+  return { range, reach, targets };
 }
 /** Strike a turret with your weapon (a hit destroys it: Defense 10, 10 HP; spec: WATCH). The weapon's attack AP. */
 export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): string | null {
@@ -853,12 +911,13 @@ export function sigilSpot(cb: Combat, u: Unit) {
  * with their tiles, rounds left and owner. Traps (and hidden turrets) show to their own side, or once spotted. */
 export function placedMagic(cb: Combat, side: 'pc' | 'foe') {
   migrateSigil(cb);
-  const out: { id: string; kind: string; tiles: string[]; left: number; by: string; who: string; side: 'pc' | 'foe'; words: string[]; element: string | null; mine: boolean; hidden: boolean; hp?: number; triggers?: number }[] = [];
+  const out: { id: string; kind: string; tiles: string[]; left: number; by: string; who: string; side: 'pc' | 'foe'; words: string[]; element: string | null; mine: boolean; hidden: boolean; hp?: number; triggers?: number; reach?: string[]; range?: number; next?: string[] }[] = [];
   for (const z of cb.zones || []) {
     const zz: any = z; if (!['field', 'trap', 'turret', 'wall', 'veil', 'light'].includes(z.kind)) continue;
     const secret = z.kind === 'trap' || (z.kind === 'turret' && zz.hidden);
     if (secret && z.side !== side && !(zz.spotted || []).includes(side)) continue;
-    out.push({ id: z.id, kind: z.kind === 'wall' ? 'field' : z.kind, tiles: z.tiles, left: z.left, by: z.by, who: z.who, side: z.side, words: z.words, element: zz.element ?? (z.words.find(isElement) || null), mine: z.side === side, hidden: !!secret, ...(zz.hp != null ? { hp: zz.hp } : {}), ...(zz.triggers != null ? { triggers: zz.triggers } : {}) });
+    out.push({ id: z.id, kind: z.kind === 'wall' ? 'field' : z.kind, tiles: z.tiles, left: z.left, by: z.by, who: z.who, side: z.side, words: z.words, element: zz.element ?? (z.words.find(isElement) || null), mine: z.side === side, hidden: !!secret, ...(zz.hp != null ? { hp: zz.hp } : {}), ...(zz.triggers != null ? { triggers: zz.triggers } : {}),
+      ...(z.kind === 'turret' ? (() => { const ta = turretAim(cb, compileSpell(z.words), z.tiles[0], z.side, ownerOf(cb, z)); return { reach: ta.reach, range: ta.range, next: ta.targets.filter((t) => !(t.hidden && t.side !== side)).map((t) => t.id) }; })() : {}) });
   }
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall') { const oo: any = o; out.push({ id: o.id, kind: 'raise', tiles: [o.pos], left: oo.left ?? 0, by: oo.by || '', who: oo.who || '', side: oo.side || 'pc', words: ['raise'], element: null, mine: oo.side === side, hidden: false, hp: o.hp }); }
   return out;
@@ -1017,30 +1076,53 @@ export function enemyAvoidMagic(cb: Combat, rng: Rng, u: Unit): boolean {
 }
 
 // ---------- a spell cast straight at a point (class moves) ----------
-export interface CastAtResult { ok: boolean; why?: string; line: string; dealt: number; hit: string[]; fizzle: boolean; plan?: MissilePlan; affected: Affected[]; spell: Spell }
-/** A spell's words resolved straight at one tile with no glyphs and no Evoke, for class moves that carry a spell some
- * other way (Three-Cut Script, Spell Magazine, Stored Spell). It goes off as Touch from `origin` (default the caster's
- * tile): Reach words are ignored (no flight, no Reach multiplier, no cover), the Burst centres on `impact` (PUSH's cone
- * points from origin through it), CHAIN jumps from the one it hits, PULL drags toward `source` (default origin), and
- * STAY / WAIT / WATCH place their field, trap or turret on `impact`. Repeats (×0.9), KIN, friendly fire and the caster's
- * multipliers apply as in an Evoke. roll false: Elements hit without a roll (a bullet already hit). mult multiplies
- * the whole spell. The caller pays every cost and emits its own fx; nothing here spends charge, AP or Flux. Additive
- * helper (lane classes-j). */
-export function castAt(cb: Combat, rng: Rng, u: Unit, words: string[], impact: string, o: { origin?: string; source?: string; roll?: boolean; victim?: Unit | null; mult?: number; opts?: EvokeOpts } = {}): CastAtResult {
+export interface CastAtResult { ok: boolean; why?: string; line: string; dealt: number; hit: string[]; fizzle: boolean; plan?: MissilePlan; plans?: MissilePlan[]; affected: Affected[]; spell: Spell }
+/** Resolve words straight at a tile as Touch, with no glyphs and no Line (spec: the classes under 1.4; Three-Cut Script,
+ * Spell Magazine, the Stitch backlash): Reach words are ignored; Bursts, Delivery, repeats ×0.9, KIN and friendly fire
+ * apply as in an Evoke. origin: where the spell comes from (the caster's tile by default); victim: the creature it lands
+ * on (null for none). roll false: damage hits without a hit roll (it already hit). extra: TWICE's missiles past the
+ * first (rules 1.4, item 477/478): the tiles given first (the targets the player picked), then the nearest creature of
+ * the right kind (an ally for Boons, else an enemy) within 1 tile of the impact (Touch's reach round the target) not
+ * already aimed at; with none, the missile is lost (its price stays paid). Without extra, only the first missile flies
+ * (the Stitch backlash: TWICE adds nothing). WATCH stays one turret (its shots carry the missiles). */
+export function castAt(cb: Combat, rng: Rng, u: Unit, words: string[], impact: string, o: { origin?: string; source?: string; roll?: boolean; victim?: Unit | null; mult?: number; opts?: EvokeOpts; extra?: string[] | true } = {}): CastAtResult {
   const base = compileSpell(words);
   const sp: Spell = { ...base, reach: null, missile: 'touch', range: 1, reachMult: 1, relayHops: 0, blocked: false, needsSight: false };
-  const origin = o.origin || u.pos, source = o.source || origin, f: Dir = origin === impact ? [0, 1] : dir8(origin, impact);
-  const victim = o.victim === undefined ? liveAt(cb, impact) : o.victim;
-  const mp = missileEffects(cb, u, u.side, sp, { i: 0, aim: impact, origin, impact, f, self: false, kind: 'touch', source, deliveryMult: o.mult ?? 1, roll: o.roll ?? true, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: o.opts || {}, reachMult: 1, victim });
+  const origin = o.origin || u.pos, source = o.source || origin, roll = o.roll ?? true, opts = o.opts || {};
+  const victim = (o.victim === undefined ? liveAt(cb, impact) : o.victim) ?? null;
+  const one = (i: number, at: string, v: Unit | null) => missileEffects(cb, u, u.side, sp, { i, aim: at, origin, impact: at, f: origin === at ? [0, 1] : dir8(origin, at), self: false, kind: 'touch', source, deliveryMult: o.mult ?? 1, roll, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts, reachMult: 1, victim: v });
+  const mp = one(0, impact, victim);
   if (typeof mp === 'string') return { ok: false, why: mp, line: '', dealt: 0, hit: [], fizzle: false, affected: [], spell: sp };
-  if (mp.plan.why) return { ok: false, why: mp.plan.why, line: '', dealt: 0, hit: [], fizzle: false, plan: mp.plan, affected: mp.affected, spell: sp };
-  const pl = mp.plan, live = mp.affected.filter(counts);
-  const fizzle = !pl.placed && !live.length && !(pl.raise.length || pl.nulls || pl.veil.length || pl.light.length || pl.step.length);
-  if (fizzle) return { ok: true, line: ' · it finds nothing it may affect and fizzles', dealt: 0, hit: [], fizzle: true, plan: pl, affected: mp.affected, spell: sp };
-  if (pl.placed) return { ok: true, line: place(cb, u, sp, pl), dealt: 0, hit: [], fizzle: false, plan: pl, affected: mp.affected, spell: sp };
-  const r = magicSpellWords(words.length, () => strike(cb, rng, u, u.side, sp, pl, mp.affected, { roll: o.roll ?? true, source, opts: o.opts || {} }));
-  let line = r.line;
-  if (sp.leech && r.dealt > 0 && !u.dead) { const h = healUnit(cb, u, Math.floor(r.dealt * sp.leech), u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: [impact], amount: h.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + h.restored + ' HP (LEECH)'; }
-  if (sp.damaging && (o.roll ?? true) && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb);
-  return { ok: true, line, dealt: r.dealt, hit: r.hit, fizzle: false, plan: pl, affected: mp.affected, spell: sp };
+  if (mp.plan.why) return { ok: false, why: mp.plan.why, line: '', dealt: 0, hit: [], fizzle: false, plan: mp.plan, plans: [mp.plan], affected: mp.affected, spell: sp };
+  const plans = [mp.plan], affected = [...mp.affected];
+  // TWICE: the missiles past the first (planned before anything strikes, as an Evoke plans them).
+  const nMiss = o.extra && !sp.watch ? sp.missiles : 1;
+  if (nMiss > 1) {
+    const boon = sp.subjects.every((w) => isBoonWord(w)), taken = [impact], prefer = Array.isArray(o.extra) ? o.extra : [];
+    for (let i = 1; i < nMiss; i++) {
+      let at = prefer.find((k) => !taken.includes(k) && !!liveAt(cb, k));
+      if (!at) at = cb.units.filter((x) => !x.dead && dist(x.pos, impact) <= 1 && !taken.includes(x.pos) && (boon ? x.side === u.side : x.side !== u.side)).sort((x, y) => dist(impact, x.pos) - dist(impact, y.pos) || dist(origin, x.pos) - dist(origin, y.pos) || x.id.localeCompare(y.id))[0]?.pos;
+      if (!at) break;
+      taken.push(at);
+      const xm = one(i, at, liveAt(cb, at) || null);
+      if (typeof xm === 'string' || xm.plan.why) continue;
+      plans.push(xm.plan); affected.push(...xm.affected);
+    }
+  }
+  const live = affected.filter(counts);
+  const fizzle = !plans.some((pl) => pl.placed || pl.raise.length || pl.nulls || pl.veil.length || pl.light.length || pl.step.length) && !live.length;
+  if (fizzle) return { ok: true, line: ' · it finds nothing it may affect and fizzles', dealt: 0, hit: [], fizzle: true, plan: mp.plan, plans, affected, spell: sp };
+  let line = '', dealt = 0, struck = false; const hit: string[] = [];
+  magicSpellWords(words.length, () => {
+    for (const pl of plans) {
+      if (plans.length > 1) line += ' · missile ' + (pl.i + 1) + ' at ' + refOf(pl.impact) + ':';
+      if (pl.placed) { line += place(cb, u, sp, pl); continue; }
+      struck = true;
+      const r = strike(cb, rng, u, u.side, sp, pl, affected.filter((a) => a.missile === pl.i), { roll, source, opts });
+      line += r.line; dealt += r.dealt; hit.push(...r.hit);
+    }
+  });
+  if (sp.leech && dealt > 0 && !u.dead) { const h = healUnit(cb, u, Math.floor(dealt * sp.leech), u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: plans.map((x) => x.impact), amount: h.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + h.restored + ' HP (LEECH)'; }
+  if (struck && sp.damaging && roll && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb);
+  return { ok: true, line, dealt, hit, fizzle: false, plan: mp.plan, plans, affected, spell: sp };
 }

@@ -439,8 +439,10 @@ describe('KIN, friendly fire and fizzle (spec: Filter; Friendly fire; Grammar 8â
   it('KIN backfires on Boons; a spell with nothing to affect fizzles: charge, AP and Flux spent, the glyphs fade, the log says so', () => {
     const { cb, u, allies, rng } = setup(['mend', 'seek', 'kin'], [{ at: '15,15' }], { allies: ['7,5'] }); u.mg!.flux = 0;
     draw(cb, rng, u, ['mend', 'kin', 'seek'], ['5,5', '4,5', '3,5']);
-    const pv = previewEvoke(cb, u, '3,5', allies[0].pos); expect(pv.ok).toBe(true); expect(pv.fizzle).toBe(true);
-    const ap = u.ap, ch = u.mg!.charge; expect(evoke(cb, rng, u, '3,5', allies[0].pos)).toBeNull();
+    // KIN: an ally can't be picked (gap 12); your own tile can, and KIN spares you there, so it fizzles.
+    const no = previewEvoke(cb, u, '3,5', allies[0].pos); expect(no.ok).toBe(false); expect(no.why).toMatch(/KIN/); expect(no.pickable).not.toContain(allies[0].pos);
+    const pv = previewEvoke(cb, u, '3,5', u.pos); expect(pv.ok).toBe(true); expect(pv.fizzle).toBe(true);
+    const ap = u.ap, ch = u.mg!.charge; expect(evoke(cb, rng, u, '3,5', u.pos)).toBeNull();
     expect(u.ap).toBe(ap - 1); expect(u.mg!.charge).toBe(ch - 3); expect(cb.glyphs!.length).toBe(0); expect(lastLog(cb)).toMatch(/fizzles/); expect(fx(cb, 'fizzle').length).toBe(1);
   });
   it('harmful words skip the Downed and the surrendered; Boons reach them', () => {
@@ -658,3 +660,34 @@ describe('old saves (item 441)', () => {
 });
 
 void unitSees; void active; void dmgTo;
+
+// Review fix: area-map ids for placed Sigil magic never repeat. magicIn rebuilt the counter from the live glyphs and
+// zones only; an Evoke uses its glyphs up, so the next caster's RAISE wall got the same 'sw' id as the first one's.
+import { ARCHETYPES as ARCH_RF, newGame as newGameRF, apply as applyRF, positionsOf as posRF, type GameState as GS_RF } from '../src';
+describe('area-map Sigil ids (review fix)', () => {
+  it('two casters\' RAISE walls get different ids, and a later glyph never reuses one', () => {
+    const arch = ARCH_RF.find((a: any) => a.id === 'sigilist')!;
+    const sheet = (name: string) => ({ name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...arch.preset }, attrs: { ...arch.attributes }, cores: { ...arch.cores }, identity: {}, sigils: ['raise', 'seek'] }) as any;
+    let g: GS_RF = newGameRF('ROOM', { id: 'host', name: 'Leon' }, 'x');
+    g = applyRF(g, { type: 'char/add', sheet: sheet('A') } as any, 'host');
+    g = applyRF(g, { type: 'char/add', sheet: sheet('B') } as any, 'host');
+    g = applyRF(g, { type: 'session/start' } as any, 'host');
+    g = applyRF(g, { type: 'narrator/turn', turn: { narration: 'Open.' } } as any, 'host');
+    const offsets = Array.from({ length: 169 }, (_, i) => [(i % 13) - 6, Math.floor(i / 13) - 6]).filter(([a, b]) => a || b).sort((a, b) => Math.abs(b[0]) + Math.abs(b[1]) - Math.abs(a[0]) - Math.abs(a[1]));
+    for (const [ii, id] of Object.keys(g.characters).entries()) {
+      const d = ii ? 1 : -1; g.characters[id].sigils = ['raise', 'seek'];
+      const at = posRF(g)[id], [x, y] = at.split(',').map(Number);
+      g = applyRF(g, { type: 'world/act', charId: id, act: 'move', to: x + ',' + (y + d), how: 'move' } as any, 'host');
+      g = applyRF(g, { type: 'world/act', charId: id, act: 'draw', word: 'raise', tile: x + ',' + (y + d) } as any, 'host');
+      g = applyRF(g, { type: 'world/act', charId: id, act: 'move', to: at, how: 'move' } as any, 'host');
+      g = applyRF(g, { type: 'world/act', charId: id, act: 'draw', word: 'seek', tile: at } as any, 'host');
+      let done = false;
+      for (const [dx, dy] of offsets) { try { g = applyRF(g, { type: 'world/act', charId: id, act: 'evoke', tile: at, aim: (x + dx) + ',' + (y + dy) } as any, 'host'); done = true; break; } catch { /* not a legal aim */ } }
+      expect(done).toBe(true);
+    }
+    const walls = (g.story.objects || []).filter((o: any) => o.kind === 'sigil_wall').map((o: any) => o.id);
+    expect(walls.length).toBe(2);
+    expect(new Set(walls).size).toBe(2);
+    expect(g.story.glyphSeq).toBeGreaterThanOrEqual(Math.max(...walls.map((w: string) => +w.replace(/\D/g, ''))));
+  });
+});

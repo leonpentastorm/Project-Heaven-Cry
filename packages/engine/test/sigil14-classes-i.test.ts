@@ -92,6 +92,19 @@ describe('Mage under 1.4', () => {
     expect(logHas(p.f.cb, /one more missile \(1 → 2\)/)).toBe(true);
     expect(payloadFight('condense', '6,3', false).b.hp).toBe(999);
   });
+  it('Payload with no aim aims by the spell\'s kind: a Boon on the caster, never the nearest enemy (item 470)', () => {
+    const f = fightWith([cls('mage', 3, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['mend', 'condense']);
+    const foe = f.unit(f.foe.id); foe.pos = '6,2'; foe.hp = 500;
+    walk(f, u, ['condense', 'mend'], ['5,2', '4,2']);
+    const me = f.unit(u.id); me.hp = Math.floor(me.maxHp / 2); const was = me.hp;
+    act(f, me, { type: 'combat/perk', id: 'class:mage.payload', actionId: 'payload', tile: '4,2' });
+    expect(f.unit(f.foe.id).hp).toBe(500); // the enemy isn't healed
+    expect(f.unit(u.id).hp).toBeGreaterThan(was);
+  });
+  it('Payload with no aim on a harmful spell still goes to the nearest enemy in the area', () => {
+    const p = payloadFight('condense', '10,2', true, '');
+    expect(p.a.hp).toBe(999 - 23);
+  });
   it('Payload is refused on a STAY, WAIT or WATCH spell, before anything is spent', () => {
     const f = fightWith([cls('mage', 3, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['spark', 'stay']);
     walk(f, u, ['stay', 'spark'], ['5,2', '4,2']); const ch = f.unit(u.id).mg!.charge;

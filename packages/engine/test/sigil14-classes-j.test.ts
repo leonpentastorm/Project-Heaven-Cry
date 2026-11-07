@@ -91,6 +91,19 @@ describe('Blade Scribe under 1.4', () => {
     expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'blade_scribe.three_cut_script', targetId: f.foe.id, choice: 'fire,fire,fire' } as any)).toThrow(/another word/);
     expect(f.pc.mg!.charge).toBe(10); expect(f.pc.ap).toBe(9);
   });
+  it('Three-Cut Script: TWICE\'s second missile flies (it was paid for): at another target you cut, else the nearest enemy next to the last', () => {
+    for (const split of [false, true]) {
+      const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }, { at: 'O11' }]);
+      const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'twice']); const [a, b] = foes(f.cb);
+      tough(at(a, '3,5'), -99); tough(at(b, '3,4'), -99); pc.ap = 9; f.g.rng.state = calm(16);
+      const targetIds = split ? [b.id, a.id, a.id] : [a.id, a.id, a.id];
+      f.act({ type: 'combat/perk', unitId: pc.id, id: 'blade_scribe.three_cut_script', targetId: a.id, targetIds, choice: 'fire,twice,fire' } as any);
+      expect(f.pc.mg!.flux).toBe(4); // TWICE's Flux paid
+      expect(logHas(f.cb, /missile 2 at /)).toBe(true);
+      const ev = (f.cb.fx || []).filter((e: any) => e.k === 'evoke' && e.by === 'three_cut_script').pop() as any;
+      expect(ev.missiles.map((m: any) => m.impact)).toEqual(['3,5', '3,4']);
+    }
+  });
   it('Three-Cut Script: STAY places a field on the last target\'s tile instead of striking', () => {
     const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'stay']); tough(at(f.foe, '3,5'), -99); pc.ap = 9;
@@ -148,6 +161,17 @@ describe('Spellslinger under 1.4', () => {
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: a.id, mode: 'shot' } as any);
     expect(logHas(f.cb, /spell magazine fires FIRE · SPREAD into Foe 1 · FIRE catches Foe 1/)).toBe(true);
     expect(foes(f.cb)[1].hp).toBeLessThan(hb); // the Burst centres on the target
+  });
+  it('Spell Magazine: TWICE\'s second missile goes to the nearest enemy next to the target', () => {
+    const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }, { at: 'O11' }]);
+    (charOf(f.g, f.pc).state ||= {})['class:spellslinger.spell_magazine'] = { words: ['fire', 'twice'], rest: (f.g.sessionN ?? 1) + '.' + (f.g.restN ?? 0) };
+    const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'twice']); const [a, b] = foes(f.cb); tough(at(a, '6,5')); tough(at(b, '6,6')); pc.ap = 6;
+    const hb = b.hp;
+    f.act({ type: 'combat/perk', unitId: pc.id, id: 'spellslinger.spell_magazine', actionId: 'load_spell_magazine' } as any);
+    seed(f, 10);
+    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: a.id, mode: 'shot' } as any);
+    expect(logHas(f.cb, /spell magazine fires FIRE · TWICE into Foe 1 · missile 1 at .*missile 2 at /)).toBe(true);
+    expect(foes(f.cb)[1].hp).toBeLessThan(hb);
   });
   it('Spell Magazine: WAIT sets its trap on the target\'s tile; a 1.2 magazine with RETURN fires nothing', () => {
     const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }]);

@@ -95,6 +95,9 @@ export interface GameState {
     /** Magic on the story map (spec: Mana): glyphs and zones (and the zone they're drawn in), the mana meter, and each
      * character's Flux, Strain, held Outburst, conditions and shield between overworld actions. */
     glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number;
+    /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
+     * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
+    glyphSeq?: number;
     magic?: Record<string, { flux: number; strain: number; held: { design: string; stage: number; cost: number } | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string> }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
@@ -1542,7 +1545,10 @@ function magicIn(g: GameState, cb: Combat) {
   cb.mana = g.story.mana ?? MANA_START;
   migrateStorySigil(g.story as any); cb.sigilV = SIGIL_REV; // 1.2 glyphs go, 1.2 walls become fields (item 441)
   if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
-  cb.glyphSeq = Math.max(0, ...[...(cb.glyphs || []), ...(cb.zones || [])].map((x) => +String(x.id).replace(/\D/g, '') || 0));
+  // Ids never repeat: the story's counter, the live glyphs and zones, and the RAISE walls standing (they outlive the
+  // glyphs that made them, so a counter rebuilt from glyphs alone would hand out a wall's id again).
+  const walls = (cb.objects || []).filter((o) => o.kind === 'sigil_wall' || /^sw\d+$/.test(String(o.id)));
+  cb.glyphSeq = Math.max(0, g.story.glyphSeq || 0, ...[...(cb.glyphs || []), ...(cb.zones || []), ...walls].map((x) => +String(x.id).replace(/\D/g, '') || 0));
   for (const u of cb.units) {
     const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held || null; u.mg.cast = !!s.cast; }
@@ -1566,6 +1572,7 @@ function magicIn(g: GameState, cb: Combat) {
 /** And back out. After a fight Strain and held Outbursts reset (spec: Strain resets after combat). */
 function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = cb.zones || []; g.story.glyphMap = cb.map.id;
+  g.story.glyphSeq = Math.max(g.story.glyphSeq || 0, cb.glyphSeq || 0);
   const m = (g.story.magic ||= {});
   for (const u of cb.units) if (u.charId) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };

@@ -49,7 +49,7 @@
       "where": "own_tile",
       "glyphs_per_tile": 1,
       "cost": "the word's charge + Glyph AP + 1 Flux (TWICE 2)",
-      "two_glyph_hook": "a perk, trait or skill may let its caster put a second glyph on a tile (none does yet); two on a tile alone are a Stack"
+      "two_glyph_hook": "a perk, trait or skill may let its caster put a second glyph on a tile (only the Stroke Gambler's half-glyphs do so far); two on a tile alone are a Stack"
     },
     "glyph_lasts": "2 + floor(sigil_duration_bonus) rounds",
     "evoke": {
@@ -1115,7 +1115,7 @@
       "class": "filter",
       "charge": 2,
       "flux": 1,
-      "text": "Your side is never affected: you and your allies can't be picked and nothing in the spell touches you. It backfires on Boons. It changes who the spell affects, not how it flies.",
+      "text": "Your side is never affected: you and your allies can't be picked (your own tile is the one exception, and KIN spares you there) and nothing in the spell touches you. It backfires on Boons. It changes who the spell affects, not how it flies.",
       "filter": "spare_own_side",
       "grand": "Sanctum: allies inside take no damage from your side's spells and attacks.",
       "grand_provisional": true,

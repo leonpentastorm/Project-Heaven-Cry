@@ -5,7 +5,7 @@ item stands on. This file lists every item that depends on the Sigil rules, what
 behave under 1.4. The engine lanes work from it. "Text" says whether the data text was already updated in the 1.4 data
 pass (so only the handler is left) or still reads as before.
 
-**What went away:** the Ring; the Stack as a default shape (it now needs the two-glyph hook, which nothing grants yet);
+**What went away:** the Ring; the Stack as a default shape (it now needs the two-glyph hook, which only the Stroke Gambler's half-glyphs hold so far);
 drawing on a tile next to you; 2 glyphs a tile; RETURN; Line range by length (4 / 8 / 12) and `LINE_RANGE`;
 PUSH as "sends the spell to 8 tiles" (`PUSH_RANGE`: PUSH is now a cone Burst; range comes from Reach words);
 "Form" and "Motion" classes (`form`, `motion`, `modifier`): the classes are now `subject_element`,

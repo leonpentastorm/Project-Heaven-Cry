@@ -170,3 +170,62 @@ describe('placed magic (spec 9.9)', () => {
     p = placedView(cb, 'pc'); expect(p.rows.find((r) => r.key === 'zx')!.label).toBe('Spotted trap');
   });
 });
+
+describe('the preview gaps of batch 1 (spec 9.7, 9.9; items 480)', () => {
+  const L2 = ['3,5', '2,5'], L3 = ['4,5', '3,5', '2,5'];
+  it('LEECH: the caster\'s heal shows as a row and on your tile before you Evoke', () => {
+    const { cb, u, rng } = setup(['fire', 'seek', 'leech'], ['8,5']); u.hp = 300;
+    walk(cb, rng, u, ['fire', 'leech', 'seek'], L3);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
+    expect(v.leech).toMatchObject({ heal: 15, restored: 15 });
+    const row = v.affected.find((a) => a.key === 'leech')!; expect(row.extra).toBe(true); expect(row.text).toMatch(/LEECH: \+15 HP if every hit lands/);
+    expect(v.tiles['2,5'].marks.some((m) => m.text === '+15 HP')).toBe(true);
+  });
+  it('NULL marks what it would unmake; the other side\'s unspotted trap stays unknown', () => {
+    const { cb, u, rng } = setup(['null', 'seek', 'spread'], ['14,14']);
+    cb.zones = [{ id: 'zf', kind: 'field', tiles: ['8,5'], words: ['fire', 'stay'], by: 'x', side: 'foe', left: 2, mult: 0.5, who: 'Foe 1' } as any,
+      { id: 'zt', kind: 'trap', tiles: ['9,6'], words: ['fire', 'wait'], by: 'x', side: 'foe', left: 3, mult: 1, who: 'Foe 1', hidden: true, spotted: [] } as any];
+    walk(cb, rng, u, ['null', 'spread', 'seek'], L3);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
+    expect(v.plan.missiles[0].nulls).toBe(2); // the engine counts both
+    expect(v.nulls).toEqual([{ kind: 'field', tiles: ['8,5'], mine: false }]); // the screen shows only what you know of
+    expect(v.tiles['8,5'].marks.some((m) => m.text === '⊘ FIELD')).toBe(true); expect((v.tiles['9,6']?.marks || []).some((m) => /TRAP/.test(m.text))).toBe(false);
+    expect(v.affected.find((a) => a.key === 'null')!.text).toMatch(/hostile field at/);
+  });
+  it('LIGHT draws its radius 4 and marks your side\'s Hidden it would reveal', () => {
+    const { cb, u, rng } = setup(['light', 'seek'], ['14,14'], ['10,6']); const ally = cb.units.find((x) => x.side === 'pc' && x !== u)!; ally.hidden = true;
+    walk(cb, rng, u, ['light', 'seek'], L2);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
+    expect(v.tiles['12,9'].marks.some((m) => m.key === 'lit')).toBe(true); expect(v.tiles['13,5']?.marks.some((m) => m.key === 'lit') || false).toBe(false);
+    expect(v.tiles['10,6'].marks.some((m) => m.text === '☀ REVEALED')).toBe(true);
+  });
+  it('a turret shows its reach and who it would fire at, before the Evoke and once placed', () => {
+    const { cb, u, es, rng } = setup(['shock', 'seek', 'watch'], ['10,5', '12,5']);
+    walk(cb, rng, u, ['shock', 'watch', 'seek'], L3);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
+    expect(v.tiles['14,5'].marks.some((m) => m.key === 'tp0r')).toBe(true); expect(v.tiles['10,5'].marks.some((m) => m.text === '▲ NEXT')).toBe(true);
+    expect(evoke(cb, rng, u, '2,5', '8,5')).toBeNull();
+    const p = placedView(cb, 'pc'), row = p.rows.find((r) => r.kind === 'turret')!;
+    expect(row.text).toMatch(/reach 8 tiles, would fire at Foe 1 now/); void es;
+    expect(p.tiles['12,5'].marks.some((m) => /r$/.test(m.key))).toBe(true); expect(p.tiles['10,5'].marks.some((m) => m.text === '▲ NEXT')).toBe(true);
+  });
+  it('Boons say what they give: QUICKEN +2 AP, SHARPEN +3 / ×1.25, MASK Hidden 2 rounds', () => {
+    const { cb, u, rng } = setup(['quicken', 'sharpen', 'mask', 'relay', 'condense'], ['14,14'], ['7,5']);
+    walk(cb, rng, u, ['quicken', 'relay'], L2);
+    expect(evokeView(cb, u, '2,5', { aims: ['7,5'] }).affected[0].text).toBe('+2 AP on their next turn (ceiling 9)');
+    cb.glyphs = []; walk(cb, rng, u, ['sharpen', 'relay'], L2);
+    expect(evokeView(cb, u, '2,5', { aims: ['7,5'] }).affected[0].text).toBe('next attack +3 to hit, ×1.25 damage');
+    cb.glyphs = []; walk(cb, rng, u, ['mask', 'condense'], L2);
+    expect(evokeView(cb, u, '2,5', { aims: ['2,5'] }).affected[0].text).toBe('Hidden until they attack, or 2 rounds');
+  });
+  it('COMMAND · move marks the tiles it may send them to; a click outside them is refused', () => {
+    const { cb, u, rng } = setup(['command', 'seek'], ['8,5']);
+    walk(cb, rng, u, ['command', 'seek'], L2);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'], order: 'move' });
+    expect(v.stage).toBe('order'); expect(v.orderTo.has('8,8')).toBe(true); expect(v.orderTo.has('8,9')).toBe(false);
+    expect(v.tiles['8,8'].marks.some((m) => m.key === 'orderto')).toBe(true);
+    expect(evokeClick(v, cb, u, '8,9', { aims: ['8,5'], order: 'move' }).toast).toMatch(/at most 3 tiles/);
+    expect(evokeClick(v, cb, u, '8,8', { aims: ['8,5'], order: 'move' }).choice!.orderTo).toBe('8,8');
+    const r = evokeView(cb, u, '2,5', { aims: ['8,5'], order: 'kneel' }); expect(r.affected[0].text).toMatch(/if it fails: kneels/);
+  });
+});

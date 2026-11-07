@@ -230,6 +230,7 @@ Hooks (all through `emit`; mutable fields marked *):
 | `glyph_drawn` | {u, glyph, cb, rng} | after a glyph is on the ground |
 | `evoke_reach` | {u, pattern, reach*} | unchanged: stand that far from a glyph (past 1 needs sight) |
 | `evoke_cost` | {u, pattern, ap*, charge*, preview, fail*} | unchanged (emitted by the planner) |
+| `spell_shape` | {u, pattern, spell*, cb} | right after the spell is compiled in `planEvoke`; a handler may replace `ctx.spell` (a fresh copy each time; Payload) |
 | `evoke_area` | {u, spell, pattern, depth*} | the area's depth (Reach range + bonus, or 1 for Touch) |
 | `spell_mult` | {u, t, spell, kind: damage\|heal\|shield, mult*} | a multiplier on a spell's final numbers for one target |
 | `spell_roll` | {u, t, die, add*, kind: 'sigil'} | unchanged: the hit roll |
@@ -244,6 +245,13 @@ Old API kept: `findPattern` (Pattern has `shape` 'line' | 'stack', `tiles` in dr
 `near`/`far`/`dir`), `grammarError(words, maxWords)` and `evokeCharge`. Removed at integration (every lane moved to
 `planEvoke` / `castAt` / `spellRange`): `subjectEffect`, `LINE_RANGE` and `PUSH_RANGE`. No test is skipped for 1.4 any
 more; the 1.2 class tests are replaced by the `sigil14-*.test.ts` files.
+
+`castAt(cb, rng, u, words, impact, { origin, source, roll, victim, mult, opts, extra })` resolves words as Touch with no
+Line and no `evoked` hook (Three-Cut Script, Spell Magazine, the Stitch backlash). `extra` turns on TWICE's missiles past
+the first: an array of tiles to aim them at first (Three-Cut passes the other targets it cut), or `true` for the nearest
+creature of the right kind within 1 tile of the impact; without it only the first missile flies. The result carries
+`plans` (every missile's plan) beside `plan` (the first). Area-map ids for placed magic come from `g.story.glyphSeq`
+(monotonic; `magicIn` also counts the live glyphs, zones and RAISE walls), so they never repeat between actions.
 
 ## Appendix: the lanes' notes
 
