@@ -3151,6 +3151,6 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 *Proving Ground multiplayer (Nov 2026)*
 
-377. **Wave scaling by party size.** With friends the wave budget and the soldier and elite caps take × (0.6 + 0.4 × players with a fighter); the unit cap stays 8 (the map seats 9). One player: × 1. *Engine: game.ts sandboxWave, sandboxScale.* PROVISIONAL.
-378. **Downed is out in a team fight.** Both teams: a Downed fighter is out at once (no death saves, no stims), so Team A (on the fight's PC side) and Team B (on its foe side, where 0 HP is already out) are alike. *Engine: game.ts sandboxAfter.* PROVISIONAL.
-379. **Team B's side-bound rules.** Team B fights from the engine's foe side, so the few rules still written for the PC side don't reach it yet: Analyze (only foes can be analyzed), Weak Point (only PC attackers) and spotting traps while moving. Stims follow the stimmer's own side. Fix when a playtest shows it matters. *Engine: combat.ts analyze, previewAttack, moveUnit.* PROVISIONAL.
+383. **Wave scaling by party size.** With friends the wave budget and the soldier and elite caps take × (0.6 + 0.4 × players with a fighter); the unit cap stays 8 (the map seats 9). One player: × 1. *Engine: game.ts sandboxWave, sandboxScale.* PROVISIONAL.
+384. **Downed is out in a team fight.** Both teams: a Downed fighter is out at once (no death saves, no stims), so Team A (on the fight's PC side) and Team B (on its foe side, where 0 HP is already out) are alike. *Engine: game.ts sandboxAfter.* PROVISIONAL.
+385. **Team B's side-bound rules.** Team B fights from the engine's foe side, so the few rules still written for the PC side don't reach it yet: Analyze (only foes can be analyzed), Weak Point (only PC attackers) and spotting traps while moving. Stims follow the stimmer's own side. Fix when a playtest shows it matters. *Engine: combat.ts analyze, previewAttack, moveUnit.* PROVISIONAL.
