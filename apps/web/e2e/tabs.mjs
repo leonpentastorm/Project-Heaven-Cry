@@ -18,7 +18,7 @@ async function open(vw, vh) {
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
-  if (await nm.count()) { await nm.fill('Leon'); await click(p, 'To the Proving Ground ›'); }
+  if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.mouse.move(vw - 10, vh - 10);
   // The Proving Ground opens gearing up on the map; start the fight straight away.
   await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
