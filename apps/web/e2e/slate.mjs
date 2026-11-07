@@ -82,6 +82,12 @@ ok('after a reload the panel stays hidden', (await p.locator('.phc-cb-mini').cou
 await p.mouse.click(720, 30); await p.keyboard.press('h'); await p.waitForTimeout(600);
 ok('H shows the panel again', (await p.locator('.phc-cb-hide').count()) > 0 && (await p.locator('.phc-cb-mini').count()) === 0);
 
+// ----- the Proving Ground has no Narrator: nothing only a Narrator rules is offered (the Hellraiser's Suppressing Fire) -----
+{ const all = [];
+  const tabs = p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]');
+  for (let i = 0; i < await tabs.count(); i++) { await tabs.nth(i).click(); await p.waitForTimeout(120); all.push(...(await p.locator('[role="tabpanel"] button').allTextContents()).map((t) => t.replace(/\s+/g, ' ').trim())); }
+  ok('no Narrator-ruled action in the Proving Ground (' + all.length + ' actions)', all.length > 5 && !all.some((t) => /Suppressing Fire|Narrator/.test(t)));
+  await tabs.first().click(); }
 // ----- customise the four commands -----
 await p.locator('button.phc-cb-link').first().click();
 const dlg = p.locator('[data-phc-cmds-dialog]'); await dlg.waitFor({ timeout: 4000 });
@@ -98,6 +104,8 @@ await p.waitForSelector('[data-phc-cutin]', { timeout: 10000 });
 const card = await p.locator('[data-phc-cutin] button[data-act]').allTextContents();
 const first = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
 ok('the next turn card leads with Reload: ' + card.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | ') + ' (' + first + ')', first === 'reload');
+const acts = await p.locator('[data-phc-cutin] button[data-act]').evaluateAll((bs) => bs.map((b) => b.getAttribute('data-act')));
+ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.join(' | '), acts.length === 4 && acts[1] === 'shot' && acts[2] === 'move' && new Set(acts).size === 4);
 await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' });
 // customise from the card (C), then reset
 await p.keyboard.press('c'); await dlg.waitFor({ timeout: 4000 });
