@@ -1,18 +1,18 @@
 {
-  "status": "in-progress",
-  "observed_utc": "2026-11-07T00:45:25.879761+00:00",
+  "status": "generated-awaiting-final-validation",
+  "observed_utc": "2026-11-07T00:47:25.204322+00:00",
   "target_sequences": 5,
   "target_frames": 36,
   "delivered_sequences": [
     "run",
     "stop",
-    "idle"
+    "idle",
+    "hello",
+    "wave"
   ],
-  "delivered_frames": 16,
-  "remaining_sequences": [
-    "hello"
-  ],
-  "next_sequence": "hello",
+  "delivered_frames": 36,
+  "remaining_sequences": [],
+  "next_sequence": null,
   "production_approved": false,
   "scope": "Wick animation sectionB only; title-screen instructions and art untouched.",
   "continuation": {

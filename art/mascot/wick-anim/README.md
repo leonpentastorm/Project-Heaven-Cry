@@ -1,6 +1,6 @@
 # Wick menu animations — production queue
 
-**16 of 36 frames delivered: run, idle and stop.** The reset has passed and drawing resumed. This is a review candidate, not production approval. Exact state is in [production-progress.json](production-progress.json); the previous quota response is retained in its limit history.
+**36 of 36 frames delivered: run, stop, idle, hello and wave.** The reset has passed and drawing resumed. This is a review candidate, not production approval. Exact state is in [production-progress.json](production-progress.json); the previous quota response is retained in its limit history.
 
 Leon requested only the two animated Wick families in [sectionB of the brief](../../briefs/title-screen.md#b-wicks-menu-animations). Title-screen key art, its instructions and screen implementation are excluded from this run. The source brief is unchanged.
 

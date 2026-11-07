@@ -432,16 +432,408 @@
           "sha256": "f231c58255b422b42c2ed7eb862436629cabbcb11cf6b2d114376d4940bace9a"
         }
       ]
+    },
+    "hello": {
+      "count": 16,
+      "fps": 12,
+      "loop": false,
+      "facing": "right-to-viewer-to-right",
+      "baseline_y": 240,
+      "footfalls_1based": [],
+      "footfalls_0based": [],
+      "root_motion_y": [
+        0,
+        0,
+        -4,
+        -12,
+        -22,
+        -30,
+        -36,
+        -40,
+        -40,
+        -40,
+        -40,
+        -27,
+        -12,
+        0,
+        0,
+        0
+      ],
+      "frames": [
+        {
+          "path": "art/mascot/wick-anim/hello/hello_00.png",
+          "sha256": "f057cfb22758edf0cd47a0aa124e8a7c0729f7345bcf210b873425f6863ffc67",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_00.png",
+            "sha256": "f057cfb22758edf0cd47a0aa124e8a7c0729f7345bcf210b873425f6863ffc67"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_01.png",
+          "sha256": "a0b513ee3535143d2979a618e88cb65e4e7cac353f76d90df9d2f7888472c6c8",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_01.png",
+            "sha256": "a0b513ee3535143d2979a618e88cb65e4e7cac353f76d90df9d2f7888472c6c8"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_02.png",
+          "sha256": "d506d5c3bbfea168b4bc755fd92dd5674a3af6c941248f721b95b591624348cd",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_02.png",
+            "sha256": "5545a9caaa8c0776540a2aa12e4074267043722e6e13bc2b9098974e1aca04a2"
+          },
+          "root_motion_y": -4
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_03.png",
+          "sha256": "f1d4b8e2e511a787172896ba8b5b60f010fa5bd6d56306f03958c0d361ae3bdf",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_03.png",
+            "sha256": "80c0b0f8b0767e2cf9a2c84156b816d0cfa1df19ea5bdec0efa1f6bbc8d579d7"
+          },
+          "root_motion_y": -12
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_04.png",
+          "sha256": "0d6b5f387d29eaf755374959d7145cd4300d67ae9ea6f0451db1bc661d492706",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_04.png",
+            "sha256": "986ca8086c0c6bf89615c6e974f3f14efdfeb5a697d8d3c0410dd039cbe7e055"
+          },
+          "root_motion_y": -22
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_05.png",
+          "sha256": "6903c69bb0c1b54a6a1baf50f3694c6424c2299120e1662f2672fb758b7b605b",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_05.png",
+            "sha256": "d1332d7a97112811eed31d509165a1b0f7e8757fcc1d3394c3678a04d046cff7"
+          },
+          "root_motion_y": -30
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_06.png",
+          "sha256": "94dcf7ac5485600f3ce99b7bdddeccbc15753d3641b6e11362e029709af3711e",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_06.png",
+            "sha256": "8563c4839bf8333d51d2bf1a67f51af45a05ac91da7455a9c8f2fb08c280b79b"
+          },
+          "root_motion_y": -36
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_07.png",
+          "sha256": "ffc028be6e28d45247c14dfb7c54525cd561fd3ecff9007ff0981ed3c2926edb",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_07.png",
+            "sha256": "6f400be5e1ab8bee5d2eed6da44994b48b93e7bece4222d3e8c4068b4fe3046d"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_08.png",
+          "sha256": "f4f5d43dee189dbaf9e520f98445e41e138fd35a3ee14e50374b7d931d6c5613",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_08.png",
+            "sha256": "3910e9410c0b9c57ad819198147c29418908e83e71293d244ea1b01aafbede84"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_09.png",
+          "sha256": "ef00f487c4b9cfdb1d77801827f53130275863a0df2b9a7edf32041814a36870",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_09.png",
+            "sha256": "7c36cbda131c7900ee4b3bdec50c806228218025d7a49b6acc6c33a1ed9babb4"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_10.png",
+          "sha256": "92fe8d2603b6c9d8c291ef4341cef7724d0b69416f5257ccae00dad715e3c685",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_10.png",
+            "sha256": "4f1da8269781eb440e7acb8d5617ad8fcf87b8f0ef907ba39954d0ac2928e7d2"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_11.png",
+          "sha256": "d31bc0ba9b9bc2e363e032eaa2361aa7fa41385cf0288a543d51e6378fd90bd7",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_11.png",
+            "sha256": "ed99a802be0a2500573796febcc4edf83379b1ec0bd43ac8c4b5035780dcec14"
+          },
+          "root_motion_y": -27
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_12.png",
+          "sha256": "19987acb12477e4b7aff38f32801aa51e3215e78a4b0800509b1c494bd238c82",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_12.png",
+            "sha256": "7fad048aa4f157dfa787de6afa2da3d5e2be991048eaf973077a59effe29d58b"
+          },
+          "root_motion_y": -12
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_13.png",
+          "sha256": "21fa6159dbb7e4605a04a9a3216879f63a110f7620f4b28c186fddef73ae1353",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_13.png",
+            "sha256": "21fa6159dbb7e4605a04a9a3216879f63a110f7620f4b28c186fddef73ae1353"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_14.png",
+          "sha256": "3272c33af9e07422a72043179bb3431db8744485b29682d1484bee6771c371b3",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_14.png",
+            "sha256": "3272c33af9e07422a72043179bb3431db8744485b29682d1484bee6771c371b3"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/hello/hello_15.png",
+          "sha256": "60c4944295cb0f81320b45a6d0fc68fd66177bd84dc792feaecdc738a7834dae",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/hello/hello_15.png",
+            "sha256": "60c4944295cb0f81320b45a6d0fc68fd66177bd84dc792feaecdc738a7834dae"
+          },
+          "root_motion_y": 0,
+          "alias_of": "art/mascot/wick-anim/idle/idle_00.png"
+        }
+      ],
+      "strip": {
+        "path": "art/mascot/wick-anim/hello.png",
+        "sha256": "3a48c628060c02511b32e18641eaa57089728c2138687fdc6da0b9f0090ce9d9"
+      },
+      "presentation_strip": {
+        "path": "art/mascot/wick-anim/presentation/hello.png",
+        "sha256": "c03ed16b7ea310cd3d5e60e9a8ac9a369c63c435095e78978f9bf7b5aac71899"
+      },
+      "preview": {
+        "path": "art/mascot/wick-anim/previews/hello.gif",
+        "sha256": "99c7a3217b278d007b149afda6c54fa55edf7926d5e54caeeee83eba81390d3c"
+      },
+      "provenance": {
+        "path": "art/mascot/wick-anim/sources/v1/hello-sheet.png",
+        "sha256": "4c9fef597e494feabd37af230161891939f32c84822160fe942a9b2877e81257",
+        "grid": [
+          4,
+          4
+        ],
+        "order": "row-major",
+        "cell_boxes": [
+          [
+            0,
+            0,
+            312,
+            315
+          ],
+          [
+            312,
+            0,
+            624,
+            315
+          ],
+          [
+            624,
+            0,
+            935,
+            315
+          ],
+          [
+            935,
+            0,
+            1247,
+            315
+          ],
+          [
+            0,
+            315,
+            312,
+            630
+          ],
+          [
+            312,
+            315,
+            624,
+            630
+          ],
+          [
+            624,
+            315,
+            935,
+            630
+          ],
+          [
+            935,
+            315,
+            1247,
+            630
+          ],
+          [
+            0,
+            630,
+            312,
+            946
+          ],
+          [
+            312,
+            630,
+            624,
+            946
+          ],
+          [
+            624,
+            630,
+            935,
+            946
+          ],
+          [
+            935,
+            630,
+            1247,
+            946
+          ],
+          [
+            0,
+            946,
+            312,
+            1261
+          ],
+          [
+            312,
+            946,
+            624,
+            1261
+          ],
+          [
+            624,
+            946,
+            935,
+            1261
+          ],
+          [
+            935,
+            946,
+            1247,
+            1261
+          ]
+        ],
+        "uniform_scale": 0.7751937984496124,
+        "ink_separation": "luminance>=128 and source alpha>=128; white plate with antialiased export edges",
+        "creative_method": "image_gen; technical crop, ink separation, uniform scale and sole registration only"
+      },
+      "reviews": [
+        {
+          "path": "art/mascot/wick-anim/previews/hello-48px-dark.png",
+          "sha256": "dac8760d6945263f1a67e3b086d8f564e9dedd74abac8271f2f4f1019892cf1a"
+        },
+        {
+          "path": "art/mascot/wick-anim/previews/hello-48px-light.png",
+          "sha256": "0824300db5f9f455d1316747b5490e98af167eb6cc762a755ba3dff01d4ca350"
+        }
+      ]
+    },
+    "wave": {
+      "count": 4,
+      "fps": 10,
+      "loop": true,
+      "facing": "viewer",
+      "baseline_y": 240,
+      "footfalls_1based": [],
+      "footfalls_0based": [],
+      "root_motion_y": [
+        -40,
+        -40,
+        -40,
+        -40
+      ],
+      "frames": [
+        {
+          "path": "art/mascot/wick-anim/wave/wave_00.png",
+          "sha256": "ffc028be6e28d45247c14dfb7c54525cd561fd3ecff9007ff0981ed3c2926edb",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/wave/wave_00.png",
+            "sha256": "6f400be5e1ab8bee5d2eed6da44994b48b93e7bece4222d3e8c4068b4fe3046d"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/wave/wave_01.png",
+          "sha256": "f4f5d43dee189dbaf9e520f98445e41e138fd35a3ee14e50374b7d931d6c5613",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/wave/wave_01.png",
+            "sha256": "3910e9410c0b9c57ad819198147c29418908e83e71293d244ea1b01aafbede84"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/wave/wave_02.png",
+          "sha256": "ef00f487c4b9cfdb1d77801827f53130275863a0df2b9a7edf32041814a36870",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/wave/wave_02.png",
+            "sha256": "7c36cbda131c7900ee4b3bdec50c806228218025d7a49b6acc6c33a1ed9babb4"
+          },
+          "root_motion_y": -40
+        },
+        {
+          "path": "art/mascot/wick-anim/wave/wave_03.png",
+          "sha256": "92fe8d2603b6c9d8c291ef4341cef7724d0b69416f5257ccae00dad715e3c685",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/wave/wave_03.png",
+            "sha256": "4f1da8269781eb440e7acb8d5617ad8fcf87b8f0ef907ba39954d0ac2928e7d2"
+          },
+          "root_motion_y": -40
+        }
+      ],
+      "strip": {
+        "path": "art/mascot/wick-anim/wave.png",
+        "sha256": "b7c9fde5a305e900d6ac9ccf46fae5486eedf667d876b73096dba542649a169c"
+      },
+      "presentation_strip": {
+        "path": "art/mascot/wick-anim/presentation/wave.png",
+        "sha256": "ec9ef8dcea9f8a6cae62db9b27f66f5e6f827de68fd6c710a4dbcaf29bf11ff1"
+      },
+      "preview": {
+        "path": "art/mascot/wick-anim/previews/wave.gif",
+        "sha256": "20a79a560423e3afc391b3f8a96a32a28178c6369a405ff90db8b0db388952b6"
+      },
+      "provenance": {
+        "derived_from": [
+          "hello/hello_07.png",
+          "hello/hello_08.png",
+          "hello/hello_09.png",
+          "hello/hello_10.png"
+        ],
+        "method": "exact generated hello apex reuse, no redraw or mirroring"
+      },
+      "reviews": [
+        {
+          "path": "art/mascot/wick-anim/previews/wave-48px-dark.png",
+          "sha256": "261e80c9277bb04582e586e9aa5448c3dc347c453d50c30e5e7dedb90cc73702"
+        },
+        {
+          "path": "art/mascot/wick-anim/previews/wave-48px-light.png",
+          "sha256": "e869b184dcec4930ebac00a4021af72260f22534045b9a3be38e1b83a3cd8a23"
+        }
+      ]
     }
   },
   "preview": {
     "path": "art/mascot/wick-anim/preview.gif",
-    "sha256": "0e29eda05184324a558e40e00f9e6b68cd991f2ed59d46a53f07075a3688d4cf"
+    "sha256": "5f5d8e007c00a5769af8eee2aa6787dfb7f4b169dc41f07a63085693167dda09"
   },
   "playback_order": [
     "run",
     "stop",
-    "idle"
+    "idle",
+    "hello",
+    "wave"
   ],
-  "delivered_frames": 16
+  "delivered_frames": 36
 }
