@@ -55,13 +55,18 @@ export type HookName =
   | 'reload' | 'jam_clear' | 'swap'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release'
   | 'analyze' | 'action_cost' | 'combat_end'
+  // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
+  // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
+  | 'evoked' | 'release_cost' | 'outburst_hold' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
+  | 'stim_start' | 'volley_end' | 'weapon_actions'
   // rules 1.3 shared subsystems (lane 0B)
   | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung'
   // story
   | 'check_build' | 'check_mod' | 'check_post' | 'check_result' | 'passive'
   | 'voice_cap' | 'ask_limit' | 'overreach_cost' | 'echo_gain'
   | 'scene_change' | 'session_start' | 'rest' | 'xp_grant'
-  | 'notice' | 'stay_hidden' | 'world_move_cost' | 'karma_award';
+  | 'notice' | 'stay_hidden' | 'world_move_cost' | 'karma_award'
+  | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable
  * fields may be changed. Return nothing. */
@@ -99,6 +104,12 @@ export interface ActionDef {
   run(h: Holder, args: ActionArgs, rng: { state: number }): string | null | void;
   /** An armed preset: the action stores u.armed[key] = choice and the engine resolves it off-turn at a hook. */
   arm?: boolean;
+  /** What args.choice takes, so the client can offer it (UI chips): a fixed list, or the holder's Sigil words, squadmates,
+   * Outburst designs or γ skills. pickMulti: how many it may take at once (words: space-separated). */
+  pick?: string[] | 'words' | 'squad' | 'designs' | 'gamma';
+  pickMulti?: number;
+  /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
+  pickLabel?: string;
 }
 
 /** A flag on an existing action (Ricochet, Double or Nothing, Nonlethal…): the player turns it on with `mods`. */
@@ -127,6 +138,8 @@ export interface ItemHandler {
   on?: Partial<Record<HookName, HookFn>>;
   checkMod?(h: Holder, ck: any, ctx: any): CheckMod[] | void;
   actions?: ActionDef[];
+  /** The data's grant_action is run another way (an automatic shot, a toggle): no default action button for it. */
+  noDefaultActions?: boolean;
   toggles?: ToggleDef[];
   /** The Narrator-ruled remainder in about 15 words, or null when the engine runs all of it. */
   brief?(h: Holder): string | null;
@@ -134,5 +147,7 @@ export interface ItemHandler {
 
 /** Story pending rulings: what the Narrator owes or must judge (only sent when non-empty). */
 export interface PendingRuling { id: string; charId: string; key: string; text: string; entryId?: string; scene?: number;
+  /** The check whose roll raised it (check_result): an Echo reroll withdraws it and the new roll decides again. */
+  fromCheck?: string;
   /** The use this ruling spent, refunded if the Narrator refuses it. */
   use?: { per: string; key: string } }

@@ -13,6 +13,7 @@ import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
 import { handlerOf, holdersOf, genericOf, boundGame } from './hooks';
 import { keyOf } from './collect';
+import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling } from './narrator';
 
@@ -64,8 +65,8 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
 
 /** An item's actions: a lane's, when it registered any (they replace the data defaults), else the defaults. */
 export function actionDefs(info: ItemInfo): ActionDef[] {
-  const lane = handlerOf(info.key)?.actions || [];
-  return lane.length ? lane : defaultActions(info);
+  const hd = handlerOf(info.key), lane = hd?.actions || [];
+  return lane.length ? lane : hd?.noDefaultActions ? [] : defaultActions(info);
 }
 
 /** One action as the UI shows it. */
@@ -81,6 +82,8 @@ export interface PerkActionEntry {
   /** Which tab: perks (perks and traits) or class (class moves). cls: the class id, for its emblem. */
   tab: 'perks' | 'class'; cls?: string; arm?: boolean; armed?: any;
   tier: string;
+  /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
+  options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
 }
 type Who = { u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -104,7 +107,18 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
-    arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier };
+    arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
+    ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}) };
+}
+/** The choices an action's pick offers this holder (ids are what args.choice takes). */
+function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
+  const p = d.pick, c = h.c;
+  if (Array.isArray(p)) return p.map((x) => ({ id: x, label: human(x) }));
+  if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
+  if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
+  if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
+  if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
+  return [];
 }
 function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
   void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action') : [];

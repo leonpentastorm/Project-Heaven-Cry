@@ -4,7 +4,7 @@
 //
 // Every item runs every tier in combat, on the area map where it applies, and its story part where it has one; what
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
-// section 6) are marked PROVISIONAL and listed in docs/rules/pending/lane-c.md.
+// section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
@@ -144,12 +144,12 @@ register({
       const d = h.u, cb = h.cb; if (!d || !cb || ctx.preview || !inFight(h)) return;
       const st = stateOf(h);
       if (ctx.u === d) { if (st.throwing) ctx.ap = 0; return; } // the throw back's AP is the action's own
-      if (ctx.radius < 0 || ctx.u.side === d.side || !alive(d) || st.caught || !canReact(cb, d)) return;
+      if (ctx.cancel || ctx.u.side === d.side || !alive(d) || st.caught || !canReact(cb, d)) return;
       if ((WEAPON[ctx.item]?.properties || []).includes('placed')) return;
       const covered = ctx.tile === d.pos || cb.units.some((v) => v !== d && v.side === d.side && alive(v) && v.pos === ctx.tile && dist(v.pos, d.pos) <= 1);
       if (!covered) return;
       useReaction(cb, d);
-      ctx.radius = -1; // nothing is caught in it (see the lane notes: the throw hook has no cancel yet)
+      ctx.cancel = true; ctx.caughtBy = d; // no blast, no fire left on the tile
       st.caught = { item: ctx.item, by: ctx.u.id, round: cb.round, seen: false };
       (d.throwables ||= {})[ctx.item] = (d.throwables[ctx.item] || 0) + 1;
       say(cb, d.name + ' catches the ' + (WEAPON[ctx.item]?.name || ctx.item).toLowerCase() + ' out of the air (Catch)!');
@@ -413,7 +413,7 @@ register({
         say(h.cb, c.name + ' strips and rebuilds the ' + (WEAPON[c.weapon]?.name || 'weapon').toLowerCase() + ' (Overhaul): full durability.');
         return null;
       } },
-    { id: 'extra_slot', label: 'Overhaul: extra mod slot', scope: ['story', 'world'], ap: 0, target: 'none',
+    { id: 'extra_slot', label: 'Overhaul: extra mod slot', pickLabel: 'The mod in your pack (its id)', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'After a long rest: your weapon gains a permanent second slot of a type it has (once per weapon). Pick the mod from your pack to fit there.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon]) return false; if (cs(c).overhauled?.[c.weapon]) return 'This weapon already has its extra slot.'; return cs(c).overhaulBench ? true : 'After a long rest.'; },
       preview: (h, args) => { const e = extraFitCheck(h.c!, args.choice, 1); return e ? { ok: false, why: e } : {}; },
@@ -459,7 +459,7 @@ function fitExtra(c: Character, choice: string | undefined, why: string): string
   void why; return null;
 }
 const extraModAction = (label: string, avail: (h: Holder) => boolean | string) => ({
-  id: 'extra_mod', label, scope: ['story', 'world'] as ('story' | 'world')[], ap: 0, target: 'none' as const,
+  id: 'extra_mod', label, scope: ['story', 'world'] as ('story' | 'world')[], pickLabel: 'The mod in your pack (its id)', ap: 0, target: 'none' as const,
   text: 'Fit a second mod in a slot type your weapon already has (out of combat).',
   available: (h: Holder) => (!h.c ? false : avail(h)),
   preview: (h: Holder, args: any) => { const e = extraFitCheck(h.c!, args.choice); return e ? { ok: false, why: e } : {}; },
@@ -560,7 +560,7 @@ register({
       for (const v of cb.units) { const c = v.charId ? g.characters?.[v.charId] : null, b = c ? cs(c).holyBless : null; if (b && blessable(v)) { (v.ps ||= {})[BLESS] = { mult: b.mult, loaded: true, spare: b.mags - 1 }; delete charState(c).holyBless; } }
     },
     damage_out: (ctx, h) => {
-      const b = ctx.att?.ps?.[BLESS]; if (!b || !b.loaded || ctx.melee || ctx._holy || !holyFoe(ctx.tgt)) return;
+      const b = ctx.att?.ps?.[BLESS]; if (!b || !b.loaded || ctx.melee || ctx.spell || ctx._holy || !holyFoe(ctx.tgt)) return;
       ctx.vs.push({ v: Math.round((b.mult - 1) * 100) / 100, label: 'Holy Ordnance' }); ctx._holy = true;
     },
     reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b) return; b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
@@ -614,6 +614,7 @@ const analogBan = (u: Unit): string | null => { const w: any = WEAPON[u.weapon];
   return null; };
 register({
   id: 'old_school', claims: [2],
+  stat: (h, stat, ctx) => (stat === 'hide_weapon_skill' && /fan the hammer/i.test(ctx?.skill || '') ? 1 : 0), // the trait's Fan the Hammer replaces the gun's
   actions: [{
     id: 'fan', label: 'Fan the Hammer (every round)', scope: ['combat'], ap: 3, target: 'enemy', uses: { per: 'per_turn', n: 1 },
     text: '3 AP: every round still loaded at one target, each at −2 (Recoil applies).',
@@ -916,11 +917,11 @@ register({
     },
     on_damaged: (ctx, h) => {
       const u = h.u, cb = h.cb; if (ctx.t !== u || !u || !cb || u.dead || u.downed) return;
-      const src = ctx.src || {}, lightning = ['lightning', 'emp'].includes(src.dmgType) || (['sigil', 'elemental'].includes(src.type) && (() => { const fx = cb.fx || []; for (let i = fx.length - 1; i >= 0; i--) if (fx[i].k === 'evoke') return (fx[i].words || []).some((w: string) => w === 'shock' || w === 'spark'); return false; })());
+      const src = ctx.src || {}, lightning = ['lightning', 'emp'].includes(src.dmgType); // SHOCK and SPARK carry dmgType lightning (magic.ts harm)
       if (lightning) say(cb, '(Jacked In: the implant shorts' + applyCond(cb, rngOf(h), src.by || null, u, 'stunned', 1, undefined, { skipSave: true }) + ')');
     },
     throw: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!u || !cb || ctx.preview || ctx.item !== 'bot_scrambler' || ctx.radius < 0 || dist(u.pos, ctx.tile) > ctx.radius) return;
+      const u = h.u, cb = h.cb; if (!u || !cb || ctx.preview || ctx.item !== 'bot_scrambler' || ctx.cancel || dist(u.pos, ctx.tile) > ctx.radius) return;
       say(cb, '(Jacked In: the scrambler fries the implant' + applyCond(cb, rngOf(h, ctx), ctx.u, u, 'stunned', 1, undefined, { skipSave: true }) + ')');
     },
     spot: (ctx, h) => { if (ctx.u === h.u && isMachine(ctx.by)) ctx.tn -= 2; },

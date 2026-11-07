@@ -3,7 +3,7 @@
 // Achieved: Charge!, Make Way, Sixth Sense, Just the Repairman, Silent Partner, Dead Signal; Ultimates: War Footing,
 // Last Charge. Traits: Forlorn Hope, Drill Echo, Ghost Soldier, Lowland Born, Live to Fight Another Day.
 //
-// Every number the data or the spec doesn't give is provisional and listed in docs/rules/pending/lane-b.md (the open
+// Every number the data or the spec doesn't give is provisional and listed in the spec (section 14, tags B…) and docs/design/perk-runtime.md (the open
 // items for spec section 14). Randomness comes from the rng the hook passes, else the bound game's rng (g.rng), so the
 // engine stays deterministic. What the engine can't run goes to the Narrator: a fight note, a pending ruling, or the
 // item's brief() remainder in the character brief.
@@ -132,7 +132,7 @@ register({
     path_opts: (o, h) => {
       if (o.u !== h.u || !h.u) return;
       const run = runnableTiles(o.cb); for (const k of run) o.runnable.add(k);
-      (o.noStop ||= new Set<string>()); for (const k of run) o.noStop.add(k); // for paths() once it honours noStop (lane B notes)
+      if (!stateOf(h).mid) { (o.noStop ||= new Set<string>()); for (const k of run) o.noStop.add(k); } // paths() never ends a move on them (a mid-run strike may)
     },
     move_cost: (ctx, h) => {
       if (ctx.u !== h.u) return;
@@ -490,7 +490,7 @@ register({
       const g = gameOf(h), s = stateOf(h), who = String(ctx.ck.target || ctx.ck.npc || ''), scene = g?.story?.scene?.n;
       if (who && s.unmoved?.[who] === scene && ctx.auto !== 'success') { ctx.auto = 'fail'; ctx.labels.push('War Footing: ' + who + ' is unmoved this scene'); return; }
       const ok = ctx.auto === 'success' || (ctx.auto !== 'fail' && (ctx.die === 20 || (ctx.die !== 1 && ctx.die + ctx.mod >= ctx.tn)));
-      if (!ok) ctx.labels.push('costs nothing (War Footing)');
+      if (!ok) { ctx.labels.push('costs nothing (War Footing)'); ctx.noFumble = true; } // no CRITICAL FAIL head
     },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !intimidates(ctx.ck) || !ctx.roll || ctx.roll.ok) return;
@@ -541,9 +541,14 @@ register({
     stay_hidden: (ctx, h) => {
       if (ctx.c !== h.c || !carriesToolbox(h.c)) return;
       const g = gameOf(h); if (!g) return; const s = stateOf(h), scene = g.story?.scene?.n, nid = ctx.npc?.id;
-      if (nid && (s.passed ||= {})[nid] === scene) { ctx.tn = -99; return; }
+      if (nid && (s.passed ||= {})[nid] === scene && ctx.auto !== 'fail') ctx.auto = 'success'; // taken for staff: no roll again
+    },
+    // The d100 only on a failed Ingenuity roll (stay_hidden_result).
+    stay_hidden_result: (ctx, h) => {
+      if (ctx.c !== h.c || ctx.ok || ctx.auto || !carriesToolbox(h.c)) return;
+      const g = gameOf(h); if (!g) return; const s = stateOf(h), scene = g.story?.scene?.n, nid = ctx.npc?.id;
       const r = die(g.rng, 100); if (r > 50) return;
-      if (nid) s.passed[nid] = scene; ctx.tn = -99;
+      if (nid) (s.passed ||= {})[nid] = scene; ctx.ok = true; ctx.labels.push('taken for staff');
       postStory(h, (ctx.npc?.name || 'The guard') + ' takes them for maintenance staff (d100 ' + r + ' ≤ 50).', { kind: 'system' });
       note(h, (ctx.npc?.name || 'a guard') + ' took ' + h.c!.name + ' for maintenance staff: the cover holds until they act unlike a repairman.');
     },
@@ -639,7 +644,8 @@ register({
     },
     run: (h, a) => {
       const o = deviceAt(h, a)!, cb = h.cb!, k: any = o; k.disabled = true;
-      if (kindOf(o).light) k.hp = 0; // a dead lamp lights nothing (lightOf reads hp; see the notes)
+      if (ow(cb) && h.g?.story) h.g.story.quiet = true; // no notice check after it on the area map
+      // a dead lamp lights nothing (lightOf reads disabled)
       if (o.locked) o.locked = false;
       log(cb, (h.c?.name || h.u!.name) + ' kills the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + ' without a sound (Dead Signal).');
       note(h, 'Dead Signal: the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + ' is silently disabled; nobody noticed. What it ran is yours.');

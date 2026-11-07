@@ -89,7 +89,8 @@
       "tags": [
         "defense",
         "positioning"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "shrug_it_off",
@@ -187,7 +188,8 @@
       "tags": [
         "cleanse",
         "self"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "used_to_the_pain",
@@ -277,7 +279,8 @@
       "recovered": "recovered",
       "tags": [
         "ap"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "scar_tissue",
@@ -365,7 +368,8 @@
       "tags": [
         "defense",
         "stacking"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "wind_on_the_skin",
@@ -538,10 +542,6 @@
           "uses": "at_will"
         },
         {
-          "op": "ignore_cover",
-          "context": "breaching_strike"
-        },
-        {
           "op": "knockback",
           "tiles": 1,
           "target": "target"
@@ -615,7 +615,8 @@
       "tags": [
         "melee",
         "forced_movement"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "grapple",
@@ -713,7 +714,8 @@
       "tags": [
         "melee",
         "control"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "into_the_dark",
@@ -793,7 +795,8 @@
       "tags": [
         "exploration",
         "ap"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "iron_stomach",
@@ -871,7 +874,8 @@
       "recovered": null,
       "tags": [
         "resistance"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "grim_reaper",
@@ -1056,7 +1060,8 @@
       "tags": [
         "social",
         "interrogation"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "wall_run",
@@ -1127,7 +1132,8 @@
       "recovered": null,
       "tags": [
         "mobility"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "roll_with_it",
@@ -1204,7 +1210,8 @@
       "tags": [
         "mobility",
         "dodge"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "origami_hands",
@@ -1295,7 +1302,8 @@
       "tags": [
         "crafting",
         "traps"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "running_reload",
@@ -1375,7 +1383,8 @@
       "tags": [
         "guns",
         "ap"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "rounding_up",
@@ -1450,7 +1459,8 @@
       "recovered": "recovered",
       "tags": [
         "ap"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "catch",
@@ -1542,7 +1552,8 @@
       "tags": [
         "reaction",
         "grenades"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "sleight_of_hand",
@@ -1620,7 +1631,8 @@
       "tags": [
         "stealth",
         "utility"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "shadow_step",
@@ -1700,7 +1712,8 @@
       "tags": [
         "stealth",
         "mobility"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "jury_rig",
@@ -1777,7 +1790,8 @@
       "tags": [
         "tech",
         "repair"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "hot_swap",
@@ -1851,7 +1865,8 @@
       "tags": [
         "ap",
         "weapons"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "got_you_in_my_sight",
@@ -1946,7 +1961,8 @@
       "tags": [
         "ap",
         "detection"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "eyes_in_the_back",
@@ -2022,7 +2038,8 @@
       "recovered": null,
       "tags": [
         "defense"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "hold_the_stroke",
@@ -2169,7 +2186,8 @@
       "tags": [
         "sigil",
         "ap"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "footnote",
@@ -2261,7 +2279,8 @@
       "tags": [
         "support",
         "knowledge"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "lab_coat",
@@ -2341,7 +2360,8 @@
       "tags": [
         "resistance",
         "chemistry"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "overruled",
@@ -2592,7 +2612,8 @@
       "tags": [
         "illusion",
         "control"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "blueprint",
@@ -2676,7 +2697,8 @@
       "tags": [
         "support",
         "planning"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "detectives_eye",
@@ -2743,7 +2765,8 @@
       "recovered": "recovered_name",
       "tags": [
         "investigation"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "pattern_lock",
@@ -2921,7 +2944,8 @@
       "tags": [
         "ap",
         "social"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "crowd_pleaser",
@@ -2999,7 +3023,8 @@
       "tags": [
         "social",
         "crowd"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "shared_breath",
@@ -3092,7 +3117,8 @@
       "tags": [
         "support",
         "heart"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "lay_down_arms",
@@ -3122,11 +3148,12 @@
         },
         {
           "op": "condition",
-          "condition": "disarmed",
+          "condition": "commanded",
           "target": "target",
           "save": "heart",
           "rounds": 1,
-          "filter": "humanoid, can hear you"
+          "filter": "humanoid, can hear you",
+          "arg": "hold"
         }
       ],
       "tiers": {
@@ -3190,7 +3217,8 @@
       "tags": [
         "control",
         "heart"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "soulmate",
@@ -3279,7 +3307,8 @@
       "tags": [
         "tank",
         "bond"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "rally_cry",
@@ -3359,7 +3388,8 @@
       "tags": [
         "ap",
         "support"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "sweet_talker",
@@ -3445,7 +3475,8 @@
       "tags": [
         "ap",
         "social"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "double_meaning",
@@ -3534,7 +3565,8 @@
       "tags": [
         "social",
         "coordination"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "heart_overload",
@@ -3608,7 +3640,8 @@
       "tags": [
         "soul_magic",
         "sacrifice"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "resonance",
@@ -3756,7 +3789,8 @@
       "tags": [
         "lore",
         "language"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "rite_in_the_field",
@@ -3830,7 +3864,8 @@
       "tags": [
         "ap",
         "ritual"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "you_get_used_to_it",
@@ -3992,7 +4027,8 @@
       "recovered": null,
       "tags": [
         "debuff"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "litany",
@@ -4183,7 +4219,8 @@
         "support",
         "faith",
         "guns"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "red_line",
@@ -4276,7 +4313,8 @@
       "tags": [
         "resistance",
         "morality"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "clean_hands",
@@ -4353,7 +4391,8 @@
       "tags": [
         "ap",
         "morality"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "outclassed",
@@ -4520,7 +4559,8 @@
       "tags": [
         "social",
         "politics"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "last_wall",
@@ -4976,7 +5016,7 @@
         {
           "op": "action_cost",
           "action": "field_repair",
-          "value": 1
+          "set": 1
         },
         {
           "op": "stat_mult",
@@ -5346,8 +5386,9 @@
         {
           "op": "stat_mod",
           "stat": "hand_off_ap_max",
-          "value": "any",
-          "context": "ally within 3 tiles, once per round"
+          "value": 3,
+          "context": "ally within 3 tiles, once per round",
+          "note": "capped at 3: more is lost to the +3 perk-AP cap (provisional)"
         },
         {
           "op": "reaction",
@@ -5461,7 +5502,7 @@
         {
           "op": "damage_mult",
           "value": 1.5,
-          "target": "allies",
+          "target": "self_and_allies",
           "context": "vs the named being, rest of the scene",
           "uses": "per_session"
         },
@@ -5685,7 +5726,8 @@
       "tags": [
         "mobility",
         "melee"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "make_way",
@@ -5732,7 +5774,8 @@
       "tags": [
         "mobility",
         "presence"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "just_the_repairman",
@@ -5774,7 +5817,8 @@
       "tags": [
         "stealth",
         "disguise"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "spoon_feed",
@@ -5828,7 +5872,8 @@
       "tags": [
         "support",
         "sigil"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "cultured",
@@ -5925,7 +5970,8 @@
       "tags": [
         "healing",
         "tech"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "dance_of_iron",
@@ -5968,7 +6014,8 @@
       "tags": [
         "guns",
         "dodge"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "cold_read",
@@ -6057,7 +6104,8 @@
       "tags": [
         "faith",
         "debuff"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "silent_partner",
@@ -6098,7 +6146,8 @@
       "tags": [
         "stealth",
         "support"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "verse_of_war",
@@ -6190,7 +6239,8 @@
       "tags": [
         "reaction",
         "initiative"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "siege_engine",
@@ -6221,12 +6271,12 @@
       "text": "Shove and Break cost 1 AP less, and nothing can knock you back.",
       "effects": [
         {
-          "op": "cost_mod",
+          "op": "action_cost",
           "action": "shove",
           "value": -1
         },
         {
-          "op": "cost_mod",
+          "op": "action_cost",
           "action": "break",
           "value": -1
         },
@@ -6243,7 +6293,8 @@
       "tags": [
         "melee",
         "terrain"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "dead_signal",
@@ -6288,7 +6339,8 @@
       "tags": [
         "tech",
         "stealth"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "twin_souls",
@@ -6334,7 +6386,8 @@
       "tags": [
         "soul_magic",
         "lore"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "the_voice",
@@ -6359,7 +6412,7 @@
         }
       ],
       "excludes": [],
-      "ap_cost": null,
+      "ap_cost": 0,
       "uses": "per_session",
       "deed": "stare down an enemy officer until they back off.",
       "text": "Once per session, give an order in combat; enemy rank-and-file who fail a Heart save obey it for one action.",
@@ -6367,7 +6420,7 @@
         {
           "op": "grant_action",
           "action": "the_voice",
-          "ap": null,
+          "ap": 0,
           "uses": "per_session"
         },
         {
@@ -6383,7 +6436,8 @@
       "tags": [
         "command",
         "control"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "bite_the_bullet",
@@ -6549,12 +6603,13 @@
           }
         }
       ],
-      "adjudication": "engine",
+      "adjudication": "hybrid",
       "recovered": "recovered",
       "tags": [
         "presence",
         "control"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "last_charge",
@@ -6595,7 +6650,8 @@
       "tags": [
         "melee",
         "shield"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "angel_of_the_trenches",
@@ -6630,7 +6686,8 @@
       "tags": [
         "healing",
         "reaction"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "every_lie_is_a_door",
@@ -6662,7 +6719,8 @@
       "tags": [
         "infiltration",
         "social"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "twin_discipline",
@@ -6696,7 +6754,8 @@
       "tags": [
         "sigil",
         "soul_magic"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "supreme_command",
@@ -6713,7 +6772,7 @@
         }
       ],
       "excludes": [],
-      "ap_cost": null,
+      "ap_cost": 0,
       "uses": "per_combat",
       "flavour": "Five stars, and nobody looks you in the eye.",
       "text": "Once per combat, give one order to the whole squad. Every ally takes a free 2 AP action immediately.",
@@ -6721,7 +6780,7 @@
         {
           "op": "grant_action",
           "action": "supreme_command",
-          "ap": null,
+          "ap": 0,
           "uses": "per_combat"
         },
         {
@@ -6736,7 +6795,8 @@
       "tags": [
         "command",
         "ap"
-      ]
+      ],
+      "provisional": true
     }
   ]
 }

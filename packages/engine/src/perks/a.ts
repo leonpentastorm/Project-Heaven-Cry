@@ -5,7 +5,7 @@
 //
 // Every item runs both tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
-// (plan section 6) are marked PROVISIONAL here and listed in docs/rules/pending/lane-a.md.
+// (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags A…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
 import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
@@ -16,7 +16,7 @@ import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily } from '../magic';
 import { die, d20 } from '../rng';
 import { setStoryCond, storyConds } from '../game';
-import { reveal, PATRON, blessing as blessingFn } from '../tactics';
+import { reveal, PATRON } from '../tactics';
 
 // ---------- small helpers ----------
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -343,8 +343,12 @@ register({
   id: 'walking_wounded', claims: 'all',
   stat: (h, stat) => (stat === 'move' && h.c && legInjured(h.c) ? baseMove(h.c) * 0.5 : 0),
   on: {
-    damage_in: (ctx, h) => { if (ctx.phase === 'after' && ctx.t === h.u && ctx.src?.crit) wwSnap(h); },
-    on_hit: (ctx, h) => { if (ctx.tgt === h.u && ctx.crit && h.cb) wwUndo(h, lastLine(h.cb)); },
+    // A critical's injury: the 'injury' hook keeps the wound but not its Daze or the halved Movement.
+    injury: (ctx, h) => {
+      if (ctx.t !== h.u) return;
+      if (ctx.loc === 'head') { ctx.noDaze = true; say(h.cb, h.u!.name + ' shrugs off the blow to the head (Walking Wounded).'); }
+      if (ctx.loc === 'leg') { ctx.noHalve = true; say(h.cb, h.u!.name + ' walks on the bad leg (Walking Wounded).'); }
+    },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') wwSnap(h); },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') { const st = stateOf(h); if (st.snap) { const legs = (h.u!.injuries || []).filter((i) => i.loc === 'leg').length; wwUndo(h, h.u!.dazedNext && !st.snap.daz ? 'head, Dazed' : legs > st.snap.legs ? 'leg' : ''); } } },
     turn_start_pre: (ctx, h) => { if (ctx.u === h.u && !h.u!.downed && bloodied(h.u!)) ctx.grants.push({ n: 1, why: 'Walking Wounded' }); },
@@ -420,7 +424,8 @@ register({
 // ======================================================================================================== TRAITS
 
 // ---------- Pain Eater ----------
-// Bloodied (below half max HP): ×1.5 damage dealt (weapons; Sigil, Soul and Elemental damage too). Fresh (above half):
+// Bloodied (below half max HP): ×1.5 damage dealt (weapons; Sigil, Soul and Elemental damage too, through harm()'s
+// damage_out, before armour). Fresh (above half):
 // ×1.5 damage taken from every source, after armour. At exactly half, neither.
 register({
   id: 'pain_eater', claims: [0, 1],
@@ -428,7 +433,6 @@ register({
     damage_out: (ctx, h) => { if (ctx.att === h.u && bloodied(h.u!)) ctx.mults.push({ v: 1.5, label: 'Pain Eater (Bloodied)' }); },
     damage_in: (ctx, h) => {
       if (ctx.phase !== 'reduce') return;
-      if (ctx.src?.by === h.u && ctx.t !== h.u && magicSrc(ctx.src) && bloodied(h.u!)) ctx.dmg *= 1.5;
       if (ctx.t === h.u && fresh(h.u!)) ctx.dmg *= 1.5;
     },
   },
@@ -442,18 +446,13 @@ register({
 // minutes out of a fight. An ally repairing you is a listed gap (actions can't yet be granted to others).
 // Plug: heals ×0.5 (here, so a healing Blessing is halved once, not twice), Blessings at half power, lightning and EMP ×2 (generic). "Some humans won't talk to a
 // machine" is the Narrator's.
-let blessGuard = false;
 register({
   id: 'factory_made', claims: [0, 3, 4, 5], narrator: [2],
   on: {
-    heal_in: (ctx, h) => { if (ctx.t === h.u && !blessGuard) ctx.n = ctx.n * 0.5; },
+    heal_in: (ctx, h) => { if (ctx.t === h.u && ctx.kind !== 'blessing') ctx.n = ctx.n * 0.5; }, // a Blessing's heal is already at half power
     combat_start: (ctx, h) => { if (h.u) { const l = (h.u.hazardImmune ||= []); if (!l.includes('toxic')) l.push('toxic'); } },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && /^(poison|poisoned|toxin|suffocat)/.test(ctx.id)) { ctx.cancel = true; ctx.why = 'Factory Made'; } },
-    blessing_in: (ctx, h) => {
-      if (ctx.t !== h.u || blessGuard || ctx.handled || !h.cb) return;
-      blessGuard = true;
-      try { ctx.out = blessingRerun(h.cb, ctx, 0.5); ctx.handled = true; } finally { blessGuard = false; }
-    },
+    blessing_in: (ctx, h) => { if (ctx.t === h.u && !ctx.handled) ctx.power = (ctx.power ?? 1) * 0.5; }, // Plug: half power (tactics.ts reads it back)
   },
   actions: [
     {
@@ -482,11 +481,6 @@ register({
   ],
   brief: () => 'some humans won\'t talk to a machine; suffocation doesn\'t touch them',
 });
-/** Run a Blessing again at a multiple of its power (Plug: half; the guard stops this handler hearing itself). */
-function blessingRerun(cb: Combat, ctx: any, mult: number): string {
-  // tactics.ts blessing() is the one runner; it fires blessing_in again, which the guard lets through to the others.
-  return blessingFn(cb, ctx.rng, ctx.u, ctx.t, ctx.blessing, ctx.power * mult);
-}
 
 // ---------- Glass Runner ----------
 // Runner: +5 Initiative (generic). The first Move each combat: its first 1 AP of tiles is free (PROVISIONAL, plan 6
@@ -532,7 +526,7 @@ register({
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },
     notice: (ctx, h) => { if (ctx.c === h.c) stateOf(h).dark = !!ctx.dark; },
-    stay_hidden: (ctx, h) => { if (ctx.c === h.c && !stateOf(h).dark) { ctx.tn = 99; ctx.mod = -99; } },
+    stay_hidden: (ctx, h) => { if (ctx.c === h.c && !stateOf(h).dark) ctx.auto = 'fail'; },
   },
   brief: () => 'one size larger; no vents, crawlspaces, small doors, lifts, light vehicles; double rations',
 });
@@ -556,7 +550,7 @@ register({
       h.u!.hp = Math.min(h.u!.maxHp, h.u!.hp + back); say(h.cb, 'Chitin turns part of the blow: ' + back + ' back (Crawler-Blooded).');
     },
     blessing_in: (ctx, h) => {
-      if (ctx.t !== h.u || blessGuard || !h.cb) return;
+      if (ctx.t !== h.u || !h.cb) return;
       const p = PATRON[h.c?.patron || ''] || Object.values(PATRON).find((x: any) => (x.blessings || []).includes(ctx.blessing));
       if ((p as any)?.faction !== 'lumeri') return;
       const r = applyDamage(h.cb, h.u!, 10, { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
@@ -611,7 +605,6 @@ register({
     on_kill: (ctx, h) => { if (ctx.by === h.u) { const st = stateOf(h); st.kos = (st.kos || 0) + 1; } },
     damage_out: (ctx, h) => { if (ctx.att === h.u && blaze(h)) ctx.mults.push({ v: 1 + blaze(h), label: 'Blaze (The Brightest Light)' }); },
     damage_in: (ctx, h) => {
-      if (ctx.phase === 'reduce' && ctx.src?.by === h.u && ctx.t !== h.u && magicSrc(ctx.src) && blaze(h)) ctx.dmg *= 1 + blaze(h);
       if (ctx.phase === 'after' && ctx.t === h.u && ctx.dealt > 0) stateOf(h).part = true;
     },
     attack_roll: (ctx, h) => { if (ctx.att === h.u) { stateOf(h).part = true; wearSync(h); } },
@@ -633,8 +626,8 @@ register({
 // ---------- Squad Anchor ----------
 // Hold Fast: allies within 2 tiles (3 if the anchor hasn't moved on its turn in progress, or on its last turn when it
 // isn't its turn) get +1 on condition saves and +1 Defense. Two anchors don't stack. Fixed Point: on a turn the anchor
-// moves more than 2 tiles, the aura is off until its next turn and that turn starts with −1 AP. Death saves: a listed
-// gap (the death save reads only the Downed unit's own items).
+// moves more than 2 tiles, the aura is off until its next turn and that turn starts with −1 AP. Death saves: +1 too
+// (the 'death_save' hook asks every unit's items).
 function anchorRange(h: Holder): number {
   const st = stateOf(h), u = h.u!, mine = !!h.cb && h.cb.order[h.cb.turn] === u.id;
   if (st.broken) return 0;
@@ -646,6 +639,7 @@ register({
   on: {
     attack_preview: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
     cond_apply: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.t)) { ctx._anchor = true; ctx.saveAdd = (ctx.saveAdd || 0) + 1; } },
+    death_save: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.u)) { ctx._anchor = true; ctx.add += 1; } },
     moved: (ctx, h) => {
       if (ctx.u !== h.u || ctx.forced || !inFight(h)) return; const st = stateOf(h); st.cur = (st.cur || 0) + (ctx.tiles || 0);
       if (st.cur > 2 && !st.broken) { st.broken = true; st.pen = 1; say(h.cb, h.u!.name + ' leaves the line (Squad Anchor): the aura drops until their next turn.'); }
@@ -688,7 +682,7 @@ register({
     },
   },
   actions: [{
-    id: 'augment_pick', label: 'Choose your augment', scope: ['story', 'world'], target: 'none', ap: 0,
+    id: 'augment_pick', label: 'Choose your augment', pick: ['arm', 'eye', 'legs'], pickLabel: 'Arm, eye or legs', scope: ['story', 'world'], target: 'none', ap: 0,
     text: 'Pick your chrome once: arm (+20% Physical damage), eye (+2 Vision, sight in the dark) or legs (+1 Movement, jumps).',
     available: (h) => (augOf(h) ? false : true),
     preview: (_h, a) => (AUG.includes(String(a.choice)) ? { lines: ['The ' + a.choice + ' augment.'] } : { ok: false, why: 'Choose arm, eye or legs.' }),
@@ -700,19 +694,22 @@ register({
 // ---------- Southern Fist ----------
 // These Hands: with an unarmed weapon in the main hand and no weapon in the off hand: +1 AP each turn (within the +3
 // cap) and ×1.2 damage on unarmed strikes. Not That: every attack with any other weapon costs +1 AP (a gun's melee
-// strike uses fists and is exempt; Overwatch reactions are free). The overworld round's AP and burst/full-auto costs
-// are listed gaps.
+// strike uses fists and is exempt; Overwatch reactions are free). Bursts, full auto, weapon skills and paired attacks
+// price their AP through attack_preview too (combat.ts volleyAp); the area map's round gets +1 through round_ap.
 const unarmed = (id?: string | null) => !!id && WEAPON[id]?.category === 'unarmed';
 const glovesOnly = (u: Unit) => unarmed(u.weapon) && !u.offWeapon;
 register({
   id: 'southern_fist', claims: 'all',
   on: {
     turn_start_pre: (ctx, h) => { if (ctx.u === h.u && glovesOnly(h.u!)) ctx.grants.push({ n: 1, why: 'Southern Fist' }); },
+    round_ap: (ctx, h) => { const c = h.c; if (ctx.c !== c || !c || WEAPON[c.weapon]?.category !== 'unarmed' || (c.offHand && WEAPON[c.offHand.id])) return; ctx.ap += 1; ctx.lines.push('Southern Fist'); }, // the area map's round
     damage_out: (ctx, h) => { if (ctx.att === h.u && glovesOnly(h.u!) && unarmed(ctx.src?.weapon)) ctx.mults.push({ v: 1.2, label: 'These Hands (Southern Fist)' }); },
     attack_preview: (ctx, h) => {
       if (ctx.att !== h.u || ctx.free) return;
       const w = WEAPON[h.u!.weapon], used = ctx.mode === 'melee' && w && !isMelee(w) ? 'fists' : h.u!.weapon;
-      if (!unarmed(used)) ctx.ap += 1;
+      // A paired attack swings both hands: either one holding another weapon is an attack with it (+1 once).
+      const off = ctx.mode === 'paired' && h.u!.offWeapon && !unarmed(h.u!.offWeapon);
+      if (!unarmed(used) || off) ctx.ap += 1;
     },
   },
   brief: () => null,

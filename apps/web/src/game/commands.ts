@@ -249,3 +249,14 @@ export function openCustomise(charId: string | null | undefined) {
 }
 /** For tests. */
 export const _resetPrefCache = () => { prefCache = null; };
+
+/** A perk action's detail as its choice: an option's id when the text names one (several, space-separated, for a
+ * multi pick like Three-Cut Script), else the text as typed. */
+export function pickChoice(e: { options?: { id: string; label: string }[]; pickMulti?: number }, det: string): string {
+  const opts = e.options || [], one = (w: string) => { const x = String(w).toLowerCase(), o = opts.find((p) => p.id.toLowerCase() === x || p.label.toLowerCase() === x); return o ? o.id : w; };
+  return (e.pickMulti || 1) > 1 ? det.split(/[\s,·]+/).filter(Boolean).map(one).join(' ') : one(det);
+}
+/** Does this action want a detail (a pick, words, a name, what you say)? */
+export function wantsDetail(e: { options?: unknown[]; pickLabel?: string; target?: string }, pv?: { ok: boolean; why?: string } | null): boolean {
+  return !!((e.options && e.options.length) || e.pickLabel || ['text', 'npc'].includes(e.target || '') || (pv && !pv.ok && /\b(name|pick|choose|type|say|word)/i.test(pv.why || '')));
+}

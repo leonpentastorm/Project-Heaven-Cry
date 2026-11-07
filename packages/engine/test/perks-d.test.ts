@@ -79,8 +79,8 @@ describe('Heart Overload', () => {
     const f = soulFight({ heart_overload: 'II' }); f.pc.maxHp = 999; f.pc.hp = 500;
     f.pc.mg!.designs.push({ id: 'mend', name: 'Mend', school: 'buff', option: 'heal', modules: [] });
     const cost = designCost(f.pc.mg!, f.pc.mg!.designs[1], manaOf(f.cb));
-    f.act({ type: 'combat/outburst', unitId: f.pc.id, design: 'mend', aim: f.pc.pos, mods: ['pay_hp'] } as any);
-    expect(f.pc.hp).toBe(500 - cost); expect(logHas(f.cb, /blood can't mend/)).toBe(true);
+    expect(() => f.act({ type: 'combat/outburst', unitId: f.pc.id, design: 'mend', aim: f.pc.pos, mods: ['pay_hp'] } as any)).toThrow(/blood can't mend/);
+    expect(f.pc.hp).toBe(500); void cost;
     const g = soulFight({ heart_overload: 'I' }), mp = g.pc.mg!.mp, hp = g.pc.hp;
     g.act({ type: 'combat/outburst', unitId: g.pc.id, design: g.pc.mg!.designs[0].id, hold: true, mods: ['pay_hp'] } as any);
     expect(g.pc.mg!.mp).toBeLessThan(mp); expect(g.pc.hp).toBe(hp);
@@ -241,7 +241,7 @@ describe('Upper-Touched', () => {
   it('story: an upper-realm NPC always notices your sneak', () => {
     const s = storyWith([{ traits: ['upper_touched'] }]);
     const out = emitStory(s.g, 'stay_hidden', { c: s.chars[0], npc: { kind: 'upper_realm' }, mod: 3, tn: 10, g: s.g });
-    expect(out.mod).toBeLessThan(-90);
+    expect(out.auto).toBe('fail');
   });
 });
 
@@ -258,7 +258,7 @@ describe('Sigil Savant', () => {
     const ch = f.pc.mg!.charge, ap = f.pc.ap; draw(f, 'spark', '3,5');
     expect(f.pc.mg!.charge).toBe(ch); expect(Math.round((ap - f.pc.ap) * 10) / 10).toBe(Math.max(0.5, Math.round((f.pc.mg!.glyphAp - 1) * 10) / 10));
     draw(f, 'condense', '3,5');
-    expect(() => draw(f, 'fire', '2,4')).toThrow(/99 AP/);
+    expect(() => draw(f, 'fire', '2,4')).toThrow(/practised/);
   });
 });
 

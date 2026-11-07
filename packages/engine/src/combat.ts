@@ -125,7 +125,7 @@ export interface Unit {
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
 }
-export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; over: null | 'win' | 'loss'; summary?: string;
+export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -185,7 +185,17 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
 }
 /** A unit went down or died: one event (the client drops and greys the token). */
 export function fxFell(cb: Combat, u: Unit) { emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
-function chained<T>(f: () => T): T { fxChain++; try { return f(); } finally { fxChain--; } }
+function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
+/** The volley a shot belongs to ('burst' | 'auto' | 'skill' | 'paired' | 'cone'), or null: attack hooks carry it as
+ * ctx.volley (hooks gap C3); 'volley_end' {u, mode, cb, rng} fires when one is over. */
+let VOLLEY: string | null = null;
+export const currentVolley = () => VOLLEY;
+/** A volley's AP through the items ('attack_preview' with the volley's mode and base AP; Southern Fist, Fire
+ * Discipline: hooks gap A6/I2). */
+function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: number): number {
+  const hk: any = { att: u, tgt: t || u, mode, melee: false, ap: base, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+}
 
 export const key = (x: number, y: number) => x + ',' + y;
 export const xy = (k: string) => k.split(',').map(Number) as [number, number];
@@ -401,7 +411,8 @@ export function toggleDoor(cb: Combat, u: Unit, tile: string): string | null {
  * pass through (Make Way: pass), a jump over one blocked tile (Augmented legs: jump), or rough ground at no extra
  * cost. A unit avoids the traps its side knows: map traps the enemy set (foes know them; PCs once spotted), and the
  * traps a side placed itself (o.side) or has spotted (o.knownBy). */
-export interface PathOpts { runnable: Set<string>; pass: Set<string>; jump: boolean; ignoreDifficult: boolean }
+/** noStop: tiles a path may cross but never end on (a wall run's wall: hooks gap B2). */
+export interface PathOpts { runnable: Set<string>; pass: Set<string>; jump: boolean; ignoreDifficult: boolean; noStop?: Set<string> }
 export function trapKnown(o: MapObject, side: 'pc' | 'foe'): boolean {
   const k: any = o; if (k.side) return k.side === side || (k.knownBy || []).includes(side);
   return side === 'foe' || !o.hidden;
@@ -438,6 +449,7 @@ export function paths(cb: Combat, from: string, self: string) {
   for (const k of Object.keys(d)) d[k] = Math.round(d[k]);
   // A tile someone you pass through stands on is a way through, never a place to stop.
   for (const u of cb.units) if (u.id !== self && !u.dead && opt.pass.has(u.id)) delete d[u.pos];
+  for (const k of opt.noStop || []) if (k !== from) delete d[k];
   return { dist: d, prev };
 }
 /** Moving N tiles costs N ÷ Movement AP, rounded up, after tiles already paid for this turn. */
@@ -523,7 +535,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0;
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
-  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, preview: true, cb, mods: cb.mods || [] };
+  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [] };
   emit(cb, 'attack_preview', hk);
   const ap = opts.free ? 0 : Math.max(0, hk.ap);
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
@@ -557,7 +569,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const T = (v: number, label: string) => (v ? [{ v, label }] : []);
   // Recoil (spec: Modifiers): −1 per earlier shot this turn, less floor(Dexterity ÷ 2); halved braced or Emplaced; bows
   // and guns marked no_recoil have none; the compensator takes 1 off each shot.
-  const recoil = melee || mode === 'auto' || opts.noRecoil || (useW.properties || []).includes('no_recoil') ? 0
+  const recoil = melee || mode === 'auto' || opts.noRecoil || hk.noRecoil || (useW.properties || []).includes('no_recoil') ? 0
     : -Math.max(0, (att.shotsThisTurn || 0) * (hasMod(att.mods, 'mod_compensator') ? 0 : 1) - Math.floor((att.dexterity || 0) / 2));
   const recoilT = att.braced || condOn(att, 'emplaced') ? Math.ceil(recoil / 2) : recoil;
   const emplaced = !melee && condOn(att, 'emplaced') ? 2 : 0;
@@ -619,7 +631,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     const pool = cb.units.filter((v) => v !== att && v !== tgt0 && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok);
     if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
-  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, mode, cb, mods: cb.mods || [] }), tgt: Unit = at.tgt || tgt0;
+  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, mods: cb.mods || [] }), tgt: Unit = at.tgt || tgt0;
   if (!who) who = charFor(att);
   if (att.companion) who = null; // a companion fights with its own numbers
   const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp, noRecoil: !!opts.noAp });
@@ -640,7 +652,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
   const ambush = ambushReady(att) && tgt.side !== att.side;
   if (ambush) att.ambushUsed = att.hideEntry || 1;
-  const rc: any = { att, tgt, mode, die: d20(rng), toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, cb, rng, mods: cb.mods || [] };
+  const rc: any = { att, tgt, mode, die: d20(rng), toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, cb, rng, mods: cb.mods || [] };
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
@@ -649,7 +661,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     if (w.magazine != null) att.ammo = Math.max(0, att.ammo - 1);
     if (w.heat_limit) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
-    if (canJam(w)) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= w.heat_limit)) att.jammed = true; }
+    if (canJam(w)) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
     else if (fumble) att.stunnedNext = 1;
   } else if (fumble) att.stunnedNext = 1;
   // Durability (spec: Weapons v2): every attack wears 1; a jam or fumble 5 more.
@@ -665,7 +677,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
-    if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt);
+    if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && !immune({ u: tgt }, 'bleed')) { tgt.bleed = 3; injury += ' · Bleeding'; }
     if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);
     if (r.prevented) injury += ' · no damage';
@@ -690,10 +702,10 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     (fumble ? (melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
   cb.log.push(line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
-  if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, cb, rng, mods: cb.mods || [] });
-  else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, cb, rng, mods: cb.mods || [] });
+  if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
+  else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
-  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true }));
+  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
 }
 
@@ -712,16 +724,22 @@ function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): 
   void dealt;
   return out;
 }
-/** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix. */
-export function rollInjury(rng: Rng, t: Unit): string {
+/** A gun's Heat limit for this unit: the weapon's, + items (stat 'heat_limit'; Belt Discipline: hooks gap J1). */
+export const heatLimit = (u: Unit, w: WeaponDef) => (w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0);
+/** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix.
+ * 'injury' {t, d, loc, side, cancel, noDaze, noHalve} fires before it lands (cb given; hooks gap A9): cancel stops
+ * it, noDaze/noHalve keep the injury but not its AP or Movement cost. */
+export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | null): string {
   const resist = t.injResist || 0;
   if (resist > 0) { const r = die(rng, 100); if (r <= resist) return ' · injury resisted (d100 ' + r + ' ≤ ' + resist + '%)'; }
   const d = die(rng, 6), inj = t.injuries || (t.injuries = []);
-  if (d === 1) { t.dazedNext = 1; return ' · INJURY (d6 ' + d + '): head, Dazed'; }
+  const side: 'left' | 'right' = d >= 4 ? (die(rng, 2) === 1 ? 'left' : 'right') : 'left';
+  const ij: any = cb ? emit(cb, 'injury', { t, by: by || null, d, loc: d === 1 ? 'head' : d <= 3 ? 'torso' : d === 4 ? 'arm' : 'leg', side, cancel: false, noDaze: false, noHalve: false, why: '', cb, rng }) : { cancel: false };
+  if (ij.cancel) return ' · injury turned aside' + (ij.why ? ' (' + ij.why + ')' : '');
+  if (d === 1) { if (!ij.noDaze) t.dazedNext = 1; return ' · INJURY (d6 ' + d + '): head' + (ij.noDaze ? '' : ', Dazed'); }
   if (d <= 3) { if (immune({ u: t }, 'bleed')) return ' · INJURY (d6 ' + d + '): torso, no bleeding'; t.bleed = 3; return ' · INJURY (d6 ' + d + '): torso, Bleeding'; }
-  const side: 'left' | 'right' = die(rng, 2) === 1 ? 'left' : 'right';
   if (d === 4) { inj.push({ loc: 'arm', side }); return ' · INJURY (d6 ' + d + '): ' + side + ' arm, −2 to attacks with it'; }
-  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
+  if (!ij.noHalve && !inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
   inj.push({ loc: 'leg', side });
   return ' · INJURY (d6 ' + d + '): ' + side + ' leg, half Movement';
 }
@@ -769,7 +787,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
   u.ap = t.ap; for (const l of t.lines) cb.log.push(l);
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
-  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2); u.firstShotTurn = false; u.sprinted = false;
+  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
   if (condOn(u, 'stunned') && !u.downed) { u.ap = 0; u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
   emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round });
@@ -787,7 +805,9 @@ export function beginTurn(cb: Combat, rng: Rng) {
   }
   if (u.downed && !u.dead) {
     // Items may add to death saves (stat 'death_save', rules 1.3; Still Standing, Bite the Bullet…).
-    const r0 = d20(rng), dm = u.charId || u.held ? statQuery({ u }, 'death_save').add : 0, r = r0 + dm;
+    const r0 = d20(rng), dm0 = u.charId || u.held ? statQuery({ u }, 'death_save').add : 0;
+    // 'death_save' {u, add, die} (mutable): any unit's items may add (an ally's Squad Anchor: hooks gap A2).
+    const ds: any = emit(cb, 'death_save', { u, add: dm0, die: r0, cb, rng }), dm = ds.add, r = r0 + dm;
     if (r >= 10) u.saves.ok++; else u.saves.fail++;
     cb.log.push(u.name + ' is Downed: death save d20 ' + r0 + (dm ? (dm > 0 ? ' +' : ' −') + Math.abs(dm) : '') + (r >= 10 ? ' · success (' + u.saves.ok + '/3)' : ' · failure (' + u.saves.fail + '/3)'));
     if (u.saves.ok >= 3) { u.downed = false; u.hp = 1; u.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stabilises at 1 HP.'); }
@@ -814,7 +834,9 @@ export function checkOver(cb: Combat) {
   if (!foes.length) return cb.over; // a fight with no foes never ends as a win
   // Surrendered and subdued foes count as defeated (rules 1.3); companions don't keep a lost fight going.
   if (foes.every((u) => u.dead || u.downed || u.surrendered)) cb.over = 'win';
-  else if (pcs.every((u) => u.dead || u.downed)) cb.over = 'loss';
+  // PCs lifted out (Extraction, Company Man) or surrendered are out of the fight: when nobody is left standing it ends,
+  // as 'extracted' if anyone got out, else a loss (a partial lift used to keep the fight open for good).
+  else if (pcs.every((u) => u.dead || u.downed || (u as any).extracted || u.surrendered)) cb.over = cb.over === 'loss' || !pcs.some((u) => (u as any).extracted) ? 'loss' : 'extracted'; // Company Man's own call stands
   return cb.over;
 }
 
@@ -953,26 +975,27 @@ export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'mele
 /** Burst (spec): 3 AP, 3 rounds at one target, each later round −1 more. Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
-  u.ap -= 3; cb.log.push(u.name + ' fires a burst.');
+  u.ap -= pv.ap; cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
-  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) if (resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0 }).refused) break; });
-  u.heat = Math.max(0, u.heat - 1); checkOver(cb); return null;
+  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) if (resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0, vi: i } as any).refused) break; }, 'burst');
+  u.heat = Math.max(0, u.heat - 1); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'auto'); if (!pv.ok) return pv.why!;
   const [ax, ay] = xy(u.pos), [tx, ty] = xy(t.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
   const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= (((WEAPON[u.weapon] as any).grants?.effect?.op === 'auto_width') ? (WEAPON[u.weapon] as any).grants.effect.value + 0.5 : 1.5); };
   const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
-  u.ap -= 4; cb.log.push(u.name + ' opens up on full auto.');
+  u.ap -= pv.ap; cb.log.push(u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
   // take), and a jam or an empty magazine ends the burst of fire.
-  chained(() => { for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true }); } });
+  chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any); } }, 'auto');
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
-  if (w.magazine != null) u.ammo = Math.max(0, startAmmo - 10);
-  u.heat += 4 - hits.length; checkOver(cb); return null;
+  // Ten rounds go out whatever the shots took; what items changed during the volley stays (hooks gap C4).
+  if (w.magazine != null) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
+  u.heat += 4 - hits.length; emit(cb, 'volley_end', { u, mode: 'auto', target: t, hits, cb, rng }); checkOver(cb); return null;
 }
 /** Shove (spec): 2 AP, adjacent; d20 + Raw Power vs 10 + the target's best of Raw Power and Athletics; pushed 1 tile, or prone if blocked. */
 export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
@@ -1028,29 +1051,29 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
   const w = WEAPON[u.weapon], fx: any = (w as any).grants?.effect || {};
   if (fx.op === 'multi_shot') {
     if (!t) return 'Pick a target.';
-    if (u.ap < fx.ap) return 'Needs ' + fx.ap + ' AP.';
+    const sap = volleyAp(cb, u, t, 'skill', fx.ap); if (u.ap < sap) return 'Needs ' + sap + ' AP.';
     const pv = previewAttack(cb, u, t, 'shot', { free: true }); if (!pv.ok) return pv.why!;
     const rounds = fx.rounds || 1;
     if (w.magazine != null && u.ammo < rounds) return 'Not enough rounds loaded.';
-    u.ap -= fx.ap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    u.ap -= sap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: w.id, cat: w.category, mode: 'skill', name: (w as any).grants.name, shots: fx.shots });
     // Each shot after the first is checked again: one that can no longer be taken (the target fell or dropped out of
     // sight, the gun broke) ends the volley; it is never rolled against a refused preview.
     chained(() => { for (let i = 0; i < fx.shots && !t.dead && !u.jammed && (w.magazine == null || u.ammo > 0); i++) {
       if (i > 0) { const p = previewAttack(cb, u, t, 'shot', { free: true }); if (!p.ok) { cb.log.push('(' + (w as any).grants.name + ' stops: ' + p.why + ')'); break; } }
-      resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0 });
-    } });
+      resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0, vi: i } as any);
+    } }, 'skill');
     if (rounds > 1 && w.magazine != null) u.ammo = Math.max(0, u.ammo - (rounds - 1));
-    checkOver(cb); return null;
+    emit(cb, 'volley_end', { u, mode: 'skill', target: t, cb, rng }); checkOver(cb); return null;
   }
   if (fx.op === 'sweep') {
-    if (u.ap < fx.ap) return 'Needs ' + fx.ap + ' AP.';
+    const sap = volleyAp(cb, u, null, 'skill', fx.ap); if (u.ap < sap) return 'Needs ' + sap + ' AP.';
     const near = cb.units.filter((v) => v.side !== u.side && !v.dead && dist(v.pos, u.pos) <= 1 && sideSees(cb, u.side, v));
     if (!near.length) return 'Nobody next to you.';
-    u.ap -= fx.ap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    u.ap -= sap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, from: u.pos, weapon: w.id, cat: w.category, mode: 'sweep', name: (w as any).grants.name, shots: near.length });
-    chained(() => { for (const v of near) resolveAttack(cb, rng, u, v, 'melee', who, { noAp: true }); });
-    checkOver(cb); return null;
+    chained(() => { for (const v of near) resolveAttack(cb, rng, u, v, 'melee', who, { noAp: true }); }, 'skill');
+    emit(cb, 'volley_end', { u, mode: 'skill', cb, rng }); checkOver(cb); return null;
   }
   return (w as any).grants ? (w as any).grants.name + ' isn\'t an action the engine runs yet: say it with Say, and the Narrator rules it after the fight.' : 'No weapon skill.';
 }
@@ -1070,13 +1093,13 @@ export function fieldRepair(cb: Combat, u: Unit): string | null {
 export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | null, who: Character | null): string | null {
   if (!u.offWeapon) return 'Nothing in your off hand to attack with.';
   const mw = WEAPON[u.weapon], ow = WEAPON[u.offWeapon];
-  const cost = Math.max(attackApCost(mw, isMelee(mw) ? 'melee' : 'shot'), attackApCost(ow, isMelee(ow) ? 'melee' : 'shot')) + 1;
+  const cost = volleyAp(cb, u, t, 'paired', Math.max(attackApCost(mw, isMelee(mw) ? 'melee' : 'shot'), attackApCost(ow, isMelee(ow) ? 'melee' : 'shot')) + 1);
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
   const offTarget = t2 || t, mainMode = isMelee(mw) ? 'melee' : 'shot';
   const pv = previewAttack(cb, u, t, mainMode, { free: true }); if (!pv.ok) return pv.why!;
   u.ap -= cost; cb.log.push(u.name + ' attacks with both hands.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: mw.id, cat: mw.category, mode: 'paired', shots: 2 });
-  fxChain++;
+  fxChain++; const wasV = VOLLEY; VOLLEY = 'paired';
   try {
   resolveAttack(cb, rng, u, t, mainMode, who, { extra: -1, noAp: true });
   // swap the off-hand weapon in for its own swing or shot
@@ -1085,8 +1108,8 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = [];
   if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else cb.log.push('(off hand: ' + p2.why + ')'); }
   u.offAmmo = u.ammo; Object.assign(u, keep);
-  } finally { fxChain--; }
-  checkOver(cb); return null;
+  } finally { fxChain--; VOLLEY = wasV; }
+  emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
 
 /** Reload (spec: Reloading): 2 AP. A magazine weapon swaps in the fullest spare and drops the one in the gun on the floor;
@@ -1167,7 +1190,8 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
 /** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
 export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
   const c = objectsAt(cb, tile).find((x) => x.hp != null && x.hp > 0); if (!c) return 'Nothing there to shoot.';
-  const w = WEAPON[u.weapon], melee = isMelee(w), ap = attackApCost(w, melee ? 'melee' : 'shot');
+  // Breaking cover is priced through the items ('ap_cost:break'; Siege Engine: hooks gap A1), at least 1 AP.
+  const w = WEAPON[u.weapon], melee = isMelee(w), ap = Math.max(1, actionAp({ u }, 'break', attackApCost(w, melee ? 'melee' : 'shot')).ap);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const r = dist(u.pos, tile);
   if (melee) { if (r > 1) return 'Out of melee reach.'; }
@@ -1322,6 +1346,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
   const owAp = attackApCost(w, melee ? 'melee' : 'shot');
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? 4 : 3, why: null, text: '' });
-  if (w.grants) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
+  // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).
+  if (w.grants && !((u.charId || u.held) && statQuery({ u }, 'hide_weapon_skill', { weapon: w.id, skill: w.grants.name }).add > 0)) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
   return out;
 }

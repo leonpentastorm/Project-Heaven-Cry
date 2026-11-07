@@ -32,7 +32,7 @@ import { bigPortrait } from './charfile';
 import { sfx, SFX_FILES, reducedMotion, uiPrefs, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
-import { resolveCommands, readPrefs, EV_CUSTOMISE, type Command } from './commands';
+import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
@@ -77,7 +77,7 @@ export function cue(name: Cue) {
 
 // ---------- what a banner and a cut-in show ----------
 interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number }
-interface Cut { id: string; unitId: string; charId: string; name: string; line: string; img: string; color: string; kicker: string;
+interface Cut { id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; mp: [number, number] | null; ap: number; weapon: string; ammo: string; magic: string[]; cmds: Command[]; at?: string; right?: boolean }
 
 const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
@@ -120,7 +120,7 @@ function cutFor(g: GameState, cb: any, unitId: string): Cut | null {
   if (mg?.evoker || (mg?.words?.length && mg.flux)) magic.push('FLUX ' + mg.flux + ' / ' + FLUX_MAX + (mg.flux >= FLUX_MAX - 1 ? ' · NEAR OVERLOAD' : ''));
   return {
     id: 'c' + unitId + ':' + cb.round + ':' + Date.now(), unitId, charId: u.charId, at: u.pos, name: ch.name || u.name, img, color: owner?.color || '#FFFFFF', kicker: 'YOUR TURN · ROUND ' + cb.round,
-    line: 'Level ' + ch.level + ' · ' + (ch.classId && CLASS[ch.classId] ? CLASS[ch.classId].name : 'Classless'),
+    line: 'Level ' + ch.level + ' · ' + (classOf(ch)?.name || (ch.classId && CLASS[ch.classId] ? CLASS[ch.classId].name : 'Classless')), clsIcon: classOf(ch)?.icon || '',
     hp: [u.hp, u.maxHp], mp: mg?.emanator ? [Math.round(mg.mp), mg.mpMax] : null, ap: u.ap,
     weapon: w ? w.name : 'Unarmed', ammo: w && w.magazine != null ? (u.jammed ? 'JAMMED' : u.ammo + ' / ' + w.magazine) : '', magic, cmds,
   };
@@ -382,7 +382,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
         <div style={{ position: 'relative', flex: 1, minWidth: 0, [R ? 'marginRight' : 'marginLeft']: -40, padding: R ? '18px 52px 18px 22px' : '18px 22px 18px 52px', background: '#0A0D13', clipPath: R ? 'polygon(0 0, 86% 0, 100% 100%, 0 100%)' : 'polygon(14% 0, 100% 0, 100% 100%, 0 100%)', borderTop: '3px solid #FFFFFF', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 20px 60px rgba(0,0,0,.7)' }}>
           <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 600, lineHeight: 1.05, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.line.toUpperCase()}</span>
+          <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
           {c.mp && <Bar label="MP" v={c.mp[0]} max={c.mp[1]} color="#5C9EFF" />}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

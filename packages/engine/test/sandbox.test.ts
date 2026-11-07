@@ -361,12 +361,32 @@ describe('the tools', () => {
   });
 });
 
+describe('perks and traits from the tools', () => {
+  it('gives and takes a perk at a tier, and a trait, mid-fight too', () => {
+    let g = start(); const c = charOf(g);
+    g = apply(g, { type: 'sandbox/perk', charId: c.id, perk: 'breaching_strike', tier: 'II' }, HOST);
+    expect(g.characters[c.id].perks).toContainEqual({ id: 'breaching_strike', tier: 'II' });
+    g = apply(g, { type: 'sandbox/perk', charId: c.id, perk: 'breaching_strike', tier: 'I' }, HOST);
+    expect(g.characters[c.id].perks.filter((x) => x.id === 'breaching_strike')).toEqual([{ id: 'breaching_strike', tier: 'I' }]);
+    g = apply(g, { type: 'sandbox/perk', charId: c.id, perk: 'breaching_strike', tier: null }, HOST);
+    expect(g.characters[c.id].perks.some((x) => x.id === 'breaching_strike')).toBe(false);
+    g = apply(g, { type: 'sandbox/trait', charId: c.id, trait: 'pain_eater' }, HOST);
+    expect(g.characters[c.id].traits).toContain('pain_eater');
+    expect(refused(g, { type: 'sandbox/trait', charId: c.id, trait: 'pain_eater' })).toMatch(/Already held/);
+    expect(refused(g, { type: 'sandbox/perk', charId: c.id, perk: 'nope' })).toMatch(/No such perk/);
+    expect(refused(g, { type: 'sandbox/perk', charId: c.id, perk: 'breaching_strike' }, GUEST)).toMatch(/Not your character/);
+    g = apply(g, { type: 'sandbox/trait', charId: c.id, trait: 'pain_eater', on: false }, HOST);
+    expect(g.characters[c.id].traits).not.toContain('pain_eater');
+  });
+});
+
 describe('outside the Proving Ground, and leaving it', () => {
   it('every sandbox action is refused outside it', () => {
     const g = lobby(), c = charOf(g);
     const acts: Action[] = [{ type: 'sandbox/wave' }, { type: 'sandbox/retry' }, { type: 'sandbox/give', charId: c.id, item: 'sabre' }, { type: 'sandbox/class', charId: c.id, classId: 'medic' },
       { type: 'sandbox/level', charId: c.id, level: 5 }, { type: 'sandbox/refill' }, { type: 'sandbox/learn', charId: c.id, word: 'fire' }, { type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: 'H6' },
-      { type: 'sandbox/clear' }, { type: 'sandbox/ai', on: false }, { type: 'sandbox/mana', value: 3 }, { type: 'sandbox/end' }, { type: 'sandbox/skill', charId: c.id, skill: 'athletics', points: 3 }];
+      { type: 'sandbox/clear' }, { type: 'sandbox/ai', on: false }, { type: 'sandbox/mana', value: 3 }, { type: 'sandbox/end' }, { type: 'sandbox/skill', charId: c.id, skill: 'athletics', points: 3 },
+      { type: 'sandbox/perk', charId: c.id, perk: 'breaching_strike' }, { type: 'sandbox/trait', charId: c.id, trait: 'pain_eater' }];
     for (const a of acts) expect(refused(g, a), a.type).toMatch(/Proving Ground is not open/);
     expect(refused(g, { type: 'sandbox/start' }, GUEST)).toMatch(/host/);
     const story = apply(g, { type: 'session/start' }, HOST);

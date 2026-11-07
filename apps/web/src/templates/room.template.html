@@ -24,7 +24,7 @@
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="{{s.ownerStyle}}">{{s.owner}}</span>
 <span style="font-family: 'Spectral', serif; font-size: 21px; font-weight: 600">{{s.name}}</span>
-<span style="font-size: 12px; color: #C9D3E3; line-height: 1.4">{{s.line}}</span>
+<span class="phc-room-class" style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: #C9D3E3; line-height: 1.4"><sc-if value="{{s.hasCls}}"><img class="phc-class-emblem" src="{{s.clsIcon}}" alt="" style="width: 16px; height: 16px; flex: none"></sc-if>{{s.line}}</span>
 <span style="{{s.stateStyle}}">{{s.state}}</span>
 <sc-if value="{{s.canRemove}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{s.remove}}" style="align-self: flex-start; min-height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; cursor: pointer">Take back</button></sc-if>
 </div>

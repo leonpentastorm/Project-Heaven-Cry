@@ -1076,11 +1076,404 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Item modifiers on every d20.** A trait's or perk's bonus to a skill applies to every d20 roll that uses that skill's modifier: checks, passives, saves, weapon attacks, Sigil and Soul strikes, initiative. Never to stats worked out per point. Conditions do the same: the Left Brain Debuff's −2 reaches every Mind skill roll, the Right Brain Debuff's every Expression and Soul skill roll (Brain saves use Charisma, Heart saves Composure).
 
-**Conditions in the story.** Out of a fight, the Narrator can put a condition on an NPC for the scene, or on a character for the scene, the session or the arc. A character still Shaken when a fight ends stays Shaken for the rest of the scene. Story conditions change checks like items do (Shaken −2 on social checks and Heart saves).
+**Conditions in the story.** Out of a fight, the Narrator can put a condition on an NPC for the scene, or on a character for the scene, the session or the arc. A character still Shaken when a fight ends stays Shaken for the rest of the scene. Story conditions change checks like items do (Shaken −2 on social checks and Heart saves). When a fight starts, the ones a story beat can carry come in as combat conditions for their own combat duration, with no save: Shaken, Fear, the Brain debuffs, Weakened, Nausea, Bleeding, an injury, an augment offline. The rest (a story Stun, Pin, Blind and the like) stay in the story; the fight's notes tell the Narrator. **PROVISIONAL** (item 373).
 
 **Voices per character.** The cap of 2 voice lines a beat is per character (item 36): a player with two characters hears each one's voices.
 
 **Start items.** A trait's start item is in the pack at creation, and worn at once when it has an armour slot (prescription glasses, the smiling mask). Traits marked as excluding each other can't be taken together; the creation check refuses them.
+
+## Perks, traits and class moves in play (rules 1.3)
+
+Written 7 Nov 2026, when every perk, trait and class move was built into the engine. Each item's numbers are in perks.json, traits.json and classes.json; this section is the reading the engine runs where the item text needed one. Whatever the engine can't judge goes to the Narrator with the item's text: a fight report line, a pending ruling in the story, or a line in the character brief. Every ruling that resolves a design flagged as game-breaking or ambiguous follows the audit's recommended fix, is marked `provisional: true` in the data, and is an open item in section 14 (items 101–376; the tag in brackets, such as *(C2)*, names the item there).
+
+### Body, melee and damage taken
+
+- **Ranged, for Bulwark.** Ranged means weapon shots, plus Sigil, Soul or Elemental damage from a caster who isn't
+  adjacent. Area blasts (explosions, barrels, grenades) are never ranged. "Behind" means the ray from the attacker
+  through the guard, carried on 1 tile (Tier II: 2). Diagonal rays are rounded. Two Bulwarks don't stack; the best one
+  counts.
+- **A wound** is a hit by someone that takes HP. A hit fully absorbed by a shield is not a wound. Hazards, traps,
+  Bleeding and Burning are not wounds. Used to the Pain and Scar Tissue both use this definition.
+- **Self-inflicted damage** never triggers the drop-to-0 savers: Mana Short, overload, Strain and Flux.
+- **Drop-to-0 order:** Angel of the Trenches runs first (it needs priority < 10), then Last Wall (10), then Bite the
+  Bullet (20).
+- **Limb damage** (Glass Runner, Crawler-Blooded, Scar Tissue II). The engine has no hit locations, so "limb damage"
+  means one of two things:
+  - the hit's damage, when a critical's injury lands on an arm or a leg;
+  - for Scar Tissue II, Injury resistance (d100).
+- **Movement −1 on traits** becomes −0.5. Under the tiles-per-AP model, −1 at Agility 1 halves Movement. This covers
+  Right of Way, Heavyworlder and Old Timer.
+
+### Movement, stealth and vision
+
+**Into the Dark.**
+- **I:** your first normal move each fight onto a tile your squad hasn't seen this fight costs 1 AP less. One Movement's worth of tiles is free. It doesn't apply to Sprint.
+- **On the area map:** the first move in each zone this character hasn't moved in yet gets the same discount.
+- **II:** +1 AP on your first turn in a fight in a place that causes Fear. That is either the Narrator's start-fight `fear` flag or a zone tagged `fear`. On the area map, the first move in such a zone gives the +1 AP.
+- **Narrator:** describes the character striding in first.
+
+**Wall Run.** A move may cross wall faces, low obstacles (half-cover objects) and holes as if they were floor.
+- **Tier I:** at most 2 such tiles in a row. **Tier II:** at most 4.
+- **Never crossable:** a door, a free-standing full-cover object (a pillar), or the inside of a building (a blocked tile whose 8 neighbours are all blocked).
+- You can't end a move on a wall or over a gap.
+- **II, Wall Run strike (Perks tab):** run to a tile of the run, which may be on the wall. Make one attack from there with your weapon's basic attack, then finish the move on the tile you chose. Each leg pays its own AP.
+- **Story:** parkour within 3 m (I) or 6 m (II) needs no Athletics check. The engine makes an Athletics check tagged `parkour`, `climbing`, `jump` or `wall_run` an automatic success; the Narrator tags it so only when the run is within the tier's distance (the brief tells it).
+
+**Roll With It.** A *successful dodge* is an attack against you that misses. It works once a round.
+- **I:** 1 free tile. **II:** 2 free tiles.
+- **Free tiles:** they cost no AP and draw no opportunity attacks. A miss on your own turn (Overwatch during your move) gives them at once. A miss on an enemy's turn gives them at the start of your next turn.
+- **II also:** your next attack gets +0.1 on its critical multiplier. The bonus waits for your next turn when the miss came on an enemy's turn, and it is spent by that attack whether it hits or misses.
+
+**Shadow Step.**
+- **I:** while Hidden, a move from a tile next to cover to a tile next to cover counts half its tiles, rounded up. On the area map, sneaking from cover to cover halves the tiles for the move and for the sneak surcharge.
+- **II:** when an attack reveals you, roll d20 + your Ingenuity modifier. The TN is 10 + the best notice (minion 0, soldier 2, elite 4, boss 6) among enemies who can see you, +2 for each earlier success this fight. If no enemy can see you, you stay Hidden without a roll.
+  - **On a success:** you stay Hidden, but in the same Hidden entry, so no second ambush.
+
+**Got You in My Sight.**
+- **I:** an enemy you see hiding, or an enemy leaving your own sight, gives +2 AP. Once a round, and it counts toward the +3 perk AP cap.
+  - **On your turn:** the AP comes at once.
+  - **If your turn is still to come this round:** it is banked for that turn.
+  - **If your turn has already passed this round:** nothing.
+  - **The penalty:** a sneak attack that hits you costs 2 AP next turn. A sneak attack is an ambush, meaning the first attack from a Hidden entry.
+- **II:** no penalty. The squad keeps the last position of an enemy that left your sight (`cb.lastSeen`).
+- **On the area map:** the Narrator rules it.
+
+**Eyes in the Back.**
+- **I:** half cover next to you counts against a ranged attack from any direction: −5, labelled.
+- **II:** allies next to you get the same.
+- **Not built:** a carried shield's frontal cover.
+
+**Wind on the Skin.** When a fight starts, the squad learns where enemies it can't see are. The range is the holder's Vision, ignoring line of sight.
+- **Tier I:** the nearest such enemy. **Tier II:** every one.
+- This is a known position, not sight: the enemy can't be targeted.
+
+**Skin Map.** Hidden enemies within 6 tiles are revealed when there is a line to them through smoke and darkness. Walls and sight-blocking objects still stop it. This is checked at every turn start, after every move, when someone hides, and when the fight starts.
+
+**Sixth Sense.** The same within 3 tiles, through anything.
+
+**Never There.**
+- The first move action each turn (Move, Sprint or Disengage) draws no opportunity attacks and no Overwatch.
+- During any later move that turn, ranged attacks against you take −4. That means Overwatch and ranged reactions, and only during your own move (the narrow reading).
+
+**Before the Blink.**
+- **Round 1:** holders act first, in their initiative order; everyone else keeps theirs. A hidden ambush opener still goes first.
+- **From round 2:** the original initiative order.
+- **Reactions:** +1 a round.
+
+**Vanishing Act.** 2 AP, once a fight.
+- **The effect:** become Hidden where you stand, even in plain view. Your next attack is an ambush.
+- **What reveals you:**
+  - any attack, even with a silent weapon;
+  - a shove;
+  - a released Outburst;
+  - taking damage;
+  - an enemy ending a move next to you;
+  - normal spotting.
+- **On the area map:** once a scene, 2 AP. You are sneaking and hidden, and only someone who walks up to you can notice you.
+
+**Charge!** Once a turn, a normal move qualifies if:
+- it is 3 or more tiles;
+- every step goes in the same one of the 8 directions;
+- it ends next to a visible enemy, and the move closed the distance on that enemy (on the area map, a hostile NPC).
+
+Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bought.
+
+**Make Way.**
+- No opportunity attacks; Overwatch still fires.
+- **On the area map:** neutral NPCs don't block your path. You can pass through them but not stop on them.
+- **Narrator:** crowds part.
+
+**War Footing.**
+- **Combat:** an enemy that ends a move next to you loses 2 AP at once. This applies once per enemy a turn, and not to a Disengage or a forced move.
+- **Story:** a failed Intimidation check costs nothing. There is no complication, and a natural 1 counts as an ordinary failure. The engine sets `roll.fumble = false` and `roll.noCost = true` and tells the Narrator. The same target can't be intimidated again that scene: the check fails automatically.
+
+**Last Charge.**
+- **The trigger:** a straight charge of 5 or more tiles at an enemy, by Charge!'s rule (a normal move).
+- **Melee:** your melee hits for the rest of that turn deal ×1.5.
+- **The shield:** max(15, 15 × Armour Class), once a fight. What is left of it goes at the start of your next turn.
+
+**Just the Repairman.** You are spotted while sneaking and carrying a toolbox (the `toolbox` item).
+- **The roll:** 50% that the observer takes you for maintenance staff, rolled as a d100 before the Ingenuity roll; 50 or less passes.
+- **On a pass:** you stay hidden from that observer, and it never checks you again this scene (this fight, in combat).
+- **What ends it:** attacking.
+
+**Silent Partner.**
+- **In a fight:** when you hide, the nearest ally next to you hides with you. They lose it when either of you ends a move with the two of you apart, or when you are found.
+- **On the area map:** while you sneak hidden, the partner is the sneaking ally next to you (the first by id). The partner uses your Dexterity for notice range and your Ingenuity to stay hidden, and stays hidden while next to you.
+- **An ambush:** it opens with both of you hidden.
+
+**Dead Signal.** 1 AP, while in stealth: disable one electronic device within 3 tiles, silently.
+- **In stealth means:**
+  - in a fight, Hidden, or seen by no enemy;
+  - on the area map, sneaking and hidden.
+- **Lamps:** go dark.
+- **Electronic locks:** open.
+- **Everything else:** a camera, an alarm, a terminal or a turret is marked `disabled`, and the Narrator is told.
+
+**Forlorn Hope.**
+- **Charge:** if you end a turn closer to the nearest enemy than you started it, +2 AP are banked for next turn, under the +3 cap.
+- **No Way Back:**
+  - you can't Disengage;
+  - you can't Retreat;
+  - your armour counts as at most Class I's 5, with slot pieces included.
+
+**Live to Fight Another Day.**
+- **Disengage:** free once a turn, 1 AP after that.
+- **Retreat (Perks tab):** a Sprint ending farther from every enemy you can see. 0 AP, no opportunity attacks, once a fight.
+- **After either:** Withdrawing (+2 Defense until your next turn ends).
+- **Yellow:** allies within 3 tiles, not you, take −1 on saves against Fear.
+
+**Drill Echo.**
+- **Best Time:**
+  - Sprint costs 1 AP less.
+  - On a running, climbing or endurance check, the d20 can't roll below 10. That means a check with Athletics or an Endurance skill, or one tagged `running` or `climbing`. A natural 20 still crits.
+- **The Count:** before any Brain Power or Rumination check (combined checks too), roll a d6. On a 1 the check fails automatically.
+- **Sigils:** before a glyph is drawn, roll a d6. On a 1 the AP is spent, no glyph appears and no charge or Flux is used. Story-mode glyphs go through the same draw.
+
+**Ghost Soldier.**
+- **Unseen:** your first attack from stealth each fight (an ambush) deals ×1.5. The Narrator is told that it made no sound.
+- **The arm:** the prosthetic arm is a start item.
+- **The War Never Ended:**
+  - **Resting in a settlement** (a short or long rest flagged settlement) takes a Vigilant check against TN 12. On a failure you get no rest benefit.
+  - **Stealth broken:** −2 AP next turn. That means being spotted, being touched, or taking damage while Hidden, but not your own attack or throw.
+  - **Skills:** −1 Eloquence, Charisma, Implication and Composure.
+
+**Lowland Born.**
+- **Concrete Forest:** in a zone tagged `urban` or with terrain `ruins` or `urban`, +1 Movement. The Narrator gives you one way out.
+- **Open Sky:** in terrain `open`, −2 Vigilant. The story side is the generic skill_mod; in a fight it is a stat answer. In a fight you also spot Hidden enemies only within half your Vision ("half Detection Range").
+
+### Weapons, ammo, reactions and explosives
+
+- **"Free" weapon handling.** A reload or clear that rides on another action (Running Reload) runs the normal action
+  with its AP check skipped. Every other rule of that action still applies: spare magazines, loose rounds, jams.
+- **Fractional AP.** The only fractional AP in the game comes from Glyph AP (0.5–0.9). Rounding Up rounds the AP left
+  after a glyph up to the next whole number, once per turn. The gained fraction counts toward the +3 perk-AP cap.
+- **Catching.** A thrown item that is caught produces no blast where it was aimed. The catcher holds it as a throwable.
+  Placed charges (a satchel) can't be caught.
+- **Improvised traps** are map traps that belong to a side. Units on the other side don't know where they are, so they
+  path through them. The trap's damage is credited to whoever set it.
+- **Extra mod slots** (Gun Nut, Blade Recluse, Overhaul) are a second slot of a type the weapon already has. Two optics
+  is allowed; a slot type the weapon lacks is not. Each source adds one: Gun Nut on any gun, Blade Recluse on the named
+  weapon, Overhaul on a weapon it overhauled. Rarity's "+1 mod slot" (Fine, Masterwork) should use the same rule. It
+  isn't built yet (core `fitMod`).
+- **Upper-realm and cursed beings** (Holy Ordnance) are units of kind `upper_realm`, `cursed`, `crawler` or `celestial`,
+  or units tagged `cursed` or `upper_realm`. Crawlers are cursed in the lore.
+- **Ammo Hog accounting.** Every round fired costs one more round. A single shot costs 2, a burst 6 and full auto 20.
+  The extra rounds are charged after the action: at the next shot's roll, a reload, a swap or the end of the turn. If
+  the fight ends first, they come off the rounds carried out of it. A gun with fewer rounds loaded is emptied.
+
+### Sigil, Soul, prayer and music
+
+- **Sigil stroke pool.** How many of your glyphs may stand on the map at once before the oldest fades. It equals Max
+  Sigil words; Hold the Stroke adds to it. Max Sigil words still caps the words in one spell.
+- **"Still active" Sigil** (Parallel Thought): one of your STAY zones (wall, smoke or light made with STAY) is standing.
+  Unfired glyphs and impact smoke or light don't count.
+- **Wards and rituals** (Rite in the Field): wards are drawing a WARD glyph, Begin on a Buff (Guarded) Outburst and the
+  Warden's Ward move; rituals are Pray and Crystallise.
+- **Upper-realm beings** are enemies with `kind: upper_realm` (or the tag `upper_realm`) on the Narrator's start_fight
+  enemies or the campaign's zone NPCs.
+- **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or "Release in
+  verse" for a held Outburst). The Narrator audits it after the fight, never per cast.
+- **The music traits' modifier** reaches every d20 that uses the skill: story checks, asks and stealth (music.ts), voice
+  passives and initiative, and in a fight the weapon attack, Sigil and Soul strikes, prayer, shoves, spotting and the
+  three saves. It never reaches derived stats. A shield of 30 or more you give starts your song, the same as a big heal.
+
+### Command, the AP economy, the team and the medic
+
+- **Bonds.** Soulmate, Sworn Sibling and Rival name a squadmate (a character). The bond is set out of a fight, with a
+  "Bond" story or area-map action. Sworn Sibling and Rival need the other player's consent. The bond takes hold at
+  once, and a pending ruling asks the Narrator to confirm that both players agreed. If the Narrator refuses, the use
+  is refunded and the bond stops holding. A bond between two characters of the same player needs no ruling. The bond
+  rides into each fight on the unit.
+- **Out-of-turn actions** come in three kinds:
+  - **Windows** (On My Mark, Supreme Command): the ordered player acts, or declines (the host declines for an away
+    player).
+  - **Armed presets** (Between Heartbeats): set on your turn, resolved by the engine at the trigger.
+  - **Automatic interrupts** (Angel of the Trenches): resolved at the trigger with no choice. "Hold position" turns it
+    off.
+- **AP debt** (On My Mark) comes off the next turn after the floor of 2, at most 4.
+- **AP an ally gives** (Hand-Off, Rally Cry, Outclassed) is banked for the ally's next turn. It counts toward that
+  turn's +3 perk-AP cap.
+- **Healing an ally** (Triage) has a floor of 1 AP.
+- **Help** means an engine action that benefits a squadmate: a stim, Hand-Off, Command, Field Repair on an ally, or a
+  Thrown Stim. Rival's Petty gate reads this list.
+
+### Status, surrender, judgement, kin and companions
+
+- **Shaken NPCs in the story.** An NPC that is Shaken this scene (the Narrator's `conditions` field) gives every
+  character +2 on social checks that target it (`check.target`). The TN ladder stays fixed, so the NPC's −2 is the
+  player's +2. If a fight starts in the same scene, it starts Shaken. (Today this runs from Bone Talk's handler, so it
+  only works while someone in the party holds Bone Talk; see hooks gap 2.)
+- **Surrender offers.** The general surrender save is once per enemy per fight (rules 1.3). Open Hand's offer is its
+  own, also once per enemy. The Name They Whisper uses the general one.
+- **Hearing.** Bone Talk, Trench Poet's Verse and Parley share the 8-tile hearing range.
+- **Non-human** (Humanity First) means any unit whose kind isn't human: robots, machines, turrets, drones, Crawlers,
+  Orks, upper-realm beings, the cursed, Celestials, beasts, any companion, and a Factory Made squadmate.
+- **Race** (The Old Blood) is a character's `race` (default human). For a non-PC unit, it's the unit's kind.
+- **Companions** act on their own AP: the drone gets 3 and the beast 4 (the trait text). It's the turn's 6 minus a
+  penalty, so Stunned and Dazed still apply.
+
+### Story perks and dialogue traits
+
+- **How a story item reaches the Narrator.** A story use posts a tagged line `[Name · key]` (private to its player when
+  the item says so: Their Own Idea, What Could Be, Case File) and a pending ruling saying what the Narrator owes. A
+  refused use (perkRulings accepted false) is refunded. A line an item owes its holder (Bedside Manner, Cold Read, Case
+  File, Real Power, What Could Be, Detective's Eye) comes back in `perkLines` with the item's key, private to the
+  holder, and is never a lie, even though voice hooks may mislead.
+- **Check fields the engine reads.** `target` (the NPC or character a check is aimed at), `applies` (item ids that
+  apply), `footnote` (the charId whose cited fact the roll acts on), `double` (Double or Nothing declared), `auto`.
+  Tags beyond the shared vocabulary: `hinted`, `culture`, `ancient_script`, `lie`.
+- **traitState keys the engine reads.** `case_open`, `case_related` (reset at each new scene), `identity` (set by
+  New Name; null when burned), `old_con`, `lie_door` (set by Every Lie Is a Door; null when a weapon is drawn),
+  `mislead_used` (reset at session start).
+- **Mastered and Ultimate uses bend a scene, not the frame.** No stated fact, planted idea or lie decides a check by
+  itself, creates items, money or allies, touches the Veil, or makes a Celestial appear without cause.
+
+**Per item: what the engine runs, what the Narrator rules.**
+
+- **Bedside Manner** (story action Touch, at will): a ruling owes a private truthful line (II: afraid, of whom).
+- **Footnote** (story: once a scene, cite a fact; combat: once a fight, 0 AP, an enemy): +1 (II +2) on every ally
+  check this scene the Narrator marks `footnote: <citer>` (or `applies footnote`), never the citer's own; in a fight,
+  allies (not the citer) get +1/+2 to hit the cited enemy for the rest of that round.
+- **Burden of Proof** (story action, at will): a ruling: no evidence, the accuser loses outright, no check; II onlookers
+  shift one step (narrative until an attitude ladder exists).
+- **Detective's Eye**: story: owed every scene (the brief says "owed this scene" until a perkLines line with its key
+  is delivered in that scene); combat: at the fight's start, one hidden trap or the weak point of the enemy with the
+  most HP (as if Analyzed, no AP); II two, and the log says whether they're connected (same owner).
+- **Crowd Pleaser**: +2 on a holder's Charisma check tagged `crowd`; II on success a ruling (turn it on one person).
+  Combat: a Persuade or Threaten heard by 3+ enemies (8 tiles) is one roll for all, its save TN +2.
+- **Double Meaning**: story: the sentence (at will) opens the scene's hint: any squad member's check tagged `hinted`
+  gets +2. Combat: once a round, 0 AP, name an enemy: each squad member's next attack on it +2 until the holder's next
+  turn; II the nearest other enemy within 8 tiles loses its first action next turn (2 AP).
+- **Old Tongue**: a holder's check tagged `ancient_script` (or `applies old_tongue`) is an automatic success. II:
+  Speak it (story, once per being; in a fight against a unit of kind `upper_realm`: it holds its attacks on its next
+  turn while it listens, a fight note).
+- **Real Power** (story action, once per organisation): a ruling (keep it consistent in memory); II they agree to see you.
+- **Established Fact** (once a session; story or fight): a ruling with the guardrails; in a fight a fight note.
+- **Closing Argument** (once a scene): a pending Eloquence check of the holder (the one named, else the latest)
+  succeeds without the die; a ruling for the listeners.
+- **Everyone's Friend** (once a scene, an NPC): the first lie lands: the button First lie lands on a pending Charisma
+  check, or a Charisma check the Narrator tags `lie` aimed at the friend, is an automatic success, once that scene.
+  An NPC who already hates them: refused, refunded.
+- **Their Own Idea** (once a scene; story or fight): the suggestion is private; important listeners save (G5).
+- **Foreseen** (once a session): public line; the Narrator replays the moment from before the decision (G9).
+- **Cultured**: +1 on a holder's Ingenuity or Charisma check tagged `culture` (or art, history, holo_drama), once on a
+  combined check.
+- **Cold Read**: Analyze (combat or the area map) of a person owes what they want most (fight note / ruling); a
+  successful story Analysis check owes it too.
+- **What Could Be** (once a session): private line and a ruling.
+- **Every Lie Is a Door** (once a session): `lie_door` on the character; hostile NPCs' notice range is 0 for the
+  holder while sneaking and stay-hidden rolls get +20; it ends at a fight's start, a new scene, or traitState
+  `lie_door: null`.
+- **Gambler**: story action Double or Nothing on a pending check (or the Narrator's `double: true`, which spends the
+  scene's use; without a use left the flag is dropped): success → critical success, failure → critical failure; an
+  Echo reroll keeps it. Combat: the toggle `trait:gambler#double` on an attack: a hit is a critical, a miss jams a gun
+  (a melee or no-Heat weapon: −1 AP next turn). One use a scene shared by both.
+- **Crowded Head**: voice cap +2 for its holder, each skill Asked twice a scene, Overreach resist +1 Echo; the twisted
+  line is the Narrator's, once a session (`mislead_used`).
+- **Cover Story**: New Name (once a session) sets `identity`; a failed roll while it holds owes a ruling (burned?
+  `identity: null`); the engine counts identities cleared after a failed roll; at 3 the brief owes the old con until
+  `old_con: true`.
+- **Cold Case**: Analyze −1 AP (generic); Case File (once a session, private truthful yes/no); Obsession −1 (G11).
+- **Interrogator**: the +2/−2 are generic skill mods on the tags `alone_with_captive` and `vs_civilians_who_know`; a
+  successful break owes a ruling (one true answer).
+- **Holo-Drama Addict**: Play it as a holo-drama (story: a ruling; combat: +3 to the next attack this turn), one use a
+  scene shared; a holder's check tagged `drama` gets +3 (a tag without the declaration spends the use; one check a
+  scene). Leading Role: a holder's check tagged `unglamorous` makes the engine roll Visualization vs 12 at once; on a
+  fail that check is at −3.
+- **Born Performer**: Adaptable: the highest γ skill by default at each new scene, changeable once a scene by the
+  player (story action, choice = a γ skill id); +2 on checks (named), passives, Ask, and a fight in that scene. Hollow:
+  dialogue XP 0, combat XP +20% (generic xp_mod); an ally's Empathy check aimed at the holder +2.
+
+### Identity, economy and upkeep traits
+
+- **Karma locks.**
+  - *Locked at its value* (Mind Without Fog): no award moves it, including Conscience's +1.
+  - *Locked to a band* (Symbol of Order: Lawful, starting at +30; Rogue Element: Chaotic, starting at −30, set at the
+    first session start):
+    - The band edge holds. Every point an award would carry past the edge is owed as "pressure".
+    - Two points of pressure move Karma one point out of the band, so leaving costs double.
+    - Pressure carries between awards. An award back toward the band pays it off first.
+    - Once outside, awards work normally. Coming back into the band locks it again.
+  - *Unlawful acts* (Symbol of Order): the Narrator flags the award `unlawful`; the loss is doubled before the band rule.
+- **Check tags this lane reads:**
+  - `dialogue` (Machine-Faced)
+  - `heart_debuff`: a social attempt to break someone through the Heart (Mind Without Fog)
+  - `official`, `merchant` (Central City Kid)
+  - `underworld` or `vs_underworld` (Wanted)
+- **Story Heart conditions on Mind Without Fog** never take. The engine removes them when the next check is called or
+  the scene changes. If the condition arrives in the same Narrator turn as a check, that check shows Shaken's −2 and an
+  equal +2 from Mind Without Fog. Every story Heart save (`kind: 'save', family: 'heart'`) succeeds on its own.
+- **Machine-Faced in dialogue.**
+  - Charisma and Implication are struck out of a dialogue check. If neither skill is left, the check fails on its own,
+    and its stakes say why.
+  - A Composure check made with Composure alone, or a Heart save in dialogue, succeeds with no roll.
+  - Combined checks roll normally.
+- **Glasses and masks** are worn and taken off through the sheet: free outside a fight, not possible in one.
+  - In the story, the Narrator knocks glasses off with `traitState {key:'glasses', value:'off'}`. The engine moves them
+    to the pack at the next check or scene change.
+- **Lunarshine.**
+  - Drinks are counted on the character (`state.lunar`).
+  - A Bottle of spirits holds 5 drinks.
+  - A drink in the story is free; in a fight it costs 1 AP.
+  - A drink someone pours: the Narrator sends `traitState {key:'drink', value:n}`.
+  - The states stack (Tipsy, Drunk, Wasted).
+  - When a scene ends with the character Drunk, the engine rolls Will Power vs 12 + drinks today. A fail adds one drink
+    and skips the reset; a success clears the drinks. A scene that ends below Drunk clears them too.
+  - A "day" runs from one long rest (or session start) to the next. A day without a drink gives the shakes until the
+    next drink.
+- **Rest-camp fight** (Insomniac): a fight that starts in the same scene as a rest.
+- **Masterpiece** (both Oils, once a session, 0 AP): an ally's next d20 gets +2: a story check, a save against an
+  enemy's condition, or an attack roll. An Echo reroll of that same check keeps the +2.
+
+### The 13 base classes
+
+- **Class moves are actions in the Class tab** (combat/perk with `id: 'class:<class>.<move>'`). A move with options
+  becomes one action per option: Ward ×1/×2/×3, Toxin by condition, ammo by type, Inscribe weapon or armour, self
+  versions. The UI sends only an action id, a target unit and a tile.
+- **Off-turn policies.** Interpose, Riposte, Reactive Plate and Drink It In fire automatically. Each one has 0-AP
+  policy actions that last for the fight: on every time (the default), only to save a Downed ally (Interpose), keep
+  1 Guard (Plate), or off.
+- **Outburst toggles.** Storm Front and Heart Surge are toggles that ride on `combat/outburst` as `mods`.
+- **Soul class casts** (Will Shield, Sanctuary, Puppet) cost:
+  - the Soul cast AP;
+  - the school base cost × the air × (1 − saving), +20% under a Right Brain Debuff, priced through `outburst_cost`;
+  - 1 Strain (2 in Flooded air, +2 without an Emanator), plus any extra the move adds;
+  - the meter drops MP ÷ 10.
+  They release at once and are never held.
+- **Evoker class moves** (Ward, Seal, Rewrite, Quicken, Inscribe) need a ready Evoker: not locked and not Silenced.
+  They spend charge from the loaded core. Ward, Seal and Rewrite add Flux, which can overload.
+
+### Advanced classes, part 1
+
+- **Advanced moves are held all at once** (no ranks), alongside the base class (`c.advancedClass`). They show in the
+  combat Class tab and, where they have a story part, in the story Perks strip.
+- **Credits.** A character's account is `c.state.credits` (the Narrator sets it with `traitState {key: 'credits'}`).
+  An RTC Contractor with no account yet starts with the Company line of **1000 credits** (PROVISIONAL, J13). The
+  engine spends credits; the Narrator decides where the Company has signal.
+- **Advanced-class Defender pieces.** An Adamantile Knight has the Defender's Brace (2 AP: Guard 1 + Durability
+  modifier, max 5; Braced: +2 Defense until you move, a shove or knockback ends it), Interpose and Reactive Plate
+  (J27). If the Knight also holds the Defender's own moves, the Defender's versions run instead.
+- **Summoned turrets** are units on the owner's side that never take a turn, die at 0 HP, release no bots and leave
+  when the fight ends.
+- **Extraction** is a third way a fight ends: everyone left was lifted out. No win, no win XP, not a defeat (J15).
+
+### Advanced classes, part 2 (the magic advanced classes)
+
+- **Advanced magic classes keep their state on the character for the scene**: Heartfed gauges
+  (`c.state.heartfed`), Heartbinder links (`c.state.links`), Vessel body forms (`c.state.vessel`), the twin
+  (`c.state.twin`, `c.state.twinLost`), Devoted Beloved designs (`c.state.beloved`), Heartfed design keys
+  (`c.state.heartKeys`), the Glyph Mason's Keystone (`c.state.keystone`). Each is stamped with the scene (or zone
+  and session) and resets when it ends. Taken on the area map, they carry into a fight in the same scene.
+- **One heart.** The twin casts through its maker's heart: neither can Begin while the other holds an Outburst; the
+  MP and Strain are the maker's.
+- **Positions for Soul magic.** A Heartbinder's link and the twin are new origins for an Outburst: range and line of
+  sight are measured from them (the area and targets are as usual).
+- **Grand forms** are zones of kind `grand` (radius 2 around the planted staff, 3 rounds + Sigil duration bonus);
+  VEIL and LIGHT also lay the ordinary smoke and light zones so sight works as usual.
+- **Story uses.** Advanced moves with a story part show in the story Perks strip: Bless a shell (the engine rolls the
+  prayer), Mark/Design a Beloved spell, Self-Crystallise, Enlarge (a ruling), Key a design, Let it fill a gauge (a
+  ruling), Link, Share always/never, Inner Charge, Manifest the twin.
 
 ## Exploration, social play, rest, and the Narrator
 
@@ -1456,3 +1849,1277 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks.
 99. **Story plumbing:** Narrator-set conditions on NPCs (scene) and characters (scene, session or arc); Karma awards capped at 30 a turn, Conscience added; rests from the Narrator or the host; the voice cap per character, not per player; private perk lines outside the voice cap; Narrator-set item state (traitState).
 100. **Data fixes:** perk type labels (item 23: Origami Hands active, Hold the Stroke passive, Overruled and Outclassed AP mods, Pattern Lock and Heart Overload passive); Lab Coat II costs 2 AP; Born Performer's −100% is on dialogue XP; Bone Talk's Shaken is a Heart debuff (item 24); Mind Without Fog excludes Symbol of Order and Rogue Element (its Karma lock would contradict theirs); the start items (prescription glasses, smiling mask, prosthetic arm, Central City ID, bank card, contraband, grimoire) and a toolbox, spirits, cigarettes, a drone frame and the four special-ammo items exist now; cameras, alarm panels and emplaced turrets are map objects; terminals and lamps are electronic.
+
+**Added in rules 1.3: perk, trait and class-move rulings (7 Nov 2026; the audit's recommended fix for every flagged design; provisional, settle in playtest)**
+
+*Body, melee and damage taken*
+
+101. **Shrug It Off.** The action needs a Body debuff to remove. Without one, Tier II's 1-AP shield could be repeated
+    every turn (GAMEBREAKING). The shield doesn't stack and uses Healing and shields received.
+    - Out of a fight, it ends a story Body condition.
+    - If the condition was only narrated, it opens a pending ruling instead.
+    - It never removes Marked, Augment Offline, Emplaced or Last Turn.
+102. **Used to the Pain.** It triggers on the first wound only, so a hit absorbed by a shield doesn't count. Friendly
+    fire doesn't count either. The AP goes through the bank, so it counts toward the next turn's +3 cap.
+103. **Scar Tissue.** It stacks on wounds.
+    - The reduction combined with the derived Elemental damage taken stays within the 60% cap.
+    - Tier II's "limb damage" is +5 Injury resistance per stack, up to +40. Leon to confirm.
+104. **Iron Stomach in the story.**
+    - Tier II passes checks tagged `fear`, `nausea`, `gore`, `horror` or `disgust` automatically, and a story
+      Fear or Nausea on the character ends at once.
+    - Tier I ends a story Fear or Nausea at the next check or scene.
+105. **Grapple.**
+    - It needs no free hand. Leon decides if one is required.
+    - The hold ends when the grappler moves, and the engine's source check ends it when the grappler goes down.
+    - Tier II redirects 50% of the attacks aimed at the grappler to an adjacent captive, rolled d100 on the game's RNG.
+    - In the story, the NPC is marked `grappled` in `npcConds` and the Narrator rules whether the hold is plausible.
+    - The Fists weapon skill "Grapple" stays separate. Folding the two together is a data job (see Data deltas).
+106. **Breaching Strike.**
+    - "Ignores cover" has no effect, since melee already ignores cover. Recommended: drop `ignore_cover` from the
+      data.
+    - The wall bonus is decided by simulating the push before the roll.
+    - "Wall" means a solid tile, the map edge or a movement-blocking object. A unit doesn't count.
+107. **Earthbreaker.**
+    - Allies in the 3×3 are hit. The user is not.
+    - There is no attack roll and no critical; damage goes through attackDamage (so Pain Eater, Ork Steel and
+      Augmented apply), less armour.
+    - A Downed creature takes 1 death-save failure.
+    - Every object with HP in the area takes its full HP as damage.
+    - In the story, it is a once-per-scene Narrator ruling.
+108. **Last Wall.** It holds against any source except self-inflicted damage. If it fires on your own turn, the guard
+    lasts until your next turn starts, which is a whole round.
+109. **Bite the Bullet.** The engine can't keep a unit "up at 0 HP", so Last Turn is played at 1 HP (with the
+    `last_turn` condition shown).
+    - Each hit during Last Turn is a death-save failure instead of damage: 1, or 2 on a critical. At 3 the
+      character dies.
+    - Any heal ends Last Turn and the character stays up.
+    - Otherwise the character goes Downed at the end of the turn: this turn if it fired on their own turn, else
+      their next one.
+    - Bleeding and hazards do nothing during Last Turn.
+110. **Siege Engine.**
+    - "Knock back" covers shoves, weapon knockback and Breaching Strike. Prone from a blocked shove still lands.
+    - Shove's −1 AP works now. Break's −1 AP waits on a hook (see Missing hooks).
+111. **Factory Made.**
+    - Field Repair heals 10 HP per Proficiency point, not per Mastery level.
+    - Poison means the toxic spill hazard (immune) and any poison or suffocation condition (cancelled).
+      Suffocation is otherwise the Narrator's.
+    - Blessings are re-run at half power, so a healing Blessing is halved once, not twice.
+112. **Glass Runner.**
+    - GAMEBREAKING as written: the first Move each combat has its first 1 AP of tiles free.
+    - A limb injury from a critical does +50% more damage.
+    - A broken leg quarters Movement, because everyone's leg injury already halves it.
+113. **Right of Way and Heavyworlder.**
+    - Movement is −0.5.
+    - Shove immunity doesn't block knockback.
+    - Heavyworlder's "can't hide in light" works like this:
+      - In a fight, Hide on a lit tile is undone at once.
+      - In the story, the stay-hidden roll uses TN 99 and −99 when the character isn't in the dark, so only a
+        natural 20 succeeds. Leon to decide if a natural 20 should also fail.
+114. **Crawler-Blooded.**
+    - A critical's arm or leg injury gives back 30% of that hit.
+    - A crawler enemy can't target the holder until the holder attacks a crawler this fight. This is per holder;
+      making it per squad is the alternative.
+    - Climbing is the Narrator's.
+    - Lumeri Blessings deal 10 true damage first. The patron counts as Lumeri when its faction is `lumeri`.
+115. **Old Timer.**
+    - +1 Echo at session start, so 2 in all. Everyone already starts with 1, so as written the upside did nothing.
+    - Seen It All is a story action (once per session) on a waiting Rumination, Lore Master or Analysis check. The
+      check resolves as a plain success, never a critical.
+    - Movement is −0.5.
+    - The −2 to Body skills reads `c.state.no_full_rest`. The Narrator sets it with `traitState`; a long rest or a
+      new session clears it.
+116. **The Brightest Light.**
+    - Every foe taken out counts as one kill, bosses included.
+    - A character is Crashed only if they attacked or were hurt in the fight.
+    - Crashed is −2 on every d20 that uses a skill: checks, attacks, saves and initiative. Passives and death saves
+      are not affected.
+    - Any rest ends Crashed, short or long, and so does a session start.
+    - Wear is doubled by tracking durability lost and taking the same amount again.
+117. **Squad Anchor.**
+    - "This turn" means the anchor's turn in progress, or its last finished turn when it isn't the anchor's turn.
+    - Fixed Point counts tiles walked; forced moves don't count.
+    - The bonus reaches condition saves and Defense. Death saves wait on a hook (see Missing hooks).
+118. **Augmented.**
+    - The pick is stored in `c.state.augment`. A "Choose your augment" action handles it until the creation screen
+      does.
+    - Arm is ×1.2 on weapon damage that isn't Elemental.
+    - Legs stay at +1 Movement as written. Leon to decide on +0.5.
+    - Maintenance is a Proficiency check vs TN 12 after every rest; on a fail the augment is offline until the next
+      rest.
+    - EMP sets Augment Offline for 2 turns.
+119. **Raised by Orks.**
+    - "Can't Read" auto-fails checks tagged `text`, `text_based` or `written`. It means in-world maps and documents,
+      never the game's grid.
+    - An Ork enemy can't target the holder until someone on the holder's side attacks an Ork.
+    - The squad opt-in for −2 Charisma is roleplay only.
+120. **Southern Fist.** "Nothing but gloves" means an unarmed main-hand weapon with no weapon in the off hand. The
+    trait's +1 AP counts toward the +3-per-turn cap.
+
+*Movement, stealth and vision*
+
+121. *(B1)* **Into the Dark I:** the free part is 1 AP (one Movement of tiles), once a fight. It doesn't apply to Sprint (audit problem 1). "Unexplored" is a tile the squad hasn't seen this fight; on the area map, a zone this character hasn't moved in yet. The first zone counts as new.
+122. *(B2)* **Wall Run:**
+    - **Runnable tiles:** map walls with at least one open neighbour, half-cover objects, and objects whose kind contains hole, pit or gap. Never doors or free-standing full-cover objects.
+    - **The II strike:** your weapon's basic attack (shot, or melee with a melee weapon).
+    - **Story:** the distance limit is the Narrator's judgement; the engine auto-passes a tagged Athletics check (provisional reading; a check `distance` field would let the engine own it).
+123. *(B3)* **Roll With It:** once a round, and the tiles are deferred off your turn (audit problems 2 and 3). The II crit bonus is spent by the next attack, hit or miss.
+124. *(B4)* **Shadow Step II:** TN 10 + best notice + 2 per earlier success; no new ambush (plan 6a-8, GAMEBREAKING fix). No witness: stays Hidden.
+125. *(B5)* **Got You in My Sight:**
+    - once a round;
+    - nothing if your turn has already passed;
+    - a sneak attack is an ambush (audit problems 2 to 4).
+126. *(B6)* **Eyes in the Back:** an unflanked shot gets −5, but a miss by that margin doesn't hit the cover. That needs a hook: see section 4.
+127. *(B7)* **Wind on the Skin:** range is Vision ignoring line of sight; the result is a known position only.
+128. *(B8)* **Skin Map:**
+    - It reveals Hidden enemies for the whole squad, because sight is shared. The audit's proposal was that it reveals them to the holder only; see section 4.
+    - Walls stop it.
+129. *(B9)* **Never There:** the narrow reading (−4 only during your own later moves).
+130. *(B10)* **Vanishing Act:** any attack reveals, even a silent one (the perk wins over the silent-weapon rule). Touched means an enemy ends a move next to you.
+131. *(B11)* **Charge!:** at most 3 AP free (the +3 cap, GAMEBREAKING fix). "At an enemy" means ending next to a visible enemy that the move closed on.
+132. *(B12)* **War Footing:** not on a Disengage; once per enemy a turn; the Intimidation target is unmoved for the scene (anti-retry). The data says `adjudication: engine`; it should be `hybrid` (data change).
+133. *(B13)* **Last Charge:** the shield is once a fight (the fix for the every-turn loop, GAMEBREAKING). ×1.5 melee applies for the rest of the charge turn. 5 tiles.
+134. *(B14)* **Just the Repairman:** the `toolbox` item only. Spare parts and the field kit don't count.
+135. *(B15)* **Silent Partner:** the nearest ally (in combat), the first by id (on the area map). The partner pays the sneak cost.
+136. *(B16)* **Dead Signal:** a lock opens rather than jams; a lamp's hp is set to 0 so it goes dark.
+137. *(B17)* **Forlorn Hope:** the AP is banked to next turn; the armour cap is Class I's value, 5, with slot pieces included.
+138. *(B18)* **Live to Fight Another Day:**
+    - **Disengage:** free once a turn (GAMEBREAKING fix).
+    - **Retreat:** 0 AP once a fight, and it counts as the turn's Sprint. Leon chooses between this and 1 AP once a turn.
+    - **+2 Dodge:** Withdrawing.
+    - **Yellow:** doesn't include the holder.
+139. *(B19)* **Drill Echo:**
+    - "Endurance checks" means the Endurance attribute's skills, plus Athletics and the tags running and climbing.
+    - The Count's lost action is a failed attempt.
+    - An Echo reroll rerolls the d20, not the d6.
+140. *(B20)* **Ghost Soldier:**
+    - Settlement rest is Vigilant against TN 12, on short and long rests.
+    - Stealth broken excludes your own attack or throw.
+    - The prosthetic arm: Proficiency mods aren't designed yet (data).
+141. *(B21)* **Lowland Born:** half Detection Range is read as spotting Hidden enemies only within half your Vision.
+
+*Weapons, ammo, reactions and explosives*
+
+142. *(C1)* **Running Reload.** The reload costs nothing on top of the move's own AP (merge_action: the move's cost only). It
+    needs a move of at least 1 tile and works once per turn. Tier II adds a separate once-per-turn jam clear. In
+    combat it is a toggle on Move. On the area map it is a "Move and reload" action, because the area map's Move takes
+    no toggles. PROVISIONAL.
+143. *(C2)* **Rounding Up (GAMEBREAKING, 6a-7).**
+    - Tier I: once per turn, so it gives at most +1 AP, counted toward the +3 cap. Leon still picks between this and
+      rounding movement down.
+    - Tier II: banks 1 AP into the next turn once per fight, and does it automatically. It fires at the first turn end
+      with at least 1 whole AP left over.
+    - The area map rounds once per round. There is no story AP to carry.
+    - PROVISIONAL.
+144. *(C3)* **Catch (6b).** Automatic, no roll, and uses your reaction.
+    - It covers a throw at your own tile, or at the tile of an ally next to you.
+    - You hold the item until your next turn. Throwing it back costs 1 AP at Tier I, 0 at Tier II.
+    - If it isn't thrown back by the end of your next turn, it goes off in your hands, credited to the original
+      thrower.
+    - PROVISIONAL.
+145. *(C4)* **Sleight of Hand (6b).**
+    - Planting needs no roll.
+    - A planted grenade goes off at the start of the target's next turn.
+    - A tracker Marks the target (no save) for the rest of the fight.
+    - Anything else becomes a Narrator note.
+    - On the area map, a planted grenade waits for that NPC's first turn in a fight.
+    - "Mid-conversation" means holding the story focus. Tier I refuses it.
+    - PROVISIONAL.
+146. *(C5)* **Jury-Rig (6b).**
+    - Tier I: after the extra use the weapon is Broken again, not destroyed. The use comes back once the weapon is
+      repaired. The extra strike does full damage.
+    - Tier II: "Patch the drone" is new. The engine had no Field Repair for drones. It restores (10% + 5% per
+      Proficiency above 3) × 2 of the drone's max HP and uses one spare-parts charge. There are no vehicles yet.
+    - PROVISIONAL.
+147. *(C6)* **Hot-Swap (6b).** In a fight, swapping a mod costs 1 AP, like swapping a weapon. Hot-Swap makes the first swap
+    of the turn free (Tier II: the first two). PROVISIONAL.
+148. *(C7)* **Origami Hands (GAMEBREAKING, 6a-6).**
+    - Each build uses one spare-parts charge, and at most 2 of your traps can stand on the map at once.
+    - Trap: 25 damage (Tier II: 37).
+    - Sling: d20 + Dexterity against Defense, within throwing range, 10 × Strength physical damage.
+    - Tool: a one-use plot item; the Narrator decides what it can do.
+    - Story: no Proficiency check, one spare-parts charge.
+    - PROVISIONAL.
+149. *(C8)* **Trick Shot (6b).**
+    - It ignores half cover only.
+    - The second target takes half of what the first target lost, at least 1, with no second armour roll.
+    - The second target must be within 2 tiles of the first and in its line of sight. The default pick is the nearest,
+      then the lowest HP; a `trick_shot_target:<id>` mod picks it instead.
+    - A miss still uses the turn's ricochet.
+    - PROVISIONAL.
+150. *(C9)* **Overhaul.**
+    - Bench repair (out of combat) restores 100% for one spare-parts charge.
+    - The extra slot is available after a long rest, once per weapon. The player picks its type by the mod they fit.
+    - PROVISIONAL.
+151. *(C10)* **Nothing Gets Past (6b).**
+    - "Hold the line" spends all whole shots of AP. Each enemy that moves draws one shot per move.
+    - The whole chain runs on one reaction (the extra shots refund it).
+    - Tiles not walked stay in the mover's bank.
+    - PROVISIONAL.
+152. *(C11)* **Dance of Iron (6b).**
+    - It uses your reaction.
+    - It triggers on a miss, fumbles included. A shot stopped by cover doesn't count.
+    - The return shot waits until the attacker's next action or the end of its turn, so it lands after a volley ends.
+    - With a melee weapon in hand there is no return shot.
+    - PROVISIONAL.
+153. *(C12)* **Holy Ordnance (6b).**
+    - The blessing goes on an adjacent ally's magazine or your own.
+    - It lasts until the magazine is swapped out (a reload). Tier II blesses the next magazine too.
+    - The bonus goes in the target-specific bucket, capped at ×2.
+    - Blessing power doesn't apply.
+    - A blessing given out of combat carries into the next fight. One still loaded when a fight ends carries over too.
+    - PROVISIONAL.
+154. *(C13)* **Gun Nut (6a-29).**
+    - The 0-AP clear doesn't reset Heat.
+    - The Collector check (fewer than 3 guns) is a Narrator note at session start.
+    - The sell and drop Dexterity check is TN 12, and the −50% sale price is the Narrator's to apply. Both stay that
+      way until the engine has sell and drop actions.
+    - Kits give one gun, so a new Gun Nut breaks the trait's own downside. Leon decides which 2 extra guns the trait
+      grants at creation.
+    - PROVISIONAL.
+155. *(C14)* **Old School.**
+    - Fan the Hammer fires every loaded round, each at −2 plus Recoil (−1 per earlier shot past ⌊Dexterity ÷ 2⌋).
+      It is once per turn and costs 3 AP.
+    - Analog bans the red dot sight (electronic), and Evoker-linked and electronic guns (weapon tags). The scope is
+      glass and is allowed. The engine enforces the ban by refusing to fire.
+    - PROVISIONAL.
+156. *(C15)* **Spray and Pray (GAMEBREAKING, 6a-13).**
+    - Full auto applies Suppressed, not Pinned, with a Body save. It doesn't stack.
+    - The full-auto penalty is −1 instead of −2.
+    - Ammo Hog doubles every round, single shots included, as the text says.
+    - Aimed shots are at −2.
+    - PROVISIONAL.
+157. *(C16)* **One Shot (6b).**
+    - The critical multiplier is ×1.5 the multiplier, so 2.0 becomes 3.0.
+    - "First shot" means the first shot of the turn.
+    - It ignores half cover only.
+    - Tunnel Vision: Vigilant checks fail, Vigilant voice lines stay silent and the holder spots no Hidden enemies.
+      Ambushes on the holder do +50%.
+    - Tunnel Vision ends on the holder's next move. A scene change also ends it.
+    - PROVISIONAL.
+158. *(C17)* **Grenadier's Arm (6b).**
+    - Weights: people 80 kg, elites 100 kg, drones 15 kg, other companions 40 kg. Bosses can't be thrown.
+    - Range is throwing range − ⌊kg ÷ 20⌋.
+    - Damage is (10 + kg ÷ 4) × physical multiplier, to the thrown body and to whoever it lands on. The body then
+      lands on the nearest free tile.
+    - The throw costs the Throw AP: 2 + 1 for Strained Arm.
+    - Throwing objects is the Narrator's call.
+    - PROVISIONAL.
+159. *(C18)* **Demolitionist.**
+    - The +30% applies to explosions credited to you, after armour (hurtUnit removes armour first). Explosive weapon
+      hits use the data's damage_mod before armour.
+    - Shaped Charge shapes: circle = the item's radius; line = 2r + 1 tiles away from you; cone = 90° and 2r + 1 tiles
+      long.
+    - "Detonate" on a trigger costs 1 AP.
+    - The charge comes from your thrown explosives: satchel, frag or incendiary.
+    - PROVISIONAL.
+160. *(C19)* **Blade Recluse.** Naming the weapon is free and can be redone out of combat. Kills with the named weapon's
+    family add 0.25 more, stored as fractions. Lowered is blocked along with Disarmed. PROVISIONAL.
+161. *(C20)* **Slicer (GAMEBREAKING, 6a-17).**
+    - Static devices only: doors, terminals, cameras, alarms and emplaced turrets (kind `turret`). Never mobile robots
+      or people.
+    - TNs: devices 12, a turret object 14. A turret unit goes by its tier: minion 12, soldier 14, elite 16, boss 20.
+    - No line of sight is needed, and the range is 5 tiles.
+    - A door can be opened, closed or locked until your next turn; then its lock goes back to what it was.
+    - A turret unit is Puppeted for one turn.
+    - Jacked In: a lightning or EMP hit, or a bot scrambler blast that reaches you, Stuns you with no save.
+    - Machines get −2 to the TN to spot the Slicer in a fight, +2 notice range in the story and +2 to the stay-hidden
+      TN.
+    - PROVISIONAL.
+
+*Sigil, Soul, prayer and music*
+
+162. *(D1)* **Hold the Stroke** (spec item 15). +1 / +2 stroke pool. It doesn't change words per spell.
+163. *(D2)* **Parallel Thought** (plan 6a-9, PROVISIONAL). Once per turn, and only while a STAY zone of yours stands. The
+    discount (1 / 2 AP) covers the glyph draws first, then the Evoke, never below 0. It ends with the Evoke, and
+    anything left over is lost.
+164. *(D3)* **Heart Overload** (plan 6a-4, PROVISIONAL). It's a toggle on Begin ("Pay with HP"), 2 / 1 HP per point of mana,
+    after every other discount, as true HP loss.
+    - An HP-paid cast can't heal or shield: its heal and shield come to 0.
+    - It can't be held to grow: a held Outburst pays mana.
+    - You can't pay into Downed.
+    - Without an Emanator the toggle is off, because you already pay from the air. **Leon to decide** whether it should
+      waive the +2 Strain instead.
+165. *(D4)* **Resonance.** Allies only. The best discount you've been given waits for your next Begin, and that Begin uses it
+    up.
+166. *(D5)* **Rite in the Field** (PROVISIONAL mapping, needs Leon's OK). −1 / −2 AP, in combat only, with these floors:
+    - WARD glyph: 0.5;
+    - Guarded Outburst: 1;
+    - Pray: 1;
+    - Warden Ward: 1;
+    - Crystallise: 1.
+167. *(D6)* **Clean Draw** (PROVISIONAL). It costs 0 AP to arm, once per fight; the use is spent when you arm it.
+    - Clean glyphs cost no charge and no Flux.
+    - Evoking a pattern made only of your clean glyphs costs no charge.
+    - The Evoke disarms it, and so does losing the clean glyphs.
+    - An enemy evoking them pays as normal.
+168. *(D7)* **The Twin Pays** (PROVISIONAL). A toggle on Begin, once per fight: 0 MP, no meter drop, no Strain on the cast or
+    while it is held (Right Brain Debuff's +20% included).
+169. *(D8)* **Twin Souls** (PROVISIONAL). "Mid-level" is dropped: any design may carry a third school, at +20 MP before the
+    band and Insight saving.
+    - The third school runs at release, before the first two.
+    - Story: once per session, a private question, answered as a pending ruling, short of proof (the Veil).
+170. *(D9)* **Twin Discipline** (PROVISIONAL). Its costs:
+    - the Evoke's charge and AP now;
+    - the Outburst's MP and Strain, already paid at Begin.
+    How it works:
+    - The pattern's shape decides the targets.
+    - Rain, Size, Random and Move are ignored, and Ether is implied.
+    - A Ring is ×0.8.
+    - The pattern's Subject words don't fire, and its glyphs fade.
+    - A STAY pattern can't be fused.
+171. *(D10)* **Verse of War** (plan 4.3). It applies only when the player has Said a line that round (on the area map, the
+    toggle alone). +1 range on Begin, and on Release through "Release in verse". ×1.1 on the Soul damage of that
+    release.
+172. *(D11)* **Fire Sermon** (PROVISIONAL). Enemies within 4 tiles. The Heart save is against 12 + your Heart debuff strength
+    (Implication).
+173. *(D12)* **Litany.** You are included. It doesn't stack: the higher Litany stands. It ends at your next turn start.
+    - Story: once per scene, the party's next save check gets +1 / +2.
+    - It reaches every save through applyCond. The Control school's push and pull save doesn't go through applyCond
+      (see the missing hooks).
+174. *(D13)* **Upper-Touched** (PROVISIONAL). 0.8 × Outburst MP, keeping the 5 MP floor.
+    - Sense: a log line when an upper-realm foe comes within 10 tiles.
+    - Seen From Above: you can't stay Hidden while one stands, and their spot rolls always succeed. In the story an
+      upper-realm NPC always notices your sneak.
+    - **Blessing d6 table**: 1 the Blessing fails, 2 +1 Strain, 3 Shaken for 1 round, 4 normal, 5 ×1.5 power, 6 a voice
+      from above (a Narrator note).
+175. *(D14)* **Sigil Savant** (plan 6a-19, PROVISIONAL).
+    - Muscle Memory: one word, chosen once (the Perks action). It draws for 0 charge and Glyph AP −1, never below 0.5.
+      It still adds 1 Flux, and the Evoke's charge is paid.
+    - Rigid: at each long rest you practise at most Max Sigil words (the Perks action "Practise words"). If you don't
+      choose, the first Max Sigil words you know are practised. The Muscle Memory word is always practised. Until the
+      first long rest, everything you know is practised.
+176. *(D15)* **Hollow Heart** (PROVISIONAL). A Mana Short that Downs you leaves you stable: your death saves always succeed but
+    never stand you up, and hits while you're Downed add no failures. You're back at 1 HP after the fight, or when
+    healed.
+    - +10% on the Soul damage you deal.
+    - Echo Chamber: casting reveals you, and you can't hide that turn. The Narrator is told that the enemies within 10
+      tiles know where you are. On the area map it ends your sneak.
+177. *(D16)* **Heretic** (PROVISIONAL reading).
+    - Stolen Fire: pray to any patron for any of its Blessings, with no pact. Will Power stands in for Faith in the
+      gates (3 / 5 / 7), the roll and the cooldown, and Devotion is never changed.
+    - Blessing Power = 1 + 0.1 × Will Power.
+    - Excommunicated: an ally's Blessing on you fails on a d6 of 1–2. At the campaign's first session start the Lumeri
+      Church is set to −40 (Hostile). The Narrator decides which other faiths count.
+178. *(D17)* **True Believer** (PROVISIONAL).
+    - The cooldown is 1 turn shorter, never below 1.
+    - The miracle is a story button, once per session.
+    - Missed rites are `traitState rites_missed` (set by the Narrator). Each one is −1 on Faith and Will Power rolls,
+      capped at −3.
+179. *(D18)* **Heaven's Faithful** (PROVISIONAL). The Treason check is d20 + Faith against **TN 12**, once at the start of each
+    fight against upper-realm beings. A failure costs −2 AP on your first turn.
+    - Communion: once per scene, a private pending ruling.
+180. *(D19)* **Music traits.** They follow the scope in the spec text above. Shields of 30+ count as a big heal.
+181. *(D20)* **You Get Used to It.** Tier I's −1 comes at the start of your next turn, at most once per turn. The +3 AP comes
+    when you heal or shield an ally (not yourself) who carries a Brain debuff. It is once per turn and within the
+    +3 cap. Tier II has no penalty.
+182. *(D21)* **Shared Breath** (PROVISIONAL). The link range is 3 tiles, with sight.
+    - The partner takes the debuff with no save.
+    - Half duration is rounded up, minimum 1. Untimed ones (Disarmed) stay untimed.
+    - Tier I ends after one split. Tier II lasts the fight.
+183. *(D22)* **Mirage** (plan 6a-10, PROVISIONAL).
+    - Range is 6 + mod(Visualization). The Analysis check is d20 + tier (minion 0, soldier 1, elite 2, boss 3) against
+      12 + mod(Visualization).
+    - It lasts until the start of your next turn (Tier II: the turn after).
+    - There is one cast per caster: a new cast replaces the old.
+    - An enemy that saw through one of your Mirages, or attacked a figure, gets +5 against your later Mirages.
+    - A wall stops a believer's move at the tile and refuses its shots through the tile.
+    - A figure takes a believer's attack, as a miss, and disproves it.
+    - A sound pulls a believer one move toward the tile instead of an action (once).
+    - Tier II's second projection comes in `text` ("x,y" or "kind@x,y").
+184. *(D23)* **Solid Image** (PROVISIONAL). It works only on Mirage projections (the Visualization Afterimage decoy isn't built
+    yet).
+    - A wall becomes a barricade object until your next turn starts.
+    - A figure takes the first hostile hit on any ally, for 0, and breaks.
+
+*Command, the AP economy, the team and the medic*
+
+185. *(E1)* **Grim Reaper.**
+    - A KO is a subdued foe: a non-lethal blow that takes the last HP. It counts like a kill.
+    - Only a kill on your own turn counts. A kill by Overwatch or a reaction gives nothing.
+    - The +2 AP comes at once, within the cap.
+    - Tier II: every enemy that sees the kill saves against Fear, once per kill.
+    - On the area map, the +2 goes to the story AP. The first-turn penalty applies only in a fight.
+186. *(E2)* **Overruled!** Read at the start of the turn only (plan). Persuade (rules 1.3 parley, 2 AP) lets a non-caster
+    inflict the Left Brain Debuff. No story part.
+187. *(E3)* **Blueprint (ambiguous: Movement).**
+    - "+1 Movement" is +1 tile per AP, as written. At Agility 1 that doubles your movement. PROVISIONAL, flagged as
+      strong.
+    - Sketching costs 1 AP on the area map and nothing in the story. Once per scene. PROVISIONAL.
+    - Every living squadmate in the scene has seen the sketch, the sketcher included.
+    - The mark is used by the next fight that starts in the same scene, or it lapses.
+    - A fight with no story before it gets nothing.
+188. *(E4)* **Talks Broke Down.**
+    - The engine infers that the fight "started because of" a dialogue check. The check must be the last dialogue check
+      any squadmate made this scene, in this story round or the one before. A dialogue check is one that uses a
+      dialogue skill or carries the 'dialogue' tag. PROVISIONAL (see hook H3).
+    - Tier II's hesitating enemy is the first enemy in initiative order. It loses 1 AP on its round-1 turn, once
+      however many holders there are.
+189. *(E5)* **Rally Cry.**
+    - It triggers when an ally drops to 0 HP to an enemy, a hazard or an enemy effect. Friendly fire and your own
+      side's Mana Short don't trigger it. PROVISIONAL.
+    - "Every other ally" includes the holder. Allies that are already Downed are left out.
+    - It doesn't stack in a round: the best value counts.
+190. *(E6)* **Soulmate.**
+    - The share is taken after the bondmate's armour and shield.
+    - It is rounded down and is true damage. It is never shared again.
+    - It stops at the holder's last HP: you can't Down yourself for a bondmate. PROVISIONAL.
+    - Mastered (10 points) shares 20%.
+    - Tier I keeps the latest bond; Tier II keeps two.
+    - Story damage (outside the combat engine) isn't shared (see hook H6).
+191. *(E7)* **Sweet Talker.**
+    - A charm is a successful Charisma or Implication check with a `target` (an NPC). It lasts for the scene.
+    - The AP gain is once per turn. PROVISIONAL.
+    - The sting (Tier I) is −2 AP on the holder's next turn.
+    - On the area map, buffing or debuffing a charmed NPC adds the AP to the story AP.
+192. *(E8)* **Outclassed.** Only a death counts as the first kill; a surrender doesn't. The first casualty is the first PC
+    Downed or killed on the holder's side; companions don't count. Each flag is set once per fight.
+193. *(E9)* **Many Hands (GAMEBREAKING-adjacent: "any amount").**
+    - Hand-Off gives 1 to 3 AP. More is wasted to the +3 cap, so the action caps the amount at 3 and says why.
+      PROVISIONAL.
+    - Range is 3 tiles, once per round.
+    - On the area map the AP is added to the ally's story AP at once.
+    - Reaction sharing isn't built yet (hook H1). It goes to the Narrator through the brief.
+194. *(E10)* **On My Mark.**
+    - The ally gets an off-turn window with a pool of 4 AP (6 minus the floor of 2). PROVISIONAL.
+    - The AP spent becomes debt on the ally's next turn.
+    - The ally can be any conscious squadmate who isn't Silenced, at any range. PROVISIONAL.
+    - One order per ally per round, however many holders there are.
+    - The debt settles at the next hook after the window closes (see hook H2).
+195. *(E11)* **Supreme Command.**
+    - It costs 0 AP (the data gives no cost). PROVISIONAL.
+    - Each other living, conscious squadmate gets one action from a separate pool of 2 AP, in initiative order.
+    - Companions are not included.
+    - The pool doesn't count toward the +3 cap.
+196. *(E12)* **The Voice.**
+    - It costs 0 AP. The save is Heart vs 12 + your Authority modifier. PROVISIONAL.
+    - Rank-and-file means minion and soldier tier. Hearing is 8 tiles.
+    - Orders use the engine's Commanded menu: halt, hold fire, drop it (Disarmed), kneel, fall back (flee).
+    - A typed order outside the menu holds the enemy in place (halt) and goes to the Narrator in the fight report.
+197. *(E13)* **Between Heartbeats.**
+    - It is an armed preset: shot, move (`move:<tile>`, else the reachable tile farthest from the enemy), prone, stim
+      (an ally target) or reload. PROVISIONAL.
+    - The 2 AP aren't yours and don't use your reaction.
+    - Ambush: before your first turn, an unarmed holder fires a shot, or drops prone if no shot is possible, at the
+      first enemy action in sight. PROVISIONAL.
+    - A preset that can't resolve (out of range) stays armed, unless it was the ambush default.
+198. *(E14)* **Spoon-Feed.**
+    - "Allies who hear" means allies within 6 tiles when it is used; you don't count. PROVISIONAL.
+    - The bonus lasts until the start of your next turn and doesn't stack on one enemy.
+    - No Analyze is needed.
+199. *(E15)* **Flat Line.** The engine picks at combat start: highest tier, then highest HP. The player can change the pick
+    (0 AP) until the end of their first turn. No re-pick when that enemy dies. PROVISIONAL.
+200. *(E16)* **Pattern Lock.**
+    - An attack type is the weapon plus the mode. Seen means you were the target or you saw the attacker.
+    - Tier II's ally +2 needs the holder up. It applies once however many holders there are.
+201. *(E17)* **Lay Down Arms (spec/data mismatch, timing).**
+    - A failed save applies Commanded "hold" (no attacks on its next turn; moving is still allowed) instead of the
+      data's Disarmed, whose 2 AP recovery isn't in the text. PROVISIONAL.
+    - Hearing is 8 tiles.
+    - Humanoid means not a robot, machine, turret, drone or beast, and not tagged `non_humanoid`.
+    - Area map and story: the engine rolls the save (d20 + the tier save vs 12 + Implication), and a pending ruling
+      tells the Narrator the result.
+    - Data delta: change the condition to `commanded` with `arg: hold` (or keep `disarmed` and add
+      `recovery: none`).
+202. *(E18)* **Field Surgeon.**
+    - Healing a living ally is 10 × Proficiency points × Healing given. PROVISIONAL (the Factory Made number).
+    - It costs 2 AP and one spare-parts charge, and needs Proficiency 3+.
+    - A Downed ally is revived.
+    - Your heals (stims, Field Repair) on a Factory Made ally undo Plug's halving.
+    - Out of a fight: 50% of max HP per charge, 10 minutes. PROVISIONAL.
+203. *(E19)* **Angel of the Trenches.**
+    - "Within your Movement" means a free tile next to the ally that you can walk to for 1 AP (floor of Movement).
+      PROVISIONAL.
+    - The ally stays at 1 HP, stops bleeding and isn't Downed.
+    - No stim is used and the move draws no opportunity attacks.
+    - It runs before Bite the Bullet (priority 10).
+    - "Hold position" (armed) turns it off.
+204. *(E20)* **Sworn Sibling.**
+    - One shared AP per pair per round. The first of the two to start a turn adjacent takes it. PROVISIONAL.
+    - "Defending them" means an attack on an enemy within 2 tiles of the Downed sibling, or one that has hurt them.
+      PROVISIONAL.
+    - Moving away costs double AP. The extra AP buys no extra tiles: it comes out of the move bank.
+    - Story: −2 on checks while the sibling's character is at 0 HP, unless tagged `for_bond`.
+205. *(E21)* **Rival.**
+    - The rivalry is mutual even if the rival doesn't hold the trait (consent through the bond).
+    - Show-Off is +2 once, with no stacking. A weapon hit counts as success on the weapon's skill.
+    - Neck and Neck: 50 XP per level the rival gains. +10% from every source except Essence and bond, while the other
+      is higher level.
+    - Petty: a Camaraderie check at TN 12, once per turn per stamp. PROVISIONAL. It covers Hand-Off, Command, Field
+      Surgeon's repair, Thrown Stim and a stim on a conscious rival. On a failure the AP and the stim are given back.
+206. *(E22)* **Born Officer.**
+    - Command gives a free 1-AP move or a free basic Shoot or Strike. No aimed shot, burst or weapon skill.
+      PROVISIONAL.
+    - An officer ally takes the order only on a Composure check vs TN 12. PROVISIONAL. If it refuses, the AP stays
+      spent.
+    - The Squad Leans on You: −1 AP to an ally within 5 tiles while the officer is Downed or dead, or out of that
+      ally's sight (literal). Once per turn however many officers there are.
+207. *(E23)* **Field Medic (GAMEBREAKING: 0-AP stims).**
+    - Triage has a floor of 1 AP. A conscious stim stays 1 AP, and stabilising goes from 2 to 1. Healing Outbursts are
+      −1 AP (floor 1). PROVISIONAL.
+    - Thrown Stim costs the stabilise AP after Triage and uses a stim. The data says `ap: 0`; change it to `null`.
+      PROVISIONAL.
+    - First, Do No Harm applies only while the medic has a way to heal: stims, the Medic class or a heal design. This
+      avoids a softlock. PROVISIONAL.
+    - Companions don't count.
+208. *(E24)* **Many Hands, On My Mark, Supreme Command and Command don't reach companions.** Companions follow their owner's
+    orders.
+209. *(E25)* **Lay Down Arms and The Voice in the story.** The Voice is combat only, as its text says. Lay Down Arms has a
+    story and area-map plea. PROVISIONAL.
+210. *(E26)* **The Petty gate's TN of 12** applies to every help action. The Narrator calls story help (tag `help_rival`).
+
+*Status, surrender, judgement, kin and companions*
+
+211. *(F1)* **Bone Talk.**
+    - In the story there's no save: the NPC chooses between answering and being Shaken (plan 6, Bone Talk 2). The
+      Narrator rules whether the threat names a real physical detail, gives the true answer, or reports the refusal
+      through `conditions`.
+    - In a fight, it costs 2 AP, needs an enemy within hearing who can see you, and the enemy makes a Heart save against
+      12 + your Heart debuff strength.
+    - Tier II: every enemy within hearing who sees you rolls.
+    - **PROVISIONAL** (the AP cost and the combat save).
+212. *(F2)* **The Name They Whisper.** GAMEBREAKING as written (it halves every enemy's effective HP).
+    - One surrender save per enemy per fight, only while you're up, never a Boss, never a machine, and never a foe
+      tagged no_surrender.
+    - The Fear at fight start lasts 2 rounds.
+    - Both TNs are 12 + max(Intimidation mod, Heart debuff strength).
+    - Enemies the Narrator marks `unaware` aren't affected.
+    - **PROVISIONAL.**
+213. *(F3)* **Open Hand.**
+    - The offer comes the moment an enemy you can see drops from above 25% to 25% or less while still standing.
+    - It's a Heart save against 12 + Heart debuff strength. One offer per enemy, separate from the general surrender
+      save.
+    - Setting: always (default), ask (no automatic offer; the free Offer mercy action is used on your turn), or never.
+      The engine can't pause an enemy turn to ask.
+    - **PROVISIONAL.**
+214. *(F4)* **Clean Hands.** Spare is a toggle chosen before the roll. A blow that takes a foe's last HP subdues it.
+    - Spared foes give no kill credit.
+    - Every surrender you cause counts as a spare.
+    - Protect means healing or shielding a unit tagged civilian, or a neutral one.
+    - The AP is banked for your next turn, once a turn, within the +3 cap.
+    - The audit's damage ×0.75 for nonlethal blows was a question, not a recommendation, so it isn't built. Leon to
+      decide.
+    - **PROVISIONAL.**
+215. *(F5)* **Judgement Day.**
+    - The judged enemy's next attack roll against anyone on your side, you included, is forced to a miss. It still
+      spends its AP and ammo.
+    - +50% goes into the target bucket (capped at ×2, plan 6a-1).
+    - **PROVISIONAL.**
+216. *(F6)* **True Name.**
+    - Allowed targets are units of kind upper_realm, cursed, celestial or beast, or tagged upper_realm. Other targets are
+      refused before anything is spent.
+    - "Studied" is the Narrator's call. In the story it's a pending ruling, and a refusal refunds the use.
+    - +50% from you and your allies goes into the target bucket.
+    - It lasts for the scene: in the story it's `c.state.true_name`, and a fight in the same scene against that name
+      counts.
+    - **PROVISIONAL.**
+217. *(F7)* **Case Closed.**
+    - Analyze also logs the target's kind, tags, saves and conditions, and sets Weak Point.
+    - +2 to hit and +20% (target bucket) for the whole squad.
+    - New action, **Close the case** (the Analyze AP cost): re-read an enemy someone else analyzed, because `analyze()`
+      refuses a second Analyze.
+    - The motive goes to the Narrator: a fight note, or a pending ruling after a successful story Analysis check.
+    - Enemies have no resistances data, so that part shows nothing.
+218. *(F8)* **Still Water.**
+    - The Brain immunity is generic.
+    - "Nothing reads you": when the AI picks this unit while it's hurt, the pick is rerun as if it were at full HP, and
+      the attack is redirected if the answer changes.
+    - Only hostile reads: allies' Feel Their Pain etc. still work (plan 6, Still Water 3).
+    - NPC reads in the story are the Narrator's (brief).
+    - **PROVISIONAL.**
+219. *(F9)* **Red Line.**
+    - The line is named with a story action (`c.state.red_line`).
+    - The Narrator rules a crossing with `traitState red_line_crossed: true`.
+    - No new line until the next session; session start clears a crossed line.
+    - In a fight: +1 (II: +2) on Heart saves through stat `save_heart`. Tier II also gives allies within 3 tiles +1
+      (cond_apply saveAdd).
+    - In the story, the holder gets +1/+2 on Heart saves (checks of kind save, family heart or Composure). Tier II gives
+      every other character +1.
+    - **PROVISIONAL** (the next-session rule, and the story allies).
+220. *(F10)* **Lab Coat.**
+    - "Identified" means any of:
+      - the Narrator's `identify` field (`c.state.identified`);
+      - a story save that targets an identified agent, or is tagged `identified`;
+      - in a fight, a chemical condition (Nausea; Poisoned, Drugged and Toxin if they exist) that is identified, or that
+        comes from a unit the holder analyzed.
+    - Story saves need the `chemical` tag.
+    - Tier II's radius is 2 tiles. The agent ends on allies in that radius, and they're immune to it for the fight. A
+      toxic spill stops hurting them (`hazardImmune`). Out of a fight, Tier II is free and ends the matching story
+      conditions on the party.
+    - **PROVISIONAL** (the radius and the identified rules).
+    - Data delta: Tier II's `ap_cost` is already 2.
+221. *(F11)* **Daggerfall Veteran.**
+    - The Flashback TN is 12 (the ladder) instead of 13, because the story can't ask for a TN that isn't on the ladder.
+    - Flashback happens at most once per fight. Its triggers are:
+      - Burning on you;
+      - a grenade or satchel thrown within 3 tiles;
+      - a barrel or explosive breaking within 3 tiles;
+      - explosive damage within 3 tiles.
+    - On a fail you're Stunned for 1 round, which loses the turn.
+    - In the story, a failed check tagged `flashback` ends your round now (`g.story.ended`). The trait says "the next
+      turn", but there's no hook at the start of an overworld round.
+    - +2 on Heart saves against debuffs from units tagged military.
+    - Shake It Off: once per combat in a fight, once per scene in the story.
+    - Seen It Before (fight): the deterministic AI runs on a copy of the game for each visible enemy, and the forecast is
+      logged.
+    - **PROVISIONAL** (the TN, once per fight, ending the round in the story).
+222. *(F12)* **Chain Smoker.** Light Up has no limit and uses no cigarettes (plan 6, Chain Smoker 2: the item exists but the
+      trait doesn't start with it). It costs 2 AP in a fight and on the area map, and nothing in the story.
+    - Detection +2 means +2 to an enemy's spotting roll against you, and +2 tiles of NPC notice range in the story.
+    - −1 Athletics doesn't change Defense.
+    - **PROVISIONAL.**
+223. *(F13)* **Trench Poet.** Verse uses the spec's debuff rule instead of the opposed roll: a Heart save against 12 + your
+      Heart debuff strength (in the story: the NPC's tier save against 12 + Implication mod). It lands Confused as a
+      declared exception (Confused is in the Brain family).
+    - In a fight it costs 1 AP and reaches 8 tiles, no sight needed.
+    - Allies in earshot (in the story, everyone else present) get +1 Composure for the scene.
+    - Once per scene, shared by the fight and the story.
+    - **PROVISIONAL.** Leon to confirm the family.
+224. *(F14)* **Grudge Bearer.** GAMEBREAKING as written.
+    - The extra round never applies to Stunned or Dazed.
+    - The first-debuff save skip never applies to a Boss or to Stunned.
+    - Never Forgive: the mark is `traitState grudge`; the Narrator sets it, and clears it with null when you're even. It
+      gives −2 on attack rolls against anyone else, −2 on your saves (except against the mark), and −2 on story checks
+      not targeting the mark (`check.target`, or the tag `targets_mark`).
+    - The Narrator must give a path to get even. The arc lapse waits for an arc concept.
+    - **PROVISIONAL.**
+225. *(F15)* **Pacifist.** Sanctuary ends with your first attack, a damaging hit, a shove or an Outburst.
+    - Nonlethal is a toggle, on by default; send `!nonlethal` to kill. It covers every blow that takes a foe's last HP,
+      magic included.
+    - Subdued foes are kept by name and id in `c.state.subdued`. Talking with one is +3, either when the check targets
+      them or when it's tagged `talk_with_enemy_defeated_nonlethally`.
+    - Karma awards whose reason says mercy, spare(d) or subdue(d) are doubled.
+    - The Vow: a kill (kill credit, so bleeding you opened counts) sets Echo to 0 and gives Shaken for the session, in the
+      story and in this fight and later ones.
+    - **PROVISIONAL** (the Karma reason words, and the Heart debuff being Shaken).
+226. *(F16)* **Humanity First.**
+    - +15% goes into the target bucket.
+    - +2 on saves against Fear from a non-human.
+    - Heals from a non-human are halved.
+    - Empathy, Charisma and Camaraderie checks tagged `non_human` or `vs_non_human` fail automatically. The check still
+      appears, labelled "Xenophobe".
+    - A Crawler counts as non-human for this trait.
+227. *(F17)* **The Old Blood.** Heals from another race are halved. Prices are the Narrator's: there is no shop.
+228. *(F18)* **Moon Hunter.**
+    - "Creature" means any quarry you tracked.
+    - Tracked comes from the Track story action (which also opens a pending ruling for where the trail leads) or from
+      `traitState tracked`. Either way it clears when the scene changes.
+    - +30% (target bucket) on the first attack on each tracked quarry this scene; a miss uses it too.
+    - **PROVISIONAL.**
+229. *(F19)* **Rabbit's Foot.**
+    - Lucky Foot is armed at the start of each fight while its once-per-session use is left. The first enemy attack roll
+      against you that would hit is rerolled automatically, because the engine can't pause an enemy turn. You can stand
+      it down. Your own saves don't count.
+    - In the story it's a pending ruling, sharing the same use.
+    - Vengeful: +2 AP once, on the next turn after an ally (not a companion) is Downed.
+    - Hunters (tag hunter) and Orks (kind ork) deal +25% to you.
+    - **PROVISIONAL** (arm-then-auto).
+230. *(F20)* **Drone Handler.**
+    - The drone joins at session start and when the scene changes (`c.companions`).
+    - Its stat block comes from enemies.json: HP 40, a service pistol (spec item 96). That contradicts the trait text
+      (30 HP, no attack). **Leon to decide**: the code follows the spec.
+    - 3 AP a turn. +5 kg carry while it stands.
+    - Repair drone: 2 AP, adjacent, one spare-parts charge, 10 HP × Proficiency Mastery level (minimum 1).
+    - Out of a fight, Rebuild drone repairs it to full for 1 spare part. A destroyed drone needs a rest since it was
+      destroyed, plus a drone frame or 3 spare parts.
+    - Tethered: Shaken (story scope arc) until it's rebuilt, and in every fight.
+    - **PROVISIONAL** (repair numbers, materials).
+231. *(F21)* **Beast Handler.**
+    - The stat block comes from enemies.json: HP 50 and bite 18 (spec item 96), against the trait's 60 HP. **Leon to
+      decide.**
+    - 4 AP a turn.
+    - Each of its turns is an order: d20 + Empathy mod against TN 8. On a fail it acts on instinct: it bites an adjacent
+      enemy, or holds, and its turn is spent. It also fails if the handler is down.
+    - Grapple: every melee hit of the beast's bite carries it (no attack mod: the beast's turns, ordered or on instinct,
+      have no mod to pick). On a hit an enemy not already Grappled makes a Body save or is Grappled by the beast.
+      **PROVISIONAL** (always-on rider).
+    - Bond: if it dies, Shaken for the arc.
+    - A long rest heals a living beast to full.
+    - **PROVISIONAL** (TN 8, instinct, grapple as a bite rider).
+
+*Story perks and dialogue traits*
+
+232. *(G1)* **Footnote**: the bonus reaches every ally roll the Narrator ties to the fact that scene (the citation is once a
+    scene). Combat form (new design): once a fight, 0 AP, +1/+2 for allies' attacks on one enemy for the rest of the
+    round. Leon to approve the combat form or keep the perk story-only.
+233. *(G2)* **Double Meaning** combat form (new design): once a round (not at will), 0 AP, +2 to each squad member's next
+    attack on the named enemy until the holder's next turn; II: the nearest other enemy within 8 tiles loses its first
+    action (2 AP). The decoy-tile variant isn't built.
+234. *(G3)* **Crowd Pleaser** in a fight: 3+ enemies within 8 tiles make it one roll for all, save TN +2.
+235. *(G4)* **Detective's Eye** combat form: at the fight's start, one hidden trap or the most-HP enemy's weak point (two at II).
+236. *(G5)* **Their Own Idea**: an elite or boss listener, or an upper-realm or cursed one, makes a Heart save: d20 + tier
+    save (minion 0, soldier 1, elite 2, boss 3) vs 12 + the holder's Heart debuff strength, rolled by the engine; a
+    resisted try spends the use. Celestials are immune (the Accords). Off-map important listeners: the Narrator only.
+237. *(G6)* **Old Tongue II** in a fight: the upper-realm being holds its attacks on its next turn (once per being, ever).
+238. *(G7)* **Real Power**: once per organisation; II "agrees to see you" is a meeting, not a yes; Celestials only by cause.
+239. *(G8)* **Established Fact** guardrails (as in the spec text above); a refusal refunds.
+240. *(G9)* **Foreseen**: today a rewind in the fiction only (the Narrator shows what would have happened and replays the
+    moment); the room sees the line. A real state rewind (the reroll copies) and a host veto are a hooks gap (below).
+241. *(G10)* **Gambler**: checks and attack rolls only (not saves, death saves, Mana Short); an Echo reroll keeps the double;
+    a fight counts as part of the scene (one use for both).
+242. *(G11)* **Cold Case Obsession**: unrelated is the default; the Narrator marks related scenes (`case_related`) or checks
+    (tag `case_related`). −1 on story checks, Ask and stay-hidden rolls, and in a fight attack rolls and saves (fixed at
+    the fight's start); never passives.
+243. *(G12)* **Holo-Drama Addict**: one use a scene shared by the story and fights; the combat form is +3 to the next attack
+    that turn with no approval (new design). Leading Role's gate is Visualization vs TN 12 (Standard).
+244. *(G13)* **Born Performer**: the default pick is the highest γ skill (ties in skill order), changeable once a scene.
+245. *(G14)* **Every Lie Is a Door**: only the holder; +20 to stay hidden next to a guard; ends at any fight's start and at a
+    new scene; people only, not simulation-level barriers.
+246. *(G15)* **Closing Argument**: a pending Eloquence check on the point succeeds without the die.
+247. *(G16)* **Everyone's Friend**: the first lie is declared by the player (button) or tagged `lie` by the Narrator.
+248. *(G17)* **Cover Story**: the engine counts an identity as burned when it is cleared after a failed roll; the old con is
+    owed at 3 (once, until `old_con: true`).
+
+*Identity, economy and upkeep traits*
+
+249. *(H1)* **Mind Without Fog / Unmoving and the trait items.** The glasses (Bottle Butts) and the mask (The Mask) are not
+    "gear" for Unmoving. Unmoving cancels only worn items' skill bonuses, and items.json has none yet (plan 6 Mind
+    Without Fog 3). The excludes with Symbol of Order and Rogue Element are already in the data. Disarmed is in the Heart
+    family, so this trait also makes the character impossible to disarm; Leon to confirm (problem 4).
+250. *(H2)* **Symbol of Order / Rogue Element, the band rule.** The pressure rule above: 2 points of award per point outside
+    the band (plan 6 Symbol of Order 2). Leon to confirm the reading of "costs double".
+251. *(H3)* **Rogue Element, wrecking.**
+    - In a fight: this unit breaks a map object to 0 HP. That gives +1 Echo once a scene; the fight counts within its
+      scene.
+    - In the story: the player claims it with the action. The Echo comes at once, and the Narrator takes it back with
+      `echo n:-1` if nothing was wrecked.
+    - Lawful factions start hostile, but this stays a brief line: factions carry no lawful tag.
+252. *(H4)* **Machine-Faced.**
+    - Only a Composure check made with Composure alone succeeds on its own (problem 2).
+    - A Heart save in dialogue succeeds on its own (problem 3).
+    - A dialogue check left with no skill fails on its own.
+    - Charisma and Implication voices keep speaking (problem 4).
+253. *(H5)* **Bottle Butts.** A critical hit that lands a head injury (Dazed) knocks the glasses off at once (problem 4).
+    They go to the pack; the player puts them back on after the fight.
+254. *(H6)* **Oil in My Mind / Oil in My Soul, Paper.** One point's worth comes off what those skills derive, on top of −1 on
+    their rolls, applied once with both Oils (plan 6 Oil in My Mind 1):
+    - −2 HP per level (Durability);
+    - Elemental damage taken −10% (Pain Threshold), so the character takes 10% more;
+    - Healing received −10% (Sensory).
+    Without this the downside never bites. Leon to confirm.
+255. *(H7)* **Masterpiece.**
+    - The +2 goes on the ally's next roll, not a roll the ally picks: the check card has no toggle for it (problem 3).
+    - The ally must be another character.
+    - The Masterpiece action is granted once (by Oil in My Mind) even though both Oils carry the synergy block (Oil in My
+      Soul problem 2).
+256. *(H8)* **Lunarshine.**
+    - The states stack (problem 2).
+    - A fail on the scene-end check adds a drink and skips the reset (problem 1).
+    - A bottle holds 5 drinks.
+    - A drink costs 1 AP in a fight.
+    - A "day" is the stretch between long rests (problem 3).
+    - The shakes need a whole day without a drink: the first session start never gives them.
+257. *(H9)* **Central City Kid.**
+    - Soft Hands triggers on the first real HP loss of the fight. Self-inflicted damage doesn't count; shield-only hits
+      don't count (problem 5).
+    - The −2 AP comes off now on the character's own turn, otherwise off the next turn, within the floor of 2.
+    - "Outside the city" means a campaign zone marked `in_city: false`. Unmarked zones are neither in nor out.
+258. *(H10)* **Insomniac.**
+    - Wired gives back half of what the rest would (problem 2):
+      - a short rest: 12.5% of max HP;
+      - a long rest: half the missing HP and half the missing MP.
+    - Always Up applies in a rest-camp fight: hidden enemies' ambush gets no 19–20 critical and no Ambush multiplier
+      against the Insomniac.
+    - Session start isn't a rest for Wired yet (hooks gap 2).
+259. *(H11)* **Wanted.** Officials' hostility is party-wide, as memory factions are (problem 2): "Central City officials",
+    standing −40, seeded once.
+260. *(H12)* **Company Man, GAMEBREAKING.** The data's `price_mod buy_pct -100` makes RTC gear free. Recommended: −40 (60% of
+    list), or a number from Leon.
+    - No shops exist, so the price is only in the brief.
+    - Extraction from a fight works only while conscious (problem 4). The character leaves the fight and gets no XP from
+      it. The fight is a loss if no conscious PC is left.
+261. *(H13)* **Market Blood.**
+    - Buy −20% and sell +20% stay Narrator-side until shops exist.
+    - "Price it" reads items.json prices for what the character carries, as a private line. Anything else is a ruling.
+    - The gift Analysis check is the Narrator's for now (hooks gap 3).
+262. *(H14)* **Inner Ring Heir.** "Triple funds" has no base: characters have no credits. It stays a brief line until a
+    starting-credits figure exists (problem 1).
+263. *(H15)* **Ace Pilot, Grounded.**
+    - It triggers only when the Narrator sets `traitState {key:'grounded', value:true}`: a full day on foot with vehicles
+      at hand (problem 1). Without vehicle rules, the trait would otherwise be all downside.
+    - Movement −1 becomes −0.5 (lane A's −1 Movement ruling).
+    - Reaction Speed −1 includes initiative.
+    - "Back in a seat" ends it, and the Narrator can refuse.
+264. *(H16)* **Worldline Fracture.**
+    - It is active only when every living character in the room holds it. The brief says ACTIVE or dormant, and the
+      session start says which.
+    - Prepared campaign content stays and is reframed as its impossible version (problem 4).
+    - By design this makes the Narrator heavier.
+
+*The 13 base classes*
+
+265. *(I1)* **Fire Discipline.**
+    - Aimed shots add 0 Heat, Overwatch aimed shots included.
+    - The Burst discount works once a turn.
+    - A bow's Aimed shot gets +1 on top of the aimed +2.
+266. *(I2)* **Special Ammo.** One load of each type per rest: armour-piercing, hollow-point, incendiary.
+    - Nothing stockpiles.
+    - A bow's quiver holds **12 arrows** (provisional).
+    - Flamers, launchers and thrown weapons aren't eligible.
+    - Loading a type costs the weapon's reload AP.
+    - A partly spent standard magazine goes back to the pouch.
+    - The next normal reload goes back to standard rounds.
+    - In the story, loading is free and costs the same use.
+267. *(I3)* **Killzone.**
+    - The double hold costs twice the shot's AP.
+    - The +2 to hit applies only to Killzone double holds.
+    - The two shots share one reaction.
+    - Each shot goes at a different enemy.
+268. *(I4)* **Momentum toward a target.** The gain is the distance closed on the target since the turn began.
+    - It is counted at the first melee attack of the turn, at most +2.
+    - Lunge's own tiles don't count.
+    - Riposte hits still earn the usual +1.
+269. *(I5)* **Lunge.**
+    - Costs 1 Momentum plus the strike's AP (2, or 3 heavy).
+    - The move is free and provokes no opportunity attacks. Overwatch still fires.
+    - The engine picks the stopping tile: the shortest walk, then the tile nearest the target.
+270. *(I6)* **Riposte.**
+    - A fumble counts as a miss.
+    - A riposte never triggers another riposte.
+    - It uses the reaction and adds the Counter bonus (`u.counter`).
+271. *(I7)* **Finisher.** Momentum is spent even on a miss. A hit then earns the usual +1.
+272. *(I8)* **Brace (shown as "Brace (Hold the Line)").**
+    - Guard gained: +max(1, 1 + Durability modifier), up to 5 in all.
+    - +2 Defense until you move, are shoved or pushed, or go prone.
+    - It also counts as the weapon Brace (`u.braced`).
+273. *(I9)* **Interpose.**
+    - Only weapon attacks on an adjacent ally can be intercepted.
+    - The Defender takes the attack's damage recomputed against their own armour, with their shield and Reactive
+      Plate applying.
+    - It costs 1 Guard and the reaction.
+274. *(I10)* **Draw Fire.**
+    - No save: it costs Guard.
+    - Rule text for the Taunted condition: must attack the taunter if able, otherwise −2 to hit anyone else.
+    - Bosses and Celestials aren't Taunted. They take −2 against anyone but the Defender on their next turn.
+275. *(I11)* **Reactive Plate.**
+    - It is not a reaction.
+    - It applies after armour and before the shield, and can cut damage to 0.
+    - Each 3 Guard lost raises the meter by 2.
+    - Policies: spend what it takes, keep 1, or off.
+276. *(I12)* **Triage (GAMEBREAKING at will).**
+    - In a fight: once per target per turn.
+    - Out of one (the story, and the area map's rounds): once per ally per scene, at 20 × Healing given; one count for
+      both.
+    - Never on yourself: Triage heals an ally.
+    - Stabilise costs 1 AP and needs no stim.
+277. *(I13)* **Stim Throw.**
+    - Needs sight; the throwing range doesn't apply.
+    - It also stops Bleeding.
+    - A Downed ally is stabilised at 1 HP.
+278. *(I14)* **Field Surgery.**
+    - Choose one: treat one arm or leg injury, or clear the ally's lasting Body conditions (`persistentConds` and
+      this scene's `npcConds`).
+    - Robot medics repairing machines: the Narrator rules it.
+279. *(I15)* **Marks.** At most 3 at a time; a 4th lifts the oldest. A Mark lasts until the fight ends.
+280. *(I16)* **Toxin.**
+    - Blades, thrown weapons and bows only, not bullets.
+    - The engine rolls its own Body save against 12 + Body debuff strength, Bleeding included.
+    - The coat lasts until the next hit or the end of the fight.
+    - A coat put on in the story carries into the next fight.
+281. *(I17)* **Execution.**
+    - Any squad Mark counts.
+    - The 25% is checked after the hit's damage.
+    - Bosses and units of kind `celestial` are immune.
+282. *(I18)* **Barrage.**
+    - STONE counts too.
+    - Each glyph costs at least 1 charge.
+283. *(I19)* **Overcharge.**
+    - Once a fight; once a scene on the area map.
+    - The next glyph costs no charge and no AP, and adds 1 Flux.
+    - Max Sigil words is +1 only while that glyph is on the ground. The data's standing +1 is the bug.
+    - The free glyph takes 1 off the firing charge (minimum 1).
+284. *(I20)* **Payload** ("Evoke with Payload", combat only). It adds Flux equal to the pattern's glyph count. What doubles,
+    by shape:
+    - **Ring:** the burst reaches 2 tiles from the centre.
+    - **SPREAD:** the burst reaches 4 tiles.
+    - **Line + SPREAD:** the cone is 6 tiles.
+    - **Line bolt:** it carries on to the next creature in its path.
+    - **Lone-target Stack:** it also hits the nearest other creature next to the target.
+    - **TWICE:** it finds 2 more targets.
+    - **STAY:** can't carry a Payload.
+285. *(I21)* **Raise Cover.**
+    - A lone STAY glyph next to you becomes a cover rune (1 AP, 1 charge): 2 tiles of full cover (barricade objects,
+      40 HP each).
+    - The tiles are the glyph's own and the free neighbour across the line to the nearest enemy.
+    - It lasts 2 rounds + the duration bonus.
+    - Combat only.
+286. *(I22)* **Ward.**
+    - Self allowed.
+    - The higher shield stands.
+    - 10 × charge × Healing given, +1 Flux per charge.
+287. *(I23)* **Seal.**
+    - Range 8 + the Sigil range bonus, sight needed.
+    - +2 Flux.
+    - The caster's own tile is what counts: Sigil charge (glyph and firing) and Outburst MP are doubled while an enemy
+      caster stands in the zone.
+288. *(I24)* **Quicken.**
+    - Not on yourself; no sight needed; no Flux.
+    - It is not perk AP, so the +3 cap doesn't count it. The ceiling of 9 holds.
+    - It applies at the start of the ally's next turn.
+289. *(I25)* **Inscribe Gear.**
+    - Always 2 charge. 3 AP in a fight (adjacent or yourself); no AP out of one.
+    - Weapon: +10% damage with that weapon. Torso: +5 armour, worn armour or not.
+    - One inscription per item. Two Scribes don't stack.
+    - It lasts until the next rest.
+290. *(I26)* **Stored Spell (GAMEBREAKING dead move).**
+    - Cap: max(1, Rumination modifier).
+    - Writing is at will within the cap. The data's `per_rest` conflicts with the cap.
+    - Both the draw charge and the firing charge are paid when written.
+    - Words are capped at Max Sigil words, so writing never overloads. STAY can't be stored.
+    - It fires for 1 AP from the holder's tile with the Scribe's snapshot numbers:
+      - a Stack lands next to you (8 tiles with PUSH);
+      - a Line flies toward the chosen tile (range by word count, 2–4);
+      - a Ring bursts on an adjacent tile.
+    - It fades at the next rest.
+291. *(I27)* **Bind (GAMEBREAKING dead move).** Rank I also teaches BIND, outside the cap. The +2 to the save TN goes to
+    whoever Evokes the pattern.
+292. *(I28)* **Blind and Slow (GAMEBREAKING free words).** A glyph's draw costs at least 1 charge. Only MUDDLE really gets
+    cheaper.
+293. *(I29)* **Rewrite.**
+    - Range 8 + the range bonus, sight needed. +1 Flux. Once a turn.
+    - On a failed Brain save, one helpful state flips:
+      - **Overwatch:** lost, with its reaction.
+      - **Shield:** becomes Sigil damage, at most 30 × the Sigil multiplier, armour applies.
+      - **Braced or Emplaced:** Prone.
+      - **Guarded or Withdrawing:** −2 Defense for the rounds left.
+      - **Inspired:** −2 to hit for the rounds left.
+      - **Hidden:** revealed and Marked.
+    - Anything else: the Narrator.
+294. *(I30)* **Shape.**
+    - It removes the base cast Strain (1, 2 in Flooded air).
+    - The +2 for having no Emanator and the Strain of holding stay.
+    - Either school being Damage counts.
+295. *(I31)* **Storm Front.**
+    - +10 MP, flat, after the multipliers, paid at Begin.
+    - Single-target Damage designs only (no Rain, Size, At Once, Inverse).
+    - It hits 2 more enemies within 2 tiles of the aim tile, nearest first, one roll each. Once a turn.
+296. *(I32)* **Heart Surge (GAMEBREAKING with Shape and at will).**
+    - Once a turn.
+    - It adds the base Strain on top. With Shape the net is the base, not 0.
+    - ×2 at release.
+    - Conditions from that release last twice as long.
+    - MP and holding Strain are not doubled.
+297. *(I33)* **Will Shield.**
+    - A class Buff cast, not a design option.
+    - Self allowed.
+    - 30 × Healing given, until the fight ends.
+298. *(I34)* **Drink It In.**
+    - It uses the reaction and needs at least 1 point absorbed.
+    - MP gained, until the damage source carries the spell's real cost: 25 for an Outburst, 20 for a Sigil or a wall
+      bite.
+299. *(I35)* **Sanctuary.**
+    - Released at once.
+    - Allies (you included) take half of all damage, except your own Mana Short.
+    - It lasts until your next turn starts.
+    - In the story it is a pending ruling.
+300. *(I36)* **Inspire** (the state is named "Encouraged").
+    - It works on attacks, saves and story checks.
+    - It refreshes and never stacks. Not on yourself.
+    - Without an Emanator it costs +2 Strain in a fight.
+301. *(I37)* **Mend.** Every Buff heal the Bard makes heals 40 (not 30). The data's `ap_cost: 0` should read `soul_cast_ap`.
+302. *(I38)* **Gift.**
+    - The ally casts with their own Soul cast AP and the Bard's design and numbers, on the Bard's MP and Strain.
+    - It releases at once.
+    - It fails if the Bard is down.
+    - Once a rest.
+303. *(I39)* **Dread.** −5 MP after the multipliers (minimum 5). Every Fear you inflict, from any source, lasts +1 round.
+304. *(I40)* **Mind Fog (expanded) and Puppet.**
+    - Mind Fog: every condition your Status Outbursts inflict saves at +2 TN.
+    - Puppet: the class text wins over `conditions.json`. It is a Heart save (a boss rolls twice and keeps the
+      better), and the Hexer picks one action: a move, an attack or a reload. Then the target goes back to its AI.
+
+*Advanced classes, part 1*
+
+305. *(J1)* **The Draw** (audit 1-3). Once per fight, not per scene. It fires at combat start, before the first turn, at the
+    nearest enemy the squad can see (lowest HP on a tie). The engine picks the target because no player can choose
+    before the first turn. A surprised Gunslinger (no turn in round 1: caught unaware or striking in the open) can't
+    Draw; an ambushing one can. Pistols and revolvers only. PROVISIONAL.
+306. *(J2)* **Six for Six.** Targets are a list (repeats allowed). Recoil applies to each shot. Heat is the engine's +1 a
+    shot: from cold, the 6th shot of a Heat-6 gun jams after firing. No further numbers needed.
+307. *(J3)* **Called Shot** (audit 1-6). The shot is a plain single shot at −2 (not Aimed) for 3 AP, with any gun or bow (not
+    melee or thrown). The shooter picks the arm (`arm:left` / `arm:right`; default the target's main hand). The
+    target's Injury resistance still rolls. A natural-20 crit also rolls its own injury. Data fix: `tn_mod` →
+    `attack_mod` context `called_shot` −2. PROVISIONAL.
+308. *(J4)* **Emplace** (audit 1-5). Needs a heavy weapon or a rifle. It sets the Emplaced condition and counts as braced
+    (the LMG's "−2 unless emplaced" goes and its braced bonus applies). It gives no recoil and +5 armour until you move.
+    A shove or knockback ends it too. OPEN: the Emplaced condition's +2 to hit (conditions.json, combat.ts:563)
+    contradicts the class text. The audit's fix (drop the +2 or rewrite it to match) is a data/core change, so the +2
+    stands for now. Rename one of the two "Emplace"s (the LMG skill or the class move). Data fix: `stat_mod armor +5`
+    needs `while: emplaced`. PROVISIONAL.
+309. *(J5)* **Suppression** (audit 1-7). Laying the zone down costs 10 rounds (or what's left) and +4 Heat. Nothing is rolled
+    when the burst goes down. Until your next turn, each enemy that moves into, inside or out of the 3x3, or attacks
+    from it, takes one attack roll from you, once per enemy. Those shots deal the weapon's damage and cost no ammo, Heat
+    or reaction. A hit Pins (Body save). PROVISIONAL.
+310. *(J6)* **Belt Discipline.** While Emplaced, Heat limit +6 and 4 Heat shed a turn. Data fix: the per_turn `heat_mod` should
+    read `set: -4` (audit 2), and the move should be marked passive.
+311. *(J7)* **Case File** (audit 1, 3-5). Analyze costs 1 AP flat. The data's −1 gives 0 at Analysis 3, so it should be
+    `action_cost analyze set: 1`. Every Analyze Marks the target with no save; Marks last the fight. Each marker holds
+    3 Marks at most (the Assassin cap) and the oldest drops. The class action re-Marks an already-analyzed target. In
+    the story, "Open a case file" on an NPC, then pass an Analysis check in the same scene, files them: they start the
+    next fight with you Marked. PROVISIONAL.
+312. *(J8)* **Weak Point (class)** (audit 1-3). Aimed shots at a Marked target ignore armour (shields still absorb) and crit on
+    18-20. Data fix: `crit_min set 18` scoped to aimed+marked. OPEN: rename it (it collides with Analysis's Weak
+    Point), e.g. "Soft Tissue".
+313. *(J9)* **One Shot** (audit 1, 2, 4). The data's `damage_mult 2.0` is a bug: triple damage means 3.0. GAMEBREAKING fix:
+    Bosses and Celestials take ×2, not ×3. Once per fight. PROVISIONAL.
+314. *(J10)* **Banner Thread** (audit 1, 2). The bonus needs no armour in the outer, inner or lower torso slots. +1 Movement
+    stands as written. OPEN for Leon: +1 tile per AP doubles speed at Agility 1; the alternative is +0.5. PROVISIONAL.
+315. *(J11)* **Rally Banner** (audit 1-6). The banner is a 20 HP object enemies can cut down. The shield is 10 × the dancer's
+    Healing given, topped up and never stacked; the dancer counts as an ally. It holds while the dancer stands within
+    3 tiles and isn't Downed. The bot-thread banner weapon's Rally is a separate one-off burst. PROVISIONAL.
+316. *(J12)* **Sweep** (audit 3, 5-7). Hits during Sweep build no Momentum (no free loop). Heals are 10 × Healing given,
+    once per ally. Only tiles entered count, not the start tile. The walk draws opportunity attacks and Overwatch like
+    a move (Leon's call; the alternative is none, like Lunge). A gun in hand strikes with fists. Data fix: rename the
+    action id to `banner_sweep` (it collides with the greatsword's Sweep). PROVISIONAL.
+317. *(J13)* **Credits** (RTC). Starting account 1000 credits (see spec text). PROVISIONAL until there's an economy.
+318. *(J14)* **Supply Drop** (audit 2-6). A Supply is a stim. The crate holds 4 takes, is half cover with 30 HP, and lands at
+    the start of the Contractor's next turn. GAP: allies can't take from it yet (needs an object-granted action), so
+    the Contractor takes, or hands a take to an ally next to the crate (1 AP). In the story: 100 credits, a stim at
+    once, and a ruling on whether there's signal. PROVISIONAL.
+319. *(J15)* **Strike Call** (audit 1-5). The centre must be a tile the squad can see. The 50 is flat Physical (armour applies,
+    no multipliers) and hits friend and foe. Before it lands, the engine moves every unit inside that has a reaction 1
+    tile out, if a free tile outside is next to it. Cover inside takes 50. Kills are the Contractor's. PROVISIONAL.
+320. *(J16)* **Extraction** (audit 1-4). The landing tile must be one the squad can see. It lands at the start of round +2 and
+    lifts every PC within 2 tiles (a Downed one only with a standing ally within 1). Lifted PCs leave the fight. If
+    nobody is left, the fight ends as "extracted". GAP: the engine has no such outcome, so `finishCombat` reports
+    "Lost" and the fight note says EXTRACTED. Data fix: adjudication `narrator` → `hybrid`. PROVISIONAL.
+321. *(J17)* **Sword Form** (audit 1-4). A glyph is drawn on a miss too. One free glyph per attack in all: the Evoker blade's
+    Edge Word doesn't stack (the weapon skill isn't engine-run yet). The glyph needs the target next to you; a reach-2
+    target can't carry one. Data fix: `action_cost value '0_with_melee'` → `set: 0` with context `melee_attack`.
+    PROVISIONAL.
+322. *(J18)* **Edge Sigil** (audit 1-4). The bonus is the word's listed damage × the Elemental multiplier: not the Sigil
+    multiplier, not the crit. It takes half armour. FIRE, SHOCK, FREEZE, SPARK and GALE count; STONE doesn't. OPEN
+    (audit 3): the glyph stays and can still join a pattern, so it deals damage twice. PROVISIONAL.
+323. *(J19)* **Three-Cut Script** (audit 1-3, 6). The spell resolves as a Stack cast straight onto the last target struck. The
+    Evoke charge is paid on top of the draws. The third word may go over Max Sigil words (the alternative is to need
+    Intelligence 3). An overload ends the script. Words are paid as they're cut, but no glyph is left on the ground
+    (three wouldn't fit one tile). PROVISIONAL.
+324. *(J20)* **Deploy Cover** (audit 1-4). GAMEBREAKING fix: at most 3 out per engineer, and a fourth packs up the oldest. The
+    barricade is a crate-kind object (half cover, 40 HP, blocks movement) on an open adjacent tile. A STAY glyph on it
+    turns it to full cover (blocks sight) without Evoking, for as long as the glyph lasts. Barricades pack up when the
+    fight ends. Data delta: add a `portable_barricade` object kind instead of the renamed crate. PROVISIONAL.
+325. *(J21)* **Sentry Turret** (audit 1-6). It needs an Evoker (2 charge). At will, one at a time (the data's `per_scene`
+    plus "one at a time" was redundant). It fires at the end of the engineer's turn at the nearest visible enemy
+    within 12 tiles: d20 + 4 against Defense, −5 for half cover, 20 flat Physical. It releases no bots. PROVISIONAL.
+326. *(J22)* **Bulwark Line** (audit 1-5). GAMEBREAKING fix: only cover within 3 tiles (measured from where you stand when you
+    use it) that has an ally next to it hardens. It turns full and gets +20 HP, which is lost first. At your next turn
+    it goes back, never breaking the cover. Data fix: "rounds: 1" → "until your next turn". PROVISIONAL.
+327. *(J23)* **Inscribed Rounds** (audit 1-6). Any gun, an Evoker, the word known, 1 charge per round, up to 6 a rest. The
+    inscribed rounds fire first (a toggle, on by default) and a miss spends one. On a hit:
+    - An element word adds half its Subject damage as its own type: FIRE 15, SHOCK 15, FREEZE 12 plus a Slowed save,
+      SPARK 7, STONE 17 Sigil, GALE 7 Sigil.
+    - A condition word (BIND, BLIND, SLOW, MUDDLE, DREAD, SILENCE) applies its condition, saved against 12 + debuff.
+    - Each hit adds +1 on the meter.
+    Stored as `c.state['class:spellslinger.inscribed_rounds'] {word, n}`. There's no per-round ammo identity yet.
+    PROVISIONAL.
+328. *(J24)* **Spell Magazine** (audit 1-5). One magazine per rest (the alternative is the Rumination modifier, like Stored
+    Spell). The cost is every word's charge plus the Evoke charge, paid out of combat; the Flux vents. Loading it costs
+    the weapon's reload AP and drops the old magazine on the floor. Its first hit auto-hits with damage words, while
+    conditions still get saves. Stack and Line land on the target, SPREAD hits within 2 at ×0.6. An unfired spell fades
+    at the next rest. PROVISIONAL.
+329. *(J25)* **Ricochet Glyph** (audit 1-5). Any ranged shot, not on a fumble or a shot cover stopped. The new target is the
+    nearest other enemy within 4 tiles of the first that the first target's tile can see. The roll is at −2, with no
+    ammo or Heat. A toggle, on by default. Data fix: `tn_mod` → `attack_mod`, plus a trigger `on_miss`. PROVISIONAL.
+330. *(J26)* **Gauntlet Infusion / Charged by Death / Discharge** (audit). The infusion elements are FIRE, FREEZE, SHOCK and
+    SPARK, chosen once per rest out of combat. +10 × Elemental for 5 MP a melee hit, as a toggle (on by default). No
+    riders, no Strain, no meter. Charges (max 3) come from any kill credited to you and share the gauntlet's pool.
+    Discharge hits enemies next to the target (not the target, you or allies) for 20 per Charge × Elemental. A miss
+    keeps the Charges; a kill on the hit gains its Charge after the spend. Data fix: `max: 3` on charged_by_death.
+    PROVISIONAL.
+331. *(J27)* **Adamantile Knight's Defender pieces** (audit 1, GAMEBREAKING).
+    - Brace (2 AP) is granted as the Knight's own action.
+    - Interpose: an adjacent ally hit by an attack: 1 Guard and the reaction, and the Knight takes the damage the ally
+      would have taken.
+    - Reactive Plate uses the reaction, except on a hit the Knight Interposed for. It spends just enough Guard to
+      stop the hit (each cuts 10), and every 3 Guard lost adds +2 on the meter.
+    PROVISIONAL.
+332. *(J28)* **Adamantile Plate** (audit 2-4). Every Reactive Plate use shields the adjacent ally with the least HP left for
+    10 per Guard spent, unscaled. The larger shield stands. PROVISIONAL.
+333. *(J29)* **Bulwark of Will** (audit 1-3). Only the Defender Brace (2 AP) triggers it, not the 1-AP weapon brace. The
+    shield is 20 × Healing given, doesn't stack, and lasts until it's absorbed or the fight ends. PROVISIONAL.
+334. *(J30)* **Unbroken.** Once per fight (the data's `per_scene` should read `per_combat`), from any source, after Last Wall
+    and Bite the Bullet. Data fix: replace `stat_mod hp_floor_once` with a `would_drop_to_0` trigger.
+
+*Advanced classes, part 2 (the magic advanced classes)*
+
+335. *(K1)* **Silent Kill** (audit 2-3, GAMEBREAKING). A killing blow from Hidden keeps you Hidden unless it was a loud gunshot
+    (a firearm with no suppressor; bows, melee and silent or suppressed guns are quiet). No new ambush until you hide
+    again (one per Hidden entry, already the engine's rule). Every enemy looking for you this round gets +2 per kill you
+    made this round (its spot TN drops by 2 a kill). PROVISIONAL.
+336. *(K2)* **Nightmare Mark** (audit 1-4). A Shade who isn't an Assassin gets the Mark (1 AP, no save, 3 at most, the oldest
+    lifts). The marked foe's Heart save is at the start of each of its turns; a failure makes it Afraid of you for that
+    turn only (the Fear ends at its turn end). Hexer's Dread doesn't lengthen it. Bosses save at their tier. PROVISIONAL.
+337. *(K3)* **Lingering Dread** (audit 1-4). Within 3 tiles **of the victim**, with line of sight to the victim's tile; Blinded
+    enemies are immune. Shaken uses the spec's Shaken (3 rounds, −2 Heart saves and social). A silent kill frightens the
+    witnesses too. PROVISIONAL.
+338. *(K4)* **Blessed Shells** (audit 2-6). A toggle on Pray. Any weapon ("or your weapon"). The Pray cooldown is still paid. A
+    loaded Blessing lasts until the hit or the end of the fight. Harmful → the target; helpful → every ally next to the
+    target, the Templar included. Polarity: patrons.json has none, so HP loss or a debuff reads as harmful (a fight note
+    asks the Narrator to overrule). Story: "Bless a shell" rolls the prayer (d20 + mod(Faith) + half Devotion vs the
+    patron's mood) and loads at the start of the next fight this scene. Data delta: `polarity: harm|help` on each
+    Blessing. PROVISIONAL.
+339. *(K5)* **Under the Eye** (audit 1-5). Combat: while the Templar is Witnessed, allies within 3 tiles get +2 to hit (the
+    fight counts as on-theme by default; a fight note asks the Narrator once a round). Story: +2 on any other
+    character's check the Narrator tags `patron_theme`. Allies pay no off-theme Devotion. Data fix: `skill_mod_tag tag
+    patron_theme` should be a hook/tag the Narrator supplies (it now is: the `patron_theme` check tag). PROVISIONAL.
+340. *(K6)* **Judgement** (audit 1-5, near-GAMEBREAKING economy). Costs **1 Devotion** (not 3), once per fight (data says
+    per_scene; the text "once per combat"), 4 AP all told, a melee weapon or any shotgun-family weapon (the scattergun,
+    censer gun, coach gun, sawn-off, brigade auto). Damage × (1 + Blessing power), Blessing power = 1 + 0.1 × Faith.
+    Spent hit or miss. A fight note asks the Narrator about taboos. Rename the move or Nerukhan's Blessing (both
+    `judgement`). Data fix: `resource devotion -3` → `-1`, `uses: per_combat`. PROVISIONAL.
+341. *(K7)* **Half-Sigil** (audit 1-5, GAMEBREAKING). A half-glyph costs **1 charge** (never free; the word's charge is
+    skipped), +1 Flux, Glyph-limit and 2-per-tile rules as normal, an Evoker needed. Half-glyphs pair as a Stack: the
+    second on a tile is drawn from the words that complete the grammar (a Subject with a Form/Motion word you know, and
+    back). PROVISIONAL.
+342. *(K8)* **Stitch** (audit 1-6). A pattern of only half-glyphs fires only through Stitch (the plain Evoke refuses it). The
+    d20: 1-5 the spell's Subjects land at full strength, no roll, on the nearest creature on your side, you included
+    (ties to you); 16-20 damage doubles (damage only, after armour); 6-15 normal. A natural 20 on the hit roll stacks.
+    Words that make no spell fizzle (the glyphs fade, the Flux stays). Echo rerolls of the Stitch d20 are not wired
+    (MISSING: Echo in combat). PROVISIONAL.
+343. *(K9)* **House Edge** (audit 1-2). Once per fight (data per_scene → per_combat). A toggle on Stitch, on by default: a
+    1-5 is rerolled; the new roll stands. PROVISIONAL.
+344. *(K10)* **Beloved Spells** (audit 1-3). Marked out of a fight (area map or story), 3 at most. −30% MP after the band and
+    the Insight saving, 5 MP at least. "Design a Beloved spell" makes a design with one module more than the slots
+    (text `school: module, module`). A design using the extra slot can't be un-marked until edited down. PROVISIONAL.
+345. *(K11)* **Heart's Own** (audit 1-3). One Strain pool. While Beginning or holding a Beloved spell the limit is +2, and the
+    Mana Short's excess counts from the raised limit (10 + 2 × (Strain − (limit + 2))). A later ordinary cast shorts
+    against the plain limit. PROVISIONAL.
+346. *(K12)* **Love Made Manifest** (audit 1-4, GAMEBREAKING with Heart Surge). Once per fight, a toggle on Begin/Release:
+    ×3 on damage, heal and shield; the release's conditions last ×3 rounds; push distance isn't lengthened. Spent on a
+    miss. It doesn't combine with Heart Surge or another effect multiplier: the higher stands (×3). PROVISIONAL.
+347. *(K13)* **Closed Loop** (audit 1-5). A second Vent ("Vent into your heart", 1 AP): 10 MP per Flux to Max MP, the meter
+    doesn't rise. The plain Vent stays. Overloads still burst into the air. Not in the spec: add a Circuit Mage block
+    next to the 1.2 magic classes. Data fix: `ap_cost` 1 on the move is the Vent's (set it to 0 with
+    `modifies: vent`); `value: "10*flux"` → a bespoke op `vent_to_mp {per_flux: 10}`; add `provisional: true` and
+    `rules: "1.2"` to the class. PROVISIONAL.
+348. *(K14)* **Self-Crystallise** (audit 1-4, GAMEBREAKING economy). 100 MP → 1 standard core, any meter. At most **Virtue**
+    cores per long rest, and self-made cores **can't be sold** (counted in `c.state.selfCores`; MISSING: the shop
+    must refuse them). Works out of combat too (the story strip), with a ruling: a pile of self-made cores is
+    conspicuous. PROVISIONAL.
+349. *(K15)* **Fusion** (audit 1-5; needs Leon's sign-off). The model: a pattern of only Form/Motion glyphs fired with a ready
+    Outburst in the Subject's place. Costs: the draws as normal, then the Evoke's AP (1) and charge, plus the
+    Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Delivery: a Line's reach by length (SPREAD: a
+    cone ×0.6), a Ring's burst ×0.8, a Stack next to it (PUSH: 8 tiles; SPREAD: within 2, ×0.6), TWICE adds the
+    nearest other enemy within 6. Every target gets the school at stage 1, or the held stage when you fuse an Outburst
+    you were holding. STAY isn't allowed (no standing Outbursts yet). Each Fusion is a fight note (Knowing risk).
+    Data fix: `ap_cost 0` vs the expression: unify. PROVISIONAL.
+350. *(K16)* **Keystone** (audit 1-5, GAMEBREAKING STAY wall). 2 AP + 1 spare standard core (in place of the word's charge),
+    +1 Flux, own or adjacent tile, any Evoker (the mason's chisel item doesn't exist yet: data delta `mason_chisel`,
+    1H tool, counts as an Evoker; price and weight provisional). Never fades, can't be scuffed, doesn't count toward
+    the glyph limit, survives being Evoked, one at a time. It stays in that map zone for the session (lost on leaving
+    the zone's map or at session end). The fix: a STAY zone holding a Keystone lasts as an ordinary glyph would (the
+    Keystone always counts as a fresh glyph). PROVISIONAL.
+351. *(K17)* **Survey** (audit 1-3). −1 charge (1 at least) for you and your allies firing a pattern that holds your Keystone;
+    enemies get nothing. Reach: Evoke from up to 2 tiles of the pattern (with sight of it), through the mason's Class
+    tab action. Data fix: `word_cost keystone_pattern` → bespoke `keystone_reach {tiles: 2, evoke_charge: -1}`.
+    PROVISIONAL.
+352. *(K18)* **Foundation** (audit 1-3). Once per scene, 0 AP: this turn, draws within 2 tiles of the Keystone cost 0 AP
+    (charge and Flux paid), through the "Draw near the Keystone" action. Needs a Keystone on the map. Data fix:
+    `action_cost draw_sigil_word "0_near_keystone"` → `{action: 'draw', set: 0, context: 'within_2_of_keystone',
+    uses: 'per_scene', duration: 'turn'}`. PROVISIONAL.
+353. *(K19)* **Enlarge and the Grand forms** (audit 1-11). Own or adjacent tile; no Flux; 3 charge from the Evoker; once per
+    fight. While planted: no drawing or Evoking. Pull out: 1 AP next to it (the engine lets the Sigilist do it;
+    MISSING: an enemy pulling it out). When the form runs out the staff comes back. Grand damage is flat (lava 10
+    fire, storm 15 lightning). Harmful forms hit everyone inside but the owner (Earthed); WARD/MEND only allies;
+    DREAD/LIGHT's −2/PULL only enemies; SILENCE everyone, the owner too. Per form:
+    - FIRE: 10 on entering (once a round) or starting a turn inside, Burning on a failed Body save.
+    - FREEZE: each tile inside costs double; a Body save after a move through it, or Prone.
+    - SHOCK: 15 at turn start to anyone in Medium armour or heavier (a PC's armour class 2+; an enemy's armour 10+);
+      robots, machines, drones and turrets are Stunned (save).
+    - STONE: up to 4 half-cover earthwork pillars (crates, 30 HP) on tiles you name (`text`), else around the staff.
+    - GALE: entering stops the walk and throws you 2 tiles outward; shots that start, end or pass inside take −5.
+    - SPARK: an attack roll of 1-3 by a gun inside jams it.
+    - WARD: allies starting a turn inside get Guarded (+2 Defense, 1 round) and a 20 shield (not stacking).
+    - MEND: allies starting a turn inside heal 10 × the owner's Healing given.
+    - BIND: entering → Pinned (Body save); a Pin stops the walk.
+    - BLIND: anyone inside sees 1 tile.
+    - SLOW: each tile inside costs double.
+    - MUDDLE: a Brain save at turn start or a stagger 1 tile in a random direction.
+    - DREAD: enemies inside, a Heart save at turn start or Shaken.
+    - VEIL: smoke (blocks sight) and anyone inside is Hidden (no new ambush entry; they stay Hidden after leaving until
+      spotted).
+    - LIGHT: Hidden enemies inside are revealed; enemies inside −2 to hit.
+    - SILENCE: Silenced while inside (it ends when they leave).
+    - CONDENSE: everyone inside pulled 1 tile toward the staff at their turn start.
+    - SPREAD (Bloom) and TWICE (Echo field): **Narrator** (a fight note): no hook into a spell's area or a repeat.
+    - PUSH: shots from outside into it −3.
+    - STAY: conditions inside don't tick down.
+    - SEEK: allies' attacks on enemies inside ignore half cover.
+    - RETURN: an ally inside who would drop to 0 stays at 1, once each.
+    - PULL: enemies within 4 tiles of the staff pulled 1 toward it at their turn start.
+    Data deltas: structured Grand data per word (trigger, effect, save, numbers) instead of prose; a `grand_staff` item
+    (2H, counts as an Evoker); a real `robot` kind on enemies (the engine reads `kind`). Spec fix: "duration bonus
+    (table below)" → the Sigil duration bonus. PROVISIONAL.
+354. *(K20)* **Empty Hand (Grand Sigilist)** (audit 1-4). Empty hands = an unarmed weapon and nothing in the off hand. Unarmed
+    strikes deal at least 20 (max of the weapon's and 20). +2 Defense, on the sheet too (stat `defense`) and kept right
+    through a swap. Data fix: `stat_mod unarmed_damage value 20` → `set: 20` (it reads as +20), `when: hands_empty` on
+    both effects. OPEN (audit 4): spec item 77 counts a carried Evoker, so an empty-handed Sigilist can still draw.
+    PROVISIONAL.
+355. *(K21)* **Earthed** (audit 1-3). Inside your own Grand form you ignore its harm and hindrance (not SILENCE). Unarmed
+    strikes inside an element form (FIRE, FREEZE, SHOCK, SPARK) are Elemental (half armour, as a flat add of half the
+    target's armour), with FIRE's Burning on a critical and FREEZE's Slowed on a hit (save). STONE, GALE and the
+    effect words add nothing (the Narrator may rule a DREAD fist). PROVISIONAL.
+356. *(K22)* **Four Hearts** (audit 1-6). Gauges last the scene. Rage: a running carry (+1 per 20 taken in total). Grief: any
+    PC-side unit but the twin (+2 Downed, +5 when a hit kills a Downed one; MISSING: a death from failed death saves
+    fires no hook). Fear: only an Elite or Boss the squad can see when the fight starts. Devotion: an ally's heal,
+    shield or boon (Guarded, Inspired…). Designs are keyed out of a fight ("Key a design"). The Narrator adds points
+    with `traitState {key: 'heartfed'}` or answers "Let it fill a gauge". Data delta: params on the bespoke ops
+    (`max: 5`, the per-event amounts). PROVISIONAL.
+357. *(K23)* **Fed** (audit 1-3). Cost uses the gauge at Begin (−10% a point, 5 MP at least); power uses the gauge at Release
+    (+10% a point on damage, heal and shield; Control and Status get nothing), which empties it, a wild release too.
+    PROVISIONAL.
+358. *(K24)* **Overflow** (audit 1-3). Automatic, once per scene. It waives only the Begin's Strain (the air's +2 without an
+    Emanator too); holding still strains. Begins at stage 2 (a release at once counts as stage 2; held, it shows stage 2
+    from your next turn start and grows from there). PROVISIONAL.
+359. *(K25)* **Link** (audit 1-4). Any PC-side unit you can see within 6 (the twin and companions too), for the scene or until
+    you're Downed; two from Will Power 5; a new link past the limit replaces the oldest; no leash. Story: link to a
+    character in the scene (a ruling on whether they're close). Data delta: `max_links {base: 1, will_power_5: 2}`.
+    PROVISIONAL.
+360. *(K26)* **Through** (audit 1-3). Begin-and-release or Release from a linked ally's place (range and sight from them).
+    Mirrors: heals and shields you receive reach every linked ally at half; Guarded and Inspired land on them for half
+    the rounds (at least 1), whatever their source. PROVISIONAL.
+361. *(K27)* **Share** (audit 1-4). Uses your one reaction a round. Half (rounded down) of what's left after the ally's armour
+    and shield, taken by you with no armour or shield of yours. A setting decides (always, the default, or never):
+    no off-turn prompt exists. Heals you send through a link ×1.25. A linked ally Downed: +2 Strain (it can short).
+    Data delta: `heal_mult {when: target_linked, value: 1.25}` and `resource strain +2 on linked_ally_downed`.
+    PROVISIONAL.
+362. *(K28)* **Inner Charge** (audit 1-6). Soul cast AP, 20 MP × the air's band (from the air without an Emanator: +2 Strain),
+    1 Strain (2 Flooded). Each form grows a stage at your turn start (×1/×1.5/×2/×2.5) and strains 1 each (2 Flooded).
+    Iron +10 armour, Surge +15 melee/unarmed, Swift +2 Movement, Steady no Prone or push and +2 Body saves, Heartbeat
+    heal 10: each × its stage. Pain to Power +1 AP next turn per 20 taken, at most +2 (no stage). Two forms (three
+    from Will Power 5), each once. Damage can slip the newest form (d20 + Will Power vs 10 + damage/10). A failed Mana
+    Short ends all forms. Silenced: no new form. Story: take a form before the trouble (20 MP), with a ruling. Data
+    delta: the six forms, their numbers, the 2/3 cap and the Strain as structured data (spec item 75). OPEN: Swift +5
+    and Iron +25 at stage 4 are strong (audit 1). PROVISIONAL.
+363. *(K29)* **Release** (audit 1-4). The standalone strike is a melee attack roll (1 AP); with the toggle on, any melee hit
+    releases for free. +15 Soul per stage, summed, **capped at 8 stages**, × the Soul multiplier, armour ignored. The
+    forms end on a miss too. Data fix: the id `release_strike` stays (no clash with the Outburst `release`).
+    PROVISIONAL.
+364. *(K30)* **Empty Hand (Vessel)** (audit 1-3). Unarmed damage at least 20 (set, not +20). The Vessel can't Begin or Release
+    Outbursts (refused at the cost: the engine shows it as "Needs 99 AP" until the hook below exists). Existing designs
+    stay but can't be cast. MISSING: refusing `magic/design` for a Vessel. Data fix: `forbid_action outburst` → the
+    engine's `combat/outburst`, `combat/release`, `magic/design`. PROVISIONAL.
+365. *(K31)* **Manifest** (audit 1-3). Once forever (no re-manifest even after it falls), out of a fight. Three designs from
+    known schools/modules, the usual module slots; they don't count against ready designs. Text: `school: mod, mod;
+    school; school` or JSON `{portrait, designs}`. A ruling asks the Narrator to describe the moment. Narrator rule (add
+    to the prompt): it is only ever "the twin" and never speaks of where it comes from. PROVISIONAL.
+366. *(K32)* **Call** (audit 1-6). HP half your **maximum**; your Defense; your Will Power as its attack bonus; Movement 1.5; 4
+    AP (6 − 2); it acts right after you. One heart: no Begin by either while the other holds (its casts use your MP
+    and Strain, range and sight from it). Guard: 1 AP, it takes the next attack aimed at you while within 1 tile, until
+    your next turn. Leash: it can't walk past 6 tiles from you, and follows to the nearest free tile within 6 when you
+    move away. It can be healed and shielded; it is never Downed. When you're Downed it fades (no Strain). It takes no
+    XP; its kills are its own. Data delta: `summon_twin` params (range 3, movement 1.5, copies Defense and Will
+    Power, Guard). PROVISIONAL.
+367. *(K33)* **Bond** (audit 1-3). At 0 HP it vanishes, no bots on the meter (it isn't a death). +3 Strain to you (a natural 1
+    on the short Downs you). No Call again this scene. PROVISIONAL.
+
+*Waiting on Leon*
+
+368. **Daggerfall Veteran's Flashback TN.** The trait says 13; the story can only call 8 / 12 / 16 / 20. *Engine: 12 (lane F); data still says 13 until Leon agrees.*
+369. **Gun Nut's extra guns.** The trait grants 3 guns at creation; kits give one. Leon to name the two extra guns. *Data: none yet; a session start with fewer than 3 is a Narrator note.*
+370. **Companion numbers disagree.** The traits say the drone has 30 HP and no attack, the beast 60 HP; enemies.json and item 96 say 40 HP with a service pistol and 50 HP. *Engine: item 96.*
+371. **Heart Overload without an Emanator.** A caster who already pays from the air: what does "Pay with HP" do? *Engine: the toggle is off for them.*
+372. **Beast Handler's grapple is always on.** Every melee hit of the beast's bite carries the grapple (a Body save or Grappled); there is no attack mod to pick, since the beast's turns (ordered or on instinct) have no attack chips. *Engine: perks/f.ts beast_handler.*
+373. **Story conditions coming into a fight.** Only Shaken, Fear, the Brain debuffs, Weakened, Nausea, Bleeding, an injury and an augment offline come in, each for its own combat duration and with no save (they used to come in for 99 rounds). A story Stun, Pin or Blind stays in the story, with a line in the fight's notes. *Engine: game.ts magicIn, STORY_CARRY.*
+374. **A partial Extraction.** When some PCs are lifted out and everyone left behind is Downed, dead or surrendered, the fight ends as extracted (no win, no loss). If nobody was lifted, it is a loss. *Engine: combat.ts checkOver.*
+375. **Triage out of a fight.** On the area map it is once per ally per scene, counted with the story Triage (it used to reset every area-map round), and never on yourself. *Engine: classes/i.ts medic.triage.*
+376. **Adamantile Knight from Defender.** The Defender's Brace grants Bulwark of Will. Guard spent by the Defender's Reactive Plate still shields the adjacent ally (Adamantile Plate). A hit either Interpose took is plated without a second reaction. *Engine: classes/i.ts 'braced' and 'plate_spent' hooks; classes/j.ts.*

@@ -294,13 +294,14 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(4000); });
     const u = active(G.combat!)!; expect(u.side).toBe('pc');
+    G.combat!.units.find((x) => x.id === u.id)!.prone = true; // Shrug It Off needs a Body debuff to remove (spec §14 item 101)
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
     await React.act(async () => { tab.click(); });
     const pick = buttons(el, /Shrug It Off/)[0]; expect(pick).toBeTruthy();
     await React.act(async () => { pick.click(); });
     const conf = buttons(el, /^Confirm$/)[0];
     await React.act(async () => { conf.click(); });
-    expect(G.combat!.log.some((l) => /uses Shrug It Off/.test(l))).toBe(true);
+    expect(G.combat!.log.some((l) => /shrugs off/.test(l))).toBe(true);
     expect(G.combat!.units.find((x) => x.id === u.id)!.shield).toBeGreaterThan(0);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });

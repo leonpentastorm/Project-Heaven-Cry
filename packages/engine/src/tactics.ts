@@ -171,11 +171,13 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   const [x, y] = xy(tile); if (x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h) return 'Off the map.';
   if (dist(u.pos, tile) > range) return placed ? 'Place it on your tile or next to you.' : 'Out of throwing range (' + range + ' tiles).';
   if (tile !== u.pos && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to throw there.';
-  const ctx: any = emit(cb, 'throw', { u, item, tile, ap: actionAp({ u }, 'throw', 2).ap, radius: radiusOf(w), preview: false, cb, rng });
+  // 'throw' {u, item, tile, ap, radius, cancel, caughtBy, preview} (mutable): cancel stops the blast (and any fire it
+  // leaves); caughtBy names who caught it, for the log (hooks gap C1).
+  const ctx: any = emit(cb, 'throw', { u, item, tile, ap: actionAp({ u }, 'throw', 2).ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng });
   if (u.ap < ctx.ap) return 'Needs ' + ctx.ap + ' AP.';
   u.ap -= ctx.ap; u.throwables![item]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: item, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
-  cb.log.push(u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + blast(cb, rng, u, tile, item, ctx.radius) + '.');
+  cb.log.push(u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
   return null;
 }
@@ -249,9 +251,10 @@ export function pray(cb: Combat, rng: Rng, u: Unit, args: { choice?: string; tar
 export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power: number): string {
   const ctx: any = emit(cb, 'blessing_in', { u, t, blessing: bl, power, handled: false, out: '', cb, rng });
   if (ctx.handled) return ctx.out || '';
+  power = Math.max(0, ctx.power ?? power); // items may change the power (Factory Made, The Old Blood: hooks gap A5/F5)
   let out = '', left = false;
   for (const e of bl.effects || []) {
-    if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u) : harm(cb, rng, u, t, -e.value * power, 'soul');
+    if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : harm(cb, rng, u, t, -e.value * power, 'soul');
     else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side });
     else if (e.op === 'cleanse') { for (const id of Object.keys(t.conds || {})) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; }

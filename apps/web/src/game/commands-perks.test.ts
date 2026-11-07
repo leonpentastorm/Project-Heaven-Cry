@@ -58,7 +58,8 @@ describe('the Perks and Class tabs', () => {
     const c = charWith({ classId: 'gunslinger' as any }); c.classId = 'marksman'; c.advancedClass = 'gunslinger';
     const f = fight(c), gr = actionGroups(f.cb, f.u, c, { g: f.g }), cl = gr.find((x) => x[3] === 'class')!;
     expect(cl[0]).toMatch(/CLASS · GUNSLINGER/);
-    expect(cl[1].map((i: any) => i[1])).toEqual(expect.arrayContaining(['The Draw', 'Six for Six', 'Called Shot']));
+    expect(cl[1].map((i: any) => i[1])).toEqual(expect.arrayContaining(['Six for Six', 'Called Shot']));
+    expect(cl[1].map((i: any) => i[1])).not.toContain('The Draw'); // automatic at the fight's start: no dead button
     const k = classOf(c)!; expect(k.icon).toMatch(/^data:image\/svg\+xml/); expect(k.ink).toBe('#F2A54A');
   });
 });

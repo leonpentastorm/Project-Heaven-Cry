@@ -54,4 +54,4 @@ export function mergeApproaches(old: Approach[], fresh: Omit<Approach, 'tries'>[
 }
 /** May this character try this approach now? Once per character per scene. */
 export const triedThisScene = (a: Approach, charId: string, scene: number) => a.tries.some((t) => t.charId === charId && t.scene === scene);
-export const lightOf = (o: MapObject) => ((o.hp == null || o.hp > 0) ? kindOf(o).light || 0 : 0);
+export const lightOf = (o: MapObject) => ((o.hp == null || o.hp > 0) && !(o as any).disabled ? kindOf(o).light || 0 : 0);

@@ -500,3 +500,20 @@ describe('Raised by Orks', () => {
     expect(storyCheck(s, s.chars[0].id, ['rumination'], { tags: ['text'], tn: 8 }).roll()).toMatch(/FAILURE \(AUTO\)/);
   });
 });
+
+// ---------- hooks gap (rules 1.3): the core hooks these items were waiting for ----------
+describe('hooks gap: lane A', () => {
+  it('Squad Anchor: a Downed ally within 2 tiles gets +1 on the death save', () => {
+    const f = fightWith([{ traits: ['squad_anchor'] }, { name: 'Ally' }]);
+    const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5';
+    const ub = f.unit(b.id); ub.hp = 0; ub.downed = true;
+    f.turn(ub);
+    expect(logHas(f.cb, /death save d20 \d+ \+1/)).toBe(true);
+  });
+  it('Southern Fist: a burst costs +1 AP (the volley prices its AP through attack_preview)', () => {
+    const f = fightWith([{ traits: ['southern_fist'] }], [{ at: 'F5' }]);
+    const u = f.pc; u.weapon = 'hellraiser_service_rifle'; u.ammo = 30; u.maxDur = 0; u.jammed = false; u.heat = 0;
+    const ap = u.ap; f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'burst' } as any);
+    const uu = f.unit(u.id); expect(ap - uu.ap, f.cb.log.slice(-3).join(' | ')).toBe(4);
+  });
+});

@@ -79,7 +79,8 @@
                   "value": 1
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -100,7 +101,8 @@
                   "when": "rest:each_special_type"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -126,7 +128,8 @@
                   "value": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -182,7 +185,8 @@
                   "value": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -209,7 +213,8 @@
                   "uses": "at_will"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -230,7 +235,8 @@
                   "max": 1.0
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -298,7 +304,8 @@
                   "uses": "at_will"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -325,7 +332,8 @@
                   "when": "on_use"
                 }
               ],
-              "adjudication": "hybrid"
+              "adjudication": "hybrid",
+              "provisional": true
             }
           ]
         },
@@ -350,7 +358,8 @@
                   "when": "per_3_guard_lost"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -412,7 +421,8 @@
                   "value": -1
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -439,7 +449,8 @@
                   "scale": "healing_given"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -473,7 +484,8 @@
                   "location": "limb"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -524,7 +536,8 @@
                   "when": "on_use"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -556,7 +569,8 @@
                   "choose": 1
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -576,7 +590,8 @@
                   "when": "hit_marked_below_25pct"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -626,12 +641,14 @@
                   "words": [
                     "fire",
                     "shock",
-                    "freeze"
+                    "freeze",
+                    "stone"
                   ],
                   "value": -1
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -642,14 +659,9 @@
               "id": "overcharge",
               "name": "Overcharge",
               "ap_cost": 0,
-              "uses": "per_scene",
+              "uses": "per_combat",
               "text": "Once per combat, add one word to a spell beyond your Max Sigil words, for no charge and no AP. It still adds Flux.",
               "effects": [
-                {
-                  "op": "stat_mod",
-                  "stat": "max_sigil_words",
-                  "value": 1
-                },
                 {
                   "op": "word_cost",
                   "words": [
@@ -658,7 +670,8 @@
                   "value": "free_one"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -683,7 +696,8 @@
                   "when": "on_cast"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -739,7 +753,8 @@
                   "tiles": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -766,7 +781,8 @@
                   "when": "on_use"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -787,7 +803,8 @@
                   "rounds": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -840,7 +857,8 @@
                   "duration": "next_turn"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -868,7 +886,8 @@
                   "duration": "until_rest"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -889,7 +908,8 @@
                   "uses": "per_rest"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -947,7 +967,8 @@
                   "value": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -983,7 +1004,8 @@
                   "value": -1
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1007,7 +1029,8 @@
                   "note": "Pick the opposite of exotic buffs."
                 }
               ],
-              "adjudication": "hybrid"
+              "adjudication": "hybrid",
+              "provisional": true
             }
           ]
         }
@@ -1059,7 +1082,8 @@
                   "when": "first_damage_cast_each_turn"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1085,7 +1109,8 @@
                   "when": "on_cast"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1110,7 +1135,8 @@
                   "when": "on_cast"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -1163,7 +1189,8 @@
                   "duration": "combat"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1184,7 +1211,8 @@
                   "when": "reaction:enemy_spell_hits_your_shield"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1210,7 +1238,8 @@
                   "target": "allies_in_zone"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         }
@@ -1269,7 +1298,8 @@
                   "duration": "next_roll"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1290,7 +1320,8 @@
                   "scale": "healing_given*ambient_healing"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1311,7 +1342,8 @@
                   "uses": "per_rest"
                 }
               ],
-              "adjudication": "hybrid"
+              "adjudication": "hybrid",
+              "provisional": true
             }
           ]
         }
@@ -1369,7 +1401,8 @@
                   "when": "duration+1"
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1389,7 +1422,8 @@
                   "value": 2
                 }
               ],
-              "adjudication": "engine"
+              "adjudication": "engine",
+              "provisional": true
             }
           ]
         },
@@ -1414,7 +1448,8 @@
                   "note": "Rule on what counts as harming itself."
                 }
               ],
-              "adjudication": "hybrid"
+              "adjudication": "hybrid",
+              "provisional": true
             }
           ]
         }
@@ -1453,17 +1488,18 @@
           "id": "the_draw",
           "name": "The Draw",
           "ap_cost": 0,
-          "uses": "per_scene",
+          "uses": "per_combat",
           "text": "Before the first initiative turn of a combat, fire one single shot with a pistol or revolver for 0 AP.",
           "effects": [
             {
               "op": "grant_action",
               "action": "draw_shot",
               "ap": 0,
-              "uses": "per_scene"
+              "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "six_for_six",
@@ -1489,7 +1525,7 @@
           "text": "Name head, arm or leg and shoot at -2. On a hit, apply that injury result (head: Dazed; arm: -2 to attacks with it; leg: half Movement) without needing a critical.",
           "effects": [
             {
-              "op": "tn_mod",
+              "op": "attack_mod",
               "context": "called_shot",
               "value": -2
             },
@@ -1501,7 +1537,8 @@
               "location": "chosen"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -1551,7 +1588,8 @@
               "value": 5
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "suppression",
@@ -1573,7 +1611,8 @@
               "when": "on_hit"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "belt_discipline",
@@ -1590,7 +1629,7 @@
             {
               "op": "heat_mod",
               "action": "per_turn",
-              "value": -2
+              "value": -4
             }
           ],
           "adjudication": "engine"
@@ -1634,7 +1673,7 @@
             {
               "op": "action_cost",
               "action": "analyze",
-              "value": -1
+              "set": 1
             },
             {
               "op": "condition",
@@ -1643,7 +1682,8 @@
               "when": "on_analyze"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "weak_point",
@@ -1673,10 +1713,12 @@
           "effects": [
             {
               "op": "damage_mult",
-              "value": 2.0
+              "value": 3.0,
+              "vs_boss": 2.0
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -1725,7 +1767,8 @@
               "value": 1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "rally_banner",
@@ -1741,7 +1784,8 @@
               "scale": "healing_given"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "sweep",
@@ -1762,7 +1806,8 @@
               "target": "allies_passed"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -1807,7 +1852,8 @@
               "when": "on_use"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         },
         {
           "id": "strike_call",
@@ -1827,7 +1873,8 @@
               "note": "No strikes where the Company has no signal."
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         },
         {
           "id": "extraction",
@@ -1847,7 +1894,8 @@
               "note": "Decide where the flyer can land and what follows."
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "hybrid",
+          "provisional": true
         }
       ]
     },
@@ -1888,10 +1936,12 @@
             {
               "op": "action_cost",
               "action": "draw_sigil_word",
-              "value": "0_with_melee"
+              "set": 0,
+              "context": "with_melee"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "edge_sigil",
@@ -1906,7 +1956,8 @@
               "type": "elemental"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "three_cut_script",
@@ -1922,7 +1973,8 @@
               "uses": "per_scene"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -1966,7 +2018,8 @@
               "hp": 40
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "sentry_turret",
@@ -1981,7 +2034,8 @@
               "hp": 40
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "bulwark_line",
@@ -1997,7 +2051,8 @@
               "rounds": 1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2042,7 +2097,8 @@
               "uses": "per_rest"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "spell_magazine",
@@ -2058,7 +2114,8 @@
               "uses": "per_rest"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "ricochet_glyph",
@@ -2068,12 +2125,13 @@
           "text": "When a shot misses, it can glance to another target within 4 tiles of the first: roll again at -2.",
           "effects": [
             {
-              "op": "tn_mod",
+              "op": "attack_mod",
               "context": "ricochet",
               "value": -2
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2123,7 +2181,8 @@
               "when": "on_hit"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "charged_by_death",
@@ -2136,10 +2195,12 @@
               "op": "resource",
               "resource": "storm_charge",
               "value": 1,
-              "when": "on_kill"
+              "when": "on_kill",
+              "max": 3
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "discharge",
@@ -2155,7 +2216,8 @@
               "target": "adjacent_to_target"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2199,7 +2261,8 @@
               "target": "ally_adjacent"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "bulwark_of_will",
@@ -2216,7 +2279,8 @@
               "when": "on_brace"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "unbroken",
@@ -2237,7 +2301,8 @@
               "when": "would_drop_to_0"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2280,7 +2345,8 @@
               "state": "stay_hidden_on_kill"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "nightmare_mark",
@@ -2296,7 +2362,8 @@
               "when": "turn_start_save"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "lingering_dread",
@@ -2312,7 +2379,8 @@
               "when": "on_kill"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2360,7 +2428,8 @@
               "uses": "at_will"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         },
         {
           "id": "under_the_eye",
@@ -2376,7 +2445,8 @@
               "target": "allies_within_3"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         },
         {
           "id": "judgement",
@@ -2396,7 +2466,8 @@
               "value": "blessing_power"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "alt_parents": [
@@ -2447,7 +2518,8 @@
               "uses": "at_will"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "stitch",
@@ -2462,7 +2534,8 @@
               "when": "stitch_16_20"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "house_edge",
@@ -2478,7 +2551,8 @@
               "uses": "per_scene"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2527,7 +2601,8 @@
               "value": 1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "hearts_own",
@@ -2542,7 +2617,8 @@
               "value": 2
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "love_made_manifest",
@@ -2556,7 +2632,8 @@
               "value": 2.0
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ]
     },
@@ -2601,7 +2678,8 @@
               "when": "on_vent"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "self_crystallise",
@@ -2623,7 +2701,8 @@
               "when": "on_use"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "fusion",
@@ -2643,7 +2722,8 @@
               "note": "Each Fusion in sight of the world is a Knowing risk: decide whether a Celestial takes an interest."
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         }
       ]
     },
@@ -2686,7 +2766,8 @@
               "cost_core": 1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "survey",
@@ -2707,7 +2788,8 @@
               "value": -1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "foundation",
@@ -2722,7 +2804,8 @@
               "value": "0_near_keystone"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,
@@ -2769,7 +2852,8 @@
               "charge": 3
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "empty_hand",
@@ -2790,7 +2874,8 @@
               "value": 20
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "earthed",
@@ -2803,7 +2888,8 @@
               "op": "grand_immunity"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,
@@ -2848,7 +2934,8 @@
               "max": 5
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "fed",
@@ -2862,7 +2949,8 @@
               "per_point": 0.1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "overflow",
@@ -2875,7 +2963,8 @@
               "op": "emotion_overflow"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,
@@ -2920,7 +3009,8 @@
               "range": 6
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "through",
@@ -2933,7 +3023,8 @@
               "op": "cast_from_link"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "share",
@@ -2947,7 +3038,8 @@
               "value": 0.5
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,
@@ -2992,7 +3084,8 @@
               "mp": 20
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "release_strike",
@@ -3006,7 +3099,8 @@
               "per_stage": 15
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "vessel_hands",
@@ -3027,7 +3121,8 @@
               ]
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,
@@ -3072,7 +3167,8 @@
               "outbursts": 3
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "provisional": true
         },
         {
           "id": "call",
@@ -3088,7 +3184,8 @@
               "leash": 6
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         {
           "id": "bond",
@@ -3102,7 +3199,8 @@
               "strain": 3
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         }
       ],
       "provisional": true,

@@ -1,4 +1,7 @@
 // The Narrator's guidance on perks and traits (lane G owns this text; plan 4.3). It goes into the cached rules prompt
 // once, after the PERKS, TRAITS AND CLASS MOVES paragraph: keep it compact (it is paid for once per hour of cache,
-// not per turn). Empty until lane G writes it.
-export const PERK_GUIDANCE = '';
+// not per turn). Per-character remainders are the brief() lines (packages/engine/src/perks/g.ts and briefs.ts).
+export const PERK_GUIDANCE = `- How items reach you: a player's item use is a tagged line "[Name · perk:id]" plus a PENDING RULINGS entry saying what you owe; the brief after an item's "*" says what stays yours (e.g. "owed this scene"). Rule truthfully: a line an item owes (Bedside Manner, Cold Read, Case File, Real Power, What Could Be, Detective's Eye) goes in perkLines with that item's key, private to its holder, and is never a lie, even though voice hooks may mislead.
+- On checks: target (the NPC or character it is aimed at), applies (item ids that apply), footnote (the charId whose cited fact the roll acts on), double (the player declared Double or Nothing). Extra tags beyond the list: hinted (the action a Double Meaning sentence hinted at), culture (talk of art, history, holo-dramas), ancient_script (reading old or upper-realm writing), lie (a lie told to someone). Never call a check an item settles (an accuser with no evidence, a script Old Tongue reads).
+- traitState keys the engine reads: case_open and case_related (Cold Case; related resets each scene), identity null (a Cover Story burned), old_con true (that visit happened), lie_door null (a weapon was drawn), mislead_used true (Crowded Head twisted a line). Set them only when the story says so.
+- Mastered and Ultimate uses bend the scene but not the frame: no fact, idea or lie decides a check by itself, makes items, money or allies, touches the Veil, or makes a Celestial appear without cause. Refuse those in perkRulings; the use is refunded.`;

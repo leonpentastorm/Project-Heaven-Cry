@@ -133,7 +133,7 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     const dock = r(document.querySelector('.phc-cb-dock')), conf = r(Array.from(document.querySelectorAll('button')).find((b) => /^(Confirm|Click a tile)/.test(b.textContent.trim()))), grid = r(document.querySelector('.phc-grid'));
     return { scrollY: window.scrollY, H: window.innerHeight, dockTop: dock && Math.round(dock.top), dockBottom: dock && Math.round(dock.bottom), conf: conf && Math.round(conf.bottom), gridTop: grid && Math.round(grid.top), pos: getComputedStyle(document.querySelector('.phc-cb-dock')).position }; });
   ok('900×800: the action dock is fixed to the bottom (' + JSON.stringify(box) + ')', box.pos === 'fixed' && box.dockBottom <= box.H + 1 && box.conf <= box.H && box.gridTop < box.dockTop);
-  await pickAction(p, /^Reload/); await p.waitForTimeout(250);
+  await pickAction(p, /^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/); await p.waitForTimeout(250);
   await p.screenshot({ path: OUT + 'tabs-900x800-narrow.png' });
   await p.mouse.wheel(0, 600); await p.waitForTimeout(300);
   const conf2 = await p.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Confirm|Click a tile)/.test(x.textContent.trim())); const r = b.getBoundingClientRect(); return r.bottom <= window.innerHeight && r.top >= 0; });

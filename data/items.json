@@ -252,7 +252,10 @@
           "slot": "optic"
         }
       ],
-      "mod_slot": "optic"
+      "mod_slot": "optic",
+      "tags": [
+        "electronic"
+      ]
     },
     {
       "id": "mod_scope",

@@ -42,7 +42,7 @@ describe('Wall Run', () => {
     wallAt(f.cb, 3); at(f.pc, '2,5'); f.turn(f.pc);
     f.act({ type: 'combat/move', unitId: f.pc.id, to: '4,5' });
     expect(f.pc.pos).toBe('4,5');
-    expect(() => f.act({ type: 'combat/move', unitId: f.pc.id, to: '3,5' })).toThrow(/stop on a wall/);
+    expect(() => f.act({ type: 'combat/move', unitId: f.pc.id, to: '3,5' })).toThrow(/stop on a wall|reach/); // paths() no longer offers a wall tile as a move's end
     const g = fightWith([{}], [{ at: 'O10' }]); wallAt(g.cb, 3); at(g.pc, '2,5'); g.turn(g.pc);
     expect(() => g.act({ type: 'combat/move', unitId: g.pc.id, to: '4,5' })).toThrow(/reach/);
   });

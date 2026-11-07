@@ -147,7 +147,8 @@
         "symbol_of_order",
         "rogue_element"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "the_brightest_light",
@@ -188,7 +189,8 @@
       "excludes": [
         "pacifist"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "southern_fist",
@@ -230,7 +232,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "forlorn_hope",
@@ -273,7 +276,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "grenadiers_arm",
@@ -312,7 +316,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "glass_runner",
@@ -325,14 +330,14 @@
       "cost": null,
       "flavour": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.",
       "upsides": [
-        "Runner: +5 Initiative, and your first move each combat costs 0 AP."
+        "Runner: +5 Initiative, and your first move each combat costs 1 AP less."
       ],
       "downsides": [
         "Glass: +50% limb damage taken. A broken leg halves your Movement until it's set."
       ],
       "notes": [],
       "narrator_hook": "called shots to the legs.",
-      "text": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.\n+ Runner: +5 Initiative, and your first move each combat costs 0 AP.\n− Glass: +50% limb damage taken. A broken leg halves your Movement until it's set.",
+      "text": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.\n+ Runner: +5 Initiative, and your first move each combat costs 1 AP less.\n− Glass: +50% limb damage taken. A broken leg halves your Movement until it's set.",
       "effects": [
         {
           "op": "stat_mod",
@@ -342,7 +347,7 @@
         {
           "op": "action_cost",
           "action": "move",
-          "set": 0,
+          "value": -1,
           "context": "first_move_each_combat"
         },
         {
@@ -357,7 +362,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "blade_recluse",
@@ -411,7 +417,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "pain_eater",
@@ -448,7 +455,8 @@
       "excludes": [
         "pacifist"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "bottle_butts_for_eyes",
@@ -510,7 +518,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "the_mask",
@@ -618,7 +627,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "right_of_way",
@@ -634,11 +644,11 @@
         "I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove."
       ],
       "downsides": [
-        "Old Injury: −1 Movement, −2 Reaction Speed."
+        "Old Injury: −0.5 Movement, −2 Reaction Speed."
       ],
       "notes": [],
       "narrator_hook": "crowds, queues, and anyone who wants you to wait.",
-      "text": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.\n+ I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove.\n− Old Injury: −1 Movement, −2 Reaction Speed.",
+      "text": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.\n+ I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove.\n− Old Injury: −0.5 Movement, −2 Reaction Speed.",
       "effects": [
         {
           "op": "skill_mod",
@@ -659,7 +669,7 @@
         {
           "op": "stat_mod",
           "stat": "move",
-          "value": -1
+          "value": -0.5
         },
         {
           "op": "skill_mod",
@@ -669,7 +679,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "drill_echo",
@@ -713,7 +724,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "the_old_blood",
@@ -835,7 +847,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "oil_in_my_mind",
@@ -923,7 +936,8 @@
             "note": "Masterpiece: make a work of art that gives one ally +2 on a roll of their choice"
           }
         ]
-      }
+      },
+      "provisional": true
     },
     {
       "id": "oil_in_my_soul",
@@ -1013,7 +1027,8 @@
             "note": "Masterpiece: make a work of art that gives one ally +2 on a roll of their choice"
           }
         ]
-      }
+      },
+      "provisional": true
     },
     {
       "id": "lunarshine",
@@ -1168,7 +1183,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "heavyworlder",
@@ -1184,11 +1200,11 @@
         "Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation."
       ],
       "downsides": [
-        "Too Big: −3 Athletics and −1 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you."
+        "Too Big: −3 Athletics and −0.5 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you."
       ],
       "notes": [],
       "narrator_hook": "stealth missions, tight corridors, and the rope bridge.",
-      "text": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.\n+ Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation.\n− Too Big: −3 Athletics and −1 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you.",
+      "text": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.\n+ Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation.\n− Too Big: −3 Athletics and −0.5 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you.",
       "effects": [
         {
           "op": "size_mod",
@@ -1219,7 +1235,7 @@
         {
           "op": "stat_mod",
           "stat": "move",
-          "value": -1
+          "value": -0.5
         },
         {
           "op": "to_hit_against_self",
@@ -1232,7 +1248,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "born_performer",
@@ -1280,7 +1297,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "rabbits_foot",
@@ -1341,7 +1359,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "ghost_soldier",
@@ -1412,7 +1431,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "symbol_of_order",
@@ -1454,7 +1474,8 @@
         "rogue_element",
         "mind_without_fog"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "rogue_element",
@@ -1498,7 +1519,8 @@
         "symbol_of_order",
         "mind_without_fog"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "the_soundscape_of_the_soul",
@@ -1675,7 +1697,7 @@
       "notes": [
         "Only takes effect if every squad member logs it."
       ],
-      "narrator_hook": null,
+      "narrator_hook": "the area whose normal events stopped happening.",
       "text": "The worldlines are merging. Things that shouldn't exist walk your streets, and nobody else seems to notice.\n+ Wild: the strangest, most impossible events show up in your campaign.\n− Unravelling: those events replace the normal events of that area.\nOnly takes effect if every squad member logs it.",
       "effects": [
         {
@@ -1689,7 +1711,8 @@
         {
           "party_all": "worldline_fracture"
         }
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "factory_made",
@@ -1753,7 +1776,8 @@
         "the_old_blood",
         "augmented"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "lowland_born",
@@ -1800,7 +1824,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "central_city_kid",
@@ -1851,7 +1876,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "daggerfall_veteran",
@@ -1910,7 +1936,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "upper_touched",
@@ -1955,7 +1982,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "raised_by_orks",
@@ -2005,7 +2033,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "gun_nut",
@@ -2061,7 +2090,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "old_school",
@@ -2103,7 +2133,8 @@
       "excludes": [
         "spray_and_pray"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "spray_and_pray",
@@ -2151,7 +2182,8 @@
       "excludes": [
         "old_school"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "one_shot",
@@ -2196,7 +2228,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "sigil_savant",
@@ -2240,7 +2273,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "hollow_heart",
@@ -2284,7 +2318,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "heretic",
@@ -2318,8 +2353,9 @@
         },
         {
           "op": "faction_start",
-          "faction": "faith_based",
-          "attitude": "hostile"
+          "faction": "Lumeri Church",
+          "attitude": "hostile",
+          "standing": -40
         },
         {
           "op": "blessing_fail",
@@ -2335,7 +2371,8 @@
       "excludes": [
         "true_believer"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "gambler",
@@ -2368,7 +2405,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "insomniac",
@@ -2409,7 +2447,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "chain_smoker",
@@ -2453,7 +2492,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "live_to_fight_another_day",
@@ -2507,7 +2547,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "sworn_sibling",
@@ -2561,7 +2602,8 @@
           "bond_target": "squad_member",
           "consent": true
         }
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "rival",
@@ -2759,7 +2801,7 @@
       "effects": [
         {
           "op": "price_mod",
-          "buy_pct": -100,
+          "buy_pct": -40,
           "sell_pct": 0,
           "context": "rtc_at_cost"
         },
@@ -2774,7 +2816,8 @@
       ],
       "adjudication": "narrator",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "field_medic",
@@ -2804,7 +2847,7 @@
         {
           "op": "grant_action",
           "action": "thrown_stim",
-          "ap": 0,
+          "ap": null,
           "uses": "per_combat"
         },
         {
@@ -2819,7 +2862,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "squad_anchor",
@@ -2872,7 +2916,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "born_officer",
@@ -2932,7 +2977,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "cold_case",
@@ -2971,7 +3017,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "interrogator",
@@ -3080,7 +3127,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "grudge_bearer",
@@ -3123,7 +3171,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "crowded_head",
@@ -3248,7 +3297,8 @@
       ],
       "adjudication": "narrator",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "inner_ring_heir",
@@ -3332,7 +3382,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "demolitionist",
@@ -3381,7 +3432,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "drone_handler",
@@ -3423,7 +3475,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "augmented",
@@ -3486,7 +3539,8 @@
           "op": "gate_check",
           "skill": "proficiency",
           "context": "after_rest",
-          "on_fail": "augment_offline_next_day"
+          "on_fail": "augment_offline_next_day",
+          "tn": 12
         },
         {
           "op": "condition",
@@ -3499,7 +3553,8 @@
       "excludes": [
         "factory_made"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "true_believer",
@@ -3544,14 +3599,17 @@
               "skill": "will_power",
               "value": -1
             }
-          ]
+          ],
+          "state_key": "rites_missed",
+          "cap": -3
         }
       ],
       "adjudication": "hybrid",
       "excludes": [
         "heretic"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "heavens_faithful",
@@ -3591,14 +3649,16 @@
           "op": "gate_check",
           "skill": "faith",
           "context": "fighting_upper_realm",
-          "on_fail": "lose_2_ap"
+          "on_fail": "lose_2_ap",
+          "tn": 12
         }
       ],
       "adjudication": "hybrid",
       "excludes": [
         "humanity_first"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "occultist",
@@ -3694,7 +3754,8 @@
       "excludes": [
         "humanity_first"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "old_timer",
@@ -3707,14 +3768,14 @@
       "cost": null,
       "flavour": "You were already old when Daggerfall happened.",
       "upsides": [
-        "Seen It All: start each session with 1 Echo. Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically."
+        "Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically."
       ],
       "downsides": [
-        "Old Bones: −1 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day."
+        "Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day."
       ],
       "notes": [],
       "narrator_hook": "the forced march.",
-      "text": "You were already old when Daggerfall happened.\n+ Seen It All: start each session with 1 Echo. Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically.\n− Old Bones: −1 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day.",
+      "text": "You were already old when Daggerfall happened.\n+ Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically.\n− Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day.",
       "effects": [
         {
           "op": "resource",
@@ -3735,7 +3796,7 @@
         {
           "op": "stat_mod",
           "stat": "move",
-          "value": -1
+          "value": -0.5
         },
         {
           "op": "stat_mult",
@@ -3751,7 +3812,8 @@
       ],
       "adjudication": "engine",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "pacifist",
@@ -3814,7 +3876,8 @@
         "pain_eater",
         "the_brightest_light"
       ],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "moon_hunter",
@@ -3867,7 +3930,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "beast_handler",
@@ -3913,7 +3977,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     },
     {
       "id": "ace_pilot",
@@ -3963,7 +4028,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [],
-      "requires": []
+      "requires": [],
+      "provisional": true
     }
   ]
 }

@@ -9,6 +9,7 @@ Two real browsers play a session through the room relay, with the scripted Narra
 - `slate-stamp.mjs`: the Lock in stamp caught at ~120 ms and ~500 ms, APPROVED, filed once, reduced motion fades. Shots: `slate-stamp-*.png`.
 - `slate-music.mjs`: two players in the Proving Ground: no fight music while gearing up, Gunline for a wave, Heaven Falls for a boss, Last Rounds with half the party Downed (both browsers), then Leave puts both on the room screen.
 - `sandbox.mjs`: the Proving Ground from the title: gearing up, the magic kit, give / unequip / equip, a mini-map click starts the fight, waves, a Sigil, Retry, Leave to the room, no Narrator calls.
+- `perks.mjs`: perks, traits and class moves in play. In the Proving Ground: the tools' Perks and Traits sections (sandbox/perk, sandbox/trait), the PERKS tab and Breaching Strike's knockback on a drill unit, Fighter from the tools (the CLASS tab and the You card carry the emblem) and Lunge, Used to the Pain's AP line, reload only on a gun (none with the sabre), the level-up class panel. Then a room with the scripted Narrator: Oil in My Soul's +1 named in the dice table's roll math and the story line. Shots: `perks-*.png`.
 - `reconnect.mjs`: both players refresh mid-session and come back to the story; the EPCCG "?" entry and the lightbox open.
 
 Run against local dev (`npm run dev -w @phc/server` after `npm run build`) or the live site:

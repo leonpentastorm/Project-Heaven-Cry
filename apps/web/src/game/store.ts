@@ -205,6 +205,8 @@ async function maybeNarrate() {
     // Keep the state from just before this turn: a reroll the room votes for goes back to it (spec: Rerolls and edits).
     const pre = hostState!, turnsBefore = votesOf(pre).turns.at(-1);
     runHost({ type: 'narrator/turn', turn }, S.me.id, null);
+    // A turn the engine refused leaves the state as it was (busy): say so, or the story would wait for good.
+    if (hostState === pre && hostState?.narrator.busy) { runHost({ type: 'narrator/error', message: 'The Narrator\'s turn could not be applied; retry.' }, S.me.id, null); return; }
     const opened = hostState ? votesOf(hostState).turns.at(-1) : undefined;
     if (opened && opened !== turnsBefore) keepBefore(opened, pre);
   } catch (e) {

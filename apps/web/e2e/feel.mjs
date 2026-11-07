@@ -109,7 +109,7 @@ ok('the shot plays: ' + r.events.map((e) => e.k + (e.hit ? '(hit ' + e.dmg + ')'
 // 3. Reload: a timer ring over the shooter
 s = await st();
 if (s.u.ammo >= (s.u.ammo ?? 0) && s.u.ap < 2) await newRound();
-await pickAct(/^Reload/);
+await pickAct(/^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/);
 r = await catchFx('06-reload', confirm, [120, 450, 900]);
 const ringUp = r.events.some((e) => e.k === 'reload');
 ok('reload plays a timer ring: ' + r.events.map((e) => e.k + (e.dur ? ':' + e.dur + 'ms' : '')).join(' '), ringUp && r.peak > 0);
@@ -184,7 +184,7 @@ for (let i = 0; i < 14 && !ended; i++) {
   if (!foe) break;
   if (s.u.jammed || s.u.ammo <= 0 || s.u.ap < 3) {
     if (s.u.ap < 2) { await newRound(); continue; }
-    await pickAct(s.u.jammed ? /^Clear/ : /^Reload/); await confirm(); await p.waitForTimeout(900); continue;
+    await pickAct(s.u.jammed ? /^Clear/ : /^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/); await confirm(); await p.waitForTimeout(900); continue;
   }
   await pickAct(/^Fan the Hammer/);
   await tok(foe.pos).click(); await p.waitForTimeout(100);

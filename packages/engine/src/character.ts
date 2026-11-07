@@ -408,7 +408,7 @@ export function stepsTaken(c: Character, skill: string) {
 }
 /** Skills with a perk step waiting, and the choices for each (a new Tier I, or an upgrade of a held Tier I). */
 export function pendingPerkSteps(c: Character) {
-  const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[] }[] = [];
+  const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];
   for (const s of SKILLS) {
     const free = stepsEarned(P(c, s.id)) - stepsTaken(c, s.id);
     if (free <= 0) continue;
@@ -417,7 +417,8 @@ export function pendingPerkSteps(c: Character) {
       const held = c.perks.find((x) => x.id === p.id);
       return !held ? [{ id: p.id, tier: 'I' as const }] : held.tier === 'I' ? [{ id: p.id, tier: 'II' as const }] : [];
     });
-    if (choices.length) out.push({ skill: s.id, choices });
+    const room = own.reduce((n, p) => { const held = c.perks.find((x) => x.id === p.id); return n + (!held ? 2 : held.tier === 'I' ? 1 : 0); }, 0);
+    if (choices.length) out.push({ skill: s.id, choices, free: Math.min(free, room) });
   }
   return out;
 }

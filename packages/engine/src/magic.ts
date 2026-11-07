@@ -12,7 +12,7 @@ import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileF
 import { type Rng, d20, die } from './rng';
 import { emit } from './effects/hooks';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
-import { itemWords, wordCostMods } from './effects/core';
+import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
 
 type Fam = 'body' | 'brain' | 'heart';
 export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string }
@@ -290,6 +290,18 @@ const harmFor = (why: string, f: () => string) => { hurtWhy = why; try { return 
 export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true' | 'physical', dmgType?: string): string {
   if (t.dead) return '';
   let dmg = Math.floor(raw), out = '';
+  // 'damage_out' for spells (hooks gap A4/F3): the same hook attacks use, before armour, so "+X% against this target"
+  // and the caster's own multipliers reach Sigil, Elemental and Soul damage. ctx.spell is true and ctx.mode 'spell';
+  // weapon-only handlers check ctx.src.type === 'weapon'. Hazards (burn, short, overload, wall) and blows with no
+  // attacker skip it.
+  if (att && !hurtWhy) {
+    const src: any = { by: att, type, dmgType: dmgType || type, spell: true };
+    const ctx: any = { att, tgt: t, mode: 'spell', melee: false, spell: true, src, base: dmg, add: 0, mults: [], vs: [] as any[], crit: false, preview: false, cb, mods: cb.mods || [] };
+    if (t.weakPoint && att.side === 'pc') ctx.vs.push({ v: 0.15, label: 'Weak Point' }); // the squad's +15% (spec), spells too
+    emit(cb, 'damage_out', ctx);
+    const vsSum = ctx.vs.reduce((a: number, x: any) => a + x.v, 0); // tactics.ts stackDamage: target bonuses add, capped at +100%
+    dmg = Math.floor(Math.max(0, dmg + ctx.add) * ctx.mults.reduce((a: number, m: any) => a * m.v, 1) * (1 + Math.min(1, Math.max(-0.9, vsSum))));
+  }
   const arm = type === 'sigil' || type === 'physical' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
   const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp' } as any);
@@ -304,15 +316,19 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   if (!t.dead && !t.downed && t.mg?.held) out += slip(cb, rng, t, dmg);
   return out;
 }
-export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null): string {
+export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, kind = 'soul'): string {
   if (t.dead) return '';
   // The air's Healing given multiplier (spec: the meter bands) applies to magical healing.
-  const r = healUnit(cb || null, t, n * (cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1), by, 'soul');
+  const r = healUnit(cb || null, t, n * (cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1), by, kind);
   if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
   if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
 }
-function shove(cb: Combat, t: Unit, from: string, n: number): string {
+/** Magic forced movement (GALE, PULL, Control push and pull): knockback immunity and the 'forced_move' hook
+ * {u, by, tiles, how: 'magic', cancel} can stop it (hooks gap A3). */
+export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Unit | null = null): string {
   if (t.dead || n === 0) return '';
+  { const im = immune({ u: t }, 'knockback'); if (im) return ' · ' + t.name + ' holds its ground (' + im + ')'; }
+  if ((emit(cb, 'forced_move', { u: t, by, tiles: Math.abs(n), how: 'magic', pull: n < 0, cancel: false, cb }) as any).cancel) return ' · ' + t.name + ' holds its ground';
   const was = t.pos;
   const [fx, fy] = from.split(',').map(Number); let [x, y] = t.pos.split(',').map(Number);
   let dx = Math.sign(x - fx), dy = Math.sign(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
@@ -339,7 +355,9 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (m && !u.downed) {
     if (m.held) {
       if (m.held.stage < 4) { m.held.stage++; emitFx(cb, 'grow', { unit: u.id, at: u.pos, stage: m.held.stage }); cb.log.push(u.name + "'s Outburst grows to stage " + m.held.stage + ' (×' + stageMult(m.held.stage) + ').'); }
-      addStrain(cb, rng, u, manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1, 'holding');
+      // 'outburst_hold' {u, strain} (mutable): the Strain of holding one more turn (hooks gap D7).
+      const oh: any = emit(cb, 'outburst_hold', { u, strain: manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1, cb });
+      if (oh.strain > 0) addStrain(cb, rng, u, oh.strain, 'holding');
     } else if (!m.cast && m.strain > 0) m.strain--;
     m.cast = false;
   }
@@ -383,7 +401,8 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
   if (dist(u.pos, tile) > 1) return 'Draw on your own tile or one next to you.';
   if (!standable(cb.map, tile)) return 'Nothing can be drawn there.';
   if ((cb.glyphs || []).filter((g) => g.pos === tile).length >= 2) return 'A tile holds at most 2 glyphs.';
-  const gc = glyphCost(cb, u, word);
+  const gc = glyphCost(cb, u, word, false, tile);
+  if (gc.fail) return gc.fail;
   const ap = gc.ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   if (m.charge < gc.charge) return 'Not enough charge in the core (' + m.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).';
   u.ap = Math.round((u.ap - ap) * 10) / 10; m.charge -= gc.charge;
@@ -397,13 +416,15 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
   cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(tile) + ' (' + gc.charge + ' charge, ' + ap + ' AP)' + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   return null;
 }
-/** A glyph's price for this unit: 'glyph_cost' {u, word, ap, charge, flux, preview} (mutable), after word_cost items. */
-export function glyphCost(cb: Combat, u: Unit, word: string, preview = false): { ap: number; charge: number; flux: number } {
-  const w = SIGIL[word], base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(u.pos)) ? 1 : 0), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: 1, preview, cb };
+/** A glyph's price for this unit: 'glyph_cost' {u, word, tile, ap, charge, flux, preview, fail} (mutable), after
+ * word_cost items. fail = 'why' refuses the draw (hooks gap D2/K5). */
+export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, tile?: string): { ap: number; charge: number; flux: number; fail?: string } {
+  const w = SIGIL[word], base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(u.pos)) ? 1 : 0), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: 1, preview, tile, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
-  return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux) };
+  return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
 }
-function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
+/** Add Flux; past the limit the Evoker overloads (exported for class moves: hooks gap I8/K1). */
+export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
   const m = u.mg!; m.flux += n;
   if (m.flux <= FLUX_MAX) return '';
   const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
@@ -500,7 +521,7 @@ function spellPath(cb: Combat, u: Unit, p: Pattern, aim: string | undefined): { 
   return { impact: aim, src: s, targets: has('spread') ? within(aim, 2) : [live(aim)].filter(Boolean) as Unit[] };
 }
 /** One Subject's effect on one target. Damage rolls Brain Power against Defense (walls hit automatically at half). */
-function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilDef | undefined, mult: number, sm: number, em: number, auto: boolean, src: string, opts: { seek?: boolean } = {}): string {
+export function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilDef | undefined, mult: number, sm: number, em: number, auto: boolean, src: string, opts: { seek?: boolean } = {}): string {
   if (!w || t.dead) return '';
   if (w.class === 'subject_element') {
     let roll = 0, crit = false;
@@ -510,10 +531,10 @@ function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilD
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: w.id }); return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')'; }
     }
     const dmg = (w.damage || 0) * mult * sm * (w.damage_type === 'elemental' ? em : 1) * (crit ? 2 : 1);
-    let line = ' · ' + w.word + (roll ? ' hits (d20 ' + roll + (crit ? ', CRITICAL' : '') + ')' : '') + harm(cb, rng, by, t, dmg, w.damage_type === 'elemental' ? 'elemental' : 'sigil');
+    let line = ' · ' + w.word + (roll ? ' hits (d20 ' + roll + (crit ? ', CRITICAL' : '') + ')' : '') + harm(cb, rng, by, t, dmg, w.damage_type === 'elemental' ? 'elemental' : 'sigil', w.id === 'shock' || w.id === 'spark' ? 'lightning' : w.id === 'fire' ? 'fire' : w.id === 'freeze' ? 'frost' : undefined);
     if (!t.dead && w.id === 'fire' && crit) line += applyCond(cb, rng, by, t, 'burning');
     if (!t.dead && w.id === 'freeze') line += applyCond(cb, rng, by, t, 'slowed');
-    if (!t.dead && w.id === 'gale') line += shove(cb, t, src, w.push_tiles || 2);
+    if (!t.dead && w.id === 'gale') line += magicShove(cb, t, src, w.push_tiles || 2, by);
     return line;
   }
   switch (w.id) {
@@ -538,8 +559,9 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string): E
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
   const touch = p.shape === 'line' ? dist(u.pos, p.near!) <= 1 : p.tiles.some((k) => dist(u.pos, k) <= 1);
   if (!touch) return no(p.shape === 'line' ? 'Stand behind the near end of the line to fire it.' : 'Stand on or next to the pattern.', { pattern: p });
-  // 'evoke_cost' {u, pattern, ap, charge, preview} (mutable): items change what firing costs.
-  const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke, charge: evokeCharge(p, u), preview: true, cb });
+  // 'evoke_cost' {u, pattern, ap, charge, preview, fail} (mutable): items change what firing costs; fail refuses it.
+  const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke, charge: evokeCharge(p, u), preview: true, fail: '', cb });
+  if (ec.fail) return no(ec.fail, { pattern: p });
   const charge = Math.max(0, ec.charge), eap = Math.max(0, ec.ap); if (u.mg!.charge < charge) return no('Firing needs ' + charge + ' charge (' + u.mg!.charge + ' left): swap a core.', { pattern: p, charge });
   if (u.ap < eap) return no('Needs ' + eap + ' AP.', { pattern: p, charge });
   const needsAim = p.shape === 'stack';
@@ -563,6 +585,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string)
     emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.shape === 'line' ? p.far : p.centre || p.tiles[0], impact: null, targets: [], words: p.words, element: subjects[0] || null, stay: true, side: u.side });
     cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: veil ? 'veil' : light ? 'light' : 'wall', tiles: veil ? tiles.flatMap((k) => around(k, 1)) : light ? tiles.flatMap((k) => around(k, 4)) : tiles, words: subjects, by: u.id, side: u.side, left, mult: 0.5, who: u.name }];
     cb.log.push(head + ': it stands' + (veil ? ' as smoke' : light ? ' as light' : ' as a wall') + ' at ' + tiles.map(refOf).join(', ') + ' for ' + left + ' round' + (left === 1 ? '' : 's') + '.');
+    emit(cb, 'evoked', { u, pattern: p, targets: [], impact: null, stay: true, zone: cb.zones[cb.zones.length - 1], charge: pv.charge, ap: pv.ap, cb, rng });
     return null;
   }
   const path = spellPath(cb, u, p, aim);
@@ -571,7 +594,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string)
   let line = '';
   const hitAll = (targets: Unit[], src: string) => {
     for (const t of targets) {
-      if (has('pull')) line += shove(cb, t, p.shape === 'line' ? p.near! : p.centre || p.tiles[0], -3);
+      if (has('pull')) line += magicShove(cb, t, p.shape === 'line' ? p.near! : p.centre || p.tiles[0], -3, u);
       for (const w of subjects) line += subjectEffect(cb, rng, u, t, SIGIL[w], formMult, m.sigilMult, m.elemMult, false, src, { seek: has('seek') });
     }
   };
@@ -587,6 +610,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string)
   // The glyphs fade as the spell fires.
   const used = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
   cb.log.push(head + line + '.');
+  emit(cb, 'evoked', { u, pattern: p, targets: path.targets, impact: path.impact, charge: pv.charge, ap: pv.ap, cb, rng }); // after the real Evoke (hooks gap D3)
   return null;
 }
 
@@ -598,13 +622,16 @@ export function designCost(m: MagicUnit, d: OutburstDesign, mana: number): numbe
 }
 export const designAp = (m: MagicUnit, d: OutburstDesign) => Math.max(1, m.soulAp - (d.modules.includes('swift') ? 1 : 0));
 export const designRange = (m: MagicUnit, d: OutburstDesign) => (d.modules.includes('move') ? 8 : SOUL_REACH) + m.soulRange;
-function addStrain(cb: Combat, rng: Rng, u: Unit, n: number, why: string) {
+/** Add Strain; past the limit the heart shorts ('strain' {u, n, why, limit} may change n or limit: hooks gap K6). */
+export function addStrain(cb: Combat, rng: Rng, u: Unit, n: number, why: string) {
+  const sc: any = emit(cb, 'strain', { u, n, why, limit: u.mg!.strainLimit, cb }); n = Math.max(0, sc.n);
   const m = u.mg!; m.strain += n;
+  if (sc.limit !== m.strainLimit) { if (m.strain > sc.limit) manaShort(cb, rng, u); return; }
   if (m.strain > m.strainLimit) manaShort(cb, rng, u);
 }
 /** The Mana Short (spec: Soul magic, 5): d20 + Will Power vs 10 + 2 × the excess. A natural 1 bursts the heart: Downed,
  * never dead (Leon). A failure hurts and stuns, and anything held releases wild. */
-function manaShort(cb: Combat, rng: Rng, u: Unit) {
+export function manaShort(cb: Combat, rng: Rng, u: Unit) {
   const m = u.mg!, over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
   emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
   if (r === 1) {
@@ -623,7 +650,7 @@ function slip(cb: Combat, rng: Rng, u: Unit, dmg: number): string {
   if (r === 20 || (r !== 1 && tot >= tn)) return ' · ' + u.name + ' keeps hold of the Outburst';
   return ' · the Outburst slips' + (wildRelease(cb, rng, u) ? '' : '');
 }
-function wildRelease(cb: Combat, rng: Rng, u: Unit): boolean {
+export function wildRelease(cb: Combat, rng: Rng, u: Unit): boolean {
   const m = u.mg!, d = m.designs.find((x) => x.id === m.held?.design); if (!d) { m.held = null; return false; }
   const near = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= designRange(m, d));
   if (!near.length) { emitFx(cb, 'release', { unit: u.id, at: u.pos, to: u.pos, school: d.school, stage: m.held?.stage || 1, wild: true, area: 0, targets: [], air: true }); cb.log.push(u.name + "'s Outburst bursts into the air."); m.held = null; return true; }
@@ -641,7 +668,8 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   const d = m.designs.find((x) => x.id === designId); if (!d) return no('No such design.');
   // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the price
   // (pay HP instead of MP, a free cast, more reach). hp > 0 is taken from the caster's HP when the cast is paid.
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), hp: 0, release, preview: true, cb });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), hp: 0, release, preview: true, fail: '', cb });
+  if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 1, hp };
   if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 1, hp };
@@ -676,9 +704,12 @@ export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): st
   const m = u.mg; if (!m || !m.held) return 'Nothing held.';
   const e = canCast(u, cb); if (e) return e;
   const d = m.designs.find((x) => x.id === m.held!.design); if (!d) { m.held = null; return 'That design is gone.'; }
-  if (u.ap < SPELL_AP.release) return 'Needs 1 AP.';
-  const why = aimError(cb, u, d, aim); if (why) return why;
-  u.ap -= SPELL_AP.release; m.cast = true;
+  // 'release_cost' {u, design, ap, range, fail} (mutable): items change a held release's price or reach (hooks gap D4).
+  const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SPELL_AP.release, range: designRange(m, d), fail: '', cb });
+  if (rc.fail) return rc.fail;
+  const rap = Math.max(0, rc.ap); if (u.ap < rap) return 'Needs ' + rap + ' AP.';
+  const why = aimError(cb, u, d, aim, rc.range); if (why) return why;
+  u.ap -= rap; m.cast = true;
   releaseAt(cb, rng, u, d, aim!, false);
   return null;
 }
@@ -712,7 +743,13 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
       else line.push(heal(t, 30 * m.healMult * sm * f, cb, u).replace(/^ · /, ''));
     } else if (school === 'control') {
       const opt = d.option || 'push';
-      if (opt === 'push' || opt === 'pull') { const r = d20(rng), ok = r === 20 || (r !== 1 && r + saveOf(t, 'body') >= 12 + m.debuff.body); line.push(ok ? t.name + ' holds its ground (Body save)' : (shove(cb, t, u.pos, opt === 'push' ? 3 : -3).replace(/^ · /, '') || t.name + ' can\'t be moved')); }
+      if (opt === 'push' || opt === 'pull') {
+        // The Body save goes through 'cond_apply' (id 'shoved', fam body) so save bonuses and immunities reach it (hooks gap D10).
+        const ca: any = emit(cb, 'cond_apply', { by: u, t, id: 'shoved', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
+        if (ca.cancel) { line.push(t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '')); return; }
+        const r = d20(rng), ok = !ca.skipSave && (r === 20 || (r !== 1 && r + saveOf(t, 'body') + (ca.saveAdd || 0) >= 12 + m.debuff.body + (ca.tnAdd || 0)));
+        line.push(ok ? t.name + ' holds its ground (Body save)' : (magicShove(cb, t, u.pos, opt === 'push' ? 3 : -3, u).replace(/^ · /, '') || t.name + ' can\'t be moved'));
+      }
       else line.push(applyCond(cb, rng, u, t, opt === 'pinned' ? 'pinned' : 'slowed', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
     } else if (school === 'status') {
       const opt = d.option || 'shaken', id = opt === 'left_brain_debuff' ? 'ldebuff' : opt === 'right_brain_debuff' ? 'rdebuff' : opt;
@@ -740,8 +777,9 @@ export function syphon(cb: Combat, u: Unit): string | null {
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return 'You need an Emanator to Crystallise.';
-  if (u.ap < SPELL_AP.crystallise) return 'Needs 3 AP.'; if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  u.ap -= SPELL_AP.crystallise; m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
+  const cap = actionAp({ u }, 'crystallise', SPELL_AP.crystallise).ap; // items price it (hooks gap D8)
+  if (u.ap < cap) return 'Needs ' + cap + ' AP.'; if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
+  u.ap -= cap; m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Enemies scuff a player's glyph they stand on (spec: Sigils, 4). */

@@ -9,12 +9,12 @@
 //    card: Next wave / Retry (start at once), or Gear up first (back to the map with the tools open). With Auto on
 //    (endless waves) the host's client calls the next wave after a short pause.
 //  · Tools drawer: Gear (what is worn and carried, equip and unequip, give anything, the magic kit), Squad (level,
-//    class and rank, skills, armour, refill), Magic (words, schools, modules, designs), Field (host: spawn enemies on a
+//    class and rank, skills, perks, traits, armour, refill), Magic (words, schools, modules, designs), Field (host: spawn enemies on a
 //    clicked tile, clear them, enemy AI, endless waves, place or fight any wave, the mana meter, leave).
 import React from 'react';
 import {
   type GameState, type Character, type Rarity, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT,
+  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT,
 } from '@engine';
 import { act, hostRoom, getState, go } from './store';
 import { fxBusyUntil } from './fx/FxLayer';
@@ -257,6 +257,8 @@ const Stepper = ({ value, min, max, set, name }: { value: number; min: number; m
 function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: boolean }) {
   const u = game.phase === 'combat' ? game.combat?.units.find((x) => x.charId === c.id) : undefined, adv = game.sandbox!.advanced[c.id];
   const [skill, setSkill] = React.useState(SKILLS[0].id);
+  const [perk, setPerk] = React.useState(PERKS[0].id);
+  const [trait, setTrait] = React.useState(TRAITS[0].id);
   const clsVal = adv ? 'adv:' + adv : c.classId || '';
   return <>
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -281,13 +283,31 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
         <optgroup label="Advanced classes">{ADVANCED_CLASSES.map((k) => <option key={k.id} value={'adv:' + k.id}>{k.name} ({k.parents.map((p) => CLASS[p]?.name || p).join(' + ')})</option>)}</optgroup>
       </select>
       {c.classId && !adv && <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
-      <span style={{ fontSize: 12, color: C.muted }}>{adv ? 'Advanced classes play as their first parent here: their moves are not engine-run yet.' : 'Rank II and III raise the signature skills to 13 and 18.'}</span>
+      <span style={{ fontSize: 12, color: C.muted }}>{adv ? 'An advanced class is held with its first parent at its own rank: both sets of moves are in the Class tab.' : 'Rank II and III raise the signature skills to 13 and 18.'}</span>
     </Section>
     <Section title="SKILL POINTS (ATTRIBUTE AND CORE FOLLOW)">
       <div style={row}>
         <select value={skill} onChange={(e) => setSkill(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Skill">{SKILLS.map((s) => <option key={s.id} value={s.id}>{s.name} ({c.skills[s.id] || 0})</option>)}</select>
         <Stepper name={SKILL[skill]?.name || 'skill'} value={c.skills[skill] || 0} min={0} max={10} set={(n) => act({ type: 'sandbox/skill', charId: c.id, skill, points: n })} />
       </div>
+    </Section>
+    <Section title="PERKS (ANY TIER, NO POINTS NEEDED)">
+      <div style={row}>
+        <select value={perk} onChange={(e) => setPerk(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Perk">
+          {(['acquired', 'mastered', 'achieved', 'ultimate'] as const).map((t) => <optgroup key={t} label={t[0].toUpperCase() + t.slice(1)}>{PERKS.filter((p) => p.tier === t).map((p) => <option key={p.id} value={p.id}>{p.name}{p.tier === 'acquired' ? ' (' + p.skills.map((k: string) => SKILL[k]?.name || k).join(', ') + ')' : ''}</option>)}</optgroup>)}
+        </select>
+        {PERK[perk]?.tier === 'acquired'
+          ? <>{(['I', 'II'] as const).map((t) => <button key={t} type="button" data-sb-perk={t} style={btn} onClick={() => act({ type: 'sandbox/perk', charId: c.id, perk, tier: t })}>Tier {t}</button>)}</>
+          : <button type="button" data-sb-perk="give" style={btn} onClick={() => act({ type: 'sandbox/perk', charId: c.id, perk })}>Give</button>}
+      </div>
+      {!!c.perks.length && <div style={row}>{c.perks.map((x) => <button key={x.id} type="button" title="Take it away" style={btn} onClick={() => act({ type: 'sandbox/perk', charId: c.id, perk: x.id, tier: null })}>{PERK[x.id]?.name || x.id}{x.tier === 'I' || x.tier === 'II' ? ' ' + x.tier : ''} ✕</button>)}</div>}
+    </Section>
+    <Section title="TRAITS (NO LIMIT OF 2 HERE)">
+      <div style={row}>
+        <select value={trait} onChange={(e) => setTrait(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Trait">{TRAITS.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
+        <button type="button" data-sb-trait="give" style={btn} onClick={() => act({ type: 'sandbox/trait', charId: c.id, trait })}>Give</button>
+      </div>
+      {!!(c.traits || []).length && <div style={row}>{(c.traits || []).map((t) => <button key={t} type="button" title="Take it away" style={btn} onClick={() => act({ type: 'sandbox/trait', charId: c.id, trait: t, on: false })}>{(TRAITS.find((x: any) => x.id === t) as any)?.name || t} ✕</button>)}</div>}
     </Section>
     <Section title="BODY ARMOUR CLASS">
       <div style={row}>{[0, 1, 2, 3, 4, 5].map((n) => <button key={n} type="button" aria-pressed={c.armourClass === n} style={{ ...btn, border: '1px solid ' + (c.armourClass === n ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/armour', charId: c.id, armourClass: n })}>{n}</button>)}</div>

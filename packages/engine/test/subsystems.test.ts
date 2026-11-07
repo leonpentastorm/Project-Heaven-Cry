@@ -241,7 +241,9 @@ describe('the story side (rules 1.3)', () => {
   });
   it('private perk lines reach only their holder; traitState is kept; trait excludes and start items', () => {
     const s = storyWith([{}]); const id = s.chars[0].id;
-    s.act({ type: 'narrator/turn', turn: { narration: '…', perkLines: [{ charId: id, key: 'perk:detectives_eye', text: 'The cuff is wet.' }], traitState: [{ charId: id, key: 'grudge', value: 'Keel' }] } } as any);
+    s.g.characters[id].perks = [...(s.g.characters[id].perks || []), { id: 'detectives_eye', tier: 'I' } as any];
+    s.act({ type: 'narrator/turn', turn: { narration: '…', perkLines: [{ charId: id, key: 'perk:detectives_eye', text: 'The cuff is wet.' }, { charId: id, key: 'perk:foreseen', text: 'Not theirs.' }], traitState: [{ charId: id, key: 'grudge', value: 'Keel' }] } } as any);
+    expect(s.g.story.entries.some((x) => x.text === 'Not theirs.')).toBe(false); // a line for an item the character doesn't hold is dropped
     const e = s.g.story.entries.find((x) => x.text === 'The cuff is wet.')!;
     expect(e.to).toBe(s.g.characters[id].owner); expect(s.g.characters[id].state!.grudge).toBe('Keel');
     const sh = { ...sheetOf(), traits: ['symbol_of_order', 'rogue_element'] };

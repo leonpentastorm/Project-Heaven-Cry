@@ -25,6 +25,8 @@ export const TAG_VOCAB = new Set([
   'for_bond', 'help_rival', 'case_related', 'chemical', 'flashback',
   'vs_blocker_or_interrupter', 'vs_same_race_and_homeworld', 'others_targeting_you', 'terrain:open', 'outside_city', 'in_city',
   'vs_military', 'humans_who_know_history', 'vs_underworld', 'vs_non_human', 'text_based', 'from_non_human', 'urban',
+  // lane G (perk-guidance.ts): a hint the character was given, culture, an ancient script, a lie being told
+  'hinted', 'culture', 'ancient_script', 'lie',
 ]);
 /** Damage contexts the engine reads from the damage source. "a|b" means either. */
 const DMG_WORDS = new Set(['melee', 'ranged', 'explosive', 'any', 'outburst', 'soul', 'sigil', 'elemental', 'lightning', 'emp', 'physical', 'true', 'weapon', 'fire']);

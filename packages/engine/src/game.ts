@@ -1,11 +1,11 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, ENEMY, MANA_BANDS } from './data';
+import { ARCHETYPES, CLASS, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, ENEMY, MANA_BANDS } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone } from './magic';
 import { reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
@@ -107,7 +107,7 @@ export interface GameState {
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
-  narrator: { busy: boolean; error: string | null; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number; last?: number; max?: number; recent?: number[]; rewrites?: number } };
+  narrator: { busy: boolean; error: string | null; /** g.seq when the in-flight call began: later rulings weren't in its prompt. */ beganSeq?: number; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number; last?: number; max?: number; recent?: number[]; rewrites?: number } };
   /** The campaign being played (spec: Campaigns): copied in at session start, or loaded from a file by the host. */
   campaign?: Campaign | null;
   /** What the room hears (spec: Music). */
@@ -234,7 +234,7 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; mods?: string[] }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[] }
   // Magic (spec: Mana, rules 1.2)
   | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
@@ -331,7 +331,9 @@ function reduce(g: GameState, a: Action, by: string) {
       g.characters[c.id] = c;
       if (g.sandbox) g.sandbox.saved.characters[c.id] = JSON.parse(JSON.stringify(c)); // leaving the Proving Ground restores it as it came
       push(g, { kind: 'system', text: c.name + ' is locked in.' });
-      if (g.phase !== 'lobby') c.echo = 1;
+      // Locked in mid-session: the session's start counts for them too ('session_start' for this character only: Old
+      // Timer's Echo, start items; hooks gap A14).
+      if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
       return;
     }
     case 'char/remove': { const c = g.characters[a.charId]; if (!c) return; if (c.owner !== by && !isHost(g, by)) fail('Not your character.'); if (g.phase !== 'lobby') fail('Characters stay once the session starts.'); delete g.characters[a.charId]; return; }
@@ -386,7 +388,7 @@ function reduce(g: GameState, a: Action, by: string) {
       closeRoundIfDone(g);
       return;
     }
-    case 'narrator/begin': { if (!isHost(g, by)) fail('Host only.'); g.narrator.busy = true; g.narrator.error = null; return; }
+    case 'narrator/begin': { if (!isHost(g, by)) fail('Host only.'); g.narrator.busy = true; g.narrator.error = null; g.narrator.beganSeq = g.seq; return; }
     case 'narrator/error': { if (!isHost(g, by)) fail('Host only.'); g.narrator.busy = false; g.narrator.error = a.message; return; }
     case 'narrator/retry': { if (!isHost(g, by)) fail('Host only.'); g.narrator.error = null; if (!g.story.work) g.story.work = { kind: g.combat ? 'combat_end' : 'round' }; return; }
     case 'narrator/usage': {
@@ -409,7 +411,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (a.type === 'check/roll') { if (ck!.roll) fail('Already rolled.'); rollCheck(g, ck!, c, false); return; }
       if (!ck!.roll) fail('Roll first.');
       // Echo (spec: Echo): spend 1 to reroll a d20, at most 1 per roll. The reroll stands.
-      if (a.type === 'check/reroll') { if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.'); c.echo--; rollCheck(g, ck!, c, true); }
+      if (a.type === 'check/reroll') { if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.'); c.echo--; if (g.story.rulings) g.story.rulings = g.story.rulings.filter((r) => r.fromCheck !== ck!.id); rollCheck(g, ck!, c, true); }
       ck!.done = true;
       if (ck!.roll!.crit && ck!.roll!.ok && ck!.tn >= 16) startSong(g, c, 'a critical success on a ' + (ck!.tn >= 20 ? 'Heroic' : 'Hard') + ' check', 'spotlight', (t) => push(g, { kind: 'system', text: t }));
       if (ck!.poi) poiResult(g, ck!, by);
@@ -487,7 +489,8 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'story') fail('In a fight, pray on your turn (3 AP).');
       if (!c!.patron || !PATRON[c!.patron]) fail('You have no patron.'); if ((c!.skills.faith || 0) < 3) fail('Prayer needs Faith 3.');
       const p = PATRON[c!.patron!], text = String(a.text || '').trim().slice(0, 300);
-      const die = d20(g.rng), m = mod(c!.skills.faith || 0) + Math.floor(devotionOf(c!) / 2), tn = g.story.patronMood?.[p.id] ?? 12, ok = die === 20 || (die !== 1 && die + m >= tn);
+      // Items' Faith mods and the song reach it, as in a fight (True Believer's missed rites, the music traits: hooks gap D11).
+      const die = d20(g.rng), m = sideRollMod(g, c!, 'faith', 'prayer') + Math.floor(devotionOf(c!) / 2), tn = g.story.patronMood?.[p.id] ?? 12, ok = die === 20 || (die !== 1 && die + m >= tn);
       if (die === 1) changeDevotion(c!, -1);
       push(g, { kind: 'check', charId: c!.id, ok, head: 'FAITH · PRAYER TO ' + p.name.toUpperCase() + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ HEARD' : '✕ SILENCE'), text: c!.name + ' prays' + (text ? ': "' + text + '"' : '.') });
       if (ok) pendRuling(g, c!, 'patron:' + p.id, c!.name + ' prayed and was heard: ' + p.name + ' answers with a Blessing (' + (p.blessings || []).map((b: any) => b.name).join(', ') + ') × ' + (1 + 0.1 * (c!.skills.faith || 0)).toFixed(1) + (text ? '. They asked: "' + text + '"' : ''));
@@ -711,16 +714,20 @@ function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   const m = low + 2 * ck.skills.filter((s, i) => i !== lowIx && (c.skills[s] || 0) > 0).length + whole.reduce((t, x) => t + x.add, 0) + cm.add.reduce((t: number, x: any) => t + x.add, 0);
   const tn = Math.max(TN_LADDER[0], Math.min(TN_LADDER[TN_LADDER.length - 1] + 4, cm.tn ?? ck.tn));
   // 'check_post' {c, ck, die, total, tn, ok, crit, fumble, auto, double}: auto 'success'/'fail', a floor, a reroll.
-  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: (ck.auto || null) as null | 'success' | 'fail', labels: [] as string[], g });
-  const die = cp.die, total = die + m, crit = die === 20 && cp.auto !== 'fail', fumble = die === 1 && cp.auto !== 'success';
-  const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : crit || (!fumble && total >= tn);
+  // noFumble: a natural 1 is just a low roll (War Footing: hooks gap B11).
+  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: (ck.auto || null) as null | 'success' | 'fail', labels: [] as string[], noFumble: false, g });
+  const die = cp.die, total = die + m, crit = die === 20 && cp.auto !== 'fail', fumble = die === 1 && cp.auto !== 'success' && !cp.noFumble;
+  const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : crit || (die !== 1 && total >= tn); // a natural 1 always fails
   const first = reroll ? ck.roll!.die : undefined;
   ck.roll = { die, mod: m, total, ok, crit, fumble, rerolled: reroll, first };
   ck.mods = itemMods.filter((x) => x.add);
   const names = ck.skills.map((s) => SKILL[s].name).join(' + ');
   const named = ck.mods.length ? ' (' + ck.mods.map((x) => (x.add > 0 ? '+' : '−') + Math.abs(x.add) + ' ' + x.label).join(', ') + ')' : '';
   push(g, { kind: 'check', charId: c.id, ok, head: names.toUpperCase() + (reroll ? ' · ECHO REROLL' : '') + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + named + ' = ' + total + ' vs ' + tn + (cp.labels.length ? ' · ' + cp.labels.join(', ') : '') + ' · ' + (cp.auto === 'success' ? '✓ SUCCESS (AUTO)' : cp.auto === 'fail' ? '✕ FAILURE (AUTO)' : crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE'), text: c.name + ': ' + ck.stakes });
-  emitStory(g, 'check_result', { c, ck, roll: ck.roll, g }); // 'check_result' {c, ck, roll}
+  // 'check_result' {c, ck, roll}. Rulings it raises belong to this roll: an Echo reroll withdraws them first (below).
+  const seq0 = g.seq;
+  emitStory(g, 'check_result', { c, ck, roll: ck.roll, g });
+  for (const r of g.story.rulings || []) if (Number(String(r.id).slice(1)) > seq0 && !r.fromCheck) r.fromCheck = ck.id;
 }
 /** Tags of the zone the story is in (terrain, in_city, urban…; campaign zones may set them), for items gated on them. */
 export function zoneTags(g: GameState): string[] {
@@ -731,6 +738,8 @@ export function zoneTags(g: GameState): string[] {
 // ---------- story plumbing (rules 1.3): conditions out of combat, rest, Karma, the Narrator's optional fields ----------
 const SOCIAL_TAGS = ['dialogue', 'crowd', 'official', 'merchant', 'military', 'underworld'];
 const SOCIAL_SKILLS = new Set(['charisma', 'eloquence', 'implication', 'intimidation', 'empathy', 'authority']);
+/** Story conditions that come into a fight as combat conditions (spec: Conditions in the story; the rest stay story-side). */
+const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
 /** A character's story conditions now (persistent ones whose scope still holds). */
 export function storyConds(g: GameState, c: Character): string[] {
   return (c.persistentConds || []).filter((p) => p.scope === 'arc' || (p.scope === 'session' && (p.session ?? 1) === (g.sessionN ?? 1)) || (p.scope === 'scene' && p.scene === g.story.scene.n)).map((p) => p.id);
@@ -741,12 +750,20 @@ export const npcConds = (g: GameState, who: string | undefined): string[] => (wh
  * their skills): named mods, like an item's. */
 function storyCondMods(g: GameState, c: Character, ck: Check): { add: number; label: string }[] {
   const on = storyConds(g, c), out: { add: number; label: string }[] = [];
-  if (!on.length) return out;
   const social = (ck.tags || []).some((t) => SOCIAL_TAGS.includes(t)) || ck.skills.some((s) => SOCIAL_SKILLS.has(s));
+  // A Shaken NPC is easier to work on: +2 on social checks against them, for everyone (hooks gap F2; Bone Talk's rule).
+  if (social && ck.target && npcConds(g, ck.target).includes('shaken')) out.push({ add: 2, label: ck.target + ' is Shaken' });
+  if (!on.length) return out;
   if (on.includes('shaken') && (social || (ck.kind === 'save' && ck.family === 'heart'))) out.push({ add: -2, label: 'Shaken' });
   if (on.includes('ldebuff') && ck.skills.some((s) => SKILL[s]?.core === 'mind')) out.push({ add: -2, label: 'Left Brain Debuff' });
   if (on.includes('rdebuff') && ck.skills.some((s) => SKILL[s]?.core === 'soul' || SKILL[s]?.attribute === 'expression')) out.push({ add: -2, label: 'Right Brain Debuff' });
   return out;
+}
+/** A side d20 with one skill outside rollCheck (Leading Role, The Slope, a prayer): its points, the song, item skill
+ * mods and the story Brain debuffs (spec: Item modifiers on every d20). Whole-check mods (check_mod) aren't included. */
+export function sideRollMod(g: GameState, c: Character, skill: string, roll = 'check'): number {
+  const debuff = storyCondMods(g, c, { skills: [skill], tags: [] } as any).filter((x) => /Brain Debuff/.test(x.label)).reduce((t, x) => t + x.add, 0);
+  return mod(c.skills[skill] || 0) + songMod(g, c, skill) + skillRollMod({ c }, skill, { roll, tags: zoneTags(g) }).add + debuff;
 }
 /** Put a condition on a character for the scene, session or arc (or take it off). */
 export function setStoryCond(g: GameState, c: Character, id: string, scope: 'scene' | 'session' | 'arc' = 'scene', end = false, by?: string) {
@@ -772,20 +789,23 @@ export const karmaBand = (k: number) => (k <= -30 ? 'Chaotic' : k >= 30 ? 'Lawfu
 export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?: boolean } = {}) {
   g.restN = (g.restN || 0) + 1;
   const chars = Object.values(g.characters).filter((c) => !c.dead);
-  const ctx: any = emitStory(g, 'rest', { g, kind, chars, settlement: !!o.settlement, hpMult: 1 });
+  // ctx.mult[charId] = {hp, mp}: a fraction of what this character gets back (Insomniac's half rest: hooks gap H1).
+  const ctx: any = emitStory(g, 'rest', { g, kind, chars, settlement: !!o.settlement, hpMult: 1, mult: {} as Record<string, { hp?: number; mp?: number }> });
   const band = MANA_BANDS.find((b) => (g.story.mana ?? MANA_START) >= b.min && (g.story.mana ?? MANA_START) <= b.max)?.id || 'normal';
   for (const c of chars) {
-    const max = maxHp(c), back = kind === 'long' ? max : Math.ceil(max * 0.25 * (ctx.hpMult || 1));
+    const pm = ctx.mult?.[c.id] || {}, hm = Math.max(0, pm.hp ?? 1), mm = Math.max(0, pm.mp ?? 1);
+    const max = maxHp(c), back = kind === 'long' ? Math.ceil((max - Math.max(c.hp, 0)) * hm) : Math.ceil(max * 0.25 * (ctx.hpMult || 1) * hm);
     if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
     if (g.story.heat) g.story.heat[c.id] = 0;
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
-    if (kind === 'long') { if (hasEmanator(c) && band !== 'thin') c.mp = maxMp(c); restockResources(c); }
+    if (kind === 'long') { if (hasEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
 }
 /** The optional rules-1.3 fields of a Narrator turn (each ignored when absent or invalid). */
 function storyFields(g: GameState, t: NarratorTurn) {
   for (const l of (t.perkLines || []).slice(0, 8)) { const c = g.characters[l.charId]; if (!c || !l.text) continue;
+    if (l.key && !holdersOf({ c }).some((h) => h.key === itemKey(l.key!) || h.itemId === l.key)) continue; // only items the character holds (hooks gap G5)
     push(g, { kind: 'voice', charId: c.id, to: c.owner, head: (l.key ? itemName(l.key).toUpperCase() + ' · ' : '') + 'ONLY YOU', text: String(l.text).slice(0, 600), ok: true }); }
   for (const x of (t.conditions || []).slice(0, 12)) {
     const id = String(x.id || ''); if (!isCondition(id)) continue;
@@ -821,7 +841,8 @@ function refundRuling(g: GameState, r: PendingRuling) {
   usesOf({ key: r.key, c, g }).refund(r.use.per as any, r.use.key);
   push(g, { kind: 'system', text: c.name + '\'s ' + (itemName(r.key)) + ' is refused; the use comes back.', ooc: true });
 }
-const itemName = (key: string) => { const [k, id] = key.split(':'); return k === 'perk' ? PERK[id]?.name || id : id.replace(/_/g, ' '); };
+/** A held item's display name from its key ('perk:id', 'trait:id', 'class:cls.move') or a bare id (never throws). */
+const itemName = (key: string) => { const full = String(itemKey(String(key || '')) || key || ''), i = full.indexOf(':'), k = i < 0 ? '' : full.slice(0, i), id = i < 0 ? full : full.slice(i + 1); return k === 'perk' ? PERK[id]?.name || id.replace(/_/g, ' ') : id.replace(/_/g, ' '); };
 function awardAutomatic(g: GameState, c: Character) {
   for (const pid of grantAutomaticPerks(c)) {
     const p = PERK[pid];
@@ -845,16 +866,22 @@ function giveXp(g: GameState, c: Character, source: string, amount: number, reas
 
 /** Apply the Narrator's validated turn. Anything that breaks a rule is dropped with a note (the adapter retries first). */
 export function narratorTurn(g: GameState, t: NarratorTurn) {
-  g.narrator.busy = false; g.narrator.error = null; g.story.work = null;
+  const began = g.narrator.busy ? g.narrator.beganSeq : undefined;
+  g.narrator.busy = false; g.narrator.error = null; g.story.work = null; delete g.narrator.beganSeq;
+  // Pending rulings answered: a refused story use is refunded; every ruling the turn saw is settled, before the scene
+  // changes, so rulings items open at the scene change survive to the next turn (hooks gap G4).
+  // 'ruling_answered' {r, accepted, c, g} fires for each answer (Established Fact, Cover Story: hooks gap G3).
+  { const list = g.story.rulings || [], answered = new Map((t.perkRulings || []).map((r) => [r.id, r]));
+    for (const r of list) { const ans = answered.get(r.id); if (ans && ans.accepted === false) refundRuling(g, r);
+      if (ans) { const c = g.characters[r.charId]; if (c) emitStory(g, 'ruling_answered', { r, accepted: ans.accepted !== false, c, g }, [c]); } }
+    // Rulings made while this call was in flight weren't in its prompt: they wait for the next turn (no lost uses).
+    const later = began == null ? [] : list.filter((r) => !answered.has(r.id) && Number(String(r.id).slice(1)) > began);
+    g.story.rulings = later; if (later.length) g.story.needs = true; }
   if (t.sceneTitle && t.sceneTitle !== g.story.scene.title) {
     g.story.scene = { title: t.sceneTitle, n: g.story.scene.n + 1, hooks: [], revealed: [], asked: {}, fired: {} };
     push(g, { kind: 'scene', text: t.sceneTitle });
     emitStory(g, 'scene_change', { g, n: g.story.scene.n, title: t.sceneTitle }); // 'scene_change' {g, n, title}
   }
-  // Pending rulings answered: a refused story use is refunded; every ruling the turn saw is settled.
-  { const list = g.story.rulings || [], answered = new Map((t.perkRulings || []).map((r) => [r.id, r]));
-    for (const r of list) { const ans = answered.get(r.id); if (ans && ans.accepted === false) refundRuling(g, r); }
-    g.story.rulings = []; }
   if (t.narration?.trim()) { push(g, { kind: 'narration', text: t.narration.trim() }); const v = votesOf(g); v.turns = [...v.turns, g.story.entries.at(-1)!.id].slice(-REROLLABLE_TURNS); }
   { const m = momentsOpen(g).find((x) => x.id === t.moment); if (m) { (g.story.moments ||= []).push(m.id); push(g, { kind: 'art', art: m.art, text: m.caption }); } }
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
@@ -1021,7 +1048,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
     case 'combat/clear': err = clearJam(cb!, u); break;
-    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, c!.classId === 'medic'); break; }
+    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined); break;
@@ -1044,6 +1071,8 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (err) fail(err);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
+  // 'action_done' {u, a, cb}: after every combat action and its window step (On My Mark settles its debt: hooks gap E-H2).
+  emitHook(cb!, 'action_done', { u, a, cb: cb! });
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
   noteDeaths(cb!);
@@ -1129,9 +1158,10 @@ function finishCombat(g: GameState) {
   const won = cb.over === 'win';
   emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
-    canon(g, (won ? 'The party won' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
+    canon(g, (won ? 'The party won' : (cb.over as string) === 'extracted' ? 'The party was extracted from' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
     for (const n of [...fallen, ...lost]) { const p = findPerson(memoryOf(g), n); if (p) applyMemOp(g, { op: 'person', id: p.id, status: 'dead' }); else if (!GENERIC.test(n)) applyMemOp(g, { op: 'person', name: n, status: 'dead' }); } }
-  cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + ' rounds. ' + cb.units.map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
+  const extracted = (cb.over as string) === 'extracted';
+  cb.summary = (won ? 'Won' : extracted ? 'Extracted from' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + ' rounds. ' + cb.units.map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
   // No XP for a fight on people who weren't hostile (spec: Anyone is a target).
   if (won && !cb.noXp) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
@@ -1299,7 +1329,13 @@ function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.
 /** A new overworld round: full AP, a fresh Say, no trails. */
 export function newRound(g: GameState) {
   g.story.round++; g.story.spoken = {}; g.story.await = 'players';
-  g.story.ap = {}; g.story.ended = {}; g.story.trail = {}; g.story.needs = false; g.story.noticed = {}; g.story.focus = null;
+  g.story.ap = {}; g.story.ended = {}; g.story.trail = {}; g.story.needs = !!g.story.rulings?.length; g.story.noticed = {}; // a ruling still owed keeps the Narrator due g.story.focus = null;
+  // 'world_round_start' {g, n}, then 'round_ap' {c, ap, lines} per character: items change a round's AP on the area map
+  // (Southern Fist, Ghost Soldier, Flashback: hooks gap A7/B7/F8/F9). Clamped to 2–9 like a turn's.
+  emitStory(g, 'world_round_start', { g, n: g.story.round });
+  for (const c of Object.values(g.characters)) { if (c.dead) continue;
+    const ra: any = emitStory(g, 'round_ap', { c, ap: ROUND_AP, lines: [] as string[], g }, [c]);
+    if (ra.ap !== ROUND_AP) { g.story.ap[c.id] = Math.max(2, Math.min(9, Math.round(ra.ap * 10) / 10)); if (ra.lines.length) push(g, { kind: 'system', text: c.name + ' ' + (ra.ap > ROUND_AP ? '+' : '') + (g.story.ap[c.id] - ROUND_AP) + ' AP this round (' + ra.lines.join(', ') + ').', charId: c.id }); } }
   for (const k in g.story.heat || {}) g.story.heat![k] = Math.max(0, g.story.heat![k] - 2);
   storyMagicRound(g);
   // What the Narrator mapped from players' words runs now, as those players' own actions, from their fresh AP.
@@ -1375,6 +1411,18 @@ function magicIn(g: GameState, cb: Combat) {
     if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
   }
+  // Story conditions (the scene's, the session's, the arc's) come into a fight in their combat form, with no save
+  // (hooks gap F1), for the condition's own combat duration (PROVISIONAL, spec 14). Only the ones a story beat can
+  // carry (the mind and heart debuffs, a wound); a story Stun, Pin, Blind and the like stay in the story (the fight's
+  // notes say so). Immunities still cancel them (cond_apply).
+  if (!cb.overworld) { const was = bindGame(g), rng = { state: g.rng.state }; try {
+    for (const u of cb.units) { const c = u.charId ? g.characters[u.charId] : null; if (!c) continue;
+      for (const id of storyConds(g, c)) {
+        if (!isCondition(id) || (u.conds && id in u.conds)) continue;
+        if (!STORY_CARRY.has(id)) { (cb.notes ||= []).push(c.name + ' entered the fight ' + id.replace(/_/g, ' ') + ' in the story: not carried as a combat condition (yours to rule).'); continue; }
+        const r = applyCondition(cb, rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(u.name + ' carries it into the fight' + r + '.');
+      } }
+  } finally { bindGame(was); } }
 }
 /** And back out. After a fight Strain and held Outbursts reset (spec: Strain resets after combat). */
 function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
@@ -1385,7 +1433,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
     m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
       ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
-    if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c) setStoryCond(g, c, 'shaken', 'scene'); }
+    if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
   }
 }
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
@@ -1430,7 +1478,11 @@ export function storyCb(g: GameState): Combat {
   const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
   const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
-  magicIn(g, cb); return cb;
+  magicIn(g, cb);
+  // 'unit_built' {u, c, cb, world}: the area map's units are rebuilt every action, so items that change a unit for longer
+  // than one action (inscribed armour, known words) put it back here (hooks gap I11). Fights use combat_start.
+  { const was = bindGame(g); try { for (const u of units) if (u.charId) emitHook(cb, 'unit_built', { u, c: g.characters[u.charId], cb, world: true }); } finally { bindGame(was); } }
+  return cb;
 }
 
 /** Sneaking characters: each hostile with sight of them inside its notice range (4 + its notice − your Dexterity,
@@ -1442,7 +1494,9 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
     if (n.side !== 'hostile') continue;
     const d = dist(n.pos, at), dark = !!cb.map.dark && !litAt(cb, at);
     let range = Math.max(1, 4 + (NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
-    range = Math.max(0, (emitStory(g, 'notice', { c, npc: n, range, dark, g }) as any).range); // 'notice' {c, npc, range, dark}
+    // 'notice' {c, npc, range, dark, ignore}: ignore = this NPC doesn't treat them as an intruder, even next to them (hooks gap G2).
+    const nc: any = emitStory(g, 'notice', { c, npc: n, range, dark, ignore: false, g }); range = Math.max(0, nc.range);
+    if (nc.ignore) continue;
     const sees = d <= 1 || (d <= range && lineOfSight(cb, n.pos, at));
     if (!sees) continue;
     const key = n.id + '|' + c.id; if ((g.story.noticed ||= {})[key] === g.story.round) continue;
@@ -1453,8 +1507,12 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
 /** The Ingenuity check to stay hidden (spec: Overworld rounds): d20 + Ingenuity vs 10 + the enemy's notice. */
 function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
   const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (NOTICE[n.tier] ?? 0), g });
-  const die = d20(g.rng), m = sh.mod, tn = sh.tn, ok = die === 20 || (die !== 1 && die + m >= tn);
-  push(g, { kind: 'check', charId: c.id, ok, head: 'INGENUITY · STAY HIDDEN · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ SUCCESS' : '✗ FAILURE'),
+  // sh.auto 'success' | 'fail' settles it with no roll; 'stay_hidden_result' {c, npc, ok, die} may then change ok
+  // (Every Lie Is a Door, Just the Repairman, Silent Partner: hooks gap B5/B6/G2).
+  const auto = sh.auto as 'success' | 'fail' | undefined;
+  const die = auto ? 0 : d20(g.rng), m = sh.mod, tn = sh.tn, ok0 = auto ? auto === 'success' : die === 20 || (die !== 1 && die + m >= tn);
+  const sr: any = emitStory(g, 'stay_hidden_result', { c, npc: n, ok: ok0, die, auto: auto || null, labels: [] as string[], g }), ok = !!sr.ok;
+  push(g, { kind: 'check', charId: c.id, ok, head: 'INGENUITY · STAY HIDDEN · ' + (auto ? 'AUTO' : 'd20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn) + (sr.labels.length ? ' · ' + sr.labels.join(', ') : '') + ' · ' + (ok ? '✓ SUCCESS' : '✗ FAILURE'),
     text: n.name + ' ' + why + ' ' + c.name + (ok ? '; ' + c.name + ' stays hidden.' : ' and spots them.') });
   if (!ok) { g.story.hidden![c.id] = false; g.story.needs = true; }
   return ok;
@@ -1482,8 +1540,11 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (tiles === undefined) fail('There\'s no way through to there: a wall, a closed door or someone is in the way.');
     // 'world_move_cost' {c, u, tiles, how, extra}: sneaking costs 1 AP a tile on top (an item may change that).
     const wm: any = emitStory(g, 'world_move_cost', { c, u, tiles, how: a.how || 'move', extra: a.how === 'sneak' ? tiles : 0, g });
-    const extra = Math.max(0, wm.extra); if (apForTiles(tiles, 0, u.movement) + extra > u.ap && a.how !== 'sprint') fail('Needs ' + (apForTiles(tiles, 0, u.movement) + extra) + ' AP (' + u.ap + ' left).');
-    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err);
+    // The move is priced by moveUnit through 'move_cost' (Charge!, Into the Dark, Shadow Step discount it: hooks gap B9);
+    // the sneak's extra comes after. A failure throws, and apply() keeps the state from before the action.
+    const extra = Math.max(0, wm.extra), ap0 = u.ap;
+    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
+    if (u.ap < extra && a.how !== 'sprint') fail('Needs ' + (Math.round((ap0 - u.ap + extra) * 10) / 10) + ' AP (' + ap0 + ' left).');
     u.ap -= extra;
     const route: string[] = []; for (let x = k!; x && x !== from; x = P.prev[x]) route.unshift(x);
     ((g.story.trail ||= {})[c!.id] ||= []).push(...(route.length ? [from, ...route] : [from, k!]));
@@ -1498,14 +1559,16 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   } else if (a.act === 'perk') {
     if (!a.id) fail('Pick a perk, trait or class move.');
     (cb as any).mods = a.mods || [];
-    err = runPerkAction({ u, c: c!, cb, g }, a.id!, { targetId: target ? target.id : a.targetId, tile: a.tile ? tileKey(g, a.tile) : undefined, choice: a.choice, text: a.text, actionId: a.actionId }, g.rng, 'world');
+    // An object target (Dead Signal's device, a door): its id as the choice and its tile, unless the action named others.
+    const obj = a.objId ? storyObjects(g).find((o) => o.id === a.objId) : null;
+    err = runPerkAction({ u, c: c!, cb, g }, a.id!, { targetId: target ? target.id : a.targetId, tile: a.tile ? tileKey(g, a.tile) : obj ? obj.pos : undefined, choice: a.choice ?? (obj ? obj.id : undefined), text: a.text, npc: a.npc, actionId: a.actionId } as any, g.rng, 'world');
     delete (cb as any).mods;
   } else if (a.act === 'reload') err = reload(cb, u);
   else if (a.act === 'load') err = loadMagazine(cb, u);
   else if (a.act === 'clear') err = clearJam(cb, u);
   else if (a.act === 'repair') err = fieldRepair(cb, u);
   else if (a.act === 'prone') err = toggleProne(cb, u);
-  else if (a.act === 'stim') { if (!target || target.side !== 'pc') fail('Pick an ally.'); err = useStim(cb, u, target!, c!, c!.classId === 'medic'); }
+  else if (a.act === 'stim') { if (!target || target.side !== 'pc') fail('Pick an ally.'); err = useStim(cb, u, target!, c!, isMedicChar(c!)); }
   else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
   else if (a.act === 'attack') {
     // Anyone and anything is a target (spec: Anyone is a target).
@@ -1565,7 +1628,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   g.story.objects = cb.objects;
   storyFx(g, cb);
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
-  noticeFor(g, c!);
+  // A silent act (an item sets g.story.quiet: Dead Signal) triggers no notice check (hooks gap B12).
+  if (!(g.story as any).quiet) noticeFor(g, c!); delete (g.story as any).quiet;
   closeRoundIfDone(g);
 }
 
@@ -1600,7 +1664,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
   // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
   for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
-  else { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
+  if (!hidden) { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
   att.ap = apNow; if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
   checkOver(cbx); runEnemies(g);
@@ -1779,6 +1843,7 @@ export type SandboxAction =
   | { type: 'sandbox/kit'; charId: string; kind?: MagicKit }
   | { type: 'sandbox/class'; charId: string; classId: string | null; rank?: number }
   | { type: 'sandbox/level'; charId: string; level: number } | { type: 'sandbox/skill'; charId: string; skill: string; points: number }
+  | { type: 'sandbox/perk'; charId: string; perk: string; tier?: 'I' | 'II' | null } | { type: 'sandbox/trait'; charId: string; trait: string; on?: boolean }
   | { type: 'sandbox/refill'; charId?: string }
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
@@ -1798,6 +1863,8 @@ export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> 
   boss: { name: 'Proving champion', weapons: ['hellraiser_lmg', 'adamantile_greatsword'] },
 };
 /** Advanced classes (rules 1.2): the engine knows them by id for the tools; base classes are in CLASS. */
+/** A Medic, or an advanced class with Medic as a parent (the 1 AP stim: hooks gap I14). */
+const isMedicChar = (c: Character) => c.classId === 'medic' || (!!c.advancedClass && !!ADVANCED_CLASSES.find((x) => x.id === c.advancedClass)?.parents.includes('medic'));
 export const ADVANCED_CLASSES: { id: string; name: string; parents: string[]; summary?: string }[] = ((classesJ as any).advanced || []).map((x: any) => ({ id: x.id, name: x.name, parents: x.parents || [], summary: x.summary }));
 const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, boss: 8 };
 /** Wave n's drill units (deterministic, so a wave can be replayed): a point budget of 2 + 1.5n; soldiers from wave 2,
@@ -2285,6 +2352,20 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId);
       sbChange(g, c, () => sbSetSkill(c, a.skill, a.points));
       sbLog(g, c.name + ': ' + SKILL[a.skill].name + ' ' + (c.skills[a.skill] || 0) + '.'); return;
+    }
+    case 'sandbox/perk': {
+      // Any perk at any tier, without the skill points it needs (the Proving Ground is for trying things); tier null takes it away.
+      const c = mine(a.charId), p = PERK[a.perk]; if (!p) fail('No such perk.');
+      const tier = a.tier === null ? null : p!.tier === 'acquired' ? (a.tier === 'II' ? 'II' : 'I') : (p!.tier as any);
+      sbChange(g, c, () => { c.perks = c.perks.filter((x) => x.id !== a.perk); if (tier) c.perks.push({ id: a.perk, tier }); });
+      sbLog(g, c.name + (tier ? ' holds ' + p!.name + (p!.tier === 'acquired' ? ' ' + tier : '') : ' no longer holds ' + p!.name) + '.'); return;
+    }
+    case 'sandbox/trait': {
+      const c = mine(a.charId), t = TRAITS.find((x) => x.id === a.trait); if (!t) fail('No such trait.');
+      const on = a.on !== false;
+      if (on) { const why = traitGainError(c.traits, a.trait); if (why) fail(why); }
+      sbChange(g, c, () => { c.traits = on ? [...(c.traits || []), a.trait] : (c.traits || []).filter((x) => x !== a.trait); });
+      sbLog(g, c.name + (on ? ' has the trait ' : ' loses the trait ') + (t as any).name + '.'); return;
     }
     case 'sandbox/learn': {
       const c = mine(a.charId);

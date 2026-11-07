@@ -4,7 +4,7 @@
 // Hollow Heart, Heretic, True Believer, Heaven's Faithful, and the three music traits (The Soundscape of the Soul,
 // Headbanger, Underground Sound).
 //
-// Every number the data or the spec doesn't give is provisional and listed in docs/rules/pending/lane-d.md (the open
+// Every number the data or the spec doesn't give is provisional and listed in the spec (section 14, tags D…) and docs/design/perk-runtime.md (the open
 // items for spec section 14), with the hooks this file works around. Randomness comes from the rng the hook or action
 // passes, else the bound game's rng (g.rng). What the engine can't run goes to the Narrator: a fight note, a pending
 // ruling, or the item's brief() remainder in the character brief.
@@ -119,8 +119,8 @@ register({
 
 // =====================================================================================================================
 // Heart Overload (Will Power). A toggle on Begin an Outburst: pay its MP in HP instead, 2 HP a point (II: 1). True HP
-// loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or shield (the heal
-// and shield come to 0) and can't be held to grow (holding pays mana as usual). No Emanator: you already pay from the
+// loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or shield (a
+// healing or shielding design is refused with the toggle on; any other heal or shield comes to 0) and can't be held to grow (holding pays mana as usual). No Emanator: you already pay from the
 // air, so the toggle is off (Leon to decide whether it should waive the +2 Strain instead).
 // =====================================================================================================================
 register({
@@ -133,6 +133,7 @@ register({
   on: {
     outburst_cost: (ctx, h) => {
       if (!me(h, ctx.u) || !modOn(h, 'pay_hp') || !h.u!.mg?.emanator || !ctx.release) return;
+      if (mends(ctx.design)) { ctx.fail ||= 'Heart Overload: blood can\'t mend. Turn off Pay with HP to heal or shield.'; return; } // outburst_cost's fail (hooks gap D5)
       const rate = h.tier === 'II' ? 1 : 2; ctx.hp = (ctx.hp || 0) + Math.round(ctx.mp) * rate; ctx.mp = 0;
     },
     outburst_begin: (ctx, h) => {
@@ -244,7 +245,7 @@ register({
 // =====================================================================================================================
 // The Twin Pays (Mastered, Will Power 10). A toggle on Begin, once per combat: no MP, no meter drop, no Strain on the
 // cast or while it is held, and a Right Brain Debuff's +20% is 0 too. The engine adds a held Outburst's Strain at the
-// start of each turn, so the Strain is taken off at the end of the turn before (the Mana Short check never sees it).
+// start of each turn through 'outburst_hold', which this item zeroes (the Mana Short check never sees it).
 // =====================================================================================================================
 register({
   id: 'the_twin_pays', claims: 'all', priority: 500,
@@ -263,10 +264,10 @@ register({
       if (ctx.hold) stateOf(h).free = ctx.design.id;
       log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no mana, no Strain).');
     },
-    turn_end: (ctx, h) => {
-      const u = h.u, m = u?.mg, s = stateOf(h); if (!me(h, ctx.u) || !m) return;
-      if (m.held && s.free === m.held.design) m.strain -= manaBand(manaOf(ctx.cb)).id === 'flooded' ? 2 : 1;
-      else s.free = null;
+    // Holding it costs nothing: the hold's Strain is zeroed at the start of the turn (hooks gap D7), never pre-paid.
+    outburst_hold: (ctx, h) => {
+      const m = h.u?.mg, s = stateOf(h); if (!me(h, ctx.u) || !m) return;
+      if (m.held && s.free === m.held.design) ctx.strain = 0; else s.free = null;
     },
     outburst_release: (ctx, h) => { if (me(h, ctx.u)) stateOf(h).free = null; },
   },
@@ -523,7 +524,7 @@ register({
     turn_start: (ctx, h) => senseUpper(h, ctx.cb),
     hide: (ctx, h) => { if (me(h, ctx.u) && upperFoes(ctx.cb, h.u!).length) reveal(ctx.cb, h.u!, 'Seen From Above: upper-realm eyes always find you'); },
     spot: (ctx, h) => { if (me(h, ctx.u) && (ctx.by?.kind === 'upper_realm' || (ctx.by?.tags || []).includes('upper_realm'))) ctx.die = 20; },
-    stay_hidden: (ctx, h) => { const c = charOf(h); if (c && ctx.c?.id === c.id && (ctx.npc?.kind === 'upper_realm' || (ctx.npc?.tags || []).includes('upper_realm'))) ctx.mod -= 99; },
+    stay_hidden: (ctx, h) => { const c = charOf(h); if (c && ctx.c?.id === c.id && (ctx.npc?.kind === 'upper_realm' || (ctx.npc?.tags || []).includes('upper_realm'))) ctx.auto = 'fail'; },
     blessing_in: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || !me(h, ctx.t) || ctx.handled) return; const s = stateOf(h);
       if (s.inside) return;
@@ -556,7 +557,7 @@ register({
   id: 'sigil_savant', claims: [0],
   actions: [
     {
-      id: 'muscle', label: 'Muscle Memory', scope: ['story', 'world'], ap: 0, target: 'none',
+      id: 'muscle', label: 'Muscle Memory', pick: 'words', pickLabel: 'The word', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'Choose the one word you can draw in your sleep (once): 0 charge, 1 AP less.',
       available: (h) => (savant(charOf(h)).word ? false : true),
       run: (h, args) => {
@@ -566,7 +567,7 @@ register({
       },
     },
     {
-      id: 'practise', label: 'Practise words', scope: ['story', 'world'], ap: 0, target: 'none', uses: { per: 'per_rest', n: 1 },
+      id: 'practise', label: 'Practise words', pick: 'words', pickMulti: 9, pickLabel: 'The words you practise', scope: ['story', 'world'], ap: 0, target: 'none', uses: { per: 'per_rest', n: 1 },
       text: 'At a rest: choose the words you practise (at most your Max Sigil words). Mid-mission you draw only those.',
       run: (h, args) => {
         const c = charOf(h); if (!c) return 'No character.';
@@ -582,8 +583,8 @@ register({
     glyph_cost: (ctx, h) => {
       const c = charOf(h); if (!me(h, ctx.u) || !c) return; const st = savant(c);
       if (st.word && ctx.word === st.word) { ctx.charge = 0; if (ctx.ap > 0.5) ctx.ap = Math.max(0.5, ctx.ap - 1); return; }
-      // Rigid: an unpractised word can't be drawn (drawGlyph has no refusal field: an unpayable price refuses it).
-      if (Array.isArray(st.practised) && !st.practised.includes(ctx.word)) ctx.ap = 99;
+      // Rigid: an unpractised word can't be drawn (glyph_cost's fail refuses it).
+      if (Array.isArray(st.practised) && !st.practised.includes(ctx.word)) ctx.fail ||= 'Rigid (Sigil Savant): you can only draw words you have practised.';
     },
     rest: (ctx, h) => {
       const c = charOf(h); if (!c || ctx.kind !== 'long' || !(ctx.chars || []).some((x: Character) => x.id === c.id)) return;
