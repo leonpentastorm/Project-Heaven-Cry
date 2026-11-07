@@ -37,20 +37,20 @@
   "files": [
     {
       "path": "art/ui/title-screen/README.md",
-      "size_bytes": 4152,
-      "sha256": "360c0a6739149a6db5d40ba963196f11838b4eb4bb9f236938049b1eebb1d993",
+      "size_bytes": 4163,
+      "sha256": "55a2dde0eb9613cc3b3e5e92a1e2a084e99354f1e063d5907afe850f374dea0e",
       "role": "implementation notes"
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
-      "size_bytes": 463,
-      "sha256": "1cbfb97184e3e106a4fc1ab38b3fe3bc9f8a1687fd2326d0235adc4b60de499e",
+      "size_bytes": 419,
+      "sha256": "7f6e42f96f7c091dd7046de8848c36555dbd99702e654d28f6d5d0ad1ec7abff",
       "role": "foreground production provenance"
     },
     {
       "path": "art/ui/title-screen/previews/alpha-edge-review.jpg",
-      "size_bytes": 331030,
-      "sha256": "70feb9a0763ef44c9d540d62a1580221ec6f5285a136dc24cace9d94844844a9",
+      "size_bytes": 335971,
+      "sha256": "cf35339690e2890e380f57e8cbc3f00807feff47ff730cea72bc8a394ed5b9fb",
       "role": "review preview"
     },
     {
@@ -67,39 +67,45 @@
     },
     {
       "path": "art/ui/title-screen/previews/composite-1920.jpg",
-      "size_bytes": 761732,
-      "sha256": "dce840ae81fbf56914877b3bd830c2bd38c691a3e46ed146f1df657b44a755e4",
+      "size_bytes": 762882,
+      "sha256": "0791eeb90d2e128f638630a4106bff03ad8a92d0ab9b0c9df087ec6bbb5ba23b",
       "role": "review preview"
     },
     {
       "path": "art/ui/title-screen/previews/menu-readability-72px.jpg",
-      "size_bytes": 762926,
-      "sha256": "cae4d56416087f0d429b5955549e113bd1b19fb9f5e638369a46356d0d8efe65",
+      "size_bytes": 762815,
+      "sha256": "850430982494f65ff75f5462aa397a65fd8e0404f025879cb7c5cb69b5c81723",
       "role": "review preview"
     },
     {
       "path": "art/ui/title-screen/previews/parallax-extremes.jpg",
-      "size_bytes": 759176,
-      "sha256": "b29afc952a57af1a677196971411cc85a3e06e788bc186412f8fe25a9ef24379",
+      "size_bytes": 767627,
+      "sha256": "8b6c8d50fe3654afd849666ccf1821c61c102cd55be25a809374afd63afb87f9",
       "role": "review preview"
     },
     {
       "path": "art/ui/title-screen/previews/phone-crop.jpg",
-      "size_bytes": 260992,
-      "sha256": "5efb68a6bc536c2d94cd2ba29aba5061071f46d2a144784ff9547da118f2bdac",
+      "size_bytes": 261718,
+      "sha256": "adc9d06b3f3eebff2943b99551e2f58c9dd16fb3f0bdfd2d147a4ec378fba640",
       "role": "review preview"
     },
     {
       "path": "art/ui/title-screen/previews/safe-zones.jpg",
-      "size_bytes": 693932,
-      "sha256": "b7529e9c848f6aa1f96e48a5c1e3af7cc700aa3e711e0965e2c928511fc14d41",
+      "size_bytes": 695027,
+      "sha256": "da7f89e68b4cadc1052720c95340e0499744d03e6dcd5e23812fb20d1de4dff0",
       "role": "review preview"
     },
     {
       "path": "art/ui/title-screen/previews/screen-crop-1920.jpg",
-      "size_bytes": 730922,
-      "sha256": "781f13360bb9b664b7860ec86ecacc74d2c0b60fe486daac7ea75d9459b4bb90",
+      "size_bytes": 730823,
+      "sha256": "b84642769671b054c1cee716cce33c16fd51ed376b9a632696250a278bd8ba98",
       "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/source-renders/foreground-correction-v4-prompt.txt",
+      "size_bytes": 3106,
+      "sha256": "1fa04461464ea25c0839e6aace51f727ac1876f8baca41ff4cb985fe1f0fabe8",
+      "role": "foreground production provenance"
     },
     {
       "path": "art/ui/title-screen/source-renders/foreground-repaint-prompt.txt",
@@ -119,8 +125,8 @@
     },
     {
       "path": "art/ui/title-screen/source-renders/title-front-native.png",
-      "size_bytes": 3149043,
-      "sha256": "679e95deeb0eb96bfad114c061b6b8acf2822b6d614e61930f55792eae171a15",
+      "size_bytes": 2953965,
+      "sha256": "e402ac5756d27cee84001e4c1095021821cfdbb484c5c376ce66d3b42b3d73c5",
       "role": "native generated source render",
       "width": 1774,
       "height": 887,
@@ -139,8 +145,8 @@
     },
     {
       "path": "art/ui/title-screen/technical-review.json",
-      "size_bytes": 2237,
-      "sha256": "22adf29a3510e7e688db6a5bd934a32f1690484e7c363ab9646664e13ff3498a",
+      "size_bytes": 2202,
+      "sha256": "4164bfcd6aa17bda1621e41f15593a35acebe3aa2ee30ef3e92fb5fba3b0f5db",
       "role": "technical review evidence"
     },
     {
@@ -155,8 +161,8 @@
     },
     {
       "path": "art/ui/title-screen/title-front.png",
-      "size_bytes": 3762562,
-      "sha256": "0b3cd693dd358e3fb04af30254a9bb50a97700692f51913173eb1525776cb50f",
+      "size_bytes": 3517556,
+      "sha256": "0fa883df18369e8e4b7758031b5cf7c99751ceb70b5a5155fcc9e94b910ee8c4",
       "role": "straight-alpha hero ridge layer",
       "width": 4096,
       "height": 2304,
@@ -175,8 +181,8 @@
     },
     {
       "path": "art/ui/title-screen/title-screen.psd",
-      "size_bytes": 9550141,
-      "sha256": "c13aebfe0df0e1dd7c795c9162e06276be3b7c5792ac4c7ad9349a3c59f356d5",
+      "size_bytes": 9539318,
+      "sha256": "49528c4211d77bb4e0afd389f0e142d461433ecdcb0948d52d9310ac9ac20f04",
       "role": "three-layer raster source"
     }
   ],
@@ -185,9 +191,9 @@
     941
   ],
   "source_note": "Repository PSD at original render resolution due 16MiB upload request limit; all PNG layers remain 4096x2304. Full-size PSD retained in downloadable Revision 2 package.",
-  "revision": 3,
+  "revision": 4,
   "foreground_placement": {
-    "revision": 3,
+    "revision": 4,
     "source": "source-renders/title-front-native.png",
     "native_dimensions": [
       1774,
@@ -205,7 +211,7 @@
       4096,
       2304
     ],
-    "notes": "Fresh single-pass tightly framed repaint, then uniform Lanczos resize and placement. Whole generated source retained, ridge meets bottom edge. No AI edits or sharpening applied after generation."
+    "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
   },
   "layered_source_note": "Repository PSD is 1672x941 due connector request limit. Full-size 4096x2304 PSD included in download package."
 }

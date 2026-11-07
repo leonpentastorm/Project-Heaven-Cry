@@ -1,5 +1,5 @@
 {
-  "revision": 3,
+  "revision": 4,
   "source": "source-renders/title-front-native.png",
   "native_dimensions": [
     1774,
@@ -17,5 +17,5 @@
     4096,
     2304
   ],
-  "notes": "Fresh single-pass tightly framed repaint, then uniform Lanczos resize and placement. Whole generated source retained, ridge meets bottom edge. No AI edits or sharpening applied after generation."
+  "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
 }

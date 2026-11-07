@@ -58,9 +58,9 @@
       "top40_max_alpha": 1
     },
     "front": {
-      "transparent_pixels": 7864694,
-      "partial_alpha_pixels": 1571926,
-      "opaque_pixels": 564,
+      "transparent_pixels": 7875612,
+      "partial_alpha_pixels": 1560425,
+      "opaque_pixels": 1147,
       "left38_max_alpha": 0,
       "top40_max_alpha": 0
     }
@@ -76,7 +76,7 @@
     941
   ],
   "foreground_placement": {
-    "revision": 3,
+    "revision": 4,
     "source": "source-renders/title-front-native.png",
     "native_dimensions": [
       1774,
@@ -94,9 +94,9 @@
       4096,
       2304
     ],
-    "notes": "Fresh single-pass tightly framed repaint, then uniform Lanczos resize and placement. Whole generated source retained, ridge meets bottom edge. No AI edits or sharpening applied after generation."
+    "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
   },
-  "visual_review": "Reviewed fresh foreground, composite, phone crop, alpha-edge and parallax previews. Five coherent silhouettes, readable stim and crossbow, straight sword wrist and crisp cyan glyph. Lead and Celestial retained in phone crop. No visible matte halo.",
+  "visual_review": "Reviewed corrected native foreground and composite/phone/alpha-edge previews. Mage glove grip, crossbow stock and transverse bow, and angry/pensive lead read clearly. Five heroes preserved; lead and Celestial retained in phone crop. No visible matte halo.",
   "full_repository_validation": "Not completed: partial checkout lacks art/catalog.json and historical collections. Focused title-screen validation run separately.",
-  "revision": 3
+  "revision": 4
 }
