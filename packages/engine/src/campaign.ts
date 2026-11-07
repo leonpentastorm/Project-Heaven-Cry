@@ -4,6 +4,7 @@
 import { type MapDef, keyOf } from './combat';
 import { OBJ } from './objects';
 import type { Track } from './music';
+import { type Mission, type BoardNpc, validateMissions } from './missions';
 import { SKILL, TN_LADDER, ENEMY, WEAPON } from './data';
 import m813J from '../../../data/campaigns/m813.json';
 import godplotJ from '../../../data/campaigns/godplot.json';
@@ -64,6 +65,10 @@ export interface Campaign {
   moments?: { id: string; art: string; caption: string; zone?: string; when: string }[];
   /** Campaign-wide music, used where a zone has none (spec: Music). */
   music?: { ambient?: Track; combat?: Track };
+  /** Missions and objectives the players can see on the mission board (spec: OOC, missions and end states). */
+  missions?: Mission[];
+  /** An NPC who offers side jobs in character, for open campaigns. */
+  board_npc?: BoardNpc;
 }
 
 /** "N1–P6", "F4–F5, H2" or "C7" to tile keys. */
@@ -124,6 +129,7 @@ export function validateCampaign(c: any): string[] {
   }
   for (const z of c.zones || []) for (const n of z.npcs || []) need(n && n.name && ['hostile', 'neutral'].includes(n.side) && ENEMY[n.tier] && WEAPON[n.weapon] && n.at, z.id + ': npc "' + (n?.name || '?') + '" needs name, side (hostile or neutral), a known tier and weapon, and at.');
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
+  errs.push(...validateMissions(c));
   return errs;
 }
 

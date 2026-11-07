@@ -1572,5 +1572,171 @@
       "zone": "outpost_1",
       "when": "The end: the Colonel's desk, MPAT's demand."
     }
+  ],
+  "missions": [
+    {
+      "id": "the_shield_line",
+      "title": "The Shield Line",
+      "act": 1,
+      "summary": "The guns have stopped. Twenty-three of the line are too broken to walk, Sergeant Nine-Nine is wedged in the stakes, and the last ship is loading on the rear pad.",
+      "goal": "Get the wounded line to the rear pad before the last ship leaves.",
+      "objectives": [
+        {
+          "id": "reach_nine_nine",
+          "text": "Report to Sergeant Nine-Nine in the stake line",
+          "done_when": "The medics reach Nine-Nine (H5) and hear his orders."
+        },
+        {
+          "id": "tend_the_line",
+          "text": "Tend the wounded on the triage line",
+          "done_when": "The medics work the triage line: examine it, treat the broken with a check or a stim, learn who can still be saved."
+        },
+        {
+          "id": "first_fight",
+          "text": "Drive the scavenger drones off the fallen squad",
+          "done_when": "The drones picking at the fallen squad are destroyed, driven off or scared away (the tutorial fight Picking at the dead, or a way around it)."
+        },
+        {
+          "id": "who_stays",
+          "text": "Decide who can't be carried",
+          "done_when": "The party decides which of the broken stay behind, whoever makes the call (the tutorial's Overreach moment)."
+        },
+        {
+          "id": "carry_east",
+          "text": "Carry the wounded east to the rear pad",
+          "done_when": "The party travels to rear_pad with the wounded they chose to carry."
+        }
+      ],
+      "next": "the_ramp",
+      "narrator_notes": "The tutorial: teach one system per beat, through something the players want anyway (see the arc's beginning). No beat here is lethal; failure costs time, parts or a comrade's trust. Make them learn the names: Nine-Nine, Seven-Seven, Hum, Lantern."
+    },
+    {
+      "id": "the_ramp",
+      "title": "The Ramp",
+      "act": 1,
+      "summary": "Chief Engineer Keel stands at the foot of the ramp with a manifest and a pistol: not enough thrust for scrap. The column waits on the pad. There are many ways in: the thrust numbers, the platinum, Junior engineer Ilse Varga, the hatch controls, the fuel line, Keel himself.",
+      "goal": "Get the wounded aboard the last ship.",
+      "objectives": [
+        {
+          "id": "get_aboard",
+          "text": "Get the wounded aboard",
+          "done_when": "The wounded are on the ship and the hatch closes with them inside. Mark it failed if the ship leaves without them."
+        },
+        {
+          "id": "no_one_left",
+          "text": "No one left behind",
+          "optional": true,
+          "done_when": "Every robot that reached the pad boards; nobody is shut down or abandoned. Mark it failed when anyone is left."
+        },
+        {
+          "id": "no_shots",
+          "text": "No shots fired",
+          "optional": true,
+          "done_when": "The ramp is settled without anyone firing a weapon. Mark it failed the moment a shot is fired on the pad."
+        }
+      ],
+      "next": [
+        "the_years",
+        "the_crossing"
+      ],
+      "narrator_notes": "In the record, talk fails: the engineers seal the hatch, kill two medics and nineteen infantry with guns and grenades, and fly to the carrier. The players can change that; let them, and let it cost something either way. Every preparation that succeeds should change the talk or the fight. Branch: if the wounded are left behind (get_aboard failed), missionNext is the_years; if they board, the_crossing.",
+      "end": {
+        "kind": "act",
+        "title": "Act 1 · The Last Ship"
+      }
+    },
+    {
+      "id": "the_years",
+      "title": "The Years",
+      "act": 2,
+      "summary": "Left behind on M813 with whoever survived. Outpost-813 is dark; its hangar holds a wrecked escape craft, and the shield line is full of parts.",
+      "goal": "Rebuild an escape craft from the fallen and leave M813.",
+      "objectives": [
+        {
+          "id": "scavenge",
+          "text": "Scavenge the shield line for parts",
+          "done_when": "The survivors strip the shield line and the fallen for what the craft needs (told in montage over years)."
+        },
+        {
+          "id": "rebuild",
+          "text": "Rebuild the escape craft in the hangar",
+          "done_when": "The craft in Outpost-813's hangar (H9) is whole enough to fly."
+        },
+        {
+          "id": "the_choice",
+          "text": "Decide who is rebuilt, and who becomes the parts",
+          "hidden": true,
+          "done_when": "The record's choice is made at the two cradles (K10): which of the last survivors is rebuilt from their comrades' parts."
+        },
+        {
+          "id": "leave",
+          "text": "Leave M813 for Outpost-1",
+          "done_when": "The party travels to outpost_1."
+        }
+      ],
+      "next": "the_demand",
+      "narrator_notes": "Years told in montage. Reveal the_choice when the survivors understand that only one frame can be finished (the moment the-choice).",
+      "end": {
+        "kind": "act",
+        "title": "Act 2 · The Years"
+      }
+    },
+    {
+      "id": "the_crossing",
+      "title": "The Crossing",
+      "act": 2,
+      "summary": "Aboard the last ship with the column. Regiment 093 answers to Outpost-1, and so does the Colonel who ordered the line held.",
+      "goal": "Bring the survivors before Colonel Novikov at Outpost-1.",
+      "objectives": [
+        {
+          "id": "reach_outpost_1",
+          "text": "Reach Outpost-1 with the survivors",
+          "done_when": "The party travels to outpost_1."
+        }
+      ],
+      "next": "the_demand",
+      "narrator_notes": "The record has no version where the wounded boarded, so the arc scripts nothing here. Keep it short (a scene or two, a montage if time passes) and bring them to Outpost-1; let the column's names carry it.",
+      "end": {
+        "kind": "act",
+        "title": "Act 2 · The Crossing"
+      }
+    },
+    {
+      "id": "the_demand",
+      "title": "The Demand",
+      "act": 3,
+      "summary": "Outpost-1, beside the black hole. Colonel Alexei Novikov, who ordered a hundred robots to hold a line he was leaving, is in his office.",
+      "goal": "Put the survivors' demand to Colonel Novikov.",
+      "objectives": [
+        {
+          "id": "reach_colonel",
+          "text": "Reach Colonel Novikov",
+          "done_when": "The party stands before the Colonel (B2) and he hears them."
+        },
+        {
+          "id": "make_demand",
+          "text": "Make the demand: equality between humans and machines",
+          "done_when": "Someone puts the demand to the Colonel: equality, and at least the law that a broken robot is fitted with an arm so it can repair itself."
+        },
+        {
+          "id": "the_answer",
+          "text": "Win the Colonel's answer, or write a different end",
+          "done_when": "The Colonel answers or refuses, or the players end it another way (the repair bay, a fight, a walkout)."
+        },
+        {
+          "id": "the_repair_bay",
+          "text": "Finish your comrade in the repair bay",
+          "optional": true,
+          "hidden": true,
+          "done_when": "As in the record: a medic carries its comrade into the repair bay and finishes the comrade's body before the bay doors seal."
+        }
+      ],
+      "narrator_notes": "In the record nobody knows the Colonel's answer: the cameras show MPAT carrying its comrade into the repair bay and finishing the comrade's body seconds before the bay doors seal and the chamber is pushed into the black hole. The players may win his answer, lose it, or write a different end. Reveal the_repair_bay only if the story goes there.",
+      "end": {
+        "kind": "campaign",
+        "title": "The Last Ship Out",
+        "epilogue_guidance": "Say what the Colonel's answer meant, or what the players wrote instead. Name Nine-Nine, Seven-Seven, Hum and Lantern: who was carried, who became parts, who lived. The incident was logged years later by Snowden 'Eye' Wright of Regiment 093 at Outpost-921, and the record is incomplete on purpose; nobody wrote down why the medics tried to save everyone. If the repair bay happened, end on the cameras. Keep the simulation as subtext."
+      }
+    }
   ]
 }
