@@ -62,7 +62,7 @@ export interface Character extends Sheet {
   /** Item and trait state the Narrator sets (traitState: a grudge, a cover identity, a rival…), by key. */
   state?: Record<string, any>;
 }
-export interface Companion { id: string; kind: 'drone' | 'beast' | string; name: string; hp?: number }
+export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | string; name: string; hp?: number; /** The twin's: half its owner's maximum when called. */ maxHp?: number; img?: string }
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
@@ -201,10 +201,24 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
 /** Items traits start you with (op start_item; rules 1.3): into the pack, and worn at once when the item has an armour
  * slot (prescription glasses, the smiling mask). An item already carried isn't doubled. */
 export function grantStartItems(c: Character) {
-  const want: string[] = [];
-  for (const t of c.traits || []) for (const e of (TRAITS.find((x) => x.id === t)?.effects || []) as any[]) if (e.op === 'start_item' && e.item) want.push(e.item);
-  if (!want.length) return;
+  const want: string[] = [], fill: { count: number; guns: string[] }[] = [];
+  for (const t of c.traits || []) for (const e of (TRAITS.find((x) => x.id === t)?.effects || []) as any[]) {
+    if (e.op === 'start_item' && e.item) want.push(e.item);
+    // Gun Nut's Collector (spec §14 item 369, PROVISIONAL): a kit gives one gun, so the start fills the pack up to the
+    // trait's minimum from its start_fill list (guns only, no extra ammo), skipping a gun already carried.
+    if (e.op === 'min_carry' && e.item_tag === 'gun' && Array.isArray(e.start_fill)) fill.push({ count: e.count || 0, guns: e.start_fill });
+  }
+  if (!want.length && !fill.length) return;
   const pack = packOf(c).map((x) => ({ ...x })), worn = { ...(c.worn || {}) };
+  const gunOf = (id?: string) => { const w: any = id ? WEAPON[id] : null; return !!w && w.magazine != null && !/melee|unarmed/.test(w.category) && w.category !== 'thrown' && w.category !== 'bow'; };
+  for (const f of fill) {
+    const held = () => [c.weapon, c.offHand?.id, ...pack.filter((p) => p.kind === 'weapon').map((p) => p.weapon || p.id)].filter((id): id is string => gunOf(id));
+    for (const id of f.guns) {
+      const have = held(); if (have.length >= f.count) break;
+      if (!WEAPON[id] || have.includes(id)) continue;
+      pack.push({ id, name: WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id });
+    }
+  }
   for (const id of want) {
     const it: any = ITEM[id]; if (!it) continue;
     if (Object.values(worn).includes(id) || pack.some((x) => (x.item || x.id) === id)) continue;
@@ -328,8 +342,9 @@ export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'pa
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 /** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'durability')));
-/** Elemental damage taken: −10% × Pain Threshold. */
-export const elementalTakenPct = (c: Character) => cap60(fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold')));
+/** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
+ * Pain Threshold 0), so only the 60% cap applies, not the floor. */
+export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(0.6, fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold'))));
 /** Ambush damage taken: −10% × Reaction Speed. */
 export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'reaction_speed')));
 /** Healing and shields received: +10% × Sensory. */

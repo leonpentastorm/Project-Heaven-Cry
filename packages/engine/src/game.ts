@@ -17,7 +17,7 @@ import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isT
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
 import { bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
-import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, type FoeTraits } from './tactics';
+import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import './perks';
 import './classes';
@@ -244,7 +244,7 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[] }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
   // Magic (spec: Mana, rules 1.2)
   | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
@@ -927,7 +927,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const vc: any = emitStory(g, 'voice_cap', { player: p.id, c: c0, chars: [c0], cap: 2, g });
     cands.sort((x, y) => y.margin - x.margin).slice(0, Math.max(0, vc.cap)).forEach(({ c, h }) => {
       g.story.scene.revealed.push(c.id + ':' + h.id);
-      push(g, { kind: 'voice', skill: h.skill, charId: c.id, to: p.id, head: SKILL[h.skill].name.toUpperCase() + ' · PASSIVE ' + passive(c, h.skill) + ' vs ' + h.tn + ' · ONLY YOU', text: h.line, ok: true });
+      push(g, { kind: 'voice', skill: h.skill, charId: c.id, to: p.id, head: SKILL[h.skill].name.toUpperCase() + ' · PASSIVE ' + passive(c, h.skill, { tags: zoneTags(g) }) + ' vs ' + h.tn + ' · ONLY YOU', text: h.line, ok: true });
     });
   }
   // Checks the Narrator asks for: the engine rolls them when the player clicks.
@@ -1202,6 +1202,7 @@ function finishCombat(g: GameState) {
   g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
   for (const u of cb.units) if (u.side === 'foe' && u.dead && u.npcId) for (const o of g.story.objects!) if (o.npcId === u.npcId) { o.dead = true; o.resolved = true; }
   for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
+  for (const u of cb.units) if (u.companion && COMPANION_ROUND_AP[u.companion] != null && u.ctrl && !u.dead && !u.downed && u.hp > 0) g.story.positions[u.id] = u.pos; // a drone or beast stays where it ended
   // Enemies still standing go back on the map as hostile tokens where they ended.
   { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
     const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
@@ -1311,8 +1312,24 @@ export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campa
 export function positionsOf(g: GameState): Record<string, string> {
   const map = zoneMap(g), pos = (g.story.positions ||= {}), taken = new Set(Object.values(pos));
   for (const c of Object.values(g.characters)) if (!pos[c.id] && !c.dead) { const k = map.pcStart.find((t) => !taken.has(t)) || map.pcStart[0]; pos[c.id] = k; taken.add(k); }
+  // A companion (Drone Handler's drone, Beast Handler's beast) is a token of its own on the area map, keyed by its unit
+  // id: next to its owner when it first shows, gone when it is destroyed or its owner is dead (PROVISIONAL, spec 14).
+  for (const c of Object.values(g.characters)) for (const comp of c.companions || []) {
+    if (COMPANION_ROUND_AP[comp.kind] == null) continue; const id = companionId(c, comp);
+    if (c.dead || !pos[c.id] || (comp.hp != null && comp.hp <= 0)) { delete pos[id]; continue; }
+    if (pos[id]) continue;
+    const [x0, y0] = pos[c.id].split(',').map(Number); let at = '';
+    const blocked = new Set([...taken, ...(g.story.npcs || []).map((n) => n.pos), ...(g.story.objects || []).filter(blocksMove).map((o) => o.pos)]);
+    for (let r = 1; r < 4 && !at; r++) for (let dy = -r; dy <= r && !at; dy++) for (let dx = -r; dx <= r && !at; dx++) { const k = (x0 + dx) + ',' + (y0 + dy); if (standable(map, k) && !blocked.has(k)) at = k; }
+    if (at) { pos[id] = at; taken.add(at); }
+  }
   return pos;
 }
+/** A companion's unit id (fights and the area map alike). */
+export const companionId = (c: Character, comp: { id: string }) => 'cp-' + c.id + '-' + comp.id;
+/** A companion's AP each overworld round: its own, as in a fight: the drone 3, the beast 4 (PROVISIONAL, spec 14). */
+export const COMPANION_ROUND_AP: Record<string, number> = { drone: 3, beast: 4, twin: 4 }; // the twin: Twinbound's Call on the area map
+export const DRONE_ROUND_AP = COMPANION_ROUND_AP.drone;
 
 // ---------- views ----------
 /** What one player may see: no hooks, no one else's voices or Overreach. */
@@ -1551,6 +1568,9 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
 export function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
   const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
+  // Companions on the area map (a drone, a beast): tokens with their own AP this round.
+  for (const c of Object.values(g.characters)) { const owner = units.find((x) => x.charId === c.id); if (!owner || !c.companions?.some((k) => COMPANION_ROUND_AP[k.kind] != null)) continue;
+    const taken = new Set(units.map((x) => x.pos)); for (const d of companionUnits(null, c, owner, taken, scratch, map, pos)) { if (!pos[d.id] || COMPANION_ROUND_AP[d.companion!] == null) continue; d.pos = pos[d.id]; d.ap = g.story.ap?.[d.id] ?? COMPANION_ROUND_AP[d.companion!]; units.push(d); } }
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; if (n.hidden) u.hidden = true; units.push(u); }
   const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
   magicIn(g, cb);
@@ -1604,6 +1624,20 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   if (c!.hp <= 0 && a.act !== 'end') fail(c!.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up.');
   if (a.act === 'end') { (g.story.ended ||= {})[c!.id] = true; if (g.story.spoken[by] == null && charsOf(g, by).every((x) => g.story.ended![x.id])) g.story.spoken[by] = ''; closeRoundIfDone(g); return; }
   const cb = storyCb(g), u = cb.units.find((x) => x.charId === c!.id)!;
+  // A companion's own move on the area map (the drone, the beast): its AP, its token; nothing else it can do here (the
+  // Narrator says what the drone sees; commanding the beast in the story is an Empathy check it calls). PROVISIONAL.
+  if (a.unit) {
+    const d = cb.units.find((x) => x.id === a.unit && x.companion && x.ctrl === c!.id); if (!d) fail('That isn\'t your companion, or it is gone.');
+    const what = d!.companion === 'beast' ? 'beast' : d!.companion === 'twin' ? 'twin' : 'drone';
+    if (a.act !== 'move') fail('On the area map the ' + what + ' only moves.');
+    const map = zoneMap(g), k = a.to ? (/,/.test(a.to) ? a.to : keyOf(a.to, map)) : null;
+    if (!k || !standable(map, k)) fail('Nothing can stand there.');
+    const err = moveUnit(cb, d!, k!, undefined, 'move'); if (err) fail(err.replace(/^Needs/, 'The ' + what + ' needs'));
+    positionsOf(g)[d!.id] = d!.pos; (g.story.ap ||= {})[d!.id] = Math.max(0, Math.round(d!.ap * 10) / 10);
+    for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
+    push(g, { kind: 'system', text: (what === 'twin' ? 'The twin (' + c!.name + '\'s) steps to ' : d!.name + ' (' + c!.name + '\'s) ' + (what === 'beast' ? 'pads to ' : 'flies to ')) + refOf(d!.pos) + '.', act: true, charId: c!.id });
+    g.story.needs = true; return;
+  }
   // Targets by id, or by name (the Narrator may name someone it placed this same turn).
   const tid = String(a.targetId || ''), tname = tid.toLowerCase();
   const target = tid ? cb.units.find((x) => x.id === tid || x.id === 'pc-' + tid) || cb.units.find((x) => x.name.toLowerCase() === tname && x.id !== u.id) || null : null;
@@ -1667,7 +1701,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
         const fx: any = (w as any).grants?.effect || {}, r = dist(u.pos, o.pos);
         const cost = !melee && mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot');
         if (u.ap < cost) fail('Needs ' + cost + ' AP.');
-        if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); }
+        if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); if (u.maxDur && useW === w) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); } // a strike wears the weapon as in a fight
         else {
           if (u.jammed) fail('Weapon jammed: clear it (2 AP).');
           if (u.maxDur && (u.dur ?? 1) <= 0) fail('Broken: Field Repair first.');
@@ -1692,7 +1726,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   }
   else if (MAGIC_ACTS.includes(a.act)) {
     const tile = a.tile ? tileKey(g, a.tile) : undefined, aim = a.aim ? tileKey(g, a.aim) : undefined;
-    const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => performMagic(cbx, rng, uu, a, tile, aim);
+    // The action's toggles (Verse of War's "In verse"…) ride on the map the spell runs on, the fight's too.
+    const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => { (cbx as any).mods = a.mods || []; try { return performMagic(cbx, rng, uu, a, tile, aim); } finally { delete (cbx as any).mods; } };
     // A spell that would touch a person on the map starts a fight, as an attack does (spec: Overworld rounds).
     if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !a.hold)) {
       // Check it would work at all (on a copy, without touching the dice), then see whether it aims at anyone on the map.
@@ -1710,6 +1745,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   // Write back: AP, the character's state, objects (doors, traps), and the log as story lines.
   spendAp(g, c!, before - u.ap);
   for (const x of cb.units) if (x.charId) { unitToCharacter(g, x, false, true); (g.story.heat ||= {})[x.charId] = x.heat || 0; (g.story.jammed ||= {})[x.charId] = !!x.jammed; }
+  for (const x of cb.units) if (x.companion && x.ctrl && g.story.positions?.[x.id] && !x.dead) g.story.positions[x.id] = x.pos; // a token pulled along (the twin follows its owner within 6)
   magicOut(g, cb, false);
   g.story.objects = cb.objects;
   storyFx(g, cb);
@@ -1769,7 +1805,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   senseLurkers(g, 'fight');
   const foes = [npc, ...npcsOf(g).filter((n) => n.side === 'hostile' && n !== npc)], stay = npcsOf(g).filter((n) => n.side !== 'hostile');
   const pos = positionsOf(g), apNow = apLeft(g, c);
-  const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id] }));
+  const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id], comp: pos }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
   g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
@@ -1779,6 +1815,8 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
+  // What each player said this overworld round carries into the fight it opens, as their round-1 line (Verse of War).
+  for (const x of cbx.units) { const pc = x.charId ? g.characters[x.charId] : null, t = pc ? g.story.spoken?.[pc.owner] : null; if (pc && t) (cbx.notes ||= []).push(pc.name + ' (round 1): "' + String(t).slice(0, 400) + '"'); }
   if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
   // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
   for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');

@@ -2474,7 +2474,9 @@
       "count": 1,
       "params": [
         "count",
-        "item_tag"
+        "item_tag",
+        "provisional",
+        "start_fill"
       ],
       "used_by": [
         "traits:gun_nut"

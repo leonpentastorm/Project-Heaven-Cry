@@ -2,7 +2,7 @@
 // Player actions go through the reducer (apply); an enemy's blow through combat/end-turn where the AI can make it.
 import { describe, expect, it } from 'vitest';
 import {
-  CLASS, apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, resolveAttack, previewEvoke, applyCond, emit, stampOf,
+  CLASS, apply, holderOf, lineOfSight, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, resolveAttack, previewEvoke, applyCond, emit, stampOf,
   type GameState, type Combat, type Unit,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -67,7 +67,8 @@ describe('Shade: a silent takedown on the area map', () => {
       ] } } as any);
       const n = npcsOf(s.g)[0]; n.facing = [Math.sign(+n.pos.split(',')[0] - +here.split(',')[0]) || 1, Math.sign(+n.pos.split(',')[1] - +here.split(',')[1])] as any; (n as any).hp = 1;
       // a second hostile far off behind a wall of distance (beyond sight)
-      const far = Object.keys(Object.fromEntries([...Array(zoneMap(s.g).w).keys()].flatMap((x) => [...Array(zoneMap(s.g).h).keys()].map((y) => [x + ',' + y, 1])))).filter((k) => standable(zoneMap(s.g), k) && Math.max(Math.abs(+k.split(',')[0] - +here.split(',')[0]), Math.abs(+k.split(',')[1] - +here.split(',')[1])) >= 14)[0];
+      const cheb = (k: string) => Math.max(Math.abs(+k.split(',')[0] - +here.split(',')[0]), Math.abs(+k.split(',')[1] - +here.split(',')[1]));
+      const far = [...Array(zoneMap(s.g).w).keys()].flatMap((x) => [...Array(zoneMap(s.g).h).keys()].map((y) => x + ',' + y)).filter((k) => standable(zoneMap(s.g), k) && !npcsOf(s.g).some((n) => n.pos === k)).sort((a, b) => cheb(b) - cheb(a)).find((k) => !lineOfSight({ map: zoneMap(s.g), objects: storyObjects(s.g), units: [] } as any, k, here)) || null;
       if (far) s.act({ type: 'narrator/turn', turn: { narration: 'Another.', npcs: [{ action: 'place', name: 'Far guard', side: 'hostile', tier: 'minion', weapon: 'fists', at: refOf(far) }] } } as any);
       s.g.story.sneak = { [c.id]: true }; s.g.story.hidden = { [c.id]: true };
       s.g.characters[c.id].skills.ingenuity = 10;
@@ -76,8 +77,10 @@ describe('Shade: a silent takedown on the area map', () => {
       return s;
     };
     const s = run(adv('shade'));
-    if (s.g.phase === 'story') { expect(storyHas(s.g, /without a sound \(Silent Kill\)/)).toBe(true); expect(s.g.story.hidden![s.chars[0].id]).toBe(true); }
-    else expect(s.g.combat!.over || logHas(s.g.combat!, /Silent Kill/)).toBeTruthy(); // nobody else on the map: the fight was won at once
+    expect(s.g.phase).toBe('story'); expect(storyHas(s.g, /without a sound \(Silent Kill\)/)).toBe(true); expect(s.g.story.hidden![s.chars[0].id]).toBe(true);
+    expect(npcsOf(s.g).some((n) => n.name === 'Far guard')).toBe(true);
+    const plain = run({});
+    expect(plain.g.phase).toBe('combat');
   });
 });
 
@@ -92,7 +95,6 @@ describe('Mage Payload and Warden Raise Cover on the area map', () => {
   });
   it('Payload on the area map is offered there (payload_world)', () => {
     const s = storyWith([cls('mage', 3, MIND)]); const c = s.chars[0];
-    const { perkActionsFor } = require('../src') as any; void perkActionsFor;
     expect(() => s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:mage.payload', actionId: 'payload_world', tile: 'A1' } as any)).toThrow(/glyph|pattern|Pick|Evoker|reach|Stand/i);
   });
 });
@@ -115,7 +117,7 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
     const f = fightWith([cls('channeler', 3, SOUL)], [{}]);
     const u = f.turn(f.pc); at(f, u, '2,2'); const foe = at(f, f.foe, '3,2');
     const s: any = withGame(f.g, () => {
-      const holder = (require('../src') as any).holderOf({ u: f.unit(u.id), cb: f.cb }, 'class:channeler.heart_surge');
+      const holder = holderOf({ u: f.unit(u.id), cb: f.cb }, 'class:channeler.heart_surge');
       return holder ? 1 : 0;
     });
     expect(s).toBe(1); void foe;
@@ -135,10 +137,10 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
     f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', tile: '4,2', choice: 'fire' });
     glyph(f.cb, f.unit(ally.id), 'push', '4,3');
     const pv = withGame(f.g, () => previewEvoke(f.cb, f.unit(ally.id), '4,2', '9,2'));
-    expect(pv.why || '').not.toMatch(/Stand on or next to/);
+    expect(pv.why || '').not.toMatch(/^Stand /);
     const plain = fightWith([{}, MIND], [{}]); const [, a2] = plain.pcs; caster(plain.unit(a2.id), ['fire', 'push']); at(plain, a2, '2,4');
     glyph(plain.cb, plain.unit(a2.id), 'fire', '4,2'); glyph(plain.cb, plain.unit(a2.id), 'push', '4,3');
-    expect(withGame(plain.g, () => previewEvoke(plain.cb, plain.unit(a2.id), '4,2', '9,2')).why || '').toMatch(/Stand on or next to/);
+    expect(withGame(plain.g, () => previewEvoke(plain.cb, plain.unit(a2.id), '4,2', '9,2')).why || '').toMatch(/^Stand /);
   });
   it('Keystone survives its Evoke and never fades', () => {
     const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push']); at(f, f.foe, '6,2'); f.unit(f.foe.id).def = -40;

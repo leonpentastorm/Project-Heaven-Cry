@@ -390,8 +390,8 @@ function dayTurns(h: Holder) {
 // Always Up: a fight that starts in the same scene as a rest (a rest-camp fight, PROVISIONAL) gives hidden enemies no
 // ambush against them: no 19-20 criticals, no Ambush multiplier. Watches: Narrator. Wired: resting gives back half of
 // what it would (PROVISIONAL, plan 6 Insomniac 2): a short rest 12.5% of max HP, a long rest half the missing HP and
-// MP (the rest hook's per-character mult). Session start heals fully before items hear of it, so Wired doesn't apply
-// there yet (lane-h.md gap 2).
+// MP (the rest hook's per-character mult). Session start counts as a long rest: 'session_heal' gives Wired its half
+// there too.
 const restedHere = (h: Holder) => { const g = h.g, s = ro(h.c).restScene; return !!g && s != null && s === sceneN(g); };
 register({
   id: 'insomniac', kind: 'trait', claims: ['immunity', 'rest_recovery_mult'], narrator: ['narrator'],

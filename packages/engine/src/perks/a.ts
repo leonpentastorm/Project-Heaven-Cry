@@ -67,6 +67,15 @@ register({
       ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - frac); ctx._bulwark = frac;
       say(h.cb, g.name + ' stands in the line of fire (Bulwark): ' + t.name + ' takes ' + Math.round(frac * 100) + '% less.');
     },
+    // The attack preview names it for the covered ally (the tooltip's damage chain): a multiplier shown only in the
+    // preview, since the real reduction comes after armour (damage_in). The best Bulwark replaces a weaker one.
+    damage_out: (ctx, h) => {
+      const g = h.u, t: Unit = ctx.tgt; if (!ctx.preview || !g || t === g || t.side !== g.side || !alive(g) || ctx.att?.side === t.side || !rangedSrc(ctx.src, t)) return;
+      const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1; if (!behindLine(ctx.att.pos, g.pos, t.pos, depth)) return;
+      const i = (ctx.mults as { v: number; label: string }[]).findIndex((m) => /^Bulwark/.test(m.label));
+      if (i >= 0 && ctx.mults[i].v <= 1 - frac) return;
+      const m = { v: 1 - frac, label: 'Bulwark (' + g.name + ')' }; if (i >= 0) ctx.mults[i] = m; else ctx.mults.push(m);
+    },
   },
   brief: () => null,
 });
@@ -174,6 +183,11 @@ register({
 // anyone but you at −2 (the condition). It breaks free with 2 AP (combat/escape). The hold ends if you move or go down.
 // II: an attack aimed at you has a 50% chance to hit your captive instead. No free hand needed (PROVISIONAL, plan 6
 // Grapple 3). Story: holding an NPC marks it Grappled for the scene and asks the Narrator if the hold is plausible.
+function grabUnit(cb: Combat, u: Unit, t: Unit, r0: Rng): string | null {
+  const r = applyCond(cb, r0, u, t, 'grappled');
+  emitFx(cb, 'melee', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
+  say(cb, u.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
+}
 const captiveOf = (cb: Combat, u: Unit) => cb.units.find((x) => !x.dead && condSource(x, 'grappled') === u.id && dist(x.pos, u.pos) <= 1) || null;
 register({
   id: 'grapple', claims: 'all',
@@ -185,23 +199,27 @@ register({
       available: (h) => (h.u && condOn(h.u, 'grappled') ? 'You are held yourself.' : true),
       preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; if (t && h.u && dist(t.pos, h.u.pos) > 1) return { ok: false, why: 'Walk up to them first.' }; return { lines: ['Grappled: Body save vs ' + (12 + (h.u?.dbf?.body || 0)) + '.' + (ow(h.cb) ? ' Starts a fight.' : '')] }; },
       run: (h, a, rng) => {
-        const grab = (cb: Combat, u: Unit, t: Unit, r0: Rng) => {
-          const r = applyCond(cb, r0, u, t, 'grappled');
-          emitFx(cb, 'melee', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
-          say(cb, u.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
-        };
-        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 2, (cbx, att, tt) => grab(cbx, att, tt, g.rng)); return null; }
-        return grab(h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
+        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 2, (cbx, att, tt) => grabUnit(cbx, att, tt, g.rng)); return null; }
+        return grabUnit(h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
       },
     },
     {
       id: 'grapple_npc', label: 'Grapple', scope: ['story', 'world'], target: 'none', ap: 0,
       text: 'Grab and hold someone in the scene: they can\'t leave until they break free (the Narrator judges the hold).',
       run: (h, a) => {
+        // On the area map, naming an NPC token (its id or name) is the token grab: walk up first; the fight opens with
+        // the grab as its opening move, paid from your AP (the Body save rolls in the fight), as Grapple on the token.
+        const tok = ow(h.cb) && h.u ? h.cb!.units.find((x) => x.side === 'foe' && !x.dead && (x.id === a.targetId || x.id === a.npc || (!!a.npc && x.name.toLowerCase() === String(a.npc).toLowerCase()))) : null;
+        if (tok) {
+          if (dist(tok.pos, h.u!.pos) > 1) return 'Walk up to them first.';
+          if (condOn(h.u!, 'grappled')) return 'You are held yourself.';
+          if (h.u!.ap < 2) return 'Needs 2 AP.';
+          const g = h.g; strikeFromWorld(tok.id, 2, (cbx, att, tt) => grabUnit(cbx, att, tt, g.rng)); return null;
+        }
         const who = String(a.npc || a.text || 'them').slice(0, 60);
         if (h.g?.story) { const k = who.toLowerCase(), m = ((h.g.story.scene.npcConds ||= {})[k] ||= []); if (!m.includes('grappled')) m.push('grappled'); }
         postStory(h, 'grabs ' + who + ' and holds on.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Grapple on ' + who + ': held (can\'t leave or act freely) until they break free. Rule whether the hold is plausible (size, armour) and when they escape.');
+        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Grapple on ' + who + ': held (can\'t leave or act freely) until they break free. Rule whether the hold is plausible (size, armour) and when they escape; if they are hostile, the hold starts a fight (open it with the grab).');
         return null;
       },
     },
@@ -459,7 +477,7 @@ register({
 // Machine Body: immune to poison (the toxic spill hazard; a poison condition if one is ever applied), bleed (generic)
 // and suffocation (Narrator). Field Repair restores 10 HP per Proficiency point (PROVISIONAL, plan 6 Factory Made 1;
 // points, not Mastery): yourself in a fight (2 AP, Proficiency 3+, one spare-parts charge, not halved by Plug), or 10
-// minutes out of a fight. An ally repairing you is a listed gap (actions can't yet be granted to others).
+// minutes out of a fight. An ally repairs you with their own Field Repair (combat/repair on you, game.ts).
 // Plug: heals ×0.5 (here, so a healing Blessing is halved once, not twice), Blessings at half power, lightning and EMP ×2 (generic). "Some humans won't talk to a
 // machine" is the Narrator's.
 register({
@@ -532,7 +550,7 @@ register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' 
 
 // ---------- Heavyworlder ----------
 // Dense: can't be Shoved (generic), carry ×2, +2 Intimidation (generic); counts one size larger (no size rules: the
-// Narrator's); heavy weapons one-handed (Narrator op until equip() reads it). Too Big: −3 Athletics (generic),
+// Narrator's); heavy weapons one-handed (stat 'one_hand_heavy', read by equip's hands rule). Too Big: −3 Athletics (generic),
 // −0.5 Movement (PROVISIONAL like Right of Way), attacks against them +2 to hit, and they can't hide in light: Hide on a
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({

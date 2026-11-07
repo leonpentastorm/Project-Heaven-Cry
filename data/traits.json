@@ -1894,11 +1894,11 @@
         "I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before."
       ],
       "downsides": [
-        "Flashback: shelling, burning, or a Crawler child: Composure check (target 13) or lose your next turn."
+        "Flashback: shelling, burning, or a Crawler child: Composure check (target 12) or lose your next turn."
       ],
       "notes": [],
       "narrator_hook": "Crawlers, survivors, and Captain Kain.",
-      "text": "You were there. You remember what the speeches left out.\n+ I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before.\n− Flashback: shelling, burning, or a Crawler child: Composure check (target 13) or lose your next turn.",
+      "text": "You were there. You remember what the speeches left out.\n+ I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before.\n− Flashback: shelling, burning, or a Crawler child: Composure check (target 12) or lose your next turn.",
       "effects": [
         {
           "op": "immunity",
@@ -1929,9 +1929,10 @@
         {
           "op": "gate_check",
           "skill": "composure",
-          "tn": 13,
+          "tn": 12,
           "context": "shelling|burning|crawler_child",
-          "on_fail": "lose_next_turn"
+          "on_fail": "lose_next_turn",
+          "provisional": true
         }
       ],
       "adjudication": "hybrid",
@@ -2073,13 +2074,21 @@
         {
           "op": "min_carry",
           "item_tag": "gun",
-          "count": 3
+          "count": 3,
+          "start_fill": [
+            "service_pistol",
+            "drifter_revolver",
+            "hellraiser_service_rifle"
+          ],
+          "provisional": true
         },
         {
           "op": "gate_check",
           "skill": "dexterity",
           "context": "sell_or_drop_gun",
-          "on_fail": "keep_until_rest"
+          "on_fail": "keep_until_rest",
+          "tn": 12,
+          "provisional": true
         },
         {
           "op": "price_mod",
@@ -3957,9 +3966,10 @@
         {
           "op": "companion",
           "id": "beast",
-          "hp": 60,
+          "hp": 50,
           "ap": 4,
-          "controlled_by": "empathy"
+          "controlled_by": "empathy",
+          "provisional": true
         },
         {
           "op": "narrator",

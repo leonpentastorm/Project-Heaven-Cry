@@ -191,7 +191,7 @@ describe('Field Medic, Humanity First, Factory Made, Heavyworlder, Old School', 
     if (heavy) {
       const s = storyWith([{ traits: ['heavyworlder'] }]); const c = s.g.characters[s.chars[0].id];
       c.offHand = { id: 'riot_shield' } as any; c.pack = [...packOf(c), { id: heavy.id, weapon: heavy.id, name: heavy.name, qty: 1, kind: 'weapon' } as any];
-      for (const sk of Object.keys(heavy.requires || {})) c.skills[sk] = 10;
+      for (const sk of Object.keys((heavy as any).requires || {})) c.skills[sk] = 10;
       s.act({ type: 'gear/equip', charId: c.id, idx: packOf(c).length - 1, to: 'main' } as any);
       expect(s.g.characters[c.id].weapon).toBe(heavy.id); expect(s.g.characters[c.id].offHand?.id).toBe('riot_shield');
     }

@@ -651,14 +651,24 @@ register({
         const g = gameOf(h); if (!g?.story) return;
         if (s.owPartner && (ctx.u === h.u || ctx.u.charId === s.owPartner)) {
           const pos = positionsOf(g), mine = ctx.u === h.u ? ctx.u.pos : pos[h.c!.id], theirs = ctx.u.charId === s.owPartner ? ctx.u.pos : pos[s.owPartner];
-          if (mine && theirs && dist(mine, theirs) > 1) { const pc = g.characters[s.owPartner]; (g.story.hidden ||= {})[s.owPartner] = false; log(cb, (pc?.name || 'The partner') + ' leaves ' + h.c!.name + '\'s side and is seen (Silent Partner).'); s.owPartner = null; return; }
+          if (mine && theirs && dist(mine, theirs) > 1) { const pc = g.characters[s.owPartner]; (g.story.hidden ||= {})[s.owPartner] = false; (s.lost ||= {})[s.owPartner] = true; log(cb, (pc?.name || 'The partner') + ' leaves ' + h.c!.name + '\'s side and is seen (Silent Partner).'); s.owPartner = null; return; }
         }
+        // Once the share is lost (walked off, attacked, found), it comes back only after a fresh sneak (a normal move
+        // first), as a character's own stealth does.
+        if (s.lost) for (const id of Object.keys(s.lost)) if (!g.story.sneak?.[id]) delete s.lost[id];
         const p = storyPartner(h);
-        if (p && (ctx.u === h.u || ctx.u.charId === p.id) && g.story.sneak?.[p.id]) { (g.story.hidden ||= {})[p.id] = true; s.owPartner = p.id; }
+        if (p && !s.lost?.[p.id] && (ctx.u === h.u || ctx.u.charId === p.id) && g.story.sneak?.[p.id]) { (g.story.hidden ||= {})[p.id] = true; s.owPartner = p.id; }
         return;
       }
       if (!s.partner) return; const p = cb.units.find((x) => x.id === s.partner);
       if (p && p.hidden && (ctx.u === p || ctx.u === h.u) && dist(p.pos, h.u.pos) > 1) { reveal(cb, p, 'left ' + h.u.name + '\'s side'); s.partner = null; }
+    },
+    // The area map: a partner who attacks (a shot that opens no fight: at an ally, at an object) loses the shared
+    // stealth; one whose attack opens a fight strikes from it (the fight then reveals them as any attack does).
+    action_done: (ctx, h) => {
+      const s = stateOf(h); if (!ctx.world || ctx.a?.act !== 'attack' || !s.owPartner || ctx.u?.charId !== s.owPartner) return;
+      const g = gameOf(h); if (!g?.story) return; const pc = g.characters[s.owPartner];
+      (g.story.hidden ||= {})[s.owPartner] = false; (s.lost ||= {})[s.owPartner] = true; log(ctx.cb, (pc?.name || 'The partner') + ' attacks and is seen: the shared stealth is gone (Silent Partner).'); s.owPartner = null;
     },
     spotted: (ctx, h) => {
       const s = stateOf(h), cb: Combat = ctx.cb; if (ctx.u !== h.u || !s.partner || h.u!.hidden) return;
@@ -681,7 +691,7 @@ register({
       const st = stateOf(h), sh = (st.shared ||= {}); if (sh[ctx.npc.id]?.round === g.story.round) return;
       sh[ctx.npc.id] = { round: g.story.round, ok: !!ctx.ok };
       const other = ctx.c === h.c ? p : h.c!;
-      if (!ctx.ok) { (g.story.hidden ||= {})[other.id] = false; postStory(h, ctx.npc.name + ' spots ' + other.name + ' too (Silent Partner: one roll for both).', { kind: 'system' }); }
+      if (!ctx.ok) { (g.story.hidden ||= {})[other.id] = false; (st.lost ||= {})[p.id] = true; st.owPartner = null; postStory(h, ctx.npc.name + ' spots ' + other.name + ' too (Silent Partner: one roll for both).', { kind: 'system' }); }
       else ((g.story.noticed ||= {}) as any)[ctx.npc.id + '|' + other.id] = g.story.round; // no second roll for the other
     },
   },
@@ -869,8 +879,35 @@ register({
     stay_hidden_result: (ctx, h) => { if (ctx.c !== h.c || ctx.ok) return; const g = gameOf(h); if (!g?.story) return; stateOf(h).owPen = 2; postStory(h, 'cover blown: −2 AP next round (Ghost Soldier).', { kind: 'system' }); },
     round_ap: (ctx, h) => { if (ctx.c !== h.c) return; const s = stateOf(h); if (s.owPen) { ctx.ap -= s.owPen; ctx.lines.push('Ghost Soldier: cover blown'); s.owPen = 0; } },
   },
-  brief: () => null,
+  // The prosthetic arm takes mods (the audit's proposal: 2 slots, fitting needs Proficiency 3; PROVISIONAL, spec 14).
+  // What a fitted mod does in the arm is the Narrator's: the brief names them.
+  actions: [{
+    id: 'fit_arm', label: 'Fit a mod to the arm', pickLabel: 'The mod in your pack (its id)', scope: ['story', 'world'], ap: 0, target: 'none',
+    text: 'Out of a fight, Proficiency 3: fit a mod from your pack into the prosthetic arm (2 slots). The Narrator rules what it does there.',
+    available: (h) => { const c = h.c; if (!c || !hasArm(c)) return false; if ((c.skills.proficiency || 0) < 3) return 'Needs Proficiency 3.'; return armMods(c).length >= ARM_SLOTS ? 'Both arm slots are taken.' : true; },
+    preview: (h, a) => { const e = armFitCheck(h.c!, a.choice); return e ? { ok: false, why: e } : { lines: ['Fits into the prosthetic arm (' + (armMods(h.c!).length + 1) + '/' + ARM_SLOTS + ').'] }; },
+    run: (h, a) => {
+      const c = h.c!, e = armFitCheck(c, a.choice); if (e) return e;
+      const pack = packOf(c).map((x) => ({ ...x })), i = armIdx(pack, a.choice), it = pack[i], id = it.item || it.id;
+      if (it.qty > 1) it.qty--; else pack.splice(i, 1); c.pack = pack;
+      c.state = { ...(c.state || {}), arm_mods: [...armMods(c), id] };
+      postStory(h, 'fits the ' + (ITEM[id]?.name || id).toLowerCase() + ' into the prosthetic arm.');
+      note(h, c.name + ' fitted ' + (ITEM[id]?.name || id) + ' into the prosthetic arm: rule what it does there.');
+      return null;
+    },
+  }],
+  brief: (h) => { const m = h.c ? armMods(h.c) : []; return m.length ? 'arm mods: ' + m.map((id) => ITEM[id]?.name || id).join(', ') + ' (yours to rule)' : null; },
 });
+const ARM_SLOTS = 2;
+const hasArm = (c: Character) => packOf(c).some((x) => (x.item || x.id) === 'prosthetic_arm' && x.qty > 0);
+const armMods = (c: Character): string[] => (Array.isArray((c.state as any)?.arm_mods) ? (c.state as any).arm_mods : []);
+const armIdx = (pack: any[], choice: any) => (/^\d+$/.test(String(choice ?? '')) ? +choice : pack.findIndex((p) => (p.item || p.id) === choice));
+function armFitCheck(c: Character, choice: any): string | null {
+  if (!hasArm(c)) return 'No prosthetic arm.'; if ((c.skills.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if (armMods(c).length >= ARM_SLOTS) return 'Both arm slots are taken.';
+  const pack = packOf(c), it = pack[armIdx(pack, choice)], m: any = it && ITEM[it.item || it.id];
+  return m && m.category === 'mod' ? null : 'Pick a mod from your pack.';
+}
 
 // =====================================================================================================================
 // Lowland Born (trait). Concrete Forest: in a zone tagged urban or terrain ruins / urban, +1 Movement; always knows one

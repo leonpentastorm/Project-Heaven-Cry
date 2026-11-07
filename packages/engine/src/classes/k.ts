@@ -1022,11 +1022,26 @@ register({
 type Gauge = 'rage' | 'grief' | 'fear' | 'devotion';
 const GAUGES: Gauge[] = ['rage', 'grief', 'fear', 'devotion'];
 /** The four gauges, kept on the character for the scene (K22: they last the scene and reset when it ends). */
-function gauges(h: { c?: Character | null; g?: any }): Record<string, any> {
+function gauges(h: { c?: Character | null; g?: any; u?: Unit | null; cb?: Combat | null }): Record<string, any> {
   const st = charState(h.c), sc = sceneOf(h);
-  if (!st.heartfed || st.heartfed.scene !== sc) st.heartfed = { scene: sc, rage: 0, grief: 0, fear: 0, devotion: 0, carry: 0, overflow: null, ovScene: st.heartfed?.ovScene ?? null };
-  return st.heartfed;
+  // The Narrator's story points: traitState heartfed_add {rage: n, …} (added, then cleared). A heartfed object written
+  // without a scene (the Narrator overwrote the gauges) counts as points to add too, never as a reset.
+  const legacy = st.heartfed && st.heartfed.scene == null ? st.heartfed : null, add = st.heartfed_add || null;
+  if (!st.heartfed || st.heartfed.scene !== sc) st.heartfed = { scene: sc, rage: 0, grief: 0, fear: 0, devotion: 0, carry: 0, overflow: null, ovScene: legacy ? null : st.heartfed?.ovScene ?? null };
+  const g = st.heartfed;
+  if (legacy || add) {
+    delete st.heartfed_add;
+    for (const k of GAUGES) {
+      const n = Math.max(0, Math.floor(+(legacy?.[k] || 0) + +(add?.[k] || 0))) || 0, was = g[k]; if (!n) continue; g[k] = Math.min(5, was + n);
+      const line = (h.u?.name || h.c?.name || '') + '\'s ' + k[0].toUpperCase() + k.slice(1) + ' rises to ' + g[k] + ' (the story).';
+      if (h.cb) say(h.cb, line); else if (h.g && (h as any).info) postStory(h as Holder, line, { private: true });
+      if (g[k] === 5 && was < 5 && h.c && has(h.u || h.c, 'heartfed.overflow') && g.ovScene !== sc && !g.overflow) g.overflow = k;
+    }
+  }
+  return g;
 }
+/** Narrator points waiting to land (traitState heartfed_add, or a heartfed object written without a scene). */
+const heartAddsWaiting = (c: Character | null | undefined) => !!c && (!!cs(c).heartfed_add || (!!cs(c).heartfed && cs(c).heartfed.scene == null));
 const keyOfDesign = (c: Character | null | undefined, id: string | undefined): Gauge | null => (id ? (cs(c).heartKeys || {})[id] || null : null);
 function gain(h: Holder, k: Gauge, n: number, why: string) {
   if (!h.c || n <= 0) return; const g = gauges(h), was = g[k]; g[k] = Math.min(5, was + n); if (g[k] === was) return;
@@ -1038,7 +1053,8 @@ const isTwin = (u: Unit | null | undefined) => !!u && !!(u as any).twinOf;
 // on your side is Downed and +5 when one dies, Fear +1 when a fight starts with an Elite or Boss the squad can see and +2
 // when you're Shaken, Devotion +1 when an ally heals, shields or buffs you. Each gauge 0-5, for the scene. Key a design
 // to a gauge out of a fight (designs made before the class need keying too). The Narrator adds points for story moments
-// with traitState {key: 'heartfed', value: {rage: n, …}} or the gauge action's story ruling.
+// with traitState {key: 'heartfed_add', value: {rage: n, …}} (added at the next round or fight, PROVISIONAL), in answer to
+// the gauge action's story ruling or on their own.
 register({
   id: 'heartfed.four_hearts', claims: 'all',
   actions: [
@@ -1048,12 +1064,13 @@ register({
       run: (h, a) => { const [id, k] = String(a.choice).split(':'); (charState(h.c).heartKeys ||= {})[id] = k; const d = h.c!.outbursts!.find((x) => x.id === id)!; const line = d.name + ' is keyed to ' + k + '.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
     { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: 'Name what this scene made you feel: the Narrator decides which gauge fills, and how much.',
-      run: (h, a) => { postStory(h, (a.text || '').slice(0, 200), { private: true }); if (h.g && h.c) pendRuling(h.g, h.c, h.key, h.c.name + ' feels it: "' + (a.text || '').slice(0, 160) + '". Add gauge points with traitState heartfed {rage|grief|fear|devotion}.'); return null; } },
+      run: (h, a) => { postStory(h, (a.text || '').slice(0, 200), { private: true }); if (h.g && h.c) pendRuling(h.g, h.c, h.key, h.c.name + ' feels it: "' + (a.text || '').slice(0, 160) + '". Add gauge points with traitState heartfed_add {rage|grief|fear|devotion: n}.'); return null; } },
   ],
   on: {
     on_damaged: (ctx, h) => { if (ctx.t !== h.u || !h.c || !onGrid(h)) return; const g = gauges(h); g.carry = (g.carry || 0) + ctx.dmg; const n = Math.floor(g.carry / 20); g.carry %= 20; if (n) gain(h, 'rage', n, ctx.dmg + ' damage'); },
     on_downed: (ctx, h) => { const v: Unit = ctx.victim; if (!h.u || !onGrid(h) || v === h.u || v.side !== h.u.side || isTwin(v)) return; gain(h, 'grief', ctx.dead ? 5 : 2, v.name + (ctx.dead ? ' dies' : ' is Downed')); },
-    combat_start: (ctx, h) => { const u = h.u, cb: Combat = ctx.cb; if (!u || !inFight({ ...h, cb })) return; const big = cb.units.find((v) => v.side !== u.side && (v.tier === 'elite' || v.tier === 'boss') && sideSees(cb, u.side, v)); if (big) gain({ ...h, cb }, 'fear', 1, big.name + ' is here'); },
+    world_round_start: (ctx, h) => { if (heartAddsWaiting(h.c)) gauges(h); },
+    combat_start: (ctx, h) => { const u = h.u, cb: Combat = ctx.cb; if (!u || !inFight({ ...h, cb })) return; if (heartAddsWaiting(h.c)) gauges({ ...h, cb }); const big = cb.units.find((v) => v.side !== u.side && (v.tier === 'elite' || v.tier === 'boss') && sideSees(cb, u.side, v)); if (big) gain({ ...h, cb }, 'fear', 1, big.name + ' is here'); },
     cond_landed: (ctx, h) => {
       const u = h.u; if (!u || ctx.t !== u || !onGrid(h)) return;
       if (ctx.id === 'shaken') gain(h, 'fear', 2, 'Shaken');
@@ -1062,7 +1079,7 @@ register({
     heal_given: (ctx, h) => { const u = h.u; if (!u || ctx.t !== u || !ctx.by || ctx.by === u || ctx.by.side !== u.side || ctx.n <= 0) return; gain(h, 'devotion', 1, ctx.by.name + '\'s care'); },
     shield_grant: (ctx, h) => { const u = h.u; if (!u || ctx.t !== u || !ctx.by || ctx.by === u || ctx.by.side !== u.side || ctx.n <= 0) return; gain(h, 'devotion', 1, ctx.by.name + '\'s care'); },
   },
-  brief: (h) => { const g = h.c ? (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed : null) : null; return 'Four Hearts' + (g ? ' (R' + g.rage + ' G' + g.grief + ' F' + g.fear + ' D' + g.devotion + ')' : '') + ': add gauge points for story moments (traitState heartfed).'; },
+  brief: (h) => { const g = h.c ? (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed : null) : null; return 'Four Hearts' + (g ? ' (R' + g.rage + ' G' + g.grief + ' F' + g.fear + ' D' + g.devotion + ')' : '') + ': add gauge points for story moments (traitState heartfed_add {rage|grief|fear|devotion: n}).'; },
 });
 // Fed (K23 part, PROVISIONAL, audit 1-3): an Outburst keyed to a gauge costs 10% less MP per point (5 MP at least; the
 // gauge at Begin) and hits 10% harder per point (damage, heal and shield; the gauge at Release, which empties it, a wild
@@ -1381,6 +1398,29 @@ register({
         say(cb, u.name + ' calls, and ' + TWIN_NAME + ' leans through at ' + refOf(t) + ' (' + x.hp + ' HP).');
         return null;
       } },
+    // The area map (the audit's proposal, PROVISIONAL): a token next to you, with its own 4 AP a round spent only on moves
+    // (world/act move with its unit id), never more than 6 tiles from you. A fight opened on the area map starts with it
+    // beside you as the called twin (combat_start below); in the story its presence is narration.
+    { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 2,
+      text: 'The twin appears within 3 tiles as a token with its own 4 AP a round (moves only); a fight starts with it called.',
+      available: (h) => (!h.u || !h.c || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first.' : (h.c.companions || []).some((k) => k.kind === 'twin') ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'The twin fell this scene: call it next scene.' : true),
+      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !free(h.cb!, t)) return { ok: false, why: 'A free tile within 3.' }; return {}; },
+      run: (h, a) => {
+        const u = h.u!, c = h.c!, g = h.g, t = aimOf(h.cb!, a, 'tile')!, tw = cs(c).twin, hp = Math.floor(0.5 * maxHp(c));
+        c.companions = [...(c.companions || []).filter((k) => k.kind !== 'twin'), { id: 'twin', kind: 'twin', name: TWIN_NAME, hp, maxHp: hp, ...(tw.portrait ? { img: tw.portrait } : {}) }];
+        if (g) (g.story.positions ||= {})['cp-' + c.id + '-twin'] = t;
+        emitFx(h.cb!, 'turn', { unit: 'cp-' + c.id + '-twin', side: u.side, at: t, summon: true });
+        say(h.cb, u.name + ' calls, and ' + TWIN_NAME + ' leans through at ' + refOf(t) + ' (' + hp + ' HP).');
+        return null;
+      } },
+    { id: 'dismiss_world', label: 'Let the twin go', scope: ['world', 'story'], target: 'none', ap: 0,
+      text: 'The twin fades back (no Strain); call it again when you need it.',
+      available: (h) => (!h.c ? false : (h.c.companions || []).some((k) => k.kind === 'twin') ? true : 'The twin isn\'t here.'),
+      run: (h) => {
+        const c = h.c!; c.companions = (c.companions || []).filter((k) => k.kind !== 'twin'); if (h.g?.story?.positions) delete h.g.story.positions['cp-' + c.id + '-twin'];
+        const line = TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' fades back from beside ' + c.name + '.'; if (h.cb) say(h.cb, line); else postStory(h, line);
+        return null;
+      } },
     { id: 'twin_cast', label: 'The twin casts', scope: ['combat'], target: 'tile', ap: (h, a) => { const o = h.cb && h.u ? twinOwner(h.cb, h.u) : null; const d = twinDesign(h, a); return o?.mg && d ? designAp(o.mg, d) : 2; },
       text: 'Cast one of the twin\'s three Outbursts from where it stands (your MP, your Strain).',
       available: (h) => (!h.u || !isTwin(h.u) ? false : !twinOwner(h.cb!, h.u)?.mg ? 'Your heart has no magic to lend.' : true),
@@ -1397,6 +1437,17 @@ register({
       run: (h) => { (h.u as any).guarding = true; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' stands guard.'); return null; } },
   ],
   on: {
+    // A twin called on the area map comes into the fight as the called twin: right after you in the order, held items
+    // as a twin's (not a companion's: it casts and Guards through the Class tab), and off the area map's list.
+    combat_start: (ctx, h) => {
+      const u = h.u, c = h.c, cb = h.cb; if (!u || !c || !cb || isTwin(u)) return;
+      const tw: any = cb.units.find((x) => x.companion === 'twin' && x.ctrl === c.id); if (!tw) return;
+      delete tw.companion; Object.assign(tw, { id: 'tw-' + u.id, twinOf: u.id, movement: 1.5, agility: 1, held: JSON.parse(JSON.stringify(twinHeld)), name: TWIN_NAME, tags: ['twin'] });
+      c.companions = (c.companions || []).filter((k) => k.kind !== 'twin'); if (h.g?.story?.positions) delete h.g.story.positions['cp-' + c.id + '-twin'];
+      const old = 'cp-' + c.id + '-twin', o: string[] = (ctx.order as string[]).filter((x) => x !== old), i = o.indexOf(u.id); o.splice(i + 1, 0, tw.id);
+      ctx.order = o; cb.order = cb.order.map((x) => (x === old ? tw.id : x));
+      say(cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' stands beside ' + u.name + ' (' + tw.hp + ' HP).');
+    },
     turn_start_pre: (ctx, h) => { if (!h.u || isTwin(h.u) || !h.cb) return; const tw = twinOf(h.cb, h.u); if (ctx.u === tw) ctx.penalties.push({ n: 2, why: 'the twin acts with 4 AP' }); if (ctx.u === h.u && tw) delete (tw as any).guarding; },
     attack_target: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.tgt !== u || !h.cb) return; const tw: any = twinOf(h.cb, u); if (!tw || !tw.guarding || dist(tw.pos, u.pos) > 1 || ctx.att === tw) return;

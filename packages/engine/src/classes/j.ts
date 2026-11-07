@@ -11,7 +11,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, type AttackMode,
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
 } from '../combat';
 import { WEAPON, SIGIL, type SigilDef } from '../data';
 import { mod, healingMult, magazineSize } from '../character';
@@ -1066,6 +1066,8 @@ register({
 // except on a hit you Interposed for). A Knight who also holds the Defender's own moves uses those (lane I) instead.
 const DEF_BRACE = 'class:defender.brace', DEF_PLATE = 'class:defender.reactive_plate';
 let INTERPOSE: string | null = null;
+/** The ally the Knight's Interpose just covered: the same attack's critical injury follows the hit to the Knight. */
+let KNIGHT_COVERED: { t: string; me: string } | null = null;
 function braceEnd(h: Holder, why: string) { const st = stateOf(h), u = h.u!; if (!st.braceDef) return; u.def -= 2; st.braceDef = false; say(h.cb, u.name + ' is no longer Braced (' + why + ').'); }
 function bulwarkShield(h: Holder) {
   const u = h.u!, kn = h.c;
@@ -1120,6 +1122,7 @@ register({
         INTERPOSE = u.id;
         try { const r = applyDamage(cb, u, d, { ...ctx.src, shield: true }); say(cb, u.name + ' takes ' + r.amount + (u.hp === 0 ? ' · Downed' : '') + '.'); if (u.hp === 0) emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
         finally { INTERPOSE = null; }
+        KNIGHT_COVERED = { t: ctx.t.id, me: u.id };
         return;
       }
       // Reactive Plate: on the Knight.
@@ -1132,6 +1135,13 @@ register({
       say(cb, line + plateShare(h, k) + '.');
     },
     // A Knight who is also a rank III Defender spends Guard through the Defender's plate: the shed plate still shields.
+    // The Interposed hit's critical injury goes to the Knight, not the ally (as the Defender's: audit problem 3, PROVISIONAL).
+    injury: (ctx, h) => {
+      const ip = KNIGHT_COVERED; if (!ip || ctx.t?.id !== ip.t || ip.me !== h.u?.id || ctx.cancel) return; KNIGHT_COVERED = null;
+      ctx.cancel = true; const me = h.u!, cb: Combat = ctx.cb;
+      if (!me.dead && !me.downed) say(cb, 'The blow\'s injury lands on ' + me.name + ' (Interpose)' + rollInjury(ctx.rng, me, cb, ctx.by || null) + '.');
+    },
+    on_hit: () => { KNIGHT_COVERED = null; }, on_miss: () => { KNIGHT_COVERED = null; },
     plate_spent: (ctx, h) => { if (ctx.u !== h.u || !has(h.u!, DEF_PLATE) || ctx.k <= 0) return; const line = plateShare(h, ctx.k); if (line) say(h.cb, h.u!.name + line.replace(/^ · /, ': ') + '.'); },
   },
   brief: () => null,

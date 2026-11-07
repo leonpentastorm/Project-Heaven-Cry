@@ -748,7 +748,7 @@
       "price_credits": 2500,
       "effects": [],
       "adjudication": "hybrid",
-      "text": "A working arm of metal and wire. It can go offline (Augment Offline) until Field Repair.",
+      "text": "A working arm of metal and wire. An arm injury hits the metal: it goes offline (Augment Offline) until Field Repair. With Proficiency 3 it takes up to 2 mods, fitted out of a fight; what each does there is the Narrator's.",
       "provisional": true
     },
     {

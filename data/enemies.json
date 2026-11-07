@@ -90,6 +90,22 @@
       "tags": [],
       "provisional": true,
       "text": "A Beast Handler's animal: it acts right after its owner, on the owner's orders. At 0 HP it is out (destroyed for the fight); rest and care bring it back."
+    },
+    {
+      "id": "twin",
+      "name": "the twin",
+      "kind": "human",
+      "hp": 50,
+      "defense": 12,
+      "attack_bonus": 0,
+      "armour": 0,
+      "movement": 1.5,
+      "weapon": "fists",
+      "tags": [
+        "twin"
+      ],
+      "provisional": true,
+      "text": "A Twinbound's twin, called on the area map: a token with its own 4 AP a round, spent only on moves, never more than 6 tiles from its owner. HP half its owner's maximum and its owner's Defense (the numbers here are stand-ins the engine replaces). A fight opened on the area map starts with it beside its owner as the called twin."
     }
   ]
 }

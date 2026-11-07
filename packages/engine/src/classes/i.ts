@@ -8,7 +8,7 @@
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
-import { strikeFromWorld } from '../game';
+import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
@@ -375,6 +375,7 @@ register({
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'reduce' || interposing || t === me || t.side !== me.side || src?.type !== 'weapon' || !src.by || !foeOf(src.by, t)) return;
       if (!alive(me) || dist(me.pos, t.pos) > 1 || resOf(me, 'guard') < 1 || !canReact(cb, me) || ctx.dmg <= 0) return;
+      if (statQuery({ u: t }, 'prey_lock', { by: src.by }).add > 0) return; // Rabbit's Foot: a hunter's or Ork's blow stays on its prey
       const pol = policy(h, 'auto');
       if (pol === 'off' || (pol === 'down' && ctx.dmg < t.hp + (t.shield || 0))) return;
       resSpend(me, 'guard', 1); useReaction(cb, me);
@@ -884,6 +885,20 @@ register({
     run: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; if (t === u) return 'Quicken an ally, not yourself.';
       u.mg!.charge -= 1; u.mg!.cast = true; const st = stateOf(h); (st.q ||= {})[t.id] = (st.q[t.id] || 0) + 1;
       emitFx(cb, 'stance', { unit: t.id, at: t.pos, what: 'quicken' }); say(cb, u.name + ' quickens ' + t.name + ': +1 AP on their next turn (1 charge).'); },
+  }, {
+    // The area map (the audit's proposal, PROVISIONAL): an overworld round is everyone's turn at once, so the ally's +1
+    // lands on this round's AP straight away (the ceiling of 9 holds). Once a round, as once a turn in a fight.
+    id: 'quicken_world', label: 'Quicken', scope: ['world'], target: 'ally', ap: 2, range: 6, uses: { per: 'per_turn', n: 1 },
+    text: 'Spend 1 charge: an ally within 6 tiles gets +1 AP this overworld round.',
+    available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true; },
+    run: (h, args) => {
+      const cb = h.cb!, u = h.u!, g = h.g, t = unitById(cb, args.targetId); if (!t || t === u) return 'Quicken an ally, not yourself.';
+      const tc = charOfUnit(t); if (!g || !tc) return 'Only a character takes Quicken on the area map.';
+      if (g.story.ended?.[tc.id]) return tc.name + ' has ended the turn.';
+      const was = apLeft(g, tc), now = Math.min(AP_MAX, was + 1); if (now <= was) return tc.name + ' is at the ceiling of ' + AP_MAX + ' AP.';
+      u.mg!.charge -= 1; u.mg!.cast = true; (g.story.ap ||= {})[tc.id] = now;
+      emitFx(cb, 'stance', { unit: t.id, at: t.pos, what: 'quicken' }); say(cb, u.name + ' quickens ' + t.name + ': +1 AP this round (' + now + '; 1 charge).');
+    },
   }],
   on: {
     turn_start: (ctx, h) => { const q = stateOf(h).q; const n = q?.[ctx.u.id]; if (!n) return; delete q[ctx.u.id];

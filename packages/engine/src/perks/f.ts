@@ -10,11 +10,12 @@ import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, h
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, type AttackMode } from '../combat';
+import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitDebuff } from '../magic';
 import { d20 } from '../rng';
+import { WEAPON } from '../data';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
-import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS } from '../tactics';
+import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -487,6 +488,8 @@ register({
     throw: (ctx, h) => { if (!ctx.preview && h.u && EXPLOSIVE_THROWS.has(ctx.item) && dist(ctx.tile, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h, ctx)); },
     object_destroyed: (ctx, h) => { const o = ctx.obj; if (h.u && o && /barrel|explosive|fuel|gas/.test(o.kind || '') && dist(o.pos, h.u.pos) <= 3) flashback(h, 'an explosion', rngOf(h)); },
     on_damaged: (ctx, h) => { if (h.u && (ctx.src?.explosive || ctx.src?.type === 'explosion') && dist(ctx.t.pos, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h)); },
+    // A launcher shell that misses still lands (at its target's tile: the engine has no scatter): shelling within 3.
+    on_miss: (ctx, h) => { const w: any = ctx.att ? WEAPON[ctx.att.weapon] : null; if (h.u && !ctx.melee && w && w.category !== 'thrown' && isExplosive(w) && ctx.tgt && dist(ctx.tgt.pos, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h, ctx)); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || ctx.roll?.ok || !(ctx.ck.tags || []).includes('flashback') || !h.g || !h.c) return;
       (h.g.story.ended ||= {})[h.c.id] = true;
@@ -708,7 +711,7 @@ register({
       ctx.power = (ctx.power ?? 1) * 0.5; say(h.cb, h.u!.name + ' takes ' + ctx.u.name + '\'s Blessing badly (The Old Blood): half power.');
     },
   },
-  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell with other races',
+  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell; story heals and Blessings from another race at half',
 });
 
 // ---------- Moon Hunter ----------
@@ -756,6 +759,8 @@ const LUCKY = (h: Holder) => h.key + '#lucky_foot';
 const luckyLeft = (h: Holder) => uses(h).left('per_session', 1, LUCKY(h)) > 0;
 register({
   id: 'rabbits_foot', claims: [0, 1, 5, 6],
+  // 'prey_lock' {by}: a hunter's or an Ork's blow stays on you: an ally's Interpose (Take the Hit) can't take it.
+  stat: (h, stat, ctx) => (stat === 'prey_lock' && preyBy(ctx?.by) ? 1 : 0),
   actions: [
     {
       id: 'lucky_foot', label: 'Lucky Foot', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 }, arm: true,
@@ -870,7 +875,7 @@ register({
       },
     },
   ],
-  brief: () => 'Narrator: what the drone scouts beyond the map',
+  brief: (h) => { const c = h.c, d = compOf(c, 'drone'), at = c && d ? h.g?.story?.positions?.['cp-' + c.id + '-' + d.id] : null; return (at ? 'drone at ' + refOf(at) + '; ' : '') + 'Narrator: what the drone scouts beyond the map'; },
 });
 const partsOf = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + (x.qty || 0), 0);
 const hasFrame = (c: Character) => packOf(c).some((x) => (x.item || x.id) === 'drone_frame' && (x.qty || 0) > 0);
@@ -907,6 +912,6 @@ register({
     combat_start: (ctx, h) => carryStoryCond(h, ctx, 'shaken'),
     rest: (ctx, h) => { const b = compOf(h.c, 'beast'); if (ctx.kind === 'long' && b && (b.hp ?? 1) > 0) b.hp = COMPANION_KINDS.beast?.hp ?? b.hp; },
   },
-  brief: () => 'Narrator: buildings it can\'t enter (most of Central City); story commands are Empathy checks you call',
+  brief: (h) => { const c = h.c, b = compOf(c, 'beast'), at = c && b && (b.hp ?? 1) > 0 ? h.g?.story?.positions?.['cp-' + c.id + '-' + b.id] : null; return (at ? 'beast at ' + refOf(at) + '; ' : '') + 'Narrator: buildings it can\'t enter (most of Central City); story commands are Empathy checks you call'; },
 });
 

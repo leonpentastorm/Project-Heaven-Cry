@@ -305,18 +305,22 @@ export function recoverWeapon(cb: Combat, u: Unit): string | null {
 // ---------- companions (rules 1.3; stat blocks provisional) ----------
 export const COMPANION_KINDS: Record<string, any> = Object.fromEntries((((enemiesJ as any).companions || []) as any[]).map((k) => [k.id, k]));
 /** A character's companions as PC-side units placed next to it (destroyed at 0 HP, not Downed; HP written back). */
-export function companionUnits(cb: Combat | null, c: Character, owner: Unit, taken: Set<string>, rng: Rng, map: { w: number; h: number; solid: string[] }): Unit[] {
+export function companionUnits(cb: Combat | null, c: Character, owner: Unit, taken: Set<string>, rng: Rng, map: { w: number; h: number; solid: string[] }, fixed?: Record<string, string>, only?: string): Unit[] {
   const out: Unit[] = [];
   for (const comp of c.companions || []) {
-    const k = COMPANION_KINDS[comp.kind]; if (!k) continue;
+    const k = COMPANION_KINDS[comp.kind]; if (!k || (only && comp.kind !== only)) continue;
     if (comp.hp != null && comp.hp <= 0) continue; // destroyed: repaired or healed in the story first
-    const [x0, y0] = xy(owner.pos); let at = '';
+    // Where it stood on the area map (fixed: the story's positions, by unit id), else next to the owner.
+    const want = fixed?.['cp-' + c.id + '-' + comp.id];
+    const [x0, y0] = xy(owner.pos); let at = want && !taken.has(want) && !map.solid.includes(want) ? want : '';
     for (let r = 1; r < 4 && !at; r++) for (let dx = -r; dx <= r && !at; dx++) for (let dy = -r; dy <= r && !at; dy++) { const kk = key(x0 + dx, y0 + dy); if (x0 + dx >= 0 && y0 + dy >= 0 && x0 + dx < map.w && y0 + dy < map.h && !map.solid.includes(kk) && !taken.has(kk)) at = kk; }
     if (!at) continue; taken.add(at);
     const u = unitFromEnemy('cp-' + c.id + '-' + comp.id, comp.name || k.name, 'minion', k.weapon || 'fists', at, rng);
     Object.assign(u, { side: 'pc', tier: undefined, hp: Math.min(k.hp, comp.hp ?? k.hp), maxHp: k.hp, def: k.defense, armour: k.armour, attack: k.attack_bonus, movement: k.movement, strength: k.attack_bonus,
       init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: k.portrait || undefined });
     u.mags = undefined; // unlimited spares, as enemies carry
+    // The twin (Twinbound's Call on the area map): half its owner's maximum HP, the owner's Defense, tied to the owner.
+    if (comp.kind === 'twin') Object.assign(u, { hp: comp.hp ?? Math.floor(0.5 * owner.maxHp), maxHp: comp.maxHp ?? Math.floor(0.5 * owner.maxHp), def: owner.def, attack: owner.mg?.will ?? 0, init: owner.init - 0.4, short: 'TW', img: comp.img || owner.img, twinOf: owner.id });
     out.push(u);
   }
   void cb;

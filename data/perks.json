@@ -445,7 +445,8 @@
       "recovered": null,
       "tags": [
         "detection"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "bedside_manner",
@@ -6183,7 +6184,8 @@
       "recovered": null,
       "tags": [
         "soul_magic"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "between_heartbeats",

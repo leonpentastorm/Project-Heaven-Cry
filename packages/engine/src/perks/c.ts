@@ -604,8 +604,8 @@ register({
 // ---------- Old School ----------
 // Fan the Hammer: with a revolver or a lever gun, 3 AP, fire every round still loaded at one target, each at −2 and with
 // Recoil (spec), once per turn (PROVISIONAL). With the drifter revolver this is the bigger version of its own Fan the
-// Hammer. Analog: no Evoker-linked or electronic guns and no electronic sight (the red dot): Old School won't fire them
-// (the engine has no equip hook yet; see the lane notes).
+// Hammer. Analog: no Evoker-linked or electronic guns and no electronic sight (the red dot): Old School won't fire them,
+// equip them or fit the red dot (stat 'equip_ban', read by equip and fit in character.ts).
 const fanGun = (u: Unit) => { const w: any = WEAPON[u.weapon]; return !!w && (w.category === 'revolver' || (w.tags || []).includes('lever')); };
 const analogBan = (u: Unit): string | null => { const w: any = WEAPON[u.weapon]; if (!w) return null; const t: string[] = w.tags || [];
   if (t.includes('evoker_linked')) return 'Old School: you won\'t fire an Evoker-linked gun.';

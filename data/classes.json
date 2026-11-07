@@ -847,7 +847,7 @@
               "name": "Quicken",
               "ap_cost": 2,
               "uses": "per_turn",
-              "text": "Spend 1 charge: an ally within 6 tiles gets +1 AP on their next turn (AP ceiling applies).",
+              "text": "Spend 1 charge: an ally within 6 tiles gets +1 AP on their next turn (AP ceiling applies). On the area map the +1 lands on this overworld round's AP.",
               "effects": [
                 {
                   "op": "stat_mod",
@@ -3175,7 +3175,7 @@
           "name": "Call",
           "ap_cost": 2,
           "uses": "at_will",
-          "text": "The Twin appears within 3 tiles and takes its own turn after yours with 4 AP: move, cast its built-in Outbursts (your MP, your Strain) or Guard you. HP 50% of yours, your Defense, Movement 1.5, your Will Power; at most 6 tiles from you.",
+          "text": "The Twin appears within 3 tiles and takes its own turn after yours with 4 AP: move, cast its built-in Outbursts (your MP, your Strain) or Guard you. HP 50% of yours, your Defense, Movement 1.5, your Will Power; at most 6 tiles from you. On the area map the twin is a token with its own 4 AP a round (moves only) and joins a fight opened there as the called twin.",
           "effects": [
             {
               "op": "summon_twin",

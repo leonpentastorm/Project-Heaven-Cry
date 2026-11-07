@@ -495,6 +495,8 @@ export class MainLogic extends DCLogic {
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }))
         .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden), faces = castMany(g, ns.map((n) => ({ key: n.id, current: ART(n.portrait) || null, tags: npcTags(n.name, n.tier, n.weapon) })), taken); return ns.map((n) => ({ id: n.id, side: 'foe', npc: n, name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: faces.get(n.id) || '',
           pos: n.pos, hp: ENEMY[n.tier]?.hp || 30, maxHp: ENEMY[n.tier]?.hp || 30, analyzedBy: n.analyzed ? 'party' : undefined, injuries: [], downed: false, dead: false })); })());
+    // Drones stand on the area map as tokens of their own (Drone Handler): the engine places them (positionsOf).
+    if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : k.kind === 'beast' ? 50 : 40; units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
     const objs = (inFight && cb ? cb.objects : g.story.objects) || defaultObjects(map), objAt = {};
     objs.forEach((o) => { if (!objAt[o.pos] || kindOf(o).blocks_move) objAt[o.pos] = o; });
@@ -524,6 +526,9 @@ export class MainLogic extends DCLogic {
     // The story map as a throwaway fight, for the engine's previews (built only when a spell is being lined up).
     let scbMemo; const scb = () => { if (scbMemo === undefined) { try { scbMemo = storyCb({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } }); } catch { scbMemo = null; } } return scbMemo; };
     const sU = (x) => (x && c ? x.units.find((u) => u.charId === c.id) || null : null);
+    // My drone on the area map (Drone Handler): its own unit, with its AP left this round.
+    const myComp = (kind) => { if (inFight || !c) return null; const x = scb(); return x ? x.units.find((u) => u.companion === kind && u.ctrl === c.id) || null : null; };
+    const myDrone = () => myComp('drone'), myBeast = () => myComp('beast'), myTwin = () => myComp('twin');
     const mHi = { pattern: new Set(), aim: null, reach: new Set(), reachCol: '' };
     let mHint = '', mReady = false, mLabel = 'Confirm';
     const myAt = c ? pos[c.id] : null, mOpen = !!(S.area && mover && isMagicW && !inFight);
@@ -626,9 +631,9 @@ export class MainLogic extends DCLogic {
     // apForTiles, previewAttack, lineOfSight) on the story map as a throwaway fight; nothing here is a rule of its own.
     const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false };
     const planOn = !!(S.area && mover && mover.hp > 0 && myAt && g.story.await === 'players' && !(g.story.ended || {})[mover.id]);
-    if (planOn && (['move', 'sprint', 'sneak'].includes(W) || ['shot', 'aimed', 'melee'].includes(W))) {
-      const cbx = scb(), u = sU(cbx);
-      if (cbx && u && ['move', 'sprint', 'sneak'].includes(W)) {
+    if (planOn && (['move', 'sprint', 'sneak', 'drone', 'beast', 'twin'].includes(W) || ['shot', 'aimed', 'melee'].includes(W))) {
+      const cbx = scb(), u = W === 'drone' ? myDrone() : W === 'beast' ? myBeast() : W === 'twin' ? myTwin() : sU(cbx);
+      if (cbx && u && ['move', 'sprint', 'sneak', 'drone', 'beast', 'twin'].includes(W)) {
         plan.isMove = true;
         if (!u.prone) {
           const P = paths(cbx, u.pos, u.id), mvv = u.movement;
@@ -636,7 +641,7 @@ export class MainLogic extends DCLogic {
           for (const k of Object.keys(P.dist)) { if (k === u.pos || (W === 'sprint' && (u.noSprint || P.dist[k] > Math.floor(3 * mvv)))) continue; if (costOf(k) <= u.ap) plan.reach.add(k); }
           const hv = S.hoverTile && plan.reach.has(S.hoverTile) ? S.hoverTile : null;
           if (hv) { plan.hv = hv; plan.cost = '−' + costOf(hv) + ' AP · ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles');
-            plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : 'Move') + ' to ' + refOf(hv) + ': ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles') + ', ' + costOf(hv) + ' AP (' + u.ap + ' left).';
+            plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles') + ', ' + costOf(hv) + ' AP (' + u.ap + ' left).';
             for (let k = hv, n = 0; P.prev[k] && k !== u.pos && n < 400; n++) { const p = P.prev[k], [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } }
         }
       } else if (cbx && u) {
@@ -654,7 +659,7 @@ export class MainLogic extends DCLogic {
         }
         plan.red = this._redMemo.red;
         // Who could be hit: people (and allies: friendly fire) and objects with something to break.
-        for (const du of units) { if (du.charId === mover.id || du.dead) continue; const tu = cbx.units.find((x) => x.id === du.id); if (!tu) continue;
+        for (const du of units) { if (du.charId === mover.id || du.dead || du.companion) continue; const tu = cbx.units.find((x) => x.id === du.id); if (!tu) continue;
           const pv = previewAttack(cbx, u, tu, mode); plan.tgt[du.pos] = { name: du.name, inRange: plan.red.has(du.pos), pv }; }
         for (const o of objs) { if (o.hidden || plan.tgt[o.pos] || !((o.hp != null && o.hp > 0) || isPersonObj(g, o))) continue; plan.tgt[o.pos] = { name: o.name, inRange: plan.red.has(o.pos), pv: null }; }
         const ht = S.hoverTile && plan.tgt[S.hoverTile];
@@ -766,6 +771,9 @@ export class MainLogic extends DCLogic {
         return toast('Click a person, an ally or an object.');
       }
       if (['move', 'sprint', 'sneak'].includes(W)) act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: W });
+      if (W === 'drone') { const d = myDrone(); if (!d) return toast('Your drone is gone: rebuild it out of a fight.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: d.id }); }
+      if (W === 'beast') { const b = myBeast(); if (!b) return toast('Your beast is gone.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: b.id }); }
+      if (W === 'twin') { const t = myTwin(); if (!t) return toast('The twin isn\'t here: call it from the Class tab.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: t.id }); }
     };
     const areaCells = cellsFor(true, worldClick);
     // ---------- buffs and debuffs (the Status tab) ----------
@@ -813,7 +821,8 @@ export class MainLogic extends DCLogic {
     const wKlass = classOf(c);
     const W_UTIL = wWa ? ['reload', 'load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']) : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
     const W_ITEMS = [
-      ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile']]],
+      ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
+        ...(myDrone() ? [['drone', 'Move the drone', myDrone().ap + ' AP left']] : []), ...(myBeast() ? [['beast', 'Move the beast', myBeast().ap + ' AP left']] : []), ...(myTwin() ? [['twin', 'Move the twin', myTwin().ap + ' AP left']] : [])]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
       ['UTILITY', [...W_UTIL, ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
       ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
@@ -832,6 +841,9 @@ export class MainLogic extends DCLogic {
     const wDet = wPkE && S.wDetailFor === W ? String(S.wDetail || '').trim() : '';
     const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W) || (!!wPkE && !pkTargeted && !pkTile && !pkObj && !wPkE.why);
     const wHint = wPkE && mover && canAct ? (wPkE.why ? wPkE.why : (pkTargeted ? (tgt ? 'Target: ' + tgt.name + '. ' : wPkE.target === 'ally' ? 'Click an ally. ' : 'Click someone on the map. ') : pkTile ? (S.wTile ? 'Tile ' + refOf(S.wTile) + '. ' : 'Click a tile. ') : pkObj ? (tgt && tgt.obj ? 'Target: ' + tgt.name + '. ' : 'Click an object. ') : '') + pkText(wPkE) + ' Confirm to use it.') : !mover ? 'You have no character to act with.' : mover.hp <= 0 ? mover.name + ' is Downed: an ally\'s stim' + (SB ? '' : ', or the Narrator,') + ' gets them up. End turn when ready.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
+      : W === 'drone' ? 'Click an open tile: the drone flies there on its own AP (3 a round). The Narrator says what it sees.'
+      : W === 'beast' ? 'Click an open tile: the beast goes there on its own AP (4 a round). Other orders out of a fight are Empathy checks the Narrator calls.'
+      : W === 'twin' ? 'Click an open tile: the twin goes there on its own AP (4 a round), never more than 6 tiles from you.'
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
       : isMagicW ? mHint
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')

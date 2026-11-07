@@ -9,14 +9,14 @@
 // passes, else the bound game's rng (g.rng). What the engine can't run goes to the Narrator: a fight note, a pending
 // ruling, or the item's brief() remainder in the character brief.
 import {
-  register, stateOf, uses, stampOf, note, pendRuling, postStory, grantPerkAp, modOn, boundGame, charOfUnit, type Holder,
+  register, stateOf, uses, stampOf, note, pendRuling, postStory, grantPerkAp, modOn, boundGame, charOfUnit, holderOf, type Holder,
 } from '../effects';
 import { SKILLS, SCHOOL } from '../data';
 import {
   type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable,
 } from '../combat';
 import {
-  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, crystallise, manaBand, manaOf, harm, heal,
+  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave,
 } from '../magic';
 import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -25,7 +25,7 @@ import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { d20, die, type Rng } from '../rng';
-import { npcsOf, positionsOf, setStoryCond } from '../game';
+import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -358,6 +358,21 @@ register({
     run: (h, args, rng) => {
       const u = h.u!, cb = h.cb!, m = u.mg!, pv = previewEvoke(cb, u, args.tile!, args.choice);
       if (!pv.ok || !m.held) return pv.why || 'Nothing held.';
+      // On the area map a fused cast that finds an NPC token opens the fight (as an Evoke there does), and the cast is
+      // the opening move, its Evoke AP paid from the character's AP.
+      if (ow(cb)) {
+        const npc = pv.targets.map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
+        if (npc) { const g = h.g || boundGame(); strikeFromWorld(npc.id, pv.ap ?? SPELL_AP.evoke, (cbx, att) => fusedCast({ ...(holderOf({ u: att, cb: cbx, c: h.c }, 'twin_discipline') || h), u: att, cb: cbx, g: h.g }, args, g.rng)); return null; }
+      }
+      return fusedCast(h, args, rng);
+    },
+  }],
+  on: { outburst_release: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.u) && s.fusing?.ring) ctx.mult = (ctx.mult || 1) * 0.8; } },
+  brief: () => null,
+});
+function fusedCast(h: Holder, args: any, rng: Rng): string | null {
+      const u = h.u!, cb = h.cb!, m = u.mg!, pv = previewEvoke(cb, u, args.tile!, args.choice);
+      if (!pv.ok || !m.held) return pv.why || 'Nothing held.';
       const p = pv.pattern!, held = { ...m.held }, d = m.designs.find((x) => x.id === held.design); if (!d) return 'That design is gone.';
       m.charge -= pv.charge; m.cast = true;
       const targets = pv.targets.map((id) => cb.units.find((x) => x.id === id)!).filter(Boolean);
@@ -373,11 +388,7 @@ register({
       } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
       const used = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
       return null;
-    },
-  }],
-  on: { outburst_release: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.u) && s.fusing?.ring) ctx.mult = (ctx.mult || 1) * 0.8; } },
-  brief: () => null,
-});
+}
 
 // =====================================================================================================================
 // Verse of War (Achieved: Implication 5 + Will Power 5). An Outburst cast while you speak in verse: +1 tile of range,
@@ -399,8 +410,21 @@ register({
     text: 'Release your held Outburst while you speak in verse: +1 tile of range, ×1.1 damage (1 AP).',
     available: (h) => { const m = h.u?.mg; if (!m) return false; if (!m.held) return 'Hold an Outburst first.'; return sayLine(h) ? true : 'Say your verse first (Say).'; },
     run: (h, args, rng) => {
-      const u = h.u!, m = u.mg!, s = stateOf(h); m.soulRange += 1; s.verseRelease = true;
-      try { return releaseOutburst(h.cb!, rng, u, args.tile); } finally { m.soulRange -= 1; s.verseRelease = false; }
+      const u = h.u!, m = u.mg!, cb = h.cb!;
+      // In verse: +1 range for this release; the flag on the holder in the map it runs on (outburst_release, damage_in).
+      const inVerse = (cbx: Combat, uu: Unit, r: Rng) => {
+        const hh = holderOf({ u: uu, cb: cbx, c: h.c }, 'verse_of_war') || h, st = stateOf({ ...hh, cb: cbx, u: uu, g: h.g });
+        uu.mg!.soulRange += 1; st.verseRelease = true;
+        try { return releaseOutburst(cbx, r, uu, args.tile); } finally { uu.mg!.soulRange -= 1; st.verseRelease = false; }
+      };
+      // On the area map a release that would touch an NPC token opens the fight, as a released Outburst does there; the
+      // release is the opening move (its own 1 AP) and the verse line carries into the fight's notes.
+      if (ow(cb)) {
+        m.soulRange += 1; let npc: Unit | undefined;
+        try { npc = spellTargets(cb, u, 'release', undefined, args.tile).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe'); } finally { m.soulRange -= 1; }
+        if (npc) { const g = h.g || boundGame(); strikeFromWorld(npc.id, 0, (cbx, att) => inVerse(cbx, att, g.rng)); return null; }
+      }
+      return inVerse(cb, u, rng);
     },
   }],
   on: {
@@ -508,7 +532,8 @@ register({
 
 // =====================================================================================================================
 // Upper-Touched (trait). Thin Veil: Outbursts cost 20% less MP (the 5 MP floor stays); you sense upper-realm beings
-// within 10 tiles (a log line names where each one is when it comes within 10; the fog presence marker needs a hook).
+// within 10 tiles (a log line names where each one is when it comes within 10, and the 'sees' hook marks it sensed
+// through the fog; on the area map the token is felt and revealed).
 // Seen From Above: upper-realm beings always know where you are (you can't stay Hidden while one stands; their spot
 // rolls always find you; in the story an upper-realm NPC always notices your sneak). Blessings cast on you roll a d6
 // (provisional table, plan 6a): 1 the Blessing fails, 2 +1 Strain, 3 Shaken 1 round, 4 as normal, 5 ×1.5 power, 6 a

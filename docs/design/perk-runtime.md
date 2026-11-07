@@ -77,8 +77,8 @@ and the line is logged once.
   Extraction `adjudication: hybrid`.
 - items.json: `mod_red_dot` `tags: ["electronic"]`.
 
-Not applied (decisions for Leon, or bigger than a data edit): Daggerfall Flashback TN 13 → 12 ("if Leon agrees");
-Gun Nut's two extra guns; the drone and beast companion HP (traits 30/60 vs enemies.json 40/50); new objects
+Applied later as provisional (completeness batch 5, spec items 368-369): Daggerfall Flashback TN 13 → 12 in the
+data; Gun Nut's two extra guns (`min_carry.start_fill`). Not applied (decisions for Leon, or bigger than a data edit): the drone and beast companion HP (traits 30/60 vs enemies.json 40/50); new objects
 (`portable_barricade`, `rally_banner`, `supply_crate`), `mason_chisel`, `grand_staff`, `tracker`; structured Grand
 data; patron Blessing polarity; the remaining lane-I class data rewrites (bespoke ops for Special Ammo, Lunge, Reactive
 Plate, Payload, Raise Cover, Seal, Stored Spell cap, Heart Surge, Puppet's save) — the handlers already run the
@@ -86,23 +86,103 @@ corrected numbers; the Emplaced condition's +2.
 
 ### Still open (core changes not made in this pass)
 
-1. Actions granted to other units (ally Field Repair for Factory Made, Gift, a handed Stored Spell, the supply crate's
-   take): `ItemHandler.grants(h, unit)` or object actions. (A10, I1, J5)
-2. Sight hooks (`sees` in `unitSees` / `visibility` / `sideSees`): Skin Map, Sixth Sense, Upper-Touched's sense, Hollow
-   Heart's reveal, Sworn Sibling, Chain Smoker, Mirage walls. (B3, D12, D13, E-H8, F12)
+1. Actions granted to other units (Gift, a handed Stored Spell, the supply crate's take): `ItemHandler.grants(h, unit)`
+   or object actions. Ally Field Repair for Factory Made is **built** (an ally's `combat/repair` on the machine body).
+   (A10, I1, J5)
+2. Sight hooks (`sees` in `visibility` / `sideSees`): **built** for Skin Map, Sixth Sense, Upper-Touched (a sensed
+   presence through fog), Sworn Sibling and Chain Smoker (+2 tiles of enemy Vision in the fog). Still to wire: Hollow
+   Heart's reveal, Mirage walls. (B3, D12, D13, E-H8, F12)
 3. Reaction sharing (Many Hands). (E-H1)
-4. Area-map NPC movement hooks (Got You in My Sight, War Footing's aura). (B8)
+4. Area-map NPC movement hooks: **built** (`npc_moved`, `npc_sense`, `round_ap`; Got You in My Sight, Wind on the Skin,
+   Skin Map, Sixth Sense). War Footing's aura on the area map is still to wire. (B7, B8)
 5. Enemies never throw (Catch), enemy spells and Judgement Day, enemy AI for staffs and the twin. (C2, F4, K12)
-6. Equip and mod-slot hooks (Old School, Forlorn Hope, Heavyworlder one-handed heavies). (A12, B15, C5)
-7. `glyph_pool` stat (Hold the Stroke's `#pool` tag stays), glyph fade/scuff/evoke-consume hooks (Keystone). (D1, K2)
+6. Equip and mod-slot hooks: **built** (stats `equip_ban` and `one_hand_heavy` in character.ts equip and fit: Old
+   School, Heavyworlder; Forlorn Hope at lock-in). (A12, B15, C5)
+7. `glyph_pool` stat (Hold the Stroke's `#pool` tag stays). Glyph fade/scuff/evoke-consume: **built** (magic.ts honours
+   the glyph's `keystone` flag; Keystone). (D1, K2)
 8. Twin Souls' `school3` in the design validator. (D6)
-9. A `refusal` on `shove` / `setOverwatch` (First, Do No Harm now refuses damaging Sigils and Outbursts). (E-H5)
-10. Story damage through the engine (Soulmate, Angel), a pre-stim hook (Rival's Petty on a Downed stim). (E-H6, H7)
-11. Session start's full heal before `session_start` (Insomniac's Wired at session start). (H lane gap 2)
-12. Foreseen's real rewind (`story/foresee`), `check/decline`, the Narrator `after` field for Talks Broke Down. (G1, G7, E-H3)
+9. A refusal on `shove` / `setOverwatch`: **built** (`action_refuse`; First, Do No Harm). (E-H5)
+10. Story damage through the engine: **built** (`storyHarm`, the Narrator's `harm[]`; Soulmate). Rival's Petty gates a
+    stim on a Downed rival before anything is spent (fight and area map). (E-H6, H7)
+11. Session start's heal: **built** (`session_heal` {mult}: Insomniac's Wired gives back half). (H lane gap 2)
+12. Foreseen's real rewind (`story/foresee`), `check/decline`. The Talks Broke Down field is **built** as
+    `combat.fromTalk` (boolean) instead of the `after` enum. (G1, G7, E-H3)
 13. Base Hand-Off as an item for every Camaraderie 3 character. (E-H4)
 14. UI pickers (tiles, choices, NPCs, checks, pack items) for the actions listed in the lanes' UI notes.
 
+
+### Completeness pass, batch 1 (closed)
+
+Each item below now works in every tier, in a fight and out of one, with a test through the reducer
+(`packages/engine/test/completeness-a.test.ts`, `-b`, `-a2`). Spec items 377-387.
+
+- **Breaching Strike:** `ignore_cover` gone from data; area-map strike opens the fight (`strikeFromWorld`); story ruling.
+- **Eyes in the Back:** `no_flank` op; the adjacent half cover is the shot's `coverTile` (a miss by its margin hits it,
+  B4); a carried shield's −5 from every side (B14).
+- **Wind on the Skin, Skin Map, Sixth Sense:** `npc_sense` on arrival, placement, rounds, moves and an area-map fight;
+  the `sees` hook in fights (B3).
+- **Got You in My Sight:** `npc_moved` and `round_ap` (B7/B8): +2 AP next overworld round; II's `story.lastSeen`.
+- **Clean Hands:** `ruling_answered` + `round_ap` (F-8): +2/+3 next overworld round on an accepted claim.
+- **Soulmate:** story damage through `storyHarm` (H6).
+- **Talks Broke Down:** `combat.fromTalk` (H3).
+- **Mirage:** area map 2 AP, engine Analysis rolls per token, ruling.
+- **Lab Coat II:** `scene.labImmune` blocks the agent for the scene.
+- **Bulwark:** preview multiplier in `damage_out` (preview only); tests for Sigil, Soul, Elemental, blasts, two guards,
+  an enemy's shot through `combat/end-turn`.
+- **Iron Stomach, Nothing Left to Fear:** tested through the story-to-fight carry and `combat/end-turn`.
+
+### Completeness pass, batch 2 (closed)
+
+Items 14-26 of the gap list, with reducer tests in `packages/engine/test/completeness-b2.test.ts` (plus `-b`, `-c`,
+`-a` and `perks-g`). Spec item 388.
+
+- **Earthbreaker, Last Wall:** both carry a brief line (the story smash is a once-a-scene ruling; "you fall" moments read
+  right in the fight report). Last Wall tested against two enemies' lethal blows on their turn.
+- **Grapple:** the scene hold (`grapple_npc`) naming an NPC token on the area map is the token grab and opens the fight
+  (`strikeFromWorld`); in the story panel the ruling says a hostile hold starts the fight. II's redirect tested on an
+  enemy's turn.
+- **Into the Dark II** on the area map (fear zone: +1 AP once a zone), **Shadow Step** on the area map, **Grim Reaper**
+  on an ambush opened from the area map (+2 AP, own turn).
+- **Pattern Lock, Outclassed, You Get Used to It, Sweet Talker, Used to the Pain, Scar Tissue, Rally Cry, Walking
+  Wounded:** each through the reducer (an enemy's turn after `combat/end-turn`, `combat/attack`, `combat/stim`,
+  `combat/perk`).
+- **Sixth Sense:** the `sees` hook lets a squadmate target a fogged enemy within 3 tiles of the holder (`combat/attack`).
+- **Foreseen:** the room vote and the host's rewind; the use stays spent after it.
+- **Many Hands** (a spent ally reacts on the holder's reaction; area-map Hand-Off), **Grenadier's Arm** (objects),
+  **Forlorn Hope** (kit armour drops at `char/add`), **Just the Repairman** (area map d100, scene memory).
+
+### Completeness pass, batch 4 (closed)
+
+Items 40-52 of the gap list, with reducer tests in `packages/engine/test/completeness-d2.test.ts` (plus `-c`). Spec
+items 396-397.
+
+- **Beast Handler:** the beast is an area-map token like the drone (`COMPANION_ROUND_AP`: drone 3, beast 4; world/act
+  move with `unit`; the brief names its tile); it starts a fight where it stood and stays where it ended. The trait's
+  `companion` op now carries the spec's 50 HP (provisional; item 370 still waits on Leon).
+- **Field Medic:** the lock on the area map (`world_round_start`), lifted by a stim; Thrown Stim on the area map.
+- **Humanity First:** +15% through `combat/attack`; a Factory Made squadmate's `combat/stim` at half; an area-map
+  Hand-Off from a non-human refused.
+- **Sworn Sibling, Upper-Touched, Chain Smoker:** through the `sees` hook (squad sight of the sibling, a sensed
+  upper-realm presence in fog, an enemy's Vision +2 against the smoker).
+- **Factory Made** (ally Field Repair), **Heavyworlder** (shove immunity on a squadmate's `combat/shove`, +2
+  Intimidation, −3 Athletics, the lit-tile stay-hidden auto-fail), **Old School** (`gear/equip` refuses an electronic
+  or Evoker-linked gun in the story).
+- **Insomniac:** Wired at session start (half); Always Up on a hidden enemy's turn after a Narrator rest.
+- **Rival:** Petty on an area-map stim on a Downed rival.
+- **Rabbit's Foot:** a taunted Ork still attacks the holder on its turn; an Interpose (the Defender's Take the Hit) can't
+  take a hunter's or Ork's blow (`prey_lock` stat, read by Interpose).
+- **Company Man:** the RTC contract memory thread, seeded once.
+
+Still open from batch 4: Humanity First's +2 Fear save from a non-human is tested only through `applyCond` (no enemy
+action inflicts Fear on a PC); Upper-Touched's d6 runs on a prayer's Blessing (`story/pray`) and fight Blessings, not on
+a Blessing the Narrator grants some other way (the Narrator turn has no Blessing field); the skills.json `take_the_hit`
+grant (Raw Power 3) has no handler of its own, so Rabbit's Foot's prey lock reaches the Defender's Interpose only.
+Sworn Sibling's sight adds nothing the shared squad sight doesn't already give (allies are always seen).
+
+Still open from batch 2: Sweet Talker's betrayal sting and You Get Used to It's penalty are tested only through
+`applyCond` (no enemy AI action lands a Brain or Heart debuff on a PC yet); the area-map Grim Reaper `u.ap += 2`
+branch in an overworld throwaway fight is reachable only if a kill lands there without opening the fight (it doesn't
+today: a Shade's silent takedown kills inside the real fight and carries the AP back).
 
 ## Appendix: the lanes' notes
 
@@ -120,7 +200,7 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
   with type flat".
 - **Bulwark.** `context` should become a machine form: `{ "op": "damage_reduction", "type": "ranged", "value": 0.25,
   "target": "ally", "area": "behind_self", "depth": 1 }` (depth 2 at Tier II).
-- **Breaching Strike.** Drop `ignore_cover`, or redefine it.
+- **Breaching Strike.** Drop `ignore_cover`, or redefine it. *(Applied: dropped from both tiers and the text.)*
 - **Siege Engine.** `cost_mod` should become `action_cost` with `value: -1` for shove and break.
 - **Movement.** Right of Way, Heavyworlder and Old Timer: `stat_mod move` value −1 becomes −0.5. Also update the
   trait text.
@@ -150,8 +230,9 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 7. **Overworld rounds have no AP hook** (like `turn_start_pre`), so Southern Fist's +1 AP doesn't apply on the area
    map.
 8. **Overworld units are rebuilt every action**, so per-fight item state isn't meaningful there. Glass Runner, Squad
-   Anchor, Scar Tissue and Brightest Light wear are fight-only for now. Brightest Light's doubled wear on area-map
-   attacks needs a hook where the overworld writes durability back.
+   Anchor and Scar Tissue are fight-only for now. Brightest Light's doubled wear on area-map attacks is **built**
+   (`unit_built` + `action_done`; a strike or shot at an object wears 1 there, spec item 392). The drone is an
+   area-map token with its own AP (spec item 393).
 9. **`rollInjury`** takes no `cb` and fires no hook. Walking Wounded, Glass Runner and Crawler-Blooded read the attack
    line rollInjury wrote ("INJURY (d6 n): side arm|leg") in `on_hit`.
    - An `injury` hook `{t, loc, side, dazed, halveMove, cancel}` would make them exact.
@@ -600,16 +681,15 @@ The story Perks strip needs:
      `releaseAt(posUnit, statUnit)` in `magic.ts` to take the caster and the stat source separately.
 2. **`fireBurst` takes a flat 3 AP** (`u.ap -= 3`) instead of `pv.ap`. Fire Discipline gives 1 AP back on the first
    round of the burst. It spots that round by the log line "X fires a burst.", which is fragile.
-3. **Interpose: the critical injury still lands on the ally.**
-   - `resolveAttack` rolls the injury on `tgt` after `applyDamage`.
-   - Needs a redirect hook after the hit is decided (an `attack_hit {tgt}` that can be changed), or an `injury_target`.
+3. ~~Interpose: the critical injury still lands on the ally.~~ **Built:** the `injury` hook (cancel, then the
+   Interposer rolls its own); the Defender's and the Adamantile Knight's Interpose both use it (spec 14 item 400).
 4. **`cond_apply` doesn't say what caused the condition** (a word, a design, a hit).
    - Bind's +2 also reaches an Outburst's Pinned option.
    - Mind Fog and Heart Surge find their release with a log-length marker (`rel` in `i.ts`).
    - Proposal: `src: {kind:'sigil'|'outburst'|'hit'|…, word?, design?}` on `cond_apply`.
 5. **`releaseAt` has no hook to add targets** and no post-release hook.
    - Storm Front rolls its extra targets inside `outburst_release`, so its log line comes before the release line.
-   - Heart Surge doesn't double push or pull distances: `shove(…, 3)` is fixed.
+   - ~~Heart Surge doesn't double push or pull distances.~~ **Built:** `forced_move` tiles are read back by `magicShove`.
 6. **`evoke` has no area or target hook and no post-evoke hook.**
    - Payload is its own action. It calls `evoke()`, then resolves the extra targets with `sigilOn` in `i.ts`, a copy
      of `subjectEffect` that leaves out GALE's shove. Keep the two in sync, or export `subjectEffect`.
@@ -617,10 +697,10 @@ The story Perks strip needs:
 8. **`flux()`, `addStrain()` / `manaShort()` and `wildRelease()` aren't exported.** `i.ts` copies Flux overload and
    the Mana Short (`addFlux`, `strainUp`). One difference: a held Outburst during a class cast's Mana Short bursts into
    the air instead of releasing wild.
-9. **The damage source has no spell cost or word count**, so Drink It In uses fallbacks (I34). Proposal:
-   `src.spell = {mp?, words?}` from `releaseAt` and `evoke`.
-10. **Encouraged (Inspire) doesn't reach** Sigil and Soul strike rolls, slip checks, the Mana Short or death saves.
-    Those d20 sites have no hook.
+9. ~~The damage source has no spell cost or word count.~~ **Built:** `spellMp` / `spellWords` on the damage source
+   from `releaseAt` and `evoke`; Drink It In reads them (spec 14 item 402).
+10. **Encouraged (Inspire)** reaches Sigil and Soul strike rolls (`spell_roll`, **built**); slip checks, the Mana Short
+    and death saves still have no hook.
 11. **Overworld units are rebuilt every action, and no hook fires when a unit is built.**
     - The Trickster's BIND and inscribed armour (+5) don't apply on the area map.
     - Proposal: a `unit_built {u, c}` hook in `unitFromCharacter`.
