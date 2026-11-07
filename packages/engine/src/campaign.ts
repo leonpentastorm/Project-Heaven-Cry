@@ -69,6 +69,8 @@ export interface Campaign {
   missions?: Mission[];
   /** An NPC who offers side jobs in character, for open campaigns. */
   board_npc?: BoardNpc;
+  /** Lines shown on the campaign's end screen. */
+  credits?: string[];
 }
 
 /** "N1–P6", "F4–F5, H2" or "C7" to tile keys. */

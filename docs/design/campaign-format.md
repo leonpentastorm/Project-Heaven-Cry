@@ -27,7 +27,38 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `acts` | no | `[{ id, title, summary, zones }]` for long campaigns: the Narrator's context carries the current act (the one holding the party's zone) in full and a line for each other zone. |
 | `pins` | no | Plot essentials pinned in the Narrator's memory from session 1. |
 | `narratorLore` | no | The World Bible chunks and lore docs the Narrator reads every turn, by key: `truth`, `worlds`, `magic`, `mana`, a sub-chunk such as `truth/knowing` or `worlds/timeline`, `sector-earth` (only the party's origins), `epccg-cast`. A key takes everything under it. Default `["truth", "worlds"]`. Anything else the Narrator can look up in its wiki when it needs it (spec: The Narrator's wiki). |
+| `missions` | no | Missions and objectives for the mission board (below). Without them the campaign plays as before. |
+| `board_npc` | no | `{ name, zone, at, portrait?, text? }`: an NPC who offers side jobs in character (an AHOC chapter quartermaster with a job board). They stand in `zone` at `at` as a neutral token, and the Narrator is told they hand out side jobs. For open campaigns; M813 is linear and doesn't use one. |
+| `credits` | no | Lines shown on the campaign's end screen. |
 | `music` | no | `{ ambient, combat }`: the default tracks where a zone has none. A track is `{ yt, title, artist, start?, length?, licence? }`: `yt` is the 11-character YouTube video id, and the video must allow embedding. An encounter can have its own `music` track (a theme for that named fight). `combat` is no longer played: fights play the game's own music (Gunline, Heaven Falls, Last Rounds). See the spec's Music section. |
+
+## Missions
+
+Missions are what the players can see they are trying to do (spec: OOC, missions and end states). The Narrator reads all of it; players see titles, goals, summaries and objectives on the mission board, and hidden ones only once revealed.
+
+| Field | Required | What it is |
+|---|---|---|
+| `id` | yes | Lowercase letters, digits and underscores (`the_ramp`). |
+| `title` | yes | "The Ramp". |
+| `act` | yes | The act number (1 or more). |
+| `summary` · `goal` | yes | Player-facing: a short paragraph, and the goal in one line. |
+| `hidden` | no | `true`: off the board until the Narrator reveals the mission. |
+| `objectives` | yes | `[{ id, text, optional?, hidden?, done_when }]`. At least one is required (not optional). `done_when` tells the Narrator when it counts as done; it is guidance, not code. Hidden objectives stay off the board until revealed. |
+| `next` | no | The mission that follows, or a list of branches. With a list, the Narrator picks one (`missionNext`) when the story decides; say how in `narrator_notes`. |
+| `narrator_notes` | no | Narrator only. |
+| `end` | no | `{ kind: "act" \| "campaign", title, epilogue_guidance? }`: closing this mission ends an act (the MISSION COMPLETE card) or the campaign (the epilogue turn and the end screen). |
+
+The campaign's first missions are the ones no other mission leads to. A mission closes when every required objective is done or failed, and its end and next fire either way. Keep spoilers (the campaign's `secrets`) in hidden objectives or the notes.
+
+```json
+{ "id": "the_ramp", "title": "The Ramp", "act": 1,
+  "summary": "Chief Engineer Keel stands at the foot of the ramp: not enough thrust for scrap.", "goal": "Get the wounded aboard the last ship.",
+  "objectives": [
+    { "id": "get_aboard", "text": "Get the wounded aboard", "done_when": "The hatch closes with the wounded inside. Failed if the ship leaves without them." },
+    { "id": "no_shots", "text": "No shots fired", "optional": true, "done_when": "Settled without anyone firing." } ],
+  "next": ["the_years", "the_crossing"], "narrator_notes": "Left behind: the_years. Aboard: the_crossing.",
+  "end": { "kind": "act", "title": "Act 1 · The Last Ship" } }
+```
 
 ## Zones
 

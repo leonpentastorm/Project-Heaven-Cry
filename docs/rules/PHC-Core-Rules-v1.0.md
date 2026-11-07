@@ -1576,6 +1576,35 @@ The room can redo or reword the AI Narrator's answers, **only if everyone agrees
 - **Reword:** nobody can type into the Narrator's words. The Narrator rewords its own line as asked: wording, tone, emphasis and details that change no outcome. It refuses, keeping its words, any request that would change what happened (items, money, injuries, deaths, positions, who did what, results, new events). The original is kept.
 - **Cost:** a reroll is one Narrator call; a rewording is a small call at low effort.
 
+## OOC, missions and end states
+
+Players need to ask the table things the story can't answer, see what they are trying to do, and know when it is done (Leon's M813 playtest, 23 rounds: "[OOC] Quest complete, now what?", "So mission complete? We just free roam now?").
+
+**Out of character (OOC)**
+
+- **Marking a line.** A player's line is OOC when its OOC toggle (beside Send) is on, or when it starts with `[OOC]`, `(OOC`, `OOC:`, `//`, `[to the narrator]` or `[to the narator]`, in any case. The marker is stripped for display.
+- **It costs nothing.** An OOC line doesn't use the player's Say for the round and isn't their turn in the speaking order. It can be sent at any time after the session starts: between turns, while the Narrator is answering, in a fight (the combat Say row reads the same markers), and after the campaign ends.
+- **Everyone sees it,** muted and labelled "OOC · player name".
+- **The Narrator answers on its next turn,** in a separate "NARRATOR · OOC" box everyone sees: plain, short (at most about 80 words, *provisional, item 377*), naming the current objectives and two or three concrete options. No prose, no hidden objectives, no secrets. The questions reach it in their own block, by character name, never in the transcript.
+- **No extra call.** An OOC question never triggers a Narrator call of its own. It makes the round's close call the Narrator even if nobody said anything in character, so a room that only asked OOC is answered as soon as everyone ends their turn. A question asked while a call is in flight waits for the next one. *Provisional, item 378.* At most 8 questions wait at once; older ones drop (*provisional, item 377*).
+
+**Missions**
+
+- A campaign may list **missions** (format: `docs/design/campaign-format.md`). Each has a title, an act, a player-facing summary and goal, objectives (some optional, some hidden until revealed), a next mission (or several branches), Narrator-only notes, and optionally an **end** (of an act, or of the campaign). Each objective has a `done_when`: guidance for the Narrator, not code. Campaigns without missions play as before.
+- **Start:** at session start, every mission no other mission leads to becomes active.
+- **The Narrator marks progress** with its turn: an objective done, failed, or revealed (a hidden one), or a whole mission done, failed or revealed. The engine checks every id against the campaign and ignores unknown ones; only active missions change, and a settled objective stays settled. At most 12 updates a turn (*provisional, item 380*).
+- **A mission closes** when every required objective is settled: complete if all are done, over if any failed. Optional objectives never hold it open. Either way its end fires and its next mission activates; with several branches, the Narrator picks one (missionNext) once the story has decided. *Provisional, item 379.*
+- **Side jobs:** the Narrator may add side jobs (an id, a title, a line) and settle them; it can't add, edit or remove main missions. At most 12 a turn and 24 in all (*provisional, item 380*).
+- **Log and toasts:** every change is a line in the story ("✓ Objective: Get the wounded aboard") and a toast for everyone. No XP comes from missions; the Narrator's quest XP stays as it is.
+- **The mission board:** a MISSIONS button in the header, with the count of open objectives and side jobs, opens the board: the current mission's title, goal and summary, its objectives (☐ to do, ✓ done, ✕ failed; optional ones marked), side jobs, and completed missions folded below. Hidden objectives, notes and `done_when` never show.
+- **The board NPC** (open campaigns): a campaign may name an NPC (name, zone, tile, portrait) who offers side jobs in character. They stand in their zone as a neutral token. M813 is linear and has none.
+- **Old saves** without missions load and play. Refreshing the campaign from the built-ins (host) starts the board at the first mission.
+
+**End states**
+
+- **Act end:** when a mission with an act end closes, everyone gets a full-screen MISSION COMPLETE card: the act's title, what happened (the Narrator's scene summaries and chapters since the act began), the objectives done, the XP each character gained in the act (from the engine's records), key choices (memory facts of importance 4 or more from the act), and the next mission's title and goal. No extra Narrator call. Continue returns to the story; each player sees the card once. The Narrator's next turn is told: "ACT ENDED: open the next mission … with a clear scene and a clear first goal."
+- **Campaign end:** when a mission with a campaign end closes, the Narrator gets one last turn, the **epilogue**, guided by the mission's epilogue guidance. Open checks and Overreach pushes are dropped (*provisional, item 381*); a fight still on finishes first. Then everyone sees the end screen: the epilogue, each character's final card (portrait, class, level, deeds), the campaign's credits if it has any, and Return to the room. The save is marked complete: nobody speaks in character any more (OOC still works), and the room shows the campaign as finished.
+
 ## Character portraits are cards
 
 - **One pool, no labels.** The creation screen's portraits are one grid of cards with no names and no set labels: a card is who *you* are, not someone else in the world. *Upload* adds your own.
@@ -3123,3 +3152,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 374. **A partial Extraction.** When some PCs are lifted out and everyone left behind is Downed, dead or surrendered, the fight ends as extracted (no win, no loss). If nobody was lifted, it is a loss. *Engine: combat.ts checkOver.*
 375. **Triage out of a fight.** On the area map it is once per ally per scene, counted with the story Triage (it used to reset every area-map round), and never on yourself. *Engine: classes/i.ts medic.triage.*
 376. **Adamantile Knight from Defender.** The Defender's Brace grants Bulwark of Will. Guard spent by the Defender's Reactive Plate still shields the adjacent ally (Adamantile Plate). A hit either Interpose took is plated without a second reaction. *Engine: classes/i.ts 'braced' and 'plate_spent' hooks; classes/j.ts.*
+
+*OOC, missions and end states (8 Nov 2026)*
+
+377. **OOC limits.** The Narrator's OOC answer is at most about 80 words (the engine keeps 600 characters); at most 8 OOC questions wait at once, older ones drop. PROVISIONAL.
+378. **OOC never calls the Narrator by itself.** A question makes the round's close call the Narrator; a question asked mid-call waits for the next turn. Alternative: an immediate small call when the whole room is idle. PROVISIONAL.
+379. **A failed required objective closes its mission** as over; the end state and next mission fire either way (M813's ramp branches on it: left behind leads to The Years). PROVISIONAL.
+380. **Mission update caps.** 12 mission updates and 12 side-job changes per Narrator turn; 24 side jobs in a campaign. PROVISIONAL.
+381. **The campaign end drops open checks and pushes** for the epilogue turn. PROVISIONAL.
+382. **Branches are the Narrator's choice** (missionNext). A player vote between branches is not built. PROVISIONAL.
+
