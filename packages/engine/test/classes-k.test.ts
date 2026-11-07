@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
-  coverageOf, itemInfo, ADVANCED, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, type Unit, type Combat, type Character,
+  coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 
@@ -464,6 +464,16 @@ describe('Twinbound', () => {
     expect((s.g.story.rulings || []).some((r: any) => /first leans through/.test(r.text))).toBe(true);
     expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any)).toThrow();
   });
+  it('Manifest takes the client picker\'s JSON {designs:[…]} (school, option, modules, name); a school you don\'t know is refused', () => {
+    const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0], known = (s.g.characters[c.id] as any).soulKnown;
+    const sc = known.schools[0], mod = known.modules[0];
+    const bad = JSON.stringify({ designs: [{ school: 'nope', modules: [] }, { school: sc, modules: [] }, { school: sc, modules: [] }] });
+    expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: bad } as any)).toThrow(/Outburst 1/);
+    const ok = JSON.stringify({ designs: [{ school: sc, modules: [mod], name: 'First Light' }, { school: sc, modules: [] }, { school: sc, modules: [] }] });
+    s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: ok } as any);
+    const tw = (s.g.characters[c.id] as any).state.twin.designs;
+    expect(tw[0]).toMatchObject({ id: 'tw1', school: sc, modules: [mod], name: 'First Light' });
+  });
   it('Call: 2 AP, the twin acts right after you with 4 AP and casts from your heart', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
@@ -547,6 +557,15 @@ describe('Lane K: more forms and story parts', () => {
     expect((s.g.story.rulings || []).length).toBeGreaterThanOrEqual(2);
     s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === v.id)!; expect((u as any).vsl.armour).toBeGreaterThanOrEqual(10);
+  });
+});
+
+describe('pick lists for the client (buttons, not typed choices)', () => {
+  it('Share and Inner Charge offer their choices as options', () => {
+    const s = storyWith([adv('heartbinder', SOUL), adv('vessel', SOUL)]);
+    const opts = (c: any, id: string) => (perkActionsFor({ c, g: s.g }, 'story').find((e) => e.actionId === id) || {} as any).options?.map((o: any) => o.id);
+    expect(opts(s.chars[0], 'share_mode')).toEqual(['always', 'never']);
+    expect(opts(s.chars[1], 'inner_charge_story')).toEqual(['iron', 'surge', 'swift', 'pain', 'steady', 'heartbeat']);
   });
 });
 

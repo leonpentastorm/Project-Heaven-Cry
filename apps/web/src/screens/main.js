@@ -10,7 +10,9 @@ import { voiceState, speak, stopVoice, CORE_VOICE } from '../game/voice';
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
-import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, wantsDetail } from '../game/commands';
+import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice } from '../game/commands';
+import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, OPT_LABEL, optValue } from '../game/actionPickers';
+import { previewPerkAction, bindGame } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, signatureOf, classLabel } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
@@ -55,10 +57,7 @@ const savePref = (k, v) => { try { localStorage.setItem('phc.' + k, v); } catch 
 // Sigils are Mind cyan and square; Outbursts are Soul violet warming to gold (docs/design/magic-presentation.md). Never mixed.
 const SIG_CYAN = '#4FC8DF', SOUL_VIOLET = '#AE9BFF', MP_BLUE = '#5C9EFF';
 const WORD_CLASS = { subject_element: 'SUBJECT · ELEMENT', subject_effect: 'SUBJECT · EFFECT', form: 'FORM', motion: 'MOTION', modifier: 'MODIFIER' };
-const OPT_LABEL = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal 30', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
-  fear: 'Afraid', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
-/** The option value the engine reads on release (data 'push_3' → 'push', 'to_hit_2' → 'hit'). */
-const optValue = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
+// OPT_LABEL and optValue (a school's options) come from game/actionPickers, shared with the twin's design picker.
 const optLabel = (school, v) => { const o = (SCHOOL[school]?.options || []).find((x) => optValue(x) === v); return o ? OPT_LABEL[o] || o : v; };
 const signed = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0');
 const chipStyle = (ink, on) => 'display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid ' + ink + '; '
@@ -856,20 +855,22 @@ export class MainLogic extends DCLogic {
       : isMagicW ? mHint
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
-    // The area map's detail field for a perk action (a pick, words, a name): chips from the engine's options, or typed.
+    // The area map's pick for an on-map perk action (Called Shot's head / arm / leg, a Keystone's word): chips from the
+    // engine's options, never typed. An off-map action picked here opens its own panel (wPanel, below).
     const wDetailVals = (() => {
-      if (!wPkE || !wantsDetail(wPkE, null)) return { wHasDetail: false, wDetailOpts: [], wHasDetailOpts: false };
+      if (!wPkE || !(pkTargeted || pkTile || pkObj) || !(wPkE.options || []).length) return { wHasDetail: false, wDetailOpts: [], wHasDetailOpts: false };
       const multi = (wPkE.pickMulti || 1) > 1, chosen = new Set(String(wDet ? pickChoice(wPkE, wDet) : '').split(' ').filter(Boolean)), setDet = (v) => this.setState({ wDetail: v, wDetailFor: W });
       const opts = (wPkE.options || []).map((o) => ({ key: o.id, label: o.label, pressed: chosen.has(o.id) ? 'true' : 'false',
         pick: () => { if (!multi) return setDet(chosen.has(o.id) ? '' : o.label); const now = [...chosen], next = chosen.has(o.id) ? now.filter((x) => x !== o.id) : [...now, o.id].slice(-(wPkE.pickMulti || 1)); setDet(next.map((id) => (wPkE.options.find((p) => p.id === id) || { label: id }).label).join(' ')); },
         style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (chosen.has(o.id) ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }));
-      return { wHasDetail: true, wDetail: wDet, onWDetail: (e) => setDet(e.target.value), wDetailLabel: wPkE.pickLabel || (wPkE.target === 'text' ? 'What you say or do' : 'Detail: a word, a name, a pick'), wDetailOpts: opts, wHasDetailOpts: opts.length > 0 };
+      return { wHasDetail: true, wDetailLabel: wPkE.pickLabel || 'Pick', wDetailOpts: opts, wHasDetailOpts: opts.length > 0 };
     })();
     const tgtPos = tgt ? (tgt.obj ? tgt.obj.pos : tgt.pos) : null, tgtOdds = isAttack && tgtPos && plan.selText ? plan.selText(tgtPos) : '';
     const wHintFull = wHint + (tgtOdds ? ' ' + tgtOdds : '');
     const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm();
+      if (wPkE && wPanel) return wPanel.confirm();
       if (wPkE) { if (pkTargeted && !tgt) return; if (pkTile && !S.wTile) return toast('Click a tile first.'); if (pkObj && !(tgt && tgt.obj)) return toast('Click an object first.');
-        act({ type: 'world/act', charId: c.id, act: 'perk', id: wPkE.id, actionId: wPkE.actionId, ...(pkTargeted && tgt ? { targetId: tgt.npc ? tgt.id : tgt.charId || tgt.id } : {}), ...(pkTile ? { tile: S.wTile } : {}), ...(pkObj && tgt && tgt.obj ? { objId: tgt.obj.id } : {}), ...(wDet ? { text: wDet, npc: wDet, choice: pickChoice(wPkE, wDet) } : {}) });
+        act({ type: 'world/act', charId: c.id, act: 'perk', id: wPkE.id, actionId: wPkE.actionId, ...(pkTargeted && tgt ? { targetId: tgt.npc ? tgt.id : tgt.charId || tgt.id } : {}), ...(pkTile ? { tile: S.wTile } : {}), ...(pkObj && tgt && tgt.obj ? { objId: tgt.obj.id } : {}), ...(wDet ? { choice: pickChoice(wPkE, wDet) } : {}) });
         if (wDet) this.setState({ wDetail: '' }); return; } if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
@@ -880,28 +881,60 @@ export class MainLogic extends DCLogic {
     const usablePk = !c || c.dead || g.phase !== 'story' ? [] : SB ? wPk.map((e) => ({ e, how: 'world' }))
       : [...storyPk.map((e) => ({ e, how: 'story' })), ...wPk.filter((e) => !(e.scope || []).includes('story')).map((e) => ({ e, how: 'world' }))];
     const ON_MAP = ['unit', 'enemy', 'ally', 'tile', 'object'];
-    const runPk = (e, how, det) => { if (!c) return;
-      const pick = det ? { text: det, npc: det, choice: pickChoice(e, det) } : {};
-      act(how === 'world' ? { type: 'world/act', charId: c.id, act: 'perk', id: e.id, actionId: e.actionId, ...pick } : { type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...pick });
-      this.setState({ pkOpen: null, pkPick: '' }); };
+    const runPk = (e, how, args) => { if (!c) return;
+      act(how === 'world' ? { type: 'world/act', charId: c.id, act: 'perk', id: e.id, actionId: e.actionId, ...args } : { type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...args });
+      this.setState({ pkOpen: null, pkForm: null, ...(S.wAct && parsePk(S.wAct) ? { wAct: null } : {}) }); };
+    /** The engine's verdict on the action with these args (the same truth the reducer uses). */
+    const pvOf = (e, how, args) => { const was = bindGame(g);
+      try { return how === 'world' ? previewPerkAction({ u: wu, c, cb: scb(), g }, e.id, { ...args, actionId: e.actionId }, 'world') : previewPerkAction({ c, g }, e.id, { ...args, actionId: e.actionId }, 'story'); }
+      catch (err) { return { ok: false, why: String((err && err.message) || err), lines: [] }; } finally { bindGame(was); } };
     const verbOf = (e) => (/^[a-z]+$/.test(e.actionId) ? e.actionId.charAt(0).toUpperCase() + e.actionId.slice(1) : e.label);
-    const pkBtn = (on) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
-    /** One action's button, and its picker when open (option chips, or a typed detail), then Confirm. where: 'card' or 'strip'. */
+    const pkBtn = (on, off) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.45; ' : 'pointer; ') + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
+    const soulChip = (on, off) => chipStyle(SOUL_VIOLET, on) + (off ? '; opacity: 0.45; cursor: default' : '');
+    /** One action's button and, when open, its picker (game/actionPickers.ts): chips from the engine's data, the party,
+     *  the people on the map, a Soul design builder, and a prose box only where the action needs words; the engine's
+     *  verdict; Confirm. where: 'card', 'strip' or 'area' (the area map's panel, open while the action is picked). */
     const pkView = ({ e, how }, where) => {
-      const key = where + ':' + pkId(e), open = S.pkOpen === key, det = open ? String(S.pkPick || '') : '';
+      const key = where + ':' + pkId(e), open = where === 'area' || S.pkOpen === key;
       const why = e.why || (how === 'world' && !SB && !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.') : null);
-      const opts0 = e.options || [], typed = !opts0.length ? ['text', 'npc'].includes(e.target) || !!e.pickLabel : /\btype\b/i.test(e.pickLabel || '');
-      const onMap = ON_MAP.includes(e.target), needs = !onMap && (opts0.length > 0 || typed);
-      const multi = (e.pickMulti || 1) > 1, chosen = new Set(String(det ? pickChoice(e, det) : '').split(' ').filter(Boolean)), setDet = (v) => this.setState({ pkPick: v });
-      const opts = opts0.map((o) => ({ key: o.id, label: o.label, pressed: chosen.has(o.id) ? 'true' : 'false', style: pkBtn(chosen.has(o.id)),
-        pick: () => { if (!multi) return setDet(chosen.has(o.id) ? '' : o.label); const now = [...chosen], nx = chosen.has(o.id) ? now.filter((x) => x !== o.id) : [...now, o.id].slice(-(e.pickMulti || 1)); setDet(nx.map((id) => (opts0.find((p) => p.id === id) || { label: id }).label).join(' ')); } }));
-      const ready = !!det.trim();
-      return { key, label: verbOf(e) + (onMap ? ' on the map…' : needs ? '…' : ''), aria: e.label + (needs ? ': choose, then confirm' : ''), title: (why ? why + ' · ' : '') + pkText(e), off: !!why, why: why || '', hasWhy: !!why, open: open && !why,
-        click: () => { if (why) return toast(why); if (onMap) return this.setState({ area: true, wAct: pkId(e), wTarget: null, wTile: null, wAim: null }); if (needs) return this.setState({ pkOpen: open ? null : key, pkPick: '' }); runPk(e, how, ''); },
+      const onMap = ON_MAP.includes(e.target), px = { g, c, how }, P = onMap ? null : pickerFor(e, px), needs = !!P;
+      const formV = () => (this.state.pkForm && this.state.pkForm.key === key ? this.state.pkForm.v : {});
+      const V = open ? formV() : {}, setV = (patch) => this.setState({ pkForm: { key, v: { ...formV(), ...patch } } });
+      const single = !!P && !P.build && P.fields.length === 1 && P.fields[0].kind === 'chips' && P.fields[0].key === 'choice' && P.fields[0].options.length <= 12;
+      const fields = open && P ? P.fields.map((f) => {
+        if (f.kind === 'chips') {
+          const ids = Array.isArray(V[f.key]) ? V[f.key] : [], multi = f.multi || 1;
+          const opts = f.options.map((o) => { const on = ids.includes(o.id), pv = single && !why ? pvOf(e, how, { choice: o.id }) : null, off = !!(pv && !pv.ok && !on);
+            return { key: o.id, label: o.label, title: off ? pv.why : o.title || '', pressed: on ? 'true' : 'false', locked: off, style: pkBtn(on, off),
+              pick: () => { if (off) return toast(pv.why); const now = Array.isArray(formV()[f.key]) ? formV()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }; });
+          return { key: f.key, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.', isProse: false, isDesigns: false, slots: [] };
+        }
+        if (f.kind === 'prose') return { key: f.key, head: f.head, isChips: false, opts: [], isEmpty: false, isProse: true, isDesigns: false, slots: [], text: V[f.key] || '', holder: f.holder, max: f.max || 240, onText: (ev) => setV({ [f.key]: ev.target.value }) };
+        // A Soul design builder (the MAGIC tab's workshop rules: a school, its option, a second school at Will Power 5, modules up to the slots).
+        const ds = draftsOf(V[f.key], f.n), mana = g.story.mana ?? MANA_START;
+        const upd = (i, what, id) => { const cur = draftsOf(formV()[f.key], f.n).map((d) => ({ ...d, modules: [...d.modules] })); cur[i] = pickInDraft(c, cur[i], what, id, f.extra); setV({ [f.key]: cur }); };
+        const slots = ds.map((d, i) => { const sv = designSlotView(c, d, f.extra), full = d.modules.length >= sv.slots;
+          return { key: 's' + i, head: (f.n > 1 ? f.head + ' ' + (i + 1) : f.head).toUpperCase(),
+            schools: sv.schools.map((o) => ({ key: o.id, label: o.label, title: o.title, pressed: d.school === o.id ? 'true' : 'false', locked: false, style: soulChip(d.school === o.id), pick: () => upd(i, 'school', o.id) })),
+            noSchools: !sv.schools.length, hasSchools2: sv.schools2.length > 0, schools2: sv.schools2.map((o) => ({ key: o.id, label: '+ ' + o.label, title: 'A second school (Will Power 5)', pressed: d.school2 === o.id ? 'true' : 'false', locked: false, style: soulChip(d.school2 === o.id), pick: () => upd(i, 'school2', o.id) })),
+            hasOptions: sv.options.length > 0, options: sv.options.map((o) => ({ key: o.id, label: o.label, title: '', pressed: d.option === o.id ? 'true' : 'false', locked: false, style: soulChip(d.option === o.id), pick: () => upd(i, 'option', o.id) })),
+            modsHead: 'MODULES · ' + d.modules.length + ' / ' + sv.slots, hasModules: sv.modules.length > 0,
+            modules: sv.modules.map((o) => { const on = d.modules.includes(o.id), off = !on && full; return { key: o.id, label: o.label + ' ' + signed(o.cost), title: o.title, pressed: on ? 'true' : 'false', locked: off, style: soulChip(on, off), pick: () => upd(i, 'module', o.id) }; }),
+            name: d.name || '', onName: (ev) => upd(i, 'name', ev.target.value), nameHolder: 'Name (optional)',
+            cost: d.school ? designCost(soulM(c), { id: 'draft', ...d }, mana) + ' MP · ' + designAp(soulM(c), { id: 'draft', ...d }) + ' AP · reach ' + designRange(soulM(c), { id: 'draft', ...d }) + ' tiles' : 'Pick a school.' }; });
+        return { key: f.key, head: '', isChips: false, opts: [], isEmpty: false, isProse: false, isDesigns: true, slots };
+      }) : [];
+      const built = open && P ? buildArgs(P, V, px) : null, pv = built && typeof built !== 'string' && !why ? pvOf(e, how, built) : null;
+      const ready = !!pv && pv.ok, line = pv ? (pv.ok ? (pv.lines || []).join(' ') : pv.why || 'Not now.') : typeof built === 'string' ? built : '';
+      const chosen = open && P ? P.fields.filter((f) => f.kind === 'chips').flatMap((f) => (Array.isArray(V[f.key]) ? V[f.key] : []).map((id) => (f.options.find((o) => o.id === id) || { label: id }).label)) : [];
+      return { key, label: verbOf(e) + (onMap ? ' on the map…' : needs ? '…' : ''), aria: e.label + (needs ? ': choose, then confirm' : ''), title: (why ? why + ' · ' : '') + pkText(e), off: !!why, why: why || '', hasWhy: !!why, open: open && !why && needs, needs,
+        click: () => { if (why) return toast(why); if (onMap) return this.setState({ area: true, wAct: pkId(e), wTarget: null, wTile: null, wAim: null }); if (needs) return this.setState({ pkOpen: S.pkOpen === key ? null : key, pkForm: null }); runPk(e, how, {}); },
         style: 'min-height: 30px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (why ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : open ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
-        pickHead: (e.pickLabel || (e.target === 'npc' ? 'Who' : e.target === 'text' ? 'What you say or do' : 'Pick')) + (multi ? ' (up to ' + e.pickMulti + ')' : ''), hasOpts: opts.length > 0, opts, hasText: typed, text: det, onText: (ev) => setDet(ev.target.value),
-        textHolder: e.target === 'npc' ? 'A name' : opts.length ? 'Or type it' : 'Type it', confirm: () => { if (!ready) return toast((e.pickLabel || 'Pick one') + ' first.'); runPk(e, how, det.trim()); },
-        cantConfirm: !ready, confirmLabel: ready ? 'Confirm · ' + det.trim().toUpperCase().slice(0, 40) : 'Pick first', cancel: () => this.setState({ pkOpen: null, pkPick: '' }) };
+        pickHead: P ? P.head : '', hint: P ? P.hint || '' : '', hasHint: !!(P && P.hint), warn: P ? P.warn || '' : '', hasWarn: !!(P && P.warn), fields, opts: (fields.find((f) => f.isChips) || { opts: [] }).opts, hasOpts: !!(P && P.fields.some((f) => f.kind === 'chips')),
+        verdict: line, hasVerdict: !!line, verdictStyle: 'font-size: 12px; line-height: 1.4; color: ' + (ready ? '#6FEA77' : '#A3AEC2'),
+        confirm: () => { if (typeof built === 'string') return toast(built); if (!ready) return toast(line || 'Not now.'); runPk(e, how, built); },
+        cantConfirm: !ready, confirmLabel: ready ? 'Confirm' + (chosen.length ? ' · ' + chosen.join(' · ').toUpperCase().slice(0, 40) : '') : 'Confirm',
+        cancel: () => this.setState({ pkOpen: null, pkForm: null, ...(where === 'area' ? { wAct: null } : {}) }) };
     };
     const actsOf = (key) => { const L = usablePk.filter((x) => x.e.id === key).map((x) => pkView(x, 'card')); return { acts: L, hasActs: L.length > 0 }; };
     for (const k of perks) Object.assign(k, actsOf('perk:' + k.key));
@@ -909,6 +942,8 @@ export class MainLogic extends DCLogic {
     for (const m of classMoves) Object.assign(m, m.locked ? { acts: [], hasActs: false } : actsOf(m.key));
     // The Perks strip: the same actions; one with a pick opens its chips under the strip.
     const stripPk = usablePk.map((x) => ({ x, v: pkView(x, 'strip') })), stripOpen = stripPk.find((y) => y.v.open);
+    // The area map: an off-map action picked from its list (Manifest the twin, a prose action) opens its picker there.
+    const wPanelV = wPkE && !ON_MAP.includes(wPkE.target) ? pkView({ e: wPkE, how: 'world' }, 'area') : null, wPanel = wPanelV && wPanelV.needs ? wPanelV : null;
     // ---------- rest (spec: Rest): the host calls it, a player asks for it (the Narrator can grant one too) ----------
     const restWhy = g.phase === 'lobby' ? 'The session hasn\'t started.' : g.phase !== 'story' ? 'No resting in a fight: win it, or get out of it, first.' : !isHost && g.story.await !== 'players' ? 'Wait for the round to open.' : !isHost && !c ? 'You have no character to ask with.' : '';
     const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party' : 'Ask the Narrator for a rest: your request goes in the story'),
@@ -967,21 +1002,13 @@ export class MainLogic extends DCLogic {
       // The mission board (missionBoard.tsx): the header button, with the count of open objectives.
       ...(() => { const mb = missionsButton(g); return { hasMissions: !!mb, missionsLabel: mb ? mb.label : '', missionsTitle: mb ? mb.title : '', openMissions: () => openMissionBoard(),
         missionsStyle: 'min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
-      // The Perks strip (plan 3): story uses of perks, traits and class moves. Text-taking ones use what is in the Say box.
+      // The Perks strip (plan 3): story uses of perks, traits and class moves. Every input is a button: an action that
+      // needs a pick (chips, a squadmate, someone on the map, a design) or words opens its own panel under the strip.
+      // Never the Say box, never a shared detail field. The Proving Ground runs these as area-map actions.
       get hasStoryPerks() { return this.storyPerks.length > 0; }, ...restVals,
-      stripOpen: !!stripOpen, stripPick: stripOpen ? stripOpen.v : { opts: [] },
-      pkDetail: S.pkDetail || '', onPkDetail: (e) => this.setState({ pkDetail: e.target.value }),
-      pkDetailOpts: [...new Set(storyPk.flatMap((e) => (e.options || []).map((o) => o.label)))].map((l) => ({ key: l, value: l })),
-      // The Say box is the text (what you say or do); the Perks detail field is the pick (a name, a squadmate, a γ skill,
-      // words): it rides as npc and as choice (an option's id when it names one).
-      // An action with option chips (Gauntlet Infusion's fire / freeze / shock / spark) opens them under the strip; the
-      // Proving Ground runs these as area-map actions.
-      storyPerks: stripPk.map(({ x: { e, how }, v }) => ({ key: pkId(e), label: e.label + (v.hasOpts ? '…' : '') + (e.uses.label ? ' · ' + e.uses.label : ''), title: (v.why ? v.why + ' · ' : '') + pkText(e) + (e.target === 'text' ? ' (uses the text in the Say box)' : e.target === 'npc' ? ' (name them in the Perks detail field, or the Say box)' : '') + (e.pickLabel ? ' · Detail: ' + e.pickLabel : '') + (e.options && e.options.length ? ' (' + e.options.map((o) => o.label).join(', ') + ')' : ''), off: !!v.why,
-        pick: () => { if (v.hasOpts || how === 'world') return v.click(); const text = (this.state.draft || '').trim(), det = String(this.state.pkDetail || '').trim();
-          if (e.target === 'text' && !text) return toast('Write it in the Say box first, then press ' + e.label + '.');
-          if (e.options && e.options.length && !det) return toast((e.pickLabel || 'Pick one') + ': type it in the Perks detail field (' + e.options.map((o) => o.label).join(', ') + ').');
-          act({ type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...(text ? { text } : {}), ...(det ? { npc: det, choice: pickChoice(e, det) } : {}) });
-          if (['text', 'npc'].includes(e.target) && text) this.setState({ draft: '', polished: false }); if (det) this.setState({ pkDetail: '' }); },
+      stripOpen: !!stripOpen, stripPick: stripOpen ? stripOpen.v : { fields: [], opts: [] },
+      storyPerks: stripPk.map(({ x: { e }, v }) => ({ key: pkId(e), label: e.label + (v.needs ? '…' : '') + (e.uses.label ? ' · ' + e.uses.label : ''), title: (v.why ? v.why + ' · ' : '') + pkText(e), off: !!v.why,
+        pick: () => v.click(),
         style: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid ' + (v.open ? '#FFFFFF' : '#2E3A50') + '; background: #10151F; color: #E7EBF3' + (v.why ? '; opacity: 0.45' : '') })),
       cantSpeak, turnText: why, turnStyle: 'font-size: 13px; color: ' + (cantSpeak ? '#A3AEC2' : myColor),
       pass: () => act({ type: 'story/pass' }),
@@ -1000,7 +1027,7 @@ export class MainLogic extends DCLogic {
         ...(ZON.some((z) => z.kind === 'veil') ? [{ key: 'v', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; ' + ZONE_STYLE.veil, text: 'Smoke (blocks sight)' }] : []),
         ...(ZON.some((z) => z.kind === 'light') ? [{ key: 'l', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; background: rgba(255, 246, 220, 0.4)', text: 'Light' }] : []),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
-      wGroups, wHint: wHintFull, ...wDetailVals, wHasConfirm: canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
+      wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       wPips: Array.from({ length: ROUND_AP }, (_, i) => ({ key: i, style: 'flex: 1; height: 8px; border-radius: 3px; background: ' + (i < apNow ? '#FFFFFF' : '#232D3F') })),
