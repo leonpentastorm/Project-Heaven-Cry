@@ -51,7 +51,7 @@ export type HookName =
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
   | 'cond_apply' | 'cond_landed' | 'cond_end'
   | 'heal_given' | 'heal_in' | 'shield_grant'
-  | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'object_destroyed'
+  | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release'
   | 'analyze' | 'action_cost' | 'combat_end'
@@ -66,6 +66,7 @@ export type HookName =
   | 'voice_cap' | 'ask_limit' | 'overreach_cost' | 'echo_gain'
   | 'scene_change' | 'session_start' | 'rest' | 'xp_grant'
   | 'notice' | 'stay_hidden' | 'world_move_cost' | 'karma_award'
+  | 'action_refuse' | 'evoke_reach' | 'spell_roll' | 'session_heal' | 'story_blessing' | 'ap_gift' | 'npc_moved' | 'npc_sense' | 'zone_enter' | 'story_harm'
   | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable

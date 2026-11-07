@@ -154,7 +154,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
   lastSeen?: Record<string, Record<string, string>>;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
-  fear?: boolean }
+  fear?: boolean;
+  /** The Narrator's word on whether the fight broke out of the talk just had (Talks Broke Down); absent: not said. */
+  fromTalk?: boolean }
 
 /** A presentation event: what just happened, precisely enough to animate (the client plays new ones by n). Tiles are
  * "x,y" keys; unit fields are unit ids. Kinds and fields:
@@ -456,8 +458,9 @@ export function paths(cb: Combat, from: string, self: string) {
 export const apForTiles = (tiles: number, bank: number, mov: number) => Math.ceil(Math.max(0, tiles - bank) / mov - 1e-9);
 
 // ---------- line of sight and cover ----------
-export function lineOfSight(cb: Combat, a: string, b: string): boolean {
-  const solid = sightBlockers(cb); // half cover doesn't block sight
+export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false): boolean {
+  // half cover doesn't block sight; ignoreVeil: smoke (VEIL zones) doesn't either (Skin Map)
+  const solid = ignoreVeil ? new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]) : sightBlockers(cb);
   let [x0, y0] = xy(a); const [x1, y1] = xy(b);
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy;
@@ -499,10 +502,19 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
-    if (tiles.has(t.pos) && !t.hidden) seen.add(t.id);
-    else if (eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3))) sensed.add(t.id);
+    let isSeen = tiles.has(t.pos) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
+    if (sightHooked(cb)) { const r = seesHook(cb, side, t, null, isSeen, isSensed); isSeen = r.seen; isSensed = !isSeen && r.sensed; }
+    if (isSeen) seen.add(t.id); else if (isSensed) sensed.add(t.id);
   }
   return { tiles, seen, sensed };
+}
+/** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched, Chain Smoker): the 'sees' hook
+ * {cb, side, t, by, seen, sensed}. side is the side looking; by is the one unit looking (an attack, a reaction) or null
+ * for the side's shared sight (the fog of war). Handlers may set seen or sensed. Allies count too (a sibling). */
+const sightHooked = (cb: Combat) => anyOn(cb, 'sees');
+function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen: boolean, sensed: boolean): { seen: boolean; sensed: boolean } {
+  const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
+  return { seen: !!r.seen, sensed: !!r.sensed };
 }
 /** Note every hostile the party sees now in cb.sighted (it only grows; old saves start it here). */
 export function noteSighted(cb: Combat) {
@@ -511,7 +523,10 @@ export function noteSighted(cb: Combat) {
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
 /** Does anyone on the attacker's side see the target? */
-export const sideSees = (cb: Combat, side: 'pc' | 'foe', tgt: Unit) => !(tgt.hidden && tgt.side !== side) && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));
+export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
+  const base = !(tgt.hidden && tgt.side !== side) && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));
+  return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
+}
 
 // ---------- attacks ----------
 export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
@@ -535,7 +550,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0;
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
-  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [] };
+  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false };
   emit(cb, 'attack_preview', hk);
   const ap = opts.free ? 0 : Math.max(0, hk.ap);
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
@@ -544,23 +559,25 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // Conditions on the attacker (spec: Conditions): Afraid can't attack its source; Taunted must attack the taunter while
   // it can see them; Disarmed or a lowered weapon attacks with nothing but fists.
   { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
-  { const ts = condSource(att, 'taunted'), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
+  { const ts = condSource(att, 'taunted'), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
   if (att.ap < ap) return fail('Needs ' + ap + ' AP.');
   if ((mode === 'burst' || mode === 'auto') && !(w.modes || []).includes(mode)) return fail('This weapon has no ' + (mode === 'auto' ? 'full auto' : 'burst') + '.');
   // An ally (friendly fire) needs this unit's own sight; the squad's shared sight covers the other side.
-  if (tgt.side === att.side ? !unitSees(cb, att, tgt.pos) : !sideSees(cb, att.side, tgt)) return fail('You can\'t see it.');
+  if (tgt.side === att.side ? !(unitSees(cb, att, tgt.pos) || (sightHooked(cb) && seesHook(cb, att.side, tgt, att, false, false).seen)) : !sideSees(cb, att.side, tgt, att)) return fail('You can\'t see it.');
   if (!melee && att.maxDur && (att.dur ?? 1) <= 0) return fail('Broken: Field Repair first.');
   if (!melee && (w.properties || []).includes('requires_braced_or_prone') && !att.braced && !att.prone) return fail('Brace it first (1 AP), or go prone.');
   const r = dist(att.pos, tgt.pos);
   if (melee && r > hk.reach) return fail('Out of melee reach.');
   if (!melee && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
   if (!melee && w.magazine != null && att.ammo <= 0) return fail('Empty: reload (2 AP).');
-  if (!melee && !lineOfSight(cb, att.pos, tgt.pos)) return fail('No line of sight.');
+  if (!melee && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
   const eff = effectiveRange(useW), optic = hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0, bands = melee ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic);
   if (bands > 2) return fail('Out of range.');
-  const coverTile0 = melee ? null : coverTileFor(cb, att.pos, tgt.pos), coverTile = hk.ignoreCover || (useW.properties || []).includes('ignores_half_cover') ? null : coverTile0, cover = coverTile ? 5 : 0;
+  // hk.coverTile: an item names a half-cover tile that protects the target although it doesn't face the shot (Eyes in
+  // the Back): it counts as the cover, so a miss by its margin hits it.
+  const facing = melee ? null : coverTileFor(cb, att.pos, tgt.pos), coverTile0 = facing || hk.coverTile || null, coverTile = hk.ignoreCover || (useW.properties || []).includes('ignores_half_cover') ? null : coverTile0, cover = coverTile ? 5 : 0;
   const rangePenalty = -2 * bands;
   const heat = melee || !w.heat_limit ? 0 : -Math.floor(att.heat / 2);
   const prone = tgt.prone ? (melee ? 2 : -2) : 0, unbraced = !melee && (w.properties || []).includes('minus2_to_hit_unless_emplaced') && !att.braced && !att.prone ? -2 : 0;
@@ -576,7 +593,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const skillCond = condSkillMod(att, useW.skill);
   const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
-    ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
+    ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
     ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...(hk.terms as Term[]).filter((t) => t && t.v)];
   if (hk.ignoreCover && coverTile0) terms.push({ v: 0, label: 'cover ignored' });
   const toHit = terms.reduce((t, x) => t + x.v, 0);
@@ -631,7 +648,8 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     const pool = cb.units.filter((v) => v !== att && v !== tgt0 && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok);
     if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
-  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, mods: cb.mods || [] }), tgt: Unit = at.tgt || tgt0;
+  // ctx.locked: an item that keeps the attack on its first target whatever redirects it (Rabbit's Foot's hunters).
+  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, mods: cb.mods || [], locked: null }), tgt: Unit = at.locked || at.tgt || tgt0;
   if (!who) who = charFor(att);
   if (att.companion) who = null; // a companion fights with its own numbers
   const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp, noRecoil: !!opts.noAp });
@@ -747,7 +765,7 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 // ---------- turns ----------
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
 export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number }
-export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean } = {}): Combat {
+export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
   const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
@@ -763,7 +781,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
-  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, ...(extra.fear ? { fear: true } : {}) };
+  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs;
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
@@ -1240,6 +1258,9 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   const cost = stimAp(u, t, isMedic);
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
+  // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
+  // Petty). It is not a refusal (the item's own rolls stand): nothing is used and the line says why.
+  { const ss: any = emit(cb, 'stim_start', { u, t, cb, cancel: false, why: '' }); if (ss.cancel) { cb.log.push(u.name + ' doesn\'t stim ' + t.name + (ss.why ? ' (' + ss.why + ')' : '') + '.'); return null; } }
   u.ap -= cost; who.stims--;
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }

@@ -10,7 +10,7 @@ import { type Character, mod, prayerCooldown } from './character';
 import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy } from './combat';
 import { type Rng, d20 } from './rng';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitDebuff } from './magic';
-import { emit, statQuery, charOfUnit, boundGame } from './effects/hooks';
+import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
 import { grantShield } from './effects/damage';
 import { actionAp } from './effects/core';
 import { note } from './effects/narrator';
@@ -53,10 +53,21 @@ export function reactionsUsed(cb: Combat, u: Unit): number {
   if (u.reactUsed && u.reactUsed.r === cb.round) return u.reactUsed.n;
   return u.reactedRound === cb.round ? 1 : 0; // old saves
 }
-export const canReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u);
+const ownReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u);
+/** Many Hands (Camaraderie Mastered, perk-runtime E-H1): an ally whose reactions are spent may spend a holder's who can
+ * see them (alive, same side, not the same unit). The first such holder in unit order. */
+export function reactionDonor(cb: Combat, u: Unit): Unit | null {
+  if (!alive(u) || maxReactions(u) <= 0) return null; // Stunned, Suppressed: no reaction to take anyone's
+  return cb.units.find((v) => v !== u && v.side === u.side && alive(v) && !v.companion && heldOfUnit(v).perks.some((p) => p.id === 'many_hands') && ownReact(cb, v) && unitSees(cb, v, u.pos)) || null;
+}
+export const canReact = (cb: Combat, u: Unit) => ownReact(cb, u) || !!reactionDonor(cb, u);
 /** Spend a reaction now; false when none is left. */
 export function useReaction(cb: Combat, u: Unit): boolean {
-  if (!canReact(cb, u)) return false;
+  if (!ownReact(cb, u)) {
+    const d = reactionDonor(cb, u); if (!d) return false;
+    d.reactUsed = { r: cb.round, n: reactionsUsed(cb, d) + 1 }; d.reactedRound = cb.round;
+    cb.log.push(u.name + ' reacts on ' + d.name + '\'s reaction (Many Hands).'); return true;
+  }
   u.reactUsed = { r: cb.round, n: reactionsUsed(cb, u) + 1 }; u.reactedRound = cb.round; return true;
 }
 /** Give a used reaction back (Many Hands shares one; a refused reaction). */

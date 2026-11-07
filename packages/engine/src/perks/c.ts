@@ -17,7 +17,7 @@ import { mod, packOf, physicalMult, carryLimit, hasMod } from '../character';
 import { applyCond, condOn } from '../magic';
 import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
-import { makeObject, kindOf, isTrap } from '../objects';
+import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { positionsOf } from '../game';
 
 // ---------- small helpers ----------
@@ -614,7 +614,13 @@ const analogBan = (u: Unit): string | null => { const w: any = WEAPON[u.weapon];
   return null; };
 register({
   id: 'old_school', claims: [2],
-  stat: (h, stat, ctx) => (stat === 'hide_weapon_skill' && /fan the hammer/i.test(ctx?.skill || '') ? 1 : 0), // the trait's Fan the Hammer replaces the gun's
+  stat: (h, stat, ctx) => {
+    if (stat === 'hide_weapon_skill') return /fan the hammer/i.test(ctx?.skill || '') ? 1 : 0; // the trait's Fan the Hammer replaces the gun's
+    // Analog in the story too: no electronic or Evoker-linked gun in hand, no red dot fitted (equip and fit refuse it).
+    if (stat === 'equip_ban') { const w: any = ctx?.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
+      return (w && (t.includes('evoker_linked') || (t.includes('electronic') && !isMelee(w)))) || ctx?.mod === 'mod_red_dot' || (ctx?.mods || []).includes('mod_red_dot') ? 1 : 0; }
+    return 0;
+  },
   actions: [{
     id: 'fan', label: 'Fan the Hammer (every round)', scope: ['combat'], ap: 3, target: 'enemy', uses: { per: 'per_turn', n: 1 },
     text: '3 AP: every round still loaded at one target, each at −2 (Recoil applies).',
@@ -723,6 +729,15 @@ register({
 // and anyone it lands on take 10 + kg ÷ 4 physical damage × Strength (PROVISIONAL). Objects and story throws: Narrator.
 const weightOf = (t: Unit) => (t.tier === 'boss' ? Infinity : t.companion === 'drone' ? 15 : t.companion ? 40 : t.tier === 'elite' ? 100 : 80);
 const throwCost = (u: Unit) => actionAp({ u }, 'throw', 2).ap;
+/** What an object weighs when thrown (PROVISIONAL, spec 14): the light, loose ones; walls, doors and fixtures can't be. */
+const THROW_KG: Record<string, number> = { crate: 25, barrel: 30, lamp: 5, camera: 3, alarm: 3, terminal: 20, container: 60 };
+/** Where a thrown object comes down: the tile, unless a unit or something solid is there (then the nearest free one). */
+const objLanding = (cb: Combat, tile: string, o: any): string | null => {
+  const free = (k: string) => standable(cb.map, k) && !objectsOf(cb).some((x) => x !== o && x.pos === k && blocksMove(x)) && !cb.units.some((v) => !v.dead && v.pos === k);
+  if (free(tile)) return tile;
+  const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
+  return null;
+};
 const landing = (cb: Combat, tile: string, self: Unit): string | null => {
   const free = (k: string) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k);
   if (free(tile)) return tile;
@@ -758,8 +773,35 @@ register({
       say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + '.');
       checkOver(cb); return null;
     },
+  }, {
+    // An object next to you (tile) thrown to a tile (choice): a crate, a barrel, a lamp… by its weight (PROVISIONAL
+    // weights, spec 14: objects carry none in the data). It lands there (or the nearest free tile), and it and whoever
+    // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
+    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'tile', range: 1,
+    pickLabel: 'Where it lands (a grid reference)',
+    text: 'Throw an adjacent object under your carry weight to a tile in range: it and whoever it lands on take damage by weight.',
+    preview: (h, args) => {
+      const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile), o = k0 ? objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null && !(x as any).dead) : null;
+      if (!o) return { ok: false, why: 'Pick an object next to you that can be lifted (a crate, a barrel, a lamp, a terminal).' };
+      if (dist(u.pos, o.pos) > 1) return { ok: false, why: 'Walk up to it first.' };
+      const kg = THROW_KG[o.kind], carry = h.c ? carryLimit(h.c) : 0;
+      if (kg > carry) return { ok: false, why: 'Too heavy: about ' + kg + ' kg; you can carry ' + Math.floor(carry) + ' kg.' };
+      const range = Math.max(1, throwRangeOf(u) - Math.floor(kg / 20)), k = tileOf(cb, args.choice);
+      if (!k) return { ok: false, why: 'Pick where it lands (within ' + range + ' tiles).' };
+      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
+      if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
+      if (!objLanding(cb, k, o)) return { ok: false, why: 'No room to land there.' };
+      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)) + ' damage to whoever is there, and to it.'] };
+    },
+    run: (h, args) => {
+      const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile)!, o = objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null)!, k = tileOf(cb, args.choice)!, kg = THROW_KG[o.kind];
+      const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
+      o.pos = land; emitFx(cb, 'shove', { unit: u.id, target: null, from: was, to: land, ok: true, object: o.id });
+      say(cb, u.name + ' hurls the ' + o.name.toLowerCase() + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + (o.hp != null && o.hp > 0 ? damageObject(cb, land, dmg, 0, u) : '') + '.');
+      checkOver(cb); return null;
+    },
   }],
-  brief: () => 'can throw any object or creature under carry weight (objects and story throws: yours)',
+  brief: () => 'story throws (anything under carry weight): yours',
 });
 
 // ---------- Demolitionist ----------

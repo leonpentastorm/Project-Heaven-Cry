@@ -131,7 +131,9 @@ function withMult<T>(u: Unit, v: number, label: string, g: () => T): T { const m
 // Silent Kill (K1, PROVISIONAL, audit 2-3): a killing blow struck from Hidden keeps you Hidden, unless it was a loud
 // gunshot (a firearm with no suppressor: bows, melee and silent or suppressed guns are quiet). You don't regain the
 // Ambush multiplier until you hide again (one ambush per Hidden entry, the engine's rule), and every enemy looking for
-// you this round gets +2 per kill you made this round (its spot TN drops). Story: the Narrator rules found bodies.
+// you this round gets +2 per kill you made this round (its spot TN drops). The area map: a killing ambush from Sneak
+// that leaves you Hidden and unseen by every other hostile opens no fight at all (game.ts silentTakedown). Story: the
+// Narrator rules found bodies.
 const loud = (u: Unit, melee = false) => { const w = W(u); return !melee && !!w && !isMelee(w) && w.category !== 'bow' && !isSilent(u); };
 register({
   id: 'shade.silent_kill', claims: 'all',
@@ -673,8 +675,8 @@ const ksOwner = (g: Glyph) => (g.id.startsWith('ks-') ? g.id.slice(3) : null);
 // Keystone (K16, PROVISIONAL, audit 1-5): 2 AP + 1 standard core (the core replaces the word's charge; +1 Flux still,
 // it's a glyph), on your tile or one next to you, an Evoker ready (the mason's chisel item doesn't exist yet: any Evoker
 // cuts). It never fades, can't be scuffed (the engine puts it back), doesn't count toward your glyph limit, and survives
-// being Evoked. One at a time. It stays in that map zone for the session (MISSING HOOKS: glyph fade, scuff and evoke
-// removal; the Keystone is restored at every turn and round boundary instead). GAMEBREAKING fix: a STAY zone that holds
+// being Evoked (magic.ts honours the glyph's keystone flag in the fade, Scuff and Evoke; the restore at turn and round
+// boundaries stays as a guard). One at a time. It stays in that map zone for the session. GAMEBREAKING fix: a STAY zone that holds
 // a Keystone lasts as long as an ordinary glyph would (the Keystone's own count is always a fresh glyph's).
 function ksRestore(h: Holder) {
   const u = h.u, cb = h.cb, c = h.c; if (!u || !cb || !c) return;
@@ -717,9 +719,8 @@ register({
   brief: () => 'Keystone: NPC Sigil users can read a cut glyph (Analysis TN 12) and Evoke a pattern holding it.',
 });
 // Survey (K17, PROVISIONAL, audit 1-3): a pattern that holds your Keystone costs 1 charge less to fire (1 at least)
-// for you and your allies, and you can Evoke it from up to 2 tiles away (with sight of it). MISSING HOOK: the touch rule
-// in previewEvoke; allies get the discount now, the reach only through your Class tab action. Enemy Sigil users who fire
-// it get neither.
+// for you and your allies, and you and your allies can Evoke it from up to 2 tiles away (with sight of it: the
+// 'evoke_reach' hook; the Class tab's action stays as the explicit form). Enemy Sigil users who fire it get neither.
 function surveyFrom(cb: Combat, u: Unit, tile: string): { p: Pattern; at: string } | string {
   const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return p;
   if (!p.glyphs.some((g) => g.id === KS(u))) return 'Survey reaches only a pattern that holds your Keystone.';
@@ -751,6 +752,8 @@ register({
       const u = h.u; if (!u || !ctx.pattern?.glyphs?.some((g: Glyph) => g.id === KS(u)) || ctx.u.side !== u.side) return;
       ctx.charge = Math.max(1, ctx.charge - 1);
     },
+    // The reach: you and your allies fire a pattern holding your Keystone from up to 2 tiles (with sight of it).
+    evoke_reach: (ctx, h) => { const u = h.u; if (!u || ctx.u.side !== u.side || !ctx.pattern?.glyphs?.some((g: Glyph) => g.id === KS(u))) return; ctx.reach = Math.max(ctx.reach, 2); },
   },
   brief: () => null,
 });
@@ -1303,8 +1306,8 @@ register({
   brief: () => 'Release: a story finisher with the Vessel\'s forms is yours to rule.',
 });
 // Empty Hand (Vessel, K30, PROVISIONAL, audit 1-3): unarmed strikes deal 20 Physical at least for 2 AP (no hands rule,
-// no Defense). The Vessel can't Begin or Release Outbursts (MP, Syphon, Crystallise and Strain stay). MISSING HOOK: the
-// design screen (magic/design) can't be refused from here; existing designs stay but can't be cast.
+// no Defense). The Vessel can't Begin or Release Outbursts (MP, Syphon, Crystallise and Strain stay), nor design them
+// (game.ts designBan refuses magic/design; the Magic panel hides it); existing designs stay but can't be cast.
 register({
   id: 'vessel.vessel_hands', claims: 'all',
   on: {

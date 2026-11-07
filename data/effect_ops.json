@@ -339,7 +339,7 @@
       "id": "immunity",
       "tier": "core",
       "summary": "Can't gain a condition or damage type.",
-      "count": 21,
+      "count": 18,
       "params": [
         "conditions",
         "context",
@@ -348,7 +348,6 @@
       ],
       "used_by": [
         "perks:clean_draw",
-        "perks:eyes_in_the_back",
         "perks:iron_stomach",
         "perks:make_way",
         "perks:nothing_left_to_fear",
@@ -822,12 +821,11 @@
       "id": "ignore_cover",
       "tier": "core",
       "summary": "Attacks ignore a level of cover.",
-      "count": 6,
+      "count": 4,
       "params": [
         "context"
       ],
       "used_by": [
-        "perks:breaching_strike",
         "perks:trick_shot",
         "traits:one_shot",
         "weapon_mastery:room_clearer"
@@ -2610,14 +2608,12 @@
       "id": "recoil_mult",
       "tier": "bespoke",
       "summary": "",
-      "count": 1,
+      "count": 0,
       "params": [
         "context",
         "value"
       ],
-      "used_by": [
-        "traits:spray_and_pray"
-      ],
+      "used_by": [],
       "example": {
         "op": "recoil_mult",
         "context": "full_auto",
@@ -3489,6 +3485,24 @@
       "params": [],
       "used_by": [],
       "provisional": true
+    },
+    {
+      "id": "no_flank",
+      "tier": "bespoke",
+      "summary": "Can't be flanked: adjacent half cover (and a carried shield's frontal cover) counts against a ranged attack from any direction.",
+      "count": 3,
+      "params": [
+        "shield_all_sides",
+        "target"
+      ],
+      "used_by": [
+        "perks:eyes_in_the_back"
+      ],
+      "example": {
+        "op": "no_flank",
+        "target": "self",
+        "shield_all_sides": true
+      }
     }
   ]
 }

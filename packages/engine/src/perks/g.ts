@@ -19,6 +19,7 @@ import { applyCond } from '../magic';
 import { SKILL, WEAPON } from '../data';
 import { d20 } from '../rng';
 import { npcsOf, sideRollMod } from '../game';
+import { foreseeVote } from '../game';
 import './briefs';
 
 // ---------- small helpers ----------
@@ -455,21 +456,22 @@ register({
 });
 
 // ---------- Foreseen (Conscience Mastered): once per session, after a major decision goes wrong, rewind and choose again ----------
-// PROVISIONAL: the room is told (the line is public). The engine can't restore the state from here yet (the reroll
-// copies live in the host's client; hooks gap in lane-g.md), so the Narrator shows what would have happened and plays
-// the moment again from before the decision, as a rewind in the fiction.
+// The real rewind (PROVISIONAL, spec 14): the room votes, as for a reroll (unanimous; in co-op anyone can veto), to go
+// back to the host's copy from just before one of the Narrator's last 5 turns (choice: its entry id; else the latest).
+// Everything since is undone, dice, HP, loot and XP included; the Narrator is told to show what would have happened and
+// play the moment again; the use stays spent. With no turn to go back to (or a vote under way) it is refused.
 register({
   id: 'foreseen',
   narrator: 'all',
   actions: [{
     id: 'foresee', label: 'Foreseen', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'After a major decision goes wrong: say which. The Narrator shows what would have happened, and you choose again.',
+    text: 'After a major decision goes wrong: say which. The room votes to go back to before that Narrator turn; you choose again.',
     run: (h, a) => {
-      const eid = postStory(h, 'has foreseen it: "' + textArg(a) + '". Back to just before the choice.');
-      ruling(h, 'Foreseen: rewind to just before "' + clip(a.text, 160) + '". Say in a few lines what would have happened, then play that moment again and let ' + h.c!.name + ' choose anew. Refuse if it wasn\'t a major decision (the use comes back).', eid);
+      const g = gOf(h); if (!g || !h.c) return 'Only in the story.';
+      return foreseeVote(g, h.c, h.key + '#foresee', a.choice, textArg(a));
     },
   }],
-  brief: () => 'rewind a major decision gone wrong: what would have happened, then choose again',
+  brief: () => null,
 });
 
 // ---------- Cultured (Lore Master 5 + Camaraderie 5): +1 Ingenuity and Charisma when the talk turns to art, history, holo-dramas ----------

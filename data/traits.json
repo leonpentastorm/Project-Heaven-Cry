@@ -2148,25 +2148,26 @@
       "cost": null,
       "flavour": "The Hellraiser doctrine: volume of fire is a tactic.",
       "upsides": [
-        "Suppression: a full-auto burst pins every target in its cone, hit or miss. Pinned targets lose 1 AP next turn and can't take reactions or Overwatch. Your full-auto recoil penalty is halved."
+        "Suppression: a full-auto burst leaves every target in its cone Suppressed, hit or miss (a Body save; it doesn't stack): −1 AP next turn and no reactions or Overwatch. Your full-auto penalty is −1 instead of −2."
       ],
       "downsides": [
-        "Ammo Hog: you burn double ammo, and single aimed shots are at −2."
+        "Ammo Hog: you burn double ammo, every round, and aimed shots are at −2."
       ],
       "notes": [],
       "narrator_hook": "the long mission with no resupply.",
-      "text": "The Hellraiser doctrine: volume of fire is a tactic.\n+ Suppression: a full-auto burst pins every target in its cone, hit or miss. Pinned targets lose 1 AP next turn and can't take reactions or Overwatch. Your full-auto recoil penalty is halved.\n− Ammo Hog: you burn double ammo, and single aimed shots are at −2.",
+      "text": "The Hellraiser doctrine: volume of fire is a tactic.\n+ Suppression: a full-auto burst leaves every target in its cone Suppressed, hit or miss (a Body save; it doesn't stack): −1 AP next turn and no reactions or Overwatch. Your full-auto penalty is −1 instead of −2.\n− Ammo Hog: you burn double ammo, every round, and aimed shots are at −2.",
       "effects": [
         {
           "op": "condition",
-          "condition": "pinned",
+          "condition": "suppressed",
           "target": "target",
-          "when": "full_auto_cone_hit_or_miss"
+          "when": "full_auto_cone_hit_or_miss",
+          "save": "body"
         },
         {
-          "op": "recoil_mult",
+          "op": "attack_mod",
           "context": "full_auto",
-          "value": 0.5
+          "value": 1
         },
         {
           "op": "ammo_mult",
@@ -2175,7 +2176,7 @@
         {
           "op": "attack_mod",
           "value": -2,
-          "context": "single_aimed_shot"
+          "context": "aimed_shot"
         }
       ],
       "adjudication": "engine",
@@ -3994,11 +3995,11 @@
         "Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge."
       ],
       "downsides": [
-        "Grounded: after a full day on foot, −1 Movement and Reaction Speed until you're back in a seat."
+        "Grounded: after a full day on foot, −0.5 Movement and −1 Reaction Speed until you're back in a seat."
       ],
       "notes": [],
       "narrator_hook": "the mission where everything with an engine is gone.",
-      "text": "Give you anything with an engine and you'll find out what it can really do.\n+ Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge.\n− Grounded: after a full day on foot, −1 Movement and Reaction Speed until you're back in a seat.",
+      "text": "Give you anything with an engine and you'll find out what it can really do.\n+ Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge.\n− Grounded: after a full day on foot, −0.5 Movement and −1 Reaction Speed until you're back in a seat.",
       "effects": [
         {
           "op": "narrator",
@@ -4016,7 +4017,7 @@
             {
               "op": "stat_mod",
               "stat": "move",
-              "value": -1
+              "value": -0.5
             },
             {
               "op": "skill_mod",

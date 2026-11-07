@@ -6,12 +6,13 @@
 // "tiles toward the target" on Lunge, Interpose on Brace, the three-Mark limit on Mark). Every move runs in combat and,
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
-import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
+import { strikeFromWorld } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
-  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell,
+  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury,
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, debuffStrength,
@@ -335,7 +336,7 @@ register({
 // ======================================================================================================== DEFENDER
 // Guard (0-5, lost after the fight) is gained by Brace. Interpose (Brace's handler, a reaction, 0 AP, while you hold
 // Guard): an adjacent ally is hit by a weapon attack: spend 1 Guard and take the hit instead (your armour, shield and
-// Reactive Plate apply; the attack's critical injury still lands on the ally: a hook gap, see the notes). Policy:
+// Reactive Plate apply; the attack's critical injury lands on the Defender too: the 'injury' hook). Policy:
 // auto (default), only when the hit would Down the ally, or off.
 
 // ---------- Brace (rank I, 2 AP; shown as "Brace (Hold the Line)": the base weapon Brace is a different action) ----------
@@ -343,6 +344,8 @@ register({
 // pushed, shoved or knocked prone). It also counts as the base weapon Brace (u.braced).
 const braceSync = (h: Holder) => { const u = h.u; if (!u) return; const st = stateOf(h); if (st.braceDef && (!u.braced || u.prone)) { st.braceDef = false; u.def -= 2; u.braced = false; } };
 let interposing = false;
+/** The ally an Interpose just covered (the same attack's injury follows the hit to the Defender). */
+let interposed: { t: string; me: string } | null = null;
 register({
   id: 'defender.brace', claims: 'all',
   actions: [
@@ -382,7 +385,15 @@ register({
       emitFx(cb, 'shove', { unit: me.id, target: t.id, from: me.pos, to: me.pos, ok: true, interpose: true });
       say(cb, me.name + ' interposes for ' + t.name + ' (1 Guard, ' + resOf(me, 'guard') + ' left) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
       if (me.hp === 0) fxFell(cb, me);
+      interposed = { t: t.id, me: me.id };
     },
+    // The hit's critical injury goes to the Defender who took it, not the ally (audit problem 3, PROVISIONAL).
+    injury: (ctx, h) => {
+      const ip = interposed; if (!ip || ctx.t?.id !== ip.t || ip.me !== h.u?.id || ctx.cancel) return; interposed = null;
+      ctx.cancel = true; const me = h.u!, cb: Combat = ctx.cb;
+      if (!me.dead && !me.downed) say(cb, 'The blow\'s injury lands on ' + me.name + ' (Interpose)' + rollInjury(ctx.rng, me, cb, ctx.by || null) + '.');
+    },
+    on_hit: () => { interposed = null; }, on_miss: () => { interposed = null; },
   },
   brief: () => null,
 });
@@ -737,6 +748,17 @@ const payloadAction = (scope: 'combat' | 'world'): ActionDef => ({
     return { lines: ['Payload: ' + pv.targets.length + ' target(s), +' + ex.targets.length + ' more (' + ex.targets.map((t) => t.name).join(', ') + '); +' + pv.pattern.glyphs.length + ' extra Flux.'], targets: [...pv.targets, ...ex.targets.map((t) => t.id)] };
   },
   run: (h, args, rng) => {
+    // The area map: a Payload that reaches anyone on the map opens the fight there first, as an Evoke does (the spell is
+    // the opening move); one that touches nobody fires on the map.
+    if (overworld(h.cb)) {
+      const cb = h.cb!, u = h.u!, tile = tileOf(cb, args.tile)!, aim = tileOf(cb, args.choice) || autoAim(cb, u, tile), pv: any = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
+      const ex = payloadExtras(cb, u, pv), npc = [...pv.targets, ...ex.targets.map((t) => t.id)].map((id) => cb.units.find((x) => x.id === id)).find((x) => x && x.side === 'foe');
+      if (npc) { const g = h.g; strikeFromWorld(npc.id, 0, (cbx, att) => payloadRun({ ...h, cb: cbx, u: att }, args, g.rng)); return null; }
+    }
+    return payloadRun(h, args, rng);
+  },
+});
+function payloadRun(h: Holder, args: ActionArgs, rng: Rng): string | null {
     const cb = h.cb!, u = h.u!, tile = tileOf(cb, args.tile)!, aim = tileOf(cb, args.choice) || autoAim(cb, u, tile);
     const pv: any = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
     const ex = payloadExtras(cb, u, pv), nums = numsOf(u), subj = subjectsOf(pv.pattern.words), n = pv.pattern.glyphs.length, seek = pv.pattern.words.includes('seek');
@@ -744,11 +766,10 @@ const payloadAction = (scope: 'combat' | 'world'): ActionDef => ({
     let line = '';
     for (const t of ex.targets) for (const w of subj) line += sigilOn(cb, rng as Rng, u, nums, t, w, ex.mult, ex.src, seek);
     say(cb, 'PAYLOAD: ' + (ex.targets.length ? 'the spell carries on' + line : 'nobody more in reach') + addFlux(cb, u, n) + '.');
-    checkOver(cb);
-  },
-});
-// Combat only: on the area map a spell that touches someone must start the fight first (game.ts does that for Evoke).
-register({ id: 'mage.payload', claims: 'all', actions: [payloadAction('combat')], brief: () => null });
+    checkOver(cb); return null;
+}
+// In a fight and on the area map ("Same on the area map"): there, a Payload that touches someone opens the fight.
+register({ id: 'mage.payload', claims: 'all', actions: [payloadAction('combat'), payloadAction('world')], brief: () => null });
 
 // ======================================================================================================== WARDEN
 
@@ -774,7 +795,8 @@ function runeTiles(cb: Combat, u: Unit, at: string): string[] {
 register({
   id: 'warden.raise_cover', claims: (e) => e?.op !== 'unlock_word',
   actions: [{
-    id: 'raise_cover', label: 'Raise Cover (cover rune)', scope: ['combat'], target: 'none', ap: SPELL_AP.evoke,
+    // In a fight and on the area map (the same number of overworld rounds there: cb.round is the story round).
+    id: 'raise_cover', label: 'Raise Cover (cover rune)', scope: ['combat', 'world'], target: 'none', ap: SPELL_AP.evoke,
     text: 'Evoke your lone STAY glyph as a cover rune: full cover on its tile and the one beside it.',
     available: (h) => { const e = evokerReady(h); if (e) return e; if (!h.cb || !loneStay(h.cb, h.u!)) return 'Draw a lone STAY glyph on or next to you first.'; if ((h.u!.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true; },
     run: (h) => {
@@ -794,6 +816,13 @@ register({
       const gone = st.runes.filter((r: any) => cb.round >= r.until); if (!gone.length) return;
       const ids = new Set(gone.flatMap((r: any) => r.ids)); cb.objects = objectsOf(cb).filter((o) => !ids.has(o.id));
       st.runes = st.runes.filter((r: any) => cb.round < r.until); say(cb, 'A cover rune of ' + h.u!.name + '\'s fades.');
+    },
+    // The area map: the runes raised there fade when their overworld round comes.
+    world_round_start: (ctx, h) => {
+      const g = ctx.g, st = stateOf({ ...h, g }); if (!g?.story || !st.runes?.length) return;
+      const gone = st.runes.filter((r: any) => g.story.round >= r.until); if (!gone.length) return;
+      const ids = new Set(gone.flatMap((r: any) => r.ids)); g.story.objects = (g.story.objects || []).filter((o: any) => !ids.has(o.id));
+      st.runes = st.runes.filter((r: any) => g.story.round < r.until); postStory({ ...h, g }, 'A cover rune fades.', { kind: 'system' });
     },
   },
   brief: () => null,
@@ -1149,8 +1178,8 @@ register({
 // ---------- Heart Surge (rank III; a toggle on Begin; once a turn, GAMEBREAKING at will, PROVISIONAL) ----------
 // Double effect (damage, healing and shields ×2 at release; conditions last twice as long), for double the cast
 // Strain: +1 base (2 in Flooded air) on top, after Shape takes its base off (so with Shape the net is the base, not 0:
-// the GAMEBREAKING combo, PROVISIONAL). The MP isn't doubled; holding Strain isn't doubled. Push/pull distances are
-// not doubled yet (a hook gap, see the notes).
+// the GAMEBREAKING combo, PROVISIONAL). The MP isn't doubled; holding Strain isn't doubled. Push and pull distances
+// are doubled too (forced_move's tiles, read back by magicShove).
 register({
   id: 'channeler.heart_surge', claims: 'all',
   toggles: [{ id: 'surge', label: 'Heart Surge (double effect, double Strain)', on: ['combat/outburst'],
@@ -1161,6 +1190,7 @@ register({
     outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'surge') && uses(h).take('per_turn', 1, h.key + '#surge')) { stateOf(h).surge = ctx.design.id; say(h.cb, h.u!.name + '\'s heart surges.'); } },
     outburst_release: (ctx, h) => { const st = stateOf(h); if (ctx.u !== h.u || st.surge !== ctx.design.id) return; st.surge = null; ctx.mult = (ctx.mult || 1) * 2; markRelease(h, ctx, 'surge'); },
     cond_apply: (ctx, h) => { if (ctx.by === h.u && releasing(h, 'surge')) ctx.rounds = (ctx.rounds || 1) * 2; },
+    forced_move: (ctx, h) => { if (ctx.by === h.u && ctx.how === 'magic' && releasing(h, 'surge') && !ctx.cancel) ctx.tiles = ctx.tiles * 2; },
   },
   brief: () => null,
 });
@@ -1190,9 +1220,8 @@ register({ id: 'guardian.will_shield', claims: 'all', actions: [willShield(false
 
 // ---------- Drink It In (rank II, a reaction once a round) ----------
 // An enemy spell (Outburst, Sigil or a wall's bite) hits a shield you made and the shield takes some of it: gain MP
-// equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP. The damage source doesn't carry the spell's
-// cost or word count yet (a hook gap): an Outburst counts its school's base cost (25 Damage, PROVISIONAL), a Sigil 2
-// words (20 MP, PROVISIONAL). Automatic; policy: off for the fight.
+// equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP (magic.ts puts spellMp / spellWords on the
+// damage source). Automatic; policy: off for the fight.
 register({
   id: 'guardian.drink_it_in', claims: 'all',
   actions: [policyAction('drink_off', 'Drink It In off', 'off', 'Keep your reaction for something else this fight.'), policyAction('drink_on', 'Drink It In on', 'auto', 'Drink enemy spells that hit your shields (the default).')],
@@ -1204,7 +1233,9 @@ register({
       if (!src?.by || src.by.side === me.side || !['sigil', 'elemental', 'soul', 'wall'].includes(src.type)) return;
       if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me)) return;
       useReaction(cb, me);
-      const gain = src.type === 'soul' ? (SCHOOL.damage?.base_cost || 25) : 20, was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
+      // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
+      // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
+      const gain = src.type === 'soul' ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
       emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg.mp - was });
       say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg.mp - was) + ' MP (' + me.mg.mp + '/' + me.mg.mpMax + ').');
     },
@@ -1256,7 +1287,7 @@ register({
 // 10 MP, no Strain (without an Emanator: +2 Strain instead, PROVISIONAL): an ally within 6 (not you; no sight needed)
 // gets +2 on their next d20 roll: an attack, a save or a check (named "Encouraged" so it never overwrites the Buff
 // school's Inspired). One at a time per ally: a second Inspire refreshes, never stacks (PROVISIONAL). Sigil and Soul
-// strikes don't see it yet (a hook gap). In the story: 10 MP, +2 on the ally's next check.
+// strikes take it too ('spell_roll'). In the story: 10 MP, +2 on the ally's next check.
 const encouraged = (g: any): Record<string, string> => (!g ? {} : ((g.story ||= {}).encouraged ||= {}));
 const encKey = (u: Unit | null | undefined, c?: Character | null) => c?.id || u?.charId || u?.id || '';
 function useEnc(h: Holder, who: string): boolean { const e = encouraged(h.g); if (!e[who] || e[who] !== (h.c?.id || h.u?.charId)) return false; delete e[who]; return true; }
@@ -1287,6 +1318,7 @@ register({
   on: {
     attack_preview: (ctx, h) => { const who = encKey(ctx.att); if (encouraged(h.g)[who] && encouraged(h.g)[who] === (h.c?.id || h.u?.charId)) ctx.terms.push({ v: 2, label: 'Encouraged' }); },
     attack_roll: (ctx, h) => { useEnc(h, encKey(ctx.att)); },
+    spell_roll: (ctx, h) => { if (useEnc(h, encKey(ctx.u))) ctx.add += 2; }, // Sigil and Soul strikes are d20 rolls too
     cond_apply: (ctx, h) => { if (ctx.skipSave || isBoon(ctx.id) || ['marked', 'augment_offline', 'bleeding', 'injured', 'hidden', 'prone'].includes(ctx.id) || ctx.t.side === ctx.by?.side) return; if (useEnc(h, encKey(ctx.t))) ctx.saveAdd += 2; },
   },
   brief: () => null,
@@ -1315,8 +1347,7 @@ register({
 // Out of combat, hand an ally one of your ready designs (say the ally and the design; else your first design). They
 // cast it once with their own AP (their Soul cast AP), on your MP and your Strain, from where they stand, with your
 // numbers; it releases at once (PROVISIONAL). A Gift fails if you are Downed, dead or not in the fight. Hybrid: the
-// Narrator rules a Gift cast in the story. In a fight the ally needs an action this runtime can't give another
-// character's unit yet (a hook gap): castGift() is the cast, ready for it.
+// Narrator rules a Gift cast in the story. In a fight the ally casts it with combat/gift {unitId, aim} (runGift).
 export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId: string, aim: string): string | null {
   const m = bard.mg; if (!m || bard.dead || bard.downed) return 'The Gift fails: its giver is down.';
   const d = m.designs.find((x) => x.id === designId); if (!d) return 'That design is gone.';
@@ -1330,6 +1361,17 @@ export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId:
   try { m.held = { design: d.id, stage: 1, cost }; bard.ap = Math.max(bard.ap, SPELL_AP.release); releaseOutburst(cb, rng, bard, aim); } finally { bard.pos = was; bard.ap = apWas; m.held = held; }
   cb.log.push(ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb)));
   return null;
+}
+/** The ally's cast of a Gift in a fight (combat/gift {unitId, aim}): the Bard in this fight whose Gift (this rest) the
+ * ally carries; castGift does the rest. Once: the Gift is spent. */
+export function runGift(g: any, cb: Combat, rng: Rng, ally: Unit, aim: string): string | null {
+  for (const b of cb.units) {
+    if (b === ally || !b.charId) continue; const c = g.characters?.[b.charId]; if (!c) continue;
+    const h = holderOf({ u: b, cb, c }, 'class:bard.gift'); if (!h) continue; const k = keep({ ...h, g }), gft = k.gift;
+    if (!gft || gft.to !== ally.charId || gft.used || gft.stamp !== restStamp({ ...h, g })) continue;
+    const err = castGift(cb, rng, b, ally, gft.design, aim); if (!err) gft.used = true; return err;
+  }
+  return 'You carry no Gift.';
 }
 register({
   id: 'bard.gift', claims: 'all',
@@ -1347,7 +1389,7 @@ register({
   }],
   on: {
     combat_start: (ctx, h) => { const gft = keep(h).gift; if (!gft || gft.stamp !== restStamp(h) || !h.cb) return; const t = h.g?.characters?.[gft.to], d = (h.c?.outbursts || []).find((x) => x.id === gft.design);
-      if (t && d) note(h, t.name + ' carries ' + (h.c?.name || '') + '\'s Gift (' + d.name + '): the engine can\'t give them the cast action yet; if they cast it, rule it on ' + (h.c?.name || '') + '\'s MP and Strain.'); },
+      if (t && d && !gft.used) h.cb.log.push(t.name + ' carries ' + (h.c?.name || '') + '\'s Gift (' + d.name + '): Cast the Gift on their turn.'); },
   },
   brief: () => 'A Gift cast in the story (or by the ally in a fight, until the engine can) is the Narrator\'s to rule.',
 });

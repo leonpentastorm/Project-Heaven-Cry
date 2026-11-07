@@ -404,6 +404,7 @@ register({
       (ctx.mult ||= {})[c.id] = { hp: 0.5, mp: 0.5 }; // applyRest gives back half of what it would
       sys(h, 'Wired: ' + c.name + ' rests badly: half the rest.');
     },
+    session_heal: (ctx, h) => { const c = h.c; if (!c) return; (ctx.mult ||= {})[c.id] = { hp: 0.5, mp: 0.5 }; sys(h, 'Wired: ' + c.name + ' slept badly: half the session\'s rest.'); },
     attack_roll: (ctx, h) => { if (ctx.tgt === h.u && ctx.ambush && restedHere(h)) { ctx.critMin = Math.max(ctx.critMin, 20); stateOf(h).noAmbush = true; say(h.cb, h.u!.name + ' was already up (Always Up): no ambush.'); } },
     damage_out: (ctx, h) => { if (ctx.tgt === h.u && ctx.src?.ambush && restedHere(h)) ctx.mults.push({ v: 1 / (ctx.att?.ambushMult || 1.5), label: 'Always Up' }); },
   },
@@ -479,6 +480,12 @@ register({
   on: {
     xp_grant: (ctx, h) => { if (ctx.c === h.c && ctx.source === 'combat' && ro(h.c).rtcFight) { ctx.amount = 0; delete h.c!.state!.rtcFight; } },
     scene_change: (ctx, h) => { if (ro(h.c).rtcFight) delete h.c!.state!.rtcFight; },
+    // The Company's claim is a standing memory thread (a debt), seeded at the first session start, so the Narrator's
+    // memory carries RTC's jobs without a per-turn line (PROVISIONAL, spec 14).
+    session_start: (ctx, h) => {
+      const g = ctx.g, c = h.c; if (!g || !c) return; const st = (c.state ||= {}); if (st.rtcThread) return;
+      st.rtcThread = applyMemOp(g, { op: 'thread', title: 'RTC contract: ' + c.name, kind: 'debt', status: 'open', who: [c.name], text: c.name + ' works for the Company (RTC): it sends jobs they can\'t refuse, and once a campaign it will pull them out of anywhere.', importance: 3 } as any) || 'seeded';
+    },
   },
   brief: () => 'RTC sells to them at ' + Math.round(RTC_PRICE * 100) + '% of list (provisional); RTC sends jobs they can\'t refuse',
 });

@@ -533,7 +533,7 @@
       "excludes": [],
       "ap_cost": 3,
       "uses": "at_will",
-      "text": "I: 3 AP, a melee hit that ignores cover and knocks the target back 1 tile. II: 2 tiles; a target slammed into a wall takes +50% damage.",
+      "text": "I: 3 AP, a melee hit that knocks the target back 1 tile. II: 2 tiles; a target slammed into a wall takes +50% damage.",
       "effects": [
         {
           "op": "grant_action",
@@ -556,17 +556,13 @@
             }
           ],
           "ap_cost": 3,
-          "text": "3 AP, a melee hit that ignores cover and knocks the target back 1 tile.",
+          "text": "3 AP, a melee hit that knocks the target back 1 tile.",
           "effects": [
             {
               "op": "grant_action",
               "action": "breaching_strike",
               "ap": 3,
               "uses": "at_will"
-            },
-            {
-              "op": "ignore_cover",
-              "context": "breaching_strike"
             },
             {
               "op": "knockback",
@@ -590,10 +586,6 @@
               "action": "breaching_strike",
               "ap": 3,
               "uses": "at_will"
-            },
-            {
-              "op": "ignore_cover",
-              "context": "breaching_strike"
             },
             {
               "op": "knockback",
@@ -1982,14 +1974,12 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: you can't be flanked. II: allies next to you can't be flanked either.",
+      "text": "I: you can't be flanked: half cover next to you, and a carried shield's frontal cover, count against a ranged attack from any direction. II: allies next to you can't be flanked either.",
       "effects": [
         {
-          "op": "immunity",
-          "conditions": [
-            "flanked"
-          ],
-          "target": "self"
+          "op": "no_flank",
+          "target": "self",
+          "shield_all_sides": true
         }
       ],
       "tiers": {
@@ -2001,14 +1991,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "you can't be flanked.",
+          "text": "you can't be flanked: half cover next to you, and a carried shield's frontal cover, count against a ranged attack from any direction.",
           "effects": [
             {
-              "op": "immunity",
-              "conditions": [
-                "flanked"
-              ],
-              "target": "self"
+              "op": "no_flank",
+              "target": "self",
+              "shield_all_sides": true
             }
           ]
         },
@@ -2023,11 +2011,9 @@
           "text": "allies next to you can't be flanked either.",
           "effects": [
             {
-              "op": "immunity",
-              "conditions": [
-                "flanked"
-              ],
-              "target": "self_and_adjacent_allies"
+              "op": "no_flank",
+              "target": "self_and_adjacent_allies",
+              "shield_all_sides": true
             }
           ],
           "replaces_tier_I": true,

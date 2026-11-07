@@ -247,7 +247,7 @@ describe('Circuit Mage', () => {
 
 // ============================================================ Glyph Mason
 describe('Glyph Mason', () => {
-  it('Keystone: 2 AP and a core; never fades, comes back after a scuff, and doesn\'t count toward the glyph limit', () => {
+  it('Keystone: 2 AP and a core; never fades, can\'t be scuffed, and doesn\'t count toward the glyph limit', () => {
     const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['fire', 'push', 'condense'], { maxWords: 1 }); const ap = f.unit(u.id).ap;
     perk(f, f.unit(u.id), 'glyph_mason.keystone', { tile: '3,2', choice: 'fire' });
     expect(f.pc.ap).toBe(ap - 2); expect(f.pc.mg!.cores).toBe(1);
@@ -255,7 +255,7 @@ describe('Glyph Mason', () => {
     expect(ks()!.word).toBe('fire');
     act(f, f.pc, { type: 'combat/draw', word: 'push', tile: '4,2' }); // the one ordinary glyph allowed (Max Sigil words 1)
     expect((f.cb.glyphs || []).filter((g) => g.word === 'push').length).toBe(1); expect(ks()).toBeTruthy();
-    act(f, f.pc, { type: 'combat/scuff' }); expect(ks()).toBeFalsy();
+    expect(() => act(f, f.pc, { type: 'combat/scuff' })).toThrow(/Keystone can't be scuffed/); expect(ks()).toBeTruthy(); // it can't be scuffed at all now
     for (let i = 0; i < 6; i++) withGame(f.g, () => endTurn(f.cb, f.g.rng)); // rounds pass
     expect(ks()).toBeTruthy(); expect(ks()!.pos).toBe('3,2');
   });
@@ -263,7 +263,7 @@ describe('Glyph Mason', () => {
     const f = fightWith([adv('glyph_mason')], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '9,2')); caster(f.unit(u.id), ['fire', 'push']);
     perk(f, f.unit(u.id), 'glyph_mason.keystone', { tile: '4,2', choice: 'fire' }); glyph(f, f.pc, 'push', '4,2');
     at(f, f.pc, '2,2'); const ch = f.pc.mg!.charge; seed(f, 15);
-    expect(withGame(f.g, () => previewEvoke(f.cb, f.pc, '4,2', foe.pos)).ok).toBe(false); // too far by the plain rule
+    expect(withGame(f.g, () => previewEvoke(f.cb, f.pc, '4,2', foe.pos)).ok).toBe(true) // the reach is the evoke_reach hook now: a plain Evoke reaches it too; // too far by the plain rule
     perk(f, f.pc, 'glyph_mason.survey', { tile: '4,2', targetId: foe.id });
     expect(f.unit(foe.id).hp).toBeLessThan(999); expect(f.pc.mg!.charge).toBe(ch - 1); expect(f.pc.pos).toBe('2,2');
     expect((f.cb.glyphs || []).some((g) => g.id === 'ks-' + f.pc.id)).toBe(true); // survives being Evoked

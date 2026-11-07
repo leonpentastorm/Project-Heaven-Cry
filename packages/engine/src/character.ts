@@ -173,6 +173,12 @@ function startingMagic(c: Character) {
   delete c.outburst;
 }
 
+/** The highest armour Class a character's traits allow (armor_class_max), or null for none. */
+export function armourCap(c: { traits?: string[] }): number | null {
+  let cap: number | null = null;
+  for (const t of c.traits || []) for (const e of ((TRAITS.find((x) => x.id === t) as any)?.effects || [])) if (e?.op === 'armor_class_max' && Number.isFinite(e.value)) cap = cap == null ? e.value : Math.min(cap, e.value);
+  return cap;
+}
 /** Turn a locked-in sheet into a level-1 character (spec: Creation; kits from the creation screen). */
 export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? 2 : 0);
@@ -183,6 +189,9 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })),
   };
+  // A trait that caps armour (Forlorn Hope: Class I at most) drops the kit's armour to the cap at lock-in (the kit's
+  // heavier plate isn't carried; PROVISIONAL, spec 14).
+  { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
   c.hp = maxHp(c);
   startingMagic(c);
   grantStartItems(c);
@@ -455,20 +464,37 @@ export function plotItem(name: string, text = '', qty = 1): PackItem {
 }
 export const isPlotItem = (it: PackItem | null | undefined) => !!it && it.kind === 'plot';
 
+/** Does this weapon take both hands for this character? A heavy weapon is one-handed for an item with stat
+ * 'one_hand_heavy' (Heavyworlder). */
+export function twoHands(c: Character, wid: string | null | undefined): boolean {
+  const w: any = wid ? WEAPON[wid] : null; if (!w || w.hands !== '2H') return false;
+  if (/^heavy/.test(w.category || '') && statQuery({ c }, 'one_hand_heavy').add > 0) return false;
+  return true;
+}
+const equipBanWhy = (c: Character, ctx: any): string => {
+  const w: any = ctx.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
+  if ((c.traits || []).includes('old_school')) return ctx.mod === 'mod_red_dot' || (ctx.mods || []).includes('mod_red_dot') ? 'Old School: no red dot on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
+  return 'A trait won\'t let you.';
+};
 export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
   if (isPlotItem(it)) return 'A plot item can\'t be equipped.';
   const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
   const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
   const putBack = (id: string, st: GearState | undefined, loaded?: number) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}), ...(loaded ? { loaded } : {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };
+  // Items may refuse what is equipped or fitted (stat 'equip_ban' {weapon, mod}: Old School won't carry an electronic or
+  // Evoker-linked gun or a red dot; Forlorn Hope's armour cap is armourCap) — perk-runtime still-open item 6.
+  const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
   if (to === 'main') {
     if (!wid) return 'Only weapons go in the main hand.';
     const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
+    { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined); // a stowed gun keeps the rounds in it (rules 1.3)
-    if ((WEAPON[wid] as any).hands === '2H' && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
+    if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
     c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
   } else if (to === 'off') {
-    if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
+    if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
+    if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods };
@@ -490,6 +516,7 @@ export function fitMod(c: Character, idx: number): string | null {
   if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
   const slots: string[] = (WEAPON[c.weapon] as any)?.mod_slots || [], mods = [...(c.weaponState?.mods || [])];
   if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot.';
+  if (statQuery({ c }, 'equip_ban', { mod: m.id }).add > 0) return equipBanWhy(c, { mod: m.id });
   const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
   if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: 'tool' }); }
   mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);

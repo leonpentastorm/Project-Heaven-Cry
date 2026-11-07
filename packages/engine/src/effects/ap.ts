@@ -4,6 +4,7 @@
 // Out-of-turn pools (Supreme Command, Between Heartbeats, a window's AP) are not perk AP: they don't count.
 import perksJ from '../../../../data/perks.json';
 import type { Combat, Unit } from '../combat';
+import { emit } from './hooks';
 
 const CEIL = (perksJ as any).rules?.ap_ceiling || {};
 export const AP_BASE = 6;
@@ -32,10 +33,10 @@ export function turnAp(u: Unit, grants: ApLine[], penalties: ApLine[]): { ap: nu
 
 /** Give perk AP now (on the unit's own turn), within the +3 cap and the turn's 9: returns what was given. Off the
  * unit's turn the AP is banked for its next turn instead (bankAp). */
-export function grantPerkAp(cb: Combat | null, u: Unit, n: number, why: string): number {
-  if (n <= 0) return 0;
+export function grantPerkAp(cb: Combat | null, u: Unit, n: number, why: string, from?: Unit | null): number {
+  if (n <= 0 || refusedGift(cb, u, n, from)) return 0;
   const mine = cb && cb.units.find((x) => x.id === cb.order[cb.turn]) === u && !cb.window;
-  if (!mine) { bankAp(u, n, why, cb); return 0; }
+  if (!mine) { bankAp(u, n, why, cb); return 0; } // already past the gift check
   const room = Math.max(0, Math.min(PERK_AP_CAP - (u.apGained || 0), AP_MAX - (u.apTurnTotal ?? u.ap)));
   const give = Math.min(n, room);
   u.ap += give; u.apGained = (u.apGained || 0) + give; u.apTurnTotal = (u.apTurnTotal ?? u.ap) + give;
@@ -43,10 +44,18 @@ export function grantPerkAp(cb: Combat | null, u: Unit, n: number, why: string):
   return give;
 }
 /** AP for the unit's next turn (counted toward that turn's +3 cap). */
-export function bankAp(u: Unit, n: number, why: string, cb?: Combat | null) {
-  if (n <= 0) return;
+export function bankAp(u: Unit, n: number, why: string, cb?: Combat | null, from?: Unit | null) {
+  if (n <= 0 || refusedGift(cb || null, u, n, from)) return;
   u.apNext = (u.apNext || 0) + n;
   if (cb) cb.log.push(u.name + ' banks ' + n + ' AP for next turn (' + why + ').');
+}
+/** An AP gift from another unit (Hand-Off): 'ap_gift' {t, from, n, cb, cancel, why} lets the receiver's items refuse it
+ * (Humanity First won't take AP from a non-human). The AP stays with the giver (the caller gives it back). */
+export function refusedGift(cb: Combat | null, u: Unit, n: number, from?: Unit | null): boolean {
+  if (!from || from === u || !cb) return false;
+  const r: any = emit(cb, 'ap_gift', { t: u, from, n, cb, cancel: false, why: '' });
+  if (r.cancel) { cb.log.push(u.name + ' won\'t take AP from ' + from.name + (r.why ? ' (' + r.why + ')' : '') + '.'); return true; }
+  return false;
 }
 /** AP taken off the unit's next turn after the floor of 2 (On My Mark), at most 4. */
 export function apDebt(u: Unit, n: number) { u.apDebt = Math.min(AP_DEBT_CAP, (u.apDebt || 0) + Math.max(0, n)); }

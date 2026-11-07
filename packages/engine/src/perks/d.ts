@@ -25,7 +25,7 @@ import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { d20, die, type Rng } from '../rng';
-import { npcsOf } from '../game';
+import { npcsOf, positionsOf, setStoryCond } from '../game';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -48,6 +48,8 @@ const mends = (d: any) => [d.school, d.school2, d.school3].some((s, i) => (s ===
 /** The last thing this character said aloud in this round of the fight (combat/say writes "Name (round N): "…""). */
 function sayLine(h: Holder): string | null {
   const cb = h.cb, c = charOf(h); if (!cb || !c) return null;
+  // The area map: the line this player said this overworld round (the overworld Say: story/speak).
+  if (ow(cb)) { const t = gameOf(h)?.story?.spoken?.[c.owner]; return t ? String(t) : null; }
   const head = c.name + ' (round ' + cb.round + '): "';
   const n = [...(cb.notes || [])].reverse().find((x) => x.startsWith(head));
   return n ? n.slice(head.length, -1) : null;
@@ -381,30 +383,31 @@ register({
 // Verse of War (Achieved: Implication 5 + Will Power 5). An Outburst cast while you speak in verse: +1 tile of range,
 // ×1.1 Soul damage. Player-declared (plan 4.3: the Narrator is never called per cast): Say the line (free), then Begin
 // with the "In verse" toggle, or "Release in verse" from the Perks tab for a held one; the line goes to the fight notes
-// for the Narrator to audit after the fight.
+// for the Narrator to audit after the fight. On the area map the same: the line is this round's Say (story/speak), and
+// the audit is a pending ruling.
 // =====================================================================================================================
 function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + '. Audit whether it was verse (+1 range, ×1.1 damage given).'); }
 register({
   id: 'verse_of_war', claims: [0, 1],
   toggles: [{
     id: 'verse', label: 'In verse', on: ['combat/outburst'],
-    available: (h) => (!h.u?.mg ? false : ow(h.cb) || sayLine(h) ? true : 'Say your verse first (Say).'),
+    available: (h) => (!h.u?.mg ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
     preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
   }],
   actions: [{
     id: 'release', label: 'Release in verse', scope: ['combat', 'world'], ap: 0, target: 'tile',
     text: 'Release your held Outburst while you speak in verse: +1 tile of range, ×1.1 damage (1 AP).',
-    available: (h) => { const m = h.u?.mg; if (!m) return false; if (!m.held) return 'Hold an Outburst first.'; return ow(h.cb) || sayLine(h) ? true : 'Say your verse first (Say).'; },
+    available: (h) => { const m = h.u?.mg; if (!m) return false; if (!m.held) return 'Hold an Outburst first.'; return sayLine(h) ? true : 'Say your verse first (Say).'; },
     run: (h, args, rng) => {
       const u = h.u!, m = u.mg!, s = stateOf(h); m.soulRange += 1; s.verseRelease = true;
       try { return releaseOutburst(h.cb!, rng, u, args.tile); } finally { m.soulRange -= 1; s.verseRelease = false; }
     },
   }],
   on: {
-    outburst_cost: (ctx, h) => { if (me(h, ctx.u) && ctx.release && modOn(h, 'verse') && (ow(ctx.cb) || sayLine(h))) ctx.range += 1; },
+    outburst_cost: (ctx, h) => { if (me(h, ctx.u) && ctx.release && modOn(h, 'verse') && sayLine(h)) ctx.range += 1; },
     outburst_release: (ctx, h) => {
       if (!me(h, ctx.u)) return; const s = stateOf(h);
-      if (!((modOn(h, 'verse') && (ow(ctx.cb) || sayLine(h))) || s.verseRelease) || ctx.wild) { s.verseAt = null; return; }
+      if (!((modOn(h, 'verse') && sayLine(h)) || s.verseRelease) || ctx.wild) { s.verseAt = null; return; }
       verseNote(h); s.verseAt = ctx.cb.log.length;
     },
     damage_in: (ctx, h) => { const s = stateOf(h); if (ctx.phase === 'reduce' && me(h, ctx.src?.by) && ctx.src?.type === 'soul' && s.verseAt != null && s.verseAt === ctx.cb?.log.length) ctx.dmg *= 1.1; },
@@ -511,9 +514,18 @@ register({
 // (provisional table, plan 6a): 1 the Blessing fails, 2 +1 Strain, 3 Shaken 1 round, 4 as normal, 5 ×1.5 power, 6 a
 // voice from above (the Narrator speaks).
 // =====================================================================================================================
-const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u).filter((v) => v.kind === 'upper_realm' || (v.tags || []).includes('upper_realm'));
+const isUpper = (v: { kind?: string; tags?: string[] } | null | undefined) => !!v && (v.kind === 'upper_realm' || (v.tags || []).includes('upper_realm'));
+const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u).filter(isUpper);
+/** The area map: upper-realm tokens within 10 tiles of the holder, once a scene each (a line; a lurker is revealed). */
+function owSenseUpper(h: Holder, at?: string) {
+  const g = gameOf(h), c = charOf(h); if (!g || !c || c.dead) return; at ||= positionsOf(g)[c.id]; if (!at) return;
+  const s = stateOf({ ...h, g }), had: string[] = (s.sensed ||= []), sc = g.story?.scene?.n ?? 0;
+  for (const n of npcsOf(g)) { if (!isUpper(n) || dist(n.pos, at) > 10) continue; const k = n.id + '@' + sc; if (had.includes(k)) continue; had.push(k);
+    if (n.hidden) delete n.hidden; postStory({ ...h, g }, 'feels something from above at ' + refOf(n.pos) + ' (Thin Veil): ' + n.name + '.', { kind: 'system' }); }
+}
 function senseUpper(h: Holder, cb: Combat) {
-  const u = h.u; if (!u || ow(cb) || !alive(u)) return; const s = stateOf(h), had: string[] = (s.sensed ||= []);
+  const u = h.u; if (!u || !alive(u)) return; const s = stateOf(h), had: string[] = (s.sensed ||= []);
+  if (ow(cb)) { owSenseUpper(h, u.pos); return; }
   for (const v of upperFoes(cb, u)) if (dist(v.pos, u.pos) <= 10 && !had.includes(v.id)) { had.push(v.id); log(cb, u.name + ' feels something from above at ' + refOf(v.pos) + ' (Thin Veil).'); }
 }
 register({
@@ -522,6 +534,24 @@ register({
     outburst_cost: (ctx, h) => { if (me(h, ctx.u) && ctx.mp >= 5) ctx.mp = Math.max(5, ctx.mp * 0.8); },
     combat_start: (ctx, h) => senseUpper(h, ctx.cb),
     turn_start: (ctx, h) => senseUpper(h, ctx.cb),
+    // The area map: after the holder moves, and when a round opens.
+    moved: (ctx, h) => { if (ow(ctx.cb) && ctx.u === h.u) senseUpper(h, ctx.cb); },
+    world_round_start: (ctx, h) => { if (ctx.g?.phase === 'story') owSenseUpper(h); },
+    zone_enter: (ctx, h) => owSenseUpper(h),
+    // A Blessing in the story rolls the same d6 (the engine rolls; the Narrator plays the result in its answer).
+    story_blessing: (ctx, h) => {
+      if (ctx.c !== h.c) return; const r = die(ctx.g.rng, 6);
+      const what = ['', 'the Blessing fails', '+1 Strain (the heart tugs)', 'Shaken for the scene', 'as normal', '×1.5 power', 'a voice from above speaks through it'][r];
+      ctx.lines.push('Upper-Touched d6 ' + r + ': ' + what + '.');
+      if (r === 3) setStoryCond(ctx.g, h.c!, 'shaken', 'scene');
+    },
+    // The sight hook: upper-realm foes within 10 tiles are a sensed presence through fog and walls; their own eyes always
+    // see you (Seen From Above).
+    sees: (ctx, h) => {
+      const u = h.u, t: Unit = ctx.t; if (!u || !alive(u)) return;
+      if (ctx.side === u.side && t.side !== u.side && isUpper(t) && dist(t.pos, u.pos) <= 10 && !ctx.seen) ctx.sensed = true;
+      if (t === u && ctx.side !== u.side && ctx.cb.units.some((v: Unit) => v.side === ctx.side && alive(v) && isUpper(v) && (!ctx.by || ctx.by === v))) ctx.seen = true;
+    },
     hide: (ctx, h) => { if (me(h, ctx.u) && upperFoes(ctx.cb, h.u!).length) reveal(ctx.cb, h.u!, 'Seen From Above: upper-realm eyes always find you'); },
     spot: (ctx, h) => { if (me(h, ctx.u) && (ctx.by?.kind === 'upper_realm' || (ctx.by?.tags || []).includes('upper_realm'))) ctx.die = 20; },
     stay_hidden: (ctx, h) => { const c = charOf(h); if (c && ctx.c?.id === c.id && (ctx.npc?.kind === 'upper_realm' || (ctx.npc?.tags || []).includes('upper_realm'))) ctx.auto = 'fail'; },
@@ -917,7 +947,8 @@ register({
       run: (h, args, rng) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return sp; log(h.cb, castMirage(h, rng, sp)); return null; },
     },
     {
-      id: 'mirage_story', label: 'Mirage', scope: ['story', 'world'], ap: 0, target: 'text',
+      // 2 overworld AP on the area map (the audit's story side); free in the story panel (a scene's action, once a round there).
+      id: 'mirage_story', label: 'Mirage', scope: ['story', 'world'], ap: (h) => (h.cb ? 2 : 0), target: 'text',
       text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Analysis; the Narrator plays them.',
       run: (h, args, rng) => {
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Project in the story.';

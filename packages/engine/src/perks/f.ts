@@ -10,7 +10,7 @@ import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, h
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, type AttackMode } from '../combat';
+import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitDebuff } from '../magic';
 import { d20 } from '../rng';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
@@ -192,6 +192,10 @@ register({
 // the roll and spared foes give no kill credit (plan 6, Clean Hands 2; PROVISIONAL). Out of combat the Narrator rules
 // spared or protected moments.
 function cleanAp(h: Holder, why: string) {
+  if (overworld(h.cb) || (!h.u && h.c)) { // the area map and the story: +2 (II +3) AP on the next overworld round, once a round
+    const g = h.g, st = stateOf(h); if (!g?.story || st.owRound === g.story.round) return;
+    st.owRound = g.story.round; st.owAp = tierII(h) ? 3 : 2; postStory(h, 'Clean Hands (' + why + '): +' + st.owAp + ' AP next round.', { kind: 'system' }); return;
+  }
   if (!h.u || !uses(h).take('per_turn', 1, h.key + '#ap')) return;
   bankAp(h.u, tierII(h) ? 3 : 2, 'Clean Hands: ' + why, h.cb);
 }
@@ -204,8 +208,15 @@ register({
     on_surrender: (ctx, h) => { if (ctx.by === h.u || (ctx.by == null && ctx.t?.lastHitBy === h.u?.id)) cleanAp(h, 'spared ' + ctx.t.name); },
     heal_given: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && innocent(ctx.t)) cleanAp(h, 'protected ' + ctx.t.name); },
     shield_grant: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && innocent(ctx.t)) cleanAp(h, 'protected ' + ctx.t.name); },
+    ruling_answered: (ctx, h) => { if (ctx.c === h.c && ctx.accepted && /^Clean Hands:/.test(ctx.r.text)) cleanAp(h, 'the Narrator agrees'); },
+    round_ap: (ctx, h) => { if (ctx.c !== h.c) return; const st = stateOf(h); if (st.owAp) { ctx.ap += st.owAp; ctx.lines.push('Clean Hands'); st.owAp = 0; } },
   },
-  brief: (h) => 'out of combat: Narrator rules spared/protected moments (+' + (tierII(h) ? 3 : 2) + ' AP has no story hook yet)',
+  actions: [{
+    id: 'clean_story', label: 'I spared them', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 2 },
+    text: 'Out of a fight: claim a moment you spared someone or protected an innocent. If the Narrator agrees, +' + 2 + ' AP (II +3) next overworld round.',
+    run: (h, a) => { const t = String(a.text || a.npc || 'someone').slice(0, 120), eid = postStory(h, 'spares or protects: ' + t + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Clean Hands: ' + h.c.name + ' spared or protected ' + t + '. Accept if it truly happened (+AP next round); refuse if not.', eid || undefined); return null; },
+  }],
+  brief: () => 'out of a fight: accept or refuse their Clean Hands claims (spared/protected)',
 });
 
 // ---------- Judgement Day (Faith Mastered) ----------
@@ -386,6 +397,8 @@ const chemOn = (u: Unit) => CHEM.filter((id) => isCondition(id) && condOn(u, id)
 register({
   id: 'lab_coat', claims: 'all',
   on: {
+    // Lab Coat II out of a fight: an agent neutralised this scene doesn't land on anyone in the party (the scene's list).
+    story_cond_apply: (ctx, h) => { const l: string[] = (ctx.g?.story?.scene as any)?.labImmune || []; if (l.includes(ctx.id)) { ctx.cancel = true; ctx.why = 'neutralised by ' + (h.c?.name || 'Lab Coat'); } },
     check_mod: (ctx, h) => {
       const ck = ctx.ck; if (ctx.c !== h.c || ck.kind !== 'save' || !(ctx.tags || []).includes('chemical')) return;
       if (ck.target ? identified(h.c, ck.target) : (ctx.tags || []).includes('identified')) ctx.add.push({ add: 3, label: 'Lab Coat' });
@@ -408,6 +421,8 @@ register({
         const what = a.choice || a.text || (ro(h.c).identified || [])[0] || 'the agent';
         const eid = postStory(h, 'neutralises ' + String(what).slice(0, 60) + ' for the party.');
         for (const c of Object.values<Character>(h.g?.characters || {})) for (const id of CHEM) if (storyConds(h.g, c).includes(id) && (a.choice ? a.choice === id : true)) setStoryCond(h.g, c, id, 'scene', true);
+        // The party stays safe from it for the rest of the scene: a later story condition of that agent doesn't land.
+        { const sc = h.g?.story?.scene; if (sc) { const l: string[] = ((sc as any).labImmune ||= []), ids = a.choice && CHEM.includes(a.choice) ? [a.choice] : CHEM; for (const id of ids) if (!l.includes(id)) l.push(id); } }
         if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Lab Coat II: ' + h.c.name + ' neutralises ' + String(what).slice(0, 60) + ' for the party this scene (if they have identified it).', eid || undefined);
         return;
       }
@@ -530,6 +545,11 @@ register({
     check_mod: (ctx, h) => { if (ctx.c === h.c && lit(h) && composureCk(ctx.ck)) ctx.add.push({ add: 2, label: 'Light Up' }); },
     spot: (ctx, h) => { if (ctx.u === h.u) ctx.mod += 2; },
     notice: (ctx, h) => { if (ctx.c === h.c) ctx.range += 2; },
+    // In the fog: enemies see you 2 tiles farther than their Vision (the sight hook), line of sight still needed.
+    sees: (ctx, h) => {
+      const u = h.u, cb: Combat = ctx.cb; if (!u || ctx.t !== u || ctx.side === u.side || ctx.seen) return;
+      if (cb.units.some((v) => v.side === ctx.side && alive(v) && (!ctx.by || ctx.by === v) && dist(v.pos, u.pos) <= (litAt(cb, u.pos) || v.darkSight ? (v.vision || 12) : Math.floor((v.vision || 12) / 2)) + 2 && lineOfSight(cb, v.pos, u.pos))) ctx.seen = !u.hidden;
+    },
   },
   brief: () => null,
 });
@@ -650,15 +670,16 @@ register({
 // For Humanity: +15% damage against non-humans (robots, machines, Crawlers, Orks, upper-realm beings, beasts, drones;
 // a Factory Made squadmate too) in the target bucket, and +2 on saves against Fear from one. Xenophobe: Empathy,
 // Charisma and Camaraderie checks tagged non_human (or vs_non_human) fail outright; heals from a non-human work at half
-// power. A Crawler counts as non-human for this trait (plan 6, Humanity First 4). Blocking AP gifts from non-human
-// squadmates needs a source on AP grants (lane-f.md, hooks gap).
+// power, and AP they hand over is refused (the 'ap_gift' hook). A Crawler counts as non-human for this trait (plan 6,
+// Humanity First 4).
 const nonHuman = (u: Unit | null | undefined) => !!u && (!!u.companion || (!!u.kind && u.kind !== 'human') || has(u, 'factory_made'));
 const XENO = ['empathy', 'charisma', 'camaraderie'];
 register({
-  id: 'humanity_first', claims: [0, 1, 2, 3, 4, 6], narrator: [5],
+  id: 'humanity_first', claims: [0, 1, 2, 3, 4, 5, 6],
   on: {
     damage_out: (ctx, h) => { if (ctx.att === h.u && nonHuman(ctx.tgt)) ctx.vs.push({ v: 0.15, label: 'For Humanity' }); },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'fear' && nonHuman(ctx.by)) ctx.saveAdd += 2; },
+    ap_gift: (ctx, h) => { if (ctx.t === h.u && nonHuman(ctx.from)) { ctx.cancel = true; ctx.why = 'Humanity First'; } },
     heal_in: (ctx, h) => { if (ctx.t === h.u && ctx.by && ctx.by !== h.u && nonHuman(ctx.by)) { ctx.n = ctx.n * 0.5; say(h.cb, h.u!.name + ' flinches from ' + ctx.by.name + '\'s help (Humanity First): half the healing.'); } },
     check_post: (ctx, h) => {
       const tags: string[] = ctx.ck.tags || [];
@@ -666,7 +687,7 @@ register({
       ctx.auto = 'fail'; ctx.labels.push('Xenophobe: they won\'t');
     },
   },
-  brief: () => 'Narrator: tag social checks with non-humans non_human; AP gifts from non-humans are refused (rule it)',
+  brief: () => 'Narrator: tag social checks with non-humans non_human',
 });
 
 // ---------- The Old Blood ----------
@@ -729,11 +750,12 @@ register({
 // the arm-then-auto rule (plan 6, Rabbit's Foot 1; PROVISIONAL). Only opposing rolls count, not your saves. In the story:
 // ask the Narrator to reroll an NPC's roll against you. Vengeful: when an ally is Downed, +2 AP on your next turn (once).
 // Prey: −1 Guts, Intimidation and Authority (generic); hunters and Orks deal +25% to you; Take the Hit and taunts can't
-// pull their attacks off you (the Narrator; the redirect hook carries no original target yet).
+// pull their attacks off you (attack_target's locked; previewAttack's ignoreTaunt).
+const preyBy = (u: Unit | null | undefined) => !!u && (u.kind === 'ork' || (u.tags || []).includes('hunter'));
 const LUCKY = (h: Holder) => h.key + '#lucky_foot';
 const luckyLeft = (h: Holder) => uses(h).left('per_session', 1, LUCKY(h)) > 0;
 register({
-  id: 'rabbits_foot', claims: [0, 1, 5], narrator: [6],
+  id: 'rabbits_foot', claims: [0, 1, 5, 6],
   actions: [
     {
       id: 'lucky_foot', label: 'Lucky Foot', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 }, arm: true,
@@ -766,8 +788,11 @@ register({
       const by: Unit | null = ctx.src?.by; if (ctx.phase !== 'reduce' || ctx.t !== h.u || !by) return;
       if (by.kind === 'ork' || (by.tags || []).includes('hunter')) ctx.dmg = ctx.dmg * 1.25;
     },
+    // Prey: a hunter's or an Ork's attack on you stays on you: a taunt doesn't stop it, Take the Hit doesn't take it.
+    attack_preview: (ctx, h) => { if (ctx.tgt === h.u && preyBy(ctx.att)) ctx.ignoreTaunt = true; },
+    attack_target: (ctx, h) => { if (ctx.orig === h.u && preyBy(ctx.att) && alive(h.u!)) ctx.locked = h.u; },
   },
-  brief: () => 'Narrator: hunters/Orks (kind ork, tag hunter) ignore Take the Hit and taunts on them',
+  brief: () => 'Narrator: tag hunters (tag hunter) and Orks (kind ork) so their attacks stay on them',
 });
 
 // ---------- Drone Handler and Beast Handler (companions) ----------

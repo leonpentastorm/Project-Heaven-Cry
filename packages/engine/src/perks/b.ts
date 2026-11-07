@@ -8,14 +8,14 @@
 // engine stays deterministic. What the engine can't run goes to the Narrator: a fight note, a pending ruling, or the
 // item's brief() remainder in the character brief.
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
-import { SKILL, WEAPON } from '../data';
-import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee } from '../combat';
+import { SKILL, WEAPON, ITEM } from '../data';
+import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
 import { d20, die, type Rng } from '../rng';
-import { RuleError, zoneTags, positionsOf, npcsOf } from '../game';
+import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -53,6 +53,8 @@ function losNoVeil(cb: Combat, a: string, b: string): boolean {
   while (!(x0 === x1 && y0 === y1)) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } const k = key(x0, y0); if (k !== b && solid.has(k)) return false; }
   return true;
 }
+/** Line of sight on the area map's throwaway fight (walls, closed doors, smoke). */
+const lineOfSightOw = (cb: Combat, a: string, b: string) => a === b || lineOfSight(cb, a, b);
 /** Hidden enemies within r tiles of a holder are revealed (Skin Map through smoke and dark; Sixth Sense through anything). */
 function sweep(h: Holder, cb: Combat, r: number, needLos: boolean, why: string) {
   const u = h.u; if (!u || !alive(u) || ow(cb)) return;
@@ -292,14 +294,29 @@ register({
     on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.pen = 2; s.sneak = false; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } },
     on_miss: (ctx, h) => { if (ctx.tgt === h.u) stateOf(h).sneak = false; },
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'sneak attack (Got You in My Sight)'); s.pen = 0; } },
+    // The area map: an NPC token the holder could see moves out of their sight, hides or leaves: +2 AP on the next
+    // overworld round (once a round); II also marks where it was last seen (g.story.lastSeen, shown as a line).
+    npc_moved: (ctx, h) => {
+      const g = ctx.g, c = h.c, n = ctx.npc, cb: Combat = ctx.cb; if (!g || !c || c.dead || !cb) return;
+      const at = positionsOf(g)[c.id]; if (!at) return;
+      const could = dist(at, ctx.from) <= 12 && lineOfSightOw(cb, at, ctx.from); if (!could) return;
+      const still = !ctx.hid && ctx.to && dist(at, ctx.to) <= 12 && lineOfSightOw(cb, at, ctx.to); if (still) return;
+      const s = stateOf(h); if (s.owRound === g.story.round) return; s.owRound = g.story.round; s.owAp = 2;
+      if (h.tier === 'II') ((g.story.lastSeen ||= {}) as any)[n.id] = ctx.from;
+      postStory(h, n.name + ' slips out of ' + c.name + '\'s sight' + (h.tier === 'II' ? ', last seen at ' + refOf(ctx.from) : '') + ': +2 AP next round (Got You in My Sight).', { kind: 'system' });
+    },
+    round_ap: (ctx, h) => { if (ctx.c !== h.c) return; const s = stateOf(h); if (s.owAp) { ctx.ap += s.owAp; ctx.lines.push('Got You in My Sight'); s.owAp = 0; } },
   },
-  brief: () => 'Area map: an NPC slipping from their sight gives +2 AP that round (Narrator).',
+  brief: () => null,
 });
 
 // =====================================================================================================================
 // Eyes in the Back (Vigilant). I: you can't be flanked: half cover next to you counts against a ranged attack from
-// any direction. II: allies next to you too. (A carried shield's frontal cover is not built yet: see the notes.)
+// any direction, as cover (a miss by its margin hits it), and a carried shield (category shield, not a planted pavise)
+// gives the same −5 from every side (PROVISIONAL, spec 14: the shield's own frontal cover isn't built). II: allies
+// next to you too.
 // =====================================================================================================================
+const carriesShield = (h: Holder, t: Unit) => { const c = t.charId ? gameOf(h)?.characters?.[t.charId] : null; const it = c?.offHand ? (ITEM as any)[c.offHand.id] : null; return !!it && it.category === 'shield' && it.id !== 'pavise'; };
 register({
   id: 'eyes_in_the_back', claims: 'all',
   on: {
@@ -307,10 +324,11 @@ register({
       const t: Unit = ctx.tgt, cb: Combat = ctx.cb, u = h.u; if (!u || ctx.melee || ctx.ignoreCover || ctx.att.side === t.side) return;
       if (t !== u && !(h.tier === 'II' && t.side === u.side && alive(u) && dist(t.pos, u.pos) <= 1)) return;
       if ((WEAPON[ctx.att.weapon]?.properties || []).includes('ignores_half_cover')) return;
-      if (coverTileFor(cb, ctx.att.pos, t.pos)) return; // the cover already faces the shot
+      if (coverTileFor(cb, ctx.att.pos, t.pos) || ctx.coverTile) return; // the cover already faces the shot
       if (ctx.terms.some((x: any) => /Eyes in the Back/.test(x.label))) return;
-      const cov = coverOf(cb); if (!Object.entries(cov).some(([k, c]) => c.kind === 'half' && dist(k, t.pos) === 1)) return;
-      ctx.terms.push({ v: -5, label: 'half cover (Eyes in the Back: no flanking)' });
+      const cov = coverOf(cb), k = Object.keys(cov).filter((k) => cov[k].kind === 'half' && dist(k, t.pos) === 1).sort()[0];
+      if (k) { ctx.coverTile = k; ctx.coverWhy = 'Eyes in the Back: no flanking'; return; }
+      if (carriesShield(h, t)) ctx.terms.push({ v: -5, label: 'shield (Eyes in the Back: no flanking)' });
     },
   },
   brief: () => null,
@@ -331,8 +349,20 @@ register({
       const ls = ((cb.lastSeen ||= {})[u.side] ||= {}); for (const f of pick) ls[f.id] = f.pos;
       log(cb, u.name + ' feels the air move (Wind on the Skin): ' + pick.map((f) => 'an enemy at ' + refOf(f.pos)).join(', ') + '.');
     },
+    // The area map: entering a zone, or a fight opening from it, reveals lurking NPCs within Vision range (12 tiles;
+    // I: the nearest one, II: every one). A revealed lurker shows on the map for everyone.
+    npc_sense: (ctx, h) => {
+      const g = ctx.g, n = ctx.npc, c = h.c; if (!g || !c || c.dead || ctx.reveal || (ctx.why !== 'zone' && ctx.why !== 'fight')) return;
+      const at = positionsOf(g)[c.id], range = 12; if (!at || dist(at, n.pos) > range) return;
+      if (h.tier !== 'II') {
+        const st = stateOf(h), stamp = ctx.why + ':' + (g.story.round ?? 0) + ':' + (g.story.zone || ''); if (st.windOnce === stamp) return; // I: one per arrival or fight
+        const near = npcsOf(g).filter((x: any) => x.hidden && dist(at, x.pos) <= range).sort((a: any, b: any) => dist(at, a.pos) - dist(at, b.pos))[0]; if (near !== n) return;
+        st.windOnce = stamp;
+      }
+      ctx.reveal = 'The air moves (Wind on the Skin, ' + c.name + ')';
+    },
   },
-  brief: () => 'Area map: on arrival, hidden hostiles in sight range are sensed (Narrator).',
+  brief: () => null,
 });
 
 // =====================================================================================================================
@@ -341,14 +371,43 @@ register({
 // anything. Both run at every turn start, after every move and the moment someone hides near you.
 // =====================================================================================================================
 const SKIN = 6, SIXTH = 3;
+/** The area map: a lurking NPC within r tiles of the holder is revealed (Skin Map needs a line through smoke and dark). */
+function owSense(ctx: any, h: Holder, r: number, needLos: boolean, why: string) {
+  const g = ctx.g, n = ctx.npc, c = h.c; if (!g || !n || !c || c.dead || ctx.reveal) return;
+  const at = positionsOf(g)[c.id]; if (!at || dist(at, n.pos) > r) return;
+  if (needLos && ctx.cb && !losNoVeil(ctx.cb, at, n.pos)) return;
+  ctx.reveal = why + ' (' + c.name + ')';
+}
+/** Skin Map's sight (the 'sees' hook): within 6 tiles a creature is seen through smoke, dark and Hidden when there's a
+ * line through walls; behind a wall it is a sensed presence. The shared fog shows it; only the holder targets it. */
+function skinSees(ctx: any, h: Holder) {
+  const u = h.u, t: Unit = ctx.t, cb: Combat = ctx.cb; if (!u || !alive(u) || ctx.side !== u.side || t.side === u.side || ctx.seen) return;
+  if (ctx.by && ctx.by !== u) return;
+  if (dist(u.pos, t.pos) > SKIN) return;
+  if (losNoVeil(cb, u.pos, t.pos)) ctx.seen = true; else ctx.sensed = true;
+}
 register({
   id: 'skin_map', claims: 'all',
-  on: { turn_start: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), moved: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), hide: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), combat_start: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map') },
+  on: {
+    turn_start: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), moved: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), hide: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'), combat_start: (ctx, h) => sweep(h, ctx.cb, SKIN, true, 'Skin Map'),
+    sees: skinSees,
+    // The holder's own shots go through smoke within 6 tiles (walls still stop them).
+    attack_preview: (ctx, h) => { if (ctx.att === h.u && dist(ctx.att.pos, ctx.tgt.pos) <= SKIN) ctx.seeVeil = true; },
+    npc_sense: (ctx, h) => owSense(ctx, h, SKIN, true, 'Skin Map'),
+    world_round_start: (ctx, h) => { if (h.c && ctx.g) senseLurkers(ctx.g, 'round', [h.c]); },
+  },
   brief: () => 'Nothing within 9 m surprises them; they know who is in a dark room.',
 });
+/** Sixth Sense's sight: enemies within 3 tiles of the holder are seen by the whole squad (through walls, dark and
+ * Blinded); a shot still needs a line of sight. */
 register({
   id: 'sixth_sense', claims: 'all',
-  on: { turn_start: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), moved: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), hide: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), combat_start: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense') },
+  on: {
+    turn_start: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), moved: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), hide: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'), combat_start: (ctx, h) => sweep(h, ctx.cb, SIXTH, false, 'Sixth Sense'),
+    sees: (ctx, h) => { const u = h.u, t: Unit = ctx.t; if (!u || !alive(u) || ctx.side !== u.side || t.side === u.side || ctx.seen || t.companion) return; if (dist(u.pos, t.pos) <= SIXTH) ctx.seen = true; },
+    npc_sense: (ctx, h) => owSense(ctx, h, SIXTH, false, 'Sixth Sense'),
+    world_round_start: (ctx, h) => { if (h.c && ctx.g) senseLurkers(ctx.g, 'round', [h.c]); },
+  },
   brief: () => 'No ambush or tail within 4 m of them goes unnoticed (Narrator reveals it).',
 });
 
@@ -587,9 +646,15 @@ register({
     moved: (ctx, h) => {
       const s = stateOf(h), cb: Combat = ctx.cb; if (!h.u) return;
       if (ow(cb)) {
-        // Area map: a sneaking partner next to you while you sneak hidden is hidden with you.
-        const p = storyPartner(h), g = gameOf(h);
-        if (p && (ctx.u === h.u || ctx.u.charId === p.id) && g?.story?.sneak?.[p.id]) (g.story.hidden ||= {})[p.id] = true;
+        // Area map: a sneaking partner next to you while you sneak hidden is hidden with you; one who ends a move away
+        // from you loses it (the shared stealth only; their own sneak starts again from a normal move).
+        const g = gameOf(h); if (!g?.story) return;
+        if (s.owPartner && (ctx.u === h.u || ctx.u.charId === s.owPartner)) {
+          const pos = positionsOf(g), mine = ctx.u === h.u ? ctx.u.pos : pos[h.c!.id], theirs = ctx.u.charId === s.owPartner ? ctx.u.pos : pos[s.owPartner];
+          if (mine && theirs && dist(mine, theirs) > 1) { const pc = g.characters[s.owPartner]; (g.story.hidden ||= {})[s.owPartner] = false; log(cb, (pc?.name || 'The partner') + ' leaves ' + h.c!.name + '\'s side and is seen (Silent Partner).'); s.owPartner = null; return; }
+        }
+        const p = storyPartner(h);
+        if (p && (ctx.u === h.u || ctx.u.charId === p.id) && g.story.sneak?.[p.id]) { (g.story.hidden ||= {})[p.id] = true; s.owPartner = p.id; }
         return;
       }
       if (!s.partner) return; const p = cb.units.find((x) => x.id === s.partner);
@@ -604,9 +669,20 @@ register({
       const diff = mod(ctx.c.skills.dexterity || 0) - mod(h.c!.skills.dexterity || 0);
       ctx.range = Math.max(1, Math.floor(ctx.range + (ctx.dark ? diff / 2 : diff)));
     },
+    // One roll for both (the audit): the first of the pair an NPC looks toward rolls (the partner with your Ingenuity);
+    // the other takes that result against the same NPC this round. A failure finds both.
     stay_hidden: (ctx, h) => {
-      if (ctx.c === h.c) return; const p = storyPartner(h); if (!p || p.id !== ctx.c.id) return;
-      ctx.mod = mod(h.c!.skills.ingenuity || 0) + skillRollMod({ c: h.c! }, 'ingenuity', { roll: 'stealth' }).add;
+      const g = gameOf(h), p = storyPartner(h); if (!g || !p || (ctx.c !== h.c && ctx.c.id !== p.id)) return;
+      const sh = (stateOf(h).shared ||= {})[ctx.npc?.id]; if (sh && sh.round === g.story.round) { ctx.auto = sh.ok ? 'success' : 'fail'; return; }
+      if (ctx.c !== h.c) ctx.mod = mod(h.c!.skills.ingenuity || 0) + skillRollMod({ c: h.c! }, 'ingenuity', { roll: 'stealth' }).add;
+    },
+    stay_hidden_result: (ctx, h) => {
+      const g = gameOf(h), p = storyPartner(h); if (!g || !p || (ctx.c !== h.c && ctx.c.id !== p.id) || !ctx.npc) return;
+      const st = stateOf(h), sh = (st.shared ||= {}); if (sh[ctx.npc.id]?.round === g.story.round) return;
+      sh[ctx.npc.id] = { round: g.story.round, ok: !!ctx.ok };
+      const other = ctx.c === h.c ? p : h.c!;
+      if (!ctx.ok) { (g.story.hidden ||= {})[other.id] = false; postStory(h, ctx.npc.name + ' spots ' + other.name + ' too (Silent Partner: one roll for both).', { kind: 'system' }); }
+      else ((g.story.noticed ||= {}) as any)[ctx.npc.id + '|' + other.id] = g.story.round; // no second roll for the other
     },
   },
   brief: () => null,
@@ -781,8 +857,19 @@ register({
       postStory(h, 'VIGILANT · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
       if (!ok) { const i = ctx.chars.indexOf(h.c); if (i >= 0) ctx.chars.splice(i, 1); }
     },
+    // The prosthetic arm (the start item, while carried): an arm injury hits metal, not flesh. No −2 to attacks; the
+    // arm goes Augment Offline until Field Repair instead (PROVISIONAL, spec 14; its mod slots wait on Leon).
+    injury: (ctx, h) => {
+      if (ctx.t !== h.u || ctx.loc !== 'arm' || ctx.cancel || !h.c || !packOf(h.c).some((x) => (x.item || x.id) === 'prosthetic_arm' && x.qty > 0)) return;
+      ctx.cancel = true; const cb: Combat = ctx.cb;
+      const r = applyCond(cb, ctx.rng || rngOf(h) || { state: 1 }, ctx.by || null, h.u!, 'augment_offline', undefined, undefined, { skipSave: true });
+      log(cb, 'The blow lands on ' + h.u!.name + '\'s prosthetic arm' + r + ' (Ghost Soldier).');
+    },
+    // The area map: a failed stay-hidden roll (found while sneaking) costs 2 AP on the next overworld round.
+    stay_hidden_result: (ctx, h) => { if (ctx.c !== h.c || ctx.ok) return; const g = gameOf(h); if (!g?.story) return; stateOf(h).owPen = 2; postStory(h, 'cover blown: −2 AP next round (Ghost Soldier).', { kind: 'system' }); },
+    round_ap: (ctx, h) => { if (ctx.c !== h.c) return; const s = stateOf(h); if (s.owPen) { ctx.ap -= s.owPen; ctx.lines.push('Ghost Soldier: cover blown'); s.owPen = 0; } },
   },
-  brief: () => 'Area map: a failed stay-hidden roll costs 2 AP next round (Narrator).',
+  brief: () => null,
 });
 
 // =====================================================================================================================

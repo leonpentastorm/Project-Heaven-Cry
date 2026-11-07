@@ -1585,7 +1585,7 @@
           "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "2 AP: clear a jam, fix a broken device, or restore 10 HP per point of Proficiency to a machine or robotic ally.",
+          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Proficiency point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
               "op": "grant_action",

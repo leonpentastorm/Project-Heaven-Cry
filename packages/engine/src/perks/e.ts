@@ -7,7 +7,7 @@
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags E…) and docs/design/perk-runtime.md with the hooks still missing.
 import {
-  register, stateOf, uses, note, has, tierOf, grantPerkAp, bankAp, apDebt, pushAp, applyDamage, healUnit, openWindow,
+  register, stateOf, uses, note, has, tierOf, grantPerkAp, bankAp, refusedGift, apDebt, pushAp, applyDamage, healUnit, openWindow,
   armedOf, disarm, actionAp, postStory, pendRuling, boundGame, PERK_AP_CAP, type Holder,
 } from '../effects';
 import type { Combat, Unit } from '../combat';
@@ -21,7 +21,7 @@ import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels } from '../cha
 import { applyCond, condOn, condSource, unitDebuff, isBoon } from '../magic';
 import { d20 } from '../rng';
 import { HEARING } from '../tactics';
-import { apLeft } from '../game';
+import { apLeft, positionsOf } from '../game';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -212,8 +212,8 @@ register({
 
 // ---------- Talks Broke Down (Charisma γ) ----------
 // The engine reads how the talk went: the last dialogue check (a dialogue skill, or the 'dialogue' tag) any squadmate
-// made this scene, in this story round or the one before, before the fight started (the Narrator's judgement that the
-// fight "started because" of it is inferred; PROVISIONAL, see the lane notes for the missing combat field). I: won, +2
+// made this scene, before the fight started. The Narrator's combat.fromTalk says whether the fight started because of
+// it; when it says nothing the engine infers it from a talk this story round or the one before (PROVISIONAL). I: won, +2
 // AP every turn of the fight; lost, −2. II: no penalty, and the first enemy in initiative order hesitates: −1 AP on its
 // round-1 turn.
 register({
@@ -225,7 +225,10 @@ register({
     },
     combat_start: (ctx, h) => {
       const g = gameOf(h), cb = ctx.cb as Combat; if (!g || !h.u || overworld(cb)) return;
-      const t = storyState(h).talk; if (!t || t.scene !== (g.story.scene?.n ?? 0) || (g.story.round ?? 0) - t.round > 1) return;
+      // The Narrator's fromTalk decides when given (false: an unrelated fight, no effect; true: the scene's last talk
+      // counts, however many rounds ago); absent, the engine infers it from a talk this round or the one before.
+      const t = storyState(h).talk; if (!t || t.scene !== (g.story.scene?.n ?? 0) || cb.fromTalk === false) return;
+      if (cb.fromTalk !== true && (g.story.round ?? 0) - t.round > 1) return;
       const st = stateOf(h); st.origin = t.ok ? 'won' : 'lost';
       say(cb, 'Talks broke down (' + h.u.name + '): the fight follows a ' + (t.ok ? 'won' : 'lost') + ' argument.');
       if (tierII(h)) { const f = cb.order.map((id) => unitById(cb, id)!).find((x) => x && x.side !== h.u!.side && alive(x)); if (f) { const fs = unitState(h, f); if (!fs.hesitate) { fs.hesitate = true; say(cb, f.name + ' hesitates (Talks Broke Down): −1 AP in round 1.'); } } }
@@ -236,7 +239,7 @@ register({
       const fs = (ctx.u as Unit).ps?.[h.key]; if (fs?.hesitate && cb.round === 1 && !fs.hesitated) { fs.hesitated = true; pushAp(ctx, -1, 'hesitates'); }
     },
   },
-  brief: () => 'fight origin read from the last dialogue check this scene',
+  brief: () => 'say combat.fromTalk when a fight breaks out of a talk (false if not)',
 });
 
 // ---------- Rally Cry (Camaraderie β) ----------
@@ -355,11 +358,10 @@ register({
 // ---------- Many Hands (Camaraderie Mastered) ----------
 // Hand-Off without limits: once per round, give any amount of your AP to one ally within 3 tiles. It arrives on their
 // next turn (banked), within the +3 perk AP cap and the 9 ceiling, so the action offers at most 3 (plan 6 Many Hands
-// 1, PROVISIONAL). An ally you can see whose reaction is spent may use yours: the engine's reaction counter is per unit,
-// so this part is a listed gap (lane notes) and goes to the Narrator. Area map: the AP moves the same way (it arrives
-// at once, the area map has no turn order).
+// 1, PROVISIONAL). An ally you can see whose reaction is spent may use yours: tactics.ts canReact/useReaction spend
+// the holder's (reactionDonor). Area map: the AP moves the same way (it arrives at once, the area map has no turn order).
 register({
-  id: 'many_hands', claims: 'all', narrator: [1],
+  id: 'many_hands', claims: 'all',
   actions: [{
     id: 'hand_off', label: 'Hand-Off', scope: ['combat', 'world'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally', range: 3,
     text: 'Give up to 3 of your AP (any amount; only 3 can count) to an ally within 3 tiles: it arrives on their next turn.',
@@ -374,13 +376,14 @@ register({
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t || t === u) return 'Pick an ally.';
       const n = Math.max(1, Math.min(PERK_AP_CAP, Math.floor(Number(args.choice) || 1)));
       const p = pettyGate(h, t, rng); if (p) { u.ap += n; return null; } // Petty: the AP stays with you (the use is spent)
-      if (overworld(cb)) { const g = gameOf(h), tc = charOf(h, t); if (g && tc) (g.story.ap ||= {})[tc.id] = apLeft(g, tc) + n; t.ap += n; say(cb, u.name + ' hands ' + n + ' AP to ' + t.name + ' (Many Hands).'); return null; }
+      if (overworld(cb)) { if (refusedGift(cb, t, n, u)) { u.ap += n; return null; } const g = gameOf(h), tc = charOf(h, t); if (g && tc) (g.story.ap ||= {})[tc.id] = apLeft(g, tc) + n; t.ap += n; say(cb, u.name + ' hands ' + n + ' AP to ' + t.name + ' (Many Hands).'); return null; }
+      if (refusedGift(cb, t, n, u)) { u.ap += n; return null; } // refused (Humanity First): the AP stays with you
       if (active(cb) === t) grantPerkAp(cb, t, n, 'Hand-Off from ' + u.name); else bankAp(t, n, 'Hand-Off from ' + u.name, cb);
       emitFx(cb, 'perk', { unit: u.id, target: t.id, from: u.pos, to: t.pos, id: 'many_hands' });
       return null;
     },
   }],
-  brief: () => 'an ally in sight may spend this character\'s reaction (rule it)',
+  brief: () => null,
 });
 
 // ---------- On My Mark (Authority Mastered) ----------
@@ -769,15 +772,15 @@ register({
 // ---------- Sworn Sibling (trait, Bond) ----------
 // Bond (out of a fight, with the other player's consent: see the bonds note). Bound (up): each round, while the two of
 // you are adjacent at the start of a turn, one free AP is shared: the first of you to start a turn adjacent takes it
-// (PROVISIONAL: one pool per pair, plan 6; perk AP, the +3 cap). You always know where they are (the Narrator is told;
-// the grid's fog doesn't yet show them through walls: listed gap). Bound (down): while your sibling is Downed and you
+// (PROVISIONAL: one pool per pair, plan 6; perk AP, the +3 cap). You always see them, through fog and walls (the
+// 'sees' hook). Bound (down): while your sibling is Downed and you
 // aren't next to them, every attack except one at an enemy within 2 tiles of them or one that has hurt them is at −2,
 // and a move that ends farther from them costs double AP. Story: while your sibling's character is down, checks are at
 // −2 unless the Narrator tags them 'for_bond'.
 const sibOf = (h: Holder): Unit | null => bondUnits(h, true)[0] || null;
 const sibChar = (h: Holder): Character | null => { const id = bondsOf(h, true)[0]; return id ? gameOf(h)?.characters?.[id] || null : null; };
 register({
-  id: 'sworn_sibling', claims: 'all', narrator: [2],
+  id: 'sworn_sibling', claims: 'all',
   actions: [bondAction(() => 1, true, 'Bond (Sworn Sibling)')],
   on: {
     turn_start: (ctx, h) => {
@@ -799,6 +802,9 @@ register({
     },
     // The doubled AP buys no extra tiles: take them back out of the move bank.
     moved: (ctx, h) => { const st = stateOf(h); if (ctx.u !== h.u || !st.extra || !h.u) return; h.u.bank = Math.max(0, (h.u.bank || 0) - st.extra * h.u.movement); delete st.extra; },
+    // You always see your sibling: through fog and walls (the sight hook), so a heal or a shot that needs your own
+    // sight of them finds them (a shot still needs a line).
+    sees: (ctx, h) => { const s = sibOf(h); if (s && ctx.t === s && (!ctx.by || ctx.by === h.u) && h.u && alive(h.u)) ctx.seen = true; },
     check_mod: (ctx, h) => {
       if (ctx.c !== h.c) return; const s = sibChar(h); if (!s || s.dead || s.hp > 0) return;
       if ((ctx.tags || []).includes('for_bond')) return;
@@ -861,9 +867,10 @@ register({
       const gain = levelForXp((ctx.c.xp || 0) + ctx.amount) - ctx.c.level;
       if (gain > 0 && ctx.source !== 'bond' && (ctx.c === r || !rivalHolds(r))) xpBond(h, other, 50 * gain);
     },
-    heal_in: (ctx, h) => {
-      const u = h.u, cb = h.cb, r = rivalOf(h); if (!u || !cb || ctx.by !== u || !r || ctx.t.charId !== r.id || ctx.kind !== 'stim') return;
-      if (pettyGate(h, ctx.t, rngOf(h))) { ctx.n = 0; if (h.c) h.c.stims++; u.ap += stimAp(u, ctx.t, h.c?.classId === 'medic'); say(cb, '(the stim stays in ' + u.name + '\'s pocket)'); }
+    // Petty on any stim, a Downed rival's revive included (the 'stim_start' hook, before anything is spent).
+    stim_start: (ctx, h) => {
+      const u = h.u, r = rivalOf(h); if (!u || ctx.u !== u || !r || ctx.t.charId !== r.id || ctx.cancel) return;
+      const p = pettyGate(h, ctx.t, rngOf(h)); if (p) { ctx.cancel = true; ctx.why = 'Petty (Rival)'; }
     },
   },
   brief: (h) => { const r = rivalOf(h); return r ? 'rival: ' + r.name + '; helping them in the story (tag help_rival) takes Camaraderie' : 'not yet bonded'; },
@@ -991,6 +998,16 @@ register({
     heal_given: (ctx, h) => { if (ctx.by === h.u && ctx.t !== h.u && ctx.n > 0 || (ctx.by === h.u && ctx.revived)) delete stateOf(h).mustHeal; },
     turn_end: (ctx, h) => { if (ctx.u === h.u) delete stateOf(h).mustHeal; },
     attack_preview: (ctx, h) => { if (ctx.att === h.u && stateOf(h).mustHeal && !ctx.fail) ctx.fail = 'First, Do No Harm: heal someone first.'; },
+    // Shoving and Overwatch are attacks too while the lock holds.
+    action_refuse: (ctx, h) => { if (ctx.u === h.u && stateOf(h).mustHeal && !ctx.fail && ['combat/shove', 'combat/overwatch'].includes(ctx.a?.type)) ctx.fail = 'First, Do No Harm: heal someone first.'; },
+    // The area map: the lock is set when an overworld round opens (a squadmate within 5 tiles Downed or under a quarter
+    // HP, and a way to heal), and lifts when you heal someone (the overworld's heal_given) or the round ends.
+    world_round_start: (ctx, h) => {
+      const g = ctx.g, c = h.c; if (!g || !c || c.dead) return; const pos = positionsOf(g), me = pos[c.id]; const st = stateOf({ ...h, g });
+      delete st.mustHeal; if (!me) return;
+      const hurt = Object.values(g.characters as Record<string, Character>).some((x) => x.id !== c.id && !x.dead && pos[x.id] && dist(pos[x.id], me) <= 5 && (x.hp <= 0 || x.hp * 4 < maxHp(x)));
+      if (hurt && ((c.stims || 0) > 0 || c.classId === 'medic')) { st.mustHeal = true; postStory({ ...h, g }, 'a squadmate is bleeding out (First, Do No Harm): no attacks until you heal someone.', { kind: 'system' }); }
+    },
   },
   brief: () => 'stage triage dilemmas: two wounded, one stim',
 });

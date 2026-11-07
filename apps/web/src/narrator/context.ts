@@ -131,11 +131,11 @@ INJURIES
 
 THE OVERWORLD (rounds)
 - Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.
-- People and enemies stand on the map as tokens (listed each turn with their ids, side and tile). Place, move, update (side or name) or remove them with npcs[]: a place needs name, side (hostile or neutral), tier, weapon id and at. Move them when the story moves them; a hostile stepping next to a hidden character makes that character roll to stay hidden.
+- People and enemies stand on the map as tokens (listed each turn with their ids, side and tile). Place, move, update (side or name) or remove them with npcs[]: a place needs name, side (hostile or neutral), tier, weapon id and at. Move them when the story moves them; a hostile stepping next to a hidden character makes that character roll to stay hidden. hidden: true places a lurker the players can't see until spotted.
 - Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone. Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
 - Every person the party can see or reach stands on the map as a token: when you introduce someone, place them with npcs[] in the same turn. A person who is only in your prose can't be talked to on the map, followed, or attacked.
 - Anyone and anything is a target: strangers, friends, allies, the party's own. Never refuse or soften an attack a player declares. Map it to actions[] (targetId may be a token id or the exact name of a token or character; objId for an object) and play the consequences: witnesses, attitudes, the law, grief, the victim's player.
-- If a player attacks a token from the overworld, the engine starts the fight by itself (a fight on people who weren't hostile gives no XP). A player shooting another player's character resolves on the map with no fight: you rule what follows. A character at 0 HP outside a fight is Downed until an ally's stim, or your treat with loc "all". If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
+- If a player attacks a token from the overworld, the engine starts the fight by itself (a fight on people who weren't hostile gives no XP). A player shooting another player's character resolves on the map with no fight: you rule what follows. A character at 0 HP outside a fight is Downed until an ally's stim, or your treat with loc "all". HP the story takes out of a fight (a fall, a beating, a fire) goes in harm[] (charId, amount): the engine applies it, never narrate HP numbers yourself. If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
 
 MEMORY (you keep the campaign's records; a campaign can run 50 hours)
 - You see only what this moment needs: the saga and latest chapters, the recent scenes, the active memory (the people, threads and facts that matter here) and the recent transcript. Everything else is in memory: call recall with names or key words before you answer about anything from long ago. Never invent past events you can't see; recall them.
@@ -268,7 +268,7 @@ export function turnPrompt(g: GameState): string {
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
   const moments = momentsOpen(g).map((m) => `${m.id}: ${m.when}`).join('\n  ');
-  const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.side}, ${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}`).join('\n  ');
+  const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.side}, ${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}${n.hidden ? ', lurking (unseen)' : ''}`).join('\n  ');
   const sneaking = Object.values(g.characters).filter((c) => g.story.sneak?.[c.id]).map((c) => c.name + (g.story.hidden?.[c.id] ? ' (hidden)' : ' (sneaking, but seen)')).join(', ');
   const M = memoryOf({ ...g }), sceneMem = M.scenes.map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n') || (g.story.journal.slice(-6).map((x, i) => `${i + 1}. ${x}`).join('\n') || 'none yet');
   const lookFor = [recent, g.story.scene.title, zoneMap(g).name, people, objs.map((o) => o.name).join(' ')].join('\n');
@@ -354,6 +354,7 @@ export function submitTool(g: GameState) {
   schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map (empty when nothing changes)', items: { type: 'object', properties: {
     action: { type: 'string', enum: ['place', 'move', 'update', 'remove'] }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
     side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
+    hidden: { type: 'boolean', description: 'Lurking: unseen by the players until spotted (place, update)' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {
     charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'] },
@@ -381,7 +382,7 @@ export function submitTool(g: GameState) {
   const opt = (props: Record<string, any>, req: string[]) => ({ type: 'array', items: { type: 'object', properties: props, required: req } });
   Object.assign(schema.properties.checks.items.properties, { target: { type: 'string', description: 'The NPC id or name the check is against' }, applies: { type: 'array', items: S, description: 'Item ids you rule apply to this check' },
     kind: { type: 'string', description: '"save" for a save, else omit' }, family: { type: 'string', description: 'save family: body, brain, heart' }, footnote: { type: 'string', description: 'charId of an ally who helps' }, double: B, auto: { type: 'string', description: 'success or fail when the fiction settles it (an item said so)' } });
-  Object.assign(schema.properties.combat.anyOf[1].properties, { fear: { type: 'boolean', description: 'The place itself is frightening' } });
+  Object.assign(schema.properties.combat.anyOf[1].properties, { fear: { type: 'boolean', description: 'The place itself is frightening' }, fromTalk: { type: 'boolean', description: 'The fight broke out of the talk just had (a parley gone wrong)' } });
   Object.assign(schema.properties.combat.anyOf[1].properties.enemies.items.properties, { kind: { type: 'string', description: 'human (default), robot, crawler, ork, upper_realm, cursed, beast, machine, turret' }, tags: { type: 'array', items: S, description: 'military, hunter, lawful, no_surrender, underworld, official…' }, unaware: B, no_surrender: B, hidden: B });
   Object.assign(schema.properties.npcs.items.properties, { kind: S, tags: { type: 'array', items: S } });
   schema.properties.actions.items.properties.act.enum.push('perk');
@@ -396,6 +397,7 @@ export function submitTool(g: GameState) {
   schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
   schema.properties.patrons = opt({ charId: S, patron: { type: 'string', description: 'patron id to make a pact' }, devotion: { type: 'integer', description: 'Devotion change' } }, ['charId']);
   schema.properties.patronMood = opt({ patron: S, tn: I }, ['patron', 'tn']);
+  schema.properties.harm = opt({ charId: S, amount: I, type: { type: 'string', description: 'physical (default), fire, elemental, true' }, why: S }, ['charId', 'amount']);
   schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }

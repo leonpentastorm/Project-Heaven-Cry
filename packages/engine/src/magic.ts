@@ -304,7 +304,7 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   }
   const arm = type === 'sigil' || type === 'physical' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
-  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp' } as any);
+  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}) } as any);
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;
@@ -328,7 +328,8 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
 export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Unit | null = null): string {
   if (t.dead || n === 0) return '';
   { const im = immune({ u: t }, 'knockback'); if (im) return ' · ' + t.name + ' holds its ground (' + im + ')'; }
-  if ((emit(cb, 'forced_move', { u: t, by, tiles: Math.abs(n), how: 'magic', pull: n < 0, cancel: false, cb }) as any).cancel) return ' · ' + t.name + ' holds its ground';
+  { const fm: any = emit(cb, 'forced_move', { u: t, by, tiles: Math.abs(n), how: 'magic', pull: n < 0, cancel: false, cb }); if (fm.cancel) return ' · ' + t.name + ' holds its ground';
+    if (fm.tiles !== Math.abs(n)) n = Math.sign(n) * Math.max(0, Math.round(fm.tiles)); } // an item may change the distance (Heart Surge doubles it)
   const was = t.pos;
   const [fx, fy] = from.split(',').map(Number); let [x, y] = t.pos.split(',').map(Number);
   let dx = Math.sign(x - fx), dy = Math.sign(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
@@ -365,7 +366,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
 }
 /** Once per round: glyphs and zones run down. */
 export function magicRoundTick(cb: Combat) {
-  for (const g of cb.glyphs || []) g.left--;
+  for (const g of cb.glyphs || []) if (!(g as any).keystone) g.left--; // a Keystone never fades (Glyph Mason)
   const gone = (cb.glyphs || []).filter((g) => g.left <= 0); if (gone.length) cb.log.push(gone.map((g) => g.word.toUpperCase()).join(', ') + ' fade' + (gone.length === 1 ? 's' : '') + ' at ' + [...new Set(gone.map((g) => refOf(g.pos)))].join(', ') + '.');
   cb.glyphs = (cb.glyphs || []).filter((g) => g.left > 0);
   for (const z of cb.zones || []) z.left--;
@@ -445,9 +446,9 @@ export function swapCore(cb: Combat, u: Unit): string | null {
 }
 /** Scuff (1 AP): wipe the glyphs on the tile you stand on. */
 export function scuff(cb: Combat, u: Unit): string | null {
-  const here = (cb.glyphs || []).filter((g) => g.pos === u.pos); if (!here.length) return 'No glyphs under you.';
+  const here = (cb.glyphs || []).filter((g) => g.pos === u.pos && !(g as any).keystone); if (!here.length) return (cb.glyphs || []).some((g) => g.pos === u.pos) ? 'A Keystone can\'t be scuffed.' : 'No glyphs under you.';
   if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
-  u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos); emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
+  u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone); emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   cb.log.push(u.name + ' scuffs out ' + here.map((g) => g.word.toUpperCase()).join(' and ') + ' at ' + refOf(u.pos) + '.');
   return null;
 }
@@ -526,7 +527,8 @@ export function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w:
   if (w.class === 'subject_element') {
     let roll = 0, crit = false;
     if (!auto && by) {
-      const r = d20(rng), cover = !opts.seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + (by.mg?.brain ?? 0) + (by.sk?.brain_power ?? 0) + condSkillMod(by, 'brain_power') + condHit(by, t, cb) - cover;
+      // 'spell_roll' {u, t, die, add, kind, cb}: items add to a Sigil or Soul strike's roll (Inspire's +2).
+      const r = d20(rng), cover = !opts.seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + (by.mg?.brain ?? 0) + (by.sk?.brain_power ?? 0) + condSkillMod(by, 'brain_power') + condHit(by, t, cb) - cover + (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add;
       crit = r === 20; roll = r;
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: w.id }); return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')'; }
     }
@@ -557,7 +559,11 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string): E
   const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return no(p);
   const ge = grammarError(p.words, Math.max(u.mg!.maxWords, p.words.length > u.mg!.maxWords ? 0 : 0) || u.mg!.maxWords); if (ge) return no(ge, { pattern: p });
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
-  const touch = p.shape === 'line' ? dist(u.pos, p.near!) <= 1 : p.tiles.some((k) => dist(u.pos, k) <= 1);
+  // 'evoke_reach' {u, pattern, reach, cb}: how far from the pattern the caster may stand (1: touching it). A reach past 1
+  // needs sight of the tile (Survey: allies and the mason Evoke a Keystone pattern from 2 tiles).
+  const er: any = emit(cb, 'evoke_reach', { u, pattern: p, reach: 1, cb }), reach = Math.max(1, er.reach || 1);
+  const near = (k: string) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= reach && lineOfSight(cb, u.pos, k));
+  const touch = p.shape === 'line' ? near(p.near!) : p.tiles.some(near);
   if (!touch) return no(p.shape === 'line' ? 'Stand behind the near end of the line to fire it.' : 'Stand on or next to the pattern.', { pattern: p });
   // 'evoke_cost' {u, pattern, ap, charge, preview, fail} (mutable): items change what firing costs; fail refuses it.
   const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke, charge: evokeCharge(p, u), preview: true, fail: '', cb });
@@ -571,7 +577,13 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string): E
   return { ok: true, pattern: p, charge, ap: eap, targets: path.targets.map((t) => t.id), impact: path.impact, needsAim, range: p.shape === 'line' ? (LINE_RANGE[p.tiles.length] || 4) + u.mg!.rangeBonus : undefined };
 }
 /** Evoke (spec: Sigils, 6): fire the pattern at that tile. */
+/** The spell being cast now, for the damage it deals (Drink It In gains the real MP cost or 10 per Sigil word). */
+let SPELL: { mp?: number; words?: number } | null = null;
 export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string): string | null {
+  const was = SPELL; let n = 0; try { n = (previewEvoke(cb, u, tile, aim) as any)?.pattern?.glyphs?.length || 0; } catch { n = 0; }
+  SPELL = { words: n }; try { return evokeInner(cb, rng, u, tile, aim); } finally { SPELL = was; }
+}
+function evokeInner(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string): string | null {
   const pv = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
   const p = pv.pattern!, m = u.mg!, has = (w: string) => p.words.includes(w), name = p.words.map((w) => w.toUpperCase()).join(' · ');
   u.ap -= pv.ap; m.charge -= pv.charge; m.cast = true;
@@ -608,7 +620,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string)
     if (second) { line += ' · TWICE:'; hitAll([second], path.impact || path.src); }
   }
   // The glyphs fade as the spell fires.
-  const used = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
+  const used = new Set(p.glyphs.filter((g) => !(g as any).keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id)); // a Keystone survives its Evoke
   cb.log.push(head + line + '.');
   emit(cb, 'evoked', { u, pattern: p, targets: path.targets, impact: path.impact, charge: pv.charge, ap: pv.ap, cb, rng }); // after the real Evoke (hooks gap D3)
   return null;
@@ -714,6 +726,9 @@ export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): st
   return null;
 }
 function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string, wild: boolean) {
+  const was = SPELL; SPELL = { mp: u.mg?.held?.cost ?? (u.mg ? designCost(u.mg, d, manaOf(cb)) : 0) }; try { releaseAtInner(cb, rng, u, d, aim, wild); } finally { SPELL = was; }
+}
+function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string, wild: boolean) {
   const m = u.mg!, stage = m.held?.stage || 1, has = (x: string) => d.modules.includes(x);
   // 'outburst_release' {u, design, stage, aim, wild, mult} (mult multiplies the stage multiplier).
   const orl: any = emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, cb, rng }); const sm = stageMult(stage) * (orl.mult || 1);
@@ -732,7 +747,7 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
       const base = (SCHOOL.damage.damage || 25) * m.soulMult * sm * f * (has('rain') ? 0.6 : 1) * (has('at_once') ? 0.5 : 1);
       if (has('inverse') && t.side === u.side) { const s = grantShield(cb, t, base, u); line.push(t.name + ' is shielded (' + s + ')'); return; }
       if (!has('at_once')) {
-        const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (has('homing') ? 2 : 0) + condHit(u, t, cb) - cover;
+        const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (has('homing') ? 2 : 0) + condHit(u, t, cb) - cover + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add;
         if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); line.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return; }
         line.push('hits ' + t.name + ' (d20 ' + r + (r === 20 ? ', CRITICAL' : '') + ')' + harm(cb, rng, u, t, base * (r === 20 ? 2 : 1), 'soul'));
       } else line.push(harm(cb, rng, u, t, base, 'soul').replace(/^ · /, ''));
@@ -784,7 +799,7 @@ export function crystallise(cb: Combat, u: Unit): string | null {
 }
 /** Enemies scuff a player's glyph they stand on (spec: Sigils, 4). */
 export function enemyScuff(cb: Combat, u: Unit): boolean {
-  if (u.ap < SPELL_AP.scuff || !(cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side)) return false;
+  if (u.ap < SPELL_AP.scuff || !(cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return false;
   return !scuff(cb, u);
 }
 export const glyphsAt = (cb: Combat, k: string) => (cb.glyphs || []).filter((g) => g.pos === k);

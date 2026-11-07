@@ -3,7 +3,7 @@
 // combat/perk, combat/attack, combat/parley, combat/analyze), with the game bound only where an engine hook is read
 // directly (notice, the enemy AI).
 import { describe, expect, it } from 'vitest';
-import { d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
+import { votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -262,12 +262,28 @@ describe('Their Own Idea', () => {
 });
 
 describe('Foreseen', () => {
-  it('once a session: the room is told; the Narrator shows what would have happened and replays the moment', () => {
+  it('once a session: the room votes (solo: at once) to go back to before the Narrator\'s turn; the rewind undoes HP and dice; the use stays spent', () => {
     const s = storyWith([{ perks: { foreseen: 'mastered' } }]); const c = s.chars[0];
+    const before = JSON.parse(JSON.stringify(s.g)), hp = s.g.characters[c.id].hp;
+    s.act({ type: 'narrator/turn', turn: { narration: 'The broker sells you out.', harm: [{ charId: c.id, amount: 30, why: 'an ambush' }] } } as any);
+    expect(s.g.characters[c.id].hp).toBe(hp - 30);
+    const turn = votesOf(s.g).turns.at(-1)!;
     perk(s, c, 'foreseen', { text: 'We trusted the broker.' });
-    expect(s.g.story.entries.some((x) => /has foreseen it/.test(x.text) && !x.to)).toBe(true);
-    expect(rulings(s.g, 'perk:foreseen')[0].text).toMatch(/would have happened/);
-    expect(() => perk(s, c, 'foreseen', { text: 'Again.' })).toThrow();
+    const v = votesOf(s.g).open!;
+    expect(v.status).toBe('passed'); expect(v.foresee?.charId).toBe(c.id); expect(v.entryId).toBe(turn); expect(v.note).toMatch(/would have happened/);
+    // The host's client keeps the copy from before the turn; the reroll machinery restores it.
+    const back = rerollFrom(s.g, { ...before, votes: { ...votesOf(before), turns: [] } }, v.note);
+    expect(back.characters[c.id].hp).toBe(hp);
+    s.g = back;
+    expect(() => perk(s, c, 'foreseen', { text: 'Again.' })).toThrow(/Used|no Narrator turn/);
+  });
+  it('co-op: another player can veto the rewind', () => {
+    const s = storyWith([{ perks: { foreseen: 'mastered' } }, { owner: 'p2' }, { owner: 'p2' }]); const c = s.chars[0];
+    s.act({ type: 'narrator/turn', turn: { narration: 'It goes wrong.' } } as any);
+    perk(s, c, 'foreseen', { text: 'The vote.' });
+    expect(votesOf(s.g).open!.status).toBe('open');
+    s.act({ type: 'vote/cast', yes: false } as any, 'p2');
+    expect(votesOf(s.g).open!.status).toBe('failed');
   });
 });
 

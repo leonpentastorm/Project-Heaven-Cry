@@ -14,12 +14,13 @@ import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageO
 import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
 import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily } from '../magic';
-import { die, d20 } from '../rng';
-import { setStoryCond, storyConds } from '../game';
+import { die, d20, type Rng } from '../rng';
+import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON } from '../tactics';
 
 // ---------- small helpers ----------
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
+const ow = overworld;
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 const rngOf = (h: Holder, ctx?: any): { state: number } | null => ctx?.rng || h.g?.rng || null;
@@ -163,6 +164,7 @@ register({
     check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
     check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
     scene_change: (_ctx, h) => storyShake(h, ['fear', 'nausea']),
+    story_cond_apply: (ctx, h) => { if (ctx.c === h.c && tierII(h) && (ctx.id === 'fear' || ctx.id === 'nausea')) { ctx.cancel = true; ctx.why = 'Iron Stomach'; } },
   },
   brief: (h) => (tierII(h) ? 'never nauseated or frightened (tag fear checks: auto-pass)' : 'shakes off nausea and fear at once'),
 });
@@ -177,14 +179,19 @@ register({
   id: 'grapple', claims: 'all',
   actions: [
     {
-      id: 'grapple', label: 'Grapple', scope: ['combat'], target: 'enemy', range: 1, ap: 2,
+      // In a fight, and on the area map against an NPC token: grabbing someone there starts the fight (or, hidden, opens
+      // it as an ambush) with the grab as the opening move (PROVISIONAL, spec 14).
+      id: 'grapple', label: 'Grapple', scope: ['combat', 'world'], target: 'enemy', range: 1, ap: 2,
       available: (h) => (h.u && condOn(h.u, 'grappled') ? 'You are held yourself.' : true),
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; return { lines: ['Grappled: Body save vs ' + (12 + (h.u?.dbf?.body || 0)) + '.'] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; if (t && h.u && dist(t.pos, h.u.pos) > 1) return { ok: false, why: 'Walk up to them first.' }; return { lines: ['Grappled: Body save vs ' + (12 + (h.u?.dbf?.body || 0)) + '.' + (ow(h.cb) ? ' Starts a fight.' : '')] }; },
       run: (h, a, rng) => {
-        const t = h.cb!.units.find((x) => x.id === a.targetId)!;
-        const r = applyCond(h.cb!, rng, h.u!, t, 'grappled');
-        emitFx(h.cb!, 'melee', { unit: h.u!.id, target: t.id, from: h.u!.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
-        say(h.cb, h.u!.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
+        const grab = (cb: Combat, u: Unit, t: Unit, r0: Rng) => {
+          const r = applyCond(cb, r0, u, t, 'grappled');
+          emitFx(cb, 'melee', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
+          say(cb, u.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
+        };
+        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 2, (cbx, att, tt) => grab(cbx, att, tt, g.rng)); return null; }
+        return grab(h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
       },
     },
     {
@@ -233,7 +240,8 @@ register({
   id: 'breaching_strike', claims: 'all',
   actions: [
     {
-      id: 'breaching_strike', label: 'Breaching Strike', scope: ['combat'], target: 'enemy', ap: 3,
+      // In a fight, and on the area map against an NPC token (the fight opens with the strike: PROVISIONAL, spec 14).
+      id: 'breaching_strike', label: 'Breaching Strike', scope: ['combat', 'world'], target: 'enemy', ap: 3,
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u || !h.cb) return;
         if (dist(h.u.pos, t.pos) > reachOf(h.u)) return { ok: false, why: 'Out of melee reach.' };
@@ -242,7 +250,20 @@ register({
         return { lines: [pv.pct + '% to hit · knockback ' + tiles + (tierII(h) && sim.wall ? ' · slams into a wall: +50% damage' : '')] };
       },
       run: (h, a, rng) => {
-        const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!, tiles = tierII(h) ? 2 : 1;
+        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 3, (cbx, att, tt) => breach(h, cbx, att, tt, g.rng)); return null; }
+        return breach(h, h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
+      },
+    },
+    {
+      id: 'breach_story', label: 'Breaching Strike', scope: ['story'], target: 'none', ap: 0,
+      text: 'Smash through a door, a barricade or someone in the way (the Narrator rules what gives).',
+      run: (h, a) => { postStory(h, a.text || 'puts a shoulder through it.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Breaching Strike out of a fight: ' + (a.text || 'breaches the way ahead') + '. Rule what breaks; a fight starts if it hits someone hostile.'); return null; },
+    },
+  ],
+  brief: () => null,
+});
+function breach(h: Holder, cb: Combat, u: Unit, t: Unit, rng: Rng): string | null {
+        const tiles = tierII(h) ? 2 : 1;
         const imm = immune({ u: t }, 'knockback'), sim = imm ? { free: 0, wall: false } : knockbackSim(cb, u, t, tiles);
         const wall = tierII(h) && sim.wall;
         say(cb, u.name + ' throws a Breaching Strike' + (wall ? ' (into the wall: +50%)' : '') + '.');
@@ -256,16 +277,7 @@ register({
           }
         }
         checkOver(cb); return null;
-      },
-    },
-    {
-      id: 'breach_story', label: 'Breaching Strike', scope: ['story'], target: 'none', ap: 0,
-      text: 'Smash through a door, a barricade or someone in the way (the Narrator rules what gives).',
-      run: (h, a) => { postStory(h, a.text || 'puts a shoulder through it.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Breaching Strike out of a fight: ' + (a.text || 'breaches the way ahead') + '. Rule what breaks; a fight starts if it hits someone hostile.'); return null; },
-    },
-  ],
-  brief: () => null,
-});
+}
 
 // ---------- Earthbreaker (Raw Power Mastered) ----------
 // Once per combat, 4 AP: strike a tile in melee reach. Every creature in the 3×3 around it (allies too, not you:
@@ -305,7 +317,7 @@ register({
     { id: 'earthbreaker_story', label: 'Earthbreaker', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 }, text: 'Smash the floor, a wall or the cover around you (the Narrator rules what breaks).',
       run: (h, a) => { postStory(h, a.text || 'brings the ground down.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Earthbreaker out of a fight: ' + (a.text || 'smashes floor, walls or cover in reach') + '. Rule what breaks.'); return null; } },
   ],
-  brief: () => null,
+  brief: () => 'out of a fight, once a scene: smashes floor, walls or cover in reach (you rule what breaks)',
 });
 
 // ---------- Last Wall (Durability Mastered) ----------
@@ -324,8 +336,11 @@ register({
       if (h.cb) { emitFx(h.cb, 'shield', { target: h.u!.id, at: h.u!.pos, amount: 0 }); say(h.cb, h.u!.name + ' refuses to fall (Last Wall): 1 HP, and nothing gets through until their next turn.'); }
     },
     turn_start_pre: (ctx, h) => { if (ctx.u === h.u) stateOf(h).guard = false; },
+    // Nothing gets through means no injury either: a critical on the guarded holder rolls none (else a torso Bleeding
+    // from a blow that did nothing would Down them at their next turn start; PROVISIONAL, spec 14).
+    injury: (ctx, h) => { if (ctx.t === h.u && stateOf(h).guard) { ctx.cancel = true; say(h.cb, 'Last Wall: no injury gets through.'); } },
   },
-  brief: () => null,
+  brief: () => 'once a fight a lethal blow leaves them at 1 HP and untouchable to their next turn',
 });
 
 // ---------- Walking Wounded (Pain Threshold Mastered) ----------
@@ -366,6 +381,7 @@ register({
   on: {
     cond_apply: (ctx, h) => { if (ctx.id === 'fear' && h.u && h.cb && inAura(h.cb, h.u, ctx.t)) { ctx.cancel = true; ctx.why = h.u.name + ' is there (Nothing Left to Fear)'; } },
     turn_start: (ctx, h) => { if (h.u && h.cb && condOn(ctx.u, 'fear') && inAura(h.cb, h.u, ctx.u)) { endCond(ctx.u, 'fear', h.cb); say(h.cb, ctx.u.name + ' steadies beside ' + h.u.name + ': no longer Afraid (Nothing Left to Fear).'); } },
+    story_cond_apply: (ctx, h) => { if (ctx.c === h.c && ctx.id === 'fear') { ctx.cancel = true; ctx.why = 'Nothing Left to Fear'; } },
     check_build: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear']); },
     check_post: (ctx, h) => { if (ctx.c !== h.c) return; const tg: string[] = ctx.ck.tags || []; if ((tg.includes('fear') || tg.includes('horror')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Nothing Left to Fear'); } },
   },
@@ -520,8 +536,8 @@ register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' 
 // −0.5 Movement (PROVISIONAL like Right of Way), attacks against them +2 to hit, and they can't hide in light: Hide on a
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({
-  id: 'heavyworlder', claims: [2, 6, 7], narrator: [0],
-  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'size' ? 1 : 0),
+  id: 'heavyworlder', claims: [2, 3, 6, 7], narrator: [0],
+  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'size' ? 1 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands)
   on: {
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },
@@ -592,7 +608,7 @@ register({
 // every d20 roll (checks, attacks, saves, initiative; not passives or death saves) until any rest.
 const blaze = (h: Holder) => Math.min(0.5, 0.1 * (stateOf(h).kos || 0));
 function wearSync(h: Holder) {
-  const u = h.u; if (!u || !u.maxDur || !inFight(h)) return; // area-map attacks: a listed gap (units are rebuilt each action)
+  const u = h.u; if (!u || !u.maxDur || !inFight(h)) return; // the area map: unit_built + action_done below
   const st = stateOf(h), d = u.dur ?? u.maxDur;
   if (st.dur != null && st.w === u.weapon && d < st.dur) { u.dur = Math.max(0, d - (st.dur - d)); }
   st.dur = u.dur ?? u.maxDur; st.w = u.weapon;
@@ -619,6 +635,13 @@ register({
     },
     rest: (_ctx, h) => { if (h.c) delete charState(h.c).crashed; },
     session_start: (_ctx, h) => { if (h.c) delete charState(h.c).crashed; },
+    // The area map: the unit is rebuilt each action, so the wear an action did is read from its start and doubled at
+    // its end (shots at objects included).
+    unit_built: (ctx, h) => { if (ctx.world && ctx.u === h.u && h.u?.maxDur) (h.u as any)._blDur = h.u.dur ?? h.u.maxDur; },
+    action_done: (ctx, h) => {
+      const u = h.u; if (!ctx.world || ctx.u !== u || !u?.maxDur) return; const d0 = (u as any)._blDur, d = u.dur ?? u.maxDur;
+      if (d0 != null && d < d0) u.dur = Math.max(0, d - (d0 - d)); delete (u as any)._blDur;
+    },
   },
   brief: (h) => (cs(h.c).crashed ? 'Crashed: −2 on every roll until a rest' : null),
 });
