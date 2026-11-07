@@ -672,12 +672,13 @@ register({
 // =====================================================================================================================
 register({
   id: 'live_to_fight_another_day', kind: 'trait', claims: 'all',
-  stat: (h, stat, ctx) => (stat === 'ap_cost:disengage' && uses(h).left('per_turn', 1, h.key + '#dis') > 0 ? -(ctx?.base ?? 1) : 0),
+  stat: (h, stat, ctx) => (stat === 'ap_cost:disengage' && h.u && !stateOf(h).disUsed ? -(ctx?.base ?? 1) : 0),
   on: {
+    turn_start: (ctx, h) => { if (ctx.u === h.u) stateOf(h).disUsed = false; },
     move_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).retreat) { ctx.ap = 0; ctx.skipOA = true; } },
     moved: (ctx, h) => {
       if (ctx.u !== h.u || ow(ctx.cb)) return; const s = stateOf(h);
-      if (ctx.how === 'disengage') uses(h).take('per_turn', 1, h.key + '#dis');
+      if (ctx.how === 'disengage') s.disUsed = true;
       if ((ctx.how === 'disengage' || s.retreat) && ctx.rng && !h.u!.dead) { const out = applyCond(ctx.cb, ctx.rng, h.u!, h.u!, 'withdrawing', undefined, undefined, { skipSave: true }); if (out) log(ctx.cb, h.u!.name + ' falls back' + out + ' (Live to Fight Another Day).'); }
     },
     cond_apply: (ctx, h) => {

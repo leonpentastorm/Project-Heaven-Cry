@@ -134,7 +134,7 @@ register({
   id: 'scar_tissue', claims: 'all',
   on: {
     on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !isHit(ctx.src)) return;
+      if (ctx.t !== h.u || !isHit(ctx.src) || !inFight(h)) return;
       const st = stateOf(h), cap = tierII(h) ? 8 : 5; if ((st.n || 0) >= cap) return;
       st.n = (st.n || 0) + 1;
       if (tierII(h)) { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + 5 * st.n; }
@@ -498,7 +498,7 @@ register({
   stat: (h, stat) => (stat === 'move' && h.c && legInjured(h.c) ? { mult: 0.5 } : 0),
   on: {
     move_cost: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.how !== 'move' || ctx.ap <= 0) return;
+      if (ctx.u !== h.u || ctx.how !== 'move' || ctx.ap <= 0 || !inFight(h)) return;
       const st = stateOf(h); if (st.freeMove) return; st.freeMove = true;
       ctx.ap = Math.max(0, ctx.ap - 1); say(h.cb, h.u!.name + ' is off like a shot (Glass Runner: 1 AP of the first move free).');
     },
@@ -598,7 +598,7 @@ register({
 // every d20 roll (checks, attacks, saves, initiative; not passives or death saves) until any rest.
 const blaze = (h: Holder) => Math.min(0.5, 0.1 * (stateOf(h).kos || 0));
 function wearSync(h: Holder) {
-  const u = h.u; if (!u || !u.maxDur) return;
+  const u = h.u; if (!u || !u.maxDur || !inFight(h)) return; // area-map attacks: a listed gap (units are rebuilt each action)
   const st = stateOf(h), d = u.dur ?? u.maxDur;
   if (st.dur != null && st.w === u.weapon && d < st.dur) { u.dur = Math.max(0, d - (st.dur - d)); }
   st.dur = u.dur ?? u.maxDur; st.w = u.weapon;
@@ -647,7 +647,7 @@ register({
     attack_preview: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
     cond_apply: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.t)) { ctx._anchor = true; ctx.saveAdd = (ctx.saveAdd || 0) + 1; } },
     moved: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.forced) return; const st = stateOf(h); st.cur = (st.cur || 0) + (ctx.tiles || 0);
+      if (ctx.u !== h.u || ctx.forced || !inFight(h)) return; const st = stateOf(h); st.cur = (st.cur || 0) + (ctx.tiles || 0);
       if (st.cur > 2 && !st.broken) { st.broken = true; st.pen = 1; say(h.cb, h.u!.name + ' leaves the line (Squad Anchor): the aura drops until their next turn.'); }
     },
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); st.broken = false; st.cur = 0; if (st.pen) { ctx.penalties.push({ n: 1, why: 'Squad Anchor (Fixed Point)' }); st.pen = 0; } },
@@ -670,13 +670,14 @@ register({
   stat: (h, stat) => (stat === 'vision' && augOn(h, 'eye') ? 2 : stat === 'move' && augOn(h, 'legs') ? 1 : 0),
   on: {
     damage_out: (ctx, h) => { if (ctx.att === h.u && augOn(h, 'arm') && ctx.src?.type === 'weapon' && !ELEMENTAL_TYPES.has(ctx.src.dmgType || '')) ctx.mults.push({ v: 1.2, label: 'Augmented arm' }); },
-    combat_start: (_ctx, h) => { if (h.u && augOn(h, 'eye')) h.u.darkSight = true; },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && h.u) h.u.darkSight = augOn(h, 'eye') || h.u.darkSight; },
+    combat_start: (_ctx, h) => { if (!h.u) return; stateOf(h).gearDark = !!h.u.darkSight; h.u.darkSight = !!h.u.darkSight || augOn(h, 'eye'); },
+    turn_start: (ctx, h) => { if (ctx.u === h.u && h.u && augOf(h) === 'eye') h.u.darkSight = !!stateOf(h).gearDark || augOn(h, 'eye'); },
     path_opts: (ctx, h) => { if (ctx.u === h.u && augOn(h, 'legs')) ctx.jump = true; },
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || ctx.src?.dmgType !== 'emp' || !augOf(h) || !h.cb || h.u!.dead) return;
       const r = applyCond(h.cb, rngOf(h) || { state: 1 }, ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
       if (h.u!.conds?.augment_offline) h.u!.conds.augment_offline = 2;
+      if (augOf(h) === 'eye') h.u!.darkSight = !!stateOf(h).gearDark;
       say(h.cb, 'The EMP fries ' + h.u!.name + '\'s ' + augOf(h) + ' augment' + r + '.');
     },
     rest: (ctx, h) => {
