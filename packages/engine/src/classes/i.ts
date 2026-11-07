@@ -21,7 +21,8 @@ import {
 import { WEAPON, SIGIL, SCHOOL } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, releaseOutburst, FLUX_MAX, SPELL_AP, PUSH_RANGE, SOUL_REACH, LINE_RANGE,
+  grammarError, previewEvoke, evoke, releaseOutburst, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  type EvokePreview, type Spell,
 } from '../magic';
 import { d20, die, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal } from '../tactics';
@@ -636,37 +637,14 @@ register({
 });
 
 // ======================================================================================================== MAGE
+/** How far the Evoker class moves with a picked target reach (Seal, Rewrite): 8 + the Sigil range bonus. Under 1.2 this
+ * was PUSH's range; PUSH is a cone in 1.4, so the class keeps the number on its own (PROVISIONAL). */
+const MOVE_RANGE = 8;
 // Flux is the shared Evoker rule (magic.ts). A Mage, Warden, Scribe or Trickster with no Evoker gets nothing from its
 // Sigil moves: the class card should warn (a UI item, see the notes).
 
-/** One Sigil Subject on one target, with a caster's numbers (live, or snapshotted for a stored spell): the same rule
- * as magic.ts subjectEffect (elements roll Brain Power against Defense, cover −5 unless SEEK; conditions save). */
+/** A caster's Sigil numbers, snapshotted when a stored spell is written (the story ruling reads them). */
 interface SigilNums { brain: number; sigilMult: number; elemMult: number; healMult: number }
-const numsOf = (u: Unit): SigilNums => ({ brain: (u.mg?.brain ?? -2) + (u.sk?.brain_power ?? 0) + condSkillMod(u, 'brain_power'), sigilMult: u.mg?.sigilMult || 1, elemMult: u.mg?.elemMult || 1, healMult: u.mg?.healMult || 1 });
-function sigilOn(cb: Combat, rng: Rng, by: Unit | null, n: SigilNums, t: Unit, word: string, mult: number, src: string, seek = false): string {
-  const w: any = SIGIL[word]; if (!w || t.dead) return '';
-  if (w.class === 'subject_element') {
-    const r = d20(rng), cover = !seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + n.brain + (by ? condHit(by, t, cb) : 0) - cover;
-    if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: by?.id, target: t.id, at: t.pos, by: 'sigil', element: w.id }); return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')'; }
-    const dmg = (w.damage || 0) * mult * n.sigilMult * (w.damage_type === 'elemental' ? n.elemMult : 1) * (r === 20 ? 2 : 1);
-    let line = ' · ' + w.word + ' hits (d20 ' + r + (r === 20 ? ', CRITICAL' : '') + ')' + harm(cb, rng, by, t, dmg, w.damage_type === 'elemental' ? 'elemental' : 'sigil');
-    if (!t.dead && w.id === 'fire' && r === 20) line += applyCond(cb, rng, by, t, 'burning');
-    if (!t.dead && w.id === 'freeze') line += applyCond(cb, rng, by, t, 'slowed');
-    return line;
-  }
-  switch (w.id) {
-    case 'ward': return ' · ' + t.name + ' is warded (' + grantShield(cb, t, 30 * n.sigilMult * mult, by) + ' shield)';
-    case 'mend': return heal(t, 25 * n.sigilMult * mult * n.healMult, cb);
-    case 'bind': return applyCond(cb, rng, by, t, 'pinned');
-    case 'blind': return applyCond(cb, rng, by, t, 'blinded');
-    case 'slow': return applyCond(cb, rng, by, t, 'slowed');
-    case 'muddle': return applyCond(cb, rng, by, t, 'ldebuff');
-    case 'dread': return applyCond(cb, rng, by, t, 'shaken');
-    case 'silence': return applyCond(cb, rng, by, t, 'silenced');
-  }
-  return '';
-}
-const subjectsOf = (words: string[]) => words.filter((w) => /^subject/.test((SIGIL as any)[w]?.class || ''));
 
 // ---------- Barrage (rank I, passive) ----------
 // FIRE, SHOCK and FREEZE cost 1 charge less (the data's word_cost, run by the generic op); STONE too (PROVISIONAL: the
@@ -679,98 +657,115 @@ register({
 });
 
 // ---------- Overcharge (rank II; once a fight, once a scene on the area map) ----------
-// Your next glyph is drawn for no charge and no AP and may go one word past your Max Sigil words in the spell it joins;
-// it still adds 1 Flux, and adds nothing to the firing charge. The data's standing +1 Max Sigil words was the bug: the
-// +1 lasts only while that glyph is on the ground (PROVISIONAL).
-function overSync(h: Holder) {
-  const st = stateOf(h), u = h.u, cb = h.cb; if (!u?.mg || !cb || !st.overId) return;
-  if (!(cb.glyphs || []).some((g) => g.id === st.overId)) { if (st.bumped) { u.mg.maxWords -= 1; st.bumped = false; } st.overId = null; }
+// Rules 1.4 (spec: Grammar 2; item 437): your next glyph is drawn for no charge and no AP and may go one word past your
+// Max Sigil words in the spell it joins, never past 4 glyphs (the 4-glyph cap in sigilwords holds over it); it still
+// adds its Flux, and adds nothing to the firing charge. The +1 Max Sigil words (and so +1 glyph on the ground) lasts
+// from the moment you Overcharge until that glyph leaves the ground (PROVISIONAL). The bump is marked on the unit's mg
+// (mg.overBump), so a unit rebuilt on the area map gets it back once.
+function overSync(st: Record<string, any>, u: Unit | null | undefined, cb: Combat | null | undefined) {
+  const m: any = u?.mg; if (!m || !cb) return;
+  if (st.bumped) { m.overBump = true; delete st.bumped; } // a 1.2 save: its maxWords already carries the +1
+  if (st.overId && !(cb.glyphs || []).some((g) => g.id === st.overId)) st.overId = null;
+  const on = !!st.over || !!st.overId;
+  if (on && !m.overBump) { m.maxWords += 1; m.overBump = true; } else if (!on && m.overBump) { m.maxWords -= 1; m.overBump = false; }
 }
 const overAction = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'overcharge' : 'overcharge_world', label: 'Overcharge', scope: [scope], target: 'none', ap: 0, uses: { per: scope === 'combat' ? 'per_combat' : 'per_scene', n: 1 },
-  text: 'Your next glyph costs no charge and no AP, and may go one word past your Max Sigil words. It still adds 1 Flux.',
+  text: 'Your next glyph costs no charge and no AP, and may go one word past your Max Sigil words (never past 4 glyphs). It still adds Flux.',
   available: (h) => { const e = evokerReady(h); if (e) return e; if (stateOf(h).over) return 'Ready: draw the glyph.'; return true; },
-  run: (h) => { stateOf(h).over = true; say(h.cb, h.u!.name + ' overcharges the Evoker: the next glyph is free.'); },
+  run: (h) => { const st = stateOf(h); st.over = true; overSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overcharges the Evoker: the next glyph is free, and the spell may hold one word more (never past ' + MAX_GLYPHS + ').'); },
 });
 register({
   id: 'mage.overcharge', claims: 'all',
   actions: [overAction('combat'), overAction('world')],
   on: {
     glyph_cost: (ctx, h) => {
-      const st = stateOf(h); overSync(h); if (ctx.u !== h.u || !st.over) return;
+      const st = stateOf(h); overSync(st, h.u, h.cb); if (ctx.u !== h.u || !st.over) return;
       ctx.ap = 0; ctx.charge = 0;
-      if (!ctx.preview && h.cb) { st.over = false; st.overId = 'gl' + ((h.cb.glyphSeq || 0) + 1); if (!st.bumped && h.u!.mg) { h.u!.mg.maxWords += 1; st.bumped = true; } }
+      if (!ctx.preview && h.cb) { st.over = false; st.overId = 'gl' + ((h.cb.glyphSeq || 0) + 1); }
     },
     evoke_cost: (ctx, h) => { const st = stateOf(h); if (ctx.u === h.u && st.overId && ctx.pattern?.glyphs?.some((g: any) => g.id === st.overId)) ctx.charge = Math.max(1, ctx.charge - 1); },
-    turn_start: (ctx, h) => { if (ctx.u === h.u) overSync(h); },
-    round_start: (ctx, h) => overSync(h),
+    evoked: (ctx, h) => { if (ctx.u === h.u) overSync(stateOf(h), h.u, h.cb); },
+    turn_start: (ctx, h) => { if (ctx.u === h.u) overSync(stateOf(h), h.u, h.cb); },
+    round_start: (ctx, h) => overSync(stateOf(h), h.u, h.cb),
+    // The area map rebuilds its units every action: put the +1 back while the Overcharge is live.
+    unit_built: (ctx, h) => { if (!ctx.world || !ctx.u?.charId || ctx.u.charId !== (h.c?.id || h.u?.charId)) return; overSync(stateOf({ ...h, u: ctx.u, cb: ctx.cb }), ctx.u, ctx.cb); },
   },
   brief: () => null,
 });
 
 // ---------- Payload (rank III, at will) ----------
-// "Evoke with Payload": double the spell's area or its number of targets; the spell adds double Flux (on Evoke, Flux
-// equal to its glyph count, PROVISIONAL). Per shape (PROVISIONAL): a Ring's burst reaches 2 tiles from the centre, not 1;
-// SPREAD's burst 4, not 2; a Line+SPREAD cone 6 tiles, not 3; a Line bolt carries on to the next creature in its path; a
-// lone-target Stack also hits the nearest other creature next to its target; TWICE finds two more. STAY can't carry it.
-function payloadExtras(cb: Combat, u: Unit, pv: any): { targets: Unit[]; mult: number; src: string } {
-  const p = pv.pattern, has = (w: string) => p.words.includes(w), hit = new Set<string>(pv.targets);
-  const live = cb.units.filter((v) => !v.dead && !v.surrendered && !hit.has(v.id) && v !== u);
-  const formMult = has('spread') ? 0.6 : p.shape === 'ring' ? 0.8 : 1;
-  if (p.shape === 'ring') { const c = p.centre; const area = pv.targets.length !== 1 || live.some((v) => dist(v.pos, c) === 1) ? 2 : 1; return { targets: live.filter((v) => dist(v.pos, c) <= area && dist(v.pos, c) >= 1).slice(0, area === 1 ? 1 : 99), mult: formMult, src: c }; }
-  if (p.shape === 'line') {
-    const [dx, dy] = p.dir; const [fx, fy] = xy(p.far);
-    if (has('spread')) return { targets: live.filter((v) => { const [vx, vy] = xy(v.pos), ax = vx - fx, ay = vy - fy, l = Math.hypot(ax, ay); return l > 3.5 && l <= 6.5 && (ax * dx + ay * dy) / (l * Math.hypot(dx, dy)) >= 0.7; }), mult: 0.6, src: p.far };
-    const range = (LINE_RANGE[p.tiles.length] || 4) + (u.mg?.rangeBonus || 0); let [x, y] = xy(pv.impact || p.far);
-    const start = dist(p.far, pv.impact || p.far);
-    for (let i = start + 1; i <= range; i++) { x += dx; y += dy; const k = key(x, y); if (!standable(cb.map, k)) break; const v = live.find((z) => z.pos === k); if (v) return { targets: [v], mult: 1, src: p.far }; }
-    return { targets: [], mult: 1, src: p.far };
-  }
-  const aim = pv.impact || p.tiles[0];
-  if (has('spread')) return { targets: live.filter((v) => dist(v.pos, aim) > 2 && dist(v.pos, aim) <= 4), mult: 0.6, src: p.tiles[0] };
-  if (has('twice')) return { targets: live.filter((v) => v.side !== u.side && dist(v.pos, aim) <= 6 && lineOfSight(cb, aim, v.pos)).sort((a, b) => dist(a.pos, aim) - dist(b.pos, aim)).slice(1, 3), mult: 1, src: aim };
-  return { targets: live.filter((v) => dist(v.pos, aim) === 1).sort((a, b) => (a.side === u.side ? 1 : 0) - (b.side === u.side ? 1 : 0) || a.id.localeCompare(b.id)).slice(0, 1), mult: 1, src: aim };
+// Rules 1.4 (item 448): "Evoke with Payload" fires a Line as an Evoke does (same place to stand, same aim), but doubles
+// what it covers: a SPREAD radius ×2 (radius 2 → 4), a PUSH cone's length ×2 (3 → 6), both when the spell has both
+// (PROVISIONAL); a spell with neither (one target, CONDENSE included) gets one more missile, as one more TWICE would: it
+// flies at a target you didn't pick in the area, the nearest of the right kind. A STAY, WAIT or WATCH spell can't carry
+// it (what stays isn't doubled). Double Flux: on top of the Flux its glyphs added, the Evoke adds Flux equal to its glyph
+// count (PROVISIONAL), which can overload. The reshaping runs on the planner's 'spell_shape' hook, so the preview, the
+// fx and the strike all read the same doubled spell.
+let payloadOn: string | null = null;
+function withPayload<T>(u: Unit, f: () => T): T { const was = payloadOn; payloadOn = u.id; try { return f(); } finally { payloadOn = was; } }
+const payloadRefused = (words: string[]) => { const sp = compileSpell(words); return sp.stay || sp.wait || sp.watch ? 'A STAY, WAIT or WATCH spell can\'t carry a Payload: what stays isn\'t doubled.' : null; };
+/** What the Payload does to this spell, in words for the preview and the log. */
+function payloadWhat(words: string[]): string {
+  const sp = compileSpell(words), out: string[] = [];
+  if (sp.spread) out.push('SPREAD radius ' + sp.radius + ' → ' + sp.radius * 2);
+  if (sp.push) out.push('PUSH cone ' + sp.coneLen + ' → ' + sp.coneLen * 2 + ' tiles');
+  if (!sp.spread && !sp.push) out.push('one more missile (' + sp.missiles + ' → ' + (sp.missiles + 1) + ')');
+  return out.join(', ');
 }
-/** The aim for a Stack (the nearest enemy in reach the stack can see), when the player gave none. */
-function autoAim(cb: Combat, u: Unit, tile: string): string | undefined {
-  const p: any = previewEvoke(cb, u, tile); if (!p.pattern || p.pattern.shape !== 'stack') return undefined;
-  const s = p.pattern.tiles[0], reach = p.pattern.words.includes('push') ? PUSH_RANGE + (u.mg?.rangeBonus || 0) : 1;
-  return cb.units.filter((v) => v.side !== u.side && !v.dead && dist(s, v.pos) <= reach && (v.pos === s || lineOfSight(cb, s, v.pos))).sort((a, b) => dist(s, a.pos) - dist(s, b.pos))[0]?.pos;
+/** The aim when the player gave none: the nearest enemy in the area (the planner tells us the area). */
+function payloadAim(cb: Combat, u: Unit, tile: string, choice?: string): string | undefined {
+  const c = tileOf(cb, choice); if (c) return c;
+  const pv = withPayload(u, () => previewEvoke(cb, u, tile));
+  return cb.units.filter((v) => !v.dead && v.side !== u.side && pv.pickable.includes(v.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || a.id.localeCompare(b.id))[0]?.pos;
+}
+function payloadPlan(cb: Combat, u: Unit, args: ActionArgs): { pv?: EvokePreview; tile?: string; aim?: string; why?: string } {
+  const tile = tileOf(cb, args.tile); if (!tile) return { why: 'Pick a glyph of the Line.' };
+  const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return { why: p };
+  const no = payloadRefused(p.words); if (no) return { why: no };
+  const aim = payloadAim(cb, u, tile, args.choice), pv = withPayload(u, () => previewEvoke(cb, u, tile, aim));
+  if (!pv.ok) return { why: pv.why || 'Can\'t fire that.', pv, tile, aim };
+  return { pv, tile, aim };
 }
 const payloadAction = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'payload' : 'payload_world', label: 'Evoke with Payload', scope: [scope], target: 'tile', ap: 0,
-  text: 'Fire the pattern on this tile with double area (or double targets), for double Flux.',
+  text: 'Evoke the Line on this tile with double area: a SPREAD radius or a PUSH cone ×2, or one more missile for a one-target spell. The Evoke adds Flux equal to its glyphs. Not for STAY, WAIT or WATCH.',
   preview: (h, args) => {
-    const cb = h.cb!, u = h.u!, tile = tileOf(cb, args.tile); if (!tile) return {};
-    const pv: any = previewEvoke(cb, u, tile, tileOf(cb, args.choice) || autoAim(cb, u, tile));
-    if (!pv.ok) return { ok: false, why: pv.why };
-    if (pv.pattern.words.includes('stay')) return { ok: false, why: 'A standing STAY pattern can\'t carry a Payload.' };
-    const ex = payloadExtras(cb, u, pv);
-    return { lines: ['Payload: ' + pv.targets.length + ' target(s), +' + ex.targets.length + ' more (' + ex.targets.map((t) => t.name).join(', ') + '); +' + pv.pattern.glyphs.length + ' extra Flux.'], targets: [...pv.targets, ...ex.targets.map((t) => t.id)] };
+    const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return { ok: false, why: r.why, ...(r.pv?.area?.length ? { tiles: r.pv.area } : {}) };
+    const pv = r.pv!, n = pv.pattern!.glyphs.length;
+    return { lines: ['Payload: ' + payloadWhat(pv.pattern!.words) + '; ' + pv.targets.length + ' target(s); +' + n + ' Flux on the Evoke.'], targets: pv.targets, tiles: pv.missiles.flatMap((m) => m.burst.tiles) };
   },
   run: (h, args, rng) => {
-    // The area map: a Payload that reaches anyone on the map opens the fight there first, as an Evoke does (the spell is
-    // the opening move); one that touches nobody fires on the map.
+    // The area map: a Payload that reaches a hostile token opens the fight there first, as an Evoke does (the spell is
+    // the opening move); one that touches nobody of the other side fires on the map.
     if (overworld(h.cb)) {
-      const cb = h.cb!, u = h.u!, tile = tileOf(cb, args.tile)!, aim = tileOf(cb, args.choice) || autoAim(cb, u, tile), pv: any = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
-      const ex = payloadExtras(cb, u, pv), npc = [...pv.targets, ...ex.targets.map((t) => t.id)].map((id) => cb.units.find((x) => x.id === id)).find((x) => x && x.side === 'foe');
+      const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return r.why;
+      const npc = r.pv!.targets.map((id) => cb.units.find((x) => x.id === id)).find((x) => x && x.side === 'foe');
       if (npc) { const g = h.g; strikeFromWorld(npc.id, 0, (cbx, att) => payloadRun({ ...h, cb: cbx, u: att }, args, g.rng)); return null; }
     }
     return payloadRun(h, args, rng);
   },
 });
 function payloadRun(h: Holder, args: ActionArgs, rng: Rng): string | null {
-    const cb = h.cb!, u = h.u!, tile = tileOf(cb, args.tile)!, aim = tileOf(cb, args.choice) || autoAim(cb, u, tile);
-    const pv: any = previewEvoke(cb, u, tile, aim); if (!pv.ok) return pv.why || 'Can\'t fire that.';
-    const ex = payloadExtras(cb, u, pv), nums = numsOf(u), subj = subjectsOf(pv.pattern.words), n = pv.pattern.glyphs.length, seek = pv.pattern.words.includes('seek');
-    const err = evoke(cb, rng as Rng, u, tile, aim); if (err) return err;
-    let line = '';
-    for (const t of ex.targets) for (const w of subj) line += sigilOn(cb, rng as Rng, u, nums, t, w, ex.mult, ex.src, seek);
-    say(cb, 'PAYLOAD: ' + (ex.targets.length ? 'the spell carries on' + line : 'nobody more in reach') + addFlux(cb, u, n) + '.');
-    checkOver(cb); return null;
+  const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return r.why;
+  const n = r.pv!.pattern!.glyphs.length, what = payloadWhat(r.pv!.pattern!.words);
+  const err = withPayload(u, () => evoke(cb, rng as Rng, u, r.tile!, r.aim)); if (err) return err;
+  say(cb, 'PAYLOAD: ' + what + addFlux(cb, u, n) + '.');
+  checkOver(cb); return null;
 }
-// In a fight and on the area map ("Same on the area map"): there, a Payload that touches someone opens the fight.
-register({ id: 'mage.payload', claims: 'all', actions: [payloadAction('combat'), payloadAction('world')], brief: () => null });
+register({
+  id: 'mage.payload', claims: 'all', actions: [payloadAction('combat'), payloadAction('world')],
+  on: {
+    spell_shape: (ctx, h) => {
+      if (ctx.u !== h.u || payloadOn !== h.u?.id) return;
+      const sp: Spell = ctx.spell; if (sp.stay || sp.wait || sp.watch) return;
+      if (sp.spread) sp.radius *= 2;
+      if (sp.push) sp.coneLen *= 2;
+      if (!sp.spread && !sp.push) sp.missiles += 1;
+    },
+  },
+  brief: () => null,
+});
 
 // ======================================================================================================== WARDEN
 
@@ -778,10 +773,14 @@ register({ id: 'mage.payload', claims: 'all', actions: [payloadAction('combat'),
 // You know STAY (the data's unlock_word, run generically). Evoke a lone STAY glyph of yours (no Subject, no second
 // glyph; 1 AP, 1 charge) as a cover rune: a two-tile wall of full cover (blocks movement and sight, 40 HP each,
 // breakable; PROVISIONAL) on the glyph's tile and the free tile next to it that faces the nearest enemy, for 2 rounds +
-// your Sigil duration bonus.
+// your Sigil duration bonus. Rules 1.4 (spec: "the old classes under the new Sigil rules"): it is the class's one
+// exception to the Line. "Lone" is the glyph alone on its tile with no glyph of its side touching it (else it belongs to
+// a Line); you drew it standing on it, so you Evoke it from a tile next to it (the rune needs its tile clear). The
+// runes are barricades, not Sigil spells: NULL doesn't take them (item 430).
+const isLoneStay = (cb: Combat, u: Unit, g: any) => g.by === u.id && g.word === 'stay' && (cb.glyphs || []).filter((x) => x.pos === g.pos).length === 1
+  && !(cb.glyphs || []).some((x) => x !== g && x.side === g.side && dist(x.pos, g.pos) === 1);
 function loneStay(cb: Combat, u: Unit): any | null {
-  return (cb.glyphs || []).find((g) => g.by === u.id && g.word === 'stay' && dist(u.pos, g.pos) <= 1 && (cb.glyphs || []).filter((x) => x.pos === g.pos).length === 1
-    && !(cb.glyphs || []).some((x) => x !== g && x.side === g.side && dist(x.pos, g.pos) === 1)) || null;
+  return (cb.glyphs || []).find((g) => dist(u.pos, g.pos) === 1 && isLoneStay(cb, u, g)) || null;
 }
 const freeTile = (cb: Combat, k: string) => standable(cb.map, k) && !cb.units.some((v) => !v.dead && v.pos === k) && !objectsOf(cb).some((o) => o.pos === k && (o.hp == null || o.hp > 0) && !['rubble', 'poi', 'exit', 'trap'].includes(o.kind));
 function runeTiles(cb: Combat, u: Unit, at: string): string[] {
@@ -798,8 +797,12 @@ register({
   actions: [{
     // In a fight and on the area map (the same number of overworld rounds there: cb.round is the story round).
     id: 'raise_cover', label: 'Raise Cover (cover rune)', scope: ['combat', 'world'], target: 'none', ap: SPELL_AP.evoke,
-    text: 'Evoke your lone STAY glyph as a cover rune: full cover on its tile and the one beside it.',
-    available: (h) => { const e = evokerReady(h); if (e) return e; if (!h.cb || !loneStay(h.cb, h.u!)) return 'Draw a lone STAY glyph on or next to you first.'; if ((h.u!.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true; },
+    text: 'Evoke your lone STAY glyph as a cover rune, from a tile next to it: full cover on its tile and the one beside it.',
+    available: (h) => {
+      const e = evokerReady(h); if (e) return e; const cb = h.cb, u = h.u!;
+      if (!cb || !loneStay(cb, u)) return (cb?.glyphs || []).some((g) => g.pos === u.pos && isLoneStay(cb!, u, g)) ? 'Step off the STAY glyph: you Evoke the rune from a tile next to it.' : 'Draw a lone STAY glyph, then step to a tile next to it.';
+      if ((u.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true;
+    },
     run: (h) => {
       const cb = h.cb!, u = h.u!, g = loneStay(cb, u)!; if (cb.units.some((v) => !v.dead && v.pos === g.pos)) return 'Someone stands on the glyph: the rune needs the tile clear.';
       const tiles = runeTiles(cb, u, g.pos), left = 2 + (u.mg!.durBonus || 0), st = stateOf(h);
@@ -807,7 +810,8 @@ register({
       const ids: string[] = [];
       for (const k of tiles) { const id = 'rune_' + u.id + '_' + k.replace(',', '_') + '_' + cb.round; ids.push(id); cb.objects = [...objectsOf(cb), makeObject(id, 'barricade', k, { name: 'Cover rune', text: 'A STAY rune standing as full cover.', hp: 40, max: 40 } as any)]; }
       (st.runes ||= []).push({ ids, until: cb.round + left });
-      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'stack', tiles, src: g.pos, impact: null, targets: [], words: ['stay'], element: null, stay: true, side: u.side });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'rune', tiles: [g.pos], area: tiles, src: g.pos, impact: g.pos, targets: [], words: ['stay'], element: null, stay: true, side: u.side, missiles: [], placed: null, fizzle: false });
+      emitFx(cb, 'wall_raised', { tiles, by: u.id, side: u.side, hp: 40, rounds: left, rune: true });
       say(cb, u.name + ' evokes STAY alone: a cover rune stands at ' + tiles.map(refOf).join(' and ') + ' for ' + left + ' rounds (1 charge).');
     },
   }],
@@ -855,12 +859,12 @@ register({
   actions: [{
     id: 'seal', label: 'Seal', scope: ['combat'], target: 'tile', ap: 3,
     available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 2) return 'Needs 2 charge.'; return true; },
-    preview: (h, args) => { const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile); if (!t) return {}; const r = PUSH_RANGE + (u.mg?.rangeBonus || 0);
+    preview: (h, args) => { const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
       if (dist(u.pos, t) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (t !== u.pos && !lineOfSight(cb, u.pos, t)) return { ok: false, why: 'No line of sight.' }; return { tiles: around(t, 1) }; },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile)!; u.mg!.charge -= 2; u.mg!.cast = true;
       cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'seal' as any, tiles: around(t, 1), words: ['seal'], by: u.id, side: u.side, left: 2, mult: 1, who: u.name }];
-      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'ring', tiles: around(t, 1), src: t, impact: t, targets: [], words: ['seal'], element: null, stay: true, side: u.side });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'area', tiles: around(t, 1), area: around(t, 1), src: t, impact: t, targets: [], words: ['seal'], element: null, stay: true, side: u.side, missiles: [], placed: null, fizzle: false });
       say(cb, u.name + ' seals the ground around ' + refOf(t) + ': enemy magic costs double there for 2 rounds (2 charge)' + addFlux(cb, u, 2) + '.');
     },
   }],
@@ -966,71 +970,86 @@ register({
 });
 
 // ---------- Stored Spell (rank III) ----------
-// Out of combat, write a whole Sigil spell (words you know, at most your Max Sigil words, so it never overloads) onto
-// an object, paying its charge and firing charge now. It fades at the next rest. You keep at most max(1, Rumination
-// modifier) at once (GAMEBREAKING: the modifier alone is 0 or less for most Scribes; PROVISIONAL). Writing is at will
-// within the cap (the data's per_rest conflicts with the cap, PROVISIONAL). In a fight it fires for 1 AP from the
-// holder's tile with the Scribe's numbers as written: a Stack lands next to you (8 tiles with PUSH), a Line flies toward
-// the tile you pick, a Ring bursts on that tile (adjacent). For now only the Scribe can trigger it: handing the object
-// to an ally needs a runtime hook (see the notes).
-interface Stored { id: string; words: string[]; shape: 'stack' | 'line' | 'ring'; stamp: string; nums: SigilNums; debuff: Record<'body' | 'brain' | 'heart', number> }
+// Out of combat, write a whole Sigil spell (words you know, at most your Max Sigil words and 4 glyphs, a spell by the
+// 1.4 grammar) onto an object, paying its charge and firing charge now. It fades at the next rest. You keep at most
+// max(1, Rumination modifier) at once (GAMEBREAKING: the modifier alone is 0 or less for most Scribes; PROVISIONAL).
+// Writing is at will within the cap (the data's per_rest conflicts with the cap, PROVISIONAL). Rules 1.4 (spec: "the old
+// classes under the new Sigil rules"): it holds words, not a shape. In a fight it goes off for 1 AP from the object's
+// tile, the Scribe's own (the Scribe holds it), with its own Reach, all around (no facing): Touch reaches the tiles next
+// to it, SEEK flies 8 from it, RELAY hops from it; Bursts, Delivery and KIN as written. It runs through the real planner
+// as a two-glyph-hook Stack of virtual glyphs on the holder's tile, so the preview, fx, hooks and strike are an Evoke's,
+// with no firing charge (paid when written) and the action's 1 AP. STAY, WAIT and WATCH are refused (they would outlive
+// the object). The holder's Evoker must be ready (PROVISIONAL: the Evoker sends the command), and the numbers are the
+// Scribe's live ones (the snapshot is kept for the story ruling). For now only the Scribe can trigger it: handing the
+// object to an ally needs a runtime hook (see the notes). A 1.2 stored spell keeps its words (its shape is ignored; RETURN
+// becomes SEEK); one that no longer makes a spell is dropped when triggered.
+interface Stored { id: string; words: string[]; shape?: string; stamp: string; nums: SigilNums; debuff: Record<'body' | 'brain' | 'heart', number> }
 const storedCap = (c: Character) => Math.max(1, mod(c.skills.rumination || 0));
 const storedOf = (h: Holder): Stored[] => (keep(h).spells ||= []).filter((x: Stored) => x.stamp === restStamp(h));
-function parseSpell(text: string): { words: string[]; shape: 'stack' | 'line' | 'ring' } {
+const STORE_REFUSED = ['stay', 'wait', 'watch'];
+function parseSpell(text: string): string[] {
   const toks = String(text || '').toLowerCase().match(/[a-z]+/g) || [];
-  const shape = (toks.find((t) => ['stack', 'line', 'ring'].includes(t)) || 'stack') as any;
-  return { words: toks.filter((t) => (SIGIL as any)[t]), shape };
+  return toks.filter((t) => (SIGIL as any)[t]);
 }
-function fireStored(cb: Combat, rng: Rng, u: Unit, sp: Stored, aim: string): string {
-  const has = (w: string) => sp.words.includes(w), subj = subjectsOf(sp.words), seek = has('seek');
-  let targets: Unit[] = [], src = u.pos, mult = 1;
-  if (sp.shape === 'ring') { if (dist(u.pos, aim) > 1) return 'A Ring bursts on your tile or one next to you.'; src = aim; mult = 0.8; targets = cb.units.filter((v) => !v.dead && dist(v.pos, aim) <= 1); }
-  else if (sp.shape === 'line') {
-    const range = LINE_RANGE[Math.max(2, Math.min(4, sp.words.length))] || 4, [ux, uy] = xy(u.pos), [ax, ay] = xy(aim), dx = Math.sign(ax - ux), dy = Math.sign(ay - uy);
-    if (!dx && !dy) return 'Pick a direction.'; let [x, y] = [ux, uy];
-    if (has('spread')) { mult = 0.6; targets = cb.units.filter((v) => { if (v.dead || v === u) return false; const [vx, vy] = xy(v.pos), bx = vx - ux, by = vy - uy, l = Math.hypot(bx, by); return l > 0 && l <= 3.5 && (bx * dx + by * dy) / (l * Math.hypot(dx, dy)) >= 0.7; }); }
-    else for (let i = 1; i <= range; i++) { x += dx; y += dy; const k = key(x, y); if (!standable(cb.map, k)) break; const v = cb.units.find((z) => !z.dead && z.pos === k); if (v) { targets = [v]; break; } }
-  } else {
-    const reach = has('push') ? PUSH_RANGE : 1; if (dist(u.pos, aim) > reach) return 'Out of reach: ' + reach + ' tile' + (reach === 1 ? '' : 's') + '.';
-    if (aim !== u.pos && !seek && !lineOfSight(cb, u.pos, aim)) return 'No line of sight there.';
-    targets = has('spread') ? cb.units.filter((v) => !v.dead && dist(v.pos, aim) <= 2) : cb.units.filter((v) => !v.dead && v.pos === aim); if (has('spread')) mult = 0.6;
-  }
-  let line = '';
-  for (const t of targets) for (const w of subj) line += sigilOn(cb, rng, u, sp.nums, t, w, mult, src, seek);
-  emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: sp.shape, tiles: [u.pos], src, impact: aim, targets: targets.map((t) => t.id), words: sp.words, element: subj[0] || null, side: u.side });
-  cb.log.push(u.name + ' triggers a stored spell (' + sp.words.map((w) => w.toUpperCase()).join(' · ') + ', ' + sp.shape + ')' + (line || ' · it finds no one') + '.');
-  return '';
+/** A stored spell's words under 1.4 (RETURN → SEEK), or why it no longer reads. */
+function storedWords(sp: Stored): { words: string[]; why?: string } {
+  const words = sp.words.map((w) => (w === 'return' ? 'seek' : w)).filter((w) => (SIGIL as any)[w]);
+  const ge = grammarError(words, MAX_GLYPHS); if (ge) return { words, why: 'The stored writing no longer makes a spell (' + ge.charAt(0).toLowerCase() + ge.slice(1, -1) + ').' };
+  if (words.some((w) => STORE_REFUSED.includes(w))) return { words, why: 'A STAY, WAIT or WATCH spell can\'t be stored.' };
+  return { words };
+}
+let storedFiring: string | null = null;
+/** Run f with the stored spell on the holder's tile as virtual glyphs (their own group: side 'stored', first in the list,
+ * so the planner finds them and nothing of the map joins them); they are gone afterwards, whatever happened. */
+function withStored<T>(cb: Combat, u: Unit, words: string[], f: () => T): T {
+  const vg = words.map((w, i) => ({ id: 'ss' + (i + 1), word: w, pos: u.pos, by: u.id, side: 'stored', left: 1, who: u.name, v: SIGIL_REV } as any));
+  const was = storedFiring; migrateSigil(cb); cb.glyphs = [...vg, ...(cb.glyphs || [])]; storedFiring = u.id;
+  try { return f(); } finally { storedFiring = was; cb.glyphs = (cb.glyphs || []).filter((g) => !vg.includes(g)); }
 }
 register({
   id: 'scribe.stored_spell', claims: 'all',
   actions: [
     {
       id: 'write', label: 'Store a spell', scope: ['story', 'world'], target: 'text', ap: 0,
-      text: 'Write a Sigil spell onto an object (say the words and the shape: "FIRE PUSH stack"); pay its charge now. It fades at the next rest.',
+      text: 'Write a Sigil spell onto an object (say its words: "FIRE SEEK SPREAD"); pay its charge now. It fades at the next rest. In a fight it goes off from your tile with its own Reach, all around.',
       available: (h) => { const c = h.c; if (!c || !hasEvoker(c)) return 'You need an Evoker.'; if (storedOf(h).length >= storedCap(c)) return 'You keep ' + storedCap(c) + ' stored spell(s) at most.'; return true; },
       run: (h, args) => {
-        const c = h.c!, { words, shape } = parseSpell(args.text || ''), known = new Set([...(c.sigils || []), ...itemWords(c)]);
-        if (words.length < 2) return 'Name the words (at least two: a Subject and a Form or Motion).';
+        const c = h.c!, words = parseSpell(args.text || ''), known = new Set([...(c.sigils || []), ...itemWords(c)]);
+        if (words.length < 2) return 'Name the words (at least two: a Subject and another word).';
         const bad = words.find((w) => !known.has(w)); if (bad) return 'You don\'t know ' + bad.toUpperCase() + '.';
         const ge = grammarError(words, maxSigilWords(c)); if (ge) return ge;
-        if (words.includes('stay')) return 'A standing STAY spell can\'t be stored.';
+        if (words.some((w) => STORE_REFUSED.includes(w))) return 'A STAY, WAIT or WATCH spell can\'t be stored: it would outlive the object.';
         const wc = wordCostMods(c), cost = words.reduce((t, w) => t + Math.max(0, (SIGIL as any)[w].charge + (wc[w] || 0)), 0) + Math.max(1, words.length - sigilCoreSaving(c));
         if (evoChargeNow(c) < cost) return 'Needs ' + cost + ' charge (' + evoChargeNow(c) + ' in the core).';
         c.evoCharge = evoChargeNow(c) - cost;
-        const sp: Stored = { id: 's' + (++h.g.seq), words, shape, stamp: restStamp(h), nums: { brain: mod(c.skills.brain_power || 0), sigilMult: sigilMult(c), elemMult: elementalMult(c), healMult: healingMult(c) },
+        const sp: Stored = { id: 's' + (++h.g.seq), words, stamp: restStamp(h), nums: { brain: mod(c.skills.brain_power || 0), sigilMult: sigilMult(c), elemMult: elementalMult(c), healMult: healingMult(c) },
           debuff: { body: debuffStrength(c, 'body'), brain: debuffStrength(c, 'brain'), heart: debuffStrength(c, 'heart') } };
         keep(h).spells = [...storedOf(h), sp];
-        postStory(h, c.name + ' writes ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + shape + ') onto an object: ' + cost + ' charge. ' + storedOf(h).length + '/' + storedCap(c) + ' stored.' + (args.npc ? '' : ''));
+        postStory(h, c.name + ' writes ' + words.map((w) => w.toUpperCase()).join(' · ') + ' onto an object: ' + cost + ' charge. ' + storedOf(h).length + '/' + storedCap(c) + ' stored.');
       },
     },
     {
       id: 'trigger', label: 'Trigger a stored spell', scope: ['combat'], target: 'tile', ap: 1,
-      text: 'Fire your oldest stored spell from your tile toward the tile you pick (1 AP).',
-      available: (h) => (storedOf(h).length ? (h.u && condOn(h.u, 'silenced') ? 'Silenced.' : true) : 'Nothing stored (write one out of combat).'),
+      text: 'Set off your oldest stored spell from your tile, with its own Reach, all around: pick the target (1 AP).',
+      available: (h) => {
+        const sp = storedOf(h)[0]; if (!sp) return 'Nothing stored (write one out of combat).';
+        const e = evokerReady(h); if (e) return e; return true;
+      },
+      preview: (h, args) => {
+        const cb = h.cb!, u = h.u!, sp = storedOf(h)[0]; if (!sp) return { ok: false, why: 'Nothing stored.' };
+        const sw = storedWords(sp); if (sw.why) return { ok: false, why: sw.why };
+        const pv = withStored(cb, u, sw.words, () => previewEvoke(cb, u, u.pos, tileOf(cb, args.tile) || undefined));
+        if (!pv.ok) return { ok: false, why: pv.why, ...(pv.area.length ? { tiles: pv.area } : {}) };
+        return { lines: ['Stored ' + sw.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + pv.targets.length + ' target(s)' + (pv.fizzle ? ' · it would fizzle' : '') + '.'], targets: pv.targets, tiles: pv.area };
+      },
       run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, aim = tileOf(cb, args.tile)!, list = storedOf(h), sp = list[0]; if (!sp) return 'Nothing stored.';
-        const e = fireStored(cb, rng as Rng, u, sp, aim); if (e) return e;
-        keep(h).spells = list.slice(1); checkOver(cb);
+        const cb = h.cb!, u = h.u!, list = storedOf(h), sp = list[0]; if (!sp) return 'Nothing stored.';
+        const sw = storedWords(sp); if (sw.why) { keep(h).spells = list.slice(1); say(cb, u.name + '\'s stored spell crumbles: ' + sw.why); return null; }
+        const aim = tileOf(cb, args.tile) || undefined;
+        const pv = withStored(cb, u, sw.words, () => previewEvoke(cb, u, u.pos, aim)); if (!pv.ok) return pv.why || 'Can\'t set it off there.';
+        say(cb, u.name + ' triggers a stored spell (' + sw.words.map((w) => w.toUpperCase()).join(' · ') + ') from ' + refOf(u.pos) + '.');
+        const err = withStored(cb, u, sw.words, () => evoke(cb, rng as Rng, u, u.pos, aim)); if (err) { cb.log.pop(); return err; }
+        keep(h).spells = list.slice(1); checkOver(cb); return null;
       },
     },
     {
@@ -1040,10 +1059,14 @@ register({
       run: (h, args) => {
         const list = storedOf(h), sp = list[0]!; keep(h).spells = list.slice(1);
         const eid = postStory(h, (h.c?.name || '') + ' sets off a stored ' + sp.words.map((w) => w.toUpperCase()).join(' · ') + '.');
-        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' (' + sp.shape + ') set off out of combat' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + sp.debuff.body) + '. Rule what it hits.', eid || undefined);
+        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' set off out of combat, from the object, with its own Reach, all around' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + sp.debuff.body) + '. Rule what it hits.', eid || undefined);
       },
     },
   ],
+  on: {
+    // The stored spell's firing charge was paid when it was written; the action pays its 1 AP.
+    evoke_cost: (ctx, h) => { if (storedFiring && ctx.u === h.u && storedFiring === h.u?.id && ctx.pattern?.side === 'stored') { ctx.charge = 0; ctx.ap = 0; } },
+  },
   brief: () => 'Stored spells set off outside a fight: the Narrator rules the result from the numbers given.',
 });
 
@@ -1080,9 +1103,13 @@ register({
 // have ended: Braced → Prone; Guarded or Withdrawing (+2 Defense) → −2 Defense; Inspired (+2 to hit) → −2 to hit; a
 // shield → that much Sigil damage, at most 30 × your Sigil multiplier (GAMEBREAKING uncapped; PROVISIONAL), armour
 // applies; Hidden → revealed and Marked; Overwatch → the held shot and its reaction are lost; Emplaced → Prone. A state
-// the engine doesn't know goes to the Narrator. Once a turn (GAMEBREAKING at will; PROVISIONAL).
+// the engine doesn't know goes to the Narrator. Once a turn (GAMEBREAKING at will; PROVISIONAL). Rules 1.4 adds two
+// buffs the SHARPEN and QUICKEN words give (PROVISIONAL): Quickened (+2 AP next turn) → Dazed (−2 AP next turn);
+// Sharpened (+3 to hit, ×1.25 on its next attack) → −3 to hit and ×0.8 damage on its next weapon attack (or until the
+// end of its next turn, as Sharpened lasts). Reach: 8 tiles + your Sigil range bonus, in sight (the 1.2 PUSH reach, kept
+// as a number of the move now that PUSH is a cone).
 function flippable(t: Unit): string[] {
-  return [t.overwatch ? 'overwatch' : '', (t.shield || 0) > 0 ? 'shield' : '', t.braced ? 'braced' : '', condOn(t, 'emplaced') ? 'emplaced' : '', condOn(t, 'guarded') ? 'guarded' : '', condOn(t, 'withdrawing') ? 'withdrawing' : '', condOn(t, 'inspired') ? 'inspired' : '', t.hidden ? 'hidden' : ''].filter(Boolean);
+  return [t.overwatch ? 'overwatch' : '', (t.shield || 0) > 0 ? 'shield' : '', t.braced ? 'braced' : '', condOn(t, 'emplaced') ? 'emplaced' : '', condOn(t, 'guarded') ? 'guarded' : '', condOn(t, 'withdrawing') ? 'withdrawing' : '', condOn(t, 'inspired') ? 'inspired' : '', condOn(t, 'quickened') ? 'quickened' : '', condOn(t, 'sharpened') ? 'sharpened' : '', t.hidden ? 'hidden' : ''].filter(Boolean);
 }
 register({
   id: 'trickster.rewrite', claims: 'all',
@@ -1090,7 +1117,7 @@ register({
     {
       id: 'rewrite', label: 'Rewrite', scope: ['combat'], target: 'enemy', ap: 3, uses: { per: 'per_turn', n: 1 },
       available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 3) return 'Needs 3 charge.'; return true; },
-      preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = PUSH_RANGE + (u.mg?.rangeBonus || 0);
+      preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
         if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
         const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitDebuff(u, 'brain')) + ').' : t.name + ' shows no state the engine knows: the Narrator picks what flips.'] }; },
       run: (h, args, rng) => {
@@ -1105,6 +1132,8 @@ register({
           case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
           case 'inspired': { const left = t.conds!.inspired; endCond(t, 'inspired', cb); (st.hit ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its nerve turns (−2 to hit, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
+          case 'quickened': endCond(t, 'quickened', cb); t.dazedNext = 1; line += ' · its haste turns to a stagger (Dazed: −2 AP on its next turn)'; break;
+          case 'sharpened': endCond(t, 'sharpened', cb); (st.blunt ||= []).push({ id: t.id, until: cb.round + 2 }); line += ' · its edge turns (−3 to hit and ×0.8 damage on its next attack)'; break;
           case 'hidden': line += reveal(cb, t, 'rewritten') + applyCond(cb, r0, u, t, 'marked', undefined, undefined, { skipSave: true }); break;
           default: line += ' · no state the engine knows: the Narrator rules what flips'; note(h, t.name + ' failed the Rewrite save: pick the opposite of one of its exotic buffs, until it would have ended.');
         }
@@ -1123,9 +1152,19 @@ register({
     },
   ],
   on: {
-    attack_preview: (ctx, h) => { const now = h.cb?.round ?? 0; if ((stateOf(h).hit || []).some((x: any) => x.id === ctx.att.id && now < x.until)) ctx.terms.push({ v: -2, label: 'Rewritten' }); },
+    attack_preview: (ctx, h) => {
+      const now = h.cb?.round ?? 0, st = stateOf(h); if (!ctx.att || !ctx.terms) return;
+      if ((st.hit || []).some((x: any) => x.id === ctx.att.id && now < x.until)) ctx.terms.push({ v: -2, label: 'Rewritten' });
+      if ((st.blunt || []).some((x: any) => x.id === ctx.att.id && now < x.until)) ctx.terms.push({ v: -3, label: 'Rewritten (Sharpened)' });
+    },
+    damage_out: (ctx, h) => { const now = h.cb?.round ?? 0; if (ctx.att && !ctx.spell && (stateOf(h).blunt || []).some((x: any) => x.id === ctx.att.id && now < x.until)) ctx.mults.push({ v: 0.8, label: 'Rewritten (Sharpened)' }); },
+    // The turned edge is spent on that attack, hit or miss.
+    on_hit: (ctx, h) => { const st = stateOf(h); if (st.blunt?.length && ctx.att) st.blunt = st.blunt.filter((x: any) => x.id !== ctx.att.id); },
+    on_miss: (ctx, h) => { const st = stateOf(h); if (st.blunt?.length && ctx.att) st.blunt = st.blunt.filter((x: any) => x.id !== ctx.att.id); },
     round_start: (ctx, h) => {
-      const st = stateOf(h), cb = h.cb!; if (!st.def?.length) return;
+      const st = stateOf(h), cb = h.cb!; if (!cb) return;
+      if (st.blunt?.length) st.blunt = st.blunt.filter((x: any) => cb.round < x.until);
+      if (!st.def?.length) return;
       for (const x of st.def.filter((x: any) => cb.round >= x.until)) { const t = unitById(cb, x.id); if (t && !t.dead) t.def += 2; }
       st.def = st.def.filter((x: any) => cb.round < x.until);
     },

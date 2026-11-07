@@ -345,7 +345,9 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const p = findPattern(cb, tile, u.pos); if (typeof p === 'string') return no(p);
   const ge = grammarError(p.words, u.mg!.maxWords); if (ge) return no(ge, { pattern: p });
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
-  const sp = compileSpell(p.words);
+  // 'spell_shape' {u, pattern, spell, cb} (mutable spell: a fresh copy per plan): items that reshape the compiled spell
+  // before it is aimed (the Mage's Payload). Additive hook (lane classes-i).
+  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(p.words), cb }) as any).spell || compileSpell(p.words)) as Spell;
   // Where you stand: within reach of a glyph, not on a middle glyph (the facing rule).
   const er: any = emit(cb, 'evoke_reach', { u, pattern: p, reach: 1, cb }), reach = Math.max(1, er.reach || 1);
   const near = p.tiles.some((k) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= reach && lineOfSight(cb, u.pos, k)));
@@ -1019,4 +1021,33 @@ export function enemyAvoidMagic(cb: Combat, rng: Rng, u: Unit): boolean {
   const P = paths(cb, u.pos, u.id), out = Object.entries(P.dist).filter(([k, n]) => k !== u.pos && !bad(k) && apForTiles(n, u.bank, u.movement) <= Math.min(1, u.ap)).sort((a, b) => a[1] - b[1])[0];
   (u as any).aiDodge = cb.round;
   return !!out && !moveUnit(cb, u, out[0], rng);
+}
+
+// ---------- a spell cast straight at a point (class moves) ----------
+export interface CastAtResult { ok: boolean; why?: string; line: string; dealt: number; hit: string[]; fizzle: boolean; plan?: MissilePlan; affected: Affected[]; spell: Spell }
+/** A spell's words resolved straight at one tile with no glyphs and no Evoke, for class moves that carry a spell some
+ * other way (Three-Cut Script, Spell Magazine, Stored Spell). It goes off as Touch from `origin` (default the caster's
+ * tile): Reach words are ignored (no flight, no Reach multiplier, no cover), the Burst centres on `impact` (PUSH's cone
+ * points from origin through it), CHAIN jumps from the one it hits, PULL drags toward `source` (default origin), and
+ * STAY / WAIT / WATCH place their field, trap or turret on `impact`. Repeats (×0.9), KIN, friendly fire and the caster's
+ * multipliers apply as in an Evoke. roll false: Elements hit without a roll (a bullet already hit). mult multiplies
+ * the whole spell. The caller pays every cost and emits its own fx; nothing here spends charge, AP or Flux. Additive
+ * helper (lane classes-j). */
+export function castAt(cb: Combat, rng: Rng, u: Unit, words: string[], impact: string, o: { origin?: string; source?: string; roll?: boolean; victim?: Unit | null; mult?: number; opts?: EvokeOpts } = {}): CastAtResult {
+  const base = compileSpell(words);
+  const sp: Spell = { ...base, reach: null, missile: 'touch', range: 1, reachMult: 1, relayHops: 0, blocked: false, needsSight: false };
+  const origin = o.origin || u.pos, source = o.source || origin, f: Dir = origin === impact ? [0, 1] : dir8(origin, impact);
+  const victim = o.victim === undefined ? liveAt(cb, impact) : o.victim;
+  const mp = missileEffects(cb, u, u.side, sp, { i: 0, aim: impact, origin, impact, f, self: false, kind: 'touch', source, deliveryMult: o.mult ?? 1, roll: o.roll ?? true, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: o.opts || {}, reachMult: 1, victim });
+  if (typeof mp === 'string') return { ok: false, why: mp, line: '', dealt: 0, hit: [], fizzle: false, affected: [], spell: sp };
+  if (mp.plan.why) return { ok: false, why: mp.plan.why, line: '', dealt: 0, hit: [], fizzle: false, plan: mp.plan, affected: mp.affected, spell: sp };
+  const pl = mp.plan, live = mp.affected.filter(counts);
+  const fizzle = !pl.placed && !live.length && !(pl.raise.length || pl.nulls || pl.veil.length || pl.light.length || pl.step.length);
+  if (fizzle) return { ok: true, line: ' · it finds nothing it may affect and fizzles', dealt: 0, hit: [], fizzle: true, plan: pl, affected: mp.affected, spell: sp };
+  if (pl.placed) return { ok: true, line: place(cb, u, sp, pl), dealt: 0, hit: [], fizzle: false, plan: pl, affected: mp.affected, spell: sp };
+  const r = magicSpellWords(words.length, () => strike(cb, rng, u, u.side, sp, pl, mp.affected, { roll: o.roll ?? true, source, opts: o.opts || {} }));
+  let line = r.line;
+  if (sp.leech && r.dealt > 0 && !u.dead) { const h = healUnit(cb, u, Math.floor(r.dealt * sp.leech), u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: [impact], amount: h.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + h.restored + ' HP (LEECH)'; }
+  if (sp.damaging && (o.roll ?? true) && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb);
+  return { ok: true, line, dealt: r.dealt, hit: r.hit, fizzle: false, plan: pl, affected: mp.affected, spell: sp };
 }

@@ -276,25 +276,24 @@ describe('RTC Contractor', () => {
 
 // ============================================================ Blade Scribe
 describe('Blade Scribe', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Sword Form: a melee attack draws a glyph on the target\'s tile for no AP (charge and Flux paid), even on a miss', () => {
+  // Sigil 1.4: the glyph goes on your own tile (more in sigil14-classes-j.test.ts).
+  it('Sword Form: a melee attack draws a glyph on your own tile for no AP (charge and Flux paid), even on a miss', () => {
     const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'condense']); const foe = tough(at(f.foe, '3,5'), 99); pc.ap = 6;
     seed(f, 5);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'melee', mods: [mk('blade_scribe.sword_form', 'word_fire')] } as any);
     expect(f.pc.ap).toBe(4); expect(f.pc.mg!.charge).toBe(8); expect(f.pc.mg!.flux).toBe(1);
-    expect((f.cb.glyphs || []).some((g) => g.pos === '3,5' && g.word === 'fire')).toBe(true);
+    expect((f.cb.glyphs || []).some((g) => g.pos === '2,5' && g.word === 'fire')).toBe(true);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Edge Sigil: a damage word drawn through Sword Form adds its damage to the hit as Elemental', () => {
+  it('Edge Sigil: a damage word drawn through Sword Form adds its damage to the hit as Elemental', () => {
     const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['shock']); const foe = tough(at(f.foe, '3,5')); pc.ap = 6;
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'melee', mods: [mk('blade_scribe.sword_form', 'word_shock')] } as any);
     expect(logHas(f.cb, /Edge Sigil: SHOCK runs down the blade · 30 damage/)).toBe(true);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Three-Cut Script: 6 AP, three cuts, the words resolve as one spell on the last target', () => {
+  // Sigil 1.4: the words resolve as Touch on the last target (more in sigil14-classes-j.test.ts).
+  it('Three-Cut Script: 6 AP, three cuts, the words resolve as one spell on the last target', () => {
     const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'condense', 'push']); const foe = tough(at(f.foe, '3,5')); pc.ap = 9;
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'blade_scribe.three_cut_script', targetId: foe.id, choice: 'fire,condense,push' } as any);
@@ -372,7 +371,8 @@ describe('Spellslinger', () => {
     expect(f.pc.ammo).toBe(12); expect(f.pc.ap).toBe(4);
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
-    expect(logHas(f.cb, /spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE · 30 damage/)).toBe(true);
+    // Sigil 1.4: as Touch on the target, no roll; CONDENSE's core ×1.5 (30 → 45)
+    expect(logHas(f.cb, /spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE catches Foe 1 · 45 damage/)).toBe(true);
   });
   it('Ricochet Glyph: a miss glances to another enemy within 4 tiles at −2, once a turn, no extra ammo', () => {
     const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }, { at: 'O2' }]);

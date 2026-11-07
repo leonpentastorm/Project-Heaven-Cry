@@ -13,9 +13,10 @@ import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
   moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
 } from '../combat';
-import { WEAPON, SIGIL, type SigilDef } from '../data';
+import { WEAPON, SIGIL } from '../data';
 import { mod, healingMult, magazineSize } from '../character';
-import { applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, magicOf, CORE_CHARGE } from '../magic';
+import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE } from '../magic';
+import { castAt, glyphCost, sigilReady } from '../sigil';
 import { d20, die } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
 import { makeObject } from '../objects';
@@ -596,71 +597,50 @@ register({
 
 // ================================================================================================ BLADE SCRIBE
 
-// Sigil words a move pays for without leaving the glyph on the ground (Three-Cut Script): drawGlyph pays charge, Flux
-// (an overload included) and the Glyph AP (given back: the move paid its AP); the glyph array is put back as it was.
-function payWord(cb: Combat, rng: Rng, u: Unit, word: string, tile: string): string | null {
-  const before = cb.glyphs ? [...cb.glyphs] : undefined;
-  const e = freeAp(u, () => drawGlyph(cb, rng as any, u, word, tile));
-  if (!e) cb.glyphs = before;
-  return e;
+// Rules 1.4 (decision 98; docs/design/sigil-1.4-impact.md): glyphs are drawn on your own tile, one a tile, and a spell a
+// move carries some other way resolves straight at its target as Touch (sigil.ts castAt: Reach words ignored, Bursts and
+// Delivery as written, repeats ×0.9, KIN and friendly fire as in an Evoke).
+/** Pay a Sigil word's price without leaving a glyph (Three-Cut Script): its charge and its Flux (an overload included),
+ * through the engine's glyph_cost hook; the move paid its AP. Returns why it can't be paid, or null. */
+function payWord(cb: Combat, rng: Rng, u: Unit, word: string): { why: string | null; line: string } {
+  const gc = glyphCost(cb, u, word, false, u.pos); if (gc.fail) return { why: gc.fail, line: '' };
+  if ((u.mg?.charge || 0) < gc.charge) return { why: 'not enough charge for ' + word.toUpperCase() + ' (' + (u.mg?.charge || 0) + ' left)', line: '' };
+  u.mg!.charge -= gc.charge;
+  return { why: null, line: gc.flux ? flux(cb, rng as any, u, gc.flux) : '' };
 }
-/** One Sigil spell's Subjects on one target (Three-Cut Script, Spell Magazine): elements roll Brain Power against
- * Defense unless auto (Elemental × the Elemental multiplier; Sigil type × Sigil only), riders as the engine's own
- * (FIRE crit Burning, FREEZE Slowed); effect words their condition (save), WARD a shield, MEND healing. SPREAD hits
- * everyone within 2 of the target at ×0.6. Mirrors magic.ts subjectEffect (not exported: see the notes). */
-function castWords(cb: Combat, rng: Rng, u: Unit, t: Unit, words: string[], o: { auto?: boolean; mult?: number } = {}): string {
-  const m = u.mg, sm = m?.sigilMult || 1, em = m?.elemMult || 1, spread = words.includes('spread');
-  const subj = words.map((w) => SIGIL[w]).filter((w): w is SigilDef => !!w && /^subject/.test(w.class));
-  const targets = spread ? cb.units.filter((v) => !v.dead && dist(v.pos, t.pos) <= 2) : [t];
-  const k = (o.mult ?? 1) * (spread ? 0.6 : 1); let line = '';
-  for (const v of targets) for (const w of subj) {
-    if (v.dead) continue;
-    if (w.class === 'subject_element') {
-      let crit = false;
-      if (!o.auto) { const r = d20(rng as any), tot = r + (m?.brain ?? 0) + (u.sk?.brain_power ?? 0); crit = r === 20; if (r === 1 || (!crit && tot < v.def)) { line += ' · ' + w.word + ' misses ' + v.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + v.def + ')'; continue; } }
-      const elem = w.damage_type === 'elemental';
-      line += ' · ' + w.word + harm(cb, rng as any, u, v, (w.damage || 0) * k * sm * (elem ? em : 1) * (crit ? 2 : 1), elem ? 'elemental' : 'sigil', w.id === 'fire' ? 'fire' : w.id === 'shock' || w.id === 'spark' ? 'lightning' : w.id === 'freeze' ? 'frost' : undefined);
-      if (!v.dead && w.id === 'fire' && crit) line += applyCond(cb, rng as any, u, v, 'burning');
-      if (!v.dead && w.id === 'freeze') line += applyCond(cb, rng as any, u, v, 'slowed');
-      continue;
-    }
-    switch (w.id) {
-      case 'ward': line += ' · ' + v.name + ' is warded (' + grantShield(cb, v, 30 * sm * k, u) + ' shield)'; break;
-      case 'mend': line += heal(v, 25 * sm * k * (m?.healMult || 1), cb, u); break;
-      case 'bind': line += applyCond(cb, rng as any, u, v, 'pinned'); break;
-      case 'blind': line += applyCond(cb, rng as any, u, v, 'blinded'); break;
-      case 'slow': line += applyCond(cb, rng as any, u, v, 'slowed'); break;
-      case 'muddle': line += applyCond(cb, rng as any, u, v, 'ldebuff'); break;
-      case 'dread': line += applyCond(cb, rng as any, u, v, 'shaken'); break;
-      case 'silence': line += applyCond(cb, rng as any, u, v, 'silenced'); break;
-      default: line += ' · ' + w.word + ' (the Narrator rules it)';
-    }
-  }
-  return line;
-}
+/** Words from a choice ("fire,condense,push" or "FIRE · SEEK"). */
+const wordsOf = (s: unknown) => String(s || '').split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
+/** The element a word carries for the fx layer and resistances (sigils.json elements; the engine's damage types). */
+const DMG_OF: Record<string, string | undefined> = { fire: 'fire', freeze: 'frost', shock: 'lightning', spark: 'lightning', acid: 'acid' };
+const condKey = (id: string) => (id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id);
 const knows = (u: Unit, w: string) => !!u.mg?.words.includes(w);
 const evokerReady = (u: Unit) => (!u.mg?.evoker ? 'Needs an Evoker in hand.' : true);
 
 // ---------- Sword Form ----------
-// Each melee attack may draw one Sigil glyph on the target's tile for no AP (toggle "Sword Form: <WORD>" on Attack);
-// it still costs the word's charge and adds 1 Flux, and it's drawn on a miss too (audit 2). One free glyph per attack in
-// all (audit 3: not stacked with the Evoker blade's Edge Word). Needs an Evoker (the Evoker blade counts). The target
-// must be next to you (a reach-2 strike can't carry the glyph; the engine refuses it with a log line).
+// Each melee attack may draw one Sigil glyph on your own tile as part of the strike, for no AP (toggle "Sword Form:
+// <WORD>" on Attack); it still costs the word's charge and Flux, and it's drawn on a miss too (audit 2). One free glyph
+// per attack in all (audit 3: not stacked with the Evoker blade's Edge Word). Needs an Evoker (the Evoker blade counts).
+// 1.4: the glyph goes on your own tile (the general rule), so a reach-2 strike carries it too; it is refused, with a
+// log line and nothing spent, when your tile already holds a glyph or the word would break the drawing rules (a second
+// Reach word in your Line, past your cap). The glyph joins your Line like any other.
 const SWORD_WORDS = Object.keys(SIGIL);
+const tileTaken = (cb: Combat | null | undefined, u: Unit) => !!cb && (cb.glyphs || []).some((g) => g.pos === u.pos);
 register({
   id: 'blade_scribe.sword_form', claims: 'all',
   toggles: SWORD_WORDS.map((w): ToggleDef => ({
     id: 'word_' + w, label: 'Sword Form: ' + SIGIL[w].word, on: ['combat/attack'],
-    available: (h, actx) => { const u = h.u; if (!u || !knows(u, w) || !u.mg?.evoker) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false; return true; },
-    preview: () => SIGIL[w].word + ' on the target\'s tile: ' + SIGIL[w].charge + ' charge, 1 Flux, no AP.',
+    available: (h, actx) => {
+      const u = h.u; if (!u || !knows(u, w) || !u.mg?.evoker) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false;
+      return tileTaken(h.cb, u) ? 'Your tile already holds a glyph.' : true;
+    },
+    preview: () => SIGIL[w].word + ' on your own tile: ' + SIGIL[w].charge + ' charge, ' + (SIGIL[w] as any).flux + ' Flux, no AP.',
   })),
   on: {
     attack_roll: (ctx, h) => {
       const u = h.u; if (ctx.att !== u || !u || !(ctx.mode === 'melee' || isMelee(W(u))) || !inFight(h)) return;
       const w = SWORD_WORDS.find((x) => modOn(h, 'word_' + x)); if (!w) return;
       const st = stateOf(h); st.edge = null;
-      if (!adj(u.pos, ctx.tgt.pos)) { say(h.cb, '(Sword Form: the target is out of reach for the glyph.)'); return; }
-      const e = freeAp(u, () => drawGlyph(h.cb!, rngOf(h, ctx) as any, u, w, ctx.tgt.pos));
+      const e = freeAp(u, () => drawGlyph(h.cb!, rngOf(h, ctx) as any, u, w, u.pos));
       if (e) say(h.cb, '(Sword Form: ' + e + ')'); else st.edge = { word: w, tgt: ctx.tgt.id };
     },
   },
@@ -669,9 +649,10 @@ register({
 
 // ---------- Edge Sigil ----------
 // A damage word drawn through Sword Form adds its damage to that hit as Elemental: the word's listed damage × your
-// Elemental multiplier (not the Sigil multiplier, not the crit), half armour. FIRE, SHOCK, FREEZE, SPARK and GALE count;
-// STONE doesn't (PROVISIONAL, audit 1-2, 4). The glyph stays on the tile (OPEN, audit 3: it can still join a pattern).
-const EDGE = new Set(['fire', 'shock', 'freeze', 'spark', 'gale']);
+// Elemental multiplier (not the Sigil multiplier, not the crit), half armour. Every element counts but STONE
+// (PROVISIONAL, audit 1-2, 4); 1.4's ACID counts too (15), and like the rest it brings no rider (no Corroded, no GALE
+// shove: PROVISIONAL, lane classes-j). The glyph stays on your tile (it can still join your Line).
+const EDGE = new Set(Object.keys(SIGIL).filter((w) => SIGIL[w].class === 'subject_element' && w !== 'stone'));
 register({
   id: 'blade_scribe.edge_sigil', claims: 'all',
   on: {
@@ -680,7 +661,7 @@ register({
       const st = u.ps?.['class:blade_scribe.sword_form']; const e = st?.edge; if (!e || e.tgt !== ctx.tgt.id) return; st.edge = null;
       if (!EDGE.has(e.word) || ctx.tgt.dead) return;
       const w = SIGIL[e.word], n = (w.damage || 0) * (u.mg?.elemMult || 1);
-      say(h.cb, 'Edge Sigil: ' + w.word + ' runs down the blade' + harm(h.cb!, rngOf(h, ctx) as any, u, ctx.tgt, n, 'elemental', e.word === 'fire' ? 'fire' : e.word === 'freeze' ? 'frost' : e.word === 'gale' ? 'elemental' : 'lightning') + '.');
+      say(h.cb, 'Edge Sigil: ' + w.word + ' runs down the blade' + withElement(e.word, () => harm(h.cb!, rngOf(h, ctx) as any, u, ctx.tgt, n, 'elemental', DMG_OF[e.word] || 'elemental')) + '.');
     },
     on_miss: (ctx, h) => { const st = h.u?.ps?.['class:blade_scribe.sword_form']; if (ctx.att === h.u && st) st.edge = null; },
   },
@@ -688,29 +669,35 @@ register({
 });
 
 // ---------- Three-Cut Script ----------
-// 6 AP flat, once per scene: three melee strikes, each drawing one word (choice: three words, "fire,condense,push";
-// targetIds for each cut, else the same target, else the nearest enemy next to you if it fell). Each word's charge and
-// 1 Flux are paid as it's cut (an overload ends the script: audit 6). After the third cut the words resolve as one
-// spell, as a Stack cast straight onto the last target struck (PROVISIONAL, audit 1): the Evoke charge is paid (3 less
-// your Sigil Core saving, at least 1: audit 2), elements roll Brain Power against Defense. The third word may go over
-// your Max Sigil words (PROVISIONAL, audit 3). Misses still draw (audit 5). Edge Sigil adds to each hit as usual.
+// 6 AP flat, once per scene: three melee strikes, each cutting one word (choice: three words, "fire,condense,push";
+// targetIds for each cut, else the same target, else the weakest enemy next to you if it fell). Each word's charge and
+// Flux are paid as it's cut (an overload ends the script: audit 6); the cuts leave no glyph on the ground. After the
+// third cut the words resolve as one spell aimed at the last target struck as Touch (it's next to you), whatever Reach
+// words are among them (1.4: sigil.ts castAt): Bursts and Delivery apply as written (a CONDENSE core on the target, a
+// SPREAD ring around it, CHAIN jumps from it; STAY / WAIT / WATCH place their magic on its tile), repeated glyphs take
+// ×0.9 each, and Elements roll Brain Power against Defense. The 1.4 grammar holds (a Subject and another word; one
+// Reach word; at most 4, and the script's 3 never pass it); the third word may go over your Max Sigil words
+// (PROVISIONAL, audit 3). The Evoke charge is paid (3 less your Sigil Core saving, at least 1: audit 2). Misses still
+// cut (audit 5). Edge Sigil adds to each hit as usual. STEP lands the target on the tile you pick (tile).
 register({
   id: 'blade_scribe.three_cut_script', claims: 'all',
   actions: [{
     id: 'three_cut_script', label: 'Three-Cut Script', pick: 'words', pickMulti: 3, pickLabel: 'Three words', scope: ['combat'], ap: 6, uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 1,
-    text: 'Three melee strikes, each drawing one word; after the third cut the three words resolve as one spell on the last target.',
+    text: 'Three melee strikes, each cutting one word; after the third cut the three words resolve as one spell on the last target, as Touch.',
     available: (h) => (!h.u ? false : evokerReady(h.u)),
     preview: (h, a) => {
-      const words = String(a.choice || '').split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
+      const u = h.u!, cb = h.cb!, words = wordsOf(a.choice);
       if (words.length !== 3) return { ok: false, why: 'Name three words (choice "fire,condense,push").' };
-      const unk = words.find((w) => !SIGIL[w] || !knows(h.u!, w)); if (unk) return { ok: false, why: 'You don\'t know ' + unk.toUpperCase() + '.' };
-      const ge = grammarError(words, Math.max(3, h.u!.mg?.maxWords || 2)); if (ge) return { ok: false, why: ge };
-      const cost = words.reduce((t, w) => t + Math.max(0, SIGIL[w].charge + (h.u!.mg?.wordCost?.[w] || 0)), 0) + Math.max(1, 3 - (h.u!.mg?.coreSave || 0));
-      if ((h.u!.mg?.charge || 0) < cost) return { ok: false, why: 'Needs ' + cost + ' charge (' + (h.u!.mg?.charge || 0) + ' in the core).' };
-      return { lines: ['Three cuts: ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge, 3 Flux).'] };
+      const unk = words.find((w) => !SIGIL[w] || !knows(u, w)); if (unk) return { ok: false, why: 'You don\'t know ' + unk.toUpperCase() + '.' };
+      const ready = sigilReady(cb, u); if (ready) return { ok: false, why: ready };
+      const ge = grammarError(words, Math.max(3, u.mg?.maxWords || 2)); if (ge) return { ok: false, why: ge };
+      let cost = Math.max(1, 3 - (u.mg?.coreSave || 0)), fx = 0;
+      for (const w of words) { const gc = glyphCost(cb, u, w, true, u.pos); if (gc.fail) return { ok: false, why: gc.fail }; cost += gc.charge; fx += gc.flux; }
+      if ((u.mg?.charge || 0) < cost) return { ok: false, why: 'Needs ' + cost + ' charge (' + (u.mg?.charge || 0) + ' in the core).' };
+      return { lines: ['Three cuts: ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge, ' + fx + ' Flux), then the spell goes off on the last target as Touch.'] };
     },
     run: (h, a, rng) => {
-      const u = h.u!, cb = h.cb!, words = String(a.choice).split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
+      const u = h.u!, cb = h.cb!, words = wordsOf(a.choice);
       const picks = a.targetIds?.length ? a.targetIds : [a.targetId, a.targetId, a.targetId];
       say(cb, u.name + ' begins the Three-Cut Script: ' + words.map((w) => w.toUpperCase()).join(' · ') + '.');
       let last: Unit | null = null;
@@ -720,17 +707,21 @@ register({
         if (!t) { say(cb, '(The script breaks off: nobody left in reach.)'); return null; }
         const r = resolveAttack(cb, rng, u, t, 'melee', null, { free: true });
         if (r.refused) { say(cb, '(The script breaks off.)'); return null; }
-        const e = payWord(cb, rng, u, words[i], t.pos);
-        if (e) { say(cb, '(The script breaks off: ' + e + ')'); return null; }
-        say(cb, 'Cut ' + (i + 1) + ': ' + words[i].toUpperCase() + '.');
+        const p = payWord(cb, rng, u, words[i]);
+        if (p.why) { say(cb, '(The script breaks off: ' + p.why + '.)'); return null; }
+        say(cb, 'Cut ' + (i + 1) + ': ' + words[i].toUpperCase() + '.' + p.line);
         last = t;
         if (u.mg?.lockRound === cb.round) { say(cb, '(The script breaks off: the Evoker overloads.)'); return null; }
       }
       const ec = Math.max(1, 3 - (u.mg?.coreSave || 0));
       if ((u.mg?.charge || 0) < ec) { say(cb, '(The script fizzles: no charge left to release it.)'); return null; }
+      if (!last || last.dead) { say(cb, '(The script resolves on nobody: the last target fell.)'); u.mg!.charge -= ec; u.mg!.cast = true; return null; }
       u.mg!.charge -= ec; u.mg!.cast = true;
-      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'stack', tiles: [last!.pos], src: last!.pos, impact: last!.pos, targets: [last!.id], words, element: words.find((w) => SIGIL[w].class === 'subject_element') || null, side: u.side });
-      say(cb, 'The script resolves on ' + last!.name + ' (' + ec + ' charge)' + castWords(cb, rng, u, last!, words) + '.');
+      const dest = a.tile ? tileOf(cb, a.tile) || undefined : undefined;
+      const r = castAt(cb, rng as any, u, words, last.pos, { victim: last, roll: true, opts: { dest, order: (a as any).order, orderTo: (a as any).orderTo } });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [u.pos], src: u.pos, impact: last.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: r.plan?.burst.tiles || [last.pos],
+        missiles: r.plan ? [{ origin: u.pos, kind: 'touch', path: [], blockedAt: null, impact: last.pos, arc: null, hops: [], burst: r.plan.burst.tiles, core: r.plan.burst.core, chain: r.plan.chain, placed: r.plan.placed }] : [], placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'three_cut_script' });
+      say(cb, 'The script resolves on ' + last.name + ' (' + ec + ' charge)' + (r.ok ? r.line : ' · it can\'t: ' + r.why) + '.');
       checkOver(cb); return null;
     },
   }],
@@ -741,14 +732,17 @@ register({
 
 // ---------- Deploy Cover ----------
 // 2 AP, at will: a portable barricade on an adjacent open tile: half cover, 40 HP, blocks movement. At most 3 out per
-// engineer; a fourth packs up the oldest (GAMEBREAKING fix, PROVISIONAL audit 1). A STAY glyph on its tile makes it
-// full cover (it blocks sight) for as long as the glyph lasts (no Evoke needed: audit 3). The barricades pack up when
-// the fight ends. Story: placing cover before a fight is the Narrator's call when there's time.
+// engineer; a fourth packs up the oldest (GAMEBREAKING fix, PROVISIONAL audit 1). 1.4: a STAY glyph of your side on a
+// tile next to it (glyphs go on your own tile, so you draw it standing beside the barricade) makes it full cover (it
+// blocks sight) for as long as the glyph lasts (no Evoke needed: audit 3); Evoking or scuffing the glyph ends it. An
+// enemy's STAY glyph does nothing for it (PROVISIONAL, lane classes-j). A 1.2 save's STAY glyph on the barricade's own
+// tile still counts. The barricades pack up when the fight ends. Story: placing cover before a fight is the
+// Narrator's call when there's time.
 function syncBarricades(h: Holder) {
   const cb = h.cb, list: string[] = h.u ? stateOf(h).cover || [] : []; if (!cb || !list.length) return;
   for (const o of objectsOf(cb)) {
     if (!list.includes(o.id)) continue;
-    const stay = (cb.glyphs || []).some((g) => g.pos === o.pos && g.word === 'stay');
+    const stay = (cb.glyphs || []).some((g) => g.word === 'stay' && g.side === h.u!.side && dist(g.pos, o.pos) <= 1);
     const want = stay ? 'barricade' : 'crate';
     if (o.kind !== want && !(o as any).bulwark) { o.kind = want; say(cb, 'The portable barricade at ' + refOf(o.pos) + (stay ? ' locks into full cover (STAY).' : ' drops back to half cover.')); }
   }
@@ -757,7 +751,7 @@ register({
   id: 'siege_engineer.deploy_cover', claims: 'all',
   actions: [
     { id: 'deploy_cover', label: 'Deploy Cover', scope: ['combat'], ap: 2, target: 'tile',
-      text: 'A portable barricade on an adjacent tile: half cover, 40 HP. A STAY glyph on it makes it full cover. Three out at most.',
+      text: 'A portable barricade on an adjacent tile: half cover, 40 HP. A STAY glyph on a tile next to it makes it full cover. Three out at most.',
       preview: (h, a) => {
         const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
         if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'A tile next to you.' };
@@ -775,6 +769,7 @@ register({
   ],
   on: {
     turn_end: (_c, h) => syncBarricades(h), turn_start: (_c, h) => syncBarricades(h), round_start: (_c, h) => syncBarricades(h), attack_target: (_c, h) => syncBarricades(h),
+    glyph_drawn: (_c, h) => syncBarricades(h), evoked: (_c, h) => syncBarricades(h),
     combat_end: (ctx, h) => { const list: string[] = stateOf(h).cover || []; if (list.length) ctx.cb.objects = objectsOf(ctx.cb).filter((o) => !list.includes(o.id)); },
   },
   brief: () => 'out of a fight, cover set up before it starts is your call',
@@ -859,22 +854,29 @@ register({
 // ---------- Inscribed Rounds ----------
 // Out of combat, once per rest: inscribe up to 6 rounds with one word (choice: the word; text: how many), paying 1
 // Evoker charge per round (PROVISIONAL, audit 2) and needing an Evoker and the word. Any gun (audit 4). In a fight the
-// inscribed rounds fire first (toggle "Inscribed round", on by default); a miss spends the round. On a hit an element
-// word adds half its Subject damage as its type (FIRE 15, SHOCK 15, FREEZE 12 and a Slowed save, SPARK 7, STONE 17
-// Sigil, GALE 7 Sigil), a condition word applies its condition (save against 12 + your debuff strength), and the hit
-// releases bots (+1 on the meter). PROVISIONAL (audit 1). The pack shows them on the sheet as state.
-const COND_WORD: Record<string, string> = { bind: 'pinned', blind: 'blinded', slow: 'slowed', muddle: 'ldebuff', dread: 'shaken', silence: 'silenced' };
-const inscribable = (w: string) => SIGIL[w]?.class === 'subject_element' || !!COND_WORD[w];
+// inscribed rounds fire first (toggle "Inscribed round", on by default); a miss spends the round. 1.4: Elements and
+// Afflictions only (Boons and Workings make no sense on a bullet). On a hit an Element adds half its Subject damage as
+// its type (FIRE 15, SHOCK 15, FREEZE 12, SPARK 7, ACID 7 Elemental; STONE 17, GALE 7 Sigil) and its listed rider
+// (FREEZE: Slowed, Body save; ACID: Corroded, no save, a Body save ends it; FIRE's Burning needs a critical spell and
+// GALE's shove a spell, so neither rides a bullet: PROVISIONAL, lane classes-j); an Affliction applies its condition
+// with its own save (against 12 + your debuff strength; COMMAND's order is halt). The hit releases bots (+1 on the
+// meter). PROVISIONAL (audit 1). The pack shows them on the sheet as state.
+const inscribable = (w: string) => { const k = (SIGIL[w] as any)?.class; return k === 'subject_element' || k === 'subject_affliction'; };
 const insOf = (h: Holder) => cs(h.c)['class:spellslinger.inscribed_rounds'] as { word: string; n: number } | undefined;
+/** A word's condition rider on one creature (sigils.json applies): its save family, rounds, and COMMAND's halt. */
+function rider(cb: Combat, rng: Rng, u: Unit, t: Unit, word: string): string {
+  const ap: any = (SIGIL[word] as any)?.applies; if (!ap?.condition || t.dead) return '';
+  return withElement(SIGIL[word].class === 'subject_element' ? word : null, () => applyCond(cb, rng as any, u, t, condKey(ap.condition), ap.rounds, (ap.save || undefined) as any, { skipSave: !ap.save, ...(word === 'command' ? { arg: 'halt' } : {}) } as any));
+}
 register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
   actions: [{
     id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word (type how many rounds, 1–6, as the detail)', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-    text: 'Out of combat: inscribe up to 6 rounds with an element or a condition word (choice: the word; text: how many), 1 charge per round.',
+    text: 'Out of combat: inscribe up to 6 rounds with an element or an affliction word (choice: the word; text: how many), 1 charge per round.',
     available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
     preview: (h, a) => {
       const m = magicOf(h.c!)!, w = String(a.choice || '').toLowerCase(), n = Math.max(1, Math.min(6, Number(a.text) || 6));
-      if (!inscribable(w)) return { ok: false, why: 'Pick an element or a condition word.' };
+      if (!inscribable(w)) return { ok: false, why: 'Pick an Element or an Affliction word.' };
       if (!m.words.includes(w)) return { ok: false, why: 'You don\'t know ' + w.toUpperCase() + '.' };
       if (m.charge < n) return { ok: false, why: 'Needs ' + n + ' charge (' + m.charge + ' in the core).' };
       return { lines: ['Inscribe ' + n + ' rounds with ' + w.toUpperCase() + ' (' + n + ' charge).'] };
@@ -889,52 +891,59 @@ register({
     },
   }],
   toggles: [{ id: 'inscribed', label: 'Inscribed round', on: ['combat/attack'], defaultOn: true,
-    available: (h) => { const s = insOf(h); return !!s && s.n > 0 && !!h.u && isRanged(h.u) ? true : false; },
+    available: (h) => { const s = insOf(h); return !!s && s.n > 0 && !!h.u && isRanged(h.u) && inscribable(s.word) ? true : false; },
     preview: (h) => { const s = insOf(h)!; return s.word.toUpperCase() + ' round (' + s.n + ' left).'; } }],
   on: {
     attack_roll: (ctx, h) => {
       const u = h.u, s = insOf(h); if (ctx.att !== u || !u || !s || s.n <= 0 || !isRanged(u) || ctx.mode === 'melee' || !modOn(h, 'inscribed') || !inFight(h)) return;
+      if (!inscribable(s.word)) return; // a 1.2 save's round with a word 1.4 retired (or a Boon): it's a plain round
       s.n--; stateOf(h).ins = { word: s.word, tgt: ctx.tgt.id };
     },
     on_hit: (ctx, h) => {
       const st = h.u ? stateOf(h) : null, ins = st?.ins; if (ctx.att !== h.u || !ins || ins.tgt !== ctx.tgt.id) return; st!.ins = null;
       const cb = h.cb!, rng = rngOf(h, ctx), u = h.u!, t = ctx.tgt as Unit, w = SIGIL[ins.word]; let line = 'The inscribed ' + w.word + ' round bites';
       if (!t.dead) {
-        if (w.class === 'subject_element') { const elem = w.damage_type === 'elemental'; line += harm(cb, rng as any, u, t, Math.floor((w.damage || 0) / 2) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', ins.word === 'fire' ? 'fire' : ins.word === 'freeze' ? 'frost' : elem ? 'lightning' : undefined); if (!t.dead && ins.word === 'freeze') line += applyCond(cb, rng as any, u, t, 'slowed'); }
-        else line += applyCond(cb, rng as any, u, t, COND_WORD[ins.word]);
+        if (w.class === 'subject_element') {
+          const elem = w.damage_type === 'elemental';
+          line += withElement(ins.word, () => harm(cb, rng as any, u, t, Math.floor((w.damage || 0) / 2) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', DMG_OF[ins.word]));
+        }
+        line += rider(cb, rng, u, t, ins.word);
       }
       shiftMana(cb, 1, 'an inscribed round'); say(cb, line + '.');
     },
     on_miss: (ctx, h) => { if (ctx.att === h.u && h.u) stateOf(h).ins = null; },
   },
-  brief: () => 'out of a fight, an inscribed round\'s other uses (a LIGHT round as a flare) are yours to rule',
+  brief: () => 'out of a fight, an inscribed round\'s other uses (a SHOCK round on a lock) are yours to rule',
 });
 
 // ---------- Spell Magazine ----------
 // Out of combat, once per rest (PROVISIONAL, audit 1: one magazine; the Scribe's Rumination count is the open
 // alternative): store a whole Sigil spell (choice: its words, "fire,condense") in a magazine, paying every word's
-// charge plus the Evoke charge now (the Flux vents into the air out of a fight). In a fight, "Load the spell magazine"
-// (reload AP) swaps it in; its first hit fires the stored spell at the target, auto-hitting with damage words (the
-// bullet already hit), conditions still saved against; Stack and Line land on the target, SPREAD around it (audit 2).
-// An unfired spell fades at the next rest.
+// charge plus the Evoke charge now (the Flux vents into the air out of a fight). 1.4: words only, no shape; the 1.4
+// grammar and your Max Sigil words hold. In a fight, "Load the spell magazine" (reload AP) swaps it in; its first hit
+// fires the stored spell at the target as if Touch-cast on it (sigil.ts castAt): Reach words are ignored, a Burst
+// centres on the target (PUSH's cone points on from you through it), CHAIN jumps from it, PULL drags toward you, and
+// STAY / WAIT / WATCH place their field, trap or turret on its tile. Damage words hit without a roll (the bullet already
+// hit); conditions still saved against; repeats ×0.9; KIN spares your side, friendly fire otherwise. An unfired spell
+// fades at the next rest. A 1.2 magazine whose words no longer make a spell fires nothing (the round is a plain one).
 const smOf = (h: Holder) => cs(h.c)['class:spellslinger.spell_magazine'] as { words: string[]; rest: string } | undefined;
 const restStamp = (g: any) => (g?.sessionN ?? 1) + '.' + (g?.restN ?? 0);
+const smCost = (m: { wordCost?: Record<string, number>; coreSave: number }, words: string[]) => words.reduce((t, w) => t + Math.max(0, SIGIL[w].charge + (m.wordCost?.[w] || 0)), 0) + Math.max(1, words.length - (m.coreSave || 0));
 register({
   id: 'spellslinger.spell_magazine', claims: 'all',
   actions: [
-    { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 3, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
+    { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 4, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
       text: 'Out of combat: store a whole Sigil spell (choice: its words, "fire,condense") in a magazine, paying its charge now.',
       available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
       preview: (h, a) => {
-        const m = magicOf(h.c!)!, words = String(a.choice || '').split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
+        const m = magicOf(h.c!)!, words = wordsOf(a.choice);
         const unk = words.find((w) => !SIGIL[w] || !m.words.includes(w)); if (!words.length || unk) return { ok: false, why: unk ? 'You don\'t know ' + unk.toUpperCase() + '.' : 'Name the spell\'s words.' };
         const ge = grammarError(words, m.maxWords); if (ge) return { ok: false, why: ge };
-        const cost = words.reduce((t, w) => t + Math.max(0, SIGIL[w].charge + (m.wordCost?.[w] || 0)), 0) + Math.max(1, words.length - m.coreSave);
-        return m.charge < cost ? { ok: false, why: 'Needs ' + cost + ' charge (' + m.charge + ' in the core).' } : { lines: ['Store ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge).'] };
+        const cost = smCost(m, words);
+        return m.charge < cost ? { ok: false, why: 'Needs ' + cost + ' charge (' + m.charge + ' in the core).' } : { lines: ['Store ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge). It goes off on the first target the magazine hits, as Touch.'] };
       },
       run: (h, a) => {
-        const c = h.c!, m = magicOf(c)!, words = String(a.choice).split(/[\s,·]+/).filter(Boolean).map((w) => w.toLowerCase());
-        const cost = words.reduce((t, w) => t + Math.max(0, SIGIL[w].charge + (m.wordCost?.[w] || 0)), 0) + Math.max(1, words.length - m.coreSave);
+        const c = h.c!, m = magicOf(c)!, words = wordsOf(a.choice), cost = smCost(m, words);
         c.evoCharge = Math.max(0, (c.evoCharge ?? m.charge) - cost); if (h.u?.mg) h.u.mg.charge = c.evoCharge;
         charState(c)[h.key] = { words, rest: restStamp(h.g) };
         const line = 'stores ' + words.map((w) => w.toUpperCase()).join(' · ') + ' in a magazine (' + cost + ' charge).';
@@ -955,9 +964,14 @@ register({
   on: {
     on_hit: (ctx, h) => {
       const st = h.u ? stateOf(h) : null; if (ctx.att !== h.u || !st?.loaded || ctx.melee) return;
-      const words: string[] = st.loaded; st.loaded = null;
-      say(h.cb, 'The spell magazine fires ' + words.map((w) => w.toUpperCase()).join(' · ') + ' into ' + ctx.tgt.name + castWords(h.cb!, rngOf(h, ctx), h.u!, ctx.tgt, words, { auto: true }) + '.');
-      shiftMana(h.cb!, 1, 'a spell round');
+      const words: string[] = st.loaded, cb = h.cb!, u = h.u!, t = ctx.tgt as Unit; st.loaded = null;
+      const name = words.map((w) => w.toUpperCase()).join(' · '), ge = grammarError(words, 4);
+      if (ge) { say(cb, 'The spell magazine\'s ' + name + ' doesn\'t hold under the new grammar (' + ge + '): nothing fires.'); return; }
+      const r = castAt(cb, rngOf(h, ctx) as any, u, words, t.pos, { victim: t, roll: false, origin: u.pos });
+      emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'touch', tiles: [t.pos], src: t.pos, impact: t.pos, targets: r.hit, words, element: r.spell.element, side: u.side, facing: 'touch', area: r.plan?.burst.tiles || [t.pos],
+        missiles: r.plan ? [{ origin: t.pos, kind: 'touch', path: [], blockedAt: null, impact: t.pos, arc: null, hops: [], burst: r.plan.burst.tiles, core: r.plan.burst.core, chain: r.plan.chain, placed: r.plan.placed }] : [], placed: r.plan?.placed || null, fizzle: r.fizzle, by: 'spell_magazine' });
+      say(cb, 'The spell magazine fires ' + name + ' into ' + t.name + (r.ok ? r.line : ' · it can\'t: ' + r.why) + '.');
+      shiftMana(cb, 1, 'a spell round');
     },
   },
   brief: () => null,
