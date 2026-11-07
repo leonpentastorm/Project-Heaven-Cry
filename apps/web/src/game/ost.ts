@@ -122,6 +122,8 @@ export function ostPlay(id: OstId | null, fadeMs = 1200) {
 }
 /** The track playing (or starting), if any. */
 export const ostNow = (): OstId | null => cur?.id ?? null;
+// For the browser tests (e2e/slate-music.mjs): which OST track this page is playing, if any.
+if (typeof window !== 'undefined') (window as any).__phcOst = { now: ostNow };
 /** The music's level, 0 to 1 (Settings x panel volume x the Narrator's duck), eased over `ms`. */
 export function ostVolume(v: number, ms = 250) {
   level = Math.max(0, Math.min(1, v));

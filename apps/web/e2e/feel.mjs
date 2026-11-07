@@ -60,9 +60,13 @@ async function spawnNear(at, dists, tier = 'minion', weapon = 'fists') {
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'To the Proving Ground ›'); }
 await p.mouse.move(1430, 990); // the cursor rests away from the card
+// The Proving Ground opens gearing up on the map: start the fight with the tools' button.
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
+await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
 const t0 = Date.now();
 // 1. Into the fight, the banner, the card
@@ -70,7 +74,7 @@ await p.waitForTimeout(250); await snap('01-into-fight');
 await p.waitForSelector('text=YOUR TURN', { timeout: 6000 });
 await snap('02-turn-banner');
 ok('the turn banner drops in (' + (Date.now() - t0) + ' ms after the fight began)', true);
-await p.waitForSelector('[data-phc-cutin]', { timeout: 4000 });
+await p.waitForSelector('[data-phc-cutin]', { timeout: 12000 }); // after the hostiles' opening turns, when they act first
 await p.waitForTimeout(450); await snap('03-cut-in');
 ok('the your-turn card slides in', true);
 const cutCmds = await p.locator('[data-phc-cutin] button').allTextContents();

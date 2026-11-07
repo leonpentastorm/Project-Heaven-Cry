@@ -17,7 +17,7 @@ const sheetFrom = (archId: string, name = 'Test'): Sheet => {
 function game() {
   const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id, 'Vale'));
   const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
-  const g: any = { phase: 'combat', combat: cb, characters: { c1: c }, players: [{ id: 'p1', name: 'Leon', initials: 'LE', color: '#7FD4FF', online: true }, { id: 'p2', name: 'Kim', initials: 'KI', color: '#E3BF51', online: true }], campaign: null, story: { zone: '' } };
+  const g: any = { code: 'ROOMA', phase: 'combat', combat: cb, characters: { c1: c }, players: [{ id: 'p1', name: 'Leon', initials: 'LE', color: '#7FD4FF', online: true }, { id: 'p2', name: 'Kim', initials: 'KI', color: '#E3BF51', online: true }], campaign: null, story: { zone: '' } };
   return { g, cb, pc: cb.units.find((x) => x.side === 'pc')!, foe: cb.units.find((x) => x.side === 'foe')! };
 }
 
@@ -57,10 +57,12 @@ describe('turn banners', () => {
   it('the four commands can be customised per character: picks win, a pick that can\'t be used now is greyed with why, one not in the kit falls back', () => {
     const { g, cb, pc } = game();
     const smart = _test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action);
-    expect(C.readPrefs('c1')).toEqual([null, null, null, null]);
+    expect(C.readPrefs(g, 'c1')).toEqual([null, null, null, null]);
     // Overwatch first, Analyze fourth; the rest stay smart (and a smart slot never repeats a pick).
-    C.writePrefs('c1', ['overwatch', null, null, 'analyze']);
-    expect(JSON.parse(store['phc.cutinCmds'])).toEqual({ c1: ['overwatch', null, null, 'analyze'] });
+    C.writePrefs(g, 'c1', ['overwatch', null, null, 'analyze']);
+    expect(JSON.parse(store['phc.cutinCmds'])).toEqual({ 'ROOMA:c1': ['overwatch', null, null, 'analyze'] });
+    // Another room's c1 is another character: it keeps the smart default.
+    expect(C.readPrefs({ code: 'ROOMB' }, 'c1')).toEqual([null, null, null, null]);
     let cmds = _test.cutFor(g, cb, pc.id)!.cmds;
     expect(cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
     expect(cmds[0]).toMatchObject({ action: 'overwatch', custom: true });
@@ -74,7 +76,7 @@ describe('turn banners', () => {
     expect(cmds[0].sub).toMatch(/^Not now: /);
     pc.ap = 6;
     // Not in this unit's kit (no magic): the smart default takes the slot.
-    C.writePrefs('c1', ['evoke', null, null, null]);
+    C.writePrefs(g, 'c1', ['evoke', null, null, null]);
     cmds = _test.cutFor(g, cb, pc.id)!.cmds;
     expect(cmds[0].action).toBe(smart[0]);
     expect(cmds[0].custom).toBeUndefined();
@@ -83,7 +85,7 @@ describe('turn banners', () => {
     expect(cat.map((e) => e.action)).toEqual(C.actionGroups(cb, pc, g.characters.c1).flatMap((gr) => gr[1].map((x) => x[0])));
     expect(cat.find((e) => e.action === 'move')!.tab).toBe('move');
     // Reset: nothing kept, the smart default again.
-    C.writePrefs('c1', [null, null, null, null]);
+    C.writePrefs(g, 'c1', [null, null, null, null]);
     expect(store['phc.cutinCmds']).toBe('{}');
     expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(smart);
   });

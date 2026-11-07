@@ -53,7 +53,7 @@ describe('the Lock in stamp', () => {
   });
 
   it('in a room lobby the record is brought to the room after the stamp', () => {
-    calls.state = { screen: 'create', code: 'ABC123', game: { phase: 'lobby' }, draft: null };
+    calls.state = { screen: 'create', code: 'ABC123', game: { phase: 'lobby', players: [{ id: 'me' }], characters: {} }, me: { id: 'me' }, role: 'host', draft: null } as any;
     const l = screen();
     l.renderVals().lockIn();
     expect(calls.act).toHaveLength(0);
@@ -72,6 +72,25 @@ describe('the Lock in stamp', () => {
     vi.advanceTimersByTime(STAMP_MS * 2);
     expect(calls.go).toHaveLength(0);
     expect(calls.saved).toBe(0);
+  });
+
+  it('a record the room would refuse gets no stamp: too much text, a third character, a guest with no link', () => {
+    const room = (extra: any = {}) => ({ screen: 'create', code: 'ABC123', game: { phase: 'lobby', players: [{ id: 'me' }], characters: {} }, me: { id: 'me' }, role: 'host', conn: 'online', draft: null, ...extra });
+    const cases: [any, (l: any) => void, RegExp][] = [
+      [room(), (l) => { l.state = { ...l.state, idv: { ...l.state.idv, history: 'x'.repeat(31_000) } }; }, /too much text/],
+      [room({ game: { phase: 'lobby', players: [{ id: 'me' }], characters: { c1: { owner: 'me' }, c2: { owner: 'me' } } } }), () => {}, /Two characters/],
+      [room({ role: 'guest', conn: 'connecting' }), () => {}, /Not connected/],
+    ];
+    for (const [state, tweak, why] of cases) {
+      calls.state = state; calls.toast = []; calls.sfx = []; calls.act = []; calls.go = []; calls.saved = 0;
+      const l = screen(); tweak(l);
+      l.lockIn();
+      expect(l.renderVals().stamped).toBe(false);
+      expect(calls.toast.map((t) => t[0]).join(' ')).toMatch(why);
+      expect(calls.sfx.map((c) => c[0])).toEqual(['error']);
+      vi.advanceTimersByTime(STAMP_MS * 2);
+      expect(calls.act).toHaveLength(0); expect(calls.go).toHaveLength(0); expect(calls.saved).toBe(0);
+    }
   });
 
   it('a player who left the screen during the stamp is not pulled away from where they went', () => {

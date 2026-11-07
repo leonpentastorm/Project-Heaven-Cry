@@ -173,14 +173,17 @@ function loadAll(): Record<string, (string | null)[]> {
   try { const v = JSON.parse((typeof localStorage !== 'undefined' && localStorage.getItem(PREF_KEY)) || '{}'); prefCache = v && typeof v === 'object' ? v : {}; } catch { prefCache = {}; }
   return prefCache!;
 }
-/** The four slots this character's player chose (null: the smart default for that slot). */
-export function readPrefs(charId: string | null | undefined): (string | null)[] {
-  const v = charId ? loadAll()[charId] : null;
+/** Where a character's picks are kept. A character id is a per-room counter (the first character locked in is 'c3' in
+ * every room), so the key carries the room code too: picks made in one room never land on another room's character. */
+export const prefKey = (g: { code?: string } | null | undefined, charId: string) => (g?.code || 'local') + ':' + charId;
+/** The four slots this character's player chose in this room (null: the smart default for that slot). */
+export function readPrefs(g: { code?: string } | null | undefined, charId: string | null | undefined): (string | null)[] {
+  const v = charId ? loadAll()[prefKey(g, charId)] : null;
   return Array.from({ length: 4 }, (_, i) => (Array.isArray(v) && typeof v[i] === 'string' ? v[i] : null));
 }
-export function writePrefs(charId: string, slots: (string | null)[]) {
-  const all = { ...loadAll() }, clean = Array.from({ length: 4 }, (_, i) => slots[i] || null);
-  if (clean.some(Boolean)) all[charId] = clean; else delete all[charId];
+export function writePrefs(g: { code?: string } | null | undefined, charId: string, slots: (string | null)[]) {
+  const all = { ...loadAll() }, clean = Array.from({ length: 4 }, (_, i) => slots[i] || null), k = prefKey(g, charId);
+  if (clean.some(Boolean)) all[k] = clean; else delete all[k];
   prefCache = all;
   try { localStorage.setItem(PREF_KEY, JSON.stringify(all)); } catch { /* private mode: kept for this visit */ }
   try { window.dispatchEvent(new CustomEvent(EV_CMDS_CHANGED, { detail: { charId } })); } catch { /* */ }

@@ -33,6 +33,7 @@ function dryRun(cb, uid, fn) {
   try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
   return { err, u, cb: c };
 }
+export { dryRun as _dryRun };
 // ---------- combat feel: motion for this screen (every effect follows the shared game state, never a local click) ----------
 // Classes (Reduce motion: .phc-reduce on <html> or the system setting cuts each to a fade or a still):
 //   .phc-yt          the YOUR TURN strip: a slanted white slab that slams in from the right, a shine crosses it
@@ -131,6 +132,7 @@ const TAB_INK = { attack: HOSTILE_INK, sigils: SIGIL_GLOW, outbursts: SOUL_INK }
 const TAB_MEM = (() => { try { return JSON.parse(localStorage.getItem('phc.combatTabs') || '{}') || {}; } catch { return {}; } })();
 function tabMem(charId, tab) {
   if (!charId) return null;
+  charId = (getState().game?.code || 'local') + ':' + charId; // ids are per room: keyed with the room code (see commands.ts prefKey)
   if (tab === undefined) return TAB_MEM[charId] || null;
   if (TAB_MEM[charId] !== tab) { TAB_MEM[charId] = tab; try { localStorage.setItem('phc.combatTabs', JSON.stringify(TAB_MEM)); } catch { /* */ } }
   return tab;
@@ -144,6 +146,8 @@ const PANEL_KEY = 'phc.combatPanel';
 let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
 /** How far the grid may zoom in when the column is hidden and the map has the room. */
 const ZOOM_MAX_WIDE = 1.4;
+/** About how tall the hidden-panel turn mini-bar is (the grid keeps clear of it). */
+const MINI_H = 196;
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
 const patternShape = (p) => (p.shape === 'stack' ? 'Stack of ' + p.glyphs.length : p.shape === 'line' ? 'Line of ' + p.tiles.length : 'Ring of ' + p.tiles.length + ' around ' + refOf(p.centre));
@@ -280,7 +284,16 @@ export class CombatLogic extends DCLogic {
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
     const availW = narrow ? rowW : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
-    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, Math.min(PANEL_HIDDEN && !narrow ? ZOOM_MAX_WIDE : 1, availW / natW, availH / natH)) * 100) / 100;
+    let fit = Math.min(PANEL_HIDDEN && !narrow ? ZOOM_MAX_WIDE : 1, availW / natW, availH / natH);
+    // Panel hidden: the grid sits on the left and stays clear of the turn mini-bar in the bottom-right corner, either
+    // beside it or above it (whichever leaves the bigger map), so no tile hides under it.
+    if (PANEL_HIDDEN && !narrow) {
+      const r = sec.getBoundingClientRect(), miniRight = getState().game?.sandbox ? 64 : 20;
+      const besideW = window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2);
+      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16);
+      fit = Math.max(Math.min(fit, besideW / natW), Math.min(fit, aboveH / natH));
+    }
+    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, fit) * 100) / 100;
     if (z !== (this._zoom || 1)) { this._zoom = z; this.setState({}); }
   }
 
@@ -709,7 +722,7 @@ export class CombatLogic extends DCLogic {
     if (fitKey !== this._fitKey && typeof requestAnimationFrame !== 'undefined') { this._fitKey = fitKey; requestAnimationFrame(() => this.fitGrid()); }
     // ---------- the column hidden: a mini-bar keeps the turn playable ----------
     const hidden = PANEL_HIDDEN;
-    const quick = mineTurn ? resolveCommands(cb, cur, ch, readPrefs(cur.charId)) : [];
+    const quick = mineTurn ? resolveCommands(cb, cur, ch, readPrefs(g, cur.charId)) : [];
     this._quick = hidden ? quick : null;
     const mini = { show: hidden && mineTurn,
       style: 'position: fixed; right: ' + (g.sandbox ? 64 : 20) + 'px; bottom: 16px; z-index: 12; width: min(380px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; border-radius: 12px; background: rgba(16, 21, 31, 0.97); border: 1px solid #2E3A50; border-top: 3px solid #FFFFFF; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6)',
@@ -722,7 +735,7 @@ export class CombatLogic extends DCLogic {
     const turnPanels = this.panels(mineTurn ? 'mine:' + cur.id + ':' + cb.round + ':' + cb.turn : 'wait:' + (cb.over ? 'over' : cur ? cur.id + ':' + cb.round + ':' + cb.turn : 'none'), T);
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
-      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto' : ''),
+      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto 0 0' : ''),
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
       rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px',
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.

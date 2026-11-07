@@ -29,7 +29,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const ch: any = game ? (game.characters as any)[charId] || null : null;
   const cat = u ? catalogue(cast, u, ch).filter(pickable) : [];
   const by = new Map(cat.map((e) => [e.action, e]));
-  const [slots, setSlots] = React.useState<(string | null)[]>(() => readPrefs(charId));
+  const [slots, setSlots] = React.useState<(string | null)[]>(() => readPrefs(game, charId));
   const [at, setAt] = React.useState(0);
   const shown = u ? resolveCommands(cast, u, ch, slots) : [];
   const box = React.useRef<HTMLDivElement | null>(null);
@@ -59,7 +59,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const pick = (action: string) => { put(action); setAt((a) => Math.min(3, a + 1)); };
   const move = (i: number, d: number) => { const j = i + d; if (j < 0 || j > 3) return; setSlots((s) => { const n = [...s]; [n[i], n[j]] = [n[j], n[i]]; return n; }); setAt(j); };
   const clear = (i: number) => setSlots((s) => { const n = [...s]; n[i] = null; return n; });
-  const save = () => { writePrefs(charId, slots); onClose(); };
+  const save = () => { writePrefs(game, charId, slots); onClose(); };
 
   const name = ch?.name || u?.name || 'this character';
   const tabs = Array.from(new Set(cat.map((e) => e.tab)));

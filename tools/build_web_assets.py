@@ -58,9 +58,9 @@ for sid, a in C.get("sprites", {}).items():
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
 # Back is opaque; mid (and front, fx) keep their alpha. Stack order: back, mid, front, fx.
 TITLE = ROOT / "art/ui/title-screen"
-# Leon, 7 Nov 2026: title-front.png is being remade. Take "front" out of this set when the new one lands; the title
-# shows a layer as soon as it is in assets.json, so nothing else changes.
-TITLE_HELD = {"front"}
+# Leon, 7 Nov 2026: the remade title-front.png landed the same day; layers can be held back here by name.
+# The title shows a layer as soon as it is in assets.json.
+TITLE_HELD: set = set()  # every layer the artist has delivered is used
 
 def emit_widths(name, src, widths, quality, alpha):
     src = pathlib.Path(src)

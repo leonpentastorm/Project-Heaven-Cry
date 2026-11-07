@@ -190,7 +190,9 @@ export type Action =
   | SandboxAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
-export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean }
+export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
+  /** HP carried from a fight it walked away from (the Proving Ground's stopped fight); absent = full. */
+  hp?: number }
 
 export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise';
@@ -212,6 +214,17 @@ export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.i
 export const PORTRAIT_MAX = 150_000;
 /** Everything else on a sheet (identity text included), so one character can't bloat every message. */
 export const SHEET_MAX = 30_000;
+/** Why this room refuses this sheet from this player (char/add's checks, also run by the creation screen before it
+ * stamps a record), or null. */
+export function roomSheetError(g: GameState, by: string, sheet: Sheet): string | null {
+  const err = validateSheet(sheet); if (err) return err;
+  // Rooms carry only the small copy of an uploaded portrait (spec: Character files); the full one stays in the file.
+  if (typeof sheet.portrait === 'string' && sheet.portrait.length > PORTRAIT_MAX) return 'That portrait is too big for a room. Re-upload it on the creation screen.';
+  if (JSON.stringify({ ...sheet, portrait: '' }).length > SHEET_MAX) return 'That character carries too much text for a room.';
+  if (!g.players.some((p) => p.id === by)) return 'Join the room first.';
+  if (charsOf(g, by).length >= 2) return 'Two characters per player at most.';
+  return null;
+}
 
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
@@ -241,12 +254,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'player/kick': { if (!isHost(g, by) || a.id === g.hostId) fail('Host only.'); g.players = g.players.filter((p) => p.id !== a.id); for (const c of Object.values(g.characters)) if (c.owner === a.id) delete g.characters[c.id]; return; }
     case 'settings': { if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.'); Object.assign(g.settings, a.patch); return; }
     case 'char/add': {
-      const err = validateSheet(a.sheet); if (err) fail(err);
-      // Rooms carry only the small copy of an uploaded portrait (spec: Character files); the full one stays in the file.
-      if (typeof a.sheet.portrait === 'string' && a.sheet.portrait.length > PORTRAIT_MAX) fail('That portrait is too big for a room. Re-upload it on the creation screen.');
-      if (JSON.stringify({ ...a.sheet, portrait: '' }).length > SHEET_MAX) fail('That character carries too much text for a room.');
-      if (!g.players.some((p) => p.id === by)) fail('Join the room first.');
-      if (charsOf(g, by).length >= 2) fail('Two characters per player at most.');
+      const err = roomSheetError(g, by, a.sheet); if (err) fail(err);
       const c = newCharacter(id(g, 'c'), by, a.sheet);
       if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: 'tool' }];
       g.characters[c.id] = c;
@@ -1209,7 +1217,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id] }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; });
   if (!wasHostile) cbx.noXp = true;
@@ -1591,7 +1599,7 @@ function sbPlace(g: GameState, n: number) {
   });
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; npc?: Npc }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc }[], pos: Record<string, string>, objects?: MapObject[]) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
@@ -1630,7 +1638,16 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
   sbCollect(g);
   if (how !== 'fell') {
     g.story.positions = pos; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
-    g.story.npcs = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined }) as Npc);
+    // The seated foes still standing go back as tokens with the HP they have left; everyone the fight did not seat
+    // (overflow units, people who were not hostile) stays on the map as they were, moved aside if a fighter ended on their tile.
+    const back = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos,
+      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}) }) as Npc);
+    const ids = new Set(back.map((n) => n.id)), map = zoneMap(g), objs = g.story.objects || [];
+    const taken = new Set<string>([...Object.values(pos), ...back.map((n) => n.pos)]);
+    const free = (k: string) => standable(map, k) && !taken.has(k) && !objs.some((o) => o.pos === k && blocksMove(o));
+    const near = (k: string) => { if (free(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 8; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const t = (x0 + dx) + ',' + (y0 + dy); if (free(t)) return t; } return k; };
+    const rest = (g.story.npcs || []).filter((x) => !ids.has(x.id)).map((x) => { const at = near(x.pos); taken.add(at); return at === x.pos ? x : { ...x, pos: at }; });
+    g.story.npcs = [...rest, ...back];
   } else {
     for (const c of Object.values(g.characters)) sbRefill(c);
     g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); g.story.npcs = [];
@@ -1659,6 +1676,13 @@ function sandboxWorld(g: GameState, a: Action, by: string) {
   const w = (a.type === 'story/move' ? { type: 'world/act', charId: (a as any).charId, act: 'move', to: (a as any).to, how: 'move' }
     : a.type === 'story/door' ? { type: 'world/act', charId: (a as any).charId, act: 'door', objId: (a as any).objId } : a) as Extract<Action, { type: 'world/act' }>;
   if (w.act === 'end') return; // no rounds to end while gearing up
+  // No rounds while gearing up, so each action is the acting character's own fresh round: the last move's trail only,
+  // the weapon cooled as a new round cools it, and the drill units get a fresh look at a sneaker.
+  if (w.charId) {
+    if (g.story.trail) delete g.story.trail[w.charId];
+    if (g.story.heat?.[w.charId]) g.story.heat[w.charId] = Math.max(0, g.story.heat[w.charId] - 2);
+    for (const k in g.story.noticed || {}) if (k.endsWith('|' + w.charId)) delete g.story.noticed![k];
+  }
   const before = { state: sb.state, wave: sb.wave, attempt: sb.attempt, last: sb.last }, n = sandboxNext(sb), had = g.combat;
   // Set up first: a fight this starts (and even wins in the same blow) is wave n.
   sbAttempt(sb, n); sb.wave = n; sb.state = 'fighting';
@@ -1733,7 +1757,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
       sbAttempt(sb, n);
       g.story.npcs = stay;
-      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), npc: x })), { ...positionsOf(g) }, storyObjects(g));
+      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x })), { ...positionsOf(g) }, storyObjects(g));
       return;
     }
     case 'sandbox/stage': {

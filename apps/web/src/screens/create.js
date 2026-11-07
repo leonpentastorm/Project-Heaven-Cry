@@ -2,7 +2,7 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
+import { validateSheet, roomSheetError, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -447,7 +447,7 @@ export class CreateLogic extends DCLogic {
   lockIn() {
     if (this.state.stamp || this.locking) return;
     CORE_PTS = BASE_CORE_PTS + (this.state.traits.includes('mind_without_fog') ? 2 : 0);
-    const sheet = this.sheet(), err = validateSheet(sheet);
+    const sheet = this.sheet(), err = this.refusal(sheet);
     if (err) { sfx('error'); return toast(err); }
     this.locking = true;
     saveToLibrary(sheet);
@@ -466,6 +466,15 @@ export class CreateLogic extends DCLogic {
       setTimeout(() => this.file(sheet), motion ? STAMP_MS : STAMP_MS_REDUCED);
     };
     if (wait) setTimeout(stamp, wait); else stamp();
+  }
+  /** Why the record can't be filed, checked before the stamp: the sheet's rules, and when it goes to a room's lobby, the
+   *  room's own checks (size, two per player) on the room as this browser sees it, and a live link for a guest. */
+  refusal(sheet) {
+    const err = validateSheet(sheet); if (err) return err;
+    const st = getState();
+    if (!(st.code && st.game && st.game.phase === 'lobby')) return null;
+    if (st.role === 'guest' && st.conn !== 'online') return 'Not connected to the room: wait for the link, or save it as a draft.';
+    return st.me && st.game.players ? roomSheetError(st.game, st.me.id, sheet) : null;
   }
   /** After the stamp: bring the record into the room's lobby, or save it; leave the screen only if the player is still on it. */
   file(sheet) {

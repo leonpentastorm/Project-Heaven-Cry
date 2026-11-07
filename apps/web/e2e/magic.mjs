@@ -121,6 +121,7 @@ ok('the Stack is spent', ((await G()).story.glyphs || []).length === 0);
 await snap('06-area-after-evoke');
 
 await dlg.getByRole('button', { name: 'Close', exact: true }).first().click();
+await dlg.waitFor({ state: 'hidden' }); // let the closing dialog leave first, or the next Area map press lands on it as it goes
 
 // ---------- 5. An Outburst let go at a hostile on the area map starts the fight ----------
 const cAt = (await G()).story.positions[me], [cx, cy] = cAt.split(',').map(Number);

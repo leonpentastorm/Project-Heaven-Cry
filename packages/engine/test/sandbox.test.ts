@@ -108,6 +108,18 @@ describe('waves', () => {
     expect(refused(g, { type: 'story/speak', text: 'Hello?' })).toMatch(/no Narrator/);
     expect(refused(g, { type: 'combat/end-turn', unitId: 'pc-' + c.id })).toMatch(/No fight/);
   });
+  it('gearing up: each action is a fresh round for its character (the last move\'s trail only, the weapon cooling, a fresh look)', () => {
+    const g0 = open(), c = charOf(g0), me = positionsOf(g0)[c.id], [mx, my] = me.split(',').map(Number);
+    const map = zoneMap(g0), ok = (k: string) => standable(map, k) && !(g0.story.objects || []).some((o) => o.pos === k) && !npcsOf(g0).some((t) => t.pos === k);
+    const there = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (mx + dx) + ',' + (my + dy)).find(ok)!;
+    let g = g0;
+    for (let i = 0; i < 10; i++) { g = apply(g, { type: 'world/act', charId: c.id, act: 'move', to: refOf(there) }, HOST); g = apply(g, { type: 'world/act', charId: c.id, act: 'move', to: refOf(me) }, HOST); }
+    expect((g.story.trail?.[c.id] || []).length).toBeLessThanOrEqual(2);
+    const x: GameState = JSON.parse(JSON.stringify(g)); (x.story.heat ||= {})[c.id] = 5; (x.story.noticed ||= {})['foe-s1|' + c.id] = x.story.round;
+    g = apply(x, { type: 'world/act', charId: c.id, act: 'move', to: refOf(there) }, HOST);
+    expect(g.story.heat![c.id]).toBe(3);
+    expect(g.story.noticed?.['foe-s1|' + c.id]).toBeUndefined();
+  });
   it('a quick start with nobody locked in makes a test character (removed on leaving)', () => {
     const g = start(lobby(false));
     const c = charOf(g); expect(c.name).toMatch(/^Recruit /);
@@ -181,6 +193,30 @@ describe('waves', () => {
     expect(npcsOf(s).length).toBe(standing);
     expect(refused(s, { type: 'sandbox/stop' })).toMatch(/No fight/);
     expect(apply(s, { type: 'sandbox/fight' }, HOST).sandbox!.attempt).toBe(2);
+  });
+  it('stopping keeps both sides as they were: wounded drill units stay wounded, and units the fight never seated stay on the map', () => {
+    let g = open();
+    // Fill the map past what one fight seats.
+    const map = zoneMap(g);
+    for (let y = 0, n = 0; y < map.h && n < 10; y++) for (let x = 0; x < map.w && n < 10; x++) {
+      const k = x + ',' + y;
+      if (!standable(map, k) || Object.values(positionsOf(g)).includes(k) || npcsOf(g).some((t) => t.pos === k) || (g.story.objects || []).some((o) => o.pos === k)) continue;
+      g = apply(g, { type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: refOf(k) }, HOST); n++;
+    }
+    const total = npcsOf(g).filter((t) => t.side === 'hostile').length;
+    g = apply(g, { type: 'sandbox/fight' }, HOST);
+    const seated = g.combat!.units.filter((u) => u.side === 'foe');
+    expect(seated.length).toBeLessThan(total);
+    const x: GameState = JSON.parse(JSON.stringify(g)), hurt = x.combat!.units.find((u) => u.side === 'foe' && !u.dead)!;
+    hurt.hp = 3; const pcu = x.combat!.units.find((u) => u.side === 'pc')!; pcu.hp = 50;
+    const s = apply(x, { type: 'sandbox/stop' }, HOST);
+    expect(npcsOf(s).filter((t) => t.side === 'hostile').length).toBe(total);
+    expect(new Set(npcsOf(s).map((t) => t.pos)).size).toBe(npcsOf(s).length); // nobody shares a tile
+    expect(npcsOf(s).find((t) => t.id === hurt.npcId)!.hp).toBe(3);
+    expect(charOf(s).hp).toBe(50);
+    const again = apply(s, { type: 'sandbox/fight' }, HOST);
+    expect(again.combat!.units.find((u) => u.npcId === hurt.npcId)!.hp).toBe(3);
+    expect(again.combat!.units.find((u) => u.side === 'pc')!.hp).toBeLessThanOrEqual(50); // the drill units may already have acted
   });
 });
 

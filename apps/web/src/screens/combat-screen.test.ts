@@ -238,7 +238,7 @@ describe('combat screen', () => {
     const save = Array.from(dlg.querySelectorAll('button')).find((b) => b.textContent === 'Save')!;
     await React.act(async () => { save.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
-    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toEqual(['analyze', 'overwatch', null, null]);
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toEqual(['analyze', 'overwatch', null, null]);
     const L = new CombatLogic({}) as any; L.togglePanel(true);
     const r = L.renderVals();
     if (!r.notMine) expect(r.mini.cmds.slice(0, 2).map((x: any) => x.action)).toEqual(['analyze', 'overwatch']);
@@ -248,16 +248,26 @@ describe('combat screen', () => {
     const dlg2 = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
     await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => /Reset to smart/.test(b.textContent || ''))!.click(); });
     await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => b.textContent === 'Save')!.click(); });
-    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toBeUndefined();
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toBeUndefined();
     // Escape closes without saving.
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
     const dlg3 = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
     await React.act(async () => { (dlg3.querySelector('[data-cmd="sprint"]') as HTMLElement).click(); });
     await React.act(async () => { dlg3.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
-    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toBeUndefined();
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toBeUndefined();
     await React.act(async () => { root.unmount(); });
     el.remove(); vi.useRealTimers();
     expect(errors).toEqual([]);
+  });
+  it('a dry run (the UI asking the engine for costs and reasons) never adds effects to the real fight', async () => {
+    // A glyph keyboard preview used to push 'draw' effects into the live fight's list (same array), all with one
+    // number, which stalled the next turn card for ~6 s.
+    const { _dryRun } = await import('./combat.js');
+    const cb: any = { units: [{ id: 'u1', saves: {}, conds: {}, mg: null }], fx: [{ n: 1, k: 'turn' }], fxSeq: 1, glyphs: [], zones: [] };
+    const r = _dryRun(cb, 'u1', (c: any) => { (c.fx ||= []).push({ n: (c.fxSeq = (c.fxSeq || 0) + 1), k: 'draw' }); return null; });
+    expect(r.err).toBeNull();
+    expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
+    expect(cb.fxSeq).toBe(1);
   });
 });
