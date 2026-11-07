@@ -906,16 +906,6 @@ export function migrateStorySigil(s: { glyphs?: any[]; zones?: any[]; sigilV?: n
   s.sigilV = SIGIL_REV;
 }
 
-// ---------- the compat subject effect (class handlers) ----------
-/** One Subject's effect on one creature, as 1.2's subjectEffect did (class handlers still call it): damage rolls Brain
- * Power against Defense unless auto; mult is the spell's multiplier. TODO(sigil-1.4): lanes move to planEvoke/strike. */
-export function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilDef | undefined, mult: number, sm: number, em: number, auto: boolean, src: string, opts: { seek?: boolean } = {}): string {
-  if (!w || t.dead) return '';
-  const sp = compileSpell([w.id, opts.seek ? 'seek' : 'condense']); sp.reachMult = 1; sp.coreMult = 1; sp.burst = false; sp.repMult = 1;
-  const a: Affected = { unit: t.id, name: t.name, at: t.pos, ally: !!by && t.side === by.side, enemy: !by || t.side !== by.side, self: by === t, mult, via: 'direct', missile: 0, ...numbersFor(cb, by, sp, t, mult, !auto, src) };
-  void sm; void em;
-  return applyTo(cb, rng, by, by?.side || 'pc', sp, t, a, { roll: !auto, origin: src, opts: {} }).line;
-}
 /** Who a spell would affect, hit or miss (a spell at an NPC on the story map starts a fight). */
 export function evokeTargets(cb: Combat, u: Unit, tile: string, aim?: string, opts: EvokeOpts = {}): string[] { return planEvoke(cb, u, tile, aim, opts).targets; }
 export const glyphsAt = (cb: Combat, k: string) => (cb.glyphs || []).filter((g) => g.pos === k);

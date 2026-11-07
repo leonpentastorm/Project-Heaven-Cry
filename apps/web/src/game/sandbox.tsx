@@ -14,7 +14,7 @@
 import React from 'react';
 import {
   type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT,
+  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { importCharacter } from './charfile';
@@ -488,21 +488,27 @@ function useTilePick(armed: boolean, pick: (ref: string) => void) {
 }
 function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   const sb = game.sandbox!, gearing = game.phase === 'story', cb = gearing ? null : game.combat;
-  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb));
-  useTilePick(armed, (r) => act({ type: 'sandbox/spawn', tier, weapon, at: r }));
+  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState('');
+  const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}) } as any);
+  useTilePick(armed, (r) => spawn(r));
   React.useEffect(() => { if (!armed) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArmed(false); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [armed]);
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);
   const foes = gearing ? (game.story.npcs || []).filter((n) => n.side === 'hostile').length : (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
   return <>
     <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'}>
       <div style={row}>
-        <select value={tier} onChange={(e) => { setTier(e.target.value); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
+        <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
+      </div>
+      <div style={row}>
+        <select value={caster} onChange={(e) => { const c = CASTER[e.target.value]; setCaster(e.target.value); if (c) { setTier(c.tier); setWeapon(c.weapon); } }} aria-label="Sigil caster" style={{ ...field, flex: 1 }} title="A Sigil caster fights with an Evoker and its words (rules 1.4)">
+          <option value="">No Sigils</option>{CASTERS.map((c) => <option key={c.id} value={c.id}>{c.name} · {c.tier} · {c.sigils.map((w) => w.toUpperCase()).join(' ')}</option>)}
+        </select>
       </div>
       <div style={row}>
         <button type="button" style={armed ? { ...primary, background: C.red, color: C.white } : primary} aria-pressed={armed} onClick={() => setArmed(!armed)}>{armed ? 'Click tiles on the map · stop' : 'Place by clicking the map'}</button>
         <input value={ref} onChange={(e) => setRef(e.target.value.toUpperCase())} placeholder="or a tile: H6" aria-label="Tile" style={{ ...field, width: 90 }} />
-        <button type="button" style={btn} disabled={!ref} onClick={() => act({ type: 'sandbox/spawn', tier, weapon, at: ref })}>Spawn</button>
+        <button type="button" style={btn} disabled={!ref} onClick={() => spawn(ref)}>Spawn</button>
       </div>
       {armed && <span style={{ fontSize: 12, color: C.text }}>Each click on a free tile spawns one{gearing ? ' (open the Area map for the big grid)' : ''}. Esc or the button stops.</span>}
       <div style={row}><button type="button" style={btn} disabled={!foes} onClick={() => act({ type: 'sandbox/clear' })}>Clear all enemies ({foes})</button></div>

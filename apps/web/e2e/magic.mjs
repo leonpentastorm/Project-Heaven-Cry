@@ -1,5 +1,6 @@
-// Magic (rules 1.2) end to end: a caster picks 2 Sigil words and an Outburst on the Kit step, the MAGIC sheet tab shows
-// them, a glyph is drawn and evoked on the area map, then a fight: draw + evoke, begin/hold/release an Outburst.
+// Magic (Sigils: rules 1.4) end to end: a caster picks 2 Sigil words (a Subject and a Reach word) and an Outburst on the
+// Kit step, the MAGIC sheet tab shows them, a 2-glyph Line is walked and Evoked on the area map, then a fight: walk a
+// Line, Evoke it from its end, begin/hold/release an Outburst.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
 import { chromium, player, click, hostAs, OUT, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
@@ -28,13 +29,13 @@ await host.waitForSelector('text=SIGIL WORDS · MIND · PICK 2');
 await host.waitForSelector('text=OUTBURST · SOUL · 1 DESIGN');
 ok('the Kit step shows both magic sections', true);
 const verdict = () => host.locator('[role="status"]').allTextContents();
-ok('defaults are a legal Stack: ' + (await verdict())[0], /✓ SPARK \+ CONDENSE/.test((await verdict())[0]));
-// pick FROST (a Subject) and PUSH (a Motion): they swap out SPARK and CONDENSE
+ok('defaults are a legal pair with a Reach word: ' + (await verdict())[0], /✓ SPARK \+ SEEK/.test((await verdict())[0]));
+// pick FIRE (a Subject) and ARC (a Reach word): they swap out SPARK and SEEK
 const word = (w) => host.locator('button[aria-pressed]').filter({ has: host.locator('span', { hasText: new RegExp('^' + w + '$') }) }).first();
 await word('FIRE').click();
-await word('PUSH').click();
+await word('ARC').click();
 const v2 = (await verdict())[0];
-ok('FIRE + PUSH replace the defaults: ' + v2, /✓ FIRE \+ PUSH/.test(v2) || /✓ PUSH \+ FIRE/.test(v2));
+ok('FIRE + ARC replace the defaults: ' + v2, /✓ FIRE \+ ARC/.test(v2) || /✓ ARC \+ FIRE/.test(v2));
 // Outburst: Control school, a name
 await host.locator('button[aria-pressed]').filter({ has: host.locator('span', { hasText: /^DAMAGE$/ }) }).first().click();
 await host.getByPlaceholder(/Outburst/).first().fill('Red Hand');
@@ -47,11 +48,11 @@ await host.waitForSelector('text=Lock in and bring to the room');
 await snap('02-lockin');
 await host.locator('text=SIGIL WORDS · MIND').first().scrollIntoViewIfNeeded(); await snap('02b-lockin-magic');
 ok('Lock in shows the Sigil and Outburst cards', await host.locator('text=SIGIL WORDS · MIND').count() > 0 && await host.locator('text=OUTBURST · SOUL').count() > 0);
-ok('Lock in lists the Sigil words and the Outburst', await host.locator('text=/Sigil words: (FIRE|PUSH)/').count() > 0 && await host.locator('text=Outburst: Red Hand').count() > 0);
+ok('Lock in lists the Sigil words and the Outburst', await host.locator('text=/Sigil words: (FIRE|ARC)/').count() > 0 && await host.locator('text=Outburst: Red Hand').count() > 0);
 await click(host, 'Lock in and bring to the room');
 await host.waitForSelector('text=✓ LOCKED IN');
 const me0 = Object.values((await G()).characters)[0];
-ok('the character keeps the picks: ' + JSON.stringify(me0.sigils) + ' / ' + JSON.stringify(me0.outbursts), me0.sigils.includes('fire') && me0.sigils.includes('push') && me0.outbursts[0]?.name === 'Red Hand');
+ok('the character keeps the picks: ' + JSON.stringify(me0.sigils) + ' / ' + JSON.stringify(me0.outbursts), me0.sigils.includes('fire') && me0.sigils.includes('arc') && me0.outbursts[0]?.name === 'Red Hand');
 
 // ---------- 2. Session ----------
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
@@ -62,7 +63,7 @@ const me = me0.id;
 const story = () => host.evaluate(() => { const g = window.__phc.getState().game; return { await: g.story.await, round: g.story.round, phase: g.phase }; });
 console.log('story', await story());
 // The Sigil student kit carries an Evoker; the Narrator hands over an Emanator so this one character can test both families.
-await act({ type: 'narrator/turn', turn: { narration: 'A crate by the ramp holds a spare heart link.', loot: [{ charId: me, item: 'emanator' }, { charId: me, item: 'standard_core', qty: 2 }] } });
+await act({ type: 'narrator/turn', turn: { narration: 'A crate by the ramp holds a spare heart link.', loot: [{ charId: me, item: 'emanator' }, { charId: me, item: 'standard_core', qty: 2 }], magic: [{ charId: me, word: 'SPREAD', reason: 'a burst stroke chalked inside the crate lid' }] } });
 await host.waitForTimeout(400);
 const meNow = () => host.evaluate((id) => window.__phc.getState().game.characters[id], me);
 ok('the Emanator is in the pack', (await meNow()).pack.some((x) => (x.item || x.id) === 'emanator'));
@@ -73,14 +74,14 @@ await host.getByRole('tab', { name: 'MAGIC', exact: true }).click();
 await host.waitForSelector('section[aria-label="Sigils"]');
 const sigSec = await host.locator('section[aria-label="Sigils"]').textContent();
 const soulSec = await host.locator('section[aria-label="Outbursts"]').textContent();
-ok('the Sigil section lists FIRE and PUSH', /FIRE/.test(sigSec) && /PUSH/.test(sigSec));
+ok('the Sigil section lists FIRE and ARC', /FIRE/.test(sigSec) && /ARC/.test(sigSec));
 ok('no "no Evoker" warning with an Evoker', !/no Evoker/i.test(sigSec));
 ok('the Soul section lists Red Hand with its MP bar', /Red Hand/.test(soulSec) && /MP/.test(soulSec) && !/No Emanator/i.test(soulSec));
 console.log('  sigil:', sigSec.replace(/\s+/g, ' ').slice(0, 220));
 console.log('  soul :', soulSec.replace(/\s+/g, ' ').slice(0, 260));
 await snap('03-sheet-tab');
 
-// ---------- 4. The area map: draw FIRE and PUSH on one tile, evoke the Stack ----------
+// ---------- 4. The area map: walk a Line (FIRE here, ARC a step back, SPREAD another) and Evoke it from its end ----------
 await click(host, 'Area map');
 await host.waitForSelector('div[role="dialog"][aria-label="Area map"]');
 const dlg = host.locator('div[role="dialog"][aria-label="Area map"]');
@@ -88,27 +89,39 @@ const myPos = async () => (await G()).story.positions[me];
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const tile = (k) => dlg.locator('button.phc-tok[aria-label^="' + ref(k) + ':"], button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const hint = async () => (await dlg.textContent()).replace(/\s+/g, ' ');
-await dlg.getByRole('button', { name: /Draw a glyph/ }).click();
-await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'FIRE' }).click();
 const at = await myPos();
 console.log('me at', at, ref(at));
+const [x0, y0] = at.split(',').map(Number);
+// A row with room: our tile, one step back (the Line's end, where we stand), and 4 tiles ahead to aim at.
+const lane = await host.evaluate(([x0, y0]) => { const g = window.__phc.getState().game, occ = new Set([...Object.values(g.story.positions), ...(g.story.npcs || []).map((n) => n.pos), ...(g.story.objects || []).map((o) => o.pos)]);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const back = (x0 - dx) + ',' + (y0 - dy), back2 = (x0 - 2 * dx) + ',' + (y0 - 2 * dy), aim = (x0 + 4 * dx) + ',' + (y0 + 4 * dy);
+    if (x0 - 2 * dx >= 0 && y0 - 2 * dy >= 0 && x0 + 4 * dx >= 0 && y0 + 4 * dy >= 0 && x0 + 4 * dx < 16 && y0 + 4 * dy < 11 && !occ.has(back) && !occ.has(back2) && !occ.has(aim)) return { back, back2, aim }; } return null; }, [x0, y0]);
+ok('room on the map for a Line: ' + (lane && [lane.back, lane.back2].map(ref).join(', ') + ', aim ' + ref(lane.aim)), !!lane);
+await dlg.getByRole('button', { name: /Draw a glyph/ }).click();
+await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'FIRE' }).click();
 await tile(at).click();
 await host.waitForTimeout(300);
-await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'PUSH' }).click();
-await tile(at).click();
+await act({ type: 'world/act', charId: me, act: 'move', to: lane.back });
+await host.waitForTimeout(300);
+await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
+await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'ARC' }).click();
+await tile(lane.back).click();
+await host.waitForTimeout(300);
+await act({ type: 'world/act', charId: me, act: 'move', to: lane.back2 });
+await host.waitForTimeout(300);
+await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
+await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'SPREAD' }).click();
+await tile(lane.back2).click();
 await host.waitForTimeout(300);
 const gl = (await G()).story.glyphs || [];
-ok('two glyphs on the story map: ' + gl.map((x) => x.word + '@' + x.pos).join(', '), gl.length === 2 && gl.every((x) => x.pos === at));
+ok('a Line of three on the story map: ' + gl.map((x) => x.word + '@' + x.pos).join(', '), gl.length === 3 && gl.some((x) => x.word === 'fire' && x.pos === at) && gl.some((x) => x.word === 'arc' && x.pos === lane.back) && gl.some((x) => x.word === 'spread' && x.pos === lane.back2));
 console.log('  lines:', (await lastLines(3)).join(' | '));
 await snap('04-area-drawn');
 await dlg.getByRole('button', { name: /^Evoke/ }).first().click();
-await tile(at).click();
+await tile(lane.back2).click();
 await host.waitForTimeout(200);
-console.log('  hint after picking the stack:', (await hint()).match(/Evoke [^.]*\.[^.]*\./)?.[0] || '(no Evoke line)');
-// aim 3 tiles away along a free row
-const [x0, y0] = at.split(',').map(Number);
-const aimK = await host.evaluate(([x0, y0]) => { const g = window.__phc.getState().game; const occ = new Set(Object.values(g.story.positions)); for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3]]) { const k = (x0 + dx) + ',' + (y0 + dy); if (!occ.has(k) && x0 + dx >= 0 && y0 + dy >= 0) return k; } return null; }, [x0, y0]);
-await tile(aimK).click();
+console.log('  hint after picking the Line:', (await hint()).match(/Fires[^.]*\.[^.]*\./)?.[0] || '(no Fires line)');
+await tile(lane.aim).click();
 await host.waitForTimeout(200);
 await snap('05-area-evoke-aim');
 const conf = dlg.getByRole('button', { name: /^Evoke ·/ }).first();
@@ -117,7 +130,7 @@ if (await conf.count()) await conf.click();
 await host.waitForTimeout(400);
 const ev = await lastLines(4);
 ok('the evoke lands: ' + ev.join(' | '), ev.some((l) => /evokes/i.test(l)));
-ok('the Stack is spent', ((await G()).story.glyphs || []).length === 0);
+ok('the Line is spent', ((await G()).story.glyphs || []).length === 0);
 await snap('06-area-after-evoke');
 
 await dlg.getByRole('button', { name: 'Close', exact: true }).first().click();
@@ -161,25 +174,47 @@ ok('combat shows both magic tabs: ' + groups.join(', '), groups.length === 2);
 ok('the header shows the mana', await host.locator('text=/MANA \\d+ · /').count() > 0);
 await snap('07-combat-start');
 
-// Draw FIRE then PUSH on our own tile
+/** Pick a word on the glyph keyboard (a second press would put it down). */
+const key = async (w) => { const b = host.locator('div[aria-label="Glyph keyboard"] button', { hasText: new RegExp('^\\s*' + w) }).first(); if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click(); };
+// Walk a Line pointed at the nearest raider: FIRE on tile T (ours, or one step off), ARC one step further from the raider,
+// so the raider sits on the ray out of the Line's far end (rules 1.4: a Line fires along itself from its end).
+// The area map's Line spent most of the core: load a fresh one first (2 AP), then take a fresh turn if that left too
+// little to step, draw, step, draw and Evoke in one go (the raider must not walk out of the Line's area in between).
+if ((u.mg?.charge || 0) < 6) { await act({ type: 'combat/core', unitId: u.id }); await host.waitForTimeout(250); ({ cb, u } = await CB()); }
+if (u.ap < 5) { await host.getByRole('button', { name: 'End turn', exact: true }).click(); await host.waitForTimeout(300); await waitMine(); ({ cb, u } = await CB()); }
+const plan = await host.evaluate((id) => { const cb = window.__phc.getState().game.combat, m = cb.map, me = cb.units.find((x) => x.charId === id);
+  const K = (x, y) => x + ',' + y, P = (k) => k.split(',').map(Number), [mx, my] = P(me.pos);
+  const bad = new Set([...(m.solid || []), ...(m.cover || []), ...(m.full || []), ...(cb.objects || []).map((o) => o.pos), ...cb.units.filter((u) => !u.dead && u !== me).map((u) => u.pos)]);
+  const free = (x, y) => x >= 0 && y >= 0 && x < m.w && y < m.h && !bad.has(K(x, y));
+  const foes = cb.units.filter((x) => x.side === 'foe' && !x.dead);
+  const D = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
+  for (const [tx, ty] of [[mx, my], ...D.map(([dx, dy]) => [mx + dx, my + dy])]) { if (!free(tx, ty)) continue;
+    for (const [dx, dy] of D) { if (!free(tx - dx, ty - dy)) continue;
+      for (const f of foes) { const [fx, fy] = P(f.pos); for (let k = 1; k <= 6; k++) if (tx + k * dx === fx && ty + k * dy === fy) return { t: K(tx, ty), back: K(tx - dx, ty - dy), foe: f.id }; } } }
+  return null; }, me);
+ok('a Line can point at a raider: ' + JSON.stringify(plan), !!plan);
+const foe = cb.units.find((x) => x.id === plan.foe);
+if (plan.t !== u.pos) { await act({ type: 'combat/move', unitId: u.id, to: plan.t }); await host.waitForTimeout(300); ({ cb, u } = await CB()); }
 await pickAction(host, /^Draw a glyph/);
 await host.waitForSelector('div[aria-label="Glyph keyboard"]');
-await host.locator('div[aria-label="Glyph keyboard"] button', { hasText: 'FIRE' }).click();
+await key('FIRE');
 await ctile(u.pos).hover(); await host.waitForTimeout(150);
 await snap('08-combat-draw-hover');
 await ctile(u.pos).click(); await host.waitForTimeout(300);
+const first = u.pos, step = plan.back;
+await act({ type: 'combat/move', unitId: u.id, to: step });
+await host.waitForTimeout(300);
 await pickAction(host, /^Draw a glyph/).catch(() => {});
-await host.locator('div[aria-label="Glyph keyboard"] button', { hasText: 'PUSH' }).click();
-await ctile(u.pos).click(); await host.waitForTimeout(300);
+await key('ARC');
+await ctile(step).click(); await host.waitForTimeout(300);
 ({ cb, u } = await CB());
-ok('two glyphs on the grid: ' + (cb.glyphs || []).map((x) => x.word + '@' + x.pos).join(', '), (cb.glyphs || []).filter((x) => x.pos === u.pos).length === 2);
-ok('draw lines in the log', cb.log.filter((l) => /draws (FIRE|PUSH)/.test(l)).length === 2);
+ok('a Line of two on the grid: ' + (cb.glyphs || []).map((x) => x.word + '@' + x.pos).join(', '), (cb.glyphs || []).some((x) => x.pos === first && x.word === 'fire') && (cb.glyphs || []).some((x) => x.pos === step && x.word === 'arc'));
+ok('draw lines in the log', cb.log.filter((l) => /draws (FIRE|ARC)/.test(l)).length === 2);
 await host.evaluate(() => scrollTo(0, 0)); await snap('09-combat-drawn');
 
-// Evoke it at the raider
-const foe = cb.units.find((x) => x.side === 'foe' && !x.dead);
+// Evoke it at the raider, from the Line's end
 await pickAction(host, /^Evoke/);
-await ctile(u.pos).click(); await host.waitForTimeout(200);
+await ctile(step).click(); await host.waitForTimeout(200);
 await ctile(foe.pos).click(); await host.waitForTimeout(250);
 await snap('10-combat-evoke-aim');
 const conf2 = host.getByRole('button', { name: /^Confirm/ }).first();
@@ -189,7 +224,7 @@ await host.waitForTimeout(500);
 ({ cb, u } = await CB());
 const evl = cb.log.filter((l) => /evokes/.test(l));
 ok('evoke in the combat log: ' + evl.at(-1), evl.length > 0);
-ok('glyphs spent', !(cb.glyphs || []).some((x) => x.pos === u.pos));
+ok('glyphs spent', !(cb.glyphs || []).some((x) => x.pos === first || x.pos === step));
 
 // A critical evoke can end the fight here (both raiders down): then the held-Outburst steps have nothing to do.
 if (cb.over) console.log('  (the evoke ended the fight: the Outburst steps are skipped this run)');

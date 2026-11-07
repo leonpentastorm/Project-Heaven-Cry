@@ -250,35 +250,12 @@ describe('Mage', () => {
     expect(f.pc.mg!.charge).toBe(ch); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.maxWords).toBe(max0 + 1); expect(f.pc.mg!.flux).toBe(1);
     expect(() => act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:mage.overcharge', actionId: 'overcharge' })).toThrow(/Used/);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Payload: the Stack also hits the nearest creature next to its target, for double Flux', () => {
-    const f = fightWith([cls('mage', 3, MIND)], [{}, {}]);
-    const u = f.turn(f.pc); const [a, b] = f.foes; line(f, [u, 3], [a, 5], [b, 6]);
-    for (const t of [a, b]) { f.unit(t.id).def = 1; f.unit(t.id).hp = 999; }
-    act(f, u, { type: 'combat/draw', word: 'spark', tile: '4,2' }); act(f, f.unit(u.id), { type: 'combat/draw', word: 'condense', tile: '4,2' });
-    const flux = f.pc.mg!.flux;
-    act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:mage.payload', actionId: 'payload', tile: '4,2', choice: '5,2' });
-    expect(logHas(f.cb, /PAYLOAD: the spell carries on/)).toBe(true);
-    expect(f.pc.mg!.flux).toBe(flux + 2);
-    expect(f.unit(b.id).hp < 999 || logHas(f.cb, /misses Foe 2/)).toBe(true);
-  });
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
 });
 
 // ======================================================================================================== WARDEN
 describe('Warden', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Raise Cover: a lone STAY glyph evoked as a two-tile cover rune that fades after 2 rounds + the duration bonus', () => {
-    const f = fightWith([cls('warden', 1, MIND)], [{}]);
-    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 12]);
-    expect(f.pc.mg!.words).toContain('stay');
-    act(f, u, { type: 'combat/draw', word: 'stay', tile: '4,2' });
-    act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:warden.raise_cover' });
-    const runes = objectsOf(f.cb).filter((o) => /^rune_/.test(o.id));
-    expect(runes.length).toBe(2); expect(runes[0].pos).toBe('4,2'); expect(f.cb.glyphs!.length).toBe(0);
-    const g = f.g, left = 2 + (f.pc.mg!.durBonus || 0);
-    withGame(g, () => { for (let i = 0; i < left; i++) { f.cb.round++; emit(f.cb, 'round_start', { cb: f.cb, round: f.cb.round, rng: g.rng }); } });
-    expect(objectsOf(f.cb).filter((o) => /^rune_/.test(o.id)).length).toBe(0);
-  });
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
   it('Ward: 2 charge, a shield of 20 × Healing given on an ally, +2 Flux', () => {
     const f = fightWith([cls('warden', 2, MIND), {}], [{}]);
     const [w, ally] = f.pcs; line(f, [w, 3], [ally, 6], [f.foe, 13]);
@@ -328,20 +305,7 @@ describe('Scribe', () => {
     const plain = fightWith([cls('scribe', 2, MIND)]).pc.armour;
     expect(pcU.armour).toBe(plain + 5);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Stored Spell: written out of combat (charge paid, cap max(1, Rumination mod)), fired in a fight for 1 AP', () => {
-    const s = storyWith([cls('scribe', 3, { ...MIND, skills: { proficiency: 11, eloquence: 6, rumination: 1 } })]);
-    const c = s.chars[0];
-    s.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.stored_spell', actionId: 'write', text: 'SPARK CONDENSE stack' });
-    expect(s.g.characters[c.id].evoCharge).toBeLessThan(10);
-    expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.stored_spell', actionId: 'write', text: 'SPARK CONDENSE stack' })).toThrow(/at most/);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
-    const cb = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!, foe = cb.units.find((x) => x.side === 'foe')!;
-    u.pos = '4,2'; foe.pos = '5,2'; foe.def = 1; cb.turn = cb.order.indexOf(u.id); u.ap = 6;
-    s.act({ type: 'combat/perk', unitId: u.id, id: 'class:scribe.stored_spell', actionId: 'trigger', tile: '5,2' });
-    expect(s.g.combat!.log.some((l) => /triggers a stored spell \(SPARK · CONDENSE, stack\)/.test(l))).toBe(true);
-    expect(s.g.combat!.units.find((x) => x.charId === c.id)!.ap).toBe(5);
-  });
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
 });
 
 // ======================================================================================================== TRICKSTER

@@ -329,37 +329,6 @@ describe('class moves: Vessel, Bard\'s Gift, Payload, Raise Cover (items 61-65)'
     expect(b2.mg!.mp).toBeLessThan(mp); expect(b2.mg!.strain || 0).toBeGreaterThanOrEqual(strain);
     expect(a2.mg?.strain || 0).toBe(allyStrain); expect(a2.ap).toBeLessThan(6);
   });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Payload on the area map: a Stack at a hostile token opens the fight with the Payload, which carries on to the guard beside it', () => {
-    const run = (payload: boolean) => {
-      const s = storyWith([cls('mage', 3, MIND)]); const c = s.chars[0], ch = s.g.characters[c.id];
-      if (!(ch.pack || []).some((x: any) => (x.item || x.id) === 'evoker')) ch.pack = [...packOf(ch), { id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'tool' } as any];
-      ch.sigils = [...new Set([...(ch.sigils || []), 'fire', 'push'])]; ch.evoCharge = 10;
-      const here = positionsOf(s.g)[c.id], gl = freeNear(s.g, here, 1);
-      fullAp(s, c.id); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'fire', tile: gl } as any);
-      fullAp(s, c.id); s.act({ type: 'world/act', charId: c.id, act: 'draw', word: 'push', tile: gl } as any);
-      const n = place(s, freeNear(s.g, gl, 2), { name: 'Scavenger' }); place(s, freeNear(s.g, n.pos, 1), { name: 'Second', weapon: 'fists' });
-      fullAp(s, c.id); s.g.rng.state = rngFor(15, 15, 15, 15).state;
-      if (payload) s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:mage.payload', actionId: 'payload_world', tile: gl, choice: n.pos } as any);
-      else s.act({ type: 'world/act', charId: c.id, act: 'evoke', tile: gl, aim: n.pos } as any);
-      return s;
-    };
-    const p = run(true);
-    expect(storyHas(p.g, /Combat: Fight at/)).toBe(true);
-    expect(storyHas(p.g, /Second \(dead\)/)).toBe(true);
-    const plain = run(false);
-    expect(plain.g.phase).toBe('combat'); expect(plain.g.combat!.units.find((u) => u.name === 'Second')!.dead).toBeFalsy();
-  });
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Raise Cover on the area map: the rune blocks a move onto its tile, and lasts 2 overworld rounds', () => {
-    const s = storyWith([cls('warden', 1, MIND)]); const c = s.chars[0], here = positionsOf(s.g)[c.id], gl = freeNear(s.g, here, 1);
-    s.g.story.glyphs = [{ id: 'gl1', word: 'stay', pos: gl, by: 'pc-' + c.id, side: 'pc', left: 3, who: c.name } as any];
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:warden.raise_cover', actionId: 'raise_cover' } as any);
-    expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name) && o.pos === gl)).toBe(true);
-    expect(() => s.act({ type: 'world/act', charId: c.id, act: 'move', to: gl } as any)).toThrow();
-    s.act({ type: 'world/act', charId: c.id, act: 'end' } as any); s.act({ type: 'narrator/turn', turn: { narration: 'A round.' } } as any);
-    expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name))).toBe(true);
-    for (let i = 0; i < 3; i++) { s.act({ type: 'world/act', charId: c.id, act: 'end' } as any); s.act({ type: 'narrator/turn', turn: { narration: 'Time passes.' } } as any); }
-    expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name))).toBe(false);
-  });
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
 });

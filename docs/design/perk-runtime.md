@@ -14,7 +14,7 @@ core hooks, switched the lanes' workarounds to them, and applied the data deltas
 | Hook / field | Where | Used by | Lane note |
 | --- | --- | --- | --- |
 | `damage_out` for spells (`ctx.spell`, `mode: 'spell'`), before armour | magic.ts `harm()` | Pain Eater, Brightest Light, Judgement Day, True Name, Case Closed, Humanity First, Moon Hunter | A4, F3 |
-| SHOCK/SPARK `dmgType: lightning`, FIRE `fire`, FREEZE `frost` | magic.ts `subjectEffect` | Slicer's Jacked In | C10 |
+| SHOCK/SPARK `dmgType: lightning`, FIRE `fire`, FREEZE `frost`, ACID `acid` | sigil.ts `DMG_TYPE` (was magic.ts `subjectEffect`) | Slicer's Jacked In | C10 |
 | `blessing_in` `ctx.power` read back; Blessing heals carry `kind: 'blessing'` | tactics.ts `blessing()` | Factory Made, The Old Blood | A5, F5 |
 | `fail` on `glyph_cost`, `evoke_cost`, `outburst_cost` (refusal with a reason) | magic.ts | Sigil Savant Rigid, Heart Overload, Grand Sigilist staff, Stroke Gambler half-Sigil, Vessel, Field Medic | D2, D5, K5, E-H5 |
 | `glyph_cost` carries `tile` | magic.ts | (Foundation can use it) | K3 |
@@ -22,7 +22,7 @@ core hooks, switched the lanes' workarounds to them, and applied the data deltas
 | `release_cost` {u, design, ap, range, fail} | magic.ts `releaseOutburst` | (Verse of War's held release can move to it) | D4 |
 | `outburst_hold` {u, strain} | magic.ts `magicTurnStart` | (The Twin Pays can move to it) | D7 |
 | `strain` {u, n, why, limit} in `addStrain` and in i.ts/k.ts copies | magic.ts, classes | Heart's Own, The Twin Pays | K6, I8 |
-| Exports: `flux`, `addStrain`, `manaShort`, `wildRelease`, `subjectEffect`, `magicShove` | magic.ts | k.ts `fluxUp` now calls `flux` | I8, J4, K1 |
+| Exports: `flux`, `addStrain`, `manaShort`, `wildRelease`, `magicShove` (`subjectEffect` removed in 1.4) | magic.ts | k.ts `fluxUp` now calls `flux` | I8, J4, K1 |
 | Magic push/pull: knockback immunity + `forced_move` (how `magic`) | magic.ts `magicShove` | Siege Engine | A3 |
 | Control push/pull save through `cond_apply` (id `shoved`, fam body) | magic.ts `releaseAt` | Litany, Squad Anchor | D10 |
 | Crystallise priced with `actionAp(…, 'crystallise', 3)` | magic.ts | Rite in the Field | D8 |
@@ -240,10 +240,10 @@ Hooks (all through `emit`; mutable fields marked *):
 | `turret_shot` | {turret, owner, target} | a WATCH turret fired |
 | `cond_apply` id `teleport` | the usual cond_apply fields | STEP's Body save against an enemy |
 
-Old API kept for the lanes (TODO(sigil-1.4) where it no longer means anything): `findPattern` (Pattern has `shape`
-'line' | 'stack', `tiles` in drawing order, `axis`, and the old `near`/`far`/`dir`), `grammarError(words, maxWords)`,
-`evokeCharge`, `subjectEffect` (one Subject on one target), `LINE_RANGE` and `PUSH_RANGE` (1.2 constants, unused by the
-engine). The class and perk tests that still assert 1.2 behaviour are `it.skip` with a `TODO(sigil-1.4)` note.
+Old API kept: `findPattern` (Pattern has `shape` 'line' | 'stack', `tiles` in drawing order, `axis`, and the old
+`near`/`far`/`dir`), `grammarError(words, maxWords)` and `evokeCharge`. Removed at integration (every lane moved to
+`planEvoke` / `castAt` / `spellRange`): `subjectEffect`, `LINE_RANGE` and `PUSH_RANGE`. No test is skipped for 1.4 any
+more; the 1.2 class tests are replaced by the `sigil14-*.test.ts` files.
 
 ## Appendix: the lanes' notes
 

@@ -145,7 +145,7 @@ ok('a fuel drum goes up with an explosion', boom);
 // 6. Magic: a Sigil evoke and an Outburst release
 await newRound();
 for (const a of [{ item: 'evoker' }, { item: 'emanator' }, { item: 'standard_core', qty: 4 }]) { const e = await act({ type: 'sandbox/give', charId: cid, ...a }); if (e) console.log('  give', a.item, e); }
-for (const w of ['fire', 'push']) await act({ type: 'sandbox/learn', charId: cid, word: w });
+for (const w of ['fire', 'seek']) await act({ type: 'sandbox/learn', charId: cid, word: w });
 await act({ type: 'sandbox/learn', charId: cid, school: 'damage' });
 const designErr = await act({ type: 'sandbox/design', charId: cid, design: { id: '', name: 'Red Hand', school: 'damage', modules: [] } });
 if (designErr) console.log('  design:', designErr);
@@ -156,7 +156,13 @@ await p.waitForTimeout(300);
 s = await st();
 console.log('  magic:', JSON.stringify({ words: s.u.mg?.words, designs: s.u.mg?.designs?.map((d) => d.name), charge: s.u.mg?.charge, mp: s.u.mg?.mp }));
 if (!s.u.mg?.charge) { const e = await act({ type: 'combat/core', unitId: s.u.id }); if (e) console.log('  core', e); await p.waitForTimeout(300); s = await st(); }
-for (const w of ['fire', 'push']) { const e = await act({ type: 'combat/draw', unitId: s.u.id, word: w, tile: s.u.pos }); if (e) console.log('  draw', w, e); }
+// Rules 1.4: a Line is drawn on your own tiles, one glyph a tile. FIRE here, a step away from the foe, SEEK there; from
+// that end the Line fires back along itself at the foe.
+{ const e = await act({ type: 'combat/draw', unitId: s.u.id, word: 'fire', tile: s.u.pos }); if (e) console.log('  draw fire', e); }
+const [fx0, fy0] = xy(s.u.pos), [tx0, ty0] = xy(mfoe[0]), back = (fx0 + Math.sign(fx0 - tx0)) + ',' + (fy0 + Math.sign(fy0 - ty0));
+{ const e = await act({ type: 'combat/move', unitId: s.u.id, to: back }); if (e) console.log('  step', e); }
+s = await st();
+{ const e = await act({ type: 'combat/draw', unitId: s.u.id, word: 'seek', tile: s.u.pos }); if (e) console.log('  draw seek', e); }
 await p.waitForTimeout(500); await snap('09-glyphs');
 r = await catchFx('10-evoke', () => act({ type: 'combat/evoke', unitId: s.u.id, tile: s.u.pos, aim: mfoe[0] }), [120, 300, 600]);
 ok('a Sigil evoke plays: ' + r.events.map((e) => e.k).join(' ') + ((await st()).toast ? ' · ' + (await st()).toast.text : ''), r.events.some((e) => e.k === 'evoke') && r.peak > 0);

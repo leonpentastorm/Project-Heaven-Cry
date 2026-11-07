@@ -52,6 +52,8 @@ export function syncAmbient(items: AmbientItem[]) {
     const el = it.kind === 'field' ? fieldNode(it.element, 'sigil') : turretNode(it.element, it.mine);
     const box = put(el, p || { x: -999, y: -999 }, it.kind === 'turret' ? s * 0.7 : s * 0.92, it.kind === 'turret' ? s * 0.9 : s * 0.92, 864e5);
     box.style.zIndex = '0'; box.style.opacity = '0';
+    // A field brightens its tile (screen blend) rather than covering who stands on it.
+    if (it.kind === 'field') box.style.mixBlendMode = 'screen';
     nodes.set(k, { item: it, box, shown: false, checked: 0 });
   }
   setSfxLoops(loopsFor(items));

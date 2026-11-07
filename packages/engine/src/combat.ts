@@ -182,7 +182,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  heal {target, at, amount, revive?} · hurt {target, at, dmg, why, killed?} (damage not from a weapon roll: explosion,
  *  trap, hazard, bleed, burn, sigil, elemental, soul, true, short, overload, wall) · shield {target, at, absorbed} ·
  *  down {unit, at, dead} · explode {at, radius, what} · object {at, what, dmg, broken, hp?} · door {unit?, at, open} ·
- *  trap {unit, at} · shove {unit, target, from, to, ok, prone?} · stance {unit, at, what: 'prone'|'stand'|'brace'|'overwatch'} ·
+ *  trap {unit, at} · shove {unit, target, from, to, ok, prone?, magic?, pull?} · stance {unit, at, what: 'prone'|'stand'|'brace'|'overwatch'} ·
  *  analyze {unit, target, from, to} · pickup {unit, at} · cover {unit, target, at, dmg} (a shot stopped by cover) ·
  *  draw {unit, at, tile, word, side, group, cls, element, effect, words} · glyph_fade {tile, word, side, why} · scuff {unit, at} ·
  *  evoke {unit, at, shape, tiles, words, element, side, facing, dir, area, src, impact, targets, targetAt, missiles: [{origin,

@@ -85,15 +85,7 @@ describe('Shade: a silent takedown on the area map', () => {
 });
 
 describe('Mage Payload and Warden Raise Cover on the area map', () => {
-  // TODO(sigil-1.4): this class/perk move still reads the 1.2 Sigil rules (a Stack, adjacent drawing, Form/Motion); its lane rewrites handler and test.
-  it.skip('Raise Cover on the area map: a cover rune stands as objects on the map and fades by overworld rounds', () => {
-    const s = storyWith([cls('warden', 1, MIND)]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
-    s.g.story.glyphs = [{ id: 'gl1', word: 'stay', pos: freeNear(s.g, here, 1), by: 'pc-' + c.id, side: 'pc', left: 3, who: c.name } as any];
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:warden.raise_cover', actionId: 'raise_cover' } as any);
-    expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name))).toBe(true);
-    for (let i = 0; i < 4; i++) { s.act({ type: 'world/act', charId: c.id, act: 'end' } as any); s.act({ type: 'narrator/turn', turn: { narration: 'Time passes.' } } as any); }
-    expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name))).toBe(false);
-  });
+  // The 1.2 version of this test is replaced by its 1.4 version in sigil14-classes-i.test.ts.
   it('Payload on the area map is offered there (payload_world)', () => {
     const s = storyWith([cls('mage', 3, MIND)]); const c = s.chars[0];
     expect(() => s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:mage.payload', actionId: 'payload_world', tile: 'A1' } as any)).toThrow(/glyph|pattern|Pick|Evoker|reach|Stand/i);

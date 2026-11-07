@@ -24,7 +24,7 @@ import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoar
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
-import { CASTER } from './ai-sigil';
+import { CASTER, armFoe } from './ai-sigil';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -2114,7 +2114,7 @@ export type SandboxAction =
   | { type: 'sandbox/refill'; charId?: string }
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
-  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string } | { type: 'sandbox/clear' }
+  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number };
 
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
@@ -2166,7 +2166,7 @@ export const sandboxNext = (sb: Sandbox) => (sb.state === 'cleared' ? Math.min(9
 /** Gearing up: the Proving Ground is open and no fight is running. */
 export const sandboxGearingUp = (g: GameState) => !!g.sandbox && g.phase === 'story';
 /** What the magic kit gives (sandbox/kit): the foci, cores, and enough to cast at once. */
-export const MAGIC_KIT = { words: ['fire', 'push', 'condense', 'ward'], schools: ['damage', 'buff'], designs: [{ name: 'Soul Bolt', school: 'damage' }, { name: 'Soul Mend', school: 'buff' }] };
+export const MAGIC_KIT = { words: ['fire', 'seek', 'spread', 'condense', 'ward'], schools: ['damage', 'buff'], designs: [{ name: 'Soul Bolt', school: 'damage' }, { name: 'Soul Mend', school: 'buff' }] };
 
 const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is not open.');
 /** The fight that is running (never the finished one kept for the combat screen while gearing up). */
@@ -2542,25 +2542,31 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       fieldOnly();
       if (sb.mode === 'teams') fail('Team fight: no drill units (switch the mode to Co-op waves).');
       if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
-      if (!WEAPON[a.weapon]) fail('No such weapon.');
-      const name = (a.name || '').trim().slice(0, 40);
+      // A Sigil caster (enemies.json casters; rules 1.4) of the same tier: it fights with an Evoker and its words.
+      const caster = a.caster ? CASTER[a.caster] : undefined;
+      if (a.caster && !caster) fail('No such caster.');
+      if (caster && caster.tier !== a.tier) fail(caster.name + ' is a ' + caster.tier + '.');
+      const weapon = a.weapon || (caster ? caster.weapon : '');
+      if (!WEAPON[weapon]) fail('No such weapon.');
+      const name = (a.name || '').trim().slice(0, 40) || (caster ? caster.name + ' ' + (1 + (cb ? cb.units.filter((u) => (u as any).caster === caster.id).length : npcsOf(g).filter((n) => n.caster === caster.id).length)) : '');
       if (gearing) {
         // On the map, idle: it joins the next fight.
         const map = zoneMap(g), k = tileKey(g, a.at);
         if (!standable(map, k) || Object.values(positionsOf(g)).includes(k) || npcsOf(g).some((n) => n.pos === k) || storyObjects(g).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
         const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (npcsOf(g).filter((n) => n.tier === a.tier).length + 1);
-        npcsOf(g).push({ id: 'foe-s' + (++sb.spawned), name: nm, side: 'hostile', tier: a.tier, weapon: a.weapon, pos: k, portrait: portraitFor(g, nm) || undefined, facing: facingToward(k, partyCentre(g)) });
-        sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[a.weapon].name + ') stands at ' + refOf(k) + '.');
+        npcsOf(g).push({ id: 'foe-s' + (++sb.spawned), name: nm, side: 'hostile', tier: a.tier, weapon, pos: k, portrait: portraitFor(g, nm) || undefined, facing: facingToward(k, partyCentre(g)), ...(caster ? { caster: caster.id } : {}) });
+        sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? ', Sigils' : '') + ') stands at ' + refOf(k) + '.');
         return;
       }
       if (!cb) fail('No fight is on.');
       const k = tileKey(g, a.at);
       if (!standable(cb!.map, k) || cb!.units.some((u) => u.pos === k && !u.dead) || objectsOf(cb!).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
       const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (cb!.units.filter((u) => u.tier === a.tier).length + 1);
-      const u = unitFromEnemy('foe-s' + (++sb.spawned), nm, a.tier, a.weapon, k, g.rng); u.npcId = u.id;
+      const u = unitFromEnemy('foe-s' + (++sb.spawned), nm, a.tier, weapon, k, g.rng); u.npcId = u.id;
+      if (caster) armFoe(u, { caster: caster.id });
       const p = portraitFor(g, nm); if (p) u.img = p;
       cb!.units.push(u); cb!.order.push(u.id);
-      sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[a.weapon].name + ') enters at ' + refOf(k) + '.');
+      sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? ', Sigils' : '') + ') enters at ' + refOf(k) + '.');
       return;
     }
     case 'sandbox/clear': {

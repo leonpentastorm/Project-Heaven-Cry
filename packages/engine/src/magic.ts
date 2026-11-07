@@ -361,7 +361,7 @@ export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Uni
     x += dx; y += dy; moved++;
   }
   if (!moved) return '';
-  t.pos = x + ',' + y; emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true }); return ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos);
+  t.pos = x + ',' + y; emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true, ...(n < 0 ? { pull: true } : {}) }); return ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos);
 }
 
 // ---------- turns ----------
@@ -398,9 +398,9 @@ export const magicLit = (cb: Combat, k: string) => (cb.zones || []).some((z) => 
 // sigilwords.ts); they are re-exported here so callers keep importing them from './magic'.
 export {
   drawGlyph, previewDraw, glyphCost, glyphApOf, glyphsPerTile, groundCap, sigilReady, scuff, findPattern, grammarError, evokeCharge, previewEvoke, planEvoke,
-  evoke, evokeOrigins, facingFrom, patternAt, placedMagic, secretFrom, subjectEffect, glyphsAt, compileSpell, spellRange, boltPath, burstTiles, dir8,
+  evoke, evokeOrigins, facingFrom, patternAt, placedMagic, secretFrom, glyphsAt, compileSpell, spellRange, boltPath, burstTiles, dir8,
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
-  enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, freeTile, LINE_RANGE, PUSH_RANGE, MAX_GLYPHS, SIGIL_REV,
+  enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter } from './sigil';

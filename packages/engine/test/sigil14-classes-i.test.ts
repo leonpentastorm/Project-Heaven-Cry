@@ -148,6 +148,7 @@ describe('Warden under 1.4', () => {
     s.g.story.glyphs = [{ id: 'gl1', word: 'stay', pos: gl, by: 'pc-' + c.id, side: 'pc', left: 3, who: c.name, v: SIGIL_REV } as any];
     s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:warden.raise_cover', actionId: 'raise_cover' } as any);
     expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name) && o.pos === gl)).toBe(true);
+    expect(() => s.act({ type: 'world/act', charId: c.id, act: 'move', to: gl } as any)).toThrow();
     for (let i = 0; i < 4; i++) { s.act({ type: 'world/act', charId: c.id, act: 'end' } as any); s.act({ type: 'narrator/turn', turn: { narration: 'Time passes.' } } as any); }
     expect(storyObjects(s.g).some((o) => /Cover rune/.test(o.name))).toBe(false);
   });

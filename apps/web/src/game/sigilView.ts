@@ -74,12 +74,14 @@ export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: st
   const m = u && u.mg, now = pa.costNow || {}, after = pa.costAfter || {};
   const stats = !ours || !m ? [] : [
     { k: 'Charge', now: String(now.charge), after: String(after.charge) + (after.evokeCharge != null ? ' (−' + after.evokeCharge + ')' : '') },
-    { k: 'AP', now: String(now.ap), after: String(after.ap) },
+    { k: 'AP', now: num(now.ap), after: num(after.ap) }, // AP can be fractional (Glyph AP 0.8): no float noise
     { k: 'Flux', now: now.flux + '/' + FLUX_MAX, after: after.flux + '/' + FLUX_MAX },
   ];
   const text = shape + ': ' + words.map((w: any) => w.word).join(' · ') + '. ' + verdict + (ours ? ' ' + pa.capLeft + (pa.capLeft === 1 ? ' glyph' : ' glyphs') + ' left before your cap; room for ' + pa.lineLeft + ' more in this Line.' : '');
   return { has: true, tile, tiles: pa.tiles || [], shape, words, readable: allRead, ours: !!ours, valid: !!pa.valid && allRead, verdict, capLeft: pa.capLeft, lineLeft: pa.lineLeft, stats, overload: ours ? pa.overloadWarning : null, text };
 }
+/** A number for the screen: at most one decimal (0.4, not 0.3999999999999999). */
+const num = (n: any) => (typeof n === 'number' ? String(Math.round(n * 10) / 10) : String(n));
 /** A spell in one short phrase from its compiled numbers: "FIRE · SEEK · CONDENSE: a bolt, range 8, one target ×1.5". */
 export function spellSummary(words: string[]): string {
   let sp: any; try { sp = compileSpell(words); } catch { return words.map(up).join(' · '); }

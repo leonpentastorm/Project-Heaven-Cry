@@ -15,10 +15,6 @@ export const MAX_GLYPHS: number = G.max_glyphs ?? 4;
 export const MIN_GLYPHS: number = G.min_glyphs ?? 2;
 export const REPEAT_MULT: number = G.repeats?.mult_per_repeated_glyph ?? 0.9;
 export const LIM = { traps: G.limits?.traps_per_caster ?? 2, turrets: G.limits?.turrets_per_caster ?? 1 };
-/** Old constants (rules 1.2), kept only so class handlers that still read them compile. TODO(sigil-1.4): the class and
- * perk lanes move to spellRange / planEvoke and these go. */
-export const LINE_RANGE: Record<number, number> = { 2: 4, 3: 8, 4: 12 };
-export const PUSH_RANGE = 8;
 
 // ---------- words ----------
 export const W = (id: string): SigilDef | undefined => SIGIL[id];

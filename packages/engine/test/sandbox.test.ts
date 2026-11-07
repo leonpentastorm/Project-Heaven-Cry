@@ -278,6 +278,22 @@ describe('the tools', () => {
     expect(pc(g).mg!.designs.some((d) => d.name === 'Mend')).toBe(true);
     expect(refused(g, { type: 'sandbox/learn', charId: c.id, word: 'not_a_word' })).toMatch(/word/);
   });
+  it('spawn a Sigil caster (rules 1.4): its tier\'s stats, an Evoker and its words, a weapon of its own; on the map it carries into the fight', () => {
+    let g = start(); const map = mapFor(g, 'proving_ground')!;
+    const free = ['7,5', '9,5', '7,7', '9,7'].filter((k) => standable(map, k) && !g.combat!.units.some((u) => u.pos === k)).map(refOf);
+    g = apply(g, { type: 'sandbox/spawn', tier: 'soldier', weapon: '', at: free[0], caster: 'sigil_adept' } as any, HOST);
+    const e = g.combat!.units.find((u) => u.id.startsWith('foe-s'))!;
+    expect(e).toMatchObject({ tier: 'soldier', weapon: 'combat_knife', caster: 'sigil_adept' }); expect(e.name).toBe('Sigil adept 1');
+    expect(e.mg?.evoker).toBe(true); expect(e.mg!.words).toEqual(expect.arrayContaining(['fire', 'seek', 'kin']));
+    expect(refused(g, { type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: free[1], caster: 'sigil_adept' } as any)).toMatch(/soldier/);
+    expect(refused(g, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'fists', at: free[1], caster: 'nobody' } as any)).toMatch(/caster/);
+    // Gearing up: an idle drill unit on the map that fights with its Sigils once the fight starts.
+    let h = open(); const k = ['7,5', '9,5', '7,7', '9,7', '5,5'].find((x) => standable(mapFor(h, 'proving_ground')!, x) && !Object.values(h.story.positions || {}).includes(x) && !(h.story.npcs || []).some((n) => n.pos === x))!;
+    h = apply(h, { type: 'sandbox/spawn', tier: 'minion', weapon: '', at: refOf(k), caster: 'sigil_novice' } as any, HOST);
+    expect(h.story.npcs!.find((n) => n.pos === k)).toMatchObject({ caster: 'sigil_novice', name: 'Sigil novice 1' });
+    h = apply(h, { type: 'sandbox/fight' }, HOST);
+    expect(h.combat!.units.find((u) => u.name === 'Sigil novice 1')!.mg?.words).toEqual(expect.arrayContaining(['spark', 'seek']));
+  });
   it('spawn, clear, enemy AI off, the mana meter', () => {
     let g = start(); const map = mapFor(g, 'proving_ground')!;
     const free = ['H6', 'J6', 'H8'].find((r) => { const k = r === 'H6' ? '7,5' : r === 'J6' ? '9,5' : '7,7'; return standable(map, k) && !g.combat!.units.some((u) => u.pos === k); })!;
@@ -324,7 +340,7 @@ describe('the tools', () => {
     // In the off hand where it fits; next to a two-handed weapon it is carried in the pack (carried is enough).
     expect((WEAPON[ch.weapon] as any).hands === '2H' ? packOf(ch).some((it) => (it.item || it.id) === 'evoker') : ch.offHand?.id === 'evoker').toBe(true);
     expect(packOf(ch).find((it) => (it.item || it.id) === 'standard_core')!.qty).toBeGreaterThanOrEqual(4);
-    expect(ch.sigils).toEqual(expect.arrayContaining(['fire', 'push']));
+    expect(ch.sigils).toEqual(expect.arrayContaining(['fire', 'seek'])); // a Reach word, so the kit casts at once (rules 1.4)
     expect((ch.outbursts || []).map((d) => d.school)).toEqual(expect.arrayContaining(['damage', 'buff']));
     expect(ch.mp).toBeGreaterThan(0);
     // twice is harmless (no second Evoker, no duplicate designs)

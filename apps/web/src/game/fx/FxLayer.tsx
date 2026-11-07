@@ -8,7 +8,8 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, queueFx, rememberTokens, setContext } from './play';
+import { canDraw, clearFx, queueFx, rememberTokens, setContext, seenNow } from './play';
+import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 
 export { playFx, queueFx, fxBusyUntil, FX_EVENT, FX_IDLE } from './play';
 
@@ -35,14 +36,14 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   const screenAt = React.useRef({ screen, at: 0 }); if (screenAt.current.screen !== screen) screenAt.current = { screen, at: Date.now() };
   React.useEffect(() => { setLayer(ref.current); if (game) preloadCombatSfx(); return () => setLayer(null); }, [!!game]);
   // Leaving the room unmounts the layer in the same render that drops the game: nothing queued may play on the title.
-  React.useEffect(() => () => clearFx(), []);
+  React.useEffect(() => () => { clearFx(); clearAmbient(); }, []);
   // A hidden tab plays nothing: on return it catches up silently.
   React.useEffect(() => {
-    const vis = () => { if (document.hidden) { clearFx(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; } };
+    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); return; } if (document.hidden) { clearFx(); clearAmbient(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; } };
     document.addEventListener('visibilitychange', vis); return () => document.removeEventListener('visibilitychange', vis);
   }, []);
   // Where everyone stands now and what the squad sees, for effects already queued as well as new ones.
-  React.useEffect(() => { setContext(game, screen); }, [game, screen]);
+  React.useEffect(() => { setContext(game, screen); if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
   // After the play effect below has read this render's tokens, keep copies of the living ones for the next kill.
   React.useEffect(() => { rememberTokens(); });
   const s = streamOf(game, screen), top = s ? lastN(s.list) : 0;
