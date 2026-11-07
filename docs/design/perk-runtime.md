@@ -213,6 +213,37 @@ Still open from batch 2: Sweet Talker's betrayal sting and You Get Used to It's 
 branch in an overworld throwaway fight is reachable only if a kill lands there without opening the fight (it doesn't
 today: a Shade's silent takedown kills inside the real fight and carries the AP back).
 
+## Sigil rules 1.4 (core engine pass)
+
+The Sigil half of the engine is `packages/engine/src/sigil.ts` (resolver, planner, placed magic, enemy AI) and
+`sigilwords.ts` (pure grammar: `compileSpell`, `grammarError`, `startingWordsError`, `migrateWords`). Both are re-exported
+from `magic.ts`, so handlers keep importing from `'../magic'`. The planner (`planEvoke` = `previewEvoke`) is pure and is
+what the real Evoke runs, so a handler that reads a preview sees exactly what will happen.
+
+Hooks (all through `emit`; mutable fields marked *):
+
+| Hook | Payload | Use |
+|---|---|---|
+| `glyph_cost` | {u, word, tile, ap*, charge*, flux*, preview, fail*} | unchanged; flux is the word's (TWICE 2) |
+| `glyphs_per_tile` | {u, tile, n*} | the two-glyph hook: set n = 2 (a Stack becomes possible) |
+| `glyph_drawn` | {u, glyph, cb, rng} | after a glyph is on the ground |
+| `evoke_reach` | {u, pattern, reach*} | unchanged: stand that far from a glyph (past 1 needs sight) |
+| `evoke_cost` | {u, pattern, ap*, charge*, preview, fail*} | unchanged (emitted by the planner) |
+| `evoke_area` | {u, spell, pattern, depth*} | the area's depth (Reach range + bonus, or 1 for Touch) |
+| `spell_mult` | {u, t, spell, kind: damage\|heal\|shield, mult*} | a multiplier on a spell's final numbers for one target |
+| `spell_roll` | {u, t, die, add*, kind: 'sigil'} | unchanged: the hit roll |
+| `evoked` | {u, pattern, spell, plan, targets, impact, fizzle, dealt, stay, zone, charge, ap} | after the real Evoke (the "after_evoke") |
+| `spell_fizzle` | {u, pattern, spell} | the spell went off and found nothing |
+| `sigil_placed` | {u, zone} | a field, trap or turret was placed |
+| `sigil_trap_sprung` | {u: victim, trap, owner} | a WAIT trap went off |
+| `turret_shot` | {turret, owner, target} | a WATCH turret fired |
+| `cond_apply` id `teleport` | the usual cond_apply fields | STEP's Body save against an enemy |
+
+Old API kept for the lanes (TODO(sigil-1.4) where it no longer means anything): `findPattern` (Pattern has `shape`
+'line' | 'stack', `tiles` in drawing order, `axis`, and the old `near`/`far`/`dir`), `grammarError(words, maxWords)`,
+`evokeCharge`, `subjectEffect` (one Subject on one target), `LINE_RANGE` and `PUSH_RANGE` (1.2 constants, unused by the
+engine). The class and perk tests that still assert 1.2 behaviour are `it.skip` with a `TODO(sigil-1.4)` note.
+
 ## Appendix: the lanes' notes
 
 Each lane's missing hooks, data deltas and UI notes as written. Most hooks and data deltas were applied in the hooks-gap pass above; what is still open is listed there.

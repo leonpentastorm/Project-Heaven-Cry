@@ -241,7 +241,13 @@
         "null"
       ]
     },
-    "provisional": true
+    "provisional": true,
+    "max_words": {
+      "minion": 2,
+      "soldier": 3,
+      "elite": 4,
+      "boss": 4
+    }
   },
   "example": {
     "words": [

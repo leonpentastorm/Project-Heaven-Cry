@@ -183,7 +183,19 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  down {unit, at, dead} · explode {at, radius, what} · object {at, what, dmg, broken, hp?} · door {unit?, at, open} ·
  *  trap {unit, at} · shove {unit, target, from, to, ok, prone?} · stance {unit, at, what: 'prone'|'stand'|'brace'|'overwatch'} ·
  *  analyze {unit, target, from, to} · pickup {unit, at} · cover {unit, target, at, dmg} (a shot stopped by cover) ·
- *  draw {unit, at, tile, word} · scuff {unit, at} · evoke {unit, at, shape, tiles, src, impact, targets, words, element, stay?} ·
+ *  draw {unit, at, tile, word, side, group, cls, element, effect, words} · glyph_fade {tile, word, side, why} · scuff {unit, at} ·
+ *  evoke {unit, at, shape, tiles, words, element, side, facing, dir, area, src, impact, targets, targetAt, missiles: [{origin,
+ *  kind: touch|bolt|lob|appear|relay, path, blockedAt, impact, arc, hops, burst, core, chain, placed}], stay, placed, fizzle} ·
+ *  chain {from, to, target, jump, mult, element} · fizzle {unit, at, tiles, words, element} · field {id, tiles, words, element,
+ *  side, by, rounds} · field_tick {id, target, at, element, side} · field_gone {id, tiles, side, why} · trap_set {id, tile, side,
+ *  by, words, element, only} · trap_spotted {id, tile, by, side, only, kind} · trap_sprung {id, tile, target, element, side,
+ *  words} · trap_gone {id, tile, side, why, only} · turret_placed {id, tile, side, by, words, element, hidden, only?} ·
+ *  turret_shot {id, from, to, target, element, side, path, kind, burst, chain} · turret_destroyed {id, tile, side, why} ·
+ *  wall_raised {tiles, by, side, hp, rounds} · wall_crumbled {tiles, why} · null_wave {at, tiles, removed, glyphs, zones, walls} ·
+ *  blink {target, from, to, element} · mask {target, at, fade?} · leech {unit, to, from, amount, element} · command {target, at,
+ *  order, to, by} · boon {target, at, word: ward|mend|quicken|sharpen|cleanse, amount?, cond?} · veil {at, tiles, side} ·
+ *  light {at, tiles, side} (Sigil rules 1.4; hurt, miss and cond carry element when a spell deals them; an event with
+ *  `only` is for that side's eyes: views drop it for the other side) ·
  *  miss {unit?, target, at, by} · cond {target, at, id, resisted?} · overload {unit, at} · vent {unit, at, flux} ·
  *  outburst {unit, at, design, school, hold, stage} · grow {unit, at, stage} · release {unit, at, to, school, stage, wild,
  *  area, targets} · short {unit, at, burst} · syphon {unit, at, mp} · crystallise {unit, at, dur} · mana {band, mana} ·

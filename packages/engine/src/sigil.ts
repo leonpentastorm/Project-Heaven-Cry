@@ -103,6 +103,9 @@ function readShape(glyphs: Glyph[], comp: string[], side: 'pc' | 'foe', from?: s
   }
   if (comp.length > MAX_GLYPHS) return 'No shape: ' + comp.length + ' glyphs touch here, and a Line is 2 to ' + MAX_GLYPHS + '. Scuff one or let it fade.';
   const s = straight(comp); if (!s) return 'No shape: these glyphs bend or cluster. A Line is one straight row (across, down or diagonal).';
+  // Read the Line from the end drawn first, so its words come in the order they were written.
+  const first = (k: string) => on(k)[0];
+  if (glyphOrder(first(s.tiles[s.tiles.length - 1]), first(s.tiles[0])) < 0) { s.tiles.reverse(); s.axis = neg(s.axis); }
   const gs = s.tiles.flatMap(on), A = s.tiles[0], Z = s.tiles[s.tiles.length - 1];
   const near = from && dist(from, Z) < dist(from, A) ? Z : A, far = near === A ? Z : A;
   return { shape: 'line', tiles: s.tiles, glyphs: gs, words: gs.map((g) => g.word), side, axis: s.axis, near, far, dir: near === A ? s.axis : neg(s.axis) };
@@ -368,7 +371,8 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   if (!aims.length) return { ...base, ok: false, why: 'Pick a target in the area (or yourself).', targets: [], needsAim, area, pickable, missiles: [], affected: [], fizzle: false };
   // Each missile (TWICE: more): its flight, its Burst, then what happens after.
   const missiles: MissilePlan[] = [], affected: Affected[] = [];
-  const nMiss = sp.watch ? 1 : sp.missiles; // WATCH + TWICE: one turret, two shots a round while (aims.length < nMiss) { const auto = autoAim(cb, u, sp, pickable, aims); if (!auto) break; aims.push(auto); }
+  const nMiss = sp.watch ? 1 : sp.missiles; // WATCH + TWICE: one turret, two shots a round
+  while (aims.length < nMiss) { const auto = autoAim(cb, u, sp, pickable, aims); if (!auto) break; aims.push(auto); }
   for (let i = 0; i < Math.min(nMiss, aims.length); i++) {
     const a = aims[i], self = a === u.pos;
     if (self && sp.push) return { ...base, ok: false, why: 'PUSH is refused on your own tile: a cone needs a way to face.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
@@ -409,7 +413,8 @@ interface MissileCtx { i: number; aim: string; origin: string; impact: string; f
 /** One missile's whole effect, planned: its Burst, who it affects, the chain, the pull and the step, Workings. */
 function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spell, c: MissileCtx): { plan: MissilePlan; affected: Affected[] } | string {
   const bt = burstTiles(cb, sp, c.impact, c.f);
-  const placed: MissilePlan['placed'] = sp.watch ? 'turret' : sp.wait ? 'trap' : sp.stay ? 'field' : null;
+  // A trap or turret going off strikes now: only an Evoke places (fields, traps, turrets).
+  const placed: MissilePlan['placed'] = c.via === 'trap' || c.via === 'turret' ? null : sp.watch ? 'turret' : sp.wait ? 'trap' : sp.stay ? 'field' : null;
   const plan: MissilePlan = { i: c.i, aim: c.aim, kind: c.kind, origin: c.origin, impact: c.impact, dir: c.f, path: c.path, blockedAt: c.blockedAt, stoppedBy: c.stoppedBy, arc: c.arc, hops: c.hops,
     burst: bt, chain: [], pull: [], step: [], stepTo: [], placed, raise: [], nulls: 0, veil: [], light: [], mainTarget: null, self: c.self };
   if (placed) return { plan, affected: [] }; // fields, traps and turrets don't strike when Evoked (item 422)
@@ -553,6 +558,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
   // LEECH (spec: Delivery): you heal a share of the spell's direct damage, in all (not × Healing given).
   if (sp.leech && dealt > 0 && !u.dead) { const n = Math.floor(dealt * sp.leech), r = healUnit(cb, u, n, u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: pv.missiles.map((x) => x.impact), amount: r.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + r.restored + ' HP (LEECH)'; }
   if (sp.damaging && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb); // Sharpened is spent on the next attack
+  if (u.hidden && sp.harmful) line += revealUnit(cb, u, 'cast a spell'); // MASK lasts until you attack
   cb.log.push(head + (line || ' · it strikes and finds no one') + '.');
   emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: hitIds.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean), impact: pv.impact, stay: sp.stay, zone: (cb.zones || [])[(cb.zones || []).length - 1], dealt, charge: pv.charge, ap: pv.ap, cb, rng });
   return null;
@@ -568,7 +574,7 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
       crit = r === 20;
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt }; }
     }
-    const hp0 = t.hp + (t.shield || 0), sm = by?.mg?.sigilMult || 1, em = by?.mg?.elemMult || 1, sharp = by && condOn(by, 'sharpened') && o.roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
+    const hp0 = t.hp + (t.shield || 0), sm = by?.mg?.sigilMult || 1, em = by?.mg?.elemMult || 1, sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
     const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
     for (const w of sp.subjects) { const d: any = W(w); if (!d?.damage) continue; const type = d.damage_type === 'elemental' ? 'elemental' : 'sigil', p = parts.find((x) => x.type === type); if (p) p.n += d.damage; else parts.push({ w, type, n: d.damage }); }
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
@@ -912,8 +918,8 @@ export const glyphsAt = (cb: Combat, k: string) => (cb.glyphs || []).filter((g) 
 // ---------- enemy casters (spec: Mana, Sigils 8; item 439) ----------
 /** Default enemy Sigil words by tier (sigils.json enemy_ai). */
 export const enemyDefaultWords = (tier: string): string[] => [...(ENEMY_AI.default_words?.[tier] || ENEMY_AI.default_words?.minion || STARTING_DEFAULT)];
-/** Max Sigil words for an enemy by tier. PROVISIONAL (not in the spec yet): minion 2, soldier 3, elite and boss 4. */
-export const ENEMY_MAX_WORDS: Record<string, number> = { minion: 2, soldier: 3, elite: 4, boss: 4 };
+/** Max Sigil words for an enemy by tier (sigils.json enemy_ai.max_words; spec item 453, provisional). */
+export const ENEMY_MAX_WORDS: Record<string, number> = ENEMY_AI.max_words || { minion: 2, soldier: 3, elite: 4, boss: 4 };
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 /** An enemy's Evoker and words (FoeSpec.sigils: its words, or true for its tier's default set). */
@@ -989,8 +995,8 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
       if (!best || s / cost > best.score / best.cost) best = { score: s, words, tiles, aim: t.pos, cost, pre: needVent ? 'vent' : needCore ? 'core' : null };
     }
   }
+  (u as any).aiCast = cb.round; // one decision a turn (the AI weighs it once)
   if (!best || (weapon > 0 && best.score / best.cost < weapon)) return false;
-  (u as any).aiCast = cb.round;
   if (!best.words.length) return !evoke(cb, rng, u, best.tiles[0], best.aim);
   if (best.pre === 'vent' && vent(cb, u)) return false;
   if (best.pre === 'core' && swapCore(cb, u)) return false;

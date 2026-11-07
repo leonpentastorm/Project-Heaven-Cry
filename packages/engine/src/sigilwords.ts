@@ -94,12 +94,13 @@ export const STARTING_DEFAULT: string[] = G.starting?.default || ['spark', 'seek
 /** Old characters' words (item 441, 438): RETURN and unknown words go (one free word each at the next rest); two
  * starting words with no Reach word swap the non-Subject one for SEEK. Returns the notes, or [] when nothing changed. */
 export function migrateWords(words: string[] | undefined): { words: string[]; free: number; notes: string[] } {
-  const list = [...(words || [])], notes: string[] = []; let free = 0;
-  const kept = list.filter((w) => { if (W(w)) return true; free++; notes.push((w || '?').toUpperCase() + ' is gone from the Sigil words (rules 1.4)' + (w === 'return' ? ': targeting yourself is Touch\'s exception now' : '') + '; one free word at the next rest.'); return false; });
-  if (kept.length === 2 && !kept.some(isReach)) {
-    const i = kept.findIndex((w) => !isSubject(w)), at = i >= 0 ? i : 1, was = kept[at];
-    if (!kept.includes('seek')) { kept[at] = 'seek'; notes.push(was.toUpperCase() + ' becomes SEEK: a new caster starts with a Reach word (rules 1.4).'); }
+  const list = [...new Set(words || [])], notes: string[] = []; let free = 0;
+  // Two starting words with no Reach word (a 1.2 Stack: SPARK · CONDENSE, FIRE · RETURN): the non-Subject one becomes SEEK.
+  if (list.length === 2 && !list.some((w) => W(w) && isReach(w)) && !list.includes('seek')) {
+    const i = list.findIndex((w) => !W(w) || !isSubject(w)), at = i >= 0 ? i : 1, was = list[at];
+    list[at] = 'seek'; notes.push((was || '?').toUpperCase() + ' becomes SEEK: a caster starts with a Reach word (rules 1.4).');
   }
-  return { words: [...new Set(kept)], free, notes };
+  const kept = list.filter((w) => { if (W(w)) return true; free++; notes.push((w || '?').toUpperCase() + ' is gone from the Sigil words (rules 1.4)' + (w === 'return' ? ': targeting yourself is Touch\'s exception now' : '') + '; one free word at the next rest.'); return false; });
+  return { words: kept, free, notes };
 }
 

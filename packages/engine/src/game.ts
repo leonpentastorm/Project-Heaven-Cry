@@ -1576,13 +1576,14 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
  * burns. Nothing happens (and nothing is logged) when there's no magic about. */
 function storyMagicRound(g: GameState) {
-  const live = (g.story.glyphs || []).length || (g.story.zones || []).length || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
+  const live = (g.story.glyphs || []).length || (g.story.zones || []).length || (g.story.objects || []).some((o) => o.kind === 'sigil_wall') || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
   for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u, g.rng); if (u.mg) u.mg.cast = false; }
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
   magicOut(g, cb, false);
+  g.story.objects = cb.objects; // RAISE walls crumble on the area map too
   storyFx(g, cb);
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true });
 }
