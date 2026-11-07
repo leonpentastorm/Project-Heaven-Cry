@@ -1,7 +1,7 @@
 // Collecting a holder's active effects (plan 2.2): traits, perks at their tier (Mastered, Achieved and Ultimate
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
-import { PERK, PERKS, TRAITS, CLASSES } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL } from '../data';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
@@ -43,6 +43,14 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
     const text = [...(x.upsides || []).map((s: string) => '+ ' + s), ...(x.downsides || []).map((s: string) => '− ' + s)].join(' ') || x.text || '';
     return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'trait'), text, adjudication: x.adjudication || 'engine', active: isAction(effects, null), bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
   }
+  if (kind === 'skill') {
+    // A skill's Mastery unlock (skills.json unlocks; key "skill:<skillId>.<points>"). Its perk_choice (the perk step) is
+    // the character's own pick, not an effect of the item, so it is left out.
+    const [sid, lvl] = id.split('.'), x: any = (SKILL[sid] as any)?.unlocks?.[lvl]; if (!x) return null;
+    const effects = (x.effects || []).filter((e: any) => e?.op !== 'perk_choice');
+    const ap = effects.find((e: any) => e?.op === 'grant_action')?.ap ?? null;
+    return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: isAction(effects, ap), bound: isAction(effects, ap), ap, uses: effects.find((e: any) => e?.op === 'grant_action')?.uses || 'at_will', provisional: !!x.provisional };
+  }
   if (kind === 'class') {
     const [cls, mv] = id.split('.'); const found = classMove(cls, mv); if (!found) return null;
     const { move, rank } = found, effects = [...(move.effects || [])];
@@ -61,12 +69,21 @@ export function splitKey(key: string): [ItemKind, string] {
   const i = key.indexOf(':'); if (i < 0) return [guessKind(key), key];
   return [key.slice(0, i) as ItemKind, key.slice(i + 1)];
 }
-const guessKind = (id: string): ItemKind => (PERK[id] ? 'perk' : TRAIT[id] ? 'trait' : id.includes('.') ? 'class' : 'perk');
+const guessKind = (id: string): ItemKind => (PERK[id] ? 'perk' : TRAIT[id] ? 'trait' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
 /** "bulwark" → "perk:bulwark"; "gambler" → "trait:gambler"; "marksman.killzone" → "class:marksman.killzone"; keys pass through. */
 export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':') ? idOrKey : (kind || guessKind(idOrKey)) + ':' + idOrKey);
 
-/** What a holder holds, the compact form a Unit carries (u.fx) and the collector reads. */
-export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null }
+/** What a holder holds, the compact form a Unit carries (u.fx) and the collector reads. skills: the skill unlocks it has
+ * reached ("brain_power.3"), only those in SKILL_ITEMS. */
+export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[] }
+/** Skill Mastery unlocks the runtime runs as items (perk-runtime H4): key "skill:<skillId>.<points>". The rest of the
+ * skills' unlocks are perk steps (perk_choice) or the Narrator's (their text reaches it through the skill's card). */
+export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'visualization.5'];
+/** The skill items a character's points reach. */
+export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
+  SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });
+/** Does a holder hold anything at all (a quick skip for dispatch)? */
+export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || h.adv || h.skills?.length);
 
 /** Class moves a holder has: base class moves up to its rank, and every move of its advanced class. */
 export function classMoveKeys(h: Held): { key: string; rank: string }[] {
@@ -86,12 +103,13 @@ export function itemsOf(h: Held): ItemInfo[] {
   for (const t of h.traits || []) { const i = itemInfo('trait:' + t); if (i) out.push(i); }
   for (const p of h.perks || []) { const i = itemInfo('perk:' + p.id, p.tier as Tier); if (i) out.push(i); }
   for (const m of classMoveKeys(h)) { const i = itemInfo(m.key, m.rank as Tier); if (i) out.push(i); }
+  for (const k of h.skills || []) { const i = itemInfo('skill:' + k); if (i) out.push(i); }
   if (itemsCache.size > 400) itemsCache.clear();
   itemsCache.set(k, out);
   return out;
 }
 const itemsCache = new Map<string, ItemInfo[]>();
-export const heldKey = (h: Held) => JSON.stringify([h.perks || [], h.traits || [], h.cls || null, h.rank || 0, h.adv || null]);
+export const heldKey = (h: Held) => JSON.stringify([h.perks || [], h.traits || [], h.cls || null, h.rank || 0, h.adv || null, h.skills || []]);
 
 /** Every effect of every item, flat (plan 2.2: effectsOf). */
 export function effectsOfHeld(h: Held): ActiveEffect[] {
@@ -108,5 +126,6 @@ export function allItems(): ItemInfo[] {
   for (const t of TRAITS) out.push(itemInfo('trait:' + t.id)!);
   for (const b of CLASSES as any[]) for (const r of RANKS) for (const m of b.ranks?.[r]?.moves || []) out.push(itemInfo('class:' + b.id + '.' + m.id)!);
   for (const a of ADV) for (const m of a.moves || []) out.push(itemInfo('class:' + a.id + '.' + m.id)!);
+  for (const k of SKILL_ITEMS) out.push(itemInfo('skill:' + k)!);
   return out.filter(Boolean);
 }

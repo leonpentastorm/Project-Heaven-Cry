@@ -21,7 +21,7 @@ import {
 import { WEAPON, SIGIL, SCHOOL } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, releaseOutburst, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
   type EvokePreview, type Spell,
 } from '../magic';
 import { d20, die, type Rng } from '../rng';
@@ -647,9 +647,10 @@ const MOVE_RANGE = 8;
 interface SigilNums { brain: number; sigilMult: number; elemMult: number; healMult: number }
 
 // ---------- Barrage (rank I, passive) ----------
-// FIRE, SHOCK and FREEZE cost 1 charge less (the data's word_cost, run by the generic op); STONE too (PROVISIONAL: the
-// fourth 2-charge damage word). Each glyph still costs at least 1 charge (PROVISIONAL: "a spell" read as each glyph).
-const BARRAGE = ['fire', 'shock', 'freeze', 'stone'];
+// The 2-charge damage words cost 1 charge less (the data's word_cost, run by the generic op): FIRE, SHOCK, FREEZE, STONE
+// (PROVISIONAL: the fourth 2-charge damage word) and, under 1.4, ACID (item 486, PROVISIONAL); SPARK and GALE already
+// cost 1, the floor, so they gain nothing. Each glyph still costs at least 1 charge ("a spell" read as each glyph).
+const BARRAGE = ['fire', 'shock', 'freeze', 'stone', 'acid'];
 register({
   id: 'mage.barrage', claims: (e) => e?.op !== 'word_cost',
   on: { glyph_cost: (ctx, h) => { if (ctx.u !== h.u || !BARRAGE.includes(ctx.word)) return; ctx.charge = Math.max(1, ctx.charge); } },
@@ -737,9 +738,9 @@ const payloadAction = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'payload' : 'payload_world', label: 'Evoke with Payload', scope: [scope], target: 'tile', ap: 0,
   text: 'Evoke the Line on this tile with double area: a SPREAD radius or a PUSH cone ×2, or one more missile for a one-target spell. The Evoke adds Flux equal to its glyphs. Not for STAY, WAIT or WATCH.',
   preview: (h, args) => {
-    const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return { ok: false, why: r.why, ...(r.pv?.area?.length ? { tiles: r.pv.area } : {}) };
+    const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return { ok: false, why: r.why, ...(r.pv?.area?.length ? { area: r.pv.area, sigil: true } : {}) };
     const pv = r.pv!, n = pv.pattern!.glyphs.length;
-    return { lines: ['Payload: ' + payloadWhat(pv.pattern!.words) + '; ' + pv.targets.length + ' target(s); +' + n + ' Flux on the Evoke.'], targets: pv.targets, tiles: pv.missiles.flatMap((m) => m.burst.tiles) };
+    return { lines: ['Payload: ' + payloadWhat(pv.pattern!.words) + '; ' + pv.targets.length + ' target(s); +' + n + ' Flux on the Evoke.'], ...evokeMarks(pv) };
   },
   run: (h, args, rng) => {
     // The area map: a Payload that reaches a hostile token opens the fight there first, as an Evoke does (the spell is
@@ -866,7 +867,7 @@ register({
     id: 'seal', label: 'Seal', scope: ['combat'], target: 'tile', ap: 3,
     available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 2) return 'Needs 2 charge.'; return true; },
     preview: (h, args) => { const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
-      if (dist(u.pos, t) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (t !== u.pos && !lineOfSight(cb, u.pos, t)) return { ok: false, why: 'No line of sight.' }; return { tiles: around(t, 1) }; },
+      if (dist(u.pos, t) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (t !== u.pos && !lineOfSight(cb, u.pos, t)) return { ok: false, why: 'No line of sight.' }; return { tiles: around(t, 1), sigil: true }; },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile)!; u.mg!.charge -= 2; u.mg!.cast = true;
       cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'seal' as any, tiles: around(t, 1), words: ['seal'], by: u.id, side: u.side, left: 2, mult: 1, who: u.name }];
@@ -1045,8 +1046,8 @@ register({
         const cb = h.cb!, u = h.u!, sp = storedOf(h)[0]; if (!sp) return { ok: false, why: 'Nothing stored.' };
         const sw = storedWords(sp); if (sw.why) return { ok: false, why: sw.why };
         const pv = withStored(cb, u, sw.words, () => previewEvoke(cb, u, u.pos, tileOf(cb, args.tile) || undefined));
-        if (!pv.ok) return { ok: false, why: pv.why, ...(pv.area.length ? { tiles: pv.area } : {}) };
-        return { lines: ['Stored ' + sw.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + pv.targets.length + ' target(s)' + (pv.fizzle ? ' · it would fizzle' : '') + '.'], targets: pv.targets, tiles: pv.area };
+        if (!pv.ok) return { ok: false, why: pv.why, ...(pv.area.length ? { area: pv.area, sigil: true } : {}) };
+        return { lines: ['Stored ' + sw.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + pv.targets.length + ' target(s)' + (pv.fizzle ? ' · it would fizzle' : '') + '.'], ...evokeMarks(pv) };
       },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, list = storedOf(h), sp = list[0]; if (!sp) return 'Nothing stored.';

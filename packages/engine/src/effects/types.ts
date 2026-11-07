@@ -88,7 +88,9 @@ export type ActionTarget = 'none' | 'self' | 'ally' | 'enemy' | 'unit' | 'tile' 
 /** What a player sends with a perk action: a target unit, a tile, a choice, a line of text, an NPC, a check. */
 export interface ActionArgs { targetId?: string; targetIds?: string[]; tile?: string; choice?: string; text?: string; npc?: string; checkId?: string; arm?: boolean }
 
-export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: string[]; tiles?: string[]; targets?: string[] }
+/** What a perk action would do. tiles: what it covers (a Burst, a zone); area: where it may be aimed (a Sigil's area);
+ * targets: the units it would affect; sigil: it is Sigil magic (the grid paints it Mind cyan, item 489 c). */
+export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: string[]; tiles?: string[]; targets?: string[]; area?: string[]; sigil?: boolean }
 
 /** An action an item grants (combat Perks or Class tab, the area map, the story panel). */
 export interface ActionDef {

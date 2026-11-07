@@ -24,7 +24,7 @@ import {
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
-import { castAt, compileSpell } from '../sigil';
+import { castAt, compileSpell, evokeMarks } from '../sigil';
 import { d20, die } from '../rng';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
 import { makeObject } from '../objects';
@@ -437,7 +437,7 @@ register({
       const p = findPattern(cb, t, u.pos); if (typeof p === 'string') return { ok: false, why: p };
       if (!halfOnly(p)) return { ok: false, why: 'Stitch fires a pattern made only of half-glyphs.' };
       if (grammarError(p.words, u.mg!.maxWords)) return { ap: 0, lines: ['These words make no spell: it fizzles (the glyphs fade).'] };
-      STITCHING = u.id; try { const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a)); return pv.ok ? { ap: 0, lines: [pv.ap + ' AP, ' + pv.charge + ' charge · ' + pv.targets.length + ' affected · d20: 1-5 backlash, 16-20 double damage'] } : { ok: false, why: pv.why }; } finally { STITCHING = null; }
+      STITCHING = u.id; try { const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a)); return pv.ok ? { ap: 0, lines: [pv.ap + ' AP, ' + pv.charge + ' charge · ' + pv.targets.length + ' affected · d20: 1-5 backlash, 16-20 double damage'], ...evokeMarks(pv) } : { ok: false, why: pv.why, ...(pv.area.length ? { area: pv.area, sigil: true } : {}) }; } finally { STITCHING = null; }
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, aim = aimOf(cb, a) || undefined, opts = stitchOpts(cb, a), p = findPattern(cb, t, u.pos);
@@ -676,7 +676,7 @@ register({
       const r = fusionCheck(h, a); if (!r.ok) return { ok: false, why: r.why };
       const live = r.plan.affected.filter((x) => !x.kinSpared && !x.skipped);
       return { ap: r.ap, lines: [r.d.name + ' through ' + r.p.words.map((w) => w.toUpperCase()).join(' · ') + ': ' + r.ap + ' AP, ' + r.charge + ' charge, ' + r.cost + ' MP, +' + r.strain + ' Strain, +2 Flux.',
-        live.length ? 'It reaches ' + live.map((x) => x.name + ' ×' + x.mult).join(', ') + '.' : 'Nothing it may affect: it will fizzle.'] };
+        live.length ? 'It reaches ' + live.map((x) => x.name + ' ×' + x.mult).join(', ') + '.' : 'Nothing it may affect: it will fizzle.'], ...evokeMarks(r.plan), targets: [...new Set(live.map((x) => x.unit))] };
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, m = u.mg!, r = fusionCheck(h, { ...a }); if (!r.ok) return r.why;
@@ -803,7 +803,7 @@ register({
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return { ok: false, why: 'Pick a glyph of the pattern.' };
       const why = surveyWhy(cb, u, t); if (why) return { ok: false, why };
       const pv = previewEvoke(cb, u, t, aimOf(cb, a) || undefined, stitchOpts(cb, a));
-      return pv.ok ? { lines: [pv.ap + ' AP, ' + pv.charge + ' charge (Survey: −1), firing ' + (pv.facing?.mode || '') + ' from ' + refOf(u.pos) + '.'] } : { ok: false, why: pv.why };
+      return pv.ok ? { lines: [pv.ap + ' AP, ' + pv.charge + ' charge (Survey: −1), firing ' + (pv.facing?.mode || '') + ' from ' + refOf(u.pos) + '.'], ...evokeMarks(pv) } : { ok: false, why: pv.why, ...(pv.area.length ? { area: pv.area, sigil: true } : {}) };
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile'); if (!t) return 'Pick a glyph of the pattern.';

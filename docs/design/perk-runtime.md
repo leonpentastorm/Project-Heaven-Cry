@@ -533,6 +533,13 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 - **H4. Base Hand-Off.** Skill unlocks (skills.json `unlocks`) aren't items. Camaraderie 3's `grant_action hand_off`
   needs an item key (for example `skill:camaraderie.3`) so every Camaraderie 3 character gets Hand-Off (1 AP,
   adjacent). Many Hands would then only widen it.
+  *Partly built (Sigil 1.4, completeness batch 2):* skill unlocks can now be items of kind `skill`, key
+  `skill:<skillId>.<points>`. `effects/collect.ts SKILL_ITEMS` lists the ones the runtime runs (today the four Sigil ones:
+  `brain_power.3` Overclock, `brain_power.5` Twin Draw, `rumination.5` Proven Formula, `visualization.5` Paint the Field;
+  handlers in `perks/skills.ts`). A character holds one once its points reach the level (`Held.skills`, from
+  `skillItemsOf(c.skills)`); the unlock's `perk_choice` effect is left out (the perk step is the character's pick). They
+  are in the coverage report. To add Hand-Off: put `camaraderie.3` in SKILL_ITEMS and `register({ id:
+  'skill:camaraderie.3', kind: 'skill', ... })`.
 - **H5. A refusal field on `evoke_cost` and `outburst_cost`, and on `shove` / `setOverwatch`.** Field Medic's First, Do
   No Harm blocks attacks through `attack_preview`. That covers shots, aimed shots, melee, bursts and auto, and
   Overwatch and reaction shots, which go through `resolveAttack`. It can't refuse a damaging Sigil, a damaging

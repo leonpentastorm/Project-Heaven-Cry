@@ -8,6 +8,7 @@ import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
 import sigilsJ from '../../../data/sigils.json';
+import enemiesJ from '../../../data/enemies.json';
 import { verdictFor } from './effects/coverage';
 
 export interface WikiEntry { key: string; name: string; text: string }
@@ -50,8 +51,14 @@ function build(): WikiEntry[] {
     'Drawing: one glyph on the caster\'s own tile; step and draw again to walk a Line, 2 to 4 tiles in a straight row (diagonals too). Glyphs fade after a few rounds.',
     'Evoking (1 AP): stand at an end or behind it to fire along the Line, beside it to fire across; the Line\'s length is the spell\'s width, the Reach its depth. A finished Line fires back the way the caster walked. Middle glyphs can\'t fire.',
     'Reach: SEEK a straight bolt (cover stops it), ARC a lob over everything, SENSE appears with no sight, RELAY casts from an ally. Delivery: STAY a field, WAIT a hidden trap, WATCH a turret, TWICE two missiles, PULL, CHAIN, LEECH. Burst: CONDENSE one target, SPREAD 5x5, PUSH a cone.',
+    'A Stack (two glyphs on one tile, a perk\'s hook) fires all around its caster. Every save is in the log. Skill unlocks the engine runs: Overclock (one word past Max Sigil words, +2 charge), Twin Draw (two spells for the longer one\'s Glyph AP, once a fight), Proven Formula (a spell Evoked again this fight: 1 AP less), Paint the Field (a free SPREAD or PUSH on a spell with no Burst). The Evoker blade\'s Edge Word: after a hit, the next glyph that turn costs 0 AP.',
     'Spells hit friends too unless KIN is in them; a spell that finds nothing it may affect fizzles. Refused: ' + (sg.refused || []).map((r: any) => r.why).join(' ') ,
     'Starting magic: ' + (sg.starting?.words ?? 2) + ' words that make a spell, one of them a Reach word. Retired 1.2 words and shapes (RETURN, Rings, Stacks) are gone.'));
+  // Enemy Sigil casters (enemies.json casters; items 469, 490, 491): what a fight's foe may name by `caster`.
+  const casters = ((enemiesJ as any).casters || []) as any[];
+  if (casters.length) add('enemy:casters', 'Enemy Sigil casters', line('Enemy Sigil casters (rules 1.4): a foe of the same tier may name one by caster; it fights with an Evoker and these words.',
+    casters.map((c) => c.name + ' (' + c.tier + '): ' + (c.sigils || []).map((w: string) => String(w).toUpperCase()).join(', ') + '.').join(' '),
+    'COMMAND from an enemy fits its target: it walks a player out of its guards\' reach (up to 3 tiles, never into harm), halts one charging in, makes a shooter drop its weapon, else makes it kneel.'));
   for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
   for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
   return out;

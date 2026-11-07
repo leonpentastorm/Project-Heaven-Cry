@@ -57,13 +57,16 @@ export function behindLine(att: string, guard: string, ally: string, depth: numb
   return false;
 }
 const rangedSrc = (src: any, t: Unit) => !!src?.by && !src.explosive && src.type !== 'explosion' && (src.type === 'weapon' ? !!src.ranged : magicSrc(src) && dist(src.by.pos, t.pos) > 1);
+/** Where the line of fire starts: a Sigil spell's missile origin (src.from: the Line's glyph a Touch spell or a SEEK bolt
+ * leaves from, a chain's last target, a turret; item 488), else the attacker's tile. */
+const fireFrom = (src: any): string => src?.from || src?.by?.pos;
 register({
   id: 'bulwark', claims: 'all',
   on: {
     damage_in: (ctx, h) => {
       const g = h.u, t: Unit = ctx.t; if (ctx.phase !== 'reduce' || !g || t === g || t.side !== g.side || !alive(g) || !ctx.hostile || !rangedSrc(ctx.src, t)) return;
       const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1, prev = ctx._bulwark || 0;
-      if (frac <= prev || !behindLine(ctx.src.by.pos, g.pos, t.pos, depth)) return;
+      if (frac <= prev || !behindLine(fireFrom(ctx.src), g.pos, t.pos, depth)) return;
       ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - frac); ctx._bulwark = frac;
       say(h.cb, g.name + ' stands in the line of fire (Bulwark): ' + t.name + ' takes ' + Math.round(frac * 100) + '% less.');
     },

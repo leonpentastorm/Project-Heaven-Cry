@@ -1,5 +1,5 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
-import { ENEMY, WEAPON, COMBAT_XP, SKILLS, type WeaponDef } from './data';
+import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
@@ -8,6 +8,7 @@ import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverW
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
+import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { turnAp } from './effects/ap';
@@ -110,6 +111,8 @@ export interface Unit {
   reactUsed?: { r: number; n: number }; owShots?: number;
   /** The first shot of this turn (per turn) and Sprint this turn (spec: once per turn, rules 1.3). */
   firstShotTurn?: boolean; sprinted?: boolean; attackedTurn?: boolean;
+  /** The Evoker blade's Edge Word (item 487): a hit this turn left a free glyph (0 AP; charge and Flux as usual). */
+  edgeWord?: boolean;
   /** This turn is lost (Stunned): the engine passes it. */
   skipTurn?: boolean;
   /** Derived stats (spec: Derived stats) the damage chain reads: percent of critical, elemental and ambush damage not
@@ -294,7 +297,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0) + statQuery({ c }, 'vision').add, sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
-    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass ? { held: heldOfChar(c) } : {}),
+    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || skillItemsOf(c.skills).length ? { held: heldOfChar(c) } : {}),
     ...pcExtras(c, w),
   };
 }
@@ -726,6 +729,9 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && !immune({ u: tgt }, 'bleed')) { tgt.bleed = 3; injury += ' · Bleeding'; }
     if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);
+    // The Evoker blade's Edge Word (item 487): a hit leaves one glyph free of AP this turn (charge and Flux as usual),
+    // drawn on your own tile as any glyph; not on an attack that already drew one (Sword Form: one free glyph an attack).
+    if (fx.op === 'edge_word' && att.mg?.evoker && !att.edgeWord && !(att.ps as any)?.['class:blade_scribe.sword_form']?.edge) { att.edgeWord = true; injury += ' · Edge Word: your next glyph this turn costs 0 AP'; }
     if (r.prevented) injury += ' · no damage';
     // Riders (rules 1.3): incendiary rounds and burning weapons set the target Burning (a hit's rider: no save);
     // enhanced rounds and mana arms release bots (+1 on the meter); explosives splash; the flamer's cone.
@@ -871,8 +877,16 @@ export function beginTurn(cb: Combat, rng: Rng) {
   if (!u.dead && condOn(u, 'commanded') && (u.side === 'foe' || u.condBy?.commanded)) {
     const o = u.condArg?.commanded || 'halt';
     if (o === 'drop') applyCond(cb, rng, null, u, 'disarmed', undefined, undefined, { skipSave: true }); if (o === 'kneel') { u.prone = true; u.braced = false; }
-    if (o.startsWith('move:')) { const to = o.slice(5), P = paths(cb, u.pos, u.id); endCond(u, 'commanded', cb); if (P.dist[to] !== undefined && P.dist[to] <= 3 && !u.prone) moveUnit(cb, u, to, rng); }
-    cb.log.push(u.name + ' obeys: ' + o.split(':')[0] + (o.startsWith('move:') ? ' to ' + refOf(o.slice(5)) : '') + '.');
+    let said = false;
+    if (o.startsWith('move:')) {
+      // The walk is checked again here (the ground may have changed since the Evoke): too far, blocked or prone, it
+      // stays where it is and the log says why (item 481).
+      const to = o.slice(5), P = paths(cb, u.pos, u.id), max = (SIGIL.command as any)?.move_tiles ?? 3; endCond(u, 'commanded', cb);
+      const why = u.prone ? 'it is prone' : P.dist[to] === undefined ? 'no way through' : P.dist[to] > max ? 'more than ' + max + ' tiles' : '';
+      if (why) { cb.log.push(u.name + ' is Commanded to walk to ' + refOf(to) + ' but can\'t (' + why + '): it stays.'); said = true; }
+      else moveUnit(cb, u, to, rng);
+    }
+    if (!said) cb.log.push(u.name + ' obeys: ' + o.split(':')[0] + (o.startsWith('move:') ? ' to ' + refOf(o.slice(5)) : '') + '.');
   }
   // 'turn_start' {u}: after AP, conditions, hazards, bleeding and death saves.
   if (!u.dead) emit(cb, 'turn_start', { u, cb, rng });
@@ -884,7 +898,7 @@ export function closeTurn(cb: Combat, rng: Rng | null, u: Unit) {
   if (rng && !u.skipTurn) spotHidden(cb, rng, u);
   if ((cb.zones || []).length) sigilSpot(cb, u); // hidden Sigil traps and turrets nearby (rules 1.4)
   if (u.res && u.res.momentum && !u.shotsThisTurn && !u.attackedTurn) u.res.momentum = 0;
-  u.attackedTurn = false; delete u.skipTurn;
+  u.attackedTurn = false; delete u.skipTurn; delete u.edgeWord;
 }
 
 export function checkOver(cb: Combat) {

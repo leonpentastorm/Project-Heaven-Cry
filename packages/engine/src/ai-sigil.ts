@@ -12,7 +12,8 @@
 //  · a caster (an Evoker: FoeSpec.sigils, or FoeSpec.caster naming an enemies.json `casters` entry): weighs every spell
 //    it can draw, walk and Evoke this turn by situation (aiSigilCast): damage on clustered players (a Burst; KIN when
 //    its own side is in the area), MEND or WARD on a hurt ally, BIND or SLOW on a player charging in with a melee
-//    weapon, NULL on player fields, turrets, traps, walls and Lines near its side, STEP out of melee, traps on the
+//    weapon, COMMAND with the order that fits its target (aiCommandOrder: walk it out of melee, halt a charger, drop a
+//    shooter's weapon, else kneel; item 490), NULL on player fields, turrets, traps, walls and Lines near its side, STEP out of melee, traps on the
 //    tiles players will cross, turrets and fields where players stand. It respects AP, charge (a core swap first),
 //    Flux (a vent first, never an overload), friendly fire (it holds a spell that hits more of its own than of yours)
 //    and casts only when the spell's value per AP beats its weapon's.
@@ -139,12 +140,20 @@ export function casterCombos(words: string[], max: number): Combo[] {
     let dmg = 0, heal = 0; for (const w of subj) { const d: any = W(w); dmg += d?.damage || 0; heal += (d?.heal || 0) + (d?.shield || 0); }
     const area = 1 + (sp.spread ? sp.radius * 1.2 * sp.radiusMult : 0) + (sp.push ? sp.coneLen * 0.6 * sp.coneMult : 0) + (sp.condense ? sp.coreMult - 1 : 0) + sp.chain * 0.6 + (sp.missiles - 1);
     const est = (dmg + heal) * sp.reachMult * area + subj.filter(isAffliction).length * 10 + (sp.reach ? sp.range * 0.3 : 0) - c.length * 0.5;
-    (groups[kind + ':' + (sp.reach || '-') + ':' + (sp.kin ? 'k' : '')] ||= []).push({ words: c, kind, sp, est });
+    // Grouped by length too (item 491): a long spell outscores a short one on paper but may not fit in one turn (4
+    // glyphs, 3 steps and the Evoke are 8 AP), so each length keeps its own strongest few.
+    (groups[kind + ':' + (sp.reach || '-') + ':' + (sp.kin ? 'k' : '') + ':' + c.length] ||= []).push({ words: c, kind, sp, est });
   }
   const out: Combo[] = [];
   for (const [g, list] of Object.entries(groups).sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
-    const n = g.startsWith('harm') ? 6 : g.startsWith('boon') ? 3 : 2;
-    out.push(...list.sort((a, b) => b.est - a.est || (a.words.join() < b.words.join() ? -1 : 1)).slice(0, n));
+    const n = g.startsWith('harm') ? 4 : g.startsWith('boon') ? 2 : 2;
+    const sorted = list.sort((a, b) => b.est - a.est || (a.words.join() < b.words.join() ? -1 : 1)), keep = sorted.slice(0, n);
+    // Every Affliction it knows keeps its strongest spell in each group (item 490): a COMMAND or BLIND that scores
+    // low on damage is still weighed by the situation, not pruned behind the damage words.
+    if (g.startsWith('harm')) for (const w of [...new Set(sorted.flatMap((c) => c.sp.uniqueSubjects.filter(isAffliction)))].sort()) {
+      if (!keep.some((c) => c.sp.uniqueSubjects.includes(w))) { const b = sorted.find((c) => c.sp.uniqueSubjects.includes(w)); if (b) keep.push(b); }
+    }
+    out.push(...keep);
   }
   COMBO_CACHE.set(k, out);
   return out;
@@ -176,16 +185,46 @@ function charging(cb: Combat, u: Unit, t: Unit): boolean {
   return d >= 2 && d <= 2 + Math.ceil((t.movement || 1.5) * 6);
 }
 /** What a condition on a player is worth to the caster (an expected-damage scale): BIND or SLOW on a charging melee
- * player, BLIND on a shooter, SILENCE on a caster count double. */
-function condValue(cb: Combat, u: Unit, cond: string, t: Unit): number {
+ * player, BLIND on a shooter, SILENCE on a caster count double; COMMAND by the order it would give (aiCommandOrder).
+ * single: the spell has one target (no Burst, one missile, no CHAIN), so COMMAND may give the move order. */
+function condValue(cb: Combat, u: Unit, cond: string, t: Unit, single = true): number {
   if (condOn(t, cond)) return 0;
   const w = condWord(cond), wp = WEAPON[t.weapon];
   if (w === 'bind' || w === 'slow' || w === 'freeze') return charging(cb, u, t) ? 22 : 9;
   if (w === 'blind') return wp && !isMelee(wp) ? 16 : 8;
   if (w === 'silence') return t.mg && (t.mg.evoker || t.mg.emanator) ? 20 : 2;
-  if (w === 'command') return 14;
+  if (w === 'command') return aiCommandOrder(cb, u, t, single).value;
   if (w === 'acid') return 8;
   return 9;
+}
+/** The order a caster gives a creature of the other side it COMMANDs (spec 14 item 490), and what it is worth (an
+ * expected-damage scale). In this order: **move** (one target only) a player standing next to the caster's side to
+ * the tile it can walk to in move_tiles (3) that is farthest from the caster's side (at least 2 away: out of melee),
+ * never onto a field, trap, turret or wall of either side (the order never sends it into harm), 18 + 2 for each of
+ * the caster's side it was next to; **halt** a player charging in with a melee weapon, 20; **drop** an armed player's
+ * weapon when it could shoot one of the caster's side (a ranged weapon, one of them in its range and sight) 16, or
+ * when it stands next to one of them 14; else **kneel** (Prone: it spends AP to get up), 9. Ties break by tile key.
+ * Deterministic. */
+export function aiCommandOrder(cb: Combat, u: Unit, t: Unit, single = true): { order: 'halt' | 'kneel' | 'drop' | 'move'; orderTo?: string; value: number } {
+  const own = friendsOf(cb, u).filter(live), adj = own.filter((f) => dist(f.pos, t.pos) <= 1);
+  if (single && adj.length && !t.prone && !condOn(t, 'pinned') && !condOn(t, 'grappled')) {
+    const max = (W('command') as any)?.move_tiles ?? 3, P = paths(cb, t.pos, t.id);
+    const harm = new Set<string>(); for (const z of cb.zones || []) if (['field', 'trap', 'turret', 'wall'].includes(z.kind)) for (const k of z.tiles) harm.add(k);
+    let to: string | null = null, td = -1;
+    for (const [k, n] of Object.entries(P.dist)) {
+      if (k === t.pos || n > max || harm.has(k)) continue;
+      const d = Math.min(...own.map((f) => dist(f.pos, k)));
+      if (d > td || (d === td && to !== null && k < to)) { td = d; to = k; }
+    }
+    if (to && td >= 2) return { order: 'move', orderTo: to, value: 18 + 2 * adj.length };
+  }
+  if (charging(cb, u, t)) return { order: 'halt', value: 20 };
+  const w = WEAPON[t.weapon];
+  if (w && w.id !== 'fists' && !condOn(t, 'disarmed')) {
+    if (!isMelee(w) && own.some((f) => dist(f.pos, t.pos) <= effectiveRange(w) && lineOfSight(cb, t.pos, f.pos))) return { order: 'drop', value: 16 };
+    if (adj.length) return { order: 'drop', value: 14 };
+  }
+  return { order: 'kneel', value: 9 };
 }
 const failChance = (t: Unit, fam: 'body' | 'brain' | 'heart', tn: number) => 1 - Math.max(0.05, Math.min(0.95, (21 - (tn - unitSave(t, fam))) / 20));
 /** What NULL unmakes on these tiles, by side: the other side's magic is worth unmaking (more when it is near the
@@ -226,7 +265,7 @@ export function aiPlanValue(cb: Combat, u: Unit, pv: EvokePreview): number {
   for (const a of livea) {
     const t = unitOf(cb, a.unit);
     const exp = Math.min(t.hp, a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour);
-    let cv = 0; for (const sv of a.saves) cv += failChance(t, sv.fam, sv.tn) * (sv.cond === 'teleport' ? 5 : condValue(cb, u, sv.cond, t));
+    let cv = 0; for (const sv of a.saves) cv += failChance(t, sv.fam, sv.tn) * (sv.cond === 'teleport' ? 5 : condValue(cb, u, sv.cond, t, singleTarget(sp)));
     if (!a.ally) { s += exp + cv + (exp >= t.hp * 0.9 ? 10 : 0); continue; }
     if (sp.harmful) s -= 1.5 * (exp + cv);
     const miss = t.maxHp - t.hp, threatened = players(cb, u).some((p) => dist(p.pos, t.pos) <= 8);
@@ -244,6 +283,8 @@ export function aiPlanValue(cb: Combat, u: Unit, pv: EvokePreview): number {
   }
   return s;
 }
+/** A spell with one target: no Burst, one missile, no CHAIN (COMMAND's move order needs one). */
+const singleTarget = (sp: Spell) => !sp.burst && sp.missiles <= 1 && !sp.chain;
 /** A blink out of melee: worth more the more players stand next to it, and when it is hurt or shoots. */
 function blinkValue(cb: Combat, u: Unit): number {
   const adj = players(cb, u).filter((t) => dist(t.pos, u.pos) <= 1).length; if (!adj) return 0;
@@ -328,7 +369,13 @@ export function aiSigilCast(cb: Combat, rng: Rng, u: Unit): boolean {
   const worth = (c: Choice) => c.score + weapon * Math.max(0, u.ap - c.cost) - 0.01 * c.cost;
   const consider = (c: Choice) => { if (!(c.score > 4)) return; if (!best || worth(c) > worth(best) + 1e-9) best = c; };
   const optsFor = (sp: Spell, aim: string, end: string): EvokeOpts | null => {
-    if (sp.uniqueSubjects.includes('command')) return { order: 'halt' };
+    if (sp.uniqueSubjects.includes('command')) {
+      // The order fits the creature at the aim (item 490); an aim with nobody on it halts whoever the burst catches.
+      const t = cb.units.find((x) => x.pos === aim && live(x) && x.side !== u.side);
+      if (!t) return { order: 'halt' };
+      const o = aiCommandOrder(cb, u, t, singleTarget(sp));
+      return o.order === 'move' ? { order: 'move', orderTo: o.orderTo } : { order: o.order };
+    }
     if (sp.uniqueSubjects.includes('step')) { if (aim !== end) return null; const d = blinkDest(cb, u, end); return d ? { dest: d } : null; }
     return {};
   };

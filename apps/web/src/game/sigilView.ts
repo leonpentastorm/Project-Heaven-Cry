@@ -4,7 +4,7 @@
 // marks. Pure: no DOM, no store, so both screens share it and the tests drive it directly.
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
-import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX } from '@engine';
+import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf } from '@engine';
 import { glyphUri, scratchUri, SIGIL_INK, SIGIL_GLOW } from './glyphs';
 
 export const HOSTILE_INK = '#F65157', ALLY_INK = '#FFFFFF', SPARED_INK = '#6FEA77', MUTED_INK = '#A3AEC2';
@@ -104,7 +104,7 @@ export function spellSummary(words: string[]): string {
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 // ---------- 3–8. Evoke: where to stand, the area, delivery, burst, who is affected, fizzle ----------
-export interface EvokeChoice { aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null }
+export interface EvokeChoice { aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
 export interface SgMark { key: string; text: string; style: string; title: string }
 export interface SgTile { layer: string; marks: SgMark[]; note: string }
 export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string; /** A summary row (LEECH's heal, NULL's catch), not a creature the spell affects. */ extra?: boolean }
@@ -117,6 +117,9 @@ export interface EvokeView {
   /** NULL: what it would unmake that this viewer may know of (never the other side's unspotted traps). */ nulls: { kind: string; tiles: string[]; mine: boolean }[];
   facing: string; range: number | null; ap: number; charge: number; fizzle: boolean; fizzleText: string;
   affected: AffectedRow[]; tiles: Record<string, SgTile>; orders: string[] | null; order: string; payload: any | null; plan: any;
+  /** Visualization · Paint the Field (items 450, 485): the free Burst words this caster may add (none if the spell has a
+   * Burst or the caster doesn't hold it), and the one picked. */ paints: string[]; paint: string | null;
+  /** COMMAND · move with a tile picked: the walk it would take (the engine's path). */ orderPath: string[];
 }
 const badge = (bg: string, fg = '#0A0D13') => 'position: absolute; z-index: 5; padding: 0 3px; border-radius: 2px; font-size: 9px; line-height: 13px; font-weight: 700; letter-spacing: 0.02em; pointer-events: none; white-space: nowrap; background: ' + bg + '; color: ' + fg;
 const CORNER = { tl: 'left: 1px; top: 1px', tr: 'right: 1px; top: 1px', bl: 'left: 1px; bottom: 1px', br: 'right: 1px; bottom: 1px', c: 'left: 50%; top: 50%; transform: translate(-50%, -50%)' };
@@ -135,7 +138,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   const pat: any = findPattern(c as any, tile, u?.pos);
   const panel = patternPanel(cb, tile, u, knows);
   const out: EvokeView = { tile, stage: 'none', ok: false, why: '', hint: '', pattern: panel, origins: [], hereOk: false, area: new Set(), pickable: new Set(), stepTo: new Set(), missilesNeeded: 1, aims, orderTo: new Set(), leech: null, nulls: [],
-    facing: '', range: null, ap: 0, charge: 0, fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null };
+    facing: '', range: null, ap: 0, charge: 0, fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null, paints: [], paint: null, orderPath: [] };
   const T = (k: string) => (out.tiles[k] ||= { layer: '', marks: [], note: '' });
   const mark = (k: string, m: SgMark, note?: string) => { const t = T(k); if (!t.marks.some((x) => x.key === m.key)) t.marks.push(m); if (note) t.note += (t.note ? ' · ' : '') + note; };
   if (typeof pat === 'string' || !u) { out.why = typeof pat === 'string' ? pat : 'No caster.'; out.hint = out.why; return out; }
@@ -151,9 +154,13 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   out.hereOk = !!(here && here.ok);
   const sp: any = (() => { try { return compileSpell(pat.words); } catch { return null; } })();
   out.missilesNeeded = sp ? (sp.watch ? 1 : sp.missiles) : 1;
+  // Paint the Field: only for a holder of the skill unlock, on a spell with no Burst word.
+  const painter = (() => { try { return !!holderOf({ u, cb: c as any }, 'skill:visualization.5'); } catch { return false; } })();
+  if (painter && sp && !sp.burst) out.paints = ['spread', 'push'];
+  const paint = choice.paint && out.paints.includes(choice.paint) ? choice.paint : null; out.paint = paint;
   const opts = (extraAim?: string | null) => {
     const list = [...aims]; if (extraAim && !list.includes(extraAim)) { if (list.length >= out.missilesNeeded) list[list.length - 1] = extraAim; else list.push(extraAim); }
-    return { aim: list[0], o: { ...(list.length > 1 ? { aims: list } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}) } };
+    return { aim: list[0], o: { ...(list.length > 1 ? { aims: list } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) } };
   };
   const a0 = opts(null), base: any = planEvoke(c as any, u, tile, a0.aim, a0.o);
   out.ap = base.ap; out.charge = base.charge; out.range = base.range ?? null;
@@ -219,6 +226,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
     if (m.turret) turretMarks(mark, cb, m.turret, 'tp' + m.i, true);
     // COMMAND · move: where the order may send them.
     for (const k of m.orderTo || []) out.orderTo.add(k);
+    if (m.orderPath && m.orderPath.length && !out.orderPath.length) out.orderPath = [...m.orderPath];
   }
   // 7. who is affected: every creature, with its tag, numbers and the roll or save it takes.
   const rows = new Map<string, any>();
@@ -254,6 +262,8 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   if (out.nulls.length) out.affected.push({ key: 'null', unit: '', name: 'NULL', tag: 'UNMAKES', ink: SIGIL_GLOW, text: out.nulls.map((n) => (n.mine ? 'your ' : 'hostile ') + (NULL_NAME[n.kind] || n.kind).toLowerCase() + ' at ' + n.tiles.map(refOf).join(', ')).join(' · '), at: '', extra: true });
   if (cmd === 'move' && !choice.orderTo) for (const k of out.orderTo) mark(k, { key: 'orderto', text: '', style: 'position: absolute; inset: 30%; z-index: 4; pointer-events: none; border: 2px dashed #E3BF51', title: 'COMMAND may send them here' }, 'COMMAND may send them here');
   if (cmd === 'move' && choice.orderTo) mark(choice.orderTo, { key: 'orderat', text: '⚑ GO', style: badge('#E3BF51') + '; ' + CORNER.br, title: 'COMMAND: they walk here' }, 'COMMAND: they walk here');
+  // The walk it would take (spec 9.5: where it would leave a creature), step by step, the last tile where it stops.
+  if (cmd === 'move' && choice.orderTo) out.orderPath.forEach((k, i) => { if (k !== choice.orderTo) mark(k, { key: 'orderpath', text: '·' + (i + 1), style: badge('transparent', '#E3BF51') + '; ' + CORNER.c + '; font-size: 12px', title: 'COMMAND: step ' + (i + 1) + ' of the walk' }, 'COMMAND: step ' + (i + 1) + ' of the walk'); });
   // 8. fizzle
   out.fizzle = !!show.ok && !!show.fizzle;
   out.fizzleText = out.fizzle ? 'Nothing it may affect: this spell will fizzle (its charge, AP and Flux are spent and its glyphs fade).' : '';
@@ -270,7 +280,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   else { out.stage = 'aim'; out.hint = base.why || 'Pick another target.'; }
   out.ok = out.stage === 'ready' && !!base.ok; out.why = base.ok ? '' : base.why || '';
   if (out.ok || (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded)) {
-    out.payload = { tile, aim: aims[0], ...(aims.length > 1 ? { aims } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(out.orders && choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}) };
+    out.payload = { tile, aim: aims[0], ...(aims.length > 1 ? { aims } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(out.orders && choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) };
   }
   if (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded && base.ok) { out.stage = 'ready'; out.ok = true; out.hint = 'Confirm: the engine aims the other missile' + (out.missilesNeeded - aims.length > 1 ? 's' : '') + ' at the nearest target, or pick ' + (out.missilesNeeded - aims.length > 1 ? 'them' : 'it') + '.'; }
   return out;
@@ -352,6 +362,23 @@ export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: stri
   if (kinds.has('raise')) out.push({ key: 'zr', box: box('background: rgba(201, 211, 227, 0.32)'), name: '▇ RAISE wall (HP)' });
   if (kinds.has('veil')) out.push({ key: 'zv', box: box('background: rgba(120, 128, 142, 0.55)'), name: 'Smoke (blocks sight)' });
   if (kinds.has('light')) out.push({ key: 'zl', box: box('background: rgba(255, 248, 225, 0.12); box-shadow: inset 0 0 6px rgba(255, 248, 225, 0.5)'), name: 'Magic light' });
+  return out;
+}
+// ---------- class moves and perks that cast (spec 9: everything shown before it goes off; item 489 c) ----------
+/** A perk or class action's preview on the grid: the area it may aim into (tinted), the tiles it covers (its Burst, a
+ * zone), and who it affects, allies marked apart from enemies. Sigil moves paint Mind cyan; others a neutral white. */
+export function actionPreviewTiles(cb: any, pv: { area?: string[]; tiles?: string[]; targets?: string[]; sigil?: boolean } | null | undefined, side: 'pc' | 'foe' = 'pc'): Record<string, SgTile> {
+  const out: Record<string, SgTile> = {}; if (!pv) return out;
+  const T = (k: string) => (out[k] ||= { layer: '', marks: [], note: '' });
+  const ink = pv.sigil ? SIGIL_GLOW : '#E7EBF3', tint = pv.sigil ? 'rgba(79, 200, 223, 0.13)' : 'rgba(231, 235, 243, 0.08)', cover = pv.sigil ? 'rgba(79, 200, 223, 0.28)' : 'rgba(231, 235, 243, 0.18)';
+  for (const k of pv.area || []) { const t = T(k); t.layer = 'background: ' + tint + '; box-shadow: inset 0 0 0 1px ' + ink; t.note += (t.note ? ' · ' : '') + 'it may aim here'; }
+  for (const k of pv.tiles || []) { const t = T(k); t.layer = 'background: ' + cover + '; box-shadow: inset 0 0 0 2px ' + ink; t.note += (t.note ? ' · ' : '') + 'it covers this tile'; }
+  for (const id of pv.targets || []) {
+    const x = (cb.units || []).find((y: any) => y.id === id); if (!x || x.dead) continue;
+    const ally = x.side === side, mk = ally ? ALLY_INK : HOSTILE_INK, tag = ally ? 'ALLY' : 'ENEMY', t = T(x.pos);
+    t.marks.push({ key: 'pkwho', text: tag, style: badge(mk) + '; left: 50%; top: -1px; transform: translateX(-50%)', title: x.name + ': affected' });
+    t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px solid ' + mk + '; outline-offset: -2px'; t.note += (t.note ? ' · ' : '') + tag.toLowerCase() + ': affected';
+  }
   return out;
 }
 /** Merge two tile overlays (placed magic under the Evoke plan). */

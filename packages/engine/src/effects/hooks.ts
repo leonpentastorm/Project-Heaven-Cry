@@ -5,7 +5,7 @@
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
-import { type Held, itemsOf, heldKey, keyOf } from './collect';
+import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -104,7 +104,8 @@ function buildIndex(held: Held): Record<string, Slot[]> {
 /** What a character holds (the compact form). Rank comes from the class rules; see character.ts classRank. */
 export function heldOfChar(c: Character | null | undefined): Held {
   if (!c) return { perks: [], traits: [] };
-  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null };
+  const sk = skillItemsOf(c.skills);
+  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}) };
 }
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
@@ -131,7 +132,7 @@ export function holderOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat
 export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): any {
   if (!cb) return ctx;
   for (const u of cb.units) {
-    const held = heldOfUnit(u); if (!held.perks.length && !held.traits.length && !held.cls && !held.adv) continue;
+    const held = heldOfUnit(u); if (!heldAny(held)) continue;
     const list = buildIndex(held)[name]; if (!list) continue;
     const c = charOfUnit(u);
     for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
@@ -152,7 +153,7 @@ export function emitStory(g: any, name: HookName, ctx: any, only?: Character[]):
 }
 /** Does anyone in this fight have a handler on this hook? (Lets costly payloads be skipped: sight diffs.) */
 export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
-  return !!cb && cb.units.some((u) => { const h = heldOfUnit(u); return (h.perks.length || h.traits.length || h.cls || h.adv) && !!buildIndex(h)[name]; });
+  return !!cb && cb.units.some((u) => { const h = heldOfUnit(u); return heldAny(h) && !!buildIndex(h)[name]; });
 }
 
 // ---------- stat and check queries ----------
@@ -160,7 +161,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
-  if (!held.perks.length && !held.traits.length && !held.cls && !held.adv) return { add, mult };
+  if (!heldAny(held)) return { add, mult };
   for (const info of itemsOf(held)) {
     const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
     if (h?.stat) take(h.stat(hh, stat, ctx));

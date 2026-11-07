@@ -21,9 +21,9 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 
 | Item | Today | Under 1.4 | Text |
 |---|---|---|---|
-| Mage · Barrage | Damage words −1 charge (fire, shock, freeze, stone) | Unchanged. OPEN: whether ACID, SPARK and GALE join (the text says "damage words", the data lists four). | unchanged |
+| Mage · Barrage | Damage words −1 charge (fire, shock, freeze, stone) | The 2-charge damage words: FIRE, FREEZE, SHOCK, STONE and ACID (item 486); SPARK and GALE already cost 1, the floor. Data, spec 282 and engine agree. | updated, built |
 | Mage · Overcharge | Next glyph free, +1 Max Sigil words while on the ground | Same, but never past 4 glyphs in a spell (item 437). The +1 to glyphs on the ground stays. | updated |
-| Mage · Payload | Ring 2-tile burst, Line/Stack area doubling, reads `p.shape`, `PUSH_RANGE`, `formMult` with ring ×0.8 | Rewrite: doubles a SPREAD radius or a PUSH cone's length, or adds one more target to a single-target spell (like one more TWICE missile); refused on STAY, WAIT or WATCH spells (item 448). Flux on Evoke = glyph count stays. | unchanged (text still true) |
+| Mage · Payload | Ring 2-tile burst, Line/Stack area doubling, reads `p.shape`, `PUSH_RANGE`, `formMult` with ring ×0.8 | Rewrite: doubles a SPREAD radius or a PUSH cone's length, or adds one more target to a single-target spell (like one more TWICE missile); refused on STAY, WAIT or WATCH spells (item 448). Flux on Evoke = glyph count stays. Spec 284 rewritten to the 1.4 outcomes. | updated (the 1.2 text said double Flux and left out the refusal) |
 | Warden · Raise Cover | Lone STAY glyph on or next to you, Evoked as a cover rune | Still the class's one exception to the Line. The glyph must be on its own tile (one a tile); you Evoke it from a tile next to it (you drew it standing on it, so step off first; the rune needs its tile clear). `loneStay` must stop reading "2 glyphs on a tile". | updated |
 | Warden · Ward | 1–3 charge shield to an ally within 6 | Unchanged (no glyph). | unchanged |
 | Warden · Seal | 3×3 zone: enemy Sigils double charge | Unchanged. NULL doesn't remove it (class zone, item 430). The fx event's `shape: 'ring'` must become a 1.4 shape name (`area`). | unchanged |
@@ -69,7 +69,7 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 | Twin Discipline | The Sigil sets the shape, the Outburst the school | The Sigil's words set where it reaches (Reach, facing) and what it covers (Burst); same model as Fusion; each creature covered once, at the Sigil's multiplier capped at ×1 (item 462). | updated, built |
 | Rite in the Field | Wards = a WARD glyph drawn | Unchanged. | unchanged |
 | Spoon Feed | Deed: teach someone a Sigil | Unchanged. | unchanged |
-| Bulwark (a.ts) | Ranged = Sigil damage from a caster not adjacent | Touch spells can hit from a caster who isn't adjacent (the caster stands by the Line, the target past it). Read "ranged" from the spell's travel: Touch counts as melee when the caster is adjacent to the target, ranged otherwise (PROVISIONAL, lane A). | unchanged |
+| Bulwark (a.ts) | Ranged = Sigil damage from a caster not adjacent | Touch spells can hit from a caster who isn't adjacent (the caster stands by the Line, the target past it). Read "ranged" from the spell's travel: Touch counts as melee when the caster is adjacent to the target, ranged otherwise; the line of fire runs from the spell's origin (item 488). | unchanged, built |
 | Rounding Up (c.ts) | Glyph AP remainder | Unchanged. | unchanged |
 
 ## Traits
@@ -80,14 +80,14 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 | Drill Echo · The Count | d6 before drawing a glyph | Unchanged. | unchanged |
 | Old School · Analog | No Evoker-linked guns | Unchanged. | unchanged |
 
-## Skills (skills.json unlocks; no engine handler found for these yet)
+## Skills (skills.json unlocks; engine-run as `skill:<skill>.<points>` items, perks/skills.ts, items 482–485)
 
 | Item | Today | Under 1.4 | Text |
 |---|---|---|---|
-| Brain Power · Overclock (M1) | A spell one word past Max Sigil words, +2 charge | Never past 4 glyphs (item 451). | updated |
-| Brain Power · Twin Draw (M2) | Draw two spells with one action, pay the longer's AP | Glyphs are drawn one a tile as you walk, so: once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). PROVISIONAL. | updated |
-| Rumination · Proven Formula (M2) | A spell already drawn this combat costs 1 AP less | Unchanged ("the same words in the same order"). | unchanged |
-| Visualization · Paint the Field (M2) | Choose line, cone or circle free | Once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4) (item 450). | updated |
+| Brain Power · Overclock (M1) | A spell one word past Max Sigil words, +2 charge | Never past 4 glyphs (item 451); engine: item 482. | updated, built |
+| Brain Power · Twin Draw (M2) | Draw two spells with one action, pay the longer's AP | Glyphs are drawn one a tile as you walk, so: once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). Spec item 483. PROVISIONAL. | updated, built |
+| Rumination · Proven Formula (M2) | A spell already drawn this combat costs 1 AP less | Unchanged ("the same words in the same order"): the Evoke's AP, item 484. | unchanged, built |
+| Visualization · Paint the Field (M2) | Choose line, cone or circle free | Once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4) (items 450, 485). | updated, built |
 | Rumination per point | +0.5 tile Sigil range | Rounded down, added once to Reach words, never to Touch. | unchanged |
 | Brain Power per point | Sigil multiplier, duration | Unchanged. | unchanged |
 | Proficiency per point | Sigil Core saving | Unchanged. | unchanged |
@@ -96,7 +96,7 @@ as the Line, as deep as the Reach range or 1 for Touch), plus self-targeting; Bu
 
 | Item | Under 1.4 | Text |
 |---|---|---|
-| Evoker blade · Edge Word | Draws its word on your own tile after a hit. | updated |
+| Evoker blade · Edge Word | After a hit, the next glyph this turn costs 0 AP (own tile; op `edge_word`, item 487). | updated, built |
 | Spellslinger's pistol / sigil-etched magazine | As Spell Magazine (words only). | unchanged |
 | Sigil plate | Any of the 40 words. | unchanged |
 | Bot-scrambler | Glyphs drawn on its tiles cost +1 AP: unchanged. | unchanged |

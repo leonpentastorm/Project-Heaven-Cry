@@ -17,7 +17,7 @@ import {
 } from '../combat';
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
-  condSkillMod, condHit, SPELL_AP, unitSave, groundCap, type Affected,
+  condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, type Affected,
 } from '../magic';
 import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
 import { type Character, mod, prayerCooldown, maxSigilWords } from '../character';
@@ -381,7 +381,7 @@ register({
       const r = fusedPlan(h, args);
       if (r.why) return { ok: false, why: r.why, ap: r.pv.ap };
       const pv = r.pv, hits = r.hits!;
-      return { ap: pv.ap, targets: hits.map((x) => x.unit.id), lines: ['Fused: ' + pv.pattern!.words.map((w) => w.toUpperCase()).join(' · ') + ', ' + pv.charge + ' charge, ' + hits.length + ' creature(s): ' + hits.map((x) => x.unit.name + (x.mult < 1 ? ' ×' + x.mult : '')).join(', ')] };
+      return { ap: pv.ap, ...evokeMarks(pv), targets: hits.map((x) => x.unit.id), lines: ['Fused: ' + pv.pattern!.words.map((w) => w.toUpperCase()).join(' · ') + ', ' + pv.charge + ' charge, ' + hits.length + ' creature(s): ' + hits.map((x) => x.unit.name + (x.mult < 1 ? ' ×' + x.mult : '')).join(', ')] };
     },
     run: (h, args, rng) => {
       const u = h.u!, cb = h.cb!, m = u.mg!;

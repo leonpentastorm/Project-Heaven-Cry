@@ -2394,7 +2394,7 @@
       "properties": [
         "counts_as_evoker"
       ],
-      "text": "After a hit, draw one Sigil word on your own tile for 0 AP (with the magic pass). Counts as an Evoker.",
+      "text": "After a hit, your next glyph this turn costs 0 AP (drawn on your own tile; its charge and Flux still apply). Counts as an Evoker.",
       "mastery_family": "mana_arms",
       "hands": "1H",
       "durability": 250,
@@ -2404,9 +2404,9 @@
       ],
       "grants": {
         "name": "Edge Word",
-        "text": "After a hit, draw one Sigil word on your own tile for 0 AP (with the magic pass). Counts as an Evoker.",
+        "text": "After a hit, your next glyph this turn costs 0 AP (drawn on your own tile; its charge and Flux still apply). Not on an attack that already drew one (Sword Form). Counts as an Evoker.",
         "effect": {
-          "op": "narrator"
+          "op": "edge_word"
         }
       },
       "lore": "The Blade Scribes write with the edge.",

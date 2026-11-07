@@ -3104,6 +3104,16 @@
       ]
     },
     {
+      "id": "edge_word",
+      "tier": "weapon",
+      "summary": "After a hit, the wielder's next glyph this turn costs 0 AP (charge and Flux as usual); not on an attack that already drew a glyph.",
+      "count": 1,
+      "params": [],
+      "used_by": [
+        "weapons:evoker_blade"
+      ]
+    },
+    {
       "id": "vs_status_damage",
       "tier": "weapon",
       "summary": "Damage multiplier against targets with any listed status.",

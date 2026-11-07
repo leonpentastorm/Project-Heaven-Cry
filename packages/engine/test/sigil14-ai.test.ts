@@ -33,7 +33,7 @@ const field = (cb: Combat, tiles: string[], side: 'pc' | 'foe', by: string, word
 
 describe('caster archetypes (data/enemies.json casters)', () => {
   it('a foe naming a caster gets its tier\'s stat block, an Evoker with the archetype\'s words and its spell bias', () => {
-    expect(CASTERS.map((c) => c.id)).toEqual(['sigil_novice', 'sigil_adept', 'sigil_warden']);
+    expect(CASTERS.map((c) => c.id)).toEqual(['sigil_novice', 'sigil_adept', 'sigil_warden', 'sigil_magister']);
     const { e, es } = fight([{ at: '2,5' }], [{ at: '12,5', caster: 'sigil_adept' }, { at: '12,8', caster: 'sigil_warden', tier: 'elite', sigils: ['spark', 'seek'] }]);
     expect(e.mg!.evoker).toBe(true); expect(e.mg!.words).toEqual(CASTER.sigil_adept.sigils); expect(e.mg!.maxWords).toBe(3);
     expect((e.mg as any).aiBias).toBe(1.3); expect((e as any).caster).toBe('sigil_adept');
@@ -41,7 +41,7 @@ describe('caster archetypes (data/enemies.json casters)', () => {
   });
   it('the AI weighs a pruned set of grammar-valid spells (no second Reach word, at most Max Sigil words)', () => {
     const cs = casterCombos(CASTER.sigil_warden.sigils, 4);
-    expect(cs.length).toBeGreaterThan(10); expect(cs.length).toBeLessThan(120);
+    expect(cs.length).toBeGreaterThan(10); expect(cs.length).toBeLessThan(200); // kept per length (item 491)
     for (const c of cs) { expect(c.words.length).toBeLessThanOrEqual(4); expect(c.words.filter((w) => ['seek', 'arc', 'sense', 'relay'].includes(w)).length).toBeLessThanOrEqual(1); }
     for (const k of ['harm', 'boon', 'null', 'blink', 'place']) expect(cs.some((c) => c.kind === k), k).toBe(true);
   });

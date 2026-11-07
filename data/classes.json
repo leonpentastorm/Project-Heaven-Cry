@@ -634,7 +634,7 @@
               "name": "Barrage",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Damage words (FIRE, SHOCK, FREEZE) cost 1 charge less each. A spell still costs at least 1.",
+              "text": "The 2-charge damage words (FIRE, FREEZE, SHOCK, STONE and ACID) cost 1 charge less each; each glyph still costs at least 1. SPARK and GALE already cost 1.",
               "effects": [
                 {
                   "op": "word_cost",
@@ -642,7 +642,8 @@
                     "fire",
                     "shock",
                     "freeze",
-                    "stone"
+                    "stone",
+            "acid"
                   ],
                   "value": -1
                 }
@@ -683,7 +684,7 @@
               "name": "Payload",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Double a spell's area (or its number of targets). The spell adds double Flux.",
+              "text": "Evoke a Line with double area: a SPREAD radius or a PUSH cone's length doubles (both, if it has both), and a spell with neither gets one more missile, as one more TWICE. The Evoke adds Flux equal to its glyph count. A STAY, WAIT or WATCH spell can't carry it.",
               "effects": [
                 {
                   "op": "area_mult",
@@ -692,7 +693,7 @@
                 {
                   "op": "resource",
                   "resource": "flux",
-                  "value": "x2",
+                  "value": "per_glyph",
                   "when": "on_cast"
                 }
               ],

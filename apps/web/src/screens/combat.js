@@ -12,7 +12,7 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
-import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
+import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, pickChoice, wantsDetail } from '../game/commands';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
@@ -30,7 +30,7 @@ const BOONS = ['guarded', 'inspired'];
  * order chips. All of it from game/sigilView.ts (the engine's preview). */
 export function sigilPad(evV, S, set) {
   const pp = evV && evV.pattern;
-  if (!pp) return { sgShow: false, sgWords: [], sgStats: [], sgAffected: [], sgOrders: [], sgHasOrders: false, sgHasAffected: false, sgHasStats: false, sgHasWarn: false };
+  if (!pp) return { sgShow: false, sgWords: [], sgStats: [], sgAffected: [], sgOrders: [], sgHasOrders: false, sgPaints: [], sgHasPaints: false, sgHasAffected: false, sgHasStats: false, sgHasWarn: false };
   const chip = (on) => 'min-height: 28px; padding: 0 10px; border-radius: 2px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; ' + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3' : 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE');
   const evc = S.evc || {}, order = evc.order || 'halt';
   return {
@@ -44,6 +44,9 @@ export function sigilPad(evV, S, set) {
     sgHasAffected: evV.affected.length > 0,
     sgOrders: (evV.orders || []).map((o) => ({ key: o, label: o.toUpperCase(), pressed: order === o ? 'true' : 'false', style: chip(order === o), pick: () => set({ evc: { ...evc, order: o, orderTo: null } }) })),
     sgHasOrders: !!(evV.orders && evV.orders.length),
+    // Visualization · Paint the Field: a free SPREAD or PUSH for a spell with no Burst (no glyph, no charge).
+    sgPaints: (evV.paints || []).map((w) => ({ key: w, label: 'PAINT · ' + w.toUpperCase(), pressed: evV.paint === w ? 'true' : 'false', style: chip(evV.paint === w), pick: () => set({ evc: { ...evc, paint: evV.paint === w ? null : w } }) })),
+    sgHasPaints: !!(evV.paints && evV.paints.length),
   };
 }
 /** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), and the unit afterwards.
@@ -532,7 +535,10 @@ export class CombatLogic extends DCLogic {
     // Placed magic (spec 9.9: fields tinted by element, your traps, spotted enemy traps, turrets, RAISE walls, smoke,
     // light) under the Evoke plan's overlay; outside the area is dimmed while aiming (spec 9.4).
     const placed = placedView(pcb, 'pc'), evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
-    const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
+    // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
+    // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
+    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
+    const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
       if (u && tgtSet.has(u.id)) return 'position: absolute; inset: -1px; z-index: 1; border-radius: 4px; pointer-events: none; border: 3px solid ' + famInk + '; box-shadow: 0 0 10px ' + famInk;
       if (k === aimTile) return 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; border: 2px solid #FFFFFF';

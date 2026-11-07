@@ -144,7 +144,7 @@ describe('Inspire on Sigil and Soul strikes (item 69)', () => {
   /** The strike's total in the miss line ("d20 r → total vs def"), with and without Inspire, on the same dice. */
   function total(inspire: boolean, kind: 'sigil' | 'soul') {
     const f = fightWith([cls('bard', 1, SOUL), kind === 'sigil' ? MIND : SOUL], [{}], { seed: 'INS' }); open(f.cb);
-    const [b, ally] = f.pcs; at(f, b, '2,2'); at(f, ally, '3,3'); const foe = at(f, f.foe, '5,3'); foe.def = 99; foe.hp = foe.maxHp = 999;
+    const [b, ally] = f.pcs; at(f, b, '2,2'); at(f, ally, kind === 'sigil' ? '4,4' : '3,3'); /* Sigil: next to the Stack and the foe (a Stack fires all around its caster) */ const foe = at(f, f.foe, '5,3'); foe.def = 99; foe.hp = foe.maxHp = 999;
     caster(f.unit(ally.id), ['fire', 'condense']);
     if (inspire) { const u = f.turn(b); f.unit(b.id).mg!.mp = 100; act(f, u, { type: 'combat/perk', id: 'class:bard.inspire', actionId: 'inspire', targetId: ally.id }); }
     const a = f.turn(ally); f.g.rng.state = 4242;

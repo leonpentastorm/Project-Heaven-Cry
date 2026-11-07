@@ -101,7 +101,11 @@ describe('drawing (spec: Drawing a spell)', () => {
     const p = findPattern(cb, '3,5'); expect(typeof p === 'object' && p.shape).toBe('stack');
     u.pos = '2,5'; e.pos = '3,3'; // two tiles north of the Stack, out of Touch
     expect(previewEvoke(cb, u, '3,5', e.pos).ok).toBe(false);
-    e.pos = '4,4'; const pv = previewEvoke(cb, u, '3,5', e.pos); expect(pv.ok).toBe(true); expect(pv.facing!.mode).toBe('stack'); expect(pv.area.length).toBe(8);
+    // "All around you": the area centres on the caster (2,5), not the Stack (batch 2, gap 16): 4,4 is next to the Stack
+    // but 2 tiles from the caster, so Touch can't reach it; 1,4 is next to the caster.
+    e.pos = '4,4'; expect(previewEvoke(cb, u, '3,5', e.pos).ok).toBe(false);
+    e.pos = '1,4'; const pv = previewEvoke(cb, u, '3,5', e.pos); expect(pv.ok).toBe(true); expect(pv.facing!.mode).toBe('stack'); expect(pv.area.length).toBe(8);
+    expect(pv.area).toContain('3,5'); expect(pv.area).not.toContain('2,5'); expect(pv.area).not.toContain('4,4');
   });
   it('refused before anything is spent: a second Reach word, a second KIN, WATCH with STAY, past your cap', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'arc', 'kin', 'watch', 'stay', 'condense']);

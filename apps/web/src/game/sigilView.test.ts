@@ -3,7 +3,7 @@
 // number comes from the engine's preview; these tests check the screen says it.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, SIGIL, type Sheet, type Combat, type Unit, type MapDef } from '@engine';
-import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, spellSummary, arrowOf } from './sigilView';
+import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, spellSummary, arrowOf, actionPreviewTiles } from './sigilView';
 import { GLYPH_PATHS, glyphSvg } from './glyphs';
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
@@ -227,5 +227,36 @@ describe('the preview gaps of batch 1 (spec 9.7, 9.9; items 480)', () => {
     expect(evokeClick(v, cb, u, '8,9', { aims: ['8,5'], order: 'move' }).toast).toMatch(/at most 3 tiles/);
     expect(evokeClick(v, cb, u, '8,8', { aims: ['8,5'], order: 'move' }).choice!.orderTo).toBe('8,8');
     const r = evokeView(cb, u, '2,5', { aims: ['8,5'], order: 'kneel' }); expect(r.affected[0].text).toMatch(/if it fails: kneels/);
+  });
+  it('COMMAND · move with a tile picked draws the walk it would take, step by step (spec 9.5; item 481)', () => {
+    const { cb, u, rng } = setup(['command', 'seek'], ['8,5']);
+    walk(cb, rng, u, ['command', 'seek'], L2);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'], order: 'move', orderTo: '8,8' });
+    expect(v.stage).toBe('ready'); expect(v.orderPath).toEqual(['8,6', '8,7', '8,8']);
+    expect(v.tiles['8,6'].marks.some((m) => m.key === 'orderpath' && m.text === '·1')).toBe(true);
+    expect(v.tiles['8,8'].marks.some((m) => m.key === 'orderat')).toBe(true);
+    expect(v.payload).toMatchObject({ order: 'move', orderTo: '8,8' });
+  });
+  it('Paint the Field: a holder gets SPREAD / PUSH chips on a spell with no Burst; the pick rides the payload (item 485)', () => {
+    const { cb, u, rng } = setup(['spark', 'seek', 'condense'], ['8,5', '9,6']);
+    walk(cb, rng, u, ['spark', 'seek'], L2);
+    expect(evokeView(cb, u, '2,5', { aims: ['8,5'] }).paints).toEqual([]); // not held
+    (u as any).held = { perks: [], traits: [], skills: ['visualization.5'] };
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] }); expect(v.paints).toEqual(['spread', 'push']);
+    const p = evokeView(cb, u, '2,5', { aims: ['8,5'], paint: 'spread' });
+    expect(p.paint).toBe('spread'); expect(p.payload).toMatchObject({ paint: 'spread' }); expect(p.affected.filter((a) => !a.extra).length).toBe(2);
+    cb.glyphs = []; walk(cb, rng, u, ['spark', 'condense'], L2);
+    expect(evokeView(cb, u, '2,5', { aims: ['3,5'] }).paints).toEqual([]); // it has a Burst word
+  });
+});
+
+describe('class moves that cast paint the grid (item 489 c)', () => {
+  it('area tinted, covered tiles framed, each affected creature marked ally or enemy; Sigil moves in Mind cyan', () => {
+    const { cb, u, es } = setup(['fire', 'seek'], ['8,5']);
+    const t = actionPreviewTiles(cb, { area: ['6,5', '7,5'], tiles: ['8,5', '9,5'], targets: [es[0].id, u.id], sigil: true });
+    expect(t['6,5'].layer).toMatch(/79, 200, 223/); expect(t['8,5'].layer).toMatch(/inset 0 0 0 2px #4FC8DF/i);
+    expect(t['8,5'].marks.find((m) => m.key === 'pkwho')!.text).toBe('ENEMY'); expect(t['2,5'].marks.find((m) => m.key === 'pkwho')!.text).toBe('ALLY');
+    expect(actionPreviewTiles(cb, { tiles: ['8,5'] })['8,5'].layer).not.toMatch(/79, 200, 223/); // not Sigil: neutral
+    expect(actionPreviewTiles(cb, null)).toEqual({});
   });
 });

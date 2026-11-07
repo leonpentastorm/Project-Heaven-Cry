@@ -20,7 +20,7 @@ import { healUnit, grantShield } from './effects/damage';
 import { AP_MAX } from './effects/ap';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
-  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, withElement, magicSpellWords, condName,
+  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, withElement, withSpellFrom, magicSpellWords, condName,
 } from './magic';
 import { makeObject, OBJ } from './objects';
 
@@ -52,6 +52,7 @@ export const glyphApOf = (u: Unit) => (u.mg?.glyphAp || 1) + (condOn(u, 'ldebuff
 export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, tile?: string): { ap: number; charge: number; flux: number; fail?: string } {
   const w = W(word), base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: w?.flux ?? 1, preview, tile: tile || u.pos, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
+  if (u.edgeWord) c.ap = 0; // the Evoker blade's Edge Word (item 487): the glyph after a hit costs no AP
   return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
 }
 /** How many glyphs one tile may hold for this caster: 1, unless an item raises it ('glyphs_per_tile' {u, tile, n};
@@ -141,10 +142,11 @@ export function facingFrom(p: Pattern, s: string): Facing | string {
 function laneStep(f: Dir): Dir { const r: Dir = [f[1] ? -f[1] : 0, f[0]]; return f[0] && f[1] ? [r[0], 0] : r; }
 const laneOffsets = (n: number) => { const lo = n % 2 ? -(n - 1) / 2 : -(n / 2 - 1), out: number[] = []; for (let j = lo; j < lo + n; j++) out.push(j); return out; };
 /** The tiles a caster may aim at (the area), for a pattern, a facing and a depth. */
-function areaTiles(cb: Combat, p: Pattern, f: Facing, depth: number): { tiles: string[]; lane: Record<string, string> } {
+function areaTiles(cb: Combat, p: Pattern, f: Facing, depth: number, from?: string): { tiles: string[]; lane: Record<string, string> } {
   const tiles: string[] = [], lane: Record<string, string> = {};
   const put = (k: string, origin: string) => { if (onMap(cb, k) && !lane[k]) { tiles.push(k); lane[k] = origin; } };
-  if (f.mode === 'stack') { const s = p.tiles[0]; for (const k of around(s, depth)) if (k !== s && onMap(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
+  // A Stack (spec: the facing rule): "all around you, out to the range, in sight": centred on the caster, not the Stack.
+  if (f.mode === 'stack') { const s = from || p.tiles[0]; for (const k of around(s, depth)) if (k !== s && onMap(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
   if (f.mode === 'along') { const ls = laneStep(f.dir); for (let k = 1; k <= depth; k++) { const c = add(f.far!, f.dir, k); for (const j of laneOffsets(p.tiles.length)) put(add(c, ls, j), f.far!); } return { tiles, lane }; }
   for (let k = 1; k <= depth; k++) for (const g of p.tiles) put(add(g, f.dir, k), g);
   return { tiles, lane };
@@ -297,6 +299,12 @@ function emptyForRaise(cb: Combat, k: string): boolean {
 const PLACED = new Set(['field', 'trap', 'turret', 'wall']);
 /** NULL's catch on a set of tiles (spec: NULL): glyphs (Keystones spared), fields, traps, turrets, smoke, light and
  * RAISE walls. Grand forms and class zones stay. */
+/** The walk paths() found to a tile, in order (the start left out). */
+function walkTo(P: { prev: Record<string, string> }, to: string): string[] {
+  const out: string[] = []; let k: string | undefined = to;
+  for (let i = 0; k && i < 64; i++) { out.unshift(k); k = P.prev[k]; if (k && !P.prev[k]) break; }
+  return out;
+}
 function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[]; walls: any[] } {
   const T = new Set(tiles);
   return {
@@ -308,6 +316,7 @@ function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[
 
 // ---------- planning (the preview and the real Evoke share it) ----------
 export interface EvokeOpts { /** TWICE: the tiles of the second and later missiles (aims[0] = aim). */ aims?: string[]; /** STEP: where the target lands. */ dest?: string; /** COMMAND: halt | kneel | drop | move. */ order?: string; /** COMMAND move: the tile. */ orderTo?: string;
+  /** Visualization's Paint the Field (item 450): the free Burst word a spell with none gets, 'spread' or 'push'. */ paint?: 'spread' | 'push';
   /** A stand-in Subject a class move puts in the spell's Subject place (the Circuit Mage's Fusion: the Outburst). It counts toward the 4-glyph cap but not Max Sigil words or the charge, and only shapes the plan (additive, lane classes-k). */ subject?: string }
 export interface MissilePlan {
   i: number; aim: string; kind: Spell['missile']; origin: string; impact: string; dir: Dir;
@@ -321,6 +330,8 @@ export interface MissilePlan {
   turret: { reach: string[]; range: number; next: string[] } | null;
   /** COMMAND with the move order: the tiles the main target could be sent to (a walk of up to move_tiles). */
   orderTo: string[];
+  /** COMMAND · move with a tile picked: the walk the target would take on its turn (tiles in order, the last is where it stops). */
+  orderPath?: string[];
   /** Why this missile can't go yet (STEP needs a landing tile). */ why?: string;
 }
 export interface EvokePreview {
@@ -377,9 +388,9 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const words = opts.subject ? [...p.words, opts.subject] : p.words;
   const ge = grammarError(words, u.mg!.maxWords + (opts.subject ? 1 : 0)); if (ge) return no(ge, { pattern: p });
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
-  // 'spell_shape' {u, pattern, spell, cb} (mutable spell: a fresh copy per plan): items that reshape the compiled spell
+  // 'spell_shape' {u, pattern, spell, opts, cb} (mutable spell: a fresh copy per plan): items that reshape the compiled spell
   // before it is aimed (the Mage's Payload). Additive hook (lane classes-i).
-  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(words), cb }) as any).spell || compileSpell(words)) as Spell;
+  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(words), opts, cb }) as any).spell || compileSpell(words)) as Spell;
   // Where you stand: within reach of a glyph, not on a middle glyph (the facing rule).
   const er: any = emit(cb, 'evoke_reach', { u, pattern: p, reach: 1, cb }), reach = Math.max(1, er.reach || 1);
   const near = p.tiles.some((k) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= reach && lineOfSight(cb, u.pos, k)));
@@ -397,7 +408,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   if (sp.missile === 'relay') {
     relays = relayChains(cb, u, sp, depth);
     for (const r of relays) for (const k of around(r.ally.pos, 1)) if (onMap(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
-  } else { const a = areaTiles(cb, p, facing, depth); area = a.tiles; laneOf = a.lane; }
+  } else { const a = areaTiles(cb, p, facing, depth, u.pos); area = a.tiles; laneOf = a.lane; }
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
   // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
   const kinBars = (k: string) => sp.kin && k !== u.pos && cb.units.some((x) => x.pos === k && !x.dead && x.side === u.side);
@@ -438,6 +449,13 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const value = { foe: 0, own: 0, boon: 0, nulls: missiles.reduce((t, m) => t + m.nulls, 0) };
   for (const a of live) { const exp = a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour; if (a.ally) value.own += exp; else value.foe += exp; if (a.ally) value.boon += a.heal + a.shield; }
   return { ...base, ok: true, targets, impact: missiles[0]?.impact ?? null, needsAim, area, pickable, missiles, affected, fizzle, value, leech: leechPlan(cb, u, sp, live) };
+}
+/** What a class move that casts through the planner shows on the grid (item 489 c): the area it may aim into, the tiles
+ * every missile covers (its Burst, CHAIN's jumps), and who it affects. */
+export function evokeMarks(pv: EvokePreview | null | undefined): { area: string[]; tiles: string[]; targets: string[]; sigil: true } {
+  if (!pv) return { area: [], tiles: [], targets: [], sigil: true };
+  const tiles = [...new Set((pv.missiles || []).flatMap((m) => [...m.burst.tiles, ...m.chain.map((c) => c.to), ...(m.turret?.reach || [])]))];
+  return { area: [...(pv.area || [])], tiles, targets: [...(pv.targets || [])], sigil: true };
 }
 /** LEECH's preview: the same sum the Evoke heals from (direct damage after armour, capped at each target's HP and shield). */
 function leechPlan(cb: Combat, u: Unit, sp: Spell, live: Affected[]): EvokePreview['leech'] {
@@ -497,6 +515,11 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.uniqueSubjects.includes('command') && c.opts.order === 'move' && main && plan.mainTarget) {
     const P = paths(cb, main.pos, main.id), max = (W('command') as any)?.move_tiles ?? 3;
     plan.orderTo = Object.keys(P.dist).filter((k) => k !== main.pos && P.dist[k] <= max);
+    // The tile is checked here, before anything is spent (item 481): one they can't walk to in move_tiles is refused.
+    const to = c.opts.orderTo;
+    if (!to) plan.why = 'COMMAND · move: pick the tile they must walk to (up to ' + max + ' tiles).';
+    else if (!plan.orderTo.includes(to)) plan.why = 'COMMAND sends them at most ' + max + ' tiles: ' + refOf(to) + ' is not a walk of ' + max + ' from ' + refOf(main.pos) + '.';
+    else plan.orderPath = walkTo(P, to);
   }
   if (sp.workings.includes('step')) {
     const movers = live.map((a) => cb.units.find((x) => x.id === a.unit)!).filter(Boolean);
@@ -559,13 +582,14 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: st
   const gc = glyphCost(cb, u, word, false, pv.tile); if (gc.fail) return gc.fail;
   const m = u.mg!, w = W(word)!;
   u.ap = Math.round((u.ap - gc.ap) * 10) / 10; m.charge -= gc.charge;
+  const edge = !!u.edgeWord; delete u.edgeWord;
   const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: pv.tile, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, v: SIGIL_REV } as Glyph;
   cb.glyphs = [...(cb.glyphs || []), g]; cb.sigilV = SIGIL_REV;
   emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: pv.tile, word, side: u.side, group: w.group, cls: w.class, element: isElement(word) ? word : null, effect: pv.effect, words: pv.words });
   let faded = '';
   const mine = myGlyphs(cb, u);
   if (mine.length > groundCap(u, cb)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u, cb) + ' glyphs at most)'; }
-  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.effect === 'extends' ? ', the Line reads ' + pv.words.map((x) => x.toUpperCase()).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : '') + ')' + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
+  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.effect === 'extends' ? ', the Line reads ' + pv.words.map((x) => x.toUpperCase()).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : '') + ')' + (edge ? ' (Edge Word: no AP)' : '') + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
   return null;
 }
@@ -639,7 +663,9 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
     for (const p of parts) {
       const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
       const raw = Math.round(p.n * a.mult * sm * (p.type === 'elemental' ? em : 1) * sharp * hk * (crit ? 2 : 1));
-      line += withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w]));
+      // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
+      const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
+      line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
     }
     dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
     if (!t.dead) {
@@ -702,8 +728,9 @@ function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: S
   for (const pl of mp.pull) { const t = cb.units.find((x) => x.id === pl.unit); if (t && !t.dead) line += magicShove(cb, t, o.source, -sp.pull, by); }
   for (const st of mp.step) {
     const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !freeTile(cb, st.to, t)) continue;
-    if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv) { line += sv; continue; } }
-    const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to);
+    let failed = '';
+    if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv.held) { line += sv.line; continue; } failed = sv.line; }
+    const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
     sigilEnter(cb, rng, t, st.to);
   }
   if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
@@ -712,12 +739,15 @@ function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: S
   if (sp.workings.includes('null')) line += nullWave(cb, sp.burst ? mp.burst.tiles : [mp.impact], mp.impact);
   return { line, dealt, hit };
 }
-function teleportSave(cb: Combat, rng: Rng, by: Unit, t: Unit): string {
+/** STEP on someone of the other side: a Body save resists. held: it stays (the line says why); else the line is the
+ * failed save, for the log (spec 9.11: every save). */
+function teleportSave(cb: Combat, rng: Rng, by: Unit, t: Unit): { held: boolean; line: string } {
   const ca: any = emit(cb, 'cond_apply', { by, t, id: 'teleport', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return ' · ' + t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '');
-  if (ca.skipSave) return '';
+  if (ca.cancel) return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '') };
+  if (ca.skipSave) return { held: false, line: '' };
   const r = d20(rng), m = unitSave(t, 'body') + (ca.saveAdd || 0), tn = 12 + unitDebuff(by, 'body') + (ca.tnAdd || 0);
-  return r === 20 || (r !== 1 && r + m >= tn) ? ' · ' + t.name + ' holds its place (body save ' + (r + m) + ' vs ' + tn + ')' : '';
+  return r === 20 || (r !== 1 && r + m >= tn) ? { held: true, line: ' · ' + t.name + ' holds its place (body save ' + (r + m) + ' vs ' + tn + ')' }
+    : { held: false, line: ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')' };
 }
 
 // ---------- what stays: fields, traps, turrets, walls ----------

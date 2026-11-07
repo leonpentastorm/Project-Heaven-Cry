@@ -198,9 +198,12 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, cb, rng });
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
   const f: Fam = ca.fam || fam || def.fam;
+  // The log shows every save, failed ones too (spec: Sigils 9, Afterwards: "every target, roll, save and number").
+  let saved = '';
   if (!BOOST.has(id) && !def.noSave && !ca.skipSave) {
     const r = d20(rng), m = saveOf(t, f) + (ca.saveAdd || 0), tn = 12 + (by ? debuffOf(by, f) : 0) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
     if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
+    saved = f + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '');
   }
   if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
@@ -220,7 +223,8 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     if (id === 'grappled' || id === 'stunned') { t.overwatch = null; }
   }
   emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
-  return ' · ' + t.name + ' is ' + def.name + (def.noTick && !rounds ? '' : ' (' + n + ' round' + (n === 1 ? '' : 's') + ')');
+  const dur = def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
+  return ' · ' + t.name + ' is ' + def.name + (dur || saved ? ' (' + [dur, saved].filter(Boolean).join('; ') + ')' : '');
 }
 /** Conditions the engine keeps as unit flags: Dazed (−2 AP next turn), Prone, Bleeding (3 rounds; a hit's rider, no
  * save), Hidden (see combat.ts hide), Injured (a d6 location, no resistance). */
@@ -229,11 +233,13 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, ro
   const fam: Fam = 'body', noSave = id === 'bleeding' || id === 'injured' || id === 'hidden' || id === 'prone';
   const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || 1, skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, cb, rng });
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
+  let saved = '';
   if (!ca.skipSave) { const r = d20(rng), m = saveOf(t, fam) + (ca.saveAdd || 0), tn = 12 + (by ? debuffOf(by, fam) : 0) + (ca.tnAdd || 0);
-    if (r === 20 || (r !== 1 && r + m >= tn)) return ' · ' + t.name + ' resists (body save ' + (r + m) + ' vs ' + tn + ')'; }
+    if (r === 20 || (r !== 1 && r + m >= tn)) return ' · ' + t.name + ' resists (body save ' + (r + m) + ' vs ' + tn + ')';
+    saved = ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')'; }
   if (id === 'dazed' || id === 'prone' || id === 'bleeding') (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1);
-  if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed'; }
-  if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone'; }
+  if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
+  if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
   if (id === 'bleeding') { t.bleed = Math.max(t.bleed || 0, ca.rounds || 3); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
   if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; return ' · ' + t.name + ' is Hidden'; }
   if (id === 'injured') { const inj = injureUnit(rng, t); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
@@ -316,7 +322,7 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   // weapon-only handlers check ctx.src.type === 'weapon'. Hazards (burn, short, overload, wall) and blows with no
   // attacker skip it.
   if (att && !hurtWhy) {
-    const src: any = { by: att, type, dmgType: dmgType || type, spell: true };
+    const src: any = { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) };
     const ctx: any = { att, tgt: t, mode: 'spell', melee: false, spell: true, src, base: dmg, add: 0, mults: [], vs: [] as any[], crit: false, preview: false, cb, mods: cb.mods || [] };
     if (t.weakPoint && att.side === 'pc') ctx.vs.push({ v: 0.15, label: 'Weak Point' }); // the squad's +15% (spec), spells too
     emit(cb, 'damage_out', ctx);
@@ -325,7 +331,7 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   }
   const arm = type === 'sigil' || type === 'physical' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
-  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}) } as any);
+  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } as any);
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;
@@ -400,12 +406,17 @@ export {
   drawGlyph, previewDraw, glyphCost, glyphApOf, glyphsPerTile, groundCap, sigilReady, scuff, findPattern, grammarError, evokeCharge, previewEvoke, planEvoke,
   evoke, evokeOrigins, facingFrom, patternAt, placedMagic, secretFrom, glyphsAt, compileSpell, spellRange, boltPath, burstTiles, dir8,
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
-  enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
+  enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
+/** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
+ * a turret's tile; SENSE and fields: the target's own tile), carried on the damage source as src.from so items that
+ * read the line of fire (Bulwark) trace it from there, not from the caster (item 488). */
+let SPELL_FROM: string | null = null;
+export function withSpellFrom<T>(from: string | null, f: () => T): T { const was = SPELL_FROM; SPELL_FROM = from; try { return f(); } finally { SPELL_FROM = was; } }
 export function withElement<T>(el: string | null, f: () => T): T { const was = FX_ELEMENT; FX_ELEMENT = el; try { return f(); } finally { FX_ELEMENT = was; } }
 /** Run f with the Sigil spell's glyph count known to the damage it deals (Drink It In: 10 per Sigil word). */
 export function magicSpellWords<T>(n: number, f: () => T): T { const was = SPELL; SPELL = { words: n }; try { return f(); } finally { SPELL = was; } }

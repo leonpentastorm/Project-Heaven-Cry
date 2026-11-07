@@ -196,7 +196,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string }[];
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }[];
   /** Place, move, update or remove people and enemies on the overworld map. */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[]; hidden?: boolean }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
@@ -267,9 +267,9 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/forget'; charId: string; designId: string }
@@ -1522,10 +1522,11 @@ const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outbu
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
-function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string }) {
-  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}) };
+function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }) {
+  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
+    ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
     case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
@@ -2160,12 +2161,14 @@ export function sandboxWave(n: number, party = 1): { name: string; tier: string;
 }
 /** Sigil casters in the wave pool (rules 1.4; provisional): wave 2 and every third wave after it, the first drill drone is a
  * Sigil novice; from wave 3, on odd waves, the first sparring trooper is a Sigil adept; from wave 6, on even waves, the
- * first range warden is a Sigil warden (enemies.json `casters`). Same tier and points; deterministic. */
+ * first range warden is a Sigil warden; from wave 10, on every champion wave (every 5th), the first Proving champion is
+ * a Sigil magister (item 491). enemies.json `casters`. Same tier and points; deterministic. */
 function sandboxCasters(n: number, wave: { name: string; tier: string; weapon: string; caster?: string }[]) {
   const swap = (tier: string, id: string) => { const f = wave.find((x) => x.tier === tier && !x.caster), c = CASTER[id]; if (!f || !c || c.tier !== tier) return; f.caster = id; f.weapon = c.weapon; f.name = c.name + ' ' + (wave.filter((x) => x.caster === id).length); };
   if (n >= 2 && n % 3 === 2) swap('minion', 'sigil_novice');
   if (n >= 3 && n % 2 === 1) swap('soldier', 'sigil_adept');
   if (n >= 6 && n % 2 === 0) swap('elite', 'sigil_warden');
+  if (n >= 10 && n % 5 === 0) swap('boss', 'sigil_magister');
   return wave;
 }
 /** The wave the next fight is: the one after a cleared wave, else the current one (a fallen wave is fought again). */

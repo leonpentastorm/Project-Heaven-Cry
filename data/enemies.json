@@ -175,7 +175,32 @@
       "spell_bias": 1.25,
       "text": "An elite Evoker with a sabre: CHAIN lightning through a squad, FREEZE and SLOW on the fast ones, WARD and MEND on its line, NULL on the fields, turrets, traps and walls you leave in its way, a hidden trap on the tiles you'll cross, STEP out of reach. Max Sigil words 4.",
       "provisional": true
+    },
+    {
+      "id": "sigil_magister",
+      "name": "Sigil magister",
+      "tier": "boss",
+      "weapon": "magistrate_pistol",
+      "sigils": [
+        "fire",
+        "shock",
+        "acid",
+        "seek",
+        "arc",
+        "spread",
+        "condense",
+        "chain",
+        "kin",
+        "ward",
+        "mend",
+        "command",
+        "step",
+        "null"
+      ],
+      "spell_bias": 1.2,
+      "text": "A champion who gives orders to the air and to you: the boss tier's nine words (FIRE, SHOCK, SEEK, ARC, SPREAD, CHAIN, KIN, WARD, NULL) with ACID, CONDENSE, MEND, STEP and COMMAND. It walks you out of its guards' reach, halts whoever charges, takes a shooter's weapon off them, burns a cluster with KIN to spare its own, and NULLs what you leave on the ground. Max Sigil words 4.",
+      "provisional": true
     }
   ],
-  "casters_note": "Enemy Sigil casters (rules 1.4, spec 14 item 460): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Evoker with these words (Max Sigil words by tier, sigils.json enemy_ai.max_words). spell_bias multiplies the value the AI puts on a spell when it weighs it against its weapon. Provisional."
+  "casters_note": "Enemy Sigil casters (rules 1.4, spec 14 items 469 and 491): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Evoker with these words (Max Sigil words by tier, sigils.json enemy_ai.max_words). spell_bias multiplies the value the AI puts on a spell when it weighs it against its weapon. Provisional."
 }

@@ -223,6 +223,8 @@ export function characterBrief(g: GameState, c: Character): string {
   const traits = items.filter((h) => h.kind === 'trait').map((h) => `${h.info.name} [${h.key}]${tag(h)}`).join(', ') || 'none';
   // An Ultimate is secret (never in the wiki), so a held one carries its text here; there are only a handful.
   const perks = items.filter((h) => h.kind === 'perk').map((h) => h.tier === 'ultimate' ? `${h.info.name} [${h.key}] (ultimate): ${h.info.text}` : `${h.info.name} [${h.key}] (${h.tier})${tag(h)}`).join(', ') || 'none';
+  // Skill Mastery unlocks the engine runs (Overclock, Twin Draw, Proven Formula, Paint the Field: rules 1.4 items 482-485).
+  const unlocks = items.filter((h) => h.kind === 'skill').map((h) => `${h.info.name} [${h.key}]${tag(h)}`).join(', ');
   const moves = items.filter((h) => h.kind === 'class').map((h) => `${h.info.name} [${h.key}]${tag(h)}`).join(', ');
   const over = pts(c).filter(([, n]) => n >= 5).map(([id]) => `${SKILL[id].name}: ${(SKILL[id] as any).overreach?.text || ''}`).join(' | ') || 'none yet';
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
@@ -232,7 +234,7 @@ export function characterBrief(g: GameState, c: Character): string {
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
-  Perks: ${perks}. Overreach triggers: ${over}${magicBrief(c)}${standingBrief(g, c)}
+  Perks: ${perks}.${unlocks ? ' Skill unlocks (engine-run): ' + unlocks + '.' : ''} Overreach triggers: ${over}${magicBrief(c)}${standingBrief(g, c)}
   Voices:
 ${voices}`;
 }
