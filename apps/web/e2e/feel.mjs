@@ -264,7 +264,8 @@ for (let tries = 0; tries < 6 && !rerolled; tries++) {
   await hact({ type: 'narrator/turn', turn: { narration: 'The lock on the gantry door is a cheap one, rusted shut.', checks: [{ charId: ch.id, skills: [trained[trained.length - 1]], tn: 20, stakes: 'Force the rusted lock.' }] } });
   await h.waitForSelector('text=CLICK TO ROLL', { timeout: 10000 }).catch(() => {});
   const callBtn = h.locator('button', { hasText: 'Force the rusted lock.' }).last();
-  if (await callBtn.count()) await callBtn.click();
+  await h.waitForTimeout(300); // a new check of yours opens the dice table by itself; else open it from its line
+  if (await callBtn.count() && !(await h.locator('div[aria-label="Dice table"]').count())) await callBtn.click();
   await h.waitForSelector('div[aria-label="Dice table"]', { timeout: 5000 });
   await click(h, /Throw/);
   await h.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/', { timeout: 6000 });
