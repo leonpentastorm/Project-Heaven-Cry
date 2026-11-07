@@ -255,7 +255,7 @@ describe('combat screen', () => {
     const slotNames = () => [1, 2, 3, 4].map((i) => (dlgR.querySelector('[data-slot="' + i + '"]')!.textContent || '').replace(/^\d/, ''));
     expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload', 'Overwatch']);
     await React.act(async () => { (dlgR.querySelector('[data-cmd="reload"]') as HTMLElement).click(); });
-    expect(slotNames()).toEqual(['ReloadYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
+    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['ReloadYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
     await React.act(async () => { Array.from(dlgR.querySelectorAll('button')).find((b) => b.textContent === 'Cancel')!.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
     // Escape closes without saving.

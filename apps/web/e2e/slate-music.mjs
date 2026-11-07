@@ -54,6 +54,11 @@ await act(host, { type: 'sandbox/fight' });
 await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 8000 });
 const m2 = await waitMusic(host, /Heaven Falls/), m2g = await waitMusic(guest, /Heaven Falls/);
 ok('a boss fight plays Heaven Falls (host: ' + m2 + ', guest: ' + m2g + ')', /Heaven Falls/.test(m2 || '') && /Heaven Falls/.test(m2g || ''));
+// The label never gives away a hostile the party hasn't seen: "Fight: a boss" only once the boss is in cb.sighted.
+{ const g2 = await G(host), boss = g2.combat.units.find((u) => u.side === 'foe' && u.tier === 'boss'), seen = (g2.combat.sighted || []).includes(boss.id);
+  const card = async (p) => (await p.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: 'Heaven Falls' }).first().textContent({ timeout: 3000 }).catch(() => '')) || '';
+  const ch = await card(host), cg = await card(guest);
+  ok('the card names the boss only once the party has seen it (seen ' + seen + '; host: ' + ch + ' | guest: ' + cg + ')', ch && cg && (seen ? /Fight: a boss/.test(ch) && /Fight: a boss/.test(cg) : !/boss/.test(ch + cg))); }
 await host.screenshot({ path: OUT + 'slate-music-heaven-falls.png' });
 // 3. half the party Downed: Last Rounds. Friendly fire from whoever is up on the other PC until it drops.
 for (let i = 0; i < 400; i++) {
