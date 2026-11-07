@@ -93,6 +93,7 @@ export function askOoc(g: GameState, by: string, text: string, post: (e: Omit<En
   const t = String(text || '').trim().slice(0, OOC_MAX); if (!t) return;
   const p = g.players.find((x) => x.id === by);
   post({ kind: 'ooc', who: by, head: 'OOC · ' + (p?.name || 'A player'), text: t, ooc: true });
+  if (g.sandbox) return; // the Proving Ground has no Narrator: OOC there is just table talk
   const q = (g.story.oocAsk ||= []);
   q.push({ seq: g.seq, who: by, name: p?.name || 'A player', text: t });
   if (q.length > OOC_QUEUE) q.splice(0, q.length - OOC_QUEUE);
