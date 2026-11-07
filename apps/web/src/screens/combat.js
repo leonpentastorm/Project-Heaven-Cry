@@ -8,6 +8,7 @@ import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
   lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions } from '@engine';
 import { act, getState, go } from '../game/store';
+import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -103,6 +104,7 @@ const COMBAT_CSS = [
 ].join('');
 ensureMotionCss();
 ensureStyle('phc-combat-motion', COMBAT_CSS);
+ensureStyle('phc-combat-layout', LAYOUT_CSS);
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
 let LIVE = null;
@@ -153,6 +155,8 @@ const ASIDE_MIN = 410;
 // mini-bar near the bottom-right keeps the turn playable (AP, the chosen action, the four quick commands, Confirm,
 // End turn), and keys 1–4 pick the quick commands instead of the (hidden) tabs. H or \ toggles it.
 const PANEL_KEY = 'phc.combatPanel';
+// The adjustable layout (game/combatLayout.ts): the zones' split and where each panel sits, per browser.
+let LAYOUT = readLayout();
 let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
 /** How far the grid may zoom in when the column is hidden and the map has the room. */
 const ZOOM_MAX_WIDE = 1.4;
@@ -294,6 +298,37 @@ export class CombatLogic extends DCLogic {
       if (to != null && panel.scrollTo) panel.scrollTo({ top: Math.max(0, to), behavior: reducedMotion() ? 'auto' : 'smooth' });
     }));
   }
+  /** A new layout (a panel dropped, the splitter let go, Reset): saved for this browser, then the grid refits. */
+  setLayout(l) {
+    LAYOUT = normalise(l); saveLayout(LAYOUT); this._liveW = null; this._fitKey = null;
+    this.setState({});
+    if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => this.fitGrid());
+  }
+  /** The bindings the layout's grips, splitter and Reset use (templates/combat.template.html). */
+  layoutVals(hidden) {
+    const pl = placement(LAYOUT, hidden), o = pl.order;
+    const panel = (n) => 'position: relative; order: ' + n + '; flex: none; min-width: 0';
+    const side = '; flex: 0 1 auto; min-height: 64px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin';
+    const grip = (id) => (e) => startPanelDrag(e.nativeEvent || e, id, LAYOUT, (l) => this.setLayout(l));
+    const gripKey = (id) => (e) => { const n = keyMovePanel(e.nativeEvent || e, id, LAYOUT); if (!n) return; e.preventDefault(); this.setLayout(n);
+      if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => requestAnimationFrame(() => { const b = id === 'actions' ? document.querySelector('.phc-cb-bar .phc-grip') : document.querySelector('[data-phc-panel="' + id + '"] > .phc-grip'); if (b && b.focus) b.focus(); })); };
+    const sec = () => (typeof document !== 'undefined' ? document.querySelector('.phc-cb-left') : null);
+    const rowW = () => { const r = sec() && sec().parentElement; if (!r) return 1200; const cs = getComputedStyle(r); return r.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0); };
+    const live = (w) => { this._liveW = w; const el = sec(); if (el) el.style.flex = '0 1 ' + w + 'px'; this.fitGrid(); };
+    return {
+      swap: pl.swap, custom: !isDefault(LAYOUT), reset: () => this.setLayout(DEFAULT_LAYOUT),
+      // In the action zone the legend and the log take what room they need up to a cap, then scroll, so the actions keep theirs.
+      mapStyle: panel(o.map), legendStyle: panel(o.legend) + (pl.legendIn === 'sideZone' ? side : ''), logStyle: panel(o.log) + (pl.logIn === 'sideZone' ? side : ''),
+      legendMap: pl.legendIn === 'mapZone', legendSide: pl.legendIn === 'sideZone', logMap: pl.logIn === 'mapZone', logSide: pl.logIn === 'sideZone',
+      grip: { map: grip('map'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
+      gripKey: { map: gripKey('map'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
+      splitNow: pl.width ? Math.round((pl.width / rowW()) * 100) : 50,
+      splitDown: (e) => { const bar = e.currentTarget, row = bar && bar.parentElement; if (!row) return; startSplit(e.nativeEvent || e, bar, row, pl.swap, live, (w) => this.setLayout({ ...LAYOUT, width: w })); },
+      splitKey: (e) => { const el = sec(); const cur = LAYOUT.width || (el ? el.getBoundingClientRect().width : 600); const r = splitKey(e.nativeEvent || e, cur, rowW(), pl.swap);
+        if (r == null) return; e.preventDefault(); this.setLayout(r === 'reset' ? { ...LAYOUT, width: null } : { ...LAYOUT, width: r }); },
+      splitReset: () => this.setLayout({ ...LAYOUT, width: null }),
+    };
+  }
   /** Size the grid to the room beside the action column (CSS zoom, so the effects layer's tile rects stay true):
    *  never larger than 1, never smaller than about half. Narrow windows fit the width only. */
   fitGrid() {
@@ -304,7 +339,8 @@ export class CombatLogic extends DCLogic {
     if (this._roEl !== sec && typeof ResizeObserver !== 'undefined') { if (this._ro) this._ro.disconnect(); this._ro = new ResizeObserver(() => { if (LIVE === this) this.fitGrid(); }); this._ro.observe(sec); this._roEl = sec; }
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
-    const availW = narrow ? rowW : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
+    const sized = !narrow && !PANEL_HIDDEN && (LAYOUT.width || this._liveW);
+    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
     let fit = Math.min(PANEL_HIDDEN && !narrow ? ZOOM_MAX_WIDE : 1, availW / natW, availH / natH);
     // Panel hidden: the grid sits on the left and stays clear of the turn mini-bar in the bottom-right corner, either
     // beside it or above it (whichever leaves the bigger map), so no tile hides under it.
@@ -326,7 +362,7 @@ export class CombatLogic extends DCLogic {
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, hold: false, word: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
-    if (!cb) return { ...lightboxVals(this), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', confirmText: 'Confirm', pad: {}, magicLegend: [] };
+    if (!cb) return { ...lightboxVals(this), lay: this.layoutVals(PANEL_HIDDEN), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', confirmText: 'Confirm', pad: {}, magicLegend: [] };
     const cur = active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
     const mineTurn = !cb.over && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
@@ -774,6 +810,7 @@ export class CombatLogic extends DCLogic {
     if (fitKey !== this._fitKey && typeof requestAnimationFrame !== 'undefined') { this._fitKey = fitKey; requestAnimationFrame(() => this.fitGrid()); }
     // ---------- the column hidden: a mini-bar keeps the turn playable ----------
     const hidden = PANEL_HIDDEN;
+    const lay = this.layoutVals(hidden);
     const quick = mineTurn ? resolveCommands(cb, cur, ch, readPrefs(g, cur.charId), { noNarrator: !!g.sandbox, g }) : [];
     this._quick = hidden ? quick : null;
     const mini = { show: hidden && mineTurn,
@@ -789,9 +826,9 @@ export class CombatLogic extends DCLogic {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
       gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto 0 0' : ''),
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
-      rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px',
+      rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px' + (lay.swap ? '; flex-direction: row-reverse' : ''), lay,
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
-      leftStyle: 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + Math.ceil((48 * cb.map.w + 36) * zoom + 34) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      leftStyle: 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
       turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),

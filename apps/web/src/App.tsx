@@ -32,13 +32,14 @@ import { TurnIntro, cue } from './game/turnIntro';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
+import { expandLayout } from './game/combatLayout';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
   create: makeScreen(expand(createT), CreateLogic as any),
   room: makeScreen(expand(roomT), RoomLogic as any),
   main: makeScreen(expand(mainT), MainLogic as any),
-  combat: makeScreen(expand(combatT), CombatLogic as any),
+  combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
   levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
   ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
 };

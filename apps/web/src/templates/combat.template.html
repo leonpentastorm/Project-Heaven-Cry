@@ -19,7 +19,8 @@
 </div>
 
 <div class="phc-cb-row" style="{{rowStyle}}">
-<section aria-label="Tactical grid" class="phc-cb-left phc-col-scroll" style="{{leftStyle}}">
+<section aria-label="Tactical grid" data-phc-zone="mapZone" class="phc-cb-left phc-col-scroll" style="{{leftStyle}}">
+<div data-phc-panel="map" style="{{lay.mapStyle}}"><button type="button" class="phc-grip" style="top: 2px; right: -31px" onPointerDown="{{lay.grip.map}}" onKeyDown="{{lay.gripKey.map}}" aria-label="Move the map: drag, or use the arrow keys" title="Drag to move the map (arrow keys too)">⠿</button>
 <div class="phc-grid-scroll" style="flex: none; overflow-x: auto"><div class="phc-grid" style="{{gridStyle}}">
 <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
 <sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
@@ -44,7 +45,9 @@
 </button></sc-if>
 </sc-for>
 </div></div>
-<div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2">
+</div>
+<sc-if value="{{lay.legendMap}}" hint-placeholder-val="{{true}}"><!--PANEL:legend--><div data-phc-panel="legend" style="{{lay.legendStyle}}"><button type="button" class="phc-grip" onPointerDown="{{lay.grip.legend}}" onKeyDown="{{lay.gripKey.legend}}" aria-label="Move the legend: drag, or use the arrow keys" title="Drag to move the legend (arrow keys too)">⠿</button>
+<div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2; padding-right: 30px">
 <sc-for list="{{legend}}" as="l" hint-placeholder-count="2"><span style="display: flex; align-items: center; gap: 6px"><span style="{{l.style}}"></span>{{l.name}}</span></sc-for>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border-radius: 3px; border: 2px solid #F65157"></span>Hostile</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3"></span>Move range</span>
@@ -52,14 +55,18 @@
 <sc-for list="{{magicLegend}}" as="l"><span style="display: flex; align-items: center; gap: 6px"><sc-if value="{{l.img}}"><img src="{{l.img}}" alt="" style="width: 14px; height: 14px"></sc-if><sc-if value="{{l.box}}"><span style="{{l.box}}"></span></sc-if>{{l.name}}</span></sc-for>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #1C2536"></span>Solid (blocks sight)</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #232D3F"></span>Difficult (2 per tile)</span>
 </div>
+</div><!--/PANEL:legend--></sc-if>
+<sc-if value="{{lay.logMap}}" hint-placeholder-val="{{true}}"><!--PANEL:log--><div data-phc-panel="log" style="{{lay.logStyle}}"><button type="button" class="phc-grip" onPointerDown="{{lay.grip.log}}" onKeyDown="{{lay.gripKey.log}}" aria-label="Move the combat log: drag, or use the arrow keys" title="Drag to move the combat log (arrow keys too)">⠿</button>
 <div style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBAT LOG</span>
 <sc-for list="{{log}}" as="l" hint-placeholder-count="3"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 15px; line-height: 1.55; color: #DCE2EC">{{l.text}}</p></sc-for>
 </div>
+</div><!--/PANEL:log--></sc-if>
 </section>
 
 <sc-if value="{{panelOpen}}">
-<aside aria-label="Turn" id="phc-cb-aside" class="phc-cb-aside phc-col-scroll {{asideCls}}" style="flex: 1 1 380px; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 6px 4px; margin: 0 -6px; overflow-x: hidden; overflow-y: auto">
+<div role="separator" class="phc-cb-split" tabindex="0" aria-orientation="vertical" aria-label="Resize the map and the action menu: drag, or arrow keys; Home resets" aria-valuenow="{{lay.splitNow}}" aria-valuemin="0" aria-valuemax="100" title="Drag to resize (double-click resets)" onPointerDown="{{lay.splitDown}}" onKeyDown="{{lay.splitKey}}" onDoubleClick="{{lay.splitReset}}"><span></span></div>
+<aside aria-label="Turn" id="phc-cb-aside" data-phc-zone="sideZone" data-phc-panel="actions" class="phc-cb-aside phc-col-scroll {{asideCls}}" style="flex: 1 1 380px; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 6px 4px; margin: 0 -6px; overflow-x: hidden; overflow-y: auto">
 <div class="phc-cb-bar" style="flex: none; display: flex; align-items: center; gap: 8px; min-height: 28px">
 <sc-if value="{{hasMe}}"><div class="phc-me-mini" aria-label="You: {{me.name}}, HP {{me.hp}}, {{me.miniLine}}" style="flex: 0 1 auto; min-width: 0; display: none; align-items: center; gap: 7px">
 <button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #000; display: block"></button>
@@ -68,6 +75,8 @@
 <span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; color: #F65157">HP</span> {{me.hp}} · {{me.miniLine}}</span>
 </div></sc-if>
 <span style="flex: none; margin-left: auto; display: flex; gap: 6px">
+<sc-if value="{{lay.custom}}"><button type="button" class="phc-cb-link phc-cb-layout-reset" onClick="{{lay.reset}}" title="Put the map, legend, log and action menu back where they started" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">↺ Layout</button></sc-if>
+<button type="button" class="phc-grip" style="position: static; opacity: 1" onPointerDown="{{lay.grip.actions}}" onKeyDown="{{lay.gripKey.actions}}" aria-label="Move the action menu to the other side: drag, or the arrow keys" title="Drag to move the action menu to the other side">⠿</button>
 <sc-if value="{{canCustomise}}"><button type="button" class="phc-cb-link" onClick="{{customise}}" aria-haspopup="dialog" title="Choose the four commands your turn card offers (keys 1–4)" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">⚙ Customise</button></sc-if>
 <button type="button" class="phc-cb-hide" onClick="{{togglePanel}}" aria-controls="phc-cb-aside" aria-expanded="true" aria-keyshortcuts="H" title="Hide the panel: the map takes the full width (key H)" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">Hide panel ⟩</button>
 </span>
@@ -222,6 +231,8 @@
 </div>
 </sc-for>
 </div>
+<sc-if value="{{lay.legendSide}}" hint-placeholder-val="{{false}}"><!--SLOT:legend--></sc-if>
+<sc-if value="{{lay.logSide}}" hint-placeholder-val="{{false}}"><!--SLOT:log--></sc-if>
 </aside>
 </sc-if>
 <sc-if value="{{panelHidden}}"><button type="button" class="phc-cb-show" onClick="{{togglePanel}}" aria-expanded="false" aria-keyshortcuts="H" aria-label="Show the turn panel" title="Show the panel (key H)" style="flex: none; align-self: flex-start; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; padding: 12px 6px; border-radius: 10px 0 0 10px; border: 1px solid #2E3A50; border-right: 0; background: #10151F; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer"><span aria-hidden="true" style="font-size: 16px">⟨</span><span style="writing-mode: vertical-rl; font-size: 11px; letter-spacing: 0.16em">SHOW PANEL</span></button></sc-if>
