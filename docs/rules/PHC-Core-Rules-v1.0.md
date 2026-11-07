@@ -1633,6 +1633,31 @@ A character is a file you can keep, or make for a friend and send to them.
 - **The spend meter:** the cost beside the room code opens the Narrator's spend: the room's total, the average, last and dearest call, how much input was read from the cache, the last 20 calls against the $0.50 ceiling, and (for the host) an estimate of the next turn's request. A turn that fails after the provider answered still counts (it was billed). Rewordings count in the total but not as turns.
 - **First-time tips:** one tip the first time a player meets each part of play: their round (Say, AP, Pass, End turn), the Narrator's voice, skill voices, rerolls and rewordings, combat, and the Report button. Each shows once per browser; *No more tips* turns them off.
 
+## The Proving Ground
+
+Practice mode: gear up, then fight waves of drill units on one arena, with endless retries and a tools panel for everything the engine owns. **No Narrator is ever called there**, on any path (no story work is ever queued, every Narrator and story action is refused, and the host's client never calls a provider while it is open). Nothing done there lasts: no XP, no injuries, no deaths, no story; leaving restores the room exactly. Sandbox actions are refused outside it.
+
+- **Opening it.** From the title, PROVING GROUND asks **Solo** or **With friends**; both open a fresh room just for it (*standalone*), the host with a test fighter, "Recruit" (Wick's face). With friends shows the room code big, with a copy button and the shareable link (the Squad tab's *Invite friends* shows it again). From an existing room, the host's ⚔ Proving Ground opens it with the room's locked-in characters.
+- **Gearing up and fighting.** Gearing up, the squad stands on the map with the wave's drill units idle; gear and magic change freely and moving costs nothing. A fight begins with *Start the fight*, or at once when anyone attacks a drill unit (the fight's log says so, and how many were ready). When it ends (cleared, fallen, or stopped by the host) the Proving Ground is gearing up again. Cleared: Next wave, for everyone at once, the squad as it stands. Fallen: Retry the wave (everyone refilled at the start tiles) or Restart from wave 1.
+- **Waves.** Wave n's point budget is 2 + 1.5n (minion 1, soldier 2, elite 4, champion 8; soldiers from wave 2, elites from wave 4, a champion every 5th wave; at most 8 units). With friends the budget and the soldier and elite caps take **× (0.6 + 0.4 × players)**, players being those with a fighter (one player: × 1, the solo waves). *Provisional.* The wave the tools placed on the map is placed again when the party grows or shrinks while gearing up.
+
+### With friends (multiplayer)
+
+- **A fighter for everyone.** Up to 4 players (the room limit). A friend who joins gets their own test fighter, "Recruit 2", "Recruit 3"… (Wick's face), refilled, on a free start tile; joining mid-fight, it fights in the next one. Instead, a player can **bring** one of their saved characters or drafts (the library, or a `.phc.zip` file) while gearing up: a **copy** replaces their Recruit, and nothing done in the Proving Ground reaches the saved character. Brought copies and Recruits are removed when the Proving Ground ends. A player with no fighter can take a Recruit at any time between fights.
+- **READY.** Each player with a fighter has a READY toggle (in the tools and on the Squad tab). *Start the fight* is the host's button and shows how many are ready ("2 / 3 ready"); the host can start anyway, and once everyone is ready anyone can. READY clears whenever a fight begins.
+- **Who can do what.**
+
+  | Everyone | Host only |
+  | --- | --- |
+  | Gear tools on their **own** fighter: give, equip, unequip, drop, armour, the magic kit, learn, designs, class, level, skills, perks, traits, refill | Spawn and clear enemies, place and jump waves, the mana meter (*Everyone can spawn* opens these to all) |
+  | READY; their team (team fight); bring a character or take a Recruit | Enemy AI on or off, endless waves, stop a fight, retry or restart mid-fight |
+  | Next wave after a clear; Retry or Restart after a fall (the host can turn *Guests can retry* off) | Room settings (Mode, Everyone can spawn, Guests can retry), remove a player, end the Proving Ground |
+
+  The host can also use the gear tools on anyone's fighter. *Everyone can spawn* is off by default; *Guests can retry* is on.
+- **Co-op.** Turn order and initiative are as in any fight; each player plays their own units, and every player sees every turn's banner, the cut-in on their own turns and the same effects. The best wave cleared is kept for the room and for each player (the Squad tab lists every player: colour, name, fighter, READY, best wave, and team in a team fight).
+- **Team fight** (room setting *Mode: Co-op waves | Team fight*; switched while gearing up). No drill units. Players pick **Team A** or **Team B** on the Squad tab (alternating by default). *Start the fight* begins a fight between the teams on the Proving Ground map, everyone refilled, Team A at the squad's start tiles, Team B at the far side. Each team has its own fog of war; friendly fire works as anywhere. **Downed is out** for both teams (no death saves, no stims back up). *Provisional.* A team wins when the other is all Downed, out or dead; then everyone is back to gearing up with full HP, and each winner's count of wins goes up. The engine seats Team B's fighters on the fight's foe side as players' units (no enemy AI runs them) and turns each Team B player's view around, so every player sees their own team as the squad.
+- **Leaving.** A guest who leaves goes to the title, and their fighter goes with them (mid-fight too: the turn moves on; a team left with nobody loses). A guest whose connection drops keeps their fighter and READY and rejoins with the code. The host's *Leave the Proving Ground* puts the room back as it was (its characters, players, story and memory; players who joined during it stay in the room, players the host removed don't); opened from the title, it closes the room and everyone lands on the title, guests with the message "The host closed the Proving Ground."
+
 ## The Narrator's voice
 
 The Narrator speaks aloud, free, in each player's own browser. Nothing is paid and nothing leaves the browser except the one-time model download.
@@ -3283,3 +3308,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 410. **The campaign end drops open checks and pushes** for the epilogue turn. PROVISIONAL.
 411. **Branches are the Narrator's choice** (missionNext). A player vote between branches is not built. PROVISIONAL.
 
+*Proving Ground multiplayer (Nov 2026)*
+
+412. **Wave scaling by party size.** With friends the wave budget and the soldier and elite caps take × (0.6 + 0.4 × players with a fighter); the unit cap stays 8 (the map seats 9). One player: × 1. *Engine: game.ts sandboxWave, sandboxScale.* PROVISIONAL.
+413. **Downed is out in a team fight.** Both teams: a Downed fighter is out at once (no death saves, no stims), so Team A (on the fight's PC side) and Team B (on its foe side, where 0 HP is already out) are alike. *Engine: game.ts sandboxAfter.* PROVISIONAL.
+414. **Team B's side-bound rules.** Team B fights from the engine's foe side, so the few rules still written for the PC side don't reach it yet: Analyze (only foes can be analyzed), Weak Point (only PC attackers) and spotting traps while moving. Stims follow the stimmer's own side. Fix when a playtest shows it matters. *Engine: combat.ts analyze, previewAttack, moveUnit.* PROVISIONAL.

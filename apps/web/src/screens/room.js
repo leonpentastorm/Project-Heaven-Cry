@@ -65,7 +65,7 @@ export class RoomLogic extends DCLogic {
       canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
         f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
       // In the Proving Ground the host's Leave ends it and keeps the room (Leon: leaving it landed on the title screen).
-      leave: () => (g.sandbox && isHost ? leaveProvingGround(false) : leaveRoom()), leaveLabel: g.sandbox && isHost ? 'Leave the Proving Ground' : isHost ? 'Save and leave' : 'Leave',
+      leave: () => (g.sandbox ? leaveProvingGround(false) : leaveRoom()), leaveLabel: g.sandbox ? 'Leave the Proving Ground' : isHost ? 'Save and leave' : 'Leave',
       leaveTitle: g.sandbox && isHost ? 'Back to this room, as it was before the Proving Ground.' : 'Back to the title screen. Resume this room any time from Saved sessions.',
       isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save',
       saveTitle: 'The game also saves itself after every action, in this browser and on the room server.',

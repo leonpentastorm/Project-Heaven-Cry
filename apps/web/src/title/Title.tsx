@@ -15,7 +15,7 @@ import { CREDITS } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
 
-type Panel = null | 'name' | 'join' | 'characters' | 'saved' | 'settings' | 'credits';
+type Panel = null | 'name' | 'join' | 'proving' | 'characters' | 'saved' | 'settings' | 'credits';
 type Item = { id: string; label: string; sub?: string; start?: boolean; bubble: string; run: () => void };
 
 const ink = { text: '#E7EBF3', muted: '#A3AEC2', dim: '#7F8BA1', line: '#232D3F', panel: 'rgba(13, 17, 25, 0.86)' };
@@ -109,7 +109,7 @@ export function Title() {
   const items: Item[] = [
     ...(lastInfo ? [{ id: 'continue', label: 'CONTINUE', sub: 'Room ' + lastInfo.code + ' · ' + ago(lastInfo.savedAt), start: true, bubble: 'Welcome back!', run: () => (needName('resume:' + lastInfo.code) ? setPanel('name') : resumeSession(lastInfo.code)) }] : []),
     { id: 'new', label: 'NEW GAME', start: true, bubble: "Let's go!", run: () => (needName('host') ? setPanel('name') : hostRoom()) },
-    { id: 'proving', label: 'PROVING GROUND', sub: 'Practice fights · endless waves · no Narrator', bubble: 'Fight me!', run: () => (needName('proving') ? setPanel('name') : startProvingGround()) },
+    { id: 'proving', label: 'PROVING GROUND', sub: 'Practice fights · endless waves · no Narrator', bubble: 'Fight me!', run: () => setPanel('proving') },
     { id: 'join', label: 'JOIN A FRIEND', bubble: 'Who\'s there?', run: () => setPanel('join') },
     { id: 'chars', label: 'CHARACTERS', bubble: 'Hello!', run: () => setPanel('characters') },
     ...(sessions.length ? [{ id: 'saved', label: 'SAVED GAMES', bubble: 'Hello!', run: () => setPanel('saved') }] : []),
@@ -351,9 +351,10 @@ export function Title() {
       {/* sub-screens */}
       {panel && (
         <section className="phc-panel" aria-label={panel} style={{ position: 'absolute', left: 'clamp(16px, 6vw, 120px)', top: '6vh', bottom: '6vh', width: 'min(760px, 92vw)', overflowY: 'auto', padding: '22px 24px', borderRadius: 16, background: ink.panel, border: '1px solid #2E3A50', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <button type="button" data-sfx="none" autoFocus={panel !== 'name' && panel !== 'join'} onClick={back} style={{ ...btn, alignSelf: 'flex-start', minHeight: 36 }}>‹ Back</button>
+          <button type="button" data-sfx="none" autoFocus={panel !== 'name' && panel !== 'join' && panel !== 'proving'} onClick={back} style={{ ...btn, alignSelf: 'flex-start', minHeight: 36 }}>‹ Back</button>
           {panel === 'name' && <NamePanel after={after} />}
           {panel === 'join' && <JoinPanel code={code} setCode={setCode} />}
+          {panel === 'proving' && <ProvingPanel />}
           {panel === 'characters' && <CharactersPanel />}
           {panel === 'saved' && <SavedPanel />}
           {panel === 'settings' && <SettingsPanel />}
@@ -425,6 +426,23 @@ function NamePanel({ after }: { after: null | string }) {
     <NameInput />
     <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => (resume ? resumeSession(resume) : prove ? startProvingGround() : hostRoom())}>{resume ? 'Continue ›' : prove ? 'To the Proving Ground ›' : 'Open a room ›'}</button>
     <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>You run the Narrator with your Anthropic key. Share the room code; friends join from anywhere.</span>
+  </>;
+}
+/** PROVING GROUND: alone (as it always was), or with friends (the room code shown big once inside). */
+function ProvingPanel() {
+  const st = React.useSyncExternalStore(subscribe, getState), named = !!st.me.name.trim();
+  const card: React.CSSProperties = { ...btn, minHeight: 92, flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: 4, padding: '12px 16px', textAlign: 'left' };
+  return <>
+    <h2 style={h2}>The Proving Ground</h2>
+    <span style={{ fontSize: 14, color: ink.muted, lineHeight: 1.5 }}>Practice fights: gear up, then fight endless waves of drill units. No Narrator, nothing carried out.</span>
+    <NameInput />
+    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+      <button type="button" data-sfx="start" disabled={!named} style={{ ...card, ...(named ? {} : { opacity: 0.5, cursor: 'default' }) }} onClick={() => startProvingGround()}>
+        <span style={{ fontSize: 18 }}>Solo ›</span><span style={{ fontSize: 12, fontWeight: 600, color: ink.muted }}>Just you and a test fighter.</span></button>
+      <button type="button" data-sfx="start" disabled={!named} style={{ ...card, border: '1px solid #E7EBF3', ...(named ? {} : { opacity: 0.5, cursor: 'default' }) }} onClick={() => startProvingGround(undefined, { friends: true })}>
+        <span style={{ fontSize: 18 }}>With friends ›</span><span style={{ fontSize: 12, fontWeight: 600, color: ink.muted }}>Share a room code: up to 4 players, co-op waves or a team fight.</span></button>
+    </div>
+    {!named && <span style={{ fontSize: 13, color: ink.muted }}>Enter your name first.</span>}
   </>;
 }
 function JoinPanel({ code, setCode }: { code: string; setCode: (c: string) => void }) {

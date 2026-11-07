@@ -40,7 +40,8 @@ await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
-if (await nm.count()) { await nm.fill('Leon'); await click(p, 'To the Proving Ground ›'); }
+// PROVING GROUND asks Solo or With friends (multiplayer); Solo is the Proving Ground as it always was.
+if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
 await drawer.waitFor({ timeout: 6000 }).catch(() => {});
@@ -166,21 +167,21 @@ const u2 = g.combat.units.find((u) => u.charId === me.id);
 ok('Retry: wave ' + g.sandbox.wave + ' again, attempt ' + g.sandbox.attempt + ', HP ' + u2.hp + '/' + u2.maxHp, g.sandbox.wave === 2 && u2.hp === u2.maxHp && !u2.downed);
 await p.waitForTimeout(700); await snap('08-retry');
 
-// 7. Leave: back to the room, not the title
+// 7. Leave: opened from the title, the Proving Ground's room closes with it, back to the title (opened from a room,
+// leaving goes back to that room: e2e/sandbox-mp.mjs and the engine tests cover it).
 await p.waitForTimeout(2200); await dismissCut();
 await openTools();
+const lastG = await G();
 await drawer.getByRole('button', { name: 'Leave', exact: true }).click();
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'lobby', null, { timeout: 6000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'home' && !window.__phc.getState().game, null, { timeout: 6000 }).catch(() => {});
 await p.waitForTimeout(500);
-g = await G();
-ok('leaving lands on the room screen (' + (await screen()) + '), the room as it was', (await screen()) === 'room' && g.phase === 'lobby' && !g.sandbox && !g.combat);
-await snap('09-left-to-room');
+ok('leaving (from the title) lands on the title screen (' + (await screen()) + '), the room closed', (await screen()) === 'home' && !(await G()));
+await snap('09-left-to-title');
 
 // 8. No Narrator anywhere
 clearInterval(watchBusy);
-g = await G();
 ok('no request went to an AI provider (' + calls.length + ')' + (calls.length ? ': ' + calls.join(' ') : ''), calls.length === 0);
-ok('the Narrator was never busy, never in error', !busySeen && !g.narrator.busy && !g.narrator.error);
+ok('the Narrator was never busy, never in error', !busySeen && !lastG.narrator.busy && !lastG.narrator.error);
 console.log('  page errors:', JSON.stringify(p.errors));
 if (p.errors.length) process.exitCode = 1;
 await browser.close();
