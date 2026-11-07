@@ -153,7 +153,7 @@
 </form>
 </sc-if>
 <div role="tablist" aria-label="Actions" class="phc-cb-tabs" style="flex: none; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none">
-<sc-for list="{{T.tabs}}" as="tb" hint-placeholder-count="5"><button type="button" role="tab" id="{{tb.id}}" aria-controls="phc-tabpanel" aria-selected="{{tb.selected}}" aria-label="{{tb.label}}" aria-keyshortcuts="{{tb.keys}}" tabindex="{{tb.tabindex}}" title="{{tb.title}}" data-tab="{{tb.key}}" onClick="{{tb.pick}}" onKeyDown="{{tb.onKey}}" style="{{tb.style}}"><span aria-hidden="true" style="{{tb.numStyle}}">{{tb.num}}</span><span style="overflow: hidden; text-overflow: ellipsis">{{tb.name}}</span><span style="{{tb.countStyle}}">{{tb.count}}</span><sc-if value="{{tb.holds}}"><span aria-hidden="true" style="{{tb.holdStyle}}"></span></sc-if></button></sc-for>
+<sc-for list="{{T.tabs}}" as="tb" hint-placeholder-count="5"><button type="button" role="tab" id="{{tb.id}}" aria-controls="phc-tabpanel" aria-selected="{{tb.selected}}" aria-label="{{tb.label}}" aria-keyshortcuts="{{tb.keys}}" tabindex="{{tb.tabindex}}" title="{{tb.title}}" data-tab="{{tb.key}}" onClick="{{tb.pick}}" onKeyDown="{{tb.onKey}}" style="{{tb.style}}"><span aria-hidden="true" style="{{tb.numStyle}}">{{tb.num}}</span><sc-if value="{{tb.icon}}"><img src="{{tb.icon}}" alt="" style="flex: none; width: 16px; height: 16px"></sc-if><span style="overflow: hidden; text-overflow: ellipsis">{{tb.name}}</span><span style="{{tb.countStyle}}">{{tb.count}}</span><sc-if value="{{tb.holds}}"><span aria-hidden="true" style="{{tb.holdStyle}}"></span></sc-if></button></sc-for>
 </div>
 <sc-for list="{{T.tabPanel}}" as="tp">
 <div role="tabpanel" id="phc-tabpanel" aria-labelledby="{{tp.tab}}" tabindex="0" class="{{tp.cls}}" style="position: relative; flex: 1 1 auto; min-height: 56px; overflow-y: auto; overflow-x: hidden; padding: 2px 4px 2px 0; outline: none">
@@ -197,6 +197,7 @@
 <span style="font-size: 14px; font-weight: 700">{{T.sel.name}}</span>
 <span class="phc-cb-seltext" title="{{T.sel.text}}" style="font-size: 12px; line-height: 1.4; color: #C9D3E3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden">{{T.sel.text}}</span>
 <sc-if value="{{T.sel.extra}}"><span class="phc-cb-selextra" title="{{T.sel.extra}}" style="font-size: 11px; color: #A3AEC2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden">{{T.sel.extra}}</span></sc-if>
+<sc-if value="{{T.sel.hasToggles}}"><div role="group" aria-label="Perk options on this action" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{T.sel.toggles}}" as="tg"><button type="button" class="phc-cb-act" data-sfx="toggle" aria-pressed="{{tg.pressed}}" disabled="{{tg.off}}" onClick="{{tg.pick}}" title="{{tg.title}}" style="{{tg.style}}">{{tg.label}}</button></sc-for></div></sc-if>
 </div>
 <sc-for list="{{T.tgtList}}" as="target">
 <div aria-label="Target" class="{{target.cls}}" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #10151F; border: 1px solid #F65157">
@@ -206,6 +207,7 @@
 <sc-if value="{{target.known}}"><div style="position: relative; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><div class="phc-hp-fill" style="{{target.hpFill}}"></div></div></sc-if>
 <span class="phc-cb-tline" title="{{target.line}}" style="font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{target.line}}</span>
 <span style="font-size: 12px; font-weight: 700">{{target.odds}}</span>
+<sc-if value="{{target.breakdown}}"><span class="phc-cb-breakdown" title="{{target.breakdown}}" style="font-size: 11px; color: #A3AEC2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden">{{target.breakdown}}</span></sc-if>
 </div>
 </div>
 </sc-for>

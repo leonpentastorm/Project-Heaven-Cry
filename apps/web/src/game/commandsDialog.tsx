@@ -27,7 +27,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const cast: any = game && cb ? castFight(game, cb, ART) || cb : null;
   const u = cast ? cast.units.find((x: any) => x.charId === charId && !x.dead) || null : null;
   const ch: any = game ? (game.characters as any)[charId] || null : null;
-  const opts = { noNarrator: !!game?.sandbox }; // the Proving Ground: nothing only a Narrator can rule
+  const opts = { noNarrator: !!game?.sandbox, g: game }; // the Proving Ground: nothing only a Narrator can rule; g: perk and class actions
   const cat = u ? catalogue(cast, u, ch, opts).filter(pickable) : [];
   const by = new Map(cat.map((e) => [e.action, e]));
   const [slots, setSlots] = React.useState<(string | null)[]>(() => readPrefs(game, charId));

@@ -253,9 +253,9 @@ describe('combat screen', () => {
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
     const dlgR = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
     const slotNames = () => [1, 2, 3, 4].map((i) => (dlgR.querySelector('[data-slot="' + i + '"]')!.textContent || '').replace(/^\d/, ''));
-    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload', 'Overwatch']);
+    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Swap magazine', 'Overwatch']);
     await React.act(async () => { (dlgR.querySelector('[data-cmd="reload"]') as HTMLElement).click(); });
-    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['ReloadYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
+    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['Swap magazineYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
     await React.act(async () => { Array.from(dlgR.querySelectorAll('button')).find((b) => b.textContent === 'Cancel')!.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
     // Escape closes without saving.
@@ -278,5 +278,30 @@ describe('combat screen', () => {
     expect(r.err).toBeNull();
     expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
     expect(cb.fxSeq).toBe(1);
+  });
+});
+
+describe('the Perks tab on the combat screen (plan 3)', () => {
+  it('a perk holder gets a Perks tab; picking Shrug It Off and confirming sends combat/perk and the engine runs it', async () => {
+    vi.useFakeTimers();
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-tab');
+    doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'shrug_it_off', tier: 'II' }];
+    doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
+    // Make it the PC's turn whatever initiative said (the enemy may have gone first).
+    for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    const u = active(G.combat!)!; expect(u.side).toBe('pc');
+    const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
+    await React.act(async () => { tab.click(); });
+    const pick = buttons(el, /Shrug It Off/)[0]; expect(pick).toBeTruthy();
+    await React.act(async () => { pick.click(); });
+    const conf = buttons(el, /^Confirm$/)[0];
+    await React.act(async () => { conf.click(); });
+    expect(G.combat!.log.some((l) => /uses Shrug It Off/.test(l))).toBe(true);
+    expect(G.combat!.units.find((x) => x.id === u.id)!.shield).toBeGreaterThan(0);
+    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
 });

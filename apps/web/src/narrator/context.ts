@@ -1,7 +1,8 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { PERK_GUIDANCE } from './perk-guidance';
+import { holdersOf, briefOf, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -88,6 +89,10 @@ OVERREACH
 XP (per character, or charId "all")
 - Sources and allowed amounts: dialogue 25-100 (a scene won through talk), discovery 25-75 (a secret, a place, a truth), quest 50-300 (an objective completed). The engine awards combat XP itself. Pacing: session 1 (about one story scene and one fight) should reach about 250 XP per character, so classes arrive at level 3. Award XP when it is earned, with a short reason.
 
+PERKS, TRAITS AND CLASS MOVES
+- Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
+- Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
+${PERK_GUIDANCE ? PERK_GUIDANCE + '\n' : ''}
 COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
 
@@ -195,13 +200,18 @@ function magicBrief(c: Character): string {
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
   const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
-  const traits = c.traits.map((t) => TRAIT[t] ? `${TRAIT[t].name}: ${String(TRAIT[t].text).replace(/\n/g, ' ')}` : t).join(' | ') || 'none';
-  const perks = c.perks.filter((x) => PERK[x.id]?.tier !== 'ultimate').map((x) => `${PERK[x.id].name} (${x.tier})`).join(', ') || 'none';
+  // Items by id (plan 4.3): the engine runs their numbers; "*" marks a part that is yours to rule (wiki_lookup the id for
+  // the full text); a lane's brief() gives the remainder in a few words. Held Ultimates are listed too (never unheld ones).
+  const items = holdersOf({ c }), tag = (h: any) => { const b = briefOf(h); return b == null ? '' : b ? '*: ' + b : '*'; };
+  const traits = items.filter((h) => h.kind === 'trait').map((h) => `${h.info.name} [${h.key}]${tag(h)}`).join(', ') || 'none';
+  // An Ultimate is secret (never in the wiki), so a held one carries its text here; there are only a handful.
+  const perks = items.filter((h) => h.kind === 'perk').map((h) => h.tier === 'ultimate' ? `${h.info.name} [${h.key}] (ultimate): ${h.info.text}` : `${h.info.name} [${h.key}] (${h.tier})${tag(h)}`).join(', ') || 'none';
+  const moves = items.filter((h) => h.kind === 'class').map((h) => `${h.info.name} [${h.key}]${tag(h)}`).join(', ');
   const over = pts(c).filter(([, n]) => n >= 5).map(([id]) => `${SKILL[id].name}: ${(SKILL[id] as any).overreach?.text || ''}`).join(' | ') || 'none yet';
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
   const id = c.identity || {};
   return `CHARACTER ${c.name} (charId ${c.id})${c.dead ? ' — DEAD' : ''}
-  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
+  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] + (c.advancedClass && ADVANCED[c.advancedClass] ? ' and ' + ADVANCED[c.advancedClass].name + ' (advanced)' : '') + (moves ? ' — moves: ' + moves : '') : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
@@ -250,7 +260,7 @@ export function turnPrompt(g: GameState): string {
   const active = memoryBlock(selectMemory({ ...g }, lookFor, ACTIVE_MEMORY_CHARS));
   const chapterJob = chapterDue(g) ? `\n\nCHAPTER DUE: also fill chapter. Roll these ${SCENES_PER_CHAPTER} oldest scenes into one chapter (title, and a summary of at most 1,200 characters keeping names, promises, debts, deaths and open questions), and rewrite the saga, the story so far, in at most 3,500 characters with this chapter folded in:\n${M.scenes.slice(0, SCENES_PER_CHAPTER).map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n')}` : '';
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
-  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${redo}`;
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${redo}`;
 }
 
 /** A caster's live magic for PARTY CONDITION: MP, Evoker charge and cores, Flux, Strain, a held Outburst. */
@@ -275,7 +285,8 @@ export function turnSchema(g: GameState) {
     narration: { type: 'string' },
     sceneTitle: { type: 'string' },
     hooks: { type: 'array', items: obj({ skill: skill, tn, truth: { type: 'string', enum: ['true', 'partial', 'misleading'] }, line: { type: 'string' } }) },
-    checks: { type: 'array', items: obj({ charId, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' } }) },
+    checks: { type: 'array', items: obj({ charId, skills: { type: 'array', items: skill }, tn, stakes: { type: 'string' }, tags: { type: 'array', items: { type: 'string' }, description: 'Check tags from the rules (dialogue, crowd, military…); [] if none fit' } }) },
+    perkRulings: { type: 'array', description: 'Answers to PENDING RULINGS: accepted false refuses the use (it is refunded)', items: obj({ id: { type: 'string' }, accepted: { type: 'boolean' } }) },
     overreach: { type: 'array', items: obj({ charId, skill: skill, push: { type: 'string' } }) },
     xp: { type: 'array', items: obj({ charId: { type: 'string', enum: [...charIds, 'all'] }, source: { type: 'string', enum: ['dialogue', 'discovery', 'quest'] }, amount: { type: 'integer' }, reason: { type: 'string' } }) },
     deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string' }, deed: { type: 'string' } }) },

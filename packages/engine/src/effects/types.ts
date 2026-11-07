@@ -131,4 +131,6 @@ export interface ItemHandler {
 }
 
 /** Story pending rulings: what the Narrator owes or must judge (only sent when non-empty). */
-export interface PendingRuling { id: string; charId: string; key: string; text: string; entryId?: string; scene?: number }
+export interface PendingRuling { id: string; charId: string; key: string; text: string; entryId?: string; scene?: number;
+  /** The use this ruling spent, refunded if the Narrator refuses it. */
+  use?: { per: string; key: string } }

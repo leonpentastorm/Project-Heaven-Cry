@@ -14,7 +14,7 @@ import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './c
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
-import { bindGame, emit as emitFx2, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import './perks';
 import './classes';
 
@@ -224,6 +224,8 @@ export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
 const id = (g: GameState, p: string) => p + (++g.seq);
 const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id: id(g, 'e'), ...e }); if (g.story.entries.length > 400) (g.archive ||= []).push(...g.story.entries.splice(0, g.story.entries.length - 400)); };
+// Story-side item uses post their lines through the game's own push (effects/narrator.ts postStory).
+setStoryPoster((g: GameState, e: any) => { push(g, e); return g.story.entries.at(-1)!.id; });
 const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filter((c) => c.owner === pid && !c.dead);
 const isHost = (g: GameState, by: string) => by === g.hostId;
 /** Players taking part in the round: everyone with a living character. */
@@ -401,10 +403,14 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'levelup/raise': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const why = canRaise(c!, a.kind, a.id); if (why) fail(why);
+      const rankBefore = c!.classId ? classRank(c!) : 0;
       if (a.kind === 'skill') { c!.skills[a.id] = (c!.skills[a.id] || 0) + 1; c!.unspent.skill--; }
       if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
+      // A class rank reached (signature total 13 or 18): say which move it brings (spec: Classes).
+      if (c!.classId && rankBefore && classRank(c!) > rankBefore) { const r = ['', 'I', 'II', 'III'][classRank(c!)], mv = ((CLASS[c!.classId] as any).ranks?.[r]?.moves || []).map((m: any) => m.name).join(', ');
+        push(g, { kind: 'system', text: c!.name + ' reaches ' + CLASS[c!.classId].name + ' ' + r + (mv ? ': ' + mv : '') + '.' }); }
       return;
     }
     case 'levelup/class': {
@@ -523,6 +529,15 @@ function reduce(g: GameState, a: Action, by: string) {
       g.checks.push({ id: id(g, 'k'), charId: c!.id, skills: ap!.skills.filter((s) => SKILL[s]), tn: ap!.tn, stakes: ap!.stakes || ap!.label, done: false, poi: { objId: o!.id, idx: a.idx } });
       return;
     }
+    case 'story/perk': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'lobby') fail('The session hasn\'t started.');
+      if (g.phase === 'combat') fail('In a fight, use the Perks tab on your turn.');
+      if (c!.dead) fail('The dead do nothing.');
+      const err = runPerkAction({ c: c!, g }, a.id, a, g.rng, 'story'); if (err) fail(err);
+      closeRoundIfDone(g);
+      return;
+    }
     case 'combat/say': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const cb = g.combat; if (!cb || g.phase !== 'combat' || cb.over) fail('No fight is on.');
@@ -592,6 +607,13 @@ function afterPending(g: GameState) {
   if (g.story.await === 'rolls' || g.story.await === 'choices') { g.story.await = 'narrator'; g.story.work = { kind: 'results' }; }
 }
 
+/** A refused story use comes back (the Narrator said no: perkRulings {accepted: false}). */
+function refundRuling(g: GameState, r: PendingRuling) {
+  const c = g.characters[r.charId]; if (!c || !r.use) return;
+  usesOf({ key: r.key, c, g }).refund(r.use.per as any, r.use.key);
+  push(g, { kind: 'system', text: c.name + '\'s ' + (itemName(r.key)) + ' is refused; the use comes back.', ooc: true });
+}
+const itemName = (key: string) => { const [k, id] = key.split(':'); return k === 'perk' ? PERK[id]?.name || id : id.replace(/_/g, ' '); };
 function awardAutomatic(g: GameState, c: Character) {
   for (const pid of grantAutomaticPerks(c)) {
     const p = PERK[pid];
@@ -637,7 +659,9 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
       const margin = passive(c, h.skill) - h.tn;
       if (margin >= 0) cands.push({ c, h, margin });
     }
-    cands.sort((x, y) => y.margin - x.margin).slice(0, 2).forEach(({ c, h }) => {
+    // 'voice_cap' {player, chars, cap}: lines a player hears per beat (2; Crowded Head raises it for its holder).
+    const vc: any = emitStory(g, 'voice_cap', { player: p.id, chars: charsOf(g, p.id), cap: 2, g });
+    cands.sort((x, y) => y.margin - x.margin).slice(0, Math.max(0, vc.cap)).forEach(({ c, h }) => {
       g.story.scene.revealed.push(c.id + ':' + h.id);
       push(g, { kind: 'voice', skill: h.skill, charId: c.id, to: p.id, head: SKILL[h.skill].name.toUpperCase() + ' · PASSIVE ' + passive(c, h.skill) + ' vs ' + h.tn + ' · ONLY YOU', text: h.line, ok: true });
     });
@@ -751,7 +775,13 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (!c || c.owner !== by) fail('Not your unit.');
   let err: string | null = null;
   const before = cb!.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
+  // Toggles the player set on this action (Ricochet, Nonlethal…), read by items' hooks through modOn(); cleared after.
+  const mods = (a as any).mods; cb!.mods = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
+  const inWindow = !!cb!.window;
+  try {
   switch (a.type) {
+    case 'combat/perk': err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat'); break;
+    case 'combat/decline': if (!cb!.window) fail('There is nothing to decline.'); windowStep(cb!, true); break;
     case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); err = shove(cb!, g.rng, u, t!); break; }
     case 'combat/prone': err = toggleProne(cb!, u); break;
@@ -793,7 +823,10 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     default: fail('Unknown action.');
   }
+  } finally { delete cb!.mods; }
   if (err) fail(err);
+  // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
+  if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
   noteDeaths(cb!);
@@ -841,6 +874,7 @@ function finishCombat(g: GameState) {
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   noteDeaths(cb); magicOut(g, cb, true);
   const won = cb.over === 'win';
+  emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
     canon(g, (won ? 'The party won' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
     for (const n of [...fallen, ...lost]) { const p = findPerson(memoryOf(g), n); if (p) applyMemOp(g, { op: 'person', id: p.id, status: 'dead' }); else if (!GENERIC.test(n)) applyMemOp(g, { op: 'person', name: n, status: 'dead' }); } }
@@ -1127,7 +1161,7 @@ export function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
   const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
-  const cb = { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
+  const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
   magicIn(g, cb); return cb;
 }
 
@@ -1178,7 +1212,9 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (!k || !standable(map, k)) fail('Nobody can stand there.');
     const P = paths(cb, u.pos, u.id), tiles = P.dist[k!];
     if (tiles === undefined) fail('There\'s no way through to there: a wall, a closed door or someone is in the way.');
-    const extra = a.how === 'sneak' ? tiles : 0; if (apForTiles(tiles, 0, u.movement) + extra > u.ap && a.how !== 'sprint') fail('Needs ' + (apForTiles(tiles, 0, u.movement) + extra) + ' AP (' + u.ap + ' left).');
+    // 'world_move_cost' {c, u, tiles, how, extra}: sneaking costs 1 AP a tile on top (an item may change that).
+    const wm: any = emitStory(g, 'world_move_cost', { c, u, tiles, how: a.how || 'move', extra: a.how === 'sneak' ? tiles : 0, g });
+    const extra = Math.max(0, wm.extra); if (apForTiles(tiles, 0, u.movement) + extra > u.ap && a.how !== 'sprint') fail('Needs ' + (apForTiles(tiles, 0, u.movement) + extra) + ' AP (' + u.ap + ' left).');
     const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err);
     u.ap -= extra;
     const route: string[] = []; for (let x = k!; x && x !== from; x = P.prev[x]) route.unshift(x);
@@ -1191,6 +1227,11 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
     if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
     if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+  } else if (a.act === 'perk') {
+    if (!a.id) fail('Pick a perk, trait or class move.');
+    (cb as any).mods = a.mods || [];
+    err = runPerkAction({ u, c: c!, cb, g }, a.id!, { targetId: target ? target.id : a.targetId, tile: a.tile ? tileKey(g, a.tile) : undefined, choice: a.choice, text: a.text, actionId: a.actionId }, g.rng, 'world');
+    delete (cb as any).mods;
   } else if (a.act === 'reload') err = reload(cb, u);
   else if (a.act === 'load') err = loadMagazine(cb, u);
   else if (a.act === 'clear') err = clearJam(cb, u);
@@ -1942,13 +1983,13 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     case 'sandbox/class': {
       const c = mine(a.charId);
       sbChange(g, c, () => {
-        delete sb.advanced[c.id];
+        delete sb.advanced[c.id]; c.advancedClass = null;
         if (!a.classId) { c.classId = null; return; }
         const adv = ADVANCED_CLASSES.find((x) => x.id === a.classId);
         if (adv) {
           // An advanced class needs 15 in one parent's signatures and 9 in the other (rules 1.2): brought up to that here.
           sbRaiseSignature(c, adv.parents[0], 15); if (adv.parents[1]) sbRaiseSignature(c, adv.parents[1], 9);
-          c.classId = adv.parents[0]; sb.advanced[c.id] = adv.id; return;
+          c.classId = adv.parents[0]; sb.advanced[c.id] = adv.id; c.advancedClass = adv.id; return;
         }
         if (!CLASS[a.classId]) fail('No such class.');
         c.classId = a.classId;
@@ -1956,7 +1997,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (rank >= 2) sbRaiseSignature(c, a.classId, rank === 3 ? 18 : 13);
       });
       const adv = sb.advanced[c.id];
-      sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (played as ' + CLASS[c.classId!]?.name + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');
+      sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (with ' + CLASS[c.classId!]?.name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');
       return;
     }
     case 'sandbox/level': {

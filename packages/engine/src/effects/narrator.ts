@@ -31,6 +31,16 @@ export function pendRuling(g: any, c: Character, key: string, text: string, entr
   g.story.needs = true;
   return r;
 }
+// ---------- story lines (the game's push is injected by game.ts, so this module needs no game import) ----------
+let poster: ((g: any, e: any) => string) | null = null;
+export const setStoryPoster = (f: (g: any, e: any) => string) => { poster = f; };
+/** Post a story line for an item use: a player line headed "[Name · key]", private to the owner (and the Narrator) when
+ * asked. Returns the entry id. */
+export function postStory(h: Holder, text: string, opts: { private?: boolean; kind?: string } = {}): string | null {
+  const g = h.g ?? boundGame(); if (!g || !poster || !h.c) return null;
+  return poster(g, { kind: opts.kind || 'player', who: h.c.owner, head: h.c.name + ' · ' + h.info.name, charId: h.c.id, text: '[' + h.info.name + ' · ' + h.key + '] ' + text, ...(opts.private ? { to: h.c.owner } : {}) });
+}
+
 /** The Pending rulings block for the next turn prompt (empty string when there is nothing owed). */
 export function rulingsPrompt(g: any): string {
   const list: PendingRuling[] = g?.story?.rulings || []; if (!list.length) return '';

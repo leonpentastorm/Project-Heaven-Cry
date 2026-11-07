@@ -10,6 +10,8 @@ import { voiceState, speak, stopVoice, CORE_VOICE } from '../game/voice';
 import { portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
+import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf } from '../game/commands';
+import { weaponActions, verdictFor, ADVANCED } from '@engine';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
@@ -212,12 +214,24 @@ export class MainLogic extends DCLogic {
     const ow = c ? overweightKg(c) : 0;
     const injuries = [...inj.map((i, n) => ({ key: n, where: ((i.side ? i.side + ' ' : '') + i.loc).toUpperCase() + ' · INJURED', what: injuryText[i.loc] })),
       ...(ow > 0 ? [{ key: 'ow', where: 'OVERBURDENED', what: ow + ' kg over your carry limit: −' + Math.ceil(ow / 5) + ' Movement and no Sprint until you drop something.' }] : [])];
-    const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon') })) : [];
+    // Who runs each item (engine effects/coverage.ts): "Engine runs it", "Narrator rules it" or "Both", always in words.
+    const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
+    const badgeOf = (key, tier) => { const v = verdictFor(key, tier); return { badge: v.label, badgeStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; border: 1px ' + (v.verdict === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v.verdict] + '; color: ' + BADGE_INK[v.verdict] }; };
+    const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon'), ...badgeOf('trait:' + t.id) })) : [];
     const perks = c ? c.perks.map((x) => { const p = PERK[x.id], sk = p.skills[0], ink = sk ? ATTR[SK[sk].attr].ink : '#FFFFFF', icon = PERK_ICON[x.id] || IMG['wick-mind-without-fog'];
       const text = p.tiers ? (x.tier === 'II' ? p.tiers.II.text : p.tiers.I.text) : p.text;
       return { key: x.id, zoom: zoomer(this, icon, p.name, 'perk'), name: p.name, icon, text: text.charAt(0).toUpperCase() + text.slice(1),
         tier: x.tier === 'I' || x.tier === 'II' ? 'TIER ' + x.tier : x.tier.toUpperCase(), chip: p.skills.map((s) => SKILL[s].name).join(' + ') || 'Ultimate',
-        chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink }; }) : [];
+        chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier) }; }) : [];
+    // The class and its moves (spec: Classes): every rank's move, held or locked with what it takes, with its emblem.
+    const klass = c ? classOf(c) : null, KR = ['I', 'II', 'III'], KT = { I: 0, II: 13, III: 18 };
+    const sigTotal = c && c.classId && CLASS[c.classId] ? CLASS[c.classId].signature.reduce((t, sk) => t + (c.skills[sk] || 0), 0) : 0;
+    const classMoves = !c ? [] : [
+      ...(c.classId && CLASS[c.classId] ? KR.flatMap((r, i) => ((CLASS[c.classId].ranks || {})[r]?.moves || []).map((m) => ({ key: c.classId + '.' + m.id, name: m.name, text: m.text, rank: 'RANK ' + r + (classRank(c) > i ? '' : ' · LOCKED: signature ' + KT[r] + ' (you have ' + sigTotal + ')'), locked: classRank(c) <= i, ...badgeOf('class:' + c.classId + '.' + m.id),
+        style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F' + (classRank(c) <= i ? '; opacity: 0.55' : '') }))) : []),
+      ...(c.advancedClass && ADVANCED[c.advancedClass] ? ADVANCED[c.advancedClass].moves.map((m) => ({ key: c.advancedClass + '.' + m.id, name: m.name, text: m.text, rank: 'ADVANCED · ' + ADVANCED[c.advancedClass].name.toUpperCase(), locked: false, ...badgeOf('class:' + c.advancedClass + '.' + m.id), style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F' })) : []),
+    ];
+    const classHead = klass ? { name: klass.name + (c.classId && !c.advancedClass ? ' ' + ['', 'I', 'II', 'III'][classRank(c)] : ''), icon: klass.icon, ink: klass.ink } : null;
     const top = c ? Object.entries(c.skills).filter(([, p]) => p > 0 && p < 10).sort((a, b) => b[1] - a[1])[0] : null;
     const mp = top ? masteredVals(this, SK[top[0]].ep.mastered, ATTR[SK[top[0]].attr].ink, SK[top[0]].name, top[1]) : {};
     // Gear: the body figure, the slot list beside it, and the backpack rig.
@@ -719,6 +733,7 @@ export class MainLogic extends DCLogic {
       if (!mover) return toast(inFight ? 'A fight is on: act on the combat grid.' : 'You have no character to act with.');
       const u = tok[k];
       if (isMagicW) return magicClick(k);
+      if (pkTargeted) { if (!u || u.charId === mover.id) return toast('Click someone else.'); if (wPkE.target === 'ally' && u.side !== 'pc') return toast('Click an ally.'); return this.setState({ wTarget: u.id }); }
       if (TARGETED.includes(W)) {
         // Anyone and anything is a target (spec: Anyone is a target): people, allies, points of interest, objects.
         const attacking = ['shot', 'aimed', 'melee'].includes(W), o = objAt[k];
@@ -769,10 +784,19 @@ export class MainLogic extends DCLogic {
     const sneaking = !!(c && (g.story.sneak || {})[c.id]), hiddenNow = sneaking && !!(g.story.hidden || {})[c.id];
     const tgtObj = S.wTarget && S.wTarget.startsWith('obj:') ? objs.find((o) => o.id === S.wTarget.slice(4)) : null;
     const tgt = S.wTarget ? (tgtObj ? { id: S.wTarget, name: tgtObj.name, obj: tgtObj, side: 'obj', person: isPersonObj(g, tgtObj) } : units.find((u) => u.id === S.wTarget)) : null;
+    // Weapon-granted and item actions come from the engine (plan 2.9, 2.7): what the weapon grants, and perk, trait and
+    // class actions usable on the map (scope 'world'), each with the engine's reason when it can't be used now.
+    const wu = c && !inFight && mover ? sU(scb()) : null;
+    const wWa = wu ? weaponActions(wu) : null, wWA = (id) => (wWa ? wWa.find((x) => x.id === id) : null);
+    const wPk = wu ? perkEntries(g, scb(), wu, c, 'world') : [], wPkSel = parsePk(W), wPkE = wPkSel ? wPk.find((e) => e.id === wPkSel.id && e.actionId === wPkSel.actionId) || null : null;
+    const wKlass = classOf(c);
+    const W_UTIL = wWa ? ['reload', 'load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']) : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile']]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
-      ['UTILITY', [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
+      ['UTILITY', [...W_UTIL, ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
+      ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
+      ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
       // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
       ...(hasMagic && (myWords.length || evoW) ? [['MAGIC · SIGILS', [['draw', 'Draw a glyph', glyphAp(c) + ' AP'], ['evoke', 'Evoke', '1 AP'], ['scuff', 'Scuff', '1 AP'], ['vent', 'Vent Flux', '1 AP'], ['core', 'Swap core', '2 AP']], SIG_CYAN]] : []),
       ...(hasMagic && (myDesigns.length || MN.held || emaW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length ? [['outburst', 'Outburst', (() => { const mm = soulM(c), aps = myDesigns.map((d) => designAp(mm, d)), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi) + ' AP'; })()]] : []),
@@ -782,15 +806,17 @@ export class MainLogic extends DCLogic {
     const wGroups = W_ITEMS.map(([name, items, ink]) => ({ name, style: 'margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (ink || '#A3AEC2'), items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
       pick: () => this.setState({ wAct: id, wTarget: null, wTile: null, wAim: null }),
       style: 'display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: 13px; cursor: pointer; color: #E7EBF3; ' + (W === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') })) }));
-    const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W);
-    const wHint = !mover ? 'You have no character to act with.' : mover.hp <= 0 ? mover.name + ' is Downed: an ally\'s stim' + (SB ? '' : ', or the Narrator,') + ' gets them up. End turn when ready.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
+    const pkTargeted = !!wPkE && ['unit', 'enemy', 'ally'].includes(wPkE.target);
+    const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W) || (!!wPkE && !pkTargeted && !wPkE.why);
+    const wHint = wPkE && mover && canAct ? (wPkE.why ? wPkE.why : (pkTargeted ? (tgt ? 'Target: ' + tgt.name + '. ' : wPkE.target === 'ally' ? 'Click an ally. ' : 'Click someone on the map. ') : '') + pkText(wPkE) + ' Confirm to use it.') : !mover ? 'You have no character to act with.' : mover.hp <= 0 ? mover.name + ' is Downed: an ally\'s stim' + (SB ? '' : ', or the Narrator,') + ' gets them up. End turn when ready.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
       : isMagicW ? mHint
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
     const tgtPos = tgt ? (tgt.obj ? tgt.obj.pos : tgt.pos) : null, tgtOdds = isAttack && tgtPos && plan.selText ? plan.selText(tgtPos) : '';
     const wHintFull = wHint + (tgtOdds ? ' ' + tgtOdds : '');
-    const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm(); if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
+    const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm();
+      if (wPkE) { if (pkTargeted && !tgt) return; return act({ type: 'world/act', charId: c.id, act: 'perk', id: wPkE.id, actionId: wPkE.actionId, ...(pkTargeted && tgt ? { targetId: tgt.npc ? tgt.id : tgt.charId || tgt.id } : {}) }); } if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const u = g.narrator.usage, host = playerOf(g.hostId);
@@ -805,7 +831,7 @@ export class MainLogic extends DCLogic {
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c),
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
-      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !rig.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !rig.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
       hero, stream, pushes,
@@ -837,6 +863,11 @@ export class MainLogic extends DCLogic {
         catch (e2) { this.setState({ polishing: false }); toast(String(e2.message || e2)); }
       },
       send: () => { const text = (this.state.draft || '').trim(); if (!text) return toast('Say something first, or Pass.'); act({ type: 'story/speak', text, roll: this.state.pickRoll }); this.setState({ draft: '', polished: false }); },
+      // The Perks strip (plan 3): story uses of perks, traits and class moves. Text-taking ones use what is in the Say box.
+      get hasStoryPerks() { return this.storyPerks.length > 0; },
+      storyPerks: (g.phase === 'story' && c && !c.dead ? storyPerkEntries(g, c) : []).map((e) => ({ key: pkId(e), label: e.label + (e.uses.label ? ' · ' + e.uses.label : ''), title: (e.why ? e.why + ' · ' : '') + pkText(e) + (e.target === 'text' ? ' (uses the text in the Say box)' : ''), off: !!e.why,
+        pick: () => { const text = (this.state.draft || '').trim(); if (e.target === 'text' && !text) return toast('Write it in the Say box first, then press ' + e.label + '.'); act({ type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...(text && e.target === 'text' ? { text } : {}) }); if (e.target === 'text') this.setState({ draft: '', polished: false }); },
+        style: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3' + (e.why ? '; opacity: 0.45' : '') })),
       cantSpeak, turnText: why, turnStyle: 'font-size: 13px; color: ' + (cantSpeak ? '#A3AEC2' : myColor),
       pass: () => act({ type: 'story/pass' }),
       endTurn: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'end' }); if (this.state.area) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); else this.setState({ wTarget: null }); },
@@ -854,7 +885,7 @@ export class MainLogic extends DCLogic {
         ...(ZON.some((z) => z.kind === 'veil') ? [{ key: 'v', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; ' + ZONE_STYLE.veil, text: 'Smoke (blocks sight)' }] : []),
         ...(ZON.some((z) => z.kind === 'light') ? [{ key: 'l', img: '', swatch: 'width: 12px; height: 12px; border-radius: 2px; background: rgba(255, 246, 220, 0.4)', text: 'Light' }] : []),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
-      wGroups, wHint: wHintFull, wHasConfirm: canAct && (isMagicW ? mReady : instant || (TARGETED.includes(W) && !!tgt)), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
+      wGroups, wHint: wHintFull, wHasConfirm: canAct && (isMagicW ? mReady : instant || ((TARGETED.includes(W) || pkTargeted) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       wPips: Array.from({ length: ROUND_AP }, (_, i) => ({ key: i, style: 'flex: 1; height: 8px; border-radius: 3px; background: ' + (i < apNow ? '#FFFFFF' : '#232D3F') })),

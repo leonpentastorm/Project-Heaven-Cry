@@ -30,6 +30,9 @@ export function register(def: ItemHandler): void {
 const mergeSel = (a: any, b: any) => (a == null ? b : b == null ? a : (e: any, i: number, t: string) => sel(a, e, i, t) || sel(b, e, i, t));
 export const handlerOf = (key: string): ItemHandler | undefined => REG.get(key);
 export const registered = () => [...REG.keys()];
+/** For tests: take a copy of the lane registrations, and put a copy back (test helpers isolate runtime tests from lanes). */
+export const _snapshotRegistry = () => new Map(REG);
+export function _restoreRegistry(snap: Map<string, ItemHandler>) { REG.clear(); for (const [k, v] of snap) REG.set(k, v); dirty(); }
 /** For tests: forget every lane registration (generic handlers stay). */
 export function _unregisterAll(keep: (key: string) => boolean = () => false) { for (const k of [...REG.keys()]) if (!keep(k)) REG.delete(k); dirty(); }
 

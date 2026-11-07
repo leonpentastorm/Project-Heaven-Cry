@@ -11,7 +11,7 @@ import {
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit } from './effects/hooks';
-import { applyDamage, healUnit } from './effects/damage';
+import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { itemWords, wordCostMods } from './effects/core';
 
 type Fam = 'body' | 'brain' | 'heart';
@@ -38,17 +38,56 @@ export const LINE_RANGE: Record<number, number> = { 2: 4, 3: 8, 4: 12 };
 export const PUSH_RANGE = 8;
 export const SOUL_REACH = 4;
 export const SPELL_AP = { evoke: 1, scuff: 1, vent: 1, core: 2, release: 1, syphon: 1, crystallise: 3 };
-const CONDS: Record<string, { name: string; fam: Fam; rounds: number }> = {
-  slowed: { name: 'Slowed', fam: 'body', rounds: 2 }, pinned: { name: 'Pinned', fam: 'body', rounds: 2 }, blinded: { name: 'Blinded', fam: 'body', rounds: 2 },
-  burning: { name: 'Burning', fam: 'body', rounds: 2 }, shaken: { name: 'Shaken', fam: 'heart', rounds: 2 }, fear: { name: 'Afraid', fam: 'heart', rounds: 2 },
-  confused: { name: 'Confused', fam: 'brain', rounds: 2 }, ldebuff: { name: 'Left Brain Debuff', fam: 'brain', rounds: 2 }, rdebuff: { name: 'Right Brain Debuff', fam: 'heart', rounds: 2 },
-  silenced: { name: 'Silenced', fam: 'brain', rounds: 1 }, guarded: { name: 'Guarded (+2 Defense)', fam: 'body', rounds: 2 }, inspired: { name: 'Inspired (+2 to hit)', fam: 'heart', rounds: 2 },
+/** Conditions (spec: Conditions and saves; rules 1.3 shared subsystems). rounds counts the bearer's turn ends (a
+ * condition put on you during your own turn doesn't lose a round at that turn's end); noTick: it lasts until something
+ * ends it (Burning until put out, Grappled until you break free, Disarmed until you recover the weapon); boon: no save;
+ * noSave: a state or a condition from a hit. 99 rounds means "until ended". */
+interface CondDef { name: string; fam: Fam; rounds: number; boon?: boolean; noTick?: boolean; noSave?: boolean; text: string }
+const CONDS: Record<string, CondDef> = {
+  slowed: { name: 'Slowed', fam: 'body', rounds: 2, text: 'Half Movement.' },
+  pinned: { name: 'Pinned', fam: 'body', rounds: 1, text: 'Can\'t move; −2 to hit. Until the end of your next turn.' },
+  blinded: { name: 'Blinded', fam: 'body', rounds: 1, text: '−4 to hit; you see only adjacent tiles.' },
+  burning: { name: 'Burning', fam: 'body', rounds: 99, noTick: true, text: '10 damage at the start of each turn until someone spends 1 AP to put it out.' },
+  weakened: { name: 'Weakened', fam: 'body', rounds: 2, text: '−25% damage dealt.' },
+  nausea: { name: 'Nausea', fam: 'body', rounds: 2, text: '−1 AP.' },
+  stunned: { name: 'Stunned', fam: 'body', rounds: 1, text: 'Lose your next turn.' },
+  grappled: { name: 'Grappled', fam: 'body', rounds: 99, noTick: true, text: 'Held: you can\'t move; −2 to attacks against anyone but the grappler. Break free: 2 AP, opposed Raw Power or Athletics.' },
+  suppressed: { name: 'Suppressed', fam: 'body', rounds: 1, text: '−1 AP; no reactions.' },
+  augment_offline: { name: 'Augment Offline', fam: 'body', rounds: 99, noTick: true, noSave: true, text: 'One augment gives nothing until repaired.' },
+  confused: { name: 'Confused', fam: 'brain', rounds: 1, text: 'Each attack has a 50% chance to go at someone at random.' },
+  ldebuff: { name: 'Left Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Mind skill rolls; Sigils cost +1 AP.' },
+  rdebuff: { name: 'Right Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Expression and Soul skill rolls; Soul spells cost +20% MP.' },
+  silenced: { name: 'Silenced', fam: 'brain', rounds: 1, text: 'No Sigils, Outbursts or prayers.' },
+  puppeted: { name: 'Puppeted', fam: 'brain', rounds: 1, text: 'The caster\'s player runs your next turn (no self-harm).' },
+  shaken: { name: 'Shaken', fam: 'heart', rounds: 3, text: '−2 on Heart saves and social checks.' },
+  fear: { name: 'Afraid', fam: 'heart', rounds: 2, text: 'Can\'t move toward or attack the source; −2 to hit anyone else.' },
+  taunted: { name: 'Taunted', fam: 'heart', rounds: 1, text: 'Your next attack must go at the one who taunted you, if you can see them.' },
+  commanded: { name: 'Commanded', fam: 'heart', rounds: 1, text: 'You obey one short order on your next turn.' },
+  disarmed: { name: 'Disarmed', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is down: no attacks with it until you recover it (2 AP).' },
+  lowered: { name: 'Weapon lowered', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is lowered: raise it (1 AP) to attack with it.' },
+  marked: { name: 'Marked', fam: 'body', rounds: 99, noTick: true, noSave: true, text: 'The marker\'s squad gets +1 to hit you; you can\'t become Hidden.' },
+  guarded: { name: 'Guarded (+2 Defense)', fam: 'body', rounds: 2, boon: true, text: '+2 Defense.' },
+  inspired: { name: 'Inspired (+2 to hit)', fam: 'heart', rounds: 2, boon: true, text: '+2 to hit.' },
+  withdrawing: { name: 'Withdrawing (+2 Defense)', fam: 'body', rounds: 1, boon: true, text: '+2 Defense until your next turn ends.' },
+  emplaced: { name: 'Emplaced', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 to attacks with the weapon; Recoil halved; moving ends it.' },
+  last_turn: { name: 'Last Turn', fam: 'body', rounds: 1, boon: true, text: 'Still standing on borrowed time.' },
 };
-export const condName = (id: string) => CONDS[id]?.name || id;
+/** Data and older ids for the same conditions (conditions.json uses the long names). */
+const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
+/** Conditions kept as unit flags rather than in u.conds (applyCond sets them). */
+const FLAG_CONDS = new Set(['dazed', 'prone', 'bleeding', 'hidden', 'injured']);
+export const condId = (id: string) => ALIAS[id] || id;
+export const condName = (id: string) => CONDS[condId(id)]?.name || ({ dazed: 'Dazed', prone: 'Prone', bleeding: 'Bleeding', hidden: 'Hidden' } as Record<string, string>)[id] || id;
+export const condText = (id: string) => CONDS[condId(id)]?.text || '';
 /** Is this a condition the engine knows, and which save family it belongs to. */
-export const isCondition = (id: string) => !!CONDS[id];
-export const condFamily = (id: string): Fam | undefined => CONDS[id]?.fam;
-const BOOST = new Set(['guarded', 'inspired']);
+export const isCondition = (id: string) => !!CONDS[condId(id)] || FLAG_CONDS.has(id);
+export const condFamily = (id: string): Fam | undefined => CONDS[condId(id)]?.fam || (FLAG_CONDS.has(id) && id !== 'hidden' ? 'body' : undefined);
+/** familyOf: the same, under the plan's name. */
+export const familyOf = condFamily;
+export const isBoon = (id: string) => !!CONDS[condId(id)]?.boon || id === 'hidden';
+/** Every condition id the engine runs (for the validator, the wiki and lanes). */
+export const CONDITION_IDS = [...Object.keys(CONDS), ...FLAG_CONDS];
+const BOOST = new Set(Object.keys(CONDS).filter((k) => CONDS[k].boon));
 
 // ---------- the meter ----------
 export const manaBand = (m: number) => MANA_BANDS.find((b) => m >= b.min && m <= b.max) || MANA_BANDS[1];
@@ -372,7 +411,7 @@ function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilD
     return line;
   }
   switch (w.id) {
-    case 'ward': { const s = Math.floor(30 * sm * mult); t.shield = Math.max(t.shield || 0, s); return ' · ' + t.name + ' is warded (' + s + ' shield)'; }
+    case 'ward': { const s = grantShield(cb, t, 30 * sm * mult, by); return ' · ' + t.name + ' is warded (' + s + ' shield)'; }
     case 'mend': return heal(t, 25 * sm * mult * (by?.mg?.healMult || 1), cb);
     case 'bind': return applyCond(cb, rng, by, t, 'pinned');
     case 'blind': return applyCond(cb, rng, by, t, 'blinded');
@@ -551,7 +590,7 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
   const one = (t: Unit, f: number) => {
     if (school === 'damage') {
       const base = (SCHOOL.damage.damage || 25) * m.soulMult * sm * f * (has('rain') ? 0.6 : 1) * (has('at_once') ? 0.5 : 1);
-      if (has('inverse') && t.side === u.side) { const s = Math.floor(base); t.shield = Math.max(t.shield || 0, s); line.push(t.name + ' is shielded (' + s + ')'); return; }
+      if (has('inverse') && t.side === u.side) { const s = grantShield(cb, t, base, u); line.push(t.name + ' is shielded (' + s + ')'); return; }
       if (!has('at_once')) {
         const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (has('homing') ? 2 : 0) + condHit(u) - cover;
         if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); line.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return; }

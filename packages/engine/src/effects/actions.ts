@@ -14,7 +14,7 @@ import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInf
 import { handlerOf, holdersOf, genericOf, boundGame } from './hooks';
 import { keyOf } from './collect';
 import { uses, scopeOf, usesLabel } from './uses';
-import { note } from './narrator';
+import { note, postStory, pendRuling } from './narrator';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -56,7 +56,9 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
   const who = h.u?.name || h.c?.name || 'Someone', tgt = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) : null;
   const what = who + ' uses ' + h.info.name + (tgt ? ' on ' + tgt.name : '') + (args.text ? ': "' + args.text.slice(0, 200) + '"' : '') + line + '.';
   if (h.cb) h.cb.log.push(what);
-  if (rest || !effs.length) note(h, (tgt ? 'on ' + tgt.name + '. ' : '') + (args.text ? '"' + args.text.slice(0, 160) + '" ' : '') + h.info.text);
+  const ask = (tgt ? 'on ' + tgt.name + '. ' : '') + (args.npc ? 'with ' + args.npc + '. ' : '') + (args.text ? '"' + args.text.slice(0, 160) + '" ' : '') + h.info.text;
+  if (!h.cb) { const eid = postStory(h, (args.npc ? args.npc + ': ' : '') + (args.text || 'uses ' + h.info.name + '.')); const g = h.g ?? boundGame(); if (g && h.c) pendRuling(g, h.c, h.key, ask, eid || undefined); }
+  else if (rest || !effs.length) note(h, ask);
   return null;
 }
 
@@ -161,7 +163,10 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   const per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
   if (h.u && sc !== 'story') h.u.ap = Math.round((h.u.ap - pv.ap) * 10) / 10;
   if (!uses(h).take(per, n, h.key + '#' + d.id)) return 'Used.';
+  const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
   const err = d.run(h, args, rng);
+  // Rulings this use opened carry it, so a refusal gives it back.
+  for (const r of (g?.story?.rulings || []).slice(had)) if (!r.use && r.charId === (h.c?.id || h.u?.charId)) r.use = { per, key: h.key + '#' + d.id };
   return err || null;
 }
 

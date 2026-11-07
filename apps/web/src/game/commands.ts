@@ -4,27 +4,58 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { WEAPON, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START } from '@engine';
+import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
+import { classIconUri, classCore, CORE_INK } from './classIcons';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
-/** [id, label, cost text, explanation] */
-export type ActionItem = [string, string, string, string];
+/** [id, label, cost text, explanation, why not now (the engine's reason; undefined: work it out from the cost)] */
+export type ActionItem = [string, string, string, string, (string | null)?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
-export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', sigils: 'Sigils', outbursts: 'Outbursts' };
+export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts' };
+
+// ---------- perk, trait and class-move actions (engine effects/actions.ts) ----------
+/** A perk action's id in the action list: "pk:<item key>#<action id>". */
+export const PK = 'pk:';
+export const pkId = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => PK + e.id + '#' + e.actionId;
+export const parsePk = (id: string): { id: string; actionId: string } | null => { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; };
+/** The unit's perk, trait and class actions on this surface, with the game bound (handlers see the live character). */
+export function perkEntries(g: any, cb: any, u: any, ch: any, scope: 'combat' | 'world' = 'combat'): PerkActionEntry[] {
+  if (!u) return [];
+  const c = ch || (g && u.charId ? g.characters?.[u.charId] : null);
+  const was = bindGame(g || null);
+  try { return perkActionsFor({ u, c, cb, g }, scope); } catch { return []; } finally { bindGame(was); }
+}
+/** A character's story-side perk, trait and class actions (the story panel's Perks strip). */
+export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
+  if (!ch || !g) return [];
+  const was = bindGame(g);
+  try { return perkActionsFor({ c: ch, g }, 'story'); } catch { return []; } finally { bindGame(was); }
+}
+/** "2 AP · 1/combat" */
+export const pkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
+export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator rules what the engine doesn\'t.');
+/** The class (and advanced class) a character holds, for the Class tab's name and emblem. */
+export function classOf(ch: any): { id: string; name: string; ink: string; icon: string } | null {
+  const id = ch?.advancedClass || ch?.classId; if (!id) return null;
+  const name = ch?.advancedClass ? ADVANCED[ch.advancedClass]?.name : (CLASS as any)[id]?.name, core = classCore(id), ink = core ? CORE_INK[core] : '#E7EBF3';
+  return { id, name: name || id, ink, icon: classIconUri(id, ink) };
+}
 
 /** Options for the action list. noNarrator: there is no Narrator to rule on anything (the Proving Ground), so actions
  *  only the Narrator can resolve (cost 'Narrator', e.g. a weapon skill the engine doesn't run) are left out. */
-export interface ActionOpts { noNarrator?: boolean }
+export interface ActionOpts { noNarrator?: boolean; /** The game (perk actions read the live character and the use counters). */ g?: any }
 
 /** Every action this unit has, in tab order (Move · Attack · Utility · Sigils · Outbursts). ch: the unit's character
  *  (for stims and the song), or null. */
 export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   const w: any = cur ? (WEAPON as any)[cur.weapon] : null, melee = w ? isMelee(w) : false;
   const mv = cur ? cur.movement : 1;
-  const heavy = w && /heavy/.test(w.category) && !isMelee(w), modes = (w && w.modes) || [];
+  const modes = (w && w.modes) || [];
+  // Weapon-granted actions (engine weaponActions, plan 2.9): only what this weapon grants shows, with the engine's reason.
+  const wa = cur ? weaponActions(cur) : [], W = (id: string) => wa.find((x: any) => x.id === id);
   const offW: any = cur && cur.offWeapon ? (WEAPON as any)[cur.offWeapon] : null;
   const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op), skPassive = sk && !skRuns && skFx.op !== 'narrator';
   const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n: number) => n < cap).sort((a: number, b: number) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
@@ -47,19 +78,26 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(sk ? [['skill', sk.name + (skPassive ? ' (always on)' : ''), skRuns ? skFx.ap + ' AP' : skPassive ? '—' : 'Narrator', sk.text + (skPassive ? ' The engine applies it on every attack.' : skRuns ? '' : ' The engine doesn\'t run this one yet: use Say, and the Narrator rules it after the fight.')] as ActionItem] : []),
       ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
       ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
-      ['overwatch', 'Overwatch', (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) + ' AP', 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.'],
-      ...(heavy ? [['brace', 'Brace', '1 AP', 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved. Moving ends it.'] as ActionItem] : []),
+      ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : []),
+      ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
-    ['UTILITY', [['reload', 'Reload', '2 AP', !w || w.magazine == null ? 'Nothing to reload.' : w.reload === 'loose' ? 'Top up from loose rounds (' + (cur.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + (w.reload_unit || 'magazine') + ' (' + (cur.mags ? cur.mags.length + ' left' : 'unlimited') + '). The one in the gun drops on the floor with any rounds left in it. ' + cur.ammo + ' / ' + w.magazine + ' loaded now.'],
-      ['load', 'Load a magazine', loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : 'Load loose rounds into an empty or part-empty magazine, 1 AP per ' + ROUNDS_PER_AP + ' rounds. You need both.'],
-      ['clear', 'Clear a jam', '2 AP', 'A jammed gun can\'t fire until cleared.'],
-      ['repair', 'Field Repair', '2 AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.'],
+    ['UTILITY', [
+      ...(W('reload') ? [['reload', W('reload')!.label, W('reload')!.ap + ' AP', W('reload')!.text + (w && w.magazine != null ? ' ' + cur.ammo + ' / ' + w.magazine + ' loaded now.' : ''), W('reload')!.why] as ActionItem] : []),
+      ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
+      ...(W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : []),
+      ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
       ['pickup', 'Pick up', '1 AP', 'Take everything on your tile or one adjacent tile (marked ▪): dropped magazines, empty or not.'],
       ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],
       ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Medic, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
       ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor: your favourite song takes over the room until the fight ends, and your music trait\'s bonus is on while it plays. It can replace another holder\'s kept-on song, never a spotlight.'] as ActionItem] : []),
       ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
   ];
+  // Perks and traits, then class moves: each item's actions as the engine lists them (hidden when they don't apply).
+  const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
+  const pkItem = (e: PerkActionEntry): ActionItem => [pkId(e), e.label, pkCost(e), pkText(e), e.why];
+  const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
+  if (perks.length) ITEMS.push(['PERKS & TRAITS', perks.map(pkItem), null, 'perks']);
+  if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null)); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
   // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
   if (hasMagic) {
     const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;
@@ -99,6 +137,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
   if (action === 'sprint' && u.noSprint) return 'Can\'t sprint in this load.';
   if (action === 'reload') { if (!gun) return 'Nothing to reload.'; if ((u.ammo ?? 0) >= w.magazine) return 'Already full.'; if (u.jammed) return 'Jammed: clear it first.'; if (w.reload === 'loose' ? !(u.loose > 0) : Array.isArray(u.mags) && !u.mags.length) return 'Nothing left to load.'; }
   if (action === 'clear' && !u.jammed) return 'Not jammed.';
+  if (action.startsWith(PK)) return null; // perk actions carry the engine's own reason (catalogue)
   if (action === 'skill') {
     if (!['multi_shot', 'sweep'].includes(skFx.op)) return skFx.op === 'narrator' || !skFx.op ? 'The Narrator rules it: use Say.' : 'Always on.';
     if (u.jammed && skFx.op === 'multi_shot') return 'Jammed: clear it first.';
@@ -118,7 +157,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
 /** Every action the unit has, flat, with its tab and why it can't be used right now (null when it can). */
 export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatEntry[] {
   if (!u) return [];
-  return actionGroups(cb, u, ch, opts).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text]) => ({ action, label, cost, text, tab, ink, why: whyNot(u, action, cost) })));
+  return actionGroups(cb, u, ch, opts).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text, why]) => ({ action, label, cost, text, tab, ink, why: u.downed ? 'Downed.' : why !== undefined ? why : whyNot(u, action, cost) })));
 }
 
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */
@@ -130,7 +169,8 @@ export function smartCommands(u: any): Command[] {
   else if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
   else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
-  if (w && w.magazine != null && !u.jammed) cmds.push({ action: 'reload', label: 'Reload', sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
+  const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
+  if (rl && !u.jammed) cmds.push({ action: 'reload', label: rl.label, sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an adjacent enemy', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });

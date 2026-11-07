@@ -1,0 +1,64 @@
+// The combat action list's engine-driven parts (plan 2.9, 3): weapon-granted actions show only for the weapons that
+// grant them, by their own names; the Perks tab only for holders; the Class tab with the class emblem and only the
+// moves the rank has unlocked.
+import { describe, expect, it } from 'vitest';
+import { ARCHETYPES, newCharacter, startCombat, MAPS, type Character } from '@engine';
+import { actionGroups, catalogue, pkId, classOf } from './commands';
+
+const charWith = (o: Partial<Character> = {}): Character => {
+  const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
+  const c = newCharacter('c1', 'p1', { name: 'T', portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
+  return Object.assign(c, o);
+};
+const fight = (c: Character) => {
+  const cb = startCombat('t', { ...MAPS.yard }, [{ c, pos: '1,5' }], [{ name: 'E', tier: 'soldier', weapon: 'service_pistol', at: 'J6' }], 'easy', { state: 5 }, []);
+  const u = cb.units.find((x: any) => x.side === 'pc')!; cb.turn = cb.order.indexOf(u.id); u.ap = 6;
+  const g = { characters: { [c.id]: c }, story: { scene: { n: 1 }, round: 1 }, sessionN: 1 };
+  return { cb, u, g };
+};
+const ids = (gr: any[], tab: string) => (gr.find((x) => x[3] === tab)?.[1] || []).map((i: any) => i[0]);
+const labels = (gr: any[], tab: string) => (gr.find((x) => x[3] === tab)?.[1] || []).map((i: any) => i[1]);
+
+describe('weapon-granted actions in the action list', () => {
+  it('a bow shows no Clear jam and no magazine; it nocks arrows', () => {
+    const { cb, u, g } = fight(charWith()); u.weapon = 'recurve_bow'; u.mags = []; u.loose = 10; u.ammo = 0;
+    const gr = actionGroups(cb, u, null, { g });
+    expect(ids(gr, 'utility')).not.toContain('clear'); expect(ids(gr, 'utility')).not.toContain('load');
+    expect(labels(gr, 'utility')).toContain('Nock an arrow');
+    expect(ids(gr, 'attack')).not.toContain('brace');
+  });
+  it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and holds a strike', () => {
+    const { cb, u, g } = fight(charWith());
+    u.weapon = 'drifter_revolver'; u.ammo = 2; u.mags = [6];
+    expect(labels(actionGroups(cb, u, null, { g }), 'utility')).toContain('Speedloader');
+    u.weapon = 'hellraiser_lmg'; expect(ids(actionGroups(cb, u, null, { g }), 'attack')).toContain('brace');
+    u.weapon = 'combat_knife';
+    const gr = actionGroups(cb, u, null, { g });
+    expect(ids(gr, 'utility')).not.toContain('reload');
+    expect(labels(gr, 'attack')).toContain('Hold a strike');
+  });
+  it('a disabled weapon action carries the engine\'s reason', () => {
+    const { cb, u, g } = fight(charWith()); u.weapon = 'service_pistol'; u.jammed = false;
+    const e = catalogue(cb, u, null, { g }).find((x) => x.action === 'clear')!;
+    expect(e.why).toBe('Not jammed.');
+  });
+});
+
+describe('the Perks and Class tabs', () => {
+  it('no Perks tab without an active item; a holder sees it with the AP and uses', () => {
+    const plain = fight(charWith());
+    expect(actionGroups(plain.cb, plain.u, plain.g.characters.c1, { g: plain.g }).some((x) => x[3] === 'perks')).toBe(false);
+    const c = charWith({ perks: [{ id: 'earthbreaker', tier: 'mastered' }] }), f = fight(c);
+    const gr = actionGroups(f.cb, f.u, c, { g: f.g }), pk = gr.find((x) => x[3] === 'perks')!;
+    expect(pk).toBeTruthy();
+    expect(pk[1][0][0]).toBe(pkId({ id: 'perk:earthbreaker', actionId: 'earthbreaker' }));
+    expect(pk[1][0][2]).toMatch(/4 AP · 1\/1 combat/);
+  });
+  it('the Class tab lists the moves the rank unlocks, under the class name, with its emblem', () => {
+    const c = charWith({ classId: 'gunslinger' as any }); c.classId = 'marksman'; c.advancedClass = 'gunslinger';
+    const f = fight(c), gr = actionGroups(f.cb, f.u, c, { g: f.g }), cl = gr.find((x) => x[3] === 'class')!;
+    expect(cl[0]).toMatch(/CLASS · GUNSLINGER/);
+    expect(cl[1].map((i: any) => i[1])).toEqual(expect.arrayContaining(['The Draw', 'Six for Six', 'Called Shot']));
+    const k = classOf(c)!; expect(k.icon).toMatch(/^data:image\/svg\+xml/); expect(k.ink).toBe('#F2A54A');
+  });
+});
