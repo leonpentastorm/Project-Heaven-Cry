@@ -1,14 +1,178 @@
 {
-  "brief": "art/briefs/title-screen.md",
   "status": "review-candidate",
-  "note": "First delivery (6 Nov 2026): the back layer only, at 1672 x 941. The brief asks for 4096 x 2304 with overscan; the middle and front layers and Wick's animations are still to come.",
+  "production_approved": false,
+  "scope": "Part A only",
+  "brief": "art/briefs/title-screen.md, develop, read 2026-11-06",
+  "canvas": [
+    4096,
+    2304
+  ],
+  "central_safe_rect": [
+    256,
+    144,
+    3840,
+    2160
+  ],
+  "native_render_dimensions": {
+    "back": [
+      1672,
+      941
+    ],
+    "mid": [
+      1672,
+      941
+    ],
+    "front": [
+      1670,
+      942
+    ]
+  },
+  "resampling": "Lanczos to specified delivery canvas; not native 4K",
+  "alpha": "straight/unpremultiplied",
+  "stack_order": [
+    "title-back.png",
+    "title-mid.png",
+    "title-front.png"
+  ],
   "files": [
     {
-      "path": "art/ui/title-screen/title-back.png",
-      "role": "back",
+      "path": "art/ui/title-screen/README.md",
+      "size_bytes": 3126,
+      "sha256": "ab5bb0ea21cca3dcf3bc9fd8e89d8794da51777616c1bcb6b927757504e2214b",
+      "role": "implementation notes"
+    },
+    {
+      "path": "art/ui/title-screen/previews/alpha-edge-review.jpg",
+      "size_bytes": 318224,
+      "sha256": "5ab548d720fb312e48619fc994c30b439c2e75e91b235b9e0e1062d5ebdd1549",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/back-only-1920.jpg",
+      "size_bytes": 583890,
+      "sha256": "8cf8f4fcf51f8e64e7742a71a83a07af145d192dcaddb7231036d7f4b62300e5",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/back-only-phone.jpg",
+      "size_bytes": 191683,
+      "sha256": "d80d1cc2464887b095a70f16ed3d69def67573344d75594e89c712ff9d747c83",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/composite-1920.jpg",
+      "size_bytes": 689220,
+      "sha256": "73aee07de7f7294724adb9c53e5a9f267c41ffdbee93a2986a20f2fd53db05d1",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/menu-readability-72px.jpg",
+      "size_bytes": 690077,
+      "sha256": "d14b1bac9d259185db39c4720d308c95b8153211e175bbc12a4ffbd4dc82af7c",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/parallax-extremes.jpg",
+      "size_bytes": 746847,
+      "sha256": "d284c246d44b89cf3d62d6321ee4945fa6da6b134589724cff535190619c5237",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/phone-crop.jpg",
+      "size_bytes": 228870,
+      "sha256": "6cef90b2ae2d4f35c6fd30d529bcc6589283674de913783a8ff4a855b434bfdf",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/safe-zones.jpg",
+      "size_bytes": 633607,
+      "sha256": "0c70edd838f7fa1fda581b131ea08768b398af245f39958b43dd18d569372523",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/previews/screen-crop-1920.jpg",
+      "size_bytes": 658135,
+      "sha256": "ca8b7cce2d729c6e5d760bd00538612f8ad49142ee440bc00ad4560af14e5fe7",
+      "role": "review preview"
+    },
+    {
+      "path": "art/ui/title-screen/source-renders/title-back-native.png",
+      "size_bytes": 2610236,
+      "sha256": "3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a",
+      "role": "native generated source render",
       "width": 1672,
       "height": 941,
-      "sha256": "6b3bf404b06f762549129d72f4d37a95361c79d96af503af4778593d295c65e7"
+      "bit_depth": 8,
+      "colour_type": 2
+    },
+    {
+      "path": "art/ui/title-screen/source-renders/title-front-native.png",
+      "size_bytes": 632918,
+      "sha256": "d219bae69e538523b04cd2e9d70d09710f123ebaf6987fa3327079ebeaff4d67",
+      "role": "native generated source render",
+      "width": 1670,
+      "height": 942,
+      "bit_depth": 8,
+      "colour_type": 6
+    },
+    {
+      "path": "art/ui/title-screen/source-renders/title-mid-native.png",
+      "size_bytes": 1438845,
+      "sha256": "c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635",
+      "role": "native generated source render",
+      "width": 1672,
+      "height": 941,
+      "bit_depth": 8,
+      "colour_type": 6
+    },
+    {
+      "path": "art/ui/title-screen/technical-review.json",
+      "size_bytes": 1718,
+      "sha256": "a011ca66e5b6292eca16a69f59089867c07a4f56b0ec23c83fefdf59acb7818f",
+      "role": "technical review evidence"
+    },
+    {
+      "path": "art/ui/title-screen/title-back.png",
+      "size_bytes": 9250897,
+      "sha256": "5ab63288cb2e6efd57f6989781a75ecab80dd1f92fc3e5ddb38bbe4fb3342f36",
+      "role": "opaque back layer",
+      "width": 4096,
+      "height": 2304,
+      "bit_depth": 8,
+      "colour_type": 2
+    },
+    {
+      "path": "art/ui/title-screen/title-front.png",
+      "size_bytes": 2381773,
+      "sha256": "61edba466d3395649ad39e787e196012296e77925039f6d3730520240fbd2fe7",
+      "role": "straight-alpha hero ridge layer",
+      "width": 4096,
+      "height": 2304,
+      "bit_depth": 8,
+      "colour_type": 6
+    },
+    {
+      "path": "art/ui/title-screen/title-mid.png",
+      "size_bytes": 4904038,
+      "sha256": "5cf1806cf75f5601f4455c90100a8b27fd242707b25b41bf1e11401af98a68fa",
+      "role": "straight-alpha battlefield layer",
+      "width": 4096,
+      "height": 2304,
+      "bit_depth": 8,
+      "colour_type": 6
+    },
+    {
+      "path": "art/ui/title-screen/title-screen.psd",
+      "size_bytes": 7681350,
+      "sha256": "707ff627445b799de1e9acc740d70e16f4b5c84c9ebc83a2a5138f007f144716",
+      "role": "three-layer raster source",
+      "width": 1672,
+      "height": 941
     }
-  ]
+  ],
+  "layered_source_canvas": [
+    1672,
+    941
+  ],
+  "source_note": "Repository PSD at original render resolution due 16MiB upload request limit; all PNG layers remain 4096x2304. Full-size PSD retained in downloadable Revision 2 package."
 }

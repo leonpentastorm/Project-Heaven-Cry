@@ -1,0 +1,81 @@
+{
+  "canvas": [
+    4096,
+    2304
+  ],
+  "central_safe_rect": [
+    256,
+    144,
+    3840,
+    2160
+  ],
+  "phone_crop": [
+    2218,
+    144,
+    3352,
+    2160
+  ],
+  "native_dimensions": {
+    "back": [
+      1672,
+      941
+    ],
+    "mid": [
+      1672,
+      941
+    ],
+    "front": [
+      1670,
+      942
+    ]
+  },
+  "back_preserved": "5ab63288cb2e6efd57f6989781a75ecab80dd1f92fc3e5ddb38bbe4fb3342f36",
+  "parallax_shift_pixels": [
+    246,
+    69
+  ],
+  "parallax_crop_min_alphas": [
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255
+  ],
+  "white_text_contrast": {
+    "minimum_under_solid_text": 5.599510789248919,
+    "p01": 6.481378337044006,
+    "pixels_below_4_5": 0
+  },
+  "alpha": {
+    "mid": {
+      "transparent_pixels": 4573754,
+      "partial_alpha_pixels": 4863427,
+      "opaque_pixels": 3,
+      "left38_max_alpha": 254,
+      "top40_max_alpha": 1
+    },
+    "front": {
+      "transparent_pixels": 7809251,
+      "partial_alpha_pixels": 1626374,
+      "opaque_pixels": 1559,
+      "left38_max_alpha": 1,
+      "top40_max_alpha": 1
+    }
+  },
+  "psd_layers": [
+    "Title front",
+    "Title mid",
+    "Title back"
+  ],
+  "psd_merged_pixels_match": true,
+  "visual_review": "Reviewed composite, phone crop and light/dark alpha-edge sheets. Five distinct figures; lead and Celestial survive phone crop; magic accents remain distinct. Parallax extremes also reviewed.",
+  "full_repository_validation": "Blocked by historical files absent from this delivery workspace; focused title-screen checks supplied.",
+  "psd_canvas": [
+    1672,
+    941
+  ],
+  "psd_verification": "ZIP prediction channels roundtrip exactly; merged image matches alpha composite at source canvas."
+}

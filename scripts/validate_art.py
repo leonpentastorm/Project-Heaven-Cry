@@ -346,7 +346,48 @@ def validate_archetype_cards(catalog):
         require(checksum_map[a['path']] == a['sha256'], 'Archetype checksum list mismatch')
     print('OK: all 46 archetype cards; IDs, role tags, review status, PNG format, hashes, manifest and previews.')
 
+def validate_title_screen():
+    """Validate the delivered layered title art without weakening older checks."""
+    root = 'art/ui/title-screen/'
+    manifest = json.loads(local(root + 'manifest.json').read_text())
+    require(manifest['scope'] == 'Part A only', 'Unexpected title-screen scope')
+    require(manifest['canvas'] == [4096, 2304], 'Wrong title canvas')
+    require(manifest['central_safe_rect'] == [256, 144, 3840, 2160], 'Wrong title safe area')
+    entries = {a['path']: a for a in manifest['files']}
+    require(len(entries) == len(manifest['files']), 'Duplicate title manifest path')
+    checksums = {line.split('  ', 1)[1]: line.split('  ', 1)[0]
+                 for line in local('art/checksums.sha256').read_text().splitlines() if line}
+    for path, asset in entries.items():
+        require(path.startswith(root) and '..' not in Path(path).parts, 'Unsafe title path')
+        data = local(path).read_bytes()
+        require(len(data) == asset['size_bytes'], f'Title size mismatch: {path}')
+        require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Title hash mismatch: {path}')
+        require(checksums.get(path) == asset['sha256'], f'Title checksum list mismatch: {path}')
+    for name, colour_type in [('title-back.png', 2), ('title-mid.png', 6), ('title-front.png', 6)]:
+        path = root + name
+        require(path in entries, f'Missing title layer: {name}')
+        data = local(path).read_bytes()
+        require(data[:8] == b'\x89PNG\r\n\x1a\n', f'Title layer not PNG: {name}')
+        require(struct.unpack('>IIBB', data[16:26]) == (4096, 2304, 8, colour_type), f'Title layer format: {name}')
+    psd = local(root + 'title-screen.psd').read_bytes()
+    require(psd[:6] == b'8BPS\x00\x01' and struct.unpack('>II', psd[14:22]) == tuple(reversed(manifest.get('layered_source_canvas', [4096, 2304]))), 'Invalid title PSD header')
+    pos = 26
+    for _ in range(2):
+        pos += 4 + struct.unpack('>I', psd[pos:pos + 4])[0]
+    pos += 8
+    require(abs(struct.unpack('>h', psd[pos:pos + 2])[0]) == 3, 'Title PSD must contain three layers')
+    for name in ['composite-1920.jpg', 'phone-crop.jpg', 'safe-zones.jpg', 'parallax-extremes.jpg', 'alpha-edge-review.jpg', 'menu-readability-72px.jpg']:
+        require(root + 'previews/' + name in entries, f'Missing title review: {name}')
+    report = json.loads(local(root + 'technical-review.json').read_text())
+    require(report['parallax_crop_min_alphas'] == [255] * 8, 'Title parallax coverage failure')
+    require(report['alpha']['front']['left38_max_alpha'] <= 1, 'Title foreground intrudes into menu zone')
+    require(report['white_text_contrast']['minimum_under_solid_text'] >= 4.5, 'Title sample text contrast')
+    require(report['psd_merged_pixels_match'], 'Title PSD composite mismatch')
+    print('OK: title-screen Part A; three 4096x2304 PNGs, layered PSD, manifest/hashes, previews, coverage and sample text contrast.')
+
 def validate():
+    if (ROOT / "art/ui/title-screen/manifest.json").exists():
+        validate_title_screen()
     catalog = json.loads(local('art/catalog.json').read_text())
     palette = json.loads(local(catalog['palette']).read_text())
     local(catalog['style_guide'])
@@ -414,13 +455,16 @@ if __name__ == '__main__':
     parser.add_argument('--archetypes-only', action='store_true', help='Check the 46-card delivery without requiring unrelated historical assets.')
     parser.add_argument('--wick-anim-only', action='store_true', help='Check delivered Wick animation clips and their technical assets.')
     parser.add_argument('--complete-wick-anim', action='store_true', help='Require all five Wick clips and 36 frames.')
+    parser.add_argument('--title-screen-only', action='store_true', help='Validate title-screen Part A independently of historical assets.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons
     COMPLETE_CAMPAIGN = args.complete_campaign
     COMPLETE_WICK_ANIM = args.complete_wick_anim
     try:
-        if args.wick_anim_only:
+        if args.title_screen_only:
+            validate_title_screen()
+        elif args.wick_anim_only:
             from validate_wick_animation import validate_wick_animation
             validate_wick_animation(complete=COMPLETE_WICK_ANIM)
         elif args.archetypes_only:
@@ -430,4 +474,5 @@ if __name__ == '__main__':
     except (ValueError, KeyError, OSError, struct.error) as error:
         print(f'FAIL: {error}', file=sys.stderr)
         sys.exit(1)
+
 

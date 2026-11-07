@@ -472,3 +472,8 @@ The 46 review candidates in `art/character-portraits/archetypes/` are selectable
 Keep a large readable face and one archetype-specific gesture in each 4:5 scene. Family lighting follows `art/briefs/archetype-portraits.md`: amber frontline, dawn gunners, violet shadows, cyan Sigils, lamp-and-screen minds, violet-gold Soul, stage-warm voices, mixed hybrids and exaggerated single-colour all-in cards. Evokers serve Mind/Sigils; Emanators serve Soul.
 
 Use the painting alone in the picker. Archetype names on the contact sheet are review metadata. Catalog IDs `arch-<id>`, `pool: player-card`, archetype bindings and casting tags live in the collection manifest and catalog additions. Candidates remain unapproved until visual review. Existing character collections and skill colour rules are unchanged.
+
+
+# Title-screen Part A — layered Heavenprint candidate
+
+The three key-art layers in `art/ui/title-screen/` retain Heavenprint's gouache, broken ink and material colours. Keep the opaque sky/city/Celestial beneath the transparent battlefield and five-hero ridge. The left 38% is reserved for UI. Violet Soul lightning belongs to the lead's Emanator glove; the mage's cyan geometry comes through an Evoker. Use the collection README for overscan, alpha, phone framing, source-resolution disclosure and validation. This art delivery does not alter Wick or Part B of the brief.
