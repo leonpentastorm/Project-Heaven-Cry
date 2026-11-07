@@ -279,4 +279,17 @@ describe('Quicken and the twin on the area map (items 76, 77)', () => {
     s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:twinbound.call', actionId: 'dismiss_world' } as any);
     expect(positionsOf(s.g)[tid]).toBeUndefined(); expect(s.g.characters[c.id].companions || []).toEqual([]);
   });
+  it('the twin stays on the area map through a scene change and a zone change (Leon, 7 Nov 2026: until let go or a fight)', () => {
+    const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
+    s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: 'damage: move; damage; damage' } as any);
+    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'class:twinbound.call', actionId: 'call_world', tile: freeNear(s.g, positionsOf(s.g)[c.id], 1) } as any);
+    const tid = 'cp-' + c.id + '-twin', has = () => (s.g.characters[c.id].companions || []).some((k) => k.kind === 'twin');
+    s.act({ type: 'narrator/turn', turn: { narration: 'Later.', sceneTitle: 'A new scene' } } as any);
+    expect(has()).toBe(true); expect(positionsOf(s.g)[tid]).toBeTruthy();
+    const zones = (s.g.campaign as any).zones.map((z: any) => z.id), other = zones.find((z: string) => z !== zoneMap(s.g).id);
+    expect(other).toBeTruthy();
+    s.act({ type: 'narrator/turn', turn: { narration: 'On.', travel: other } } as any);
+    expect(zoneMap(s.g).id).toBe(other); expect(has()).toBe(true);
+    expect(cheb(positionsOf(s.g)[tid], positionsOf(s.g)[c.id])).toBeLessThanOrEqual(3); // placed beside its owner
+  });
 });

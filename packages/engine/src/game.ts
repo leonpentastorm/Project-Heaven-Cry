@@ -5,7 +5,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone } from './magic';
 import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
@@ -702,7 +702,8 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   }
   const rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? l.rarity : 'standard') as Rarity;
   let given = '';
-  if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); if (rarity !== 'standard') given += ' (' + rarity + ')'; }
+  let guns: string[] = [];
+  if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
   else if (ITEM[id]) { given = (label || ITEM[id].name).slice(0, 60); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool' }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
@@ -710,7 +711,8 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
     if (ex) { ex.qty += n; if (it.text && !ex.text) ex.text = it.text; } else pack.push(it);
     given = it.name;
   }
-  c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + given + '.' });
+  c.pack = pack; collectGuns(c, guns); // Gun Nut: a gun gained joins the collection while it has room (item 369)
+  push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + given + '.' });
 }
 
 function closeRoundIfDone(g: GameState) {
@@ -1038,6 +1040,11 @@ function combatAction(g: GameState, a: Action, by: string) {
   const c = u.charId ? g.characters[u.charId] : u.ctrl ? g.characters[u.ctrl] : pup;
   if (!c || c.owner !== by) fail('Not your unit.');
   if ((u.companion || pup) && !COMPANION_ACTS.has(a.type)) fail((u.companion ? 'A companion' : 'A puppet') + ' can move, attack, hold Overwatch and end its turn.');
+  // A unit with a fixed action list (the drone: move and a plain shot; spec §14 item 370) refuses everything else.
+  if (u.allowedActions && a.type !== 'combat/end-turn' && a.type !== 'combat/decline') {
+    const id = a.type === 'combat/attack' ? a.mode || 'shot' : a.type === 'combat/move' ? a.how || 'move' : a.type.slice('combat/'.length);
+    if (!u.allowedActions.includes(id)) fail(u.name + ' can only ' + u.allowedActions.map((x) => ACT_NAME[x] || x).join(', ') + ' and end its turn.');
+  }
   const who = u.charId ? c : null; // a companion or puppet fights with its own numbers
   let err: string | null = null;
   const before = cb!.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
@@ -1134,6 +1141,7 @@ function syncSong(g: GameState) {
 /** Anyone and anything is a target (spec: Anyone is a target): any unit but yourself, alive. */
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
+const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
 const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
 /** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
 function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Character | null {
@@ -1709,8 +1717,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
           if (w.magazine != null && u.ammo <= 0) fail('Empty: reload (2 AP).');
           if (!lineOfSight(cb, u.pos, o.pos)) fail('No line of sight.');
           if (Math.ceil(r / effectiveRange(w)) - 1 > 2) fail('Out of range.');
-          if (w.magazine != null) u.ammo--; u.heat += 1;
-          if ((w as any).heat_limit && u.heat >= (w as any).heat_limit) u.jammed = true;
+          if (w.magazine != null && !u.infiniteAmmo) u.ammo--; if (!u.infiniteAmmo) u.heat += 1;
+          if ((w as any).heat_limit && !u.infiniteAmmo && u.heat >= (w as any).heat_limit) u.jammed = true;
           if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
         }
         u.ap -= cost; emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
@@ -2161,7 +2169,8 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
     const at = pack.length - 1;
     if (w.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === item && it.mags)) pack.push(magsOf(item, 3));
     if (w.ammo) { const want = 3 * (w.magazine || 6), r = pack.find((it) => it.calibre === w.ammo); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
-    c.pack = pack; return at;
+    c.pack = pack; collectGuns(c, Array(Math.min(n, 3)).fill(item)); // Gun Nut's collection (item 369)
+    return at;
   }
   if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
   const def = ITEM[item] as any; if (!def) fail('No such item.');
@@ -2506,7 +2515,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       sbChange(g, c, () => {
         if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
         else if (a.type === 'sandbox/unequip') err = sbUnequip(c, a.slot);
-        else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else { pack.splice(a.idx, 1); c.pack = pack; } }
+        else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else if ((err = partError(c, a.idx, pack[a.idx].qty))) { /* Gun Nut's Collector: a collection gun stays (item 369) */ } else { pack.splice(a.idx, 1); c.pack = pack; } }
         else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); c.armourClass = want; }
       });
       if (err) fail(err);
@@ -2558,7 +2567,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId), t = TRAITS.find((x) => x.id === a.trait); if (!t) fail('No such trait.');
       const on = a.on !== false;
       if (on) { const why = traitGainError(c.traits, a.trait); if (why) fail(why); }
-      sbChange(g, c, () => { c.traits = on ? [...(c.traits || []), a.trait] : (c.traits || []).filter((x) => x !== a.trait); });
+      sbChange(g, c, () => { c.traits = on ? [...(c.traits || []), a.trait] : (c.traits || []).filter((x) => x !== a.trait); if (on && !c.collection) startCollection(c); });
       sbLog(g, c.name + (on ? ' has the trait ' : ' loses the trait ') + (t as any).name + '.'); return;
     }
     case 'sandbox/learn': {

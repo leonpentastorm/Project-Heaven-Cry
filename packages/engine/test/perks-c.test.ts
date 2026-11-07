@@ -300,10 +300,10 @@ describe('Gun Nut', () => {
     f.act({ type: 'combat/clear', unitId: u.id } as any);
     expect(f.pc.jammed).toBe(false); expect(f.pc.ap).toBe(6); expect(f.pc.heat).toBe(5);
   });
-  it('story: a second mod in a slot type the gun has; Collector tells the Narrator about fewer than 3 guns', () => {
+  it('story: a second mod in a slot type the gun has; no Collector note at session start (item 369: the collection is the first guns gained)', () => {
     const s = storyWith([{ traits: ['gun_nut'] }]); const c = s.chars[0];
     emitStory(s.g, 'session_start', { g: s.g, n: 2 });
-    expect(s.g.story.rulings!.some((r) => /Collector/.test(r.text))).toBe(true);
+    expect((s.g.story.rulings || []).some((r) => /Collector/.test(r.text))).toBe(false);
     c.weaponState = { ...(c.weaponState || {}), mods: ['mod_red_dot'] };
     c.pack = [...packOf(c), { id: 'mod_scope', item: 'mod_scope', name: 'Scope', qty: 1, kind: 'tool' } as any];
     s.act({ type: 'story/perk', charId: c.id, id: 'gun_nut', actionId: 'extra_mod', choice: 'mod_scope' } as any);

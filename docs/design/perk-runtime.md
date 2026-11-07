@@ -78,11 +78,40 @@ and the line is logged once.
 - items.json: `mod_red_dot` `tags: ["electronic"]`.
 
 Applied later as provisional (completeness batch 5, spec items 368-369): Daggerfall Flashback TN 13 → 12 in the
-data; Gun Nut's two extra guns (`min_carry.start_fill`). Not applied (decisions for Leon, or bigger than a data edit): the drone and beast companion HP (traits 30/60 vs enemies.json 40/50); new objects
+data; Gun Nut's two extra guns (`min_carry.start_fill`, since removed: see Leon's answers below). Not applied (decisions for Leon, or bigger than a data edit): new objects
 (`portable_barricade`, `rally_banner`, `supply_crate`), `mason_chisel`, `grand_staff`, `tracker`; structured Grand
 data; patron Blessing polarity; the remaining lane-I class data rewrites (bespoke ops for Special Ammo, Lunge, Reactive
 Plate, Payload, Raise Cover, Seal, Stored Spell cap, Heart Surge, Puppet's save) — the handlers already run the
 corrected numbers; the Emplaced condition's +2.
+
+### Leon's answers (7 Nov 2026; spec section 14 items 368–371 and 404, settled)
+
+1. **Item 368, Daggerfall Veteran's Flashback:** TN 12. The trait text says "target 12"; the `gate_check` lost its
+   provisional flag (the trait keeps its own flag for the lane-F rulings, items 221 and 399).
+2. **Item 369, Gun Nut's Collector:** no guns at creation ("the 3 first gun you look/buy/get"). `min_carry` lost
+   `start_fill` and its provisional flag; `grantStartItems` no longer fills guns; the session-start "wants at least 3"
+   note is gone. `Character.collection` (weapon ids, at most the trait's count, 3) is the first guns gained:
+   `startCollection` at `newCharacter` (the kit's gun) and at the Proving Ground's trait gain, `collectGuns` in
+   `giveLoot` (game.ts) and `sbGive` (sandbox give and give-and-equip). Equip, unequip and swaps only move a gun, so
+   they don't touch it. Old saves: `collectionOf` reads the first 3 guns carried (main hand, off hand, pack order) and
+   the next `collectGuns` stores that. `partError(c, idx, qty)` refuses taking a collection gun out of the pack unless
+   more of that gun are carried than the collection holds; `sandbox/drop` uses it (`gear/give` and `gear/drop` still
+   take only plot items). The Dexterity check (TN 12, still provisional) and −50% sale stay the Narrator's: the brief
+   names the collection. The sheet's weapon tooltips tag a collection gun. Reading, flagged provisional in the spec:
+   parting with a collection gun doesn't open a place for a later one. Tests: completeness-e2.
+3. **Item 370, companions:** drone 30 HP, beast 60 HP (enemies.json, the traits' `companion` ops; HP not provisional,
+   the rest of the stat blocks still is). The drone keeps its service pistol with only a plain shot and unlimited ammo:
+   enemies.json `actions: ["move", "shot"]` and `infinite_ammo: true` → `Unit.allowedActions` and `Unit.infiniteAmmo`
+   in `companionUnits`. `combatAction` refuses any other action type or attack mode (end turn and decline always
+   allowed); `weaponActions` filters to the list, and the web `actionGroups` and `smartCommands` show only those.
+   `infiniteAmmo`: no round spent (resolveAttack, full auto, multi-shot, shootCover, the area-map object shot), no Heat,
+   no jam (a natural 1 costs 1 AP next turn instead). Tests: subsystems (drone 25 shots, beast 60), completeness-d2,
+   web turnIntro.
+4. **Item 371, Heart Overload without an Emanator:** does nothing. The toggle's `available` returns false (not a
+   greyed reason), so `togglesFor` and the combat screen don't offer it; `outburst_cost` already ignored `pay_hp`
+   without an Emanator. Test: perks-d.
+5. **Item 404, the twin on the area map:** it stays until "Let the twin go" or a fight starts; it doesn't leave on a
+   scene or zone change (after travel `positionsOf` puts it beside its owner). No code change; test: completeness-f.
 
 ### Still open (core changes not made in this pass)
 
@@ -158,7 +187,7 @@ items 396-397.
 
 - **Beast Handler:** the beast is an area-map token like the drone (`COMPANION_ROUND_AP`: drone 3, beast 4; world/act
   move with `unit`; the brief names its tile); it starts a fight where it stood and stays where it ended. The trait's
-  `companion` op now carries the spec's 50 HP (provisional; item 370 still waits on Leon).
+  `companion` op now carries 60 HP, as the stat block does (item 370, settled by Leon, 7 Nov 2026).
 - **Field Medic:** the lock on the area map (`world_round_start`), lifted by a stim; Thrown Stim on the area map.
 - **Humanity First:** +15% through `combat/attack`; a Factory Made squadmate's `combat/stim` at half; an area-map
   Hand-Off from a non-human refused.
@@ -297,8 +326,8 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 2. `items.json` `mod_red_dot`: add `tags: ["electronic"]`. Old School currently tests the mod's id.
 3. `items.json`: a `tracker` item (a small plot or tool item, a few grams) for Sleight of Hand. Right now any pack item
    with "tracker" in its id or name counts as one.
-4. `traits.json` Gun Nut: decide on the 2 extra guns at creation (Collector). Today the trait breaks its own downside
-   from session 1. The lane only tells the Narrator.
+4. ~~`traits.json` Gun Nut: decide on the 2 extra guns at creation (Collector).~~ Settled (Leon, 7 Nov 2026): no extra
+   guns; the collection is the first 3 guns gained (Leon's answers, item 369).
 5. `traits.json` Blade Recluse `effects[0]`: `context: named_weapon_family` is already there. Nothing to change.
 6. `perks.json` Trick Shot `effects[1]`: `damage_mod` with `basis: half_of_hit` should become a bespoke `ricochet` op.
    The lane claims it, so this is cosmetic.
@@ -341,7 +370,8 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 11. **Bot scrambler on a Slicer.** `blast()` stuns only robots and drones by kind. Slicer catches it through the
     `throw` hook, by distance to the tile. A `blast` hook ({by, tile, item, who[]}) would be cleaner.
 12. **No sell or drop actions** exist for Gun Nut's Collector gate and sale price. When `gear/sell` and `gear/drop`
-    exist, they need a `gear_part` hook ({c, item, refuse, priceMult}).
+    exist, they need a `gear_part` hook ({c, item, refuse, priceMult}), or call `partError` (character.ts) for the
+    collection guns, as `sandbox/drop` does.
 
 #### UI notes (lane Z or a UI pass; the engine actions exist)
 
@@ -426,7 +456,8 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 
 #### Not done / left to others
 
-- Heart Overload without an Emanator: Leon's call (D3).
+- ~~Heart Overload without an Emanator: Leon's call (D3).~~ Settled (Leon, 7 Nov 2026, item 371): it does nothing; the
+  toggle isn't offered.
 - Twin Souls' third school can't appear in real play until the validator allows `school3` (missing hook 6). The engine
   side is tested with a hand-made design.
 - The Afterimage decoy (Visualization unlock) for Solid Image belongs to the skill-unlock lane.
@@ -492,9 +523,9 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
 #### Data deltas wanted (not made: lanes don't edit data)
 
 1. `data/traits.json`:
-   - `drone_handler` and `beast_handler`: the `companion` effects' hp (30 / 60) disagree with enemies.json companions
-     (40 / 50). Pick one.
-   - `daggerfall_veteran` `gate_check` tn 13 → 12 if Leon agrees.
+   - ~~`drone_handler` and `beast_handler`: the `companion` effects' hp (30 / 60) disagree with enemies.json companions
+     (40 / 50). Pick one.~~ Done: 30 / 60 everywhere (item 370, Leon, 7 Nov 2026).
+   - ~~`daggerfall_veteran` `gate_check` tn 13 → 12 if Leon agrees.~~ Done: 12 (item 368, Leon, 7 Nov 2026).
    - `provisional: true` on Daggerfall Veteran, Chain Smoker, Trench Poet, Grudge Bearer, Pacifist, Rabbit's Foot,
      Drone Handler, Beast Handler, Moon Hunter.
 2. `data/perks.json`: `provisional: true` on Bone Talk, Clean Hands, Red Line, Lab Coat (the Mastered ones already

@@ -122,14 +122,14 @@ register({
 // =====================================================================================================================
 // Heart Overload (Will Power). A toggle on Begin an Outburst: pay its MP in HP instead, 2 HP a point (II: 1). True HP
 // loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or shield (a
-// healing or shielding design is refused with the toggle on; any other heal or shield comes to 0) and can't be held to grow (holding pays mana as usual). No Emanator: you already pay from the
-// air, so the toggle is off (Leon to decide whether it should waive the +2 Strain instead).
+// healing or shielding design is refused with the toggle on; any other heal or shield comes to 0) and can't be held to grow (holding pays mana as usual). No Emanator: the
+// perk does nothing; the toggle stays off and isn't offered (spec §14 item 371, Leon 7 Nov 2026).
 // =====================================================================================================================
 register({
   id: 'heart_overload', claims: 'all', priority: 300,
   toggles: [{
     id: 'pay_hp', label: 'Pay with HP', on: ['combat/outburst'],
-    available: (h) => (!h.u?.mg ? false : !h.u.mg.emanator ? 'No Emanator: you already pay from the air.' : true),
+    available: (h) => !!h.u?.mg?.emanator, // no Emanator: nothing to pay, so no toggle at all (item 371)
     preview: (h) => (h.tier === 'II' ? '1 HP' : '2 HP') + ' per point of mana; can\'t heal, shield or be held.',
   }],
   on: {

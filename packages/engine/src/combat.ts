@@ -120,6 +120,13 @@ export interface Unit {
   offMags?: number[];
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string;
+  /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
+   * turn and declining a reaction window. Unset: every action its weapon and kind allow. The drone (enemies.json
+   * companions `actions`; spec §14 item 370): move and a plain shot. */
+  allowedActions?: string[];
+  /** Never runs dry: no round is spent, nothing to reload, no Heat and no jam (a fumble costs 1 AP next turn instead).
+   * The drone's service pistol (enemies.json companions `infinite_ammo`; spec §14 item 370). */
+  infiniteAmmo?: boolean;
   /** Class resources (Momentum, Guard, Marks, Charges, Supplies…): current values, and maxima. */
   res?: Record<string, number>; resMax?: Record<string, number>;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
@@ -676,10 +683,11 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
   const hit = rc.hit ?? (!fumble && (crit || total >= pv.need));
   if (!melee) {
-    if (w.magazine != null) att.ammo = Math.max(0, att.ammo - 1);
-    if (w.heat_limit) att.heat += 1; att.shotsThisTurn++;
+    // A unit with infinite ammo (the drone, item 370) spends no round, takes no Heat and never jams.
+    if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1);
+    if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
-    if (canJam(w)) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
+    if (canJam(w) && !att.infiniteAmmo) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
     else if (fumble) att.stunnedNext = 1;
   } else if (fumble) att.stunnedNext = 1;
   // Durability (spec: Weapons v2): every attack wears 1; a jam or fumble 5 more.
@@ -1012,7 +1020,7 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any); } }, 'auto');
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
   // Ten rounds go out whatever the shots took; what items changed during the volley stays (hooks gap C4).
-  if (w.magazine != null) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
+  if (w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
   u.heat += 4 - hits.length; emit(cb, 'volley_end', { u, mode: 'auto', target: t, hits, cb, rng }); checkOver(cb); return null;
 }
 /** Shove (spec): 2 AP, adjacent; d20 + Raw Power vs 10 + the target's best of Raw Power and Athletics; pushed 1 tile, or prone if blocked. */
@@ -1081,7 +1089,7 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
       if (i > 0) { const p = previewAttack(cb, u, t, 'shot', { free: true }); if (!p.ok) { cb.log.push('(' + (w as any).grants.name + ' stops: ' + p.why + ')'); break; } }
       resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0, vi: i } as any);
     } }, 'skill');
-    if (rounds > 1 && w.magazine != null) u.ammo = Math.max(0, u.ammo - (rounds - 1));
+    if (rounds > 1 && w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - (rounds - 1));
     emit(cb, 'volley_end', { u, mode: 'skill', target: t, cb, rng }); checkOver(cb); return null;
   }
   if (fx.op === 'sweep') {
@@ -1218,7 +1226,7 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
     if (w.magazine != null && u.ammo <= 0) return 'Empty: reload (2 AP).';
     if (!lineOfSight(cb, u.pos, tile)) return 'No line of sight.';
     if (Math.ceil(r / effectiveRange(w)) - 1 > 2) return 'Out of range.';
-    if (w.magazine != null) u.ammo--; u.heat += 1;
+    if (w.magazine != null && !u.infiniteAmmo) u.ammo--; if (!u.infiniteAmmo) u.heat += 1;
   }
   u.ap -= ap;
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); // an attack action wears 1 (spec: Weapons v2)
@@ -1370,5 +1378,6 @@ export function weaponActions(u: Unit): WeaponAction[] {
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? 4 : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).
   if (w.grants && !((u.charId || u.held) && statQuery({ u }, 'hide_weapon_skill', { weapon: w.id, skill: w.grants.name }).add > 0)) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
-  return out;
+  // A unit with a fixed action list (the drone: move and shoot, item 370) has none of the weapon's other actions.
+  return u.allowedActions ? out.filter((a) => u.allowedActions!.includes(a.id)) : out;
 }

@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, emit, emitStory, applyCond, applyDamage, healUnit, grantShield, resolveAttack, previewOutburst, designCost, manaOf, passive, statQuery, skillRollMod,
-  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, type Unit, type Combat, type GameState,
+  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, type Unit, type Combat, type GameState,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { strokePool } from '../src/perks/d';
@@ -84,6 +84,19 @@ describe('Heart Overload', () => {
     const g = soulFight({ heart_overload: 'I' }), mp = g.pc.mg!.mp, hp = g.pc.hp;
     g.act({ type: 'combat/outburst', unitId: g.pc.id, design: g.pc.mg!.designs[0].id, hold: true, mods: ['pay_hp'] } as any);
     expect(g.pc.mg!.mp).toBeLessThan(mp); expect(g.pc.hp).toBe(hp);
+  });
+});
+
+describe('Heart Overload without an Emanator (item 371, Leon 7 Nov 2026)', () => {
+  it('does nothing: the Pay with HP toggle isn\'t offered, and a sent pay_hp costs no HP', () => {
+    const f = soulFight({ heart_overload: 'I' });
+    const on = () => withGame(f.g, () => togglesFor({ u: f.pc, c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g } as any, 'combat/outburst')).map((t) => t.id);
+    expect(on()).toContain('perk:heart_overload#pay_hp');
+    f.pc.mg!.emanator = false;
+    expect(on()).not.toContain('perk:heart_overload#pay_hp');
+    const hp = f.pc.hp;
+    try { f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, aim: f.foe.pos, mods: ['pay_hp'] } as any); } catch { /* the cast itself may need an Emanator: either way no HP is paid */ }
+    expect(f.pc.hp).toBe(hp);
   });
 });
 

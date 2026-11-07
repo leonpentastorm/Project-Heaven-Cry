@@ -1931,8 +1931,7 @@
           "skill": "composure",
           "tn": 12,
           "context": "shelling|burning|crawler_child",
-          "on_fail": "lose_next_turn",
-          "provisional": true
+          "on_fail": "lose_next_turn"
         }
       ],
       "adjudication": "hybrid",
@@ -2051,11 +2050,11 @@
         "Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP."
       ],
       "downsides": [
-        "Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."
+        "Collector: the first 3 guns you get are your collection (your kit's gun counts), and you carry them, weight included. Selling, abandoning or giving away one of them takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."
       ],
       "notes": [],
       "narrator_hook": "rare guns as loot, as bait, and as evidence.",
-      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP.\n− Collector: you carry at least 3 guns at all times, weight included. Selling or abandoning one takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go.",
+      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP.\n− Collector: the first 3 guns you get are your collection (your kit's gun counts), and you carry them, weight included. Selling, abandoning or giving away one of them takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go.",
       "effects": [
         {
           "op": "narrator",
@@ -2074,13 +2073,7 @@
         {
           "op": "min_carry",
           "item_tag": "gun",
-          "count": 3,
-          "start_fill": [
-            "service_pistol",
-            "drifter_revolver",
-            "hellraiser_service_rifle"
-          ],
-          "provisional": true
+          "count": 3
         },
         {
           "op": "gate_check",
@@ -3966,10 +3959,9 @@
         {
           "op": "companion",
           "id": "beast",
-          "hp": 50,
+          "hp": 60,
           "ap": 4,
-          "controlled_by": "empathy",
-          "provisional": true
+          "controlled_by": "empathy"
         },
         {
           "op": "narrator",
