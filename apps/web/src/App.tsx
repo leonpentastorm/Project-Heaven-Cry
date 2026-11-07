@@ -14,6 +14,7 @@ import { CreateLogic } from './screens/create';
 import { RoomLogic } from './screens/room';
 import { MainLogic } from './screens/main';
 import { CombatLogic } from './screens/combat';
+import { expandLayout } from './game/combatLayout';
 import { LevelUpLogic } from './screens/levelup';
 import { UltimateLogic } from './screens/ultimate';
 import { Music } from './game/music';
@@ -38,7 +39,7 @@ const SCREENS: Record<Screen, React.ComponentType<any>> = {
   create: makeScreen(expand(createT), CreateLogic as any),
   room: makeScreen(expand(roomT), RoomLogic as any),
   main: makeScreen(expand(mainT), MainLogic as any),
-  combat: makeScreen(expand(combatT), CombatLogic as any),
+  combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
   levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
   ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
 };
