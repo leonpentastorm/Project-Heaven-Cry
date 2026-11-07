@@ -53,5 +53,16 @@ for mid, a in C.get("maps", {}).items():
 for sid, a in C.get("sprites", {}).items():
     w, h = a.get("dimensions", [256, 256])
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
+# Title screen (art/briefs/title-screen.md): the three parallax layers and Wick's menu animations, once delivered.
+TITLE = ROOT / "art/ui/title-screen"
+for layer in ("back", "mid", "front", "fx"):
+    f = TITLE / f"title-{layer}.png"
+    if f.exists():
+        emit("title-" + layer, f, (1440, 810), (2560, 1440), 84)
+WICK = ROOT / "art/mascot/wick-anim"
+for seq in ("run", "stop", "idle", "hello", "wave"):
+    f = WICK / f"{seq}.png"
+    if f.exists():  # a horizontal strip of 256 x 256 frames; keep it lossless-ish and full size
+        emit("wick-" + seq, f, (256 * 16, 256), None, 92)
 MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n")
 print(f"{len(assets)} assets -> {OUT.relative_to(ROOT)}")

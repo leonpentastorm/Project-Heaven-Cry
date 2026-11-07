@@ -1,0 +1,14 @@
+{
+  "brief": "art/briefs/title-screen.md",
+  "status": "review-candidate",
+  "note": "First delivery (6 Nov 2026): the back layer only, at 1672 x 941. The brief asks for 4096 x 2304 with overscan; the middle and front layers and Wick's animations are still to come.",
+  "files": [
+    {
+      "path": "art/ui/title-screen/title-back.png",
+      "role": "back",
+      "width": 1672,
+      "height": 941,
+      "sha256": "6b3bf404b06f762549129d72f4d37a95361c79d96af503af4778593d295c65e7"
+    }
+  ]
+}

@@ -64,20 +64,20 @@ The sub-screens the menu opens (join, characters, saved games, settings, credits
 
 ## 7. Sounds
 
-All free, CC0 where possible, listed in the credits manifest. The files are picked in the sound research (the table is filled in once the files are chosen and checked):
+All CC0, in `apps/web/public/sfx/`, credited on the Credits page (`game/sfxCredits.ts`). Chosen by research, not by ear: **Leon, listen and swap any you don't like** (each is one line in `game/sfx.ts`).
 
-| Event | Where | Character |
-|---|---|---|
-| `hover` | Title and sub-screen menu items, tabs | A soft, short tick |
-| `click` | Every button in the game | A crisp, small press |
-| `start` | NEW GAME, CONTINUE, Start session | A deeper confirm, a little grand |
-| `back` | Back, Escape, Close | A softer, lower press |
-| `slide` | Screen transitions | A short airy whoosh |
-| `error` | A refused action (the red toast) | A muted double buzz |
-| `toggle` | Checkboxes, switches | A light switch |
-| `tab` | Sheet tabs, family tabs | A paper or plastic flick |
-| `wick_hello` | Wick's hello | A short happy robot chirp |
-| `wick_steps` | Wick running | Tiny quick footsteps |
+| Event | Where | Character | File |
+|---|---|---|---|
+| `hover` | Title and sub-screen menu items, tabs | A soft, short tick | Kenney Interface Sounds `select_001` |
+| `click` | Every button in the game | A crisp, small press | Kenney `click_001` |
+| `start` | NEW GAME, CONTINUE, Start session | A deeper confirm, a little grand | Kenney `confirmation_002` |
+| `back` | Back, Escape, Close | A softer, lower press | Kenney `back_001` |
+| `slide` | Screen transitions | A short airy whoosh | Kenney `maximize_004` (forward), `minimize_004` (back) |
+| `error` | A refused action (the red toast) | A muted double buzz | Kenney `error_004` |
+| `toggle` | Checkboxes, switches | A light switch | Kenney `toggle_001` / `toggle_002` |
+| `tab` | Sheet tabs, family tabs | A paper or plastic flick | Kenney `pluck_001` |
+| `wick_hello` | Wick's hello | A short happy robot chirp | fupi, *Cute Mission Complete* (OpenGameArt), pitched up two semitones |
+| `wick_steps` | Wick running | Tiny quick footsteps | Synthesised in the game: tiny metal taps |
 
 - **Volume:** UI sounds have their own slider in Settings (default 60%) and a mute. They duck under the Narrator's voice like the music.
 - **Hover sounds** only on menus and tabs, never on every button (that gets noisy).

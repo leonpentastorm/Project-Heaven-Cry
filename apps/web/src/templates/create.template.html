@@ -54,6 +54,7 @@
 <sc-if value="{{hasOrigin}}" hint-placeholder-val="{{true}}">
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="grid-column: 1 / -1; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{origin.name}}</div>
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">HOME</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Home}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">UPBRINGING</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Upbringing}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU KNOW</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.knows}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">PEOPLE SEE YOU AS</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.seen}}</span></div>
@@ -66,7 +67,7 @@
 
 <aside style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
-<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 280px; height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button>
+<button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 280px; max-width: calc(100vw - 64px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button>
 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOUR PORTRAIT</span>
 <div role="radiogroup" aria-label="Portraits" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; max-height: 470px; overflow-y: auto; padding-right: 6px">
@@ -254,6 +255,71 @@
 </button>
 </sc-for>
 </div>
+
+<sc-if value="{{hasMagic}}" hint-placeholder-val="{{true}}">
+<h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Magic</h2>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">Your build can cast. The usual first picks are already chosen, so you can leave this as it is. More words and designs come from study and from living, after creation.</p>
+
+<sc-if value="{{canSigil}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #4FC8DF">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<img src="{{sigilHead}}" alt="" style="width: 28px; height: 28px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #8BDEEE">SIGIL WORDS · MIND · PICK 2</span>
+<button type="button" onClick="{{resetSigils}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Back to SPARK + CONDENSE</button>
+</div>
+<span style="font-size: 13px; line-height: 1.45; color: #A3AEC2">Two words drawn on one tile make a Stack, your first spell. It needs one Subject (an element or an effect) and one Form or Motion. Picking a third word swaps out the one doing the same job.</span>
+<span role="status" aria-live="polite" style="{{sigilVerdictStyle}}">{{sigilVerdict}}</span>
+<sc-for list="{{sigilGroups}}" as="g" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{g.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<sc-for list="{{g.words}}" as="w" hint-placeholder-count="6">
+<button type="button" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" disabled="{{w.disabled}}" title="{{w.title}}" style="{{w.style}}">
+<img src="{{w.img}}" alt="" style="width: 36px; height: 36px; flex: none; padding: 4px; border-radius: 8px; background: #0A0D13">
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{w.charge}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{w.text}}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{canSoul}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #AE9BFF">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<img src="{{soulHead}}" alt="" style="width: 28px; height: 28px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #AE9BFF">OUTBURST · SOUL · 1 DESIGN</span>
+<span style="{{slotChipStyle}}">{{slotChip}}</span>
+<button type="button" onClick="{{resetOb}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Back to Damage + Move</button>
+</div>
+<span style="font-size: 13px; line-height: 1.45; color: #A3AEC2">An Outburst is held in the heart and released. Your first design is one school and one module: pick a school, then a module (a new pick replaces it). Designs you make in play can carry more modules, up to your slots (1 + Will Power ÷ 3).</span>
+<span role="status" aria-live="polite" style="{{obVerdictStyle}}">{{obVerdict}}</span>
+<label style="display: flex; flex-direction: column; gap: 6px; max-width: 420px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">NAME</span>
+<input value="{{obName}}" onChange="{{onObName}}" maxlength="40" placeholder="{{obPlaceholder}}" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px; letter-spacing: 0"></label>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SCHOOL</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<sc-for list="{{schoolCards}}" as="c" hint-placeholder-count="4">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #AE9BFF">{{c.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{c.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{c.text}}</span></button>
+</sc-for>
+</div>
+<sc-if value="{{hasOpts}}" hint-placeholder-val="{{false}}">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHAT IT DOES</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obOpts}}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
+</sc-if>
+<sc-for list="{{modGroups}}" as="g" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">MODULES · {{g.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<sc-for list="{{g.mods}}" as="m" hint-placeholder-count="5">
+<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; color: #AE9BFF">{{m.mark}} {{m.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{m.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{m.text}}</span></button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</sc-if>
 </section>
 </sc-if>
 
@@ -335,6 +401,28 @@
 <span style="font-size: 12px; color: #7F8BA1">{{leanText}}</span>
 </div>
 </div>
+
+<sc-if value="{{hasMagic}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px">
+<sc-if value="{{canSigil}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #4FC8DF">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">SIGIL WORDS · MIND</span>
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<sc-for list="{{magicSigils}}" as="w" hint-placeholder-count="2"><div title="{{w.text}}" style="display: flex; align-items: center; gap: 8px"><img src="{{w.img}}" alt="" style="width: 34px; height: 34px; padding: 4px; border-radius: 8px; background: #0A0D13"><span style="font-size: 15px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span></div></sc-for>
+</div>
+<sc-if value="{{hasMagicLine}}" hint-placeholder-val="{{true}}"><span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">{{magicLine}}</span></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{canSoul}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #AE9BFF">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #AE9BFF">OUTBURST · SOUL</span>
+<div style="display: flex; align-items: center; gap: 10px"><img src="{{magicOb.heart}}" alt="" style="width: 30px; height: 30px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{magicOb.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #AE9BFF">{{magicOb.school}}</span></span></div>
+<span style="font-size: 13px; color: #C9D3E3">{{magicOb.parts}}</span>
+<span style="font-size: 12px; color: #A3AEC2">{{magicOb.cost}}</span>
+</div>
+</sc-if>
+</div>
+</sc-if>
 
 <sc-if value="{{hasVoices}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">

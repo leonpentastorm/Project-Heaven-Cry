@@ -1,11 +1,11 @@
 <div style="position: relative; min-height: 1000px; overflow: hidden; background: #05070B; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
 <div aria-hidden="true" style="position: absolute; left: 50%; top: 330px; width: 1400px; height: 1400px; margin: -700px 0 0 -700px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.07) 0deg 1.2deg, transparent 1.2deg 12deg); animation: phcUltSpin 90s linear infinite; pointer-events: none"></div>
-<header style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 32px; border-bottom: 1px solid #1C2536">
+<header class="phc-drop-in" style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 32px; border-bottom: 1px solid #1C2536">
 <img src="{{pc}}" alt="" style="display: block; flex: none; width: 40px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #2E3A50; background: #000">
 <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">AWARDED TO</span><span style="font-weight: 700">{{whoName}}</span></span>
 <span style="margin-left: auto; font-family: 'Spectral', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; color: #A3AEC2">PROJECT HEAVEN CRY</span>
 </header>
-<main style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 26px; padding: 40px 32px 28px; text-align: center">
+<main class="phc-stagger" style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 26px; padding: 40px 32px 28px; text-align: center">
 <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.4em; color: #FFFFFF">ULTIMATE PERK</span>
 <span style="font-family: 'Spectral', serif; font-size: 18px; font-style: italic; color: #A3AEC2">Nobody is told these exist. You found one.</span>
@@ -45,7 +45,7 @@
 <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><sc-for list="{{chips}}" as="k" hint-placeholder-count="4"><span style="{{k.style}}">{{k.label}}</span></sc-for></div>
 </div>
 <sc-if value="{{notTaken}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{take}}" style="min-height: 52px; padding: 0 44px; border-radius: 999px; border: 0; background: #FFFFFF; color: #05070B; font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer">TAKE IT</button></sc-if>
-<sc-if value="{{taken}}" hint-placeholder-val="{{false}}"><span role="status" style="display: flex; align-items: center; gap: 10px; min-height: 52px; font-size: 15px; color: #6FEA77"><span aria-hidden="true">&#10003;</span>{{takenLine}}</span></sc-if>
+<sc-if value="{{taken}}" hint-placeholder-val="{{false}}"><span role="status" class="phc-pop-in" style="display: flex; align-items: center; gap: 10px; min-height: 52px; font-size: 15px; color: #6FEA77"><span aria-hidden="true">&#10003;</span>{{takenLine}}</span></sc-if>
 </main>
 
 <!--LIGHTBOX-->

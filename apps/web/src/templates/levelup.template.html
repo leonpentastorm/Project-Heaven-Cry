@@ -1,5 +1,5 @@
 <div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
-<header style="display: flex; align-items: center; gap: 16px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<header class="phc-drop-in" style="display: flex; align-items: center; gap: 16px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
 <button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{name}}" style="{{zoomBtn}}"><img src="{{pc}}" alt="{{name}}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000"></button>
 <div style="display: flex; flex-direction: column"><span style="font-size: 12px; letter-spacing: 0.2em; color: #A3AEC2">{{kicker}}</span><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{title}}</span></div>
 <div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap">
@@ -10,14 +10,14 @@
 </header>
 
 <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
-<section aria-label="Choose your class" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<section aria-label="Choose your class" class="phc-stagger" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
 <sc-if value="{{choosing}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 6px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">Your class has found you</h1>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 66ch">You choose among the classes with your two highest signature totals. Spend your skill point first if you like: it can change the list.</p>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px">
 <sc-for list="{{classCards}}" as="c" hint-placeholder-count="3">
-<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">
+<button type="button" class="phc-pop-in" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">
 <span style="display: flex; justify-content: space-between; width: 100%; align-items: baseline"><span style="{{c.nameStyle}}">{{c.name}}</span><span style="font-size: 12px; color: #A3AEC2">signature {{c.total}}</span></span>
 <span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{c.meta}}</span>
 <span style="font-size: 13px; color: #C9D3E3">Signature: {{c.sig}}</span>
@@ -28,7 +28,7 @@
 </sc-for>
 </div>
 </sc-if>
-<sc-if value="{{hasClass}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">{{classLine}}</h1><p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2">{{rankLine}}</p></div></sc-if>
+<sc-if value="{{hasClass}}" hint-placeholder-val="{{false}}"><div class="phc-pop-in" style="display: flex; flex-direction: column; gap: 6px"><h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">{{classLine}}</h1><p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2">{{rankLine}}</p></div></sc-if>
 <sc-if value="{{waitClass}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">Grow</h1><p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2">Your class finds you at level 3, from your skills. Until then, spend what you have.</p></div></sc-if>
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{skillHead}}</span>
@@ -42,7 +42,7 @@
 </div>
 </div>
 <sc-if value="{{hasSteps}}" hint-placeholder-val="{{false}}">
-<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #FFFFFF">
+<div class="phc-rise-in" style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 12px; background: #10151F; border: 1px solid #FFFFFF">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #FFFFFF">PERK STEPS · ONE PER MASTERY LEVEL (3, 5, 7, 9 POINTS)</span>
 <sc-for list="{{steps}}" as="st" hint-placeholder-count="1">
 <div style="display: flex; flex-direction: column; gap: 8px">
@@ -56,7 +56,7 @@
 </sc-if>
 </section>
 
-<aside aria-label="Cores" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
+<aside aria-label="Cores" class="phc-slide-in-right" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CORES</span>
 <sc-for list="{{coreRows}}" as="r" hint-placeholder-count="3">
 <div style="display: grid; grid-template-columns: 120px 48px minmax(0, 1fr); gap: 10px; align-items: center">

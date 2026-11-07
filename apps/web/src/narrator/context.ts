@@ -1,7 +1,7 @@
 // The AI Narrator's context, in layers ordered for prompt caching (docs/design/tech-plan.md, section 7):
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
-import { type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -96,6 +96,13 @@ FIGHTS
 - Enemy tiers, weakest to strongest: minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). The engine sets their numbers.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
+MAGIC (the engine runs every number)
+- Sigil magic (Mind; needs an Evoker and mana cores): a caster draws word glyphs on map tiles (draw: word + tile); glyphs that touch form a pattern (Stack: 2 on one tile; Line: 2 to 4 tiles in a row; Ring: around an empty tile) and Evoke fires it (evoke: tile of any glyph + aim). A pattern needs a subject word (FIRE, SPARK, SHIELD…) and a form or motion (CONDENSE, PUSH, STAY, SPREAD…). Glyphs stay on the ground until fired, scuffed or faded: anyone may use or scuff them, enemies too. Firing builds Flux; vent clears it (raising the mana meter).
+- Soul magic (Soul; needs an Emanator and MP): an Outburst is a ready design (school + modules); begin it now or hold it (it grows each turn, Strain rises), then release. Too much Strain is a Mana Short. A heart burst Downs, never kills. Syphon draws ambient mana into MP; crystallise turns 10 mana into a core.
+- Players' spell words map to actions[]: draw (word, tile), evoke (tile, aim), scuff, vent, core, outburst (design id, aim, hold), release (aim), syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
+- The mana meter (0 to 40; thin, normal, rich, flooded) is in PARTY CONDITION. Deaths, venting and Grand forms raise it; Soul casting, syphon and crystallise lower it. Set mana only when the story changes the place itself (a ley spring, a dead zone); null otherwise. Flooded places strain Soul casters; thin places starve them.
+- Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school or module id, and a reason. Rare: a word is a reward, at most one per character per scene.
+
 THE MAP (grid references)
 - Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. Each turn gives you the current map, what is where, and where everyone stands.
 - The party moves between the campaign's zones with travel (a zone id, or "" to stay). Travel when the story does: a walk, a flight, years passing. Each zone keeps its objects as the party left them. When a player asks to travel (their line reads "asks to travel to … [travel:zone]"), travel if the story allows it; otherwise narrate what stops them.
@@ -149,8 +156,8 @@ WORLD RULES THAT NEVER BREAK
 - Keep traits that are deliberately ugly in clean in-world language.
 
 THE WIKI (wiki_lookup)
-- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
-- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.
+- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
+- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.\n- Sigil words: ${wikiKinds().sigil.join(', ')}. Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
 - Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
 
@@ -179,6 +186,12 @@ export function campaignPrompt(g: GameState): string {
   ].filter(Boolean).join('\n');
 }
 
+/** A caster's magic, for the party block (static between level-ups; the live meters are in PARTY CONDITION). */
+function magicBrief(c: Character): string {
+  const words = (c.sigils || []).map((w) => SIGIL[w]?.word || w), designs = (c.outbursts || []).map((d) => `${d.id} ${d.name} (${[d.school, d.school2].filter(Boolean).join('+')}${d.modules.length ? ': ' + d.modules.join(', ') : ''})`);
+  if (!words.length && !designs.length) return '';
+  return `\n  Magic: ${words.length ? 'Sigil words ' + words.join(', ') + (hasEvoker(c) ? '' : ' (no Evoker carried)') : 'no Sigil words'}; ${designs.length ? 'Outburst designs ' + designs.join('; ') + (hasEmanator(c) ? '' : ' (no Emanator carried)') : 'no Outbursts'}.`;
+}
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
   const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
@@ -192,7 +205,7 @@ export function characterBrief(g: GameState, c: Character): string {
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
-  Perks: ${perks}. Overreach triggers: ${over}
+  Perks: ${perks}. Overreach triggers: ${over}${magicBrief(c)}
   Voices:
 ${voices}`;
 }
@@ -219,7 +232,7 @@ export function turnPrompt(g: GameState): string {
     : w.kind === 'round' ? `Round ${g.story.round} has closed: every player has used their turn. Answer what needs you since your last turn (lines said, examines, attempts, travel requests, anyone spotted), all together. Request checks where outcomes are uncertain.`
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
-  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}`).join('; ');
+  const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}${c.dead ? '' : liveMagic(g, c)}`).join('; ') + `. Mana here: ${g.story.mana ?? 15} (${manaBand(g.story.mana ?? 15).id})`;
   const pos = positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
   const where = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => c.name + ' ' + refOf(pos[c.id])).join(', ');
   const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
@@ -238,6 +251,16 @@ export function turnPrompt(g: GameState): string {
   const chapterJob = chapterDue(g) ? `\n\nCHAPTER DUE: also fill chapter. Roll these ${SCENES_PER_CHAPTER} oldest scenes into one chapter (title, and a summary of at most 1,200 characters keeping names, promises, debts, deaths and open questions), and rewrite the saga, the story so far, in at most 3,500 characters with this chapter folded in:\n${M.scenes.slice(0, SCENES_PER_CHAPTER).map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n')}` : '';
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
   return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${redo}`;
+}
+
+/** A caster's live magic for PARTY CONDITION: MP, Evoker charge and cores, Flux, Strain, a held Outburst. */
+function liveMagic(g: GameState, c: Character): string {
+  const m = g.story.magic?.[c.id], out: string[] = [];
+  if (hasEmanator(c)) out.push(`MP ${mpNow(c)}/${maxMp(c)}`);
+  if (hasEvoker(c)) out.push(`Evoker ${evoChargeNow(c)} charge, ${coresCarried(c)} spare cores`);
+  if (m?.flux) out.push(`Flux ${m.flux}`); if (m?.strain) out.push(`Strain ${m.strain}`); if (m?.held) out.push('holding an Outburst');
+  const conds = Object.keys(m?.conds || {}); if (conds.length) out.push(conds.join(', '));
+  return out.length ? ', ' + out.join(', ') : '';
 }
 
 /** JSON schema for one Narrator turn (structured outputs: every object closed, every field required). */
@@ -307,10 +330,16 @@ export function submitTool(g: GameState) {
     side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {
-    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone'] },
+    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'] },
     to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id or exact name, or a charId or character name' },
     mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'An object id: a door for door; anything to attack' },
+    word: { type: 'string', description: 'A Sigil word id, for draw' }, tile: { type: 'string', description: 'A grid reference: where to draw, or a glyph of the pattern to evoke' },
+    aim: { type: 'string', description: 'A grid reference or token id, for evoke, outburst and release' }, design: { type: 'string', description: 'An Outburst design id, for outburst' }, hold: { type: 'boolean', description: 'outburst: hold it to grow' },
   }, required: ['charId', 'act'] } };
+  schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school or module each', items: { type: 'object', properties: {
+    charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, reason: { type: 'string' },
+  }, required: ['charId', 'reason'] } };
+  schema.properties.mana = { anyOf: [{ type: 'null' }, { type: 'integer' }], description: 'Set the place\'s mana meter (0 to 40) only when the story changes the place itself; null otherwise' };
   schema.properties.memory = { type: 'array', description: 'Memory upkeep: people, threads, facts, factions, pins (empty when nothing changes)', items: { type: 'object', properties: {
     op: { type: 'string', enum: ['person', 'thread', 'fact', 'faction', 'pin', 'unpin'] }, id: { type: 'string', description: 'An existing record id, to update it' },
     name: { type: 'string' }, aliases: { type: 'array', items: { type: 'string' } }, role: { type: 'string' }, where: { type: 'string', description: 'A zone id' },
@@ -320,7 +349,7 @@ export function submitTool(g: GameState) {
     standing: { type: 'integer' }, change: { type: 'integer' },
   }, required: ['op'] } };
   schema.properties.chapter = { anyOf: [{ type: 'null' }, { type: 'object', properties: { title: { type: 'string' }, summary: { type: 'string' }, saga: { type: 'string' } }, required: ['title', 'summary', 'saga'] }], description: 'Only when the turn says CHAPTER DUE' };
-  schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'memory', 'chapter'];
+  schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }
 

@@ -2,7 +2,7 @@
 // Narrator can look up by key ("weapon:service_pistol", "condition:bleeding") when a moment needs it, instead of
 // carrying all of it in every prompt. Entries describe what a thing is and does in words; the engine still owns
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
-import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL } from './data';
+import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, SIGILS, SCHOOLS, MODULES } from './data';
 import { OBJECT_KINDS } from './objects';
 import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
@@ -29,6 +29,10 @@ function build(): WikiEntry[] {
   for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Tenets: ' + (p.tenets || []).join('; ') + '.', 'Taboos: ' + (p.taboos || []).join('; ') + '.', 'Blessings: ' + (p.blessings || []).map((b: any) => b.name).join(', ') + '.'));
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));
+  // Magic (spec: Magic, rules 1.2): Sigil words, Soul schools and modules.
+  for (const w of SIGILS as any[]) add('sigil:' + w.id, w.word, line(w.word + ' (Sigil word, ' + String(w.class).replace('_', ', ') + '; ' + w.charge + ' charge to draw).', w.text, w.grand ? 'Grand form: ' + w.grand : ''));
+  for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
+  for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
   return out;
 }
 let cache: WikiEntry[] | null = null;

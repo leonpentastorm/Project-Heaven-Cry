@@ -6,7 +6,7 @@ export const OUT = new URL('./shots/', import.meta.url).pathname;
 export async function player(browser, name) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true });
   // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off (and no tips).
-  await ctx.addInitScript((voice) => { try { if (!voice) localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); } catch { /* */ } }, !!process.env.VOICE);
+  await ctx.addInitScript((voice) => { try { if (!voice) localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } }, !!process.env.VOICE);
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
@@ -14,7 +14,28 @@ export async function player(browser, name) {
   page.errors = errors; page.pname = name;
   return page;
 }
+/** Host a room from the title screen: NEW GAME, then your name, then Open a room. */
+export async function hostAs(page, name) {
+  await page.goto(BASE);
+  await click(page, 'NEW GAME', { exact: true });
+  await page.getByPlaceholder('Leon').fill(name);
+  await click(page, 'Open a room ›');
+}
 export const click = async (page, text, opts = {}) => { const b = page.getByRole('button', { name: text, exact: !!opts.exact }).first(); await b.waitFor({ timeout: opts.timeout || 8000 }); await b.click(); };
+/** Click a combat action by its button name (string or RegExp). The actions live in tabs (Move · Attack · Utility ·
+ *  Sigils · Outbursts) and only the open tab's buttons are on the page, so this flips to the tab that holds it first. */
+export async function pickAction(page, name, opts = {}) {
+  const btn = () => page.locator('[role="tabpanel"]').getByRole('button', { name, exact: !!opts.exact }).first();
+  if (!(await btn().count())) {
+    const tabs = page.locator('[role="tablist"][aria-label="Actions"] [role="tab"]');
+    const n = await tabs.count();
+    for (let i = 0; i < n; i++) {
+      await tabs.nth(i).click();
+      if (await btn().waitFor({ timeout: 250 }).then(() => true, () => false)) break;
+    }
+  }
+  await btn().click({ timeout: opts.timeout || 8000 });
+}
 export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullPage: !!0 });
 export async function makeCharacter(page, name, archFamily, archName, kit) {
   await click(page, 'Make a character');

@@ -8,3 +8,4 @@ export * from './campaign';
 export * from './music';
 export * from './glossary';
 export * from './memory';
+export * from './magic';

@@ -3,6 +3,7 @@
 import React from 'react';
 import type { GameState, MemEdit } from '@engine';
 import { act } from './store';
+import { usePresence, presenceCls } from './presence';
 
 type Tab = 'story' | 'people' | 'threads' | 'facts' | 'more';
 const ATT = ['−3 hostile', '−2 hostile', '−1 unfriendly', '0 neutral', '+1 friendly', '+2 warm', '+3 devoted'];
@@ -31,7 +32,7 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
       </div>
       {!open && body && <span style={{ fontSize: 13, lineHeight: 1.5, color: '#C9D3E3', whiteSpace: 'pre-wrap' }}>{body}</span>}
       {open && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+        <div className="phc-drop-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
           {fields.map((f) => (
             <label key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, gridColumn: f.type === 'area' ? '1 / -1' : undefined }}>
               <span style={label}>{f.name}</span>
@@ -51,6 +52,7 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
 
 export function MemoryPanel({ game, isHost, side }: { game: GameState | null; isHost: boolean; side: 'left' | 'right' }) {
   const [open, setOpen] = React.useState(false), [tab, setTab] = React.useState<Tab>('story'), [q, setQ] = React.useState(''), [adding, setAdding] = React.useState('');
+  const pres = usePresence(open); // fades in with the card popping up; out the same way
   if (!isHost || !game || game.phase === 'lobby') return null;
   const m = game.memory || { people: [], threads: [], facts: [], factions: [], scenes: [], chapters: [], saga: '', pins: [] } as any;
   const match = (s: string) => !q || s.toLowerCase().includes(q.toLowerCase());
@@ -61,9 +63,9 @@ export function MemoryPanel({ game, isHost, side }: { game: GameState | null; is
       <button type="button" onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" style={{ position: 'fixed', [side]: 16, bottom: 64, zIndex: 9, minHeight: 40, padding: '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
         ◈ Memory
       </button>
-      {open && (
-        <div role="dialog" aria-modal="true" aria-label="The Narrator's memory" style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(5, 7, 11, 0.88)', display: 'grid', placeItems: 'center', padding: 16 }}>
-          <div style={{ width: 'min(980px, 100%)', maxHeight: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 12, padding: 20, borderRadius: 18, background: ink.panel, border: '1px solid ' + ink.line, boxSizing: 'border-box' }}>
+      {pres.shown && (
+        <div role="dialog" aria-modal="true" aria-label="The Narrator's memory" className={presenceCls('phc-a-fade', pres.closing)} style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(5, 7, 11, 0.88)', display: 'grid', placeItems: 'center', padding: 16 }}>
+          <div className={presenceCls('phc-a-pop', pres.closing)} style={{ width: 'min(980px, 100%)', maxHeight: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 12, padding: 20, borderRadius: 18, background: ink.panel, border: '1px solid ' + ink.line, boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={label}>THE NARRATOR'S MEMORY · HOST ONLY</span>

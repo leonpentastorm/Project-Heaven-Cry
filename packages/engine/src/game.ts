@@ -1,11 +1,14 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM } from './data';
+import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, ENEMY, MANA_BANDS } from './data';
+import provingJ from '../../../data/campaigns/proving.json';
+import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, loadAll, equip, unequip, fitMod, type Rarity, passive, pendingPerkSteps, validateSheet,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
-import { type Combat, type MapDef, type AttackMode, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, lineOfSight, litAt } from './combat';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
+import { type Combat, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -18,6 +21,8 @@ export interface Entry {
   /** For kind art: the asset id of a story moment (spec: Campaigns, moments). */
   art?: string;
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
+  /** An action someone took on the area map (a shot, a reload, a door): shown as an action line and in the map's log. */
+  act?: boolean;
   /** Out of character (names players, not characters): shown to players, never sent to the Narrator. */
   ooc?: boolean;
   /** A Narrator turn the room voted to reroll: kept greyed out, never sent to the Narrator. */
@@ -45,7 +50,9 @@ export interface GameState {
   story: {
     entries: Entry[]; round: number; spoken: Record<string, string>;
     await: 'none' | 'players' | 'narrator' | 'rolls' | 'choices';
-    scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]> };
+    scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]>;
+      /** In a player's view only: for each of their characters, the skills with a voice hook not yet revealed to it (no lines, no TNs). */
+      voiced?: Record<string, string[]> };
     journal: string[]; work: NarratorWork;
     /** Where the story happens (a map id) and where each character stands on it, by tile key (spec: Grid references). */
     zone?: string; positions?: Record<string, string>;
@@ -58,6 +65,12 @@ export interface GameState {
     /** Overworld rounds (spec: Overworld rounds): AP left and turn ended per character, this round's paths, Sneak. */
     ap?: Record<string, number>; ended?: Record<string, boolean>; trail?: Record<string, string[]>;
     sneak?: Record<string, boolean>; hidden?: Record<string, boolean>;
+    /** Weapon heat and jams carried between overworld actions (heat cools by 2 each round; a jam stays until cleared). */
+    heat?: Record<string, number>; jammed?: Record<string, boolean>;
+    /** Magic on the story map (spec: Mana): glyphs and zones (and the zone they're drawn in), the mana meter, and each
+     * character's Flux, Strain, held Outburst, conditions and shield between overworld actions. */
+    glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number;
+    magic?: Record<string, { flux: number; strain: number; held: { design: string; stage: number; cost: number } | null; conds?: Record<string, number>; shield?: number; cast?: boolean }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
     /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
@@ -68,6 +81,8 @@ export interface GameState {
     npcs?: Npc[]; zoneNpcs?: Record<string, Npc[]>;
     /** The party's shared spotlight: who is dealing with what (a point of interest), and what they're hovering. */
     focus?: { charId: string; objId?: string; hover?: number; seq: number } | null;
+    /** Presentation events from area-map actions (the same shape as a fight's, see FxEvent), capped at FX_CAP. */
+    fx?: FxEvent[]; fxSeq?: number;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -83,6 +98,8 @@ export interface GameState {
   memory?: Memory;
   /** Every story line that scrolled out of the live log, kept forever on the host's computer for recall. */
   archive?: Entry[];
+  /** The Proving Ground (practice mode): endless waves on one map, no Narrator, no XP, no story (see Sandbox). */
+  sandbox?: Sandbox | null;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -111,7 +128,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }[];
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean }[];
   /** Place, move, update or remove people and enemies on the overworld map. */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string }[];
   combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
@@ -127,6 +144,11 @@ export type NarratorTurn = {
   endScene?: { summary: string } | null;
   /** Memory upkeep (spec: The Narrator's memory): people, threads, facts, factions and pins to add or update. */
   memory?: MemOp[];
+  /** Magic the story teaches (spec: The Magic panel): a tutor's Sigil word, or an Outburst school or module learned
+   * from a moment that shook the character. */
+  magic?: { charId: string; word?: string; school?: string; module?: string; reason?: string }[];
+  /** The air here, set by the place (spec: the meter): 0-40, e.g. a chapel Flooded at 32, a vacuum lab Thin at 4. */
+  mana?: number | null;
   /** When asked: the oldest scenes rolled into a chapter, and the saga (the story so far) rewritten. */
   chapter?: { title: string; summary: string; saga: string } | null;
   /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
@@ -153,18 +175,25 @@ export type Action =
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string }
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean }
+  // Magic (spec: Mana, rules 1.2)
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
+  | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
+  | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/forget'; charId: string; designId: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
   | { type: 'vote/suggest'; kind: 'reroll' | 'edit'; entryId: string; note?: string } | { type: 'vote/dismiss'; id: string }
   | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
   | { type: 'narrator/rewrite'; entryId: string; text: string; refused?: string }
   | { type: 'campaign/refresh' } | { type: 'memory/edit'; edit: MemEdit }
-  | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string };
+  | { type: 'music/end'; seq: number } | { type: 'music/play'; charId: string } | { type: 'music/pin'; charId: string } | { type: 'music/unpin'; charId: string } | { type: 'combat/song'; unitId: string }
+  | SandboxAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean }
 
-export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door';
+export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door'
+  | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise';
 export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
 export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
   /** Everyone who must say yes: the players online when the vote started. */
@@ -187,11 +216,15 @@ export const SHEET_MAX = 30_000;
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   reduce(g, action, by);
+  if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   g.v++;
   return g;
 }
 
 function reduce(g: GameState, a: Action, by: string) {
+  if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
+  if (g.sandbox && SANDBOX_REFUSED.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
     case 'player/join': {
       if (!isHost(g, by)) fail('Only the host admits players.');
@@ -216,6 +249,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const c = newCharacter(id(g, 'c'), by, a.sheet);
       if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: 'tool' }];
       g.characters[c.id] = c;
+      if (g.sandbox) g.sandbox.saved.characters[c.id] = JSON.parse(JSON.stringify(c)); // leaving the Proving Ground restores it as it came
       push(g, { kind: 'system', text: c.name + ' is locked in.' });
       if (g.phase !== 'lobby') c.echo = 1;
       return;
@@ -226,7 +260,8 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'lobby') fail('Already started.');
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
       g.phase = 'story';
-      for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); }
+      for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); if (hasEmanator(c)) c.mp = maxMp(c); }
+      g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
@@ -380,6 +415,44 @@ function reduce(g: GameState, a: Action, by: string) {
       g.settings.start = g.campaign!.id;
       if (g.campaign!.tone) g.settings.tone = g.campaign!.tone;
       return;
+    }
+    case 'magic/learn': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Learn after the fight.');
+      if (c!.learnedScene === g.story.scene.n && g.phase === 'story') fail('One new thing a scene: it takes a rest to sink in.');
+      if (a.from === 'ally') {
+        const ok = Object.values(g.characters).some((x) => x.id !== c!.id && !x.dead && (a.word ? (x.sigils || []).includes(a.word) : a.module ? (x.soulKnown?.modules || []).includes(a.module) : (x.soulKnown?.schools || []).includes(a.school || '')));
+        if (!ok) fail('Nobody in the squad knows that to teach it.');
+      } else {
+        if (!a.word) fail('A Sigil plate teaches a word.');
+        const pack = packOf(c!), i = pack.findIndex((x) => (x.item || x.id) === 'sigil_plate' && (x.note || '').toLowerCase() === a.word);
+        if (i < 0) fail('You carry no plate with that word.');
+        pack[i] = { ...pack[i], qty: pack[i].qty - 1 }; c!.pack = pack.filter((x) => x.qty > 0 || x.mags);
+      }
+      const e = teach(g, c!, a, a.from === 'ally' ? 'taught by the squad' : 'from a Sigil plate'); if (e) fail(e);
+      c!.learnedScene = g.story.scene.n; return;
+    }
+    case 'magic/design': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Design Outbursts out of combat.');
+      const d = a.design, k = c!.soulKnown || { schools: [], modules: [] };
+      if (!d || !SCHOOL[d.school]) fail('Pick a school.');
+      if (!k.schools.includes(d.school)) fail('You haven\'t learned the ' + SCHOOL[d.school].name + ' school.');
+      if (d.school2) { if ((c!.skills.will_power || 0) < 5) fail('Two schools need Will Power 5.'); if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) fail('Pick a second school you know.'); }
+      const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) fail('Use only modules you know.');
+      if (mods.length > moduleSlots(c!)) fail('At most ' + moduleSlots(c!) + ' module' + (moduleSlots(c!) === 1 ? '' : 's') + ' (Will Power).');
+      const opts = (SCHOOL[d.school] as any).options as string[] | undefined;
+      const option = d.option && opts && opts.some((o) => o.replace(/^to_/, '').startsWith(d.option!)) ? d.option : undefined;
+      const list = (c!.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
+      const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}) };
+      if (at >= 0) list[at] = clean; else { if (list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.'); list.push(clean); }
+      return;
+    }
+    case 'magic/forget': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('After the fight.');
+      if (g.story.magic?.[c!.id]?.held?.design === a.designId) fail('You are holding that Outburst: release it first.'); // or it could never be let go
+      c!.outbursts = (c!.outbursts || []).filter((x) => x.id !== a.designId); return;
     }
     case 'story/move': { worldAct(g, { type: 'world/act', charId: a.charId, act: 'move', to: a.to, how: 'move' }, by); return; }
     case 'story/door': { worldAct(g, { type: 'world/act', charId: a.charId, act: 'door', objId: a.objId }, by); return; }
@@ -554,6 +627,8 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   }
   for (const op of t.objects || []) applyObjectOp(g, op);
   for (const op of t.npcs || []) applyNpcOp(g, op);
+  if (typeof t.mana === 'number') g.story.mana = Math.max(0, Math.min(40, Math.round(t.mana)));
+  for (const m of t.magic || []) { const c = g.characters[m.charId]; if (c) teach(g, c, m, m.reason || 'the story'); }
   if ((t.npcs || []).length) noticeAll(g);
   for (const l of t.loot || []) {
     const c = g.characters[l.charId]; if (!c || c.dead) continue;
@@ -580,7 +655,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
       const used = new Set<number>();
       for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
       g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
-    g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined);
+    g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined); magicIn(g, g.combat);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
     // Every enemy gets a stable NPC id (its face and its survival after the fight follow it); a story NPC keeps its own.
     g.combat.units.filter((u) => u.side === 'foe').forEach((u, i) => { const f: any = foes[i]; u.npcId = (f && f.id) || 'n' + (++g.seq); if (f && f.portrait) u.img = f.portrait; });
@@ -611,7 +686,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); err = shove(cb!, g.rng, u, t!); break; }
     case 'combat/prone': err = toggleProne(cb!, u); break;
     case 'combat/brace': err = brace(cb!, u); break;
-    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; err = useWeaponSkill(cb!, g.rng, u, t, c); break; }
+    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, c); break; }
     case 'combat/repair': err = fieldRepair(cb!, u); break;
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
     case 'combat/overwatch': err = setOverwatch(cb!, u, a.mode); break;
@@ -631,16 +706,27 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== 'pc') fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, c!.classId === 'medic'); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
+    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
+    case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined); break;
+    case 'combat/scuff': err = scuffGlyph(cb!, u); break;
+    case 'combat/vent': err = ventFlux(cb!, u); break;
+    case 'combat/core': err = swapCore(cb!, u); break;
+    case 'combat/outburst': err = beginOutburst(cb!, g.rng, u, a.design, a.aim ? tileKey(g, a.aim) : undefined, !!a.hold); break;
+    case 'combat/release': err = releaseOutburst(cb!, g.rng, u, a.aim ? tileKey(g, a.aim) : undefined); break;
+    case 'combat/syphon': err = syphonMana(cb!, u); break;
+    case 'combat/crystallise': err = crystalliseCore(cb!, u); break;
     case 'combat/song': {
       if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
       if (u.ap < SONG_AP) fail('Needs ' + SONG_AP + ' AP.');
       if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
-      u.ap -= SONG_AP; break;
+      u.ap -= SONG_AP; emitFx(cb!, 'song', { unit: u.id, at: u.pos }); break;
     }
     default: fail('Unknown action.');
   }
   if (err) fail(err);
+  for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
+  noteDeaths(cb!);
   checkOver(cb!);
   runEnemies(g);
 }
@@ -673,15 +759,16 @@ function runEnemies(g: GameState) {
   for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
     const u = active(cb)!;
     if (u.side !== 'foe') break;
-    enemyTurn(cb, g.rng);
+    if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
-  if (cb.over) finishCombat(g);
+  if (cb.over) { if (g.sandbox) sandboxOver(g); else finishCombat(g); }
 }
 
 function finishCombat(g: GameState) {
   const cb = g.combat!;
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
+  noteDeaths(cb); magicOut(g, cb, true);
   const won = cb.over === 'win';
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
     canon(g, (won ? 'The party won' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
@@ -706,7 +793,7 @@ function finishCombat(g: GameState) {
 
 /** The one Narrator call a fight costs gets this: the result, the moments that mattered, who's left where, and anything said mid-fight. */
 export function combatReport(cb: Combat): string {
-  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge/;
+  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns/;
   const moments = cb.log.filter((l) => key.test(l)).slice(-14);
   const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
     + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));
@@ -784,9 +871,13 @@ export function positionsOf(g: GameState): Record<string, string> {
 // ---------- views ----------
 /** What one player may see: no hooks, no one else's voices or Overreach. */
 export function viewFor(g: GameState, playerId: string): GameState {
-  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...g.story.scene, hooks: [] } } };
+  // The skill panel shows Ask only where a voice has something (Silent elsewhere): which skills, never the hooks themselves.
+  const sc = g.story.scene, voiced: Record<string, string[]> = {};
+  for (const c of Object.values(g.characters)) if (c.owner === playerId) voiced[c.id] = [...new Set(sc.hooks.filter((h) => !sc.revealed.includes(c.id + ':' + h.id)).map((h) => h.skill))];
+  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
+  if (g.sandbox) v.sandbox = { ...g.sandbox, saved: { characters: {}, campaign: null, story: null, music: null } };
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
@@ -818,6 +909,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
     // Ammo carried out of the fight (spec: Reloading).
     c.loaded = u.ammo;
+    magicToCharacter(c, u);
     if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
       if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
@@ -836,11 +928,13 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
-function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, apLeft(g, c) - n); }
+function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths
 /** A new overworld round: full AP, a fresh Say, no trails. */
 export function newRound(g: GameState) {
   g.story.round++; g.story.spoken = {}; g.story.await = 'players';
   g.story.ap = {}; g.story.ended = {}; g.story.trail = {}; g.story.needs = false; g.story.noticed = {}; g.story.focus = null;
+  for (const k in g.story.heat || {}) g.story.heat![k] = Math.max(0, g.story.heat![k] - 2);
+  storyMagicRound(g);
   // What the Narrator mapped from players' words runs now, as those players' own actions, from their fresh AP.
   const q = g.story.queued || []; g.story.queued = [];
   for (const x of q) {
@@ -881,13 +975,89 @@ const ENEMY_TIERS = ['minion', 'soldier', 'elite', 'boss'];
 /** Names too generic to be a person in memory. */
 const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard captain|hostile|soldier|trooper|enemy rearguard trooper)$/i;
 
+// ---------- magic on the story map and between the story and fights (spec: Mana, rules 1.2) ----------
+const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'];
+/** A tile from a grid reference ("C7") or a tile key ("2,6"). */
+function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean }, tile?: string, aim?: string): string | null {
+  switch (a.act) {
+    case 'draw': return a.word && tile ? drawGlyph(cb, rng, u, a.word, tile) : 'Pick a word and a tile.';
+    case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim) : 'Pick a glyph of the pattern.';
+    case 'scuff': return scuffGlyph(cb, u);
+    case 'vent': return ventFlux(cb, u);
+    case 'core': return swapCore(cb, u);
+    case 'outburst': return a.design ? beginOutburst(cb, rng, u, a.design, aim, !!a.hold) : 'Pick a design.';
+    case 'release': return releaseOutburst(cb, rng, u, aim);
+    case 'syphon': return syphonMana(cb, u);
+    case 'crystallise': return crystalliseCore(cb, u);
+  }
+  return 'Unknown spell.';
+}
+/** Bring the story's magic into a fight or the overworld's throwaway combat: the meter, glyphs and zones (when it's
+ * the same zone), and each character's Flux, Strain, held Outburst, conditions and shield. */
+function magicIn(g: GameState, cb: Combat) {
+  cb.mana = g.story.mana ?? MANA_START;
+  if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
+  cb.glyphSeq = Math.max(0, ...[...(cb.glyphs || []), ...(cb.zones || [])].map((x) => +String(x.id).replace(/\D/g, '') || 0));
+  for (const u of cb.units) {
+    const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
+    if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held || null; u.mg.cast = !!s.cast; }
+    if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
+    if (s.shield) u.shield = s.shield;
+  }
+}
+/** And back out. After a fight Strain and held Outbursts reset (spec: Strain resets after combat). */
+function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
+  g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = cb.zones || []; g.story.glyphMap = cb.map.id;
+  const m = (g.story.magic ||= {});
+  for (const u of cb.units) if (u.charId) {
+    const conds = afterFight ? {} : { ...(u.conds || {}) };
+    m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast };
+  }
+}
+/** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
+ * burns. Nothing happens (and nothing is logged) when there's no magic about. */
+function storyMagicRound(g: GameState) {
+  const live = (g.story.glyphs || []).length || (g.story.zones || []).length || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
+  if (!live || g.phase !== 'story') return;
+  const cb = storyCb(g); cb.round = g.story.round;
+  magicRoundTick(cb);
+  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); if (u.mg) u.mg.cast = false; }
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
+  magicOut(g, cb, false);
+  storyFx(g, cb);
+  for (const l of cb.log) push(g, { kind: 'system', text: l, act: true });
+}
+/** The overworld's throwaway fight keeps its presentation events in the story (renumbered, capped), so area-map
+ * actions animate for everyone as fights do. */
+function storyFx(g: GameState, cb: Combat) {
+  if (!cb.fx?.length) return;
+  const list = (g.story.fx ||= []);
+  for (const e of cb.fx) list.push({ ...e, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) });
+  if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
+}
+/** Learn a word, a school or a module (spec: The Magic panel). */
+function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string }, why: string): string {
+  if (m.word) {
+    if (!SIGIL[m.word]) return 'No such word.';
+    const known = (c.sigils ||= []); if (known.includes(m.word)) return c.name + ' already knows ' + SIGIL[m.word].word + '.';
+    if (known.length >= wordsKnownCap(c)) return c.name + ' knows ' + known.length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').';
+    known.push(m.word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[m.word].word + ' (' + why + ').' }); return '';
+  }
+  const k = (c.soulKnown ||= { schools: [], modules: [] });
+  if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
+  if (m.module) { if (!MODULE[m.module]) return 'No such module.'; if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
+  return 'Nothing to learn.';
+}
+
 /** The overworld as a throwaway fight state, so every combat rule (paths, sight, actions) runs unchanged. Units carry
  * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
-function storyCb(g: GameState): Combat {
+export function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
-  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
+  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; units.push(u); }
-  return { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
+  const cb = { name: 'overworld', map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
+  magicIn(g, cb); return cb;
 }
 
 /** Sneaking characters: each hostile with sight of them inside its notice range (4 + its notice − your Dexterity,
@@ -947,7 +1117,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   } else if (a.act === 'door') {
     const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
     if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
-    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
   } else if (a.act === 'reload') err = reload(cb, u);
   else if (a.act === 'load') err = loadMagazine(cb, u);
   else if (a.act === 'clear') err = clearJam(cb, u);
@@ -962,7 +1132,29 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (!t && o && o.dead) fail(o.name + ' is dead.');
     if (!t && o && isPersonObj(g, o)) t = (o.npcId && cb.units.find((x) => x.id === o.npcId)) || poiToNpc(g, cb, o);
     if (!t && o) {
-      if (o.hp == null || o.hp <= 0) { if (u.ap < 2) fail('Needs 2 AP.'); u.ap -= 2; cb.log.push(c!.name + ' attacks the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + '.'); g.story.needs = true; }
+      if (o.hp == null || o.hp <= 0) {
+        // Something without HP: the shot is real (a round, heat, sight, range) and the Narrator rules what it does.
+        // The mode the player chose counts: melee strikes with the weapon (or fists), aimed costs the aimed AP.
+        const w = WEAPON[u.weapon], mode = a.mode || 'shot', melee = isMelee(w) || mode === 'melee', useW = melee && !isMelee(w) ? WEAPON.fists : w;
+        const fx: any = (w as any).grants?.effect || {}, r = dist(u.pos, o.pos);
+        const cost = !melee && mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot');
+        if (u.ap < cost) fail('Needs ' + cost + ' AP.');
+        if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); }
+        else {
+          if (u.jammed) fail('Weapon jammed: clear it (2 AP).');
+          if (u.maxDur && (u.dur ?? 1) <= 0) fail('Broken: Field Repair first.');
+          if ((w.properties || []).includes('requires_braced_or_prone') && !u.braced && !u.prone) fail('Brace it first (1 AP), or go prone.');
+          if (w.magazine != null && u.ammo <= 0) fail('Empty: reload (2 AP).');
+          if (!lineOfSight(cb, u.pos, o.pos)) fail('No line of sight.');
+          if (Math.ceil(r / effectiveRange(w)) - 1 > 2) fail('Out of range.');
+          if (w.magazine != null) u.ammo--; u.heat += 1;
+          if ((w as any).heat_limit && u.heat >= (w as any).heat_limit) u.jammed = true;
+          if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
+        }
+        u.ap -= cost; emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
+        cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
+        g.story.needs = true;
+      }
       else err = shootCover(cb, u, o.pos, c!);
     } else {
       if (!t || t.id === u.id || t.dead) fail('Pick someone else to attack.');
@@ -970,13 +1162,27 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
       else { overworldAttack(g, cb, c!, u, t!, a.mode || 'shot'); return; }
     }
   }
+  else if (MAGIC_ACTS.includes(a.act)) {
+    const tile = a.tile ? tileKey(g, a.tile) : undefined, aim = a.aim ? tileKey(g, a.aim) : undefined;
+    const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => performMagic(cbx, rng, uu, a, tile, aim);
+    // A spell that would touch a person on the map starts a fight, as an attack does (spec: Overworld rounds).
+    if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !a.hold)) {
+      // Check it would work at all (on a copy, without touching the dice), then see whether it aims at anyone on the map.
+      const dry: Combat = JSON.parse(JSON.stringify(cb)), e0 = run(dry, dry.units.find((x) => x.id === u.id)!, { state: g.rng.state }); if (e0) fail(e0);
+      const npc = spellTargets(cb, u, a.act, tile, aim, a.design).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
+      if (npc) { overworldAttack(g, cb, c!, u, npc, 'shot', (cbx, att) => run(cbx, att, g.rng)); return; }
+    }
+    err = run(cb, u, g.rng);
+  }
   else fail('Unknown action.');
   if (err) fail(err);
   // Write back: AP, the character's state, objects (doors, traps), and the log as story lines.
   spendAp(g, c!, before - u.ap);
-  for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false, true);
+  for (const x of cb.units) if (x.charId) { unitToCharacter(g, x, false, true); (g.story.heat ||= {})[x.charId] = x.heat || 0; (g.story.jammed ||= {})[x.charId] = !!x.jammed; }
+  magicOut(g, cb, false);
   g.story.objects = cb.objects;
-  for (const l of cb.log) push(g, { kind: 'system', text: l });
+  storyFx(g, cb);
+  for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c!.id });
   noticeFor(g, c!);
   closeRoundIfDone(g);
 }
@@ -984,8 +1190,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
 /** Attacking from the overworld starts the fight on this map, everyone where they stand (spec: Overworld rounds).
  * Hidden (sneaking, unseen): an ambush; from the target's front the attacker must pass Ingenuity first. The fight opens
  * on the attacker's turn with the AP they have left. Seen: the attack still lands, but the attacker sits out round 1. */
-function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['units'][number], t: Combat['units'][number], mode: AttackMode) {
-  const pv = previewAttack(cb, u, t, mode); if (!pv.ok) fail(pv.why!);
+function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['units'][number], t: Combat['units'][number], mode: AttackMode, perform?: (cbx: Combat, att: Combat['units'][number]) => string | null) {
+  if (!perform) { const pv = previewAttack(cb, u, t, mode); if (!pv.ok) fail(pv.why!); }
   const npc = npcsOf(g).find((n) => n.id === t.id)!;
   let hidden = !!(g.story.sneak?.[c.id] && g.story.hidden?.[c.id]);
   if (hidden) {
@@ -1002,7 +1208,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id] }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) })), tier, g.rng, storyObjects(g));
+  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos) })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; });
   if (!wasHostile) cbx.noXp = true;
@@ -1011,7 +1217,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
   if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); }
   else { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
-  att.ap = apNow; resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  att.ap = apNow; if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
   checkOver(cbx); runEnemies(g);
 }
@@ -1144,4 +1350,415 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
   if (g.story.work) g.story.work = { ...g.story.work, redo: note || 'Tell it differently.' };
   g.story.entries.push({ id: 'e' + (++g.seq), kind: 'system', text: 'The room voted to reroll the Narrator\'s turn' + (note ? ': "' + note + '"' : '') + '. Everything since it is undone.', ooc: true });
   return g;
+}
+
+// ---------- the Proving Ground (practice mode) ----------
+// Endless waves of drill units on one arena, with infinite retries, and a tools panel for everything the engine owns:
+// gear, class, level, skills, magic, enemies, the enemy AI, the mana meter. No Narrator is ever called (nothing sets
+// story.work, and every Narrator and story action is refused), no XP, no story entries, no lasting injuries or deaths.
+// Leaving restores the room's characters, campaign and story as they were.
+
+/** Proving Ground state. `saved` is the room before it began (host only: views carry an empty copy). */
+export interface Sandbox {
+  wave: number; best: number; attempt: number; ai: boolean;
+  /** The next wave comes by itself after a short pause (the host's client sends sandbox/wave), or waits for a click. */
+  auto: boolean;
+  state: 'fighting' | 'cleared' | 'fallen';
+  /** An advanced class picked in the tools (by character): the engine plays its first parent (advanced moves are not engine-run yet). */
+  advanced: Record<string, string>;
+  /** Test characters made for the Proving Ground: removed when it ends. */
+  temp: string[];
+  /** The mana meter when this wave began (Retry puts it back). */
+  waveMana: number;
+  spawned: number;
+  saved: { characters: Record<string, Character>; campaign: Campaign | null; story: any; music: any };
+}
+export type SandboxAction =
+  | { type: 'sandbox/start'; archetype?: string; kit?: string } | { type: 'sandbox/end' }
+  | { type: 'sandbox/wave'; wave?: number } | { type: 'sandbox/retry'; restart?: boolean }
+  | { type: 'sandbox/give'; charId: string; item: string; qty?: number; rarity?: Rarity; equip?: boolean }
+  | { type: 'sandbox/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' | 'mod' } | { type: 'sandbox/unequip'; charId: string; slot: string }
+  | { type: 'sandbox/drop'; charId: string; idx: number } | { type: 'sandbox/armour'; charId: string; armourClass: number }
+  | { type: 'sandbox/class'; charId: string; classId: string | null; rank?: number }
+  | { type: 'sandbox/level'; charId: string; level: number } | { type: 'sandbox/skill'; charId: string; skill: string; points: number }
+  | { type: 'sandbox/refill'; charId?: string }
+  | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string }
+  | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
+  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string } | { type: 'sandbox/clear' }
+  | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number };
+
+/** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
+const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
+export const PROVING_GROUND = provingJ as unknown as Campaign;
+/** Drill units by tier: their names and the weapons each wave cycles through. */
+export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> = {
+  minion: { name: 'Drill drone', weapons: ['service_pistol', 'combat_knife', 'decrkm_smg', 'lever_carbine'] },
+  soldier: { name: 'Sparring trooper', weapons: ['hellraiser_service_rifle', 'lumeri_scattergun', 'legion_pdw', 'sabre'] },
+  elite: { name: 'Range warden', weapons: ['legion_bullpup', 'brigade_auto_shotgun', 'ccec_marksman_rifle', 'war_axe'] },
+  boss: { name: 'Proving champion', weapons: ['hellraiser_lmg', 'adamantile_greatsword'] },
+};
+/** Advanced classes (rules 1.2): the engine knows them by id for the tools; base classes are in CLASS. */
+export const ADVANCED_CLASSES: { id: string; name: string; parents: string[]; summary?: string }[] = ((classesJ as any).advanced || []).map((x: any) => ({ id: x.id, name: x.name, parents: x.parents || [], summary: x.summary }));
+const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, boss: 8 };
+/** Wave n's drill units (deterministic, so a wave can be replayed): a point budget of 2 + 1.5n; soldiers from wave 2,
+ * elites from wave 4, a champion every 5th wave; at most 8. Provisional: tuned by play. */
+export function sandboxWave(n: number): { name: string; tier: string; weapon: string }[] {
+  n = Math.max(1, Math.floor(n));
+  let pts = 2 + Math.floor(n * 1.5); const tiers: string[] = [];
+  if (n % 5 === 0) for (let i = 0; i < Math.min(2, n / 5) && pts >= TIER_COST.boss; i++) { tiers.push('boss'); pts -= TIER_COST.boss; }
+  const caps: [string, number][] = [['elite', n >= 4 ? Math.floor(n / 4) : 0], ['soldier', n >= 2 ? Math.ceil(n / 2) : 0]];
+  for (const [t, cap] of caps) for (let i = 0; i < cap && pts > TIER_COST[t] && tiers.length < 7; i++) { tiers.push(t); pts -= TIER_COST[t]; }
+  while (pts > 0 && tiers.length < 8) { tiers.push('minion'); pts--; }
+  if (!tiers.length) tiers.push('minion');
+  const count: Record<string, number> = {};
+  return tiers.map((t) => { const i = (count[t] = (count[t] || 0) + 1), T = SANDBOX_TIERS[t]; return { name: T.name + ' ' + i, tier: t, weapon: T.weapons[(i - 1 + n) % T.weapons.length] }; });
+}
+
+const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is not open.');
+/** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
+const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
+  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init'] as const;
+
+/** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
+ * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
+function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
+  const cb = g.combat; if (!cb) return;
+  const i = cb.units.findIndex((u) => u.charId === c.id); if (i < 0) return;
+  const old = cb.units[i], u = unitFromCharacter(c, old.pos, { state: g.rng.state });
+  u.init = old.init;
+  if (mode === 'keep') {
+    for (const k of SB_KEEP) if (old[k] !== undefined) (u as any)[k] = JSON.parse(JSON.stringify(old[k]));
+    if (old.offWeapon && old.offWeapon === u.offWeapon) u.offAmmo = old.offAmmo;
+    if (old.mg && u.mg) { u.mg.flux = old.mg.flux; u.mg.strain = old.mg.strain; u.mg.held = old.mg.held; u.mg.cast = old.mg.cast; u.mg.lockRound = old.mg.lockRound; }
+    if (u.conds?.slowed) { u.baseMove = u.movement; u.movement /= 2; }
+    if (u.conds?.blinded) { u.baseVision = u.vision || 12; u.vision = 1; }
+    if (u.conds?.guarded) u.def += 2;
+    u.hp = Math.min(u.hp, u.maxHp);
+  } else {
+    u.ap = active(cb)?.id === old.id ? Math.max(old.ap, 6) : old.ap;
+    u.waitRound = old.waitRound;
+  }
+  cb.units[i] = u; syncSong(g);
+}
+/** Change a character in the Proving Ground: its fighter's state is written onto it first, then rebuilt from it. */
+function sbChange(g: GameState, c: Character, fn: () => void, mode: 'keep' | 'refill' = 'keep') {
+  const u = g.combat?.units.find((x) => x.charId === c.id);
+  if (u) unitToCharacter(g, u, false);
+  fn();
+  sbRebuild(g, c, mode);
+}
+/** Levelling up mid-fight in the Proving Ground: the fighter takes the new numbers and keeps everything else. */
+export function sandboxResync(g: GameState, charId: string) { const c = g.characters[charId]; if (c && g.combat) sbChange(g, c, () => {}); }
+
+/** Full HP, no injuries, every magazine full, stims, MP, the Evoker's charge and cores, a mended weapon. */
+function sbRefill(c: Character) {
+  c.dead = false; c.hp = maxHp(c); c.injuries = []; c.downedFails = 0;
+  c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : { ...it }));
+  const w = WEAPON[c.weapon];
+  if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
+  if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
+  if (hasEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
+  c.pack = pack;
+  if (hasEmanator(c)) c.mp = maxMp(c);
+  c.stims = Math.max(c.stims, 3);
+  if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
+}
+/** Set a skill, raising its Attribute and Core to fit (the Proving Ground ignores budgets, never the tree's caps). */
+function sbSetSkill(c: Character, id: string, p: number) {
+  const sk = SKILL[id]; if (!sk) fail('Unknown skill.');
+  p = Math.max(0, Math.min(10, Math.round(p)));
+  c.skills = { ...c.skills, [id]: p };
+  if ((c.attrs[sk.attribute] || 1) < p) c.attrs = { ...c.attrs, [sk.attribute]: p };
+  const core = sk.core as keyof Character['cores']; if ((c.cores[core] || 1) < (c.attrs[sk.attribute] || 1)) c.cores = { ...c.cores, [core]: c.attrs[sk.attribute] };
+  grantAutomaticPerks(c);
+}
+/** Raise a class's signature skills, evenly, until their total reaches `total`. */
+function sbRaiseSignature(c: Character, classId: string, total: number) {
+  const sig = CLASS[classId]?.signature || [];
+  for (let guard = 0; guard < 40; guard++) {
+    const now = sig.reduce((t, s) => t + (c.skills[s] || 0), 0); if (now >= total) return;
+    const low = [...sig].sort((a, b) => (c.skills[a] || 0) - (c.skills[b] || 0))[0]; if ((c.skills[low] || 0) >= 10) return;
+    sbSetSkill(c, low, (c.skills[low] || 0) + 1);
+  }
+}
+/** Put an item or weapon in the pack (weapons come with three magazines and loose rounds). Returns its pack index. */
+function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number {
+  const pack = packOf(c).map((x) => ({ ...x })), n = Math.max(1, Math.min(20, Math.round(qty || 1)));
+  if (WEAPON[item]) {
+    const w = WEAPON[item];
+    for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id: item, name: w.name, qty: 1, kind: 'weapon', weapon: item, rarity, ...(rarity !== 'standard' ? { dur: maxDurOf(item, rarity) } : {}) });
+    const at = pack.length - 1;
+    if (w.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === item && it.mags)) pack.push(magsOf(item, 3));
+    if (w.ammo) { const want = 3 * (w.magazine || 6), r = pack.find((it) => it.calibre === w.ammo); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
+    c.pack = pack; return at;
+  }
+  if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
+  const def = ITEM[item] as any; if (!def) fail('No such item.');
+  const kind: PackItem['kind'] = def.category === 'focus' ? 'focus' : item === 'standard_core' ? 'ammo' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool';
+  const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
+  if (ex >= 0 && kind !== 'focus') { pack[ex].qty += n; c.pack = pack; return ex; }
+  pack.push({ id: item, item, name: def.name, qty: n, kind }); c.pack = pack; return pack.length - 1;
+}
+/** Equip from the pack, in a fight too: a weapon taken in hand comes loaded. */
+function sbEquip(c: Character, idx: number, to: 'main' | 'off' | 'worn' | 'mod'): string | null {
+  const it = packOf(c)[idx]; if (!it) return 'Nothing there.';
+  const err = to === 'mod' ? fitMod(c, idx) : equip(c, idx, to); if (err) return err;
+  if (to === 'main') c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  return null;
+}
+const sbLog = (g: GameState, t: string) => { if (g.combat) g.combat.log.push('⚙ ' + t); };
+/** The fighters' state written back onto their characters (between waves: nobody stays dead or down). */
+function sbCollect(g: GameState) {
+  const cb = g.combat; if (!cb) return;
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false);
+  magicOut(g, cb, true);
+  for (const c of Object.values(g.characters)) { c.dead = false; if (c.hp <= 0) c.hp = 1; c.downedFails = 0; c.injuries = []; }
+}
+/** Start wave n on the Proving Ground. fresh: everyone refilled at the start tiles, the field clean (Retry);
+ * otherwise the squad carries its HP, ammo and magic in and stays where it stands (the next wave). */
+function sbStartWave(g: GameState, n: number, fresh: boolean, mana?: number) {
+  const sb = sbOf(g), old = g.combat;
+  const pos: Record<string, string> = {};
+  if (old && !fresh) for (const u of old.units) if (u.charId && !u.dead) pos[u.charId] = u.pos;
+  sbCollect(g);
+  if (mana != null) g.story.mana = mana;
+  if (fresh) { g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; for (const c of Object.values(g.characters)) sbRefill(c); }
+  const map = zoneMap(g), foes = sandboxWave(n);
+  const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
+  if (!pcs.length) fail('Lock in a character first.');
+  const cb = startCombat('Proving Ground · Wave ' + n, map, pcs, foes, n % 5 === 0 ? 'boss' : n >= 4 ? 'hard' : 'standard', g.rng);
+  magicIn(g, cb);
+  cb.noXp = true;
+  cb.log.unshift('WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + foes.length + ' drill unit' + (foes.length === 1 ? '' : 's'));
+  { const seen: Record<string, number> = {}; for (const u of cb.units) if (u.side === 'foe') { u.npcId = u.id; const p = portraitFor(g, u.name, seen); if (p) u.img = p; } }
+  g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
+  sb.wave = n; sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START;
+  syncSong(g);
+  runEnemies(g);
+}
+/** A wave ends: cleared (the next one waits for a click or the host's short pause) or the squad fell (Retry). */
+function sandboxOver(g: GameState) {
+  const sb = sbOf(g), cb = g.combat!;
+  if (cb.over === 'win') { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); cb.log.push('WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
+  else { sb.state = 'fallen'; cb.log.push('The squad falls on wave ' + sb.wave + '. Retry the wave, or start again from wave 1.'); }
+  cb.summary = (cb.over === 'win' ? 'Cleared' : 'Fell on') + ' wave ' + sb.wave + '.';
+}
+/** A fight that was over runs again (an enemy spawned into a cleared wave, or the field cleared). */
+function sbResume(g: GameState) {
+  const cb = g.combat!; cb.over = null; sbOf(g).state = 'fighting';
+  const u = active(cb); if (!u || u.dead || (u.side === 'foe' && u.downed)) endTurn(cb, g.rng);
+  runEnemies(g);
+}
+/** A test character from an archetype (for a quick Proving Ground with nobody locked in). */
+function sbTestSheet(archetype: string | undefined, kit: string | undefined): Sheet {
+  const a = ARCHETYPES.find((x) => x.id === archetype) || ARCHETYPES.find((x) => x.id === 'sharpshooter') || ARCHETYPES[0];
+  // Most archetypes have a painted portrait in the web app's assets (char-arch-<id>.webp); the rest show their initials.
+  const painted = !['heavy_gunner', 'silver_tongue', 'witch_hunter', 'field_medic', 'living_wall', 'wrecking_ball'].includes(a.id);
+  return { name: 'Recruit ' + a.name, portrait: painted ? '/assets/char-arch-' + a.id.replace(/_/g, '-') + '.webp' : '', origin: 'Proving Ground', kit: ['medic', 'soldier', 'sigil', 'soul'].includes(kit || '') ? kit! : 'soldier', traits: [],
+    skills: { ...(a.preset || {}) }, attrs: { ...(a.attributes || {}) }, cores: { ...(a.cores || {}) }, identity: {}, archetype: a.id };
+}
+
+function sandboxAction(g: GameState, a: SandboxAction, by: string) {
+  const host = isHost(g, by), inRoom = g.players.some((p) => p.id === by);
+  const hostOnly = () => { if (!host) fail('Only the host does that in the Proving Ground.'); };
+  /** The character a tool acts on: its player's, or anyone's for the host. */
+  const mine = (charId: string) => { const c = g.characters[charId]; if (!c) fail('No such character.'); if (c!.owner !== by && !host) fail('Not your character.'); return c!; };
+  if (a.type === 'sandbox/start') {
+    hostOnly();
+    if (g.phase !== 'lobby') fail('Open the Proving Ground from the room, before the session starts.');
+    const saved = { characters: JSON.parse(JSON.stringify(g.characters)), campaign: g.campaign ? JSON.parse(JSON.stringify(g.campaign)) : null, story: JSON.parse(JSON.stringify(g.story)), music: g.music ? JSON.parse(JSON.stringify(g.music)) : null };
+    const sb: Sandbox = { wave: 1, best: 0, attempt: 1, ai: true, auto: true, state: 'fighting', advanced: {}, temp: [], waveMana: MANA_START, spawned: 0, saved };
+    g.sandbox = sb;
+    if (!charsOf(g, by).length && (a.archetype || !Object.keys(g.characters).length)) {
+      const c = newCharacter(id(g, 'c'), by, sbTestSheet(a.archetype, a.kit)); c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id);
+    }
+    if (!Object.keys(g.characters).length) { g.sandbox = null; fail('Lock in a character first.'); }
+    g.campaign = JSON.parse(JSON.stringify(PROVING_GROUND));
+    g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.objects = []; g.story.mana = MANA_START;
+    g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.await = 'none'; g.story.work = null;
+    musicOf(g).fight++;
+    sbStartWave(g, 1, true);
+    return;
+  }
+  const sb = sbOf(g), cb = g.combat;
+  switch (a.type) {
+    case 'sandbox/end': {
+      hostOnly();
+      const s = sb.saved, added = Object.values(g.characters).filter((c) => !s.characters[c.id] && !sb.temp.includes(c.id));
+      g.characters = { ...s.characters }; for (const c of added) g.characters[c.id] = c; // added mid-practice: kept (s.characters has their fresh copy too)
+      g.campaign = s.campaign; g.story = s.story; if (s.music) g.music = s.music; else delete g.music;
+      g.combat = null; g.phase = 'lobby'; g.sandbox = null; g.checks = []; g.overreach = []; g.awards = [];
+      return;
+    }
+    case 'sandbox/wave': {
+      if (a.wave != null) hostOnly(); else if (!inRoom) fail('Join the room first.');
+      if (a.wave == null && sb.state !== 'cleared') fail(sb.state === 'fallen' ? 'The squad is down: retry the wave.' : 'Clear this wave first.');
+      const n = Math.max(1, Math.min(99, Math.round(a.wave ?? sb.wave + 1)));
+      // Starting the wave already on the field again is a new attempt: the fight's name, first log line and effects
+      // numbering would otherwise match the old one, and the client would skip its banner and opening effects.
+      if (n === sb.wave && g.combat) sb.attempt++;
+      sbStartWave(g, n, sb.state === 'fallen');
+      return;
+    }
+    case 'sandbox/retry': {
+      // Anyone may retry once the squad has fallen; mid-fight (or after a clear) only the host resets the room's run.
+      if (sb.state === 'fallen') { if (!inRoom) fail('Join the room first.'); } else hostOnly();
+      sb.attempt++;
+      sbStartWave(g, a.restart ? 1 : sb.wave, true, a.restart ? MANA_START : sb.waveMana);
+      return;
+    }
+    case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
+    case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
+    case 'sandbox/mana': {
+      hostOnly(); const v = Math.max(0, Math.min(40, Math.round(Number(a.value) || 0)));
+      g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }
+      sbLog(g, 'The mana meter is set to ' + v + '.'); return;
+    }
+    case 'sandbox/spawn': {
+      hostOnly(); if (!cb) fail('No fight is on.');
+      if (sb.state === 'fallen') fail('The squad is down: retry first.');
+      if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
+      if (!WEAPON[a.weapon]) fail('No such weapon.');
+      const k = tileKey(g, a.at);
+      if (!standable(cb!.map, k) || cb!.units.some((u) => u.pos === k && !u.dead) || objectsOf(cb!).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
+      const name = (a.name || '').trim().slice(0, 40) || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (cb!.units.filter((u) => u.tier === a.tier).length + 1);
+      const u = unitFromEnemy('foe-s' + (++sb.spawned), name, a.tier, a.weapon, k, g.rng); u.npcId = u.id;
+      const p = portraitFor(g, name); if (p) u.img = p;
+      cb!.units.push(u); cb!.order.push(u.id);
+      sbLog(g, name + ' (' + a.tier + ', ' + WEAPON[a.weapon].name + ') enters at ' + refOf(k) + '.');
+      if (cb!.over) sbResume(g);
+      return;
+    }
+    case 'sandbox/clear': {
+      hostOnly(); if (!cb) fail('No fight is on.');
+      if (sb.state === 'fallen') fail('The squad is down: retry first.');
+      const cur = cb!.order[cb!.turn];
+      cb!.units = cb!.units.filter((u) => u.side !== 'foe'); cb!.order = cb!.order.filter((x) => cb!.units.some((u) => u.id === x));
+      const t = cb!.order.indexOf(cur);
+      if (t >= 0) cb!.turn = t; else { cb!.turn = 0; beginTurn(cb!, g.rng); }
+      cb!.over = null; sb.state = 'fighting';
+      sbLog(g, 'The field is cleared. Spawn enemies, or call the next wave.');
+      return;
+    }
+    case 'sandbox/refill': {
+      const list = a.charId ? [mine(a.charId)] : (host ? Object.values(g.characters) : fail('Pick a character.'));
+      for (const c of list) sbChange(g, c, () => sbRefill(c), 'refill');
+      if (cb) for (const c of list) { const u = cb.units.find((x) => x.charId === c.id); if (u) { u.downed = false; u.dead = false; u.saves = { ok: 0, fail: 0 }; u.bleed = 0; u.conds = {}; u.shield = 0; u.jammed = false; u.heat = 0; } }
+      sbLog(g, list.map((c) => c.name).join(', ') + ': refilled.'); return;
+    }
+    case 'sandbox/give': {
+      const c = mine(a.charId), rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(a.rarity || '') ? a.rarity : 'standard') as Rarity;
+      if (!WEAPON[a.item] && !ITEM[a.item]) fail('No such item.');
+      let err: string | null = null;
+      sbChange(g, c, () => {
+        const at = sbGive(c, a.item, a.qty || 1, rarity);
+        if (a.equip && at >= 0) {
+          const it = packOf(c)[at], def = ITEM[a.item] as any;
+          const to = WEAPON[a.item] ? 'main' : def?.category === 'mod' ? 'mod' : def?.category === 'armour' ? 'worn' : def?.slot === 'off_hand' ? 'off' : null;
+          if (to && it) err = sbEquip(c, at, to);
+        }
+      });
+      sbLog(g, c.name + ' gets ' + (WEAPON[a.item]?.name || ITEM[a.item]?.name) + (WEAPON[a.item] && rarity !== 'standard' ? ' (' + rarity + ')' : '') + (a.equip && !err ? ', equipped' : '') + '.');
+      if (err) fail(err);
+      return;
+    }
+    case 'sandbox/equip': case 'sandbox/unequip': case 'sandbox/drop': case 'sandbox/armour': {
+      const c = mine(a.charId); let err: string | null = null;
+      sbChange(g, c, () => {
+        if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
+        else if (a.type === 'sandbox/unequip') err = unequip(c, a.slot);
+        else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else { pack.splice(a.idx, 1); c.pack = pack; } }
+        else c.armourClass = Math.max(0, Math.min(5, Math.round(a.armourClass)));
+      });
+      if (err) fail(err);
+      return;
+    }
+    case 'sandbox/class': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => {
+        delete sb.advanced[c.id];
+        if (!a.classId) { c.classId = null; return; }
+        const adv = ADVANCED_CLASSES.find((x) => x.id === a.classId);
+        if (adv) {
+          // An advanced class needs 15 in one parent's signatures and 9 in the other (rules 1.2): brought up to that here.
+          sbRaiseSignature(c, adv.parents[0], 15); if (adv.parents[1]) sbRaiseSignature(c, adv.parents[1], 9);
+          c.classId = adv.parents[0]; sb.advanced[c.id] = adv.id; return;
+        }
+        if (!CLASS[a.classId]) fail('No such class.');
+        c.classId = a.classId;
+        const rank = Math.max(1, Math.min(3, Math.round(a.rank || 1)));
+        if (rank >= 2) sbRaiseSignature(c, a.classId, rank === 3 ? 18 : 13);
+      });
+      const adv = sb.advanced[c.id];
+      sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (played as ' + CLASS[c.classId!]?.name + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');
+      return;
+    }
+    case 'sandbox/level': {
+      const c = mine(a.charId), L = Math.max(1, Math.min(20, Math.round(a.level)));
+      sbChange(g, c, () => {
+        if (L > c.level) { c.xp = Math.max(c.xp, xpForLevel(L)); applyLevels(c); }
+        else { c.level = L; c.xp = xpForLevel(L); }
+        c.hp = maxHp(c);
+      });
+      const u = cb?.units.find((x) => x.charId === c.id); if (u) u.hp = u.maxHp;
+      sbLog(g, c.name + ' is level ' + c.level + ' (' + maxHp(c) + ' HP).'); return;
+    }
+    case 'sandbox/skill': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => sbSetSkill(c, a.skill, a.points));
+      sbLog(g, c.name + ': ' + SKILL[a.skill].name + ' ' + (c.skills[a.skill] || 0) + '.'); return;
+    }
+    case 'sandbox/learn': {
+      const c = mine(a.charId);
+      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.');
+      if (!a.word && !a.school && !a.module) fail('Pick a word, a school or a module.');
+      sbChange(g, c, () => {
+        if (a.word && !(c.sigils ||= []).includes(a.word)) c.sigils.push(a.word); // the Proving Ground ignores the Brain Power cap
+        const k = (c.soulKnown ||= { schools: [], modules: [] });
+        if (a.school && !k.schools.includes(a.school)) k.schools.push(a.school);
+        if (a.module && !k.modules.includes(a.module)) k.modules.push(a.module);
+      });
+      sbLog(g, c.name + ' learns ' + [a.word && SIGIL[a.word].word, a.school && SCHOOL[a.school].name + ' (school)', a.module && MODULE[a.module].name + ' (module)'].filter(Boolean).join(', ') + '.');
+      return;
+    }
+    case 'sandbox/design': {
+      const c = mine(a.charId), d = a.design;
+      if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
+      const mods = [...new Set(d.modules || [])].filter((x) => MODULE[x]).slice(0, 4);
+      sbChange(g, c, () => {
+        const k = (c.soulKnown ||= { schools: [], modules: [] });
+        for (const s of [d.school, d.school2].filter(Boolean) as string[]) if (!k.schools.includes(s)) k.schools.push(s);
+        for (const m of mods) if (!k.modules.includes(m)) k.modules.push(m);
+        const list = (c.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
+        const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}) };
+        if (at >= 0) list[at] = clean; else { if (list.length >= 8) fail('Eight designs at most here: forget one first.'); list.push(clean); }
+      });
+      return;
+    }
+    case 'sandbox/forget': {
+      const c = mine(a.charId);
+      sbChange(g, c, () => {
+        if (a.word) c.sigils = (c.sigils || []).filter((x) => x !== a.word);
+        if (a.designId) { const u = cb?.units.find((x) => x.charId === c.id); if (u?.mg?.held?.design === a.designId) fail('That Outburst is being held: release it first.'); c.outbursts = (c.outbursts || []).filter((x) => x.id !== a.designId); }
+      });
+      return;
+    }
+  }
+  fail('Unknown action.');
+}
+/** The ordinary gear and magic-book actions, allowed mid-fight in the Proving Ground (the fighter is rebuilt). */
+function sandboxGear(g: GameState, a: Action, by: string) {
+  const charId = (a as any).charId as string, c = g.characters[charId]; if (!c || c.owner !== by) fail('Not your character.');
+  const m: Record<string, () => SandboxAction> = {
+    'gear/equip': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: (a as any).to }),
+    'gear/unequip': () => ({ type: 'sandbox/unequip', charId, slot: (a as any).slot }),
+    'gear/mod': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: 'mod' }),
+    'magic/design': () => ({ type: 'sandbox/design', charId, design: (a as any).design }),
+    'magic/forget': () => ({ type: 'sandbox/forget', charId, designId: (a as any).designId }),
+    'magic/learn': () => ({ type: 'sandbox/learn', charId, word: (a as any).word, school: (a as any).school, module: (a as any).module }),
+  };
+  if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
+  const to = m[a.type]; if (!to) fail('Unknown action.');
+  sandboxAction(g, to(), by);
 }

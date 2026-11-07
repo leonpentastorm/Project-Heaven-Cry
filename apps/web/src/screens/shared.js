@@ -6,6 +6,7 @@ import epTpl from '../templates/epccg.template.html?raw';
 import lbTpl from '../templates/lightbox.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
+import { reducedMotion } from '../game/sfx';
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -47,10 +48,11 @@ export function zoomer(self, img, caption, kind) { return () => {
 }; }
 export const zoomBtn = 'display: block; flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: inherit';
 export function lightboxVals(self) {
-  const L = self.state.lb, closeLb = () => self.setState({ lb: null });
-  if (!L) return { lbOpen: false, closeLb, lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
+  // Closing plays the modal's out animation first (closeAnim, below; hoisted), then drops the picture.
+  const L = self.state.lb, closeLb = () => closeAnim(self, 'lb', () => self.setState({ lb: null }));
+  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
   const icon = L.kind === 'icon' || L.kind === 'perk';
-  return { lbOpen: true, closeLb, zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
+  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
     imgStyle: 'display: block; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
 }
 
@@ -171,3 +173,55 @@ export function tokenVals(u, opt) {
     popStyle: 'position: absolute; z-index: 30; ' + (opt.up ? 'bottom' : 'top') + ': calc(100% + 6px); ' + (opt.right ? 'right: 0' : 'left: 0') + '; width: 210px; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (opt.ally ? opt.color : '#F65157') + '; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); color: #E7EBF3; text-align: left; pointer-events: none; white-space: normal',
   };
 }
+
+// ---------- motion: slide and pop in AND out for a screen's own panels (main screen; reusable by any DC screen) ----------
+// Classes (all respect Reduce motion: the app's toggle turns the slides into fades via .phc-rm on a screen root, and the
+// system setting stops them in the global CSS; nothing waits on an animation event, so a hidden tab never sticks):
+//   .phc-m-backdrop   a modal's dim backdrop: fades in; with .phc-m-closing it fades out and stops taking clicks
+//   .phc-m-card       the modal's card inside a backdrop: rises and grows in; inside .phc-m-closing it sinks out
+//   .phc-m-rise       anything arriving in a list (story entries, prompts, check buttons): a short slide up
+//   .phc-m-tab-l / -r tab content switching: slides in from the left / right (the direction of the tab picked)
+//   .phc-m-tip        a tooltip or a small popover: drops in fast
+//   .phc-m-pop        a button or badge that appears (Level up): pops in, then .phc-m-glow pulses its outline
+//   .phc-m-flip       a value that just changed (a reroll result): flips in
+export const MOTION_MS = 180;
+export const MOTION_CSS = [
+  '@keyframes phcMFadeIn{from{opacity:0}to{opacity:1}}@keyframes phcMFadeOut{from{opacity:1}to{opacity:0}}',
+  '@keyframes phcMCardIn{from{opacity:0;transform:translateY(22px) scale(.965)}to{opacity:1;transform:none}}',
+  '@keyframes phcMCardOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(16px) scale(.97)}}',
+  '@keyframes phcMRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}',
+  '@keyframes phcMFromL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}@keyframes phcMFromR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}',
+  '@keyframes phcMDrop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}',
+  '@keyframes phcMPop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.06)}100%{transform:none}}',
+  '@keyframes phcMGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.28)}}',
+  '@keyframes phcMFlip{0%{opacity:0;transform:rotateX(90deg)}100%{opacity:1;transform:none}}',
+  '.phc-m-backdrop{animation:phcMFadeIn .2s ease-out both}',
+  '.phc-m-backdrop.phc-m-closing{animation:phcMFadeOut ' + MOTION_MS + 'ms ease-in both;pointer-events:none}',
+  '.phc-m-card{animation:phcMCardIn .3s cubic-bezier(.2,.8,.2,1) both}',
+  '.phc-m-closing .phc-m-card{animation:phcMCardOut ' + MOTION_MS + 'ms ease-in both}',
+  '.phc-m-rise{animation:phcMRise .32s cubic-bezier(.2,.8,.2,1) both}',
+  '.phc-m-tab-l{animation:phcMFromL .24s cubic-bezier(.2,.8,.2,1) both}.phc-m-tab-r{animation:phcMFromR .24s cubic-bezier(.2,.8,.2,1) both}',
+  '.phc-m-tip{animation:phcMDrop .14s ease-out both}',
+  '.phc-m-pop{animation:phcMPop .36s cubic-bezier(.2,.8,.2,1) both,phcMGlow 2.4s ease-in-out .4s infinite}',
+  '.phc-m-flip{animation:phcMFlip .3s ease-out both}',
+  // Reduce motion (the app's own toggle): every slide becomes a plain fade.
+  '.phc-rm .phc-m-card,.phc-rm .phc-m-rise,.phc-rm .phc-m-tab-l,.phc-rm .phc-m-tab-r,.phc-rm .phc-m-tip,.phc-rm .phc-m-pop,.phc-rm .phc-m-flip{animation:phcMFadeIn .15s ease-out both}',
+  '.phc-rm .phc-m-closing .phc-m-card{animation:phcMFadeOut .15s ease-in both}',
+].join('');
+/** Put a stylesheet in the page once (by id). Safe outside a browser. */
+export function ensureStyle(id, css) {
+  if (typeof document === 'undefined' || document.getElementById(id)) return;
+  const el = document.createElement('style'); el.id = id; el.textContent = css; document.head.appendChild(el);
+}
+export const ensureMotionCss = () => ensureStyle('phc-motion', MOTION_CSS);
+/** The class for a screen root: 'phc-rm' when Reduce motion is on (slides become fades). */
+export const motionRoot = () => (reducedMotion() ? 'phc-rm' : '');
+/** Close something with its out animation: mark it closing (state.closing[name]), then run done() after the animation.
+ *  A second call while it is closing does nothing. */
+export function closeAnim(self, name, done) {
+  if ((self.state.closing || {})[name]) return;
+  self.setState({ closing: { ...(self.state.closing || {}), [name]: true } });
+  setTimeout(() => { try { done(); } finally { self.setState({ closing: { ...(self.state.closing || {}), [name]: false } }); } }, reducedMotion() ? 150 : MOTION_MS);
+}
+/** A modal backdrop's class, with the closing state. */
+export const modalCls = (self, name) => 'phc-m-backdrop' + ((self.state.closing || {})[name] ? ' phc-m-closing' : '');

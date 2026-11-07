@@ -5,6 +5,7 @@ import React from 'react';
 import { musicFor, musicTraitOf, songOf, type GameState } from '@engine';
 import { act, toast } from './store';
 import { onVoice, voiceState, voicePrefs, setVoicePrefs, loadVoice, NARRATOR_VOICES } from './voice';
+import { COMBAT_IN_MS, usePresence, presenceCls } from './presence';
 
 declare global { interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void } }
 let apiP: Promise<any> | null = null;
@@ -37,6 +38,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const holder = React.useRef<HTMLDivElement>(null);
   const player = React.useRef<any>(null), ready = React.useRef(false), playing = React.useRef<string>('');
   const live = React.useRef({ want, game, p, isHost }); live.current = { want, game, p, isHost };
+  // A fight just started: the screen plays its combat-in transition (App.tsx), so the old music fades out under it and
+  // the fight's music fades in once it is over (COMBAT_IN_MS), not on top of it.
+  const lastPhase = React.useRef(game?.phase), combatAt = React.useRef(0);
+  if (lastPhase.current !== game?.phase) { if (game?.phase === 'combat' && lastPhase.current === 'story') combatAt.current = Date.now(); lastPhase.current = game?.phase; }
 
   // One player for the whole session.
   React.useEffect(() => {
@@ -75,10 +80,12 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     return () => { window.removeEventListener('pointerdown', go); window.removeEventListener('keydown', go); };
   }, []);
 
-  function fadeTo(target: number, then?: () => void) {
+  function fadeTo(target: number, then?: () => void, ms = FADE_MS) {
     const pl = player.current; if (!pl?.getVolume) { then?.(); return; }
     const from = pl.getVolume(), t0 = performance.now();
-    const step = () => { const k = Math.min(1, (performance.now() - t0) / FADE_MS); try { pl.setVolume(Math.round(from + (target - from) * k)); } catch { /* */ } if (k < 1) requestAnimationFrame(step); else then?.(); };
+    // A hidden tab barely runs animation frames: jump straight to the end there.
+    if (typeof document !== 'undefined' && document.hidden) { try { pl.setVolume(target); } catch { /* */ } then?.(); return; }
+    const step = () => { const k = Math.min(1, (performance.now() - t0) / ms); try { pl.setVolume(Math.round(from + (target - from) * k)); } catch { /* */ } if (k < 1) requestAnimationFrame(step); else then?.(); };
     requestAnimationFrame(step);
   }
   function sync() {
@@ -94,6 +101,13 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
       // If the browser blocked sound, try muted and wait for the first click.
       setTimeout(() => { try { if (!live.current.p.paused && !badRef.current && playing.current === key && pl.getPlayerState() !== 1) { setBlocked(true); pl.mute(); pl.playVideo(); } } catch { /* */ } }, 2500);
     };
+    const wait = COMBAT_IN_MS - (Date.now() - combatAt.current);
+    if (wait > 0) {
+      // Under the combat-in transition: out quickly, then the fight's music fades in after it.
+      const go = () => setTimeout(() => { if (playing.current === key) start(); }, Math.max(0, COMBAT_IN_MS - (Date.now() - combatAt.current)));
+      had ? fadeTo(0, go, Math.max(200, wait - 150)) : go();
+      return;
+    }
     had ? fadeTo(0, start) : start();
   }
   const key = want?.track ? want.key + ':' + want.track.yt : '';
@@ -131,6 +145,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const [vs, setVs] = React.useState(voiceState()), [vp, setVp] = React.useState(voicePrefs());
   React.useEffect(() => onVoice(() => { setVs(voiceState()); setVp(voicePrefs()); }), []);
   const ducked = !!vs.speaking;
+  const panel = usePresence(open), creditP = usePresence(credit && !open ? credit : null);
   React.useEffect(() => { const pl = player.current; if (!pl || !ready.current || p.paused) return; fadeTo(ducked ? Math.round(p.vol * 0.25) : p.vol); }, [ducked]);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;
@@ -143,7 +158,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   return (
     <>
       {/* The panel (and the video in it) stays in the page: on screen when open, out of view when closed, so the music keeps playing. */}
-      <div role="dialog" aria-label="Music" aria-hidden={!open} style={{ position: 'fixed', [side]: open ? 16 : -10000, bottom: 64, zIndex: 9, width: 380, padding: 12, borderRadius: 14, background: '#10151F', border: '1px solid #3B475D', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div role="dialog" aria-label="Music" aria-hidden={!open} className={panel.shown ? presenceCls('phc-a-rise', panel.closing) : undefined} style={{ position: 'fixed', [side]: panel.shown ? 16 : -10000, bottom: 64, zIndex: 9, width: 380, padding: 12, borderRadius: 14, background: '#10151F', border: '1px solid #3B475D', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div ref={holder} style={{ width: 356, height: 200, borderRadius: 8, overflow: 'hidden', background: '#000' }} />
           <div style={label}>NOW PLAYING{want?.layer ? ' · ' + ({ spotlight: 'SPOTLIGHT', pin: 'KEPT ON', encounter: 'FIGHT THEME', combat: 'FIGHT', ambient: 'AREA' } as any)[want.layer] : ''}</div>
           {track ? <>
@@ -187,12 +202,12 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music'}</span>
       </button>
-      {credit && !open && (
-        <div role="status" style={{ position: 'fixed', [side]: 16, bottom: 66, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + credit.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
+      {creditP.shown && (
+        <div role="status" className={presenceCls(side === 'left' ? 'phc-a-left' : 'phc-a-right', creditP.closing)} style={{ position: 'fixed', [side]: 16, bottom: 66, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + creditP.shown.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
           <div style={label}>♪ NOW PLAYING</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#E7EBF3' }}>{credit.title}</div>
-          <div style={{ fontSize: 12, color: '#A3AEC2' }}>{credit.artist}</div>
-          <div style={{ fontSize: 11, color: credit.color }}>{credit.reason}</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#E7EBF3' }}>{creditP.shown.title}</div>
+          <div style={{ fontSize: 12, color: '#A3AEC2' }}>{creditP.shown.artist}</div>
+          <div style={{ fontSize: 11, color: creditP.shown.color }}>{creditP.shown.reason}</div>
         </div>
       )}
     </>

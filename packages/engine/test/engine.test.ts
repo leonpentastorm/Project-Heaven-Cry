@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PORTRAIT_MAX,
   ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
-  pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
+  standable, loadedOf, pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -493,7 +493,7 @@ describe('music (spec: Music)', () => {
 describe("the Narrator's wiki (glossary)", () => {
   it('has an entry for every rule-bearing kind, found by key or by name', () => {
     const kinds = wikiKinds();
-    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
+    for (const k of ['skill', 'trait', 'perk', 'weapon', 'item', 'condition', 'class', 'patron', 'enemy', 'object', 'sigil', 'school', 'module']) expect(kinds[k]?.length, k).toBeGreaterThan(0);
     expect(wikiLookup('weapon:service_pistol')!.text).toContain('Snap Shot');
     expect(wikiLookup('condition:Bleeding')!.key).toBe('condition:bleeding');
     expect(wikiLookup('item:musek_blestor')!.text).toContain('favourite song');
@@ -568,6 +568,20 @@ describe('overworld rounds (spec: Overworld rounds)', () => {
     const d = npcsOf(g).find((n) => n.name === 'Scavenger drone')!; expect(refOf(d.pos)).toBe('C3');
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'It drifts.', npcs: [{ action: 'move', id: d.id, at: 'D3' }] } as any }, 'host');
     expect(refOf(npcsOf(g).find((n) => n.id === d.id)!.pos)).toBe('D3');
+  });
+  it('shooting something with no HP spends a round, shows as an action, and an empty gun must reload', () => {
+    let { g, id } = open('ammo');
+    const c0 = g.characters[id], at = positionsOf(g)[id];
+    // A thing with no HP, in plain sight one tile away.
+    const [x, y] = at.split(',').map(Number), k = [x + 1 + ',' + y, x - 1 + ',' + y, x + ',' + (y + 1), x + ',' + (y - 1)].find((t) => standable(zoneMap(g), t) && !storyObjects(g).some((o) => o.pos === t))!;
+    g.story.objects = [...storyObjects(g), makeObject('o-test', 'poi', k, { name: 'Old console' })];
+    const loaded = loadedOf(c0);
+    g = apply(g, { type: 'world/act', charId: id, act: 'attack', objId: 'o-test', mode: 'shot' }, 'host');
+    expect(g.characters[id].loaded).toBe(loaded - 1);
+    const line = g.story.entries.at(-1)!; expect(line.act).toBe(true); expect(line.text).toMatch(/fires at the old console/);
+    const t = JSON.parse(JSON.stringify(g)); t.characters[id].loaded = 0; t.story.ap[id] = 0;
+    t.story.ap = {}; // fresh AP
+    expect(() => apply(t, { type: 'world/act', charId: id, act: 'attack', objId: 'o-test', mode: 'shot' }, 'host')).toThrow(/Empty: reload/);
   });
   it('attacking in the open starts the fight; the attacker sits out round 1', () => {
     let { g, id } = open('seen');

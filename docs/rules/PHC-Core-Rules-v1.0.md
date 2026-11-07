@@ -210,7 +210,7 @@ Classes aren't picked; skills earn them. Each base class has three **signature s
 | Soul | Bard | Support | Camaraderie, Implication, Authority | Strain |
 | Soul | Hexer | Debuff | Intimidation, Implication, Lore Master | Strain |
 
-Each class's three signature moves, and all 15 advanced classes, are in classes.json.
+Each class's three signature moves, and all 21 advanced classes (six added in rules 1.2), are in classes.json.
 
 ## Combat on the grid
 
@@ -818,6 +818,7 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Burning | Body | 10 damage at the start of each turn | until someone spends 1 AP to put it out |
 | Weakened | Body | −25% damage dealt | 2 rounds |
 | Slowed | Body | half Movement | 2 rounds |
+| Silenced | Brain | no Sigils, Outbursts or prayers (rules 1.2, provisional) | 1 round |
 | Nausea | Body | −1 AP | 2 rounds |
 | Pinned | Body | can't move; −2 to hit | until the end of your next turn |
 | Stunned | Body | lose your next turn | 1 turn |
@@ -868,7 +869,7 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 **Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
 
-> **Rules revision 1.2, DRAFT (6 Nov 2026), waiting for Leon's numbered feedback.** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). Data and engine follow once Leon accepts it.
+> **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76).
 
 ### The Magic panel and learning
 
@@ -882,7 +883,7 @@ Magic has its own tab on the character sheet, **MAGIC**. It lists the Sigil word
 
 A Sigil is a command word drawn as a glowing glyph **onto a tile**. A spell exists when glyphs on the ground make a valid **pattern**. The shape is part of the spell, and a big shape costs you the walk. The words are in sigils.json.
 
-1. **Draw** a glyph on your own tile or an adjacent one. Cost: Glyph AP (Derived stats) and 1 Flux. An Evoker must be in a hand. A tile holds at most 2 glyphs.
+1. **Draw** a glyph on your own tile or an adjacent one. Cost: Glyph AP (Derived stats), **the word's charge** from your Evoker's core, and 1 Flux. An Evoker must be in a hand. A tile holds at most 2 glyphs.
 2. **Glyphs last** 2 rounds + your Sigil duration bonus (round down). Out of combat they last the same number of overworld rounds. You can have at most your **Max Sigil words** glyphs on the ground; drawing one more fades your oldest.
 3. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
 4. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
@@ -891,14 +892,14 @@ A Sigil is a command word drawn as a glowing glyph **onto a tile**. A spell exis
 | Shape | Glyphs | Where the spell goes |
 |---|---|---|
 | **Stack** | 2 on one tile | The cantrip: onto one tile adjacent to the stack. With PUSH: out to 8 tiles + range bonus from the stack. |
-| **Line** | 2–4 on adjacent tiles in a straight row (across or diagonal) | Fires out of the far end along the line's direction, to 8 tiles + range bonus. You Evoke it from behind its near end. |
+| **Line** | 2–4 on adjacent tiles in a straight row (across or diagonal) | Fires out of the far end along the line's direction, hitting the first creature in its path. **Range by length** (Leon: two-tile lines were too cheap): 2 tiles reach 4, 3 reach 8, 4 reach 12, + range bonus. You Evoke it from behind its near end. |
 | **Ring** | 3–4 on tiles around one centre tile | Bursts in radius 1 around the centre, or (support words) lands on whoever stands on the centre. |
 
    A tile in a Line or Ring may hold a Stack: both glyphs count as words. **Shape and word change each other:**
    - **STAY** in a Line turns the line itself into a wall: anyone entering a tile takes the effect, for as long as the glyphs last. In a Ring it fills the centre the same way.
    - **SPREAD** in a Line fires a 3-tile cone from the far end instead of a bolt.
    - **TWICE**, **SEEK** and **RETURN** work as written in any shape.
-6. **Evoke** (1 AP): fire a pattern. You must touch it (stand on or next to one of its tiles; behind the near end for a Line), and your Evoker's core must hold the pattern's charge: the sum of its words' charges, minus your Sigil Core saving, minimum 1. Charge is paid when you Evoke, not when you draw. A finished pattern can wait: Evoke it on a later turn while its glyphs last (traps and set-ups). The glyphs fade when the spell fires, unless the pattern holds STAY.
+6. **Evoke** (1 AP): fire a pattern. You must touch it (stand on or next to one of its tiles; behind the near end for a Line), and and firing costs **more charge on top of the drawing**: 1 per glyph in the pattern, minus your Sigil Core saving, minimum 1 (Leon: charge paid on drawing, firing costs even more). A finished pattern can wait: Evoke it on a later turn while its glyphs last (traps and set-ups). The glyphs fade when the spell fires, unless the pattern holds STAY.
 7. **Co-op.** Two Sigil users can build one pattern together, each drawing their own glyphs. Whoever Evokes pays the charge and rolls. **Enemy Sigil users** can Evoke any pattern they can read, yours included.
 8. **Flux, overload and Vent** work as before: each glyph drawn adds 1 Flux; above 6 the Evoker overloads (10 damage per Flux over 6, it locks for 1 turn, all the Flux bursts into the air); Vent (1 AP) dumps it into the air.
 9. **Hitting and damage:** damaging spells roll Brain Power against Defense; condition words call for the target's save against 12 + your debuff strength. Damage: the Subject's damage × the Form multiplier (CONDENSE ×1, SPREAD ×0.6) × Sigil multiplier × Elemental multiplier.
@@ -906,8 +907,8 @@ A Sigil is a command word drawn as a glowing glyph **onto a tile**. A spell exis
 **Words.** 24, as before, but LINE, WALL and CONE became shapes (above), so three new words take their places: **SPARK** (Subject, element, 1 charge: 15 Elemental damage; the cheapest attack), **PULL** (Motion, 1 charge: drags the target 3 tiles toward the pattern) and **SILENCE** (Subject, effect, 2 charge: no Sigils, Outbursts or prayers for 1 round, Brain save).
 
 Examples:
-- **Starter cantrip:** SPARK + CONDENSE stacked beside you. 2 glyphs, Evoke: 3 AP at Expression 1, 1 charge, 15 damage to one adjacent tile.
-- **Bolt:** FIRE · CONDENSE in a Line of 2, Evoked from behind: 3 AP, 3 charge, 30 damage to the first creature along the line, up to 8 tiles.
+- **Starter cantrip:** SPARK + CONDENSE stacked beside you. 2 glyphs, Evoke: 3 AP at Expression 1, 2 charge to draw + 2 to fire, 15 damage to one adjacent tile.
+- **Bolt:** FIRE · CONDENSE · PUSH in a Line of 3, Evoked from behind: 4 AP, 4 charge to draw + 3 to fire, 30 damage to the first creature along the line, up to 8 tiles. A Line of 2 (FIRE · CONDENSE) reaches only 4.
 - **Firewall:** FIRE · SPREAD · STAY in a Line of 3 across a corridor: anyone crossing burns (×0.6) until the glyphs fade.
 - **Trap:** BIND · CONDENSE · RETURN in a Ring around a doorway tile, left unevoked; when the guard steps onto the centre, the Sigil user next to it Evokes.
 
@@ -1052,7 +1053,7 @@ Outside fights the story runs in rounds, the way a fight does, but with everyone
 - **Each round** every player character has a full turn of AP (6, at the same movement rate as in a fight) and every player has one **Say**. Players act in any order.
 - **Actions** are the fight's actions at the fight's AP costs, on the area map:
   - Moving: Move, Sprint, Sneak.
-  - Attacking: Shot, Aimed shot, Melee.
+  - Attacking: Shot, Aimed shot, Melee. A shot at something with no HP (a console, a crate, a door) is a real shot: it spends a round, adds heat, needs sight and an unjammed, loaded weapon, and shows in the story as an action; the Narrator rules what it does.
   - Analyze, Reload, Load a magazine, Clear a jam, Field Repair, Stim an ally, drop prone or stand.
   - Points of interest: examining one costs **1 AP**, trying an approach **2 AP**, stepping through an exit **1 AP** (and it asks the Narrator to travel). Opening a door costs 1 AP.
 - **Pass** gives up only the Say. **End turn** gives up the AP left, and the Say if unused. Running out of AP ends the turn too.
@@ -1078,6 +1079,12 @@ Notice bonus: minion +0, soldier +2, elite +4, boss +6. Each hostile checks each
 **Typed intents.** A player can also say what they do ("I move to A15 and shoot that guard"). The Narrator turns the mechanical part into actions, and the engine runs them as that player's own actions when the next round opens, from their fresh AP, under every rule above. An action the rules forbid is reported, not done.
 
 **The shared spotlight.** When a player opens a point of interest or rolls a check, the panel or the dice table opens for the whole party by default, with a large "NAME'S TURN" banner. Everyone sees what that player hovers and chooses, live. Anyone can close it and wait for the story to tell them what happened.
+
+**On screen** (6 Nov 2026, Leon):
+- **The area map** shows your status beside the actions (HP, MP, AP left, the weapon with rounds loaded and spare magazines, red when empty) and a **log** of this round under the map: shots, reloads, doors, rolls.
+- **Actions read as actions** in the story: a line with a red edge for an attack, a white edge for anything else.
+- **A point of interest is rolled in its own popup:** trying an approach opens the dice right there, and a "Roll it" button stays in the popup until you do. The bar above the chat is only for checks the Narrator calls.
+- **The play screen is fixed:** the header, the sheet, the map column and the input stay on screen; each column scrolls on its own. The story sticks to the newest line; scrolled up, a **↓ Latest** button (with the count of new lines) jumps back down.
 
 ## Anyone is a target
 
@@ -1339,7 +1346,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 65. **The Narrator's memory:** the $0.50 ceiling, 6 scenes per chapter, the 9,000-character budgets for active memory and transcript, the ledger caps (300 people, 200 threads, 1,500 facts), the forgetting curve (scenes/10).
 66. **Anyone is a target:** a point-of-interest person fights as a minion with fists; attacking something without HP costs 2 AP; Downed outside a fight lasts until a stim or treatment.
 67. **Rerolls and edits:** the last 5 turns can be rerolled; 3 waiting suggestions per player; only online players vote.
-68. **Rules 1.2 draft: Sigils on the map** (Leon). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, charge paid on Evoke, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
+68. **Rules 1.2: Sigils on the map** (Leon). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, word charge on drawing plus 1 a glyph on firing, Line range 4 / 8 / 12 by length, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
 69. **The three new words** (SPARK 15 damage at 1 charge, PULL 3 tiles, SILENCE 1 round) replacing LINE, WALL and CONE.
 70. **Learning magic:** 2 starting words that must make a Stack, 1 starting design, 4 + Brain Power words known, one word per long rest, Sigil plates, Narrator-granted modules.
 71. **Charge and release:** stages up to 4 (×1 to ×2.5), 1 Strain per held turn, the slip check (10 + damage ÷ 10), wild release.
@@ -1348,3 +1355,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 74. **Heartfed and Heartbinder:** the four gauges and what fills them, 10% per point, Link range 6, Share half, 2 Strain when a link is Downed.
 75. **Vessel:** the six body forms and their numbers, 2 held forms (3 at Will Power 5), +15 per stage on Release.
 76. **Twinbound:** the Twin's HP 50%, 4 AP, 6-tile leash, 3 Strain on its loss, three fixed built-in Outbursts.
+77. **Magic in the engine (first build):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); the Evoker and Emanator count when carried, not only in hand; learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.

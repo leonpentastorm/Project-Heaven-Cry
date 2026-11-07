@@ -1,6 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
@@ -8,6 +8,8 @@ export interface Sheet {
   downedFails?: number;
   skills: Record<string, number>; attrs: Record<string, number>; cores: Record<CoreId, number>;
   identity: Record<string, string>; archetype?: string | null;
+  /** Starting magic chosen at creation (spec: The Magic panel): 2 Sigil words that make a Stack, and 1 Outburst design. */
+  sigils?: string[]; outburst?: { name?: string; school: string; modules: string[]; option?: string } | null;
 }
 
 export interface Character extends Sheet {
@@ -30,7 +32,12 @@ export interface Character extends Sheet {
   offHand?: ({ id: string } & GearState) | null;
   /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
   worn?: Record<string, string>;
+  /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
+   * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
+  outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[] };
+  mp?: number; evoCharge?: number; learnedScene?: number;
 }
+export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
 /** Rarity (spec: Weapons v2, Rarity): accuracy, damage and durability bonuses; price multiplier. */
@@ -93,7 +100,32 @@ export function validateSheet(s: Sheet): string | null {
   if (!d.ok) return 'Those points break the tree or the budgets.';
   if (d.spent !== BUDGET.skill) return 'Spend all 10 Skill points.';
   if (d.attrLeft !== 0 || d.coreLeft !== 0) return 'Place every Attribute and Core point.';
+  return startingMagicError(s, d);
+}
+/** Starting magic (spec: The Magic panel): 2 Sigil words making a Stack (a Subject and a Form or Motion); 1 Outburst
+ * design from one school and one module. Both optional: a caster without a choice gets the defaults. */
+export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skills'>, d?: unknown): string | null {
+  if (s.sigils && s.sigils.length) {
+    if (s.sigils.length !== 2 || new Set(s.sigils).size !== 2) return 'Pick exactly 2 different Sigil words.';
+    const w = s.sigils.map((x) => SIGIL[x]); if (w.some((x) => !x)) return 'Unknown Sigil word.';
+    if (!w.some((x) => /^subject/.test(x.class)) || !w.some((x) => x.class === 'form' || x.class === 'motion')) return 'Your 2 Sigil words must make a Stack: one Subject and one Form or Motion.';
+  }
+  if (s.outburst) {
+    if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
+    if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
+    // One school and exactly one module; the Will Power module slots are for designs made in play.
+    if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
+  }
   return null;
+}
+/** The magic a new character starts with: their picks, or a default cantrip for anyone with the skill or the kit. */
+function startingMagic(c: Character) {
+  const bp = c.skills.brain_power || 0, wp = c.skills.will_power || 0;
+  c.sigils = c.sigils && c.sigils.length ? [...c.sigils] : bp >= 1 || c.kit === 'sigil' ? ['spark', 'condense'] : [];
+  const o = c.outburst || (wp >= 1 || c.kit === 'soul' ? { school: 'damage', modules: ['move'] } : null);
+  c.outbursts = o ? [{ id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}) }] : [];
+  c.soulKnown = o ? { schools: [o.school], modules: [...(o.modules || [])] } : { schools: [], modules: [] };
+  delete c.outburst;
 }
 
 /** Turn a locked-in sheet into a level-1 character (spec: Creation; kits from the creation screen). */
@@ -107,6 +139,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
     injuries: [], pack: kit.pack.map((x) => ({ ...x })),
   };
   c.hp = maxHp(c);
+  startingMagic(c);
   return c;
 }
 
@@ -188,6 +221,34 @@ export const physicalMult = (c: Character) => 1 + 0.1 * (A(c, 'strength') - 1) +
 export const critMult = (c: Character) => 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics');
 export const healingMult = (c: Character) => 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie');
 export const maxMp = (c: Character) => 100 + 100 * (A(c, 'virtue') - 1);
+// ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
+export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
+export const soulMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.15 * P(c, 'will_power');
+export const elementalMult = (c: Character) => 1 + 0.2 * (A(c, 'expression') - 1) + 0.1 * P(c, 'visualization');
+export const maxSigilWords = (c: Character) => 2 + Math.floor((A(c, 'intelligence') - 1) / 2);
+export const glyphAp = (c: Character) => Math.max(0.5, Math.round((1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
+export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
+export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
+export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
+export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power');
+export const soulCastAp = (c: Character) => Math.max(1, Math.ceil(3 - 0.5 * P(c, 'empathy')));
+export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
+export const soulRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'lore_master'));
+export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
+export const strainLimit = (c: Character) => 3 + Math.floor(P(c, 'will_power') / 2);
+export const moduleSlots = (c: Character) => 1 + Math.floor(P(c, 'will_power') / 3);
+export const readyDesigns = (c: Character) => 2 + Math.floor(P(c, 'empathy') / 2);
+/** Save bonuses and debuff strength (spec: Conditions and saves). */
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => mod(P(c, fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'));
+export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication')));
+const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
+export const hasEvoker = (c: Character) => carries(c, ['evoker', 'evoker_blade', 'spellslinger_pistol']);
+export const hasEmanator = (c: Character) => carries(c, ['emanator', 'emanator_gauntlet']);
+export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0);
+/** MP now: the Emanator's charge (full when first carried); no Emanator, no MP. */
+export const mpNow = (c: Character) => (hasEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
+/** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
+export const evoChargeNow = (c: Character) => (hasEvoker(c) ? c.evoCharge ?? 10 : 0);
 export const passive = (c: Character, skill: string) => 10 + mod(P(c, skill));
 export const masteryOf = (p: number) => (p >= 10 ? 5 : p >= 9 ? 4 : p >= 7 ? 3 : p >= 5 ? 2 : p >= 3 ? 1 : 0);
 
