@@ -164,7 +164,10 @@ await p.locator('div[aria-label="The squad fell"] button', { hasText: /Retry wav
 await p.waitForFunction((a) => { const g = window.__phc.getState().game; return g.sandbox?.state === 'fighting' && g.sandbox.attempt > a; }, attempt, { timeout: 6000 });
 g = await G();
 const u2 = g.combat.units.find((u) => u.charId === me.id);
-ok('Retry: wave ' + g.sandbox.wave + ' again, attempt ' + g.sandbox.attempt + ', HP ' + u2.hp + '/' + u2.maxHp, g.sandbox.wave === 2 && u2.hp === u2.maxHp && !u2.downed);
+// Refilled at the start: full HP unless a drill unit (wave 2 has a Sigil novice) already acted before this check.
+const hitSince = g.combat.log.some((l) => /Recruit/.test(l) && /damage|bleeds|burns/.test(l) && !/Recruit (attacks|shoots|strikes|evokes)/.test(l));
+if (u2.hp !== u2.maxHp) console.log('  after the retry:', g.combat.log.slice(-8).join(' | ').slice(0, 600));
+ok('Retry: wave ' + g.sandbox.wave + ' again, attempt ' + g.sandbox.attempt + ', HP ' + u2.hp + '/' + u2.maxHp + (hitSince ? ' (hit since)' : ''), g.sandbox.wave === 2 && (u2.hp === u2.maxHp || hitSince) && !u2.downed);
 await p.waitForTimeout(700); await snap('08-retry');
 
 // 7. Leave: opened from the title, the Proving Ground's room closes with it, back to the title (opened from a room,

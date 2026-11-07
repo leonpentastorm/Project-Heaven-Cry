@@ -151,7 +151,14 @@ const designErr = await act({ type: 'sandbox/design', charId: cid, design: { id:
 if (designErr) console.log('  design:', designErr);
 await clearField();
 s = await st();
-const mfoe = await spawnNear(s.u.pos, [2]);
+// A row through us with a free tile behind (the Line's far end) and a free tile 2 ahead (the target): rules 1.4 Lines
+// fire along themselves from their end.
+const lane = await p.evaluate((at) => { const cb = window.__phc.getState().game.combat, m = cb.map, [x, y] = at.split(',').map(Number);
+  const bad = new Set([...(m.solid || []), ...(m.cover || []), ...(m.full || []), ...(cb.objects || []).map((o) => o.pos), ...cb.units.filter((u) => !u.dead).map((u) => u.pos)]);
+  const free = (a, b) => a >= 0 && b >= 0 && a < m.w && b < m.h && !bad.has(a + ',' + b);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) if (free(x - dx, y - dy) && free(x + dx, y + dy) && free(x + 2 * dx, y + 2 * dy)) return { back: (x - dx) + ',' + (y - dy), foe: (x + 2 * dx) + ',' + (y + 2 * dy) };
+  return null; }, s.u.pos);
+const mfoe = lane && !(await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: ref(lane.foe) })) ? [lane.foe] : await spawnNear(s.u.pos, [2]);
 await p.waitForTimeout(300);
 s = await st();
 console.log('  magic:', JSON.stringify({ words: s.u.mg?.words, designs: s.u.mg?.designs?.map((d) => d.name), charge: s.u.mg?.charge, mp: s.u.mg?.mp }));
@@ -159,7 +166,7 @@ if (!s.u.mg?.charge) { const e = await act({ type: 'combat/core', unitId: s.u.id
 // Rules 1.4: a Line is drawn on your own tiles, one glyph a tile. FIRE here, a step away from the foe, SEEK there; from
 // that end the Line fires back along itself at the foe.
 { const e = await act({ type: 'combat/draw', unitId: s.u.id, word: 'fire', tile: s.u.pos }); if (e) console.log('  draw fire', e); }
-const [fx0, fy0] = xy(s.u.pos), [tx0, ty0] = xy(mfoe[0]), back = (fx0 + Math.sign(fx0 - tx0)) + ',' + (fy0 + Math.sign(fy0 - ty0));
+const [fx0, fy0] = xy(s.u.pos), [tx0, ty0] = xy(mfoe[0]), back = lane ? lane.back : (fx0 + Math.sign(fx0 - tx0)) + ',' + (fy0 + Math.sign(fy0 - ty0));
 { const e = await act({ type: 'combat/move', unitId: s.u.id, to: back }); if (e) console.log('  step', e); }
 s = await st();
 { const e = await act({ type: 'combat/draw', unitId: s.u.id, word: 'seek', tile: s.u.pos }); if (e) console.log('  draw seek', e); }
