@@ -1205,6 +1205,9 @@ function runEnemies(g: GameState) {
   const cb = g.combat!;
   for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
     const u = active(cb)!;
+    // A player's unit Downed, killed or out of the fight on its own turn (a reaction, a trap, a barrel, a Mana Short), or
+    // already Downed when the fight began, can't act or press End turn: its turn passes on by itself.
+    if (u.side !== 'foe' && !cb.window && (u.dead || u.downed || u.surrendered)) { endTurn(cb, g.rng); continue; }
     if (u.side !== 'foe') break;
     if (u.charId) break; // a player's fighter on the foe side (the Proving Ground's team fight): its player acts
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
