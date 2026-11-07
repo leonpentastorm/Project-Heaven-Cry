@@ -17,9 +17,12 @@ async function open(vw, vh) {
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'To the Proving Ground ›'); }
   await p.mouse.move(vw - 10, vh - 10);
+  // The Proving Ground opens gearing up on the map; start the fight straight away.
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  if (await p.evaluate(() => window.__phc.getState().game.phase !== 'combat')) await p.evaluate(() => window.__phc.act({ type: 'sandbox/fight' }));
   await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
   await p.waitForSelector('text=YOUR TURN', { timeout: 8000 });
   return p;
@@ -107,6 +110,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     // The last tab is remembered for this character across turns; a command on the turn card switches the tab.
     await p.locator('[role="tab"][data-tab="utility"]').click(); await p.waitForTimeout(150);
     await p.getByRole('button', { name: 'End turn', exact: true }).click();
+    for (let k = 0; k < 10; k++) { await p.waitForTimeout(600); console.log('DBG', JSON.stringify(await p.evaluate(() => { const s = window.__phc.getState(), cb = s.game.combat; return { screen: s.screen, phase: s.game.phase, turn: cb && cb.order[cb.turn], round: cb?.round, ap: cb?.units.find((u)=>u.side==='pc')?.ap, cut: !!document.querySelector('[data-phc-cutin]'), dlg: !!document.querySelector('[data-phc-cmds-dialog]'), hidden: document.hidden, over: cb?.over }; }))); }
+    await p.screenshot({ path: OUT + 'dbg-endturn.png' });
     await p.waitForSelector('[data-phc-cutin]', { timeout: 6000 });
     await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 8000 });
     await p.waitForTimeout(300);
