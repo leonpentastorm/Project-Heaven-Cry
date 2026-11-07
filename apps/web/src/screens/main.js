@@ -18,6 +18,9 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
+import { openMissionBoard } from '../game/missionBoard';
+import { missionsButton } from '../game/missionView';
+import { oocOf } from '@engine';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
@@ -383,6 +386,10 @@ export class MainLogic extends DCLogic {
     if (!this._seenIds || this._seenCode !== g.code) { this._seenIds = new Set(g.story.entries.map((x) => x.id)); this._seenCode = g.code; }
     const stream = [...shown.slice(-150).map((e) => {
       const base = { key: e.id, cls: this._seenIds.has(e.id) ? '' : 'phc-m-rise', text: e.text, head: e.head || '', isScene: false, isNarration: false, isPlayer: false, isVoice: false, isCheck: false, isNote: false, isArt: false, isGathering: false, paras: [] };
+      // Out of character (spec: OOC, missions and end states): a player's question and the Narrator's plain answer, muted and labelled.
+      if (e.kind === 'ooc') { const nar = !e.who; return { ...base, isOoc: true, head: nar ? 'NARRATOR · OOC' : e.head || 'OOC',
+        oocStyle: 'margin: 0; display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 8px; background: ' + (nar ? '#10151F' : 'transparent') + '; border: 1px ' + (nar ? 'solid #2E3A50' : 'dashed #2E3A50'),
+        oocHeadStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (nar ? '#E7EBF3' : '#A3AEC2'), oocTextStyle: 'font-size: 14px; line-height: 1.5; color: ' + (nar ? '#E7EBF3' : '#A3AEC2') }; }
       if (e.kind === 'scene') return { ...base, isScene: true, text: e.text.toUpperCase() };
       if (e.kind === 'art') return { ...base, isArt: true, img: ART(e.art), zoom: zoomer(this, ART_BIG(e.art), e.text, 'world') };
       if (e.kind === 'narration') {
@@ -909,7 +916,15 @@ export class MainLogic extends DCLogic {
         try { const out = await polishText(text, c ? c.name : ''); this.setState({ rawDraft: text, draft: out, polished: true, polishing: false }); }
         catch (e2) { this.setState({ polishing: false }); toast(String(e2.message || e2)); }
       },
-      send: () => { const text = (this.state.draft || '').trim(); if (!text) return toast('Say something first, or Pass.'); act({ type: 'story/speak', text, roll: this.state.pickRoll }); this.setState({ draft: '', polished: false }); },
+      send: () => { const text = (this.state.draft || '').trim(); if (!text) return toast('Say something first, or Pass.'); const ooc = !!this.state.ooc || oocOf(text).ooc; act({ type: 'story/speak', text, ...(ooc ? { ooc: true } : { roll: this.state.pickRoll }) }); this.setState({ draft: '', polished: false, ooc: false }); },
+      // OOC (a question to the Narrator out of character): it doesn't use the Say or the turn, so it works between turns too.
+      oocOn: !!S.ooc, oocPressed: S.ooc ? 'true' : 'false', toggleOoc: () => this.setState({ ooc: !S.ooc }),
+      oocStyle: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; cursor: pointer; ' + (S.ooc ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2'),
+      inputOff: cantSpeak && !(S.ooc && c && g.phase !== 'lobby'), sendLabel: S.ooc ? 'Ask OOC' : 'Send',
+      inputHolder: S.ooc ? 'Ask the Narrator out of character (doesn\'t use your turn)…' : cantSpeak ? why : 'Say or do something… (' + (c ? c.name : '') + ')',
+      // The mission board (missionBoard.tsx): the header button, with the count of open objectives.
+      ...(() => { const mb = missionsButton(g); return { hasMissions: !!mb, missionsLabel: mb ? mb.label : '', missionsTitle: mb ? mb.title : '', openMissions: () => openMissionBoard(),
+        missionsStyle: 'min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
       // The Perks strip (plan 3): story uses of perks, traits and class moves. Text-taking ones use what is in the Say box.
       get hasStoryPerks() { return this.storyPerks.length > 0; },
       pkDetail: S.pkDetail || '', onPkDetail: (e) => this.setState({ pkDetail: e.target.value }),

@@ -2,6 +2,7 @@
 // sent only to api.anthropic.com. One call per Narrator turn, structured JSON output, cached system layers.
 import Anthropic from '@anthropic-ai/sdk';
 import type { GameState, NarratorTurn } from '@engine';
+import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
 
@@ -166,6 +167,17 @@ export function scriptedProvider(): NarratorProvider {
       const skillOf = (c: any) => Object.entries(c.skills).sort((a: any, b: any) => b[1] - a[1])[0][0];
       const base: NarratorTurn = { narration: '', sceneTitle: '', hooks: [], checks: [], overreach: [], xp: [], deeds: [], combat: null, endScene: null };
       const usage = { input: 0, output: 0, cacheRead: 0, costUsd: 0 };
+      // OOC and missions (e2e/missions.mjs): OOC questions get a plain answer naming the open objectives, and a player
+      // line since the last narration that says "done:<objective id>" marks that objective of the active mission done.
+      if (w.kind === 'round') {
+        const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
+        const marks = E.slice(from).filter((e) => e.kind === 'player').flatMap((e) => [...e.text.matchAll(/done:([a-z0-9_]+)/g)].map((x) => x[1]));
+        const asked = g.story.oocAsk || [], m = missionBoard(g).current[0];
+        if (asked.length || marks.length) return { usage, turn: { ...base, narration: marks.length ? 'It is done. The next thing is already waiting.' : 'The wind moves over the line.',
+          ooc: asked.length ? (m ? 'You are on ' + m.title + ': ' + m.goal + ' Open: ' + m.objectives.filter((o) => o.status === 'open').map((o) => o.text).join('; ') + '.' : 'No mission is open.') : '',
+          missions: m ? marks.map((objective) => ({ mission: m.id, objective, status: 'done' as const })) : [] } };
+      }
+      if (w.kind === 'epilogue') return { usage, turn: { ...base, narration: 'Years later, the record is filed. Nobody wrote down why.' } };
       if (w.kind === 'opening') return { usage, turn: { ...base, sceneTitle: 'The rear pad', narration: 'Outpost-813\'s rear landing pad hums under the black hole\'s light. One ship is still loading, its hold full of platinum crates, and the engineers at the ramp are watching your squad walk in.', hooks: chars.map((c) => ({ skill: skillOf(c), tn: 8, truth: 'true' as const, line: 'They counted you on the way in. They didn\'t like the number.' })) } };
       if (w.kind === 'round' && !g.story.entries.some((e) => e.kind === 'check')) return { usage, turn: { ...base, narration: 'Chief Engineer Keel plants himself at the top of the ramp. "Not enough thrust for scrap," he says.', checks: first ? [{ charId: first.id, skills: [skillOf(first)], tn: 12, stakes: 'Get Keel to lower the ramp.' }] : [] } };
       if (w.kind === 'results') return { usage, turn: { ...base, narration: 'Keel\'s hand goes to his holster. Behind him, two engineers do the same.', combat: { name: 'The rear pad', map: 'rear_pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Chief Engineer Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } };

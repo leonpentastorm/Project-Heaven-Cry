@@ -24,13 +24,13 @@ Built from Leon's task brief, written after his M813 playtest of 23 rounds. The 
   - An OOC line never uses the player's Say and never counts as their turn. It works at any time after the session starts: between turns, mid-fight (the combat Say row reads the markers through the engine) and after the campaign ends.
   - It shows muted, labelled "OOC · <player>".
   - The Narrator gets the questions in their own `OUT-OF-CHARACTER QUESTIONS` block, by character name only, and answers in a new optional `ooc` field. The answer shows in a "NARRATOR · OOC" box.
-  - **Decision:** an OOC question never triggers a Narrator call of its own. It sets `story.needs`, so the round's close calls the Narrator even if nobody spoke in character. A question asked while a call is in flight waits for the next one (the same rule as perk rulings). Spec item 378.
+  - **Decision:** an OOC question never triggers a Narrator call of its own. It sets `story.needs`, so the round's close calls the Narrator even if nobody spoke in character. A question asked while a call is in flight waits for the next one (the same rule as perk rulings). Spec item 407 (377–382 were renumbered 406–411 at the merge: develop had used them).
 - **Missions**
   - Campaigns can list `missions`: id, title, act, summary, goal, hidden, objectives (`done_when` is guidance for the Narrator, not code), next (an id or a list of branches), narrator_notes, and end (`act` or `campaign`). They can also name a `board_npc` and list `credits`. The format is in `docs/design/campaign-format.md`, and `validateCampaign` checks it.
   - State lives in `g.story.missions`.
   - At session start, every mission no other mission leads to becomes active.
   - The Narrator sends optional `missions` updates (done, failed, revealed), a `missionNext` branch pick and `side` jobs. Unknown ids are ignored, and the Narrator can't edit main missions.
-  - A mission closes when every required objective is settled: complete if all are done, "over" if any failed. Its end and next fire either way; spec item 379.
+  - A mission closes when every required objective is settled: complete if all are done, "over" if any failed. Its end and next fire either way; spec item 408.
   - Old saves without missions play as before. `campaign/refresh` starts the board for an old save.
 - **M813's missions** (in `data/campaigns/m813.json`, written from its arc and no new plot):
   - `the_shield_line`, the tutorial.
@@ -94,14 +94,14 @@ Most of the increase is M813's mission list in the cached campaign block.
 3. **Name clash.** `g.story.ended` was already taken by the per-round turn flags, so a finished campaign is `g.story.complete`.
 4. **Carrying characters on.** Nothing yet carries a levelled character (XP, gear) into a new campaign; that needs a design.
 5. **Secrets in player views (already there before this branch).** `viewFor` sends the whole campaign to players, secrets and Narrator notes included. The board hides them, but the data reaches the browser. Strip Narrator-only fields in `viewFor`.
-6. **Provisional limits, spec items 377–382:**
+6. **Provisional limits, spec items 406–411 (renumbered from 377–382 at the merge):**
    - OOC answers are about 80 words at most (600 characters kept), with at most 8 questions waiting.
    - OOC never calls the Narrator by itself.
    - A failed required objective closes its mission.
    - At most 12 mission updates and 12 side-job changes a turn, and 24 side jobs in all.
    - The epilogue drops open checks.
    - Branches are the Narrator's pick; there is no player vote.
-7. **Numbering.** Decision log entry **95**; spec section 14 items **377–382**. If `develop` has used those numbers meanwhile, renumber.
+7. **Numbering.** Decision log entry **95**; spec section 14 items **406–411** (renumbered from 377–382 at the merge: develop had used those numbers).
 8. **Combat screen.** It has no OOC chip, because the perk session was working on it. Typing `[OOC]` in its Say row already works.
 
 ---

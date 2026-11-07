@@ -19,13 +19,16 @@ import { actionAp } from './effects/core';
 import { bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
+import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
-  id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene' | 'art';
+  id: string; kind: 'narration' | 'player' | 'voice' | 'check' | 'system' | 'xp' | 'overreach' | 'combat' | 'scene' | 'art' | 'ooc';
+  /** A mission log line (missions.ts): start, done, failed, reveal, side, complete, end. Everyone gets a toast. */
+  mission?: string;
   /** For kind art: the asset id of a story moment (spec: Campaigns, moments). */
   art?: string;
   text: string; head?: string; who?: string; skill?: string; charId?: string; to?: string; ok?: boolean; roll?: boolean;
@@ -54,7 +57,7 @@ export interface Check {
   roll?: { die: number; mod: number; total: number; ok: boolean; crit: boolean; fumble: boolean; rerolled: boolean; first?: number };
 }
 export interface Overreach { id: string; charId: string; skill: string; push: string; choice?: 'indulge' | 'resist' }
-export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'combat_end'; note?: string;
+export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'combat_end' | 'epilogue'; note?: string;
   /** A reroll the room voted for: what the players asked the Narrator to do differently (spec: Rerolls and edits). */
   redo?: string };
 
@@ -109,6 +112,12 @@ export interface GameState {
     ps?: Record<string, any>;
     /** Patrons' moods: the TN of a prayer to each (12 by default; the Narrator moves it). */
     patronMood?: Record<string, number>;
+    /** Missions and objectives (missions.ts); absent for campaigns without missions and for old saves. */
+    missions?: MissionState;
+    /** OOC questions waiting for the Narrator's next turn (seq: when asked). */
+    oocAsk?: { seq: number; who: string; name: string; text: string }[];
+    /** The campaign is over (its last mission ended and the epilogue was told). */
+    complete?: boolean;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -212,13 +221,22 @@ export type NarratorTurn = {
   /** HP the story takes out of a fight (a fall, a beating, fire): the engine applies it through damage taken, so items
    * that change damage (Soulmate, Scar Tissue) count. type: physical, fire, elemental, true. */
   harm?: { charId: string; amount: number; type?: string; why?: string }[];
+  // ---------- OOC and missions (missions.ts; all optional) ----------
+  /** A plain out-of-character answer to the players' OOC questions ("" when there is none). */
+  ooc?: string;
+  /** Objectives done, failed or revealed (a mission id alone reveals a hidden mission). Unknown ids are ignored. */
+  missions?: { mission: string; objective?: string; status: 'done' | 'failed' | 'revealed'; note?: string }[];
+  /** The branch to follow when a closed mission leads to several. */
+  missionNext?: string;
+  /** Side jobs the Narrator adds or settles (never main missions). */
+  side?: { id: string; title?: string; text?: string; status?: 'open' | 'done' | 'failed' }[];
 };
 export type Action =
   | { type: 'player/join'; id: string; name: string } | { type: 'player/online'; id: string; online: boolean } | { type: 'player/kick'; id: string }
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
-  | { type: 'story/speak'; text: string; roll?: boolean } | { type: 'story/skip'; playerId: string }
+  | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
   | { type: 'narrator/begin' } | { type: 'narrator/turn'; turn: NarratorTurn } | { type: 'narrator/error'; message: string }
   | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number; kind?: 'turn' | 'rewrite' } | { type: 'narrator/retry' }
   | { type: 'check/roll'; checkId: string } | { type: 'check/reroll'; checkId: string } | { type: 'check/accept'; checkId: string }
@@ -365,12 +383,17 @@ function reduce(g: GameState, a: Action, by: string) {
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
+      placeBoardNpc(g);
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
       for (const pin of g.campaign!.pins || []) applyMemOp(g, { op: 'pin', text: pin });
       push(g, { kind: 'system', text: 'Session 1 begins.' });
+      startMissions(g, (e) => push(g, e));
       return;
     }
     case 'story/speak': {
+      // OOC (missions.ts): a question to the Narrator, not a move. It doesn't use the Say or the turn.
+      { const o = oocOf(a.text); if (a.ooc || o.ooc) { if (g.phase === 'lobby') fail('The session hasn\'t started.'); if (!o.text) fail('Say something.'); askOoc(g, by, o.text, (e) => push(g, e)); return; } }
+      if (g.story.complete) fail('The campaign is complete.');
       if (g.phase !== 'story') fail('Not in story mode.');
       if (g.story.await !== 'players') fail('The Narrator is still answering.');
       const mine = charsOf(g, by); if (!mine.length) fail('You have no character in this story.');
@@ -419,7 +442,7 @@ function reduce(g: GameState, a: Action, by: string) {
       u.last = a.costUsd; u.max = Math.max(u.max || 0, a.costUsd); u.recent = [...(u.recent || []), Math.round(a.costUsd * 10000) / 10000].slice(-20);
       return;
     }
-    case 'narrator/turn': { if (!isHost(g, by)) fail('Only the Narrator (the host\'s client) can do that.'); narratorTurn(g, a.turn); return; }
+    case 'narrator/turn': { if (!isHost(g, by)) fail('Only the Narrator (the host\'s client) can do that.'); const w0 = g.story.work, b0 = g.narrator.busy ? g.narrator.beganSeq : undefined; narratorTurn(g, a.turn); missionTurn(g, a.turn, w0, b0, (e) => push(g, e)); return; }
     case 'check/roll':
     case 'check/reroll':
     case 'check/accept': {
@@ -537,7 +560,7 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'memory/edit': { if (!isHost(g, by)) fail('Only the host edits the Narrator\'s memory.'); const err = editMemory(g, a.edit); if (err) fail(err); return; }
     case 'vote/suggest': case 'vote/dismiss': case 'vote/start': case 'vote/cast': case 'vote/close': case 'narrator/rewrite': { voteAction(g, a, by); return; }
-    case 'campaign/refresh': { if (!isHost(g, by)) fail('Host only.'); refreshCampaign(g); return; }
+    case 'campaign/refresh': { if (!isHost(g, by)) fail('Host only.'); refreshCampaign(g); if (g.phase !== 'lobby') startMissions(g, (e) => push(g, e)); return; }
     case 'music/end': { if (!isHost(g, by)) fail('Host only.'); songEnded(g, a.seq); return; }
     case 'music/play': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
@@ -648,6 +671,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'combat/say': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const cb = g.combat; if (!cb || g.phase !== 'combat' || cb.over) fail('No fight is on.');
+      { const o = oocOf(a.text); if (o.ooc) { if (!o.text) fail('Say something.'); askOoc(g, by, o.text, (e) => push(g, e)); return; } } // answered after the fight
       const text = String(a.text || '').trim().slice(0, 300); if (!text) fail('Say something.');
       (cb!.notes ||= []).push(c!.name + ' (round ' + cb!.round + '): "' + text + '"');
       cb!.log.push(c!.name + ': "' + text + '"');
