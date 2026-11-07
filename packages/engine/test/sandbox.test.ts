@@ -1,7 +1,7 @@
 // The Proving Ground (practice mode): endless waves, infinite retry, the tools panel's actions, and no Narrator.
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, validateCampaign, zoneMap, active,
+  ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
   WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf,
 } from '../src';
 
@@ -122,9 +122,17 @@ describe('waves', () => {
   });
   it('a quick start with nobody locked in makes a test character (removed on leaving)', () => {
     const g = start(lobby(false));
-    const c = charOf(g); expect(c.name).toMatch(/^Recruit /);
+    const c = charOf(g); expect(c.name).toBe('Recruit'); expect(c.portrait).toBe(SANDBOX_PORTRAIT); // Wick, the Narrator's avatar
+    expect(g.story.entries.every((e) => !/M813|Last Ship/i.test(e.text))).toBe(true); expect(g.story.scene.title).toBe('The Proving Ground');
     const back = apply(g, { type: 'sandbox/end' }, HOST);
     expect(back.phase).toBe('lobby'); expect(Object.keys(back.characters)).toEqual([]);
+  });
+  it('the test character is numbered when the room already has a Recruit', () => {
+    let g = newGame('PROVE2', { id: HOST, name: 'Host' }, 'seed-proving');
+    g = apply(g, { type: 'player/join', id: GUEST, name: 'Guest' }, HOST);
+    g = apply(g, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Recruit') }, GUEST);
+    g = apply(g, { type: 'sandbox/start', archetype: 'bulwark' }, HOST);
+    expect(charOf(g).name).toBe('Recruit 2'); expect(charOf(g).portrait).toBe(SANDBOX_PORTRAIT);
   });
   it('a cleared wave waits, then the next comes with the squad as it stands; the best wave is kept', () => {
     let g = start();

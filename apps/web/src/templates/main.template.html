@@ -4,7 +4,7 @@
 <span style="font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em">PROJECT HEAVEN CRY</span>
 <nav aria-label="Mode" style="display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F"><button type="button" aria-current="page" style="padding: 8px 16px; border-radius: 7px; border: 0; background: #1C2536; color: #E7EBF3; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">STORY</button><button type="button" onClick="{{toCombat}}" disabled="{{noCombat}}" style="padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px; cursor: pointer">COMBAT</button></nav>
 <span style="{{narrChipStyle}}">{{narrChip}}</span><sc-if value="{{narrError}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{retry}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{retryLabel}}</button></sc-if>
-<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ROOM {{code}} · </span><button type="button" onClick="{{spend}}" title="What the Narrator has cost so far" style="padding: 0; border: 0; background: none; color: #A3AEC2; font-family: inherit; font-size: 12px; letter-spacing: 0.14em; text-decoration: underline dotted; cursor: pointer">{{costText}}</button><button type="button" onClick="{{report}}" title="Something broke? Download a report to send to Leon." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">⚑ Report</button><button type="button" onClick="{{toRoom}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Room</button><sc-if value="{{isHost}}"><button type="button" onClick="{{save}}" title="The game also saves itself after every action, in this browser and on the room server." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{saveLabel}}</button></sc-if>
+<span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">{{roomText}}</span><sc-if value="{{withNarrator}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{spend}}" title="What the Narrator has cost so far" style="padding: 0; border: 0; background: none; color: #A3AEC2; font-family: inherit; font-size: 12px; letter-spacing: 0.14em; text-decoration: underline dotted; cursor: pointer">{{costText}}</button></sc-if><button type="button" onClick="{{report}}" title="Something broke? Download a report to send to Leon." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">⚑ Report</button><button type="button" onClick="{{toRoom}}" style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Room</button><sc-if value="{{isHost}}"><button type="button" onClick="{{save}}" title="The game also saves itself after every action, in this browser and on the room server." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{saveLabel}}</button></sc-if>
 <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
 <span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">ECHO</span>
 <sc-for list="{{echoPips}}" as="e" hint-placeholder-count="3"><span style="{{e.style}}" aria-hidden="true"></span></sc-for>
@@ -239,7 +239,8 @@
 <div class="phc-story phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto">
 <div style="display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">
 <figure style="margin: 0; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #232D3F">
-<button type="button" onClick="{{hero.zoom}}" aria-label="Enlarge the art for {{hero.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}"></button>
+<sc-if value="{{hero.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{hero.zoom}}" aria-label="Enlarge the art for {{hero.title}}" style="{{zoomBtn}}; width: 100%"><img src="{{hero.img}}" alt="{{hero.title}}" style="{{hero.imgStyle}}"></button></sc-if>
+<sc-if value="{{hero.noImg}}" hint-placeholder-val="{{false}}"><div aria-hidden="true" style="height: 132px; background-color: #0D1119; background-image: linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px); background-size: 24px 24px"></div></sc-if>
 <figcaption style="position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px; background: rgba(10, 13, 19, 0.82); display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 12px; letter-spacing: 0.24em; color: #A3AEC2">{{hero.kicker}}</span>
 <span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{hero.title}}</span>
@@ -283,7 +284,7 @@
 </sc-for>
 </div>
 <span style="{{turnStyle}}">{{turnText}}</span>
-<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-if value="{{withNarrator}}" hint-placeholder-val="{{true}}"><div style="display: flex; gap: 8px; flex-wrap: wrap">
 <textarea aria-label="What do you do?" rows="2" value="{{draft}}" onChange="{{onDraft}}" disabled="{{cantSpeak}}" placeholder="{{placeholder}}" style="flex: 1 1 360px; min-height: 52px; padding: 10px 14px; border-radius: 10px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 16px; resize: vertical"></textarea>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <button type="button" onClick="{{polish}}" disabled="{{cantPolish}}" title="{{polishTitle}}" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">{{polishLabel}}</button>
@@ -293,7 +294,7 @@
 <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #C9D3E3; cursor: pointer">
 <input type="checkbox" checked="{{pickRoll}}" onChange="{{togglePick}}" style="width: 20px; height: 20px; accent-color: #E7EBF3">
 Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(it chooses the skills; the engine rolls)</span>
-</label>
+</label></sc-if>
 </div>
 </main>
 
@@ -314,17 +315,17 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-for list="{{nearby}}" as="n"><button type="button" onClick="{{n.open}}" style="display: block; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer">{{n.label}}</button></sc-for>
 </div>
 </sc-if>
-<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">SPEAKING ORDER</span>
+<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{orderTitle}}</span>
 <sc-for list="{{order}}" as="o" hint-placeholder-count="3">
 <div style="display: flex; gap: 10px; align-items: center"><button type="button" onClick="{{o.zoom}}" aria-label="Enlarge {{o.name}}" style="{{zoomBtn}}"><img src="{{o.img}}" alt="" style="{{o.imgStyle}}"></button><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px">{{o.name}}</span><span style="{{o.playerStyle}}">{{o.player}}</span></span><span style="{{o.stateStyle}}">{{o.state}}</span></div>
 </sc-for>
 <div style="display: flex; gap: 8px">
-<button type="button" onClick="{{pass}}" disabled="{{cantSpeak}}" title="Give up your Say this round; your AP stay" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button>
+<sc-if value="{{withNarrator}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{pass}}" disabled="{{cantSpeak}}" title="Give up your Say this round; your AP stay" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Pass</button></sc-if>
 <button type="button" onClick="{{endTurn}}" disabled="{{cantEnd}}" title="Done for this round: your AP (and your Say, if unused)" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
-<button type="button" onClick="{{skipRest}}" disabled="{{cantSkip}}" title="Host: skip players who are away" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Skip the rest</button>
+<sc-if value="{{withNarrator}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{skipRest}}" disabled="{{cantSkip}}" title="Host: skip players who are away" style="flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Skip the rest</button></sc-if>
 </div>
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em">{{apText}}</span>
-<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">Each round: one Say and a full turn of AP (act on the area map). When everyone has ended their turn, the Narrator answers what needs it.</span>
+<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{orderNote}}</span>
 </aside>
 </div>
 

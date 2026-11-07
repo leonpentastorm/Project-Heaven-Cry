@@ -54,11 +54,11 @@ describe('turn banners', () => {
     expect(_test.estMs({ k: 'reload', dur: 1200 })).toBe(1200);
     expect(_test.estMs({ k: 'move', path: ['1,1', '2,1', '3,1'] })).toBeGreaterThan(_test.estMs({ k: 'move', path: ['1,1', '2,1'] }));
   });
-  it('the four commands can be customised per character: picks win, a pick that can\'t be used now is greyed with why, one not in the kit falls back', () => {
+  it('the four commands can be customised per character: picks keep their slots, the smart default fills the rest in its order, a pick that can\'t be used now is greyed with why, one not in the kit falls back', () => {
     const { g, cb, pc } = game();
     const smart = _test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action);
     expect(C.readPrefs(g, 'c1')).toEqual([null, null, null, null]);
-    // Overwatch first, Analyze fourth; the rest stay smart (and a smart slot never repeats a pick).
+    // Overwatch first, Analyze fourth; slots 2 and 3 take the smart default in its order, skipping the picks.
     C.writePrefs(g, 'c1', ['overwatch', null, null, 'analyze']);
     expect(JSON.parse(store['phc.cutinCmds'])).toEqual({ 'ROOMA:c1': ['overwatch', null, null, 'analyze'] });
     // Another room's c1 is another character: it keeps the smart default.
@@ -67,8 +67,21 @@ describe('turn banners', () => {
     expect(cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
     expect(cmds[0]).toMatchObject({ action: 'overwatch', custom: true });
     expect(cmds[3]).toMatchObject({ action: 'analyze', custom: true });
-    expect(cmds[1].action).toBe(smart[1]);
+    const rest = smart.filter((a) => a !== 'overwatch' && a !== 'analyze');
+    expect([cmds[1].action, cmds[2].action]).toEqual(rest.slice(0, 2));
     expect(new Set(cmds.map((x) => x.action)).size).toBe(4);
+    // Reload in slot 1: the smart default's Shoot is not lost; it moves along (Reload · Shoot · Move · Overwatch).
+    expect(smart).toEqual(['shot', 'move', 'reload', 'overwatch']);
+    C.writePrefs(g, 'c1', ['reload', null, null, null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['reload', 'shot', 'move', 'overwatch']);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
+    // A pick in a later slot: the smart commands before it keep their order around it.
+    C.writePrefs(g, 'c1', [null, null, 'aimed', null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['shot', 'move', 'aimed', 'reload']);
+    // Picks that already cover the smart default: spare actions fill in, never a repeat.
+    C.writePrefs(g, 'c1', ['overwatch', 'reload', 'move', null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['overwatch', 'reload', 'move', 'shot']);
+    C.writePrefs(g, 'c1', ['overwatch', 'analyze', null, null]);
     // Can't be used now: greyed with the reason (no AP left).
     pc.ap = 0;
     cmds = _test.cutFor(g, cb, pc.id)!.cmds;
@@ -88,5 +101,22 @@ describe('turn banners', () => {
     C.writePrefs(g, 'c1', [null, null, null, null]);
     expect(store['phc.cutinCmds']).toBe('{}');
     expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(smart);
+  });
+  it('the Proving Ground (no Narrator) offers no action only the Narrator can rule, like Suppressing Fire', () => {
+    const { g, cb, pc } = game();
+    pc.weapon = 'hellraiser_service_rifle'; pc.ammo = 24;
+    const all = C.catalogue(cb, pc, g.characters.c1), none = C.catalogue(cb, pc, g.characters.c1, { noNarrator: true });
+    expect(all.find((e) => e.action === 'skill')).toMatchObject({ label: 'Suppressing Fire', cost: 'Narrator' });
+    expect(none.find((e) => e.action === 'skill')).toBeUndefined();
+    expect(none.filter((e) => e.cost === 'Narrator')).toEqual([]);
+    expect(none.length).toBe(all.length - 1);
+    expect(C.actionGroups(cb, pc, g.characters.c1, { noNarrator: true }).flatMap((gr) => gr[1]).some((it) => it[2] === 'Narrator')).toBe(false);
+    // The cut-in in the Proving Ground: a stored pick of it falls back to the smart default.
+    C.writePrefs(g, 'c1', ['skill', null, null, null]);
+    g.sandbox = { state: 'fighting' };
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).not.toContain('skill');
+    delete g.sandbox;
+    expect(_test.cutFor(g, cb, pc.id)!.cmds[0]).toMatchObject({ action: 'skill', custom: true, off: true });
+    C.writePrefs(g, 'c1', [null, null, null, null]);
   });
 });

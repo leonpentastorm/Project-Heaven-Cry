@@ -114,7 +114,7 @@ function cutFor(g: GameState, cb: any, unitId: string): Cut | null {
   const portrait = ch.portrait || u.img || '';
   const img = ART_BIG(portrait) || ART(portrait) || portrait || IMG['wick-welcome'];
   // The four commands: the player's own picks for this character (game/commandsDialog.tsx), else the smart default.
-  const cmds: Command[] = resolveCommands(cb, u, ch, readPrefs(g, u.charId));
+  const cmds: Command[] = resolveCommands(cb, u, ch, readPrefs(g, u.charId), { noNarrator: !!g.sandbox });
   const magic: string[] = [];
   if (mg?.held) { const d = mg.designs?.find((x: any) => x.id === mg.held.design); magic.push('HOLDING ' + (d ? d.name : 'an Outburst').toUpperCase() + ' · STAGE ' + mg.held.stage); }
   if (mg?.evoker || (mg?.words?.length && mg.flux)) magic.push('FLUX ' + mg.flux + ' / ' + FLUX_MAX + (mg.flux >= FLUX_MAX - 1 ? ' · NEAR OVERLOAD' : ''));

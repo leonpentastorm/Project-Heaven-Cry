@@ -4,7 +4,7 @@
 // plays it (YouTube, or the game's own file) and may pause it for itself, which changes nothing here.
 import type { GameState } from './game';
 import type { Character } from './character';
-import type { Combat } from './combat';
+import { type Combat, visibility } from './combat';
 import { SKILL, TRAITS } from './data';
 
 /** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
@@ -22,14 +22,18 @@ export const trackKey = (t: Track | null | undefined) => (t ? (t.ost ? 'ost:' + 
 
 /**
  * Which of the game's fight tracks fits this fight (spec: Music): Last Rounds while at least half the party is Downed
- * (or dead), Heaven Falls in a fight with an elite or a boss in it (or a Hard or Boss fight), else Gunline. The party is
- * every fighter on the players' side. Heaven Falls holds for the whole fight once an elite or boss has been in it;
- * Last Rounds hands back as soon as enough of the party is up again.
+ * (or dead), Heaven Falls once the party has seen an elite or a boss in it (or in a Hard or Boss fight), else Gunline.
+ * The party is every fighter on the players' side. What the party has seen is cb.sighted (shared sight, kept by the
+ * engine as hostiles come into view), so every player in the room gets the same track and label, and an elite or boss
+ * still in the fog of war changes nothing: neither the track nor the label gives it away. Heaven Falls holds for the
+ * whole fight once one has been seen; Last Rounds hands back as soon as enough of the party is up again.
  */
-export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'>): { id: OstId; why: string } {
+export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'> & Partial<Pick<Combat, 'sighted' | 'map' | 'over'>>): { id: OstId; why: string } {
   const party = cb.units.filter((u) => u.side === 'pc'), down = party.filter((u) => u.downed || u.dead).length;
   if (party.length && down * 2 >= party.length) return { id: 'last_rounds', why: down === party.length ? 'Last rounds: the party is down' : 'Last rounds: half the party is down' };
-  const foes = cb.units.filter((u) => u.side === 'foe');
+  // Old saves have no sighted list yet: what the party sees right now.
+  const seen = new Set(cb.sighted ?? (cb.map ? [...visibility(cb as Combat, 'pc').seen] : []));
+  const foes = cb.units.filter((u) => u.side === 'foe' && seen.has(u.id));
   if (foes.some((u) => u.tier === 'boss')) return { id: 'heaven_falls', why: 'Fight: a boss' };
   if (foes.some((u) => u.tier === 'elite')) return { id: 'heaven_falls', why: 'Fight: an elite' };
   if (cb.difficulty === 'boss' || cb.difficulty === 'hard') return { id: 'heaven_falls', why: 'Fight: a hard one' };

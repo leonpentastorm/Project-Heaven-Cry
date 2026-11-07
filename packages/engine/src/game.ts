@@ -8,7 +8,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
-import { type Combat, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -230,6 +230,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   reduce(g, action, by);
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
+  if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
   g.v++;
   return g;
 }
@@ -769,6 +770,7 @@ function runEnemies(g: GameState) {
     const u = active(cb)!;
     if (u.side !== 'foe') break;
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
+    noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   if (cb.over) { if (g.sandbox) sandboxOver(g); else finishCombat(g); }
@@ -1700,12 +1702,15 @@ function sandboxWorld(g: GameState, a: Action, by: string) {
   Object.assign(sb, before);
   g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players';
 }
-/** A test character from an archetype (for a quick Proving Ground with nobody locked in). */
-function sbTestSheet(archetype: string | undefined, kit: string | undefined): Sheet {
+/** The Narrator's avatar (Wick), the Proving Ground's stand-in face: a test character is nobody in particular. */
+export const SANDBOX_PORTRAIT = '/assets/wick-narrator-placeholder.webp';
+/** A test character from an archetype (for a quick Proving Ground with nobody locked in): "Recruit", then "Recruit 2", …
+ *  if the room already has one, and Wick's face. The archetype sets the build; the name stays generic. */
+function sbTestSheet(g: GameState, archetype: string | undefined, kit: string | undefined): Sheet {
   const a = ARCHETYPES.find((x) => x.id === archetype) || ARCHETYPES.find((x) => x.id === 'sharpshooter') || ARCHETYPES[0];
-  // Most archetypes have a painted portrait in the web app's assets (char-arch-<id>.webp); the rest show their initials.
-  const painted = !['heavy_gunner', 'silver_tongue', 'witch_hunter', 'field_medic', 'living_wall', 'wrecking_ball'].includes(a.id);
-  return { name: 'Recruit ' + a.name, portrait: painted ? '/assets/char-arch-' + a.id.replace(/_/g, '-') + '.webp' : '', origin: 'Proving Ground', kit: ['medic', 'soldier', 'sigil', 'soul'].includes(kit || '') ? kit! : 'soldier', traits: [],
+  const names = new Set(Object.values(g.characters).map((c) => c.name));
+  let name = 'Recruit'; for (let k = 2; names.has(name); k++) name = 'Recruit ' + k;
+  return { name, portrait: SANDBOX_PORTRAIT, origin: 'Proving Ground', kit: ['medic', 'soldier', 'sigil', 'soul'].includes(kit || '') ? kit! : 'soldier', traits: [],
     skills: { ...(a.preset || {}) }, attrs: { ...(a.attributes || {}) }, cores: { ...(a.cores || {}) }, identity: {}, archetype: a.id };
 }
 
@@ -1722,10 +1727,12 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     const sb: Sandbox = { wave: 1, best: 0, attempt: 1, ai: true, auto: false, state: 'ready', fights: 0, advanced: {}, temp: [], waveMana: MANA_START, spawned: 0, saved };
     g.sandbox = sb;
     if (!charsOf(g, by).length && (a.archetype || !Object.keys(g.characters).length)) {
-      const c = newCharacter(id(g, 'c'), by, sbTestSheet(a.archetype, a.kit)); c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id);
+      const c = newCharacter(id(g, 'c'), by, sbTestSheet(g, a.archetype, a.kit)); c.echo = 1; g.characters[c.id] = c; sb.temp.push(c.id);
     }
     if (!Object.keys(g.characters).length) { g.sandbox = null; fail('Lock in a character first.'); }
     g.campaign = JSON.parse(JSON.stringify(PROVING_GROUND));
+    // A clean page: no campaign's story, scene or journal shows here (sandbox/end puts the room's story back as it was).
+    g.story.entries = []; g.story.journal = []; g.story.scene = { title: PROVING_GROUND.title, n: 0, hooks: [], revealed: [], asked: {}, fired: {} };
     g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.mana = MANA_START;
     g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.objects = defaultObjects(zoneMap(g));
     for (const c of Object.values(g.characters)) sbRefill(c);

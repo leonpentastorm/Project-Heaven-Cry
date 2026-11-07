@@ -1196,7 +1196,7 @@ The room hears one song at a time. The engine decides what plays and why; each p
 | Spotlight | The favourite song of the character who did something amazing | One full play outside a fight; the end of the fight if it started in one |
 | Last Rounds | The game's own track, while at least half the party is Downed (or dead) | When enough of the party is up again: it hands back |
 | Encounter | The campaign's theme for that named encounter | The end of the fight |
-| Combat | The game's own fight music (Project Heaven Cry OST): **Heaven Falls** in a fight with an elite or a boss in it, or a Hard or Boss fight; else **Gunline**. Campaigns' generic combat tracks are not played | The end of the fight |
+| Combat | The game's own fight music (Project Heaven Cry OST): **Heaven Falls** once the party has seen an elite or a boss in the fight (it holds for the rest of the fight), or in a Hard or Boss fight (the difficulty is known to everyone); else **Gunline**. An elite or boss still hidden in the fog of war changes nothing, and the music card names only what the party has seen (an unseen one reads as plain *Fight*). Campaigns' generic combat tracks are not played | The end of the fight |
 | Ambient | The zone's ambient track, else the campaign's | Leaving the zone |
 
 The game's own tracks loop seamlessly, crossfade (about 1.2 s) when the fight's situation changes, and fade out when the fight ends. A Proving Ground still gearing up (no fight begun) has no fight music.

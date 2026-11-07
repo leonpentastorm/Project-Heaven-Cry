@@ -15,9 +15,13 @@ export type ActionItem = [string, string, string, string];
 export type ActionGroup = [string, ActionItem[], string | null, string];
 export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', sigils: 'Sigils', outbursts: 'Outbursts' };
 
+/** Options for the action list. noNarrator: there is no Narrator to rule on anything (the Proving Ground), so actions
+ *  only the Narrator can resolve (cost 'Narrator', e.g. a weapon skill the engine doesn't run) are left out. */
+export interface ActionOpts { noNarrator?: boolean }
+
 /** Every action this unit has, in tab order (Move · Attack · Utility · Sigils · Outbursts). ch: the unit's character
  *  (for stims and the song), or null. */
-export function actionGroups(cb: any, cur: any, ch: any): ActionGroup[] {
+export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   const w: any = cur ? (WEAPON as any)[cur.weapon] : null, melee = w ? isMelee(w) : false;
   const mv = cur ? cur.movement : 1;
   const heavy = w && /heavy/.test(w.category) && !isMelee(w), modes = (w && w.modes) || [];
@@ -73,6 +77,7 @@ export function actionGroups(cb: any, cur: any, ch: any): ActionGroup[] {
         ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.'] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
   }
+  if (opts.noNarrator) return ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
   return ITEMS;
 }
 
@@ -111,9 +116,9 @@ export function whyNot(u: any, action: string, cost: string): string | null {
 }
 
 /** Every action the unit has, flat, with its tab and why it can't be used right now (null when it can). */
-export function catalogue(cb: any, u: any, ch: any): CatEntry[] {
+export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatEntry[] {
   if (!u) return [];
-  return actionGroups(cb, u, ch).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text]) => ({ action, label, cost, text, tab, ink, why: whyNot(u, action, cost) })));
+  return actionGroups(cb, u, ch, opts).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text]) => ({ action, label, cost, text, tab, ink, why: whyNot(u, action, cost) })));
 }
 
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */
@@ -136,32 +141,35 @@ export function smartCommands(u: any): Command[] {
   return cmds;
 }
 
-/** Spare picks when a smart slot would repeat a command the player put in another slot. */
+/** Spare picks when the smart default runs out (it has four, and some may already be the player's picks). */
 const SPARE = ['overwatch', 'aimed', 'sprint', 'shove', 'reload', 'analyze', 'stim', 'prone', 'disengage', 'melee'];
 
-/** The four commands for this unit: each slot the player set (if the unit still has that action; greyed with the reason
- *  when it can't be used now), else the smart default for that slot. */
-export function resolveCommands(cb: any, u: any, ch: any, prefs: (string | null)[] = []): Command[] {
+/** The four commands for this unit. Each slot the player set holds their pick (if the unit still has that action; greyed
+ *  with the reason when it can't be used now). The other slots take the smart default's commands in its own order,
+ *  skipping any the player already placed, so a pick never pushes a smart command off the card: Reload in slot 1 gives
+ *  Reload · Shoot · Move · Overwatch. When the smart list runs out, spare actions fill in. */
+export function resolveCommands(cb: any, u: any, ch: any, prefs: (string | null)[] = [], opts: ActionOpts = {}): Command[] {
   const smart = smartCommands(u);
   if (!prefs.some(Boolean)) return smart;
-  const cat = catalogue(cb, u, ch), by = new Map(cat.map((e) => [e.action, e]));
-  const picked = new Set(prefs.filter((a): a is string => !!a && by.has(a)));
-  const used = new Set<string>(), out: Command[] = [];
+  const cat = catalogue(cb, u, ch, opts), by = new Map(cat.map((e) => [e.action, e]));
+  const slots: (Command | null)[] = [null, null, null, null], used = new Set<string>();
+  // The player's picks first, in their slots (a pick that repeats an earlier slot, or that the unit lacks, is left open).
   for (let i = 0; i < 4; i++) {
-    const key = String(i + 1), a = prefs[i], e = a ? by.get(a) : undefined;
-    if (e && !used.has(e.action)) {
-      used.add(e.action);
-      out.push({ action: e.action, label: e.label, sub: e.why ? 'Not now: ' + e.why.replace(/\.$/, '') : e.cost + (e.tab === 'attack' && (WEAPON as any)[u.weapon] ? ' · ' + (WEAPON as any)[u.weapon].name : ''), key, off: !!e.why, custom: true });
-      continue;
-    }
-    let s: Command | undefined = smart[i];
-    if (s && (picked.has(s.action) || used.has(s.action))) {
-      const spare = SPARE.map((x) => by.get(x)).find((x) => x && !picked.has(x.action) && !used.has(x.action));
-      s = spare ? { action: spare.action, label: spare.label, sub: spare.why ? 'Not now: ' + spare.why.replace(/\.$/, '') : spare.cost, key, off: !!spare.why } : s;
-    }
-    if (s) { used.add(s.action); out.push({ ...s, key }); }
+    const a = prefs[i], e = a ? by.get(a) : undefined;
+    if (!e || used.has(e.action)) continue;
+    used.add(e.action);
+    slots[i] = { action: e.action, label: e.label, sub: e.why ? 'Not now: ' + e.why.replace(/\.$/, '') : e.cost + (e.tab === 'attack' && (WEAPON as any)[u.weapon] ? ' · ' + (WEAPON as any)[u.weapon].name : ''), key: String(i + 1), off: !!e.why, custom: true };
   }
-  return out;
+  // Then the smart default, in its order, into the open slots; spare actions if it runs out.
+  const fill: Command[] = smart.filter((c) => !used.has(c.action));
+  for (const x of SPARE) { const e = by.get(x); if (e) fill.push({ action: e.action, label: e.label, sub: e.why ? 'Not now: ' + e.why.replace(/\.$/, '') : e.cost, key: '', off: !!e.why }); }
+  for (let i = 0; i < 4; i++) {
+    if (slots[i]) continue;
+    const c = fill.find((x) => !used.has(x.action));
+    if (!c) continue;
+    used.add(c.action); slots[i] = { ...c, key: String(i + 1) };
+  }
+  return slots.filter((c): c is Command => !!c);
 }
 
 // ---------- the player's choice, per character, in this browser ----------

@@ -249,6 +249,15 @@ describe('combat screen', () => {
     await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => /Reset to smart/.test(b.textContent || ''))!.click(); });
     await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => b.textContent === 'Save')!.click(); });
     expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toBeUndefined();
+    // The preview: Reload in slot 1 keeps the smart default's other commands, in order (Shoot is not pushed off).
+    await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
+    const dlgR = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
+    const slotNames = () => [1, 2, 3, 4].map((i) => (dlgR.querySelector('[data-slot="' + i + '"]')!.textContent || '').replace(/^\d/, ''));
+    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload', 'Overwatch']);
+    await React.act(async () => { (dlgR.querySelector('[data-cmd="reload"]') as HTMLElement).click(); });
+    expect(slotNames()).toEqual(['ReloadYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
+    await React.act(async () => { Array.from(dlgR.querySelectorAll('button')).find((b) => b.textContent === 'Cancel')!.click(); });
+    expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
     // Escape closes without saving.
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
     const dlg3 = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;

@@ -2,8 +2,8 @@
 // panel is hidden) offers on keys 1–4, per character. Opened from the cut-in ("Customise", or C) and from the combat
 // panel's "⚙ Customise" (window event 'phc:customise-cmds'); mounted by TurnIntro (game/turnIntro.tsx).
 //
-// The list is the combat panel's own (game/commands.ts actionGroups), so whatever the tabs offer can be a command. An
-// empty slot keeps the smart default for that slot. Saved in this browser per character (a UI preference, not game
+// The list is the combat panel's own (game/commands.ts actionGroups), so whatever the tabs offer can be a command. The
+// empty slots take the smart default's commands in order, skipping the player's picks (resolveCommands). Saved in this browser per character (a UI preference, not game
 // state): nothing here goes to the room.
 import React from 'react';
 import { type GameState } from '@engine';
@@ -27,11 +27,12 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const cast: any = game && cb ? castFight(game, cb, ART) || cb : null;
   const u = cast ? cast.units.find((x: any) => x.charId === charId && !x.dead) || null : null;
   const ch: any = game ? (game.characters as any)[charId] || null : null;
-  const cat = u ? catalogue(cast, u, ch).filter(pickable) : [];
+  const opts = { noNarrator: !!game?.sandbox }; // the Proving Ground: nothing only a Narrator can rule
+  const cat = u ? catalogue(cast, u, ch, opts).filter(pickable) : [];
   const by = new Map(cat.map((e) => [e.action, e]));
   const [slots, setSlots] = React.useState<(string | null)[]>(() => readPrefs(game, charId));
   const [at, setAt] = React.useState(0);
-  const shown = u ? resolveCommands(cast, u, ch, slots) : [];
+  const shown = u ? resolveCommands(cast, u, ch, slots, opts) : [];
   const box = React.useRef<HTMLDivElement | null>(null);
 
   // Focus: into the dialog on open, kept inside it (Tab wraps), back where it was on close. Escape closes.
@@ -71,7 +72,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2' }}>TURN CARD · {name.toUpperCase()}</span>
           <span id="phc-cmds-title" style={{ fontFamily: "'Spectral', serif", fontSize: 24, fontWeight: 600 }}>Your four commands</span>
-          <span style={{ fontSize: 12, lineHeight: 1.45, color: '#C9D3E3' }}>The turn card offers these on keys 1–4. Pick a slot, then an action. A slot left on <b>Smart</b> follows the fight (Clear jam when you jam, Release while you hold an Outburst). Saved for {name} in this browser.</span>
+          <span style={{ fontSize: 12, lineHeight: 1.45, color: '#C9D3E3' }}>The turn card offers these on keys 1–4. Pick a slot, then an action. Your picks keep their slots; the slots left on <b>Smart</b> take the smart default in its order, skipping your picks, and follow the fight (Clear jam when you jam, Release while you hold an Outburst). Saved for {name} in this browser.</span>
         </div>
         <div role="group" aria-label="The four slots" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8 }}>
           {[0, 1, 2, 3].map((i) => {

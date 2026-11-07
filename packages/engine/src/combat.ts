@@ -84,6 +84,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
    * meter, and the dead already counted toward it. */
   glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number;
+  /** Hostiles the party has seen at least once this fight (shared sight: visibility(cb, 'pc')), kept as they come into view.
+   * The fight music reads it, so an elite or boss in the fog of war changes nothing until it is seen (spec: Music). */
+  sighted?: string[];
   /** Presentation events (shots, hits, reloads, spells…) for the client's effects layer, newest last, capped at FX_CAP.
    * Numbered by fxSeq; they carry no rules and nothing reads them back (see FxEvent). */
   fx?: FxEvent[]; fxSeq?: number }
@@ -363,6 +366,12 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
     else if (eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3))) sensed.add(t.id);
   }
   return { tiles, seen, sensed };
+}
+/** Note every hostile the party sees now in cb.sighted (it only grows; old saves start it here). */
+export function noteSighted(cb: Combat) {
+  if (cb.over) return;
+  const seen = visibility(cb, 'pc').seen, had = cb.sighted || [], add = [...seen].filter((id) => !had.includes(id));
+  if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
 /** Does anyone on the attacker's side see the target? */
 export const sideSees = (cb: Combat, side: 'pc' | 'foe', tgt: Unit) => cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));

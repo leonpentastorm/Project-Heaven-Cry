@@ -1,10 +1,11 @@
 // The game's own fight music (spec: Music): which of Gunline, Heaven Falls and Last Rounds plays, and what still wins
 // over them (a player's spotlight or pinned song; a campaign's theme for a named encounter).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, OST, fightTheme, musicFor, startSong, trackKey, newGame, apply, type Sheet, type GameState, type Unit } from '../src';
+import { ARCHETYPES, OST, fightTheme, musicFor, startSong, trackKey, newGame, apply, visibility, noteSighted, viewFor, type Sheet, type GameState, type Unit } from '../src';
 
 const unit = (id: string, side: 'pc' | 'foe', x: Partial<Unit> = {}) => ({ id, side, tier: side === 'foe' ? 'soldier' : undefined, downed: false, dead: false, ...x }) as Unit;
-const fight = (units: Unit[], difficulty = 'standard') => ({ units, difficulty });
+/** A fight where the party has seen every hostile (sighted), unless told which ones it has seen. */
+const fight = (units: Unit[], difficulty = 'standard', sighted = units.filter((u) => u.side === 'foe').map((u) => u.id)) => ({ units, difficulty, sighted });
 
 describe('fightTheme: the fight track', () => {
   it('a normal fight plays Gunline', () => {
@@ -18,6 +19,17 @@ describe('fightTheme: the fight track', () => {
     expect(fightTheme(fight([unit('a', 'pc'), unit('e1', 'foe')], 'boss')).id).toBe('heaven_falls');
     // The elite is down: the theme holds.
     expect(fightTheme(fight([unit('a', 'pc'), unit('e1', 'foe', { tier: 'elite', dead: true })])).id).toBe('heaven_falls');
+  });
+  it('an elite or boss in the fog of war changes nothing: Gunline and a plain "Fight" until the party sees it', () => {
+    const units = [unit('a', 'pc'), unit('e1', 'foe'), unit('e2', 'foe', { tier: 'boss' })];
+    expect(fightTheme(fight(units, 'standard', ['e1']))).toEqual({ id: 'gunline', why: 'Fight' });
+    expect(fightTheme(fight(units, 'standard', []))).toEqual({ id: 'gunline', why: 'Fight' });
+    expect(fightTheme(fight(units, 'standard', ['e1', 'e2']))).toEqual({ id: 'heaven_falls', why: 'Fight: a boss' });
+    // A Hard or Boss fight is known to everyone: Heaven Falls from the start, and the label still names no unseen boss.
+    expect(fightTheme(fight(units, 'boss', []))).toEqual({ id: 'heaven_falls', why: 'Fight: a hard one' });
+    expect(fightTheme(fight(units, 'hard', ['e1']))).toEqual({ id: 'heaven_falls', why: 'Fight: a hard one' });
+    // Seen once, then killed or back out of sight: it stays seen (sighted only grows), so the theme holds.
+    expect(fightTheme(fight([unit('a', 'pc'), unit('e2', 'foe', { tier: 'boss', dead: true })], 'standard', ['e2'])).id).toBe('heaven_falls');
   });
   it('half the party Downed plays Last Rounds, over Heaven Falls, and hands back when they get up', () => {
     const units = [unit('a', 'pc', { downed: true }), unit('b', 'pc'), unit('e1', 'foe', { tier: 'boss' })];
@@ -57,12 +69,28 @@ describe('musicFor in a fight', () => {
     expect(OST.gunline.artist).toBe('Project Heaven Cry OST');
     expect(trackKey(musicFor(r.g).track)).toBe('ost:gunline');
   });
-  it('an elite plays Heaven Falls; half the party Downed plays Last Rounds', () => {
+  it('a seen elite plays Heaven Falls; half the party Downed plays Last Rounds', () => {
     const r = room();
     r.act(brawl([{ name: 'Captain', tier: 'elite', weapon: 'service_pistol' }]));
+    r.g.combat!.sighted = r.g.combat!.units.filter((u) => u.side === 'foe').map((u) => u.id); // the party has seen it
     expect(musicFor(r.g).track!.title).toBe('Heaven Falls');
     r.g.combat!.units.find((u) => u.side === 'pc')!.downed = true;
     expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Last Rounds' }, reason: 'Last rounds: half the party is down' });
+  });
+  it('the engine keeps what the party has seen, the same for every player; an unseen elite plays Gunline', () => {
+    const r = room();
+    r.act(brawl([{ name: 'Captain', tier: 'elite', weapon: 'service_pistol' }]));
+    const cb = r.g.combat!, cap = cb.units.find((u) => u.side === 'foe')!;
+    // After every action the engine notes the hostiles the party sees now; the list only grows.
+    expect(cb.sighted).toEqual([...visibility(cb, 'pc').seen]);
+    const fogged: GameState = JSON.parse(JSON.stringify(r.g)); fogged.combat!.sighted = [];
+    expect(musicFor(fogged)).toMatchObject({ layer: 'combat', track: { title: 'Gunline' }, reason: 'Fight' });
+    fogged.combat!.sighted = [cap.id];
+    expect(musicFor(fogged)).toMatchObject({ layer: 'combat', track: { title: 'Heaven Falls' }, reason: 'Fight: an elite' });
+    noteSighted(fogged.combat!); expect(fogged.combat!.sighted).toContain(cap.id);
+    // Every player's view reads the same.
+    const host = viewFor(fogged, 'host'), guest = viewFor(fogged, 'p2');
+    expect(musicFor(host)).toEqual(musicFor(guest));
   });
   it('a player\'s spotlight song wins over all of it', () => {
     const r = room();
