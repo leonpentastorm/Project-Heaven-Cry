@@ -14,6 +14,7 @@ import { CreateLogic } from './screens/create';
 import { RoomLogic } from './screens/room';
 import { MainLogic } from './screens/main';
 import { CombatLogic } from './screens/combat';
+import { expandLayout } from './game/combatLayout';
 import { LevelUpLogic } from './screens/levelup';
 import { UltimateLogic } from './screens/ultimate';
 import { Music } from './game/music';
@@ -32,7 +33,6 @@ import { TurnIntro, cue } from './game/turnIntro';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
-import { expandLayout } from './game/combatLayout';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
