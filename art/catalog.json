@@ -9429,5 +9429,25 @@
       "revision": 2,
       "prompt_path": "art/sprites/objects/v1/revisions/v2/sources/obj-field-lamp.prompt.txt"
     }
+  },
+  "animation_manifests": {
+    "wick-menu": {
+      "path": "art/mascot/wick-anim/manifest.json",
+      "sha256": "96574d49202cf4a19ac0b23c01f8f84fad27037de6b675671a1a12cad89f0497",
+      "collection": "wick-menu-v1",
+      "label": "Wick menu animations",
+      "status": "review-candidate",
+      "production_approved": false,
+      "clip_count": 5,
+      "frame_count": 36,
+      "frame_size": [
+        256,
+        256
+      ],
+      "baseline_y": 240,
+      "ink": "#FFFFFF",
+      "background": "transparent",
+      "preview": "art/mascot/wick-anim/preview.gif"
+    }
   }
 }

@@ -10,4 +10,4 @@ This is Wick as the EPCCG's guide, not a trait or perk icon: the trait and perk 
 
 ## Menu animation production
 
-The two requested animated Wick families use five clips (run, stop, idle, hello, wave), 36 frames total. The [production queue](wick-anim/README.md) records the image-limit pause and scheduled continuation; no animation frames have been generated yet. Title-screen key art and its instructions are outside this run.
+The two requested animated Wick families are delivered as five clips (run, stop, idle, hello, wave), **36 frames total**. See the [animation handoff](wick-anim/README.md), [manifest](wick-anim/manifest.json) and [all-clip preview](wick-anim/preview.gif). They are flat white review candidates on transparency, not production approved. Original generated sheets, registered masters and 48px reviews are preserved. Title-screen key art, its instructions and game implementation were outside this art job.

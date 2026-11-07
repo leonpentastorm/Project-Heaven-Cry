@@ -32,6 +32,10 @@ def validate_wick_animation(complete=False):
         require(not complete, 'No Wick animations delivered')
         return
     m = json.loads(manifest_path.read_text())
+    catalog_entry = json.loads((ROOT / 'art/catalog.json').read_text())['animation_manifests']['wick-menu']
+    require(checked(catalog_entry) == manifest_path, 'Catalog animation manifest path')
+    require(catalog_entry['status'] == 'review-candidate' and catalog_entry['production_approved'] is False, 'Catalog animation approval')
+    require(catalog_entry['frame_count'] == m['delivered_frames'] and catalog_entry['clip_count'] == len(m['clips']), 'Catalog animation coverage')
     plan = json.loads((BASE / 'production-plan.json').read_text())
     specs = {s['id']: s for s in plan['sequences']}
     require(m['status'] == 'review-candidate' and m['production_approved'] is False, 'Animation approval status')
@@ -82,7 +86,9 @@ def validate_wick_animation(complete=False):
         require(len(set(hashes)) >= (3 if name != 'hello' else 12), f'{name}: duplicate poses')
         for r in clip['reviews']:
             checked(r)
-        checked(clip['preview'])
+        gif = Image.open(checked(clip['preview']))
+        clip_duration = sum(f.info.get('duration', 0) for f in ImageSequence.Iterator(gif))
+        require(abs(clip_duration - clip['count'] * 1000 / clip['fps']) <= 10, f'{name}: GIF timing')
         if 'path' in clip['provenance']:
             checked(clip['provenance'])
         total += clip['count']
@@ -90,7 +96,7 @@ def validate_wick_animation(complete=False):
     require(total == m['delivered_frames'] and (not complete or total == 36), 'Animation total count')
     preview = Image.open(checked(m['preview']))
     actual_duration = sum(f.info.get('duration', 0) for f in ImageSequence.Iterator(preview))
-    require(abs(actual_duration - expected_duration) <= total * 10, 'Preview GIF timing')
+    require(abs(actual_duration - expected_duration) <= len(m['clips']) * 10, 'Preview GIF timing')
     progress = json.loads((BASE / 'production-progress.json').read_text())
     require(progress['delivered_frames'] == total and set(progress['delivered_sequences']) == set(m['clips']), 'Animation progress differs')
     checksum_map = {line.split('  ', 1)[1]: line.split('  ', 1)[0] for line in (ROOT / 'art/checksums.sha256').read_text().splitlines()}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the PHC art handoff. Python 3 standard library only."""
+"""Validate the PHC art handoff. Wick animation pixel/GIF checks require Pillow."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PIXEL_ASSET = None
 COMPLETE_ICONS = False
 COMPLETE_CAMPAIGN = False
+COMPLETE_WICK_ANIM = False
 WICK_TEST_IDS = {
     'humanity-first', 'the-old-blood', 'factory-made', 'chain-smoker',
     'raised-by-orks', 'the-brightest-light', 'rabbits-foot', 'forlorn-hope',

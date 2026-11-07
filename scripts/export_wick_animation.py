@@ -18,6 +18,19 @@ ORDER = ['run', 'stop', 'idle', 'hello', 'wave']
 
 
 def refresh_checksums():
+    manifest_path = BASE / 'manifest.json'
+    if manifest_path.exists():
+        catalog_path = ROOT / 'art/catalog.json'
+        catalog = json.loads(catalog_path.read_text())
+        manifest = json.loads(manifest_path.read_text())
+        catalog.setdefault('animation_manifests', {})['wick-menu'] = {
+            **record(manifest_path), 'collection': 'wick-menu-v1',
+            'label': 'Wick menu animations', 'status': 'review-candidate',
+            'production_approved': False, 'clip_count': len(manifest['clips']),
+            'frame_count': manifest['delivered_frames'], 'frame_size': [256, 256],
+            'baseline_y': 240, 'ink': '#FFFFFF', 'background': 'transparent',
+            'preview': 'art/mascot/wick-anim/preview.gif'}
+        catalog_path.write_text(json.dumps(catalog, indent=2, ensure_ascii=True) + '\n')
     update_checksums()
     path = ROOT / 'art/checksums.sha256'
     entries = {line.split('  ', 1)[1]: line.split('  ', 1)[0]
@@ -35,6 +48,12 @@ def save(im, path):
 
 def record(path):
     return {'path': relative(path), 'sha256': sha(path)}
+
+
+def gif_durations(count, fps):
+    """Distribute GIF's 10ms rounding error instead of speeding up every frame."""
+    return [(round((i + 1) * 100 / fps) - round(i * 100 / fps)) * 10
+            for i in range(count)]
 
 
 def active_frames(clip):
@@ -87,7 +106,7 @@ def deliver(clip, frames, provenance, manifest):
         gif_frames.append(bg.convert('RGB'))
     gif = BASE / f'previews/{clip}.gif'
     gif_frames[0].save(gif, save_all=True, append_images=gif_frames[1:],
-                       duration=1000 / spec['fps'], loop=0, disposal=2, optimize=False)
+                       duration=gif_durations(len(frames), spec['fps']), loop=0, disposal=2, optimize=False)
     manifest['clips'][clip] = {
         'count': len(frames), 'fps': spec['fps'], 'loop': spec['loop'],
         'facing': spec['facing'], 'baseline_y': 240,
@@ -154,18 +173,7 @@ def export(clip, source):
         deliver('wave', [frames[i].copy() for i in indices],
                 {'derived_from': [f'hello/hello_{i:02}.png' for i in indices],
                  'method': 'exact generated hello apex reuse, no redraw or mirroring'}, manifest)
-    all_frames, durations = [], []
-    for name in ORDER:
-        if name not in manifest['clips']:
-            continue
-        for i in range(SPECS[name]['frames']):
-            f = Image.open(BASE / f'presentation/{name}/{name}_{i:02}.png').convert('RGBA')
-            bg = Image.new('RGBA', f.size, '#10151F')
-            bg.alpha_composite(f)
-            all_frames.append(bg.convert('RGB'))
-            durations.append(1000 / SPECS[name]['fps'])
-    all_frames[0].save(BASE / 'preview.gif', save_all=True, append_images=all_frames[1:], duration=durations, loop=0, disposal=2, optimize=False)
-    manifest['preview'] = record(BASE / 'preview.gif')
+    refresh_previews(manifest)
     manifest['playback_order'] = [c for c in ORDER if c in manifest['clips']]
     manifest['delivered_frames'] = sum(c['count'] for c in manifest['clips'].values())
     dump(mp, manifest)
@@ -185,6 +193,27 @@ def export(clip, source):
     dump(BASE / 'production-plan.json', plan)
     refresh_checksums()
     print(f'Exported {clip}; {manifest["delivered_frames"]}/36 delivered frames')
+
+
+def refresh_previews(manifest):
+    all_frames, durations = [], []
+    for name in ORDER:
+        if name not in manifest['clips']:
+            continue
+        clip_frames = []
+        for i in range(SPECS[name]['frames']):
+            f = Image.open(BASE / f'presentation/{name}/{name}_{i:02}.png').convert('RGBA')
+            bg = Image.new('RGBA', f.size, '#10151F')
+            bg.alpha_composite(f)
+            clip_frames.append(bg.convert('RGB'))
+        times = gif_durations(len(clip_frames), SPECS[name]['fps'])
+        gif_path = BASE / f'previews/{name}.gif'
+        clip_frames[0].save(gif_path, save_all=True, append_images=clip_frames[1:], duration=times, loop=0, disposal=2, optimize=False)
+        manifest['clips'][name]['preview'] = record(gif_path)
+        all_frames.extend(clip_frames)
+        durations.extend(times)
+    all_frames[0].save(BASE / 'preview.gif', save_all=True, append_images=all_frames[1:], duration=durations, loop=0, disposal=2, optimize=False)
+    manifest['preview'] = record(BASE / 'preview.gif')
 
 
 if __name__ == '__main__':

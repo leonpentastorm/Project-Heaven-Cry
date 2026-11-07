@@ -15,6 +15,7 @@ Find your art mode, read that part, and attach that mode's reference images. Cur
 | A campaign object sprite | Campaign brief group E; sections 01–07 for materials | Heavenprint paint anchors, a top-down map and the current overhead object reference |
 | A player skill portrait | Current art modes; sections 15–17; the abstract skill prompt in section 12 | `current-abstract-skills-27.jpg` |
 | A trait or perk icon | Current art modes; sections 08–11 and 14; the Wick icon prompt in section 12 | `approved-wick-trait-mind-without-fog.png` |
+| A flat-ink Wick menu animation | Sections 09, 10 and 14; current animation brief section B; `art/mascot/wick-anim/README.md` | Approved `art/mascot/wick-welcome.png`, Mind Without Fog, and the retained animation masters |
 | Painted mascot art | Sections 08–11; the Wick base prompt in section 12 | `wick-model-study.png`, the approved icon |
 
 ## What changed in 1.3
@@ -303,7 +304,7 @@ Check at the actual target size on both light and dark UI backgrounds. Face pixe
 
 ## Wick's modes
 
-- **Flat white ink:** trait and perk icons only (sections 11–14), plus the welcome mark Leon chose as the app icon (`art/mascot/wick-welcome.png`).
+- **Flat white ink:** trait and perk icons (sections 11–14), the welcome mark Leon chose as the app icon (`art/mascot/wick-welcome.png`), and the explicitly requested menu animation clips in `art/mascot/wick-anim/`.
 - **Fully 3D, rendered:** the Narrator's avatar, wherever the Narrator appears (AI or human). Brief: `art/briefs/wick-narrator-3d.md`. Same construction and anchors (section 09), with the painted materials: ivory ceramic, oxide-red capelet, brass, warm screen and lantern.
 - **Painted:** promotional and larger mascot art, below.
 
@@ -381,6 +382,8 @@ The heart is Wick's lantern-heart chest feature, not a requirement to replace it
 Traits and perks: pure white #FFFFFF. No attribute or requirement colour appears in an icon. Use cut-outs and sparse graphic separations for interior form. No painterly tonal modelling, gradients, glow or soft drop shadows. Retain the reference's hand-drawn print character; do not automatically sanitize all irregularity into vector geometry.
 
 The bowl, meditating pose and deflected arrows belong to Mind Without Fog, not every icon. For another trait, change the action and symbols to express its actual effect.
+
+The menu animation handoff uses the same flat ink and identity anchors: 256px transparent frames, nominal 200px Wick, registered soles at y240, never mirrored. Run/stop/idle face right; hello turns toward the viewer. Hello's jump is carried by the manifest root-motion track or its baked presentation variant, while required frames retain fixed registration. Wave reuses hello's four apex drawings; stop and hello end at the generated idle pose. Original sheets and versioned masters remain preserved. All five clips are review candidates, not production approved. See `art/mascot/wick-anim/README.md`; this does not change the separate title-screen art or implementation instructions.
 
 ## Scope and fidelity
 This lock applies to perk and trait icons; it does not change the two approved portrait collections or the pilot's painted style. Preserve the selected source unchanged. Review future exports on the intended UI background so the face, cape folds and heart read correctly without replacing their design.
