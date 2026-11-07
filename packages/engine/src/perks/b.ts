@@ -143,6 +143,14 @@ register({
       if (run.has(ctx.to) && !s.mid) throw new RuleError('Wall Run: you can\'t stop on a wall or over a gap.');
       s.carry = run.has(ctx.to) ? n : 0;
     },
+    // Story: a parkour Athletics check (tagged parkour, climbing, jump or wall_run) succeeds without a roll. The
+    // Narrator only tags it so when the run is within 3 m (I) or 6 m (II); the brief says so (provisional reading).
+    check_post: (ctx, h) => {
+      if (ctx.c !== h.c || ctx.auto) return; const ck = ctx.ck || {};
+      if (!((ck.skills || []) as string[]).includes('athletics')) return;
+      if (!((ck.tags || []) as string[]).some((t) => /^(parkour|climbing|jump|wall_run)$/.test(t))) return;
+      ctx.auto = 'success'; ctx.labels.push('Wall Run ' + (h.tier === 'II' ? 'II' : 'I') + ': no check needed');
+    },
   },
   actions: [{
     id: 'wall_strike', label: 'Wall Run strike', scope: ['combat'], ap: 0, target: 'enemy',
@@ -171,7 +179,7 @@ register({
       return null;
     },
   }],
-  brief: (h) => 'Story: runs walls and leaps gaps to ' + (h.tier === 'II' ? '6' : '3') + ' m without a check.',
+  brief: (h) => 'Story: runs walls and leaps gaps to ' + (h.tier === 'II' ? '6' : '3') + ' m without a check (tag such an Athletics check parkour).',
 });
 
 // =====================================================================================================================

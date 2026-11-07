@@ -59,6 +59,22 @@ describe('Wall Run', () => {
   });
 });
 
+describe('Wall Run (story)', () => {
+  it('a parkour Athletics check succeeds without a roll; an untagged one still rolls', () => {
+    const s = storyWith([{ perks: { wall_run: 'I' } }]); const c = s.chars[0];
+    s.act({ type: 'narrator/turn', turn: { narration: 'A gap between roofs.', checks: [{ charId: c.id, skills: ['athletics'], tn: 20, stakes: 'Leap the gap', tags: ['parkour'] }] } } as any);
+    s.g.rng.state = rngFor(1).state;
+    let ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id });
+    expect(s.g.checks.find((k) => k.id === ck.id)!.roll!.ok).toBe(true);
+    expect(s.g.story.entries.some((e: any) => /Wall Run I: no check needed/.test(e.head || ''))).toBe(true);
+    s.act({ type: 'check/accept', checkId: ck.id } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'A heavy crate.', checks: [{ charId: c.id, skills: ['athletics'], tn: 20, stakes: 'Lift it' }] } } as any);
+    s.g.rng.state = rngFor(1).state;
+    ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id });
+    expect(s.g.checks.find((k) => k.id === ck.id)!.roll!.ok).toBe(false);
+  });
+});
+
 describe('Roll With It', () => {
   it('I: a miss against you on an enemy turn gives 1 free tile next turn, with no opportunity attacks; once a round', () => {
     const f = fightWith([{ perks: { roll_with_it: 'I' } }], [{ at: 'C6', weapon: 'fists' }]);

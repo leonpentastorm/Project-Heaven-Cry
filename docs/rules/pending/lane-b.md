@@ -17,7 +17,7 @@ None of this is in the spec yet. The text below is written for the spec. The ope
 - **Never crossable:** a door, a free-standing full-cover object (a pillar), or the inside of a building (a blocked tile whose 8 neighbours are all blocked).
 - You can't end a move on a wall or over a gap.
 - **II, Wall Run strike (Perks tab):** run to a tile of the run, which may be on the wall. Make one attack from there with your weapon's basic attack, then finish the move on the tile you chose. Each leg pays its own AP.
-- **Story:** parkour within 3 m (I) or 6 m (II) needs no Athletics check.
+- **Story:** parkour within 3 m (I) or 6 m (II) needs no Athletics check. The engine makes an Athletics check tagged `parkour`, `climbing`, `jump` or `wall_run` an automatic success; the Narrator tags it so only when the run is within the tier's distance (the brief tells it).
 
 **Roll With It.** A *successful dodge* is an attack against you that misses. It works once a round.
 - **I:** 1 free tile. **II:** 2 free tiles.
@@ -148,6 +148,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 2. **Wall Run:**
    - **Runnable tiles:** map walls with at least one open neighbour, half-cover objects, and objects whose kind contains hole, pit or gap. Never doors or free-standing full-cover objects.
    - **The II strike:** your weapon's basic attack (shot, or melee with a melee weapon).
+   - **Story:** the distance limit is the Narrator's judgement; the engine auto-passes a tagged Athletics check (provisional reading; a check `distance` field would let the engine own it).
 3. **Roll With It:** once a round, and the tiles are deferred off your turn (audit problems 2 and 3). The II crit bonus is spent by the next attack, hit or miss.
 4. **Shadow Step II:** TN 10 + best notice + 2 per earlier success; no new ambush (plan 6a-8, GAMEBREAKING fix). No witness: stays Hidden.
 5. **Got You in My Sight:**

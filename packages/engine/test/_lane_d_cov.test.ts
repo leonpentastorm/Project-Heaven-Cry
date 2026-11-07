@@ -1,4 +1,0 @@
-import { it } from 'vitest';
-import { coverageReport } from '../src';
-const IDS='hold_the_stroke parallel_thought heart_overload resonance rite_in_the_field clean_draw the_twin_pays twin_souls twin_discipline verse_of_war fire_sermon litany upper_touched sigil_savant hollow_heart heretic true_believer heavens_faithful mirage solid_image the_soundscape_of_the_soul headbanger underground_sound you_get_used_to_it shared_breath'.split(' ');
-it('cov', () => { for (const r of coverageReport() as any[]) if (IDS.includes(r.key.split(':')[1])) (globalThis as any).__o=((globalThis as any).__o||'')+[r.key, r.tier, r.index, r.op, r.owner].join(' ')+'\n'; require('fs').writeFileSync('/tmp/claude-0/-home-user-Project-Heaven-Cry/349dac9a-7112-5faf-9546-ff9e3adafea4/scratchpad/cov.txt',(globalThis as any).__o); });
