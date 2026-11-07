@@ -135,5 +135,5 @@
   "registration_note": "Required frames and strips keep sole registration at y240. Also supply root_motion_y for hello/wave and optionally presentation frames/strips with jump baked in; this preserves fixed registration and visible flight. Grounded frames stay y240.",
   "timing_note": "Native hello is16 frames at12fps (1.333s). Any title-screen transition acceleration is a consumer decision; do not modify screen code or its instructions.",
   "preservation": "Version raw sources and frame masters under sources/v1 and masters/v1; keep all earlier revisions. Main delivery uses requested run/,stop/,idle/,hello/,wave/ folders and horizontal PNG strips.",
-  "status": "planned-no-generated-frames"
+  "status": "in-progress"
 }

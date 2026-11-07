@@ -1,31 +1,19 @@
 {
-  "status": "paused-image-generation-limit",
-  "observed_utc": "2026-11-06T11:14:05.923528+00:00",
+  "status": "in-progress",
+  "observed_utc": "2026-11-07T00:41:47.779032+00:00",
   "target_sequences": 5,
   "target_frames": 36,
-  "delivered_sequences": [],
-  "delivered_frames": 0,
+  "delivered_sequences": [
+    "run"
+  ],
+  "delivered_frames": 8,
   "remaining_sequences": [
-    "run",
     "idle",
     "stop",
-    "hello",
-    "wave"
+    "hello"
   ],
-  "next_sequence": "run",
+  "next_sequence": "idle",
   "production_approved": false,
-  "generation_pause": {
-    "type": "usage_limit_reached",
-    "http_status": 429,
-    "plan_type": "plus",
-    "reset_epoch": 1794011398,
-    "reset_utc": "2026-11-07T00:29:58Z",
-    "reset_local": "2026-11-07T07:29:58+07:00",
-    "timezone": "Asia/Bangkok",
-    "limit_window_minutes": 1440,
-    "returned_resets_in_seconds": 48002,
-    "attempts_after_limit": 0
-  },
   "scope": "Wick animation sectionB only; title-screen instructions and art untouched.",
   "continuation": {
     "automation_id": "Automation_35ee8a4a77b48191a4e5a9bf89dd757c",
@@ -34,5 +22,19 @@
     "timezone": "Asia/Bangkok",
     "action": "Generate and push the Wick menu animations; not a reminder",
     "one_time": true
-  }
+  },
+  "limit_history": [
+    {
+      "type": "usage_limit_reached",
+      "http_status": 429,
+      "plan_type": "plus",
+      "reset_epoch": 1794011398,
+      "reset_utc": "2026-11-07T00:29:58Z",
+      "reset_local": "2026-11-07T07:29:58+07:00",
+      "timezone": "Asia/Bangkok",
+      "limit_window_minutes": 1440,
+      "returned_resets_in_seconds": 48002,
+      "attempts_after_limit": 0
+    }
+  ]
 }

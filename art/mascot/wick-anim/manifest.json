@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "brief": "art/briefs/title-screen.md#b-wicks-menu-animations",
+  "frame_size": [
+    256,
+    256
+  ],
+  "baseline_y": 240,
+  "ink": "#FFFFFF",
+  "background": "transparent",
+  "never_mirror": true,
+  "registration": "Required frames and strips keep sole registration at y240. Also supply root_motion_y for hello/wave and optionally presentation frames/strips with jump baked in; this preserves fixed registration and visible flight. Grounded frames stay y240.",
+  "references": [
+    {
+      "path": "art/mascot/wick-welcome.png",
+      "sha256": "757b112eb8a7a3b7c263f56daa2ba211308bca455e463d0e6d1b1b54353e6939"
+    },
+    {
+      "path": "art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png",
+      "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+    }
+  ],
+  "clips": {
+    "run": {
+      "count": 8,
+      "fps": 12,
+      "loop": true,
+      "facing": "right",
+      "baseline_y": 240,
+      "footfalls_1based": [
+        2,
+        6
+      ],
+      "footfalls_0based": [
+        1,
+        5
+      ],
+      "root_motion_y": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "frames": [
+        {
+          "path": "art/mascot/wick-anim/run/run_00.png",
+          "sha256": "42a224ec9c4aa30c4f6b776c5360406f1e89e042a578549170087aeb518b980d",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_00.png",
+            "sha256": "42a224ec9c4aa30c4f6b776c5360406f1e89e042a578549170087aeb518b980d"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_01.png",
+          "sha256": "0c09b60375efc5b92a1b21fd32e91167b96bdfef382b46926295930e31254bd8",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_01.png",
+            "sha256": "0c09b60375efc5b92a1b21fd32e91167b96bdfef382b46926295930e31254bd8"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_02.png",
+          "sha256": "49cb0cc30573d2029351aa390ca91cb4785258785d3debc14afa737078b376ed",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_02.png",
+            "sha256": "49cb0cc30573d2029351aa390ca91cb4785258785d3debc14afa737078b376ed"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_03.png",
+          "sha256": "3eed31b2baa1ce95bd03ad890ef1d975174f1ff3beb53c7c8583407cc77937e8",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_03.png",
+            "sha256": "3eed31b2baa1ce95bd03ad890ef1d975174f1ff3beb53c7c8583407cc77937e8"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_04.png",
+          "sha256": "4413e3b522c2c45606f5b653499096fbc979a0e3dc62f72141aaa25374171b4c",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_04.png",
+            "sha256": "4413e3b522c2c45606f5b653499096fbc979a0e3dc62f72141aaa25374171b4c"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_05.png",
+          "sha256": "7243075226fda32f8b400890fd572a9023c975a8ddf5937f950ec72ffb7ecfb2",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_05.png",
+            "sha256": "7243075226fda32f8b400890fd572a9023c975a8ddf5937f950ec72ffb7ecfb2"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_06.png",
+          "sha256": "a66e9516833509fe8baf9788a229383a42452538a92351b277d985962f014de9",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_06.png",
+            "sha256": "a66e9516833509fe8baf9788a229383a42452538a92351b277d985962f014de9"
+          },
+          "root_motion_y": 0
+        },
+        {
+          "path": "art/mascot/wick-anim/run/run_07.png",
+          "sha256": "540dc4e9bd91fdd95c4604627326a33bb44cb8bdfca3a38d8aed92aa8a867f7f",
+          "presentation": {
+            "path": "art/mascot/wick-anim/presentation/run/run_07.png",
+            "sha256": "540dc4e9bd91fdd95c4604627326a33bb44cb8bdfca3a38d8aed92aa8a867f7f"
+          },
+          "root_motion_y": 0
+        }
+      ],
+      "strip": {
+        "path": "art/mascot/wick-anim/run.png",
+        "sha256": "778d8939009fbd33fcc425e3252d2eca3df2197368d49bc97e91e3106010a345"
+      },
+      "presentation_strip": {
+        "path": "art/mascot/wick-anim/presentation/run.png",
+        "sha256": "778d8939009fbd33fcc425e3252d2eca3df2197368d49bc97e91e3106010a345"
+      },
+      "preview": {
+        "path": "art/mascot/wick-anim/previews/run.gif",
+        "sha256": "afc63526ae5c6963ae8215fb9c73833103f1ca3fb8eca564a7cb9573255925a7"
+      },
+      "provenance": {
+        "path": "art/mascot/wick-anim/sources/v1/run-sheet.png",
+        "sha256": "dabfb274487b88437bd28a2bbc6e76112230a60fc01c29c61ea99149fe66cbdd",
+        "grid": [
+          4,
+          2
+        ],
+        "order": "row-major",
+        "cell_boxes": [
+          [
+            0,
+            0,
+            444,
+            444
+          ],
+          [
+            444,
+            0,
+            887,
+            444
+          ],
+          [
+            887,
+            0,
+            1330,
+            444
+          ],
+          [
+            1330,
+            0,
+            1774,
+            444
+          ],
+          [
+            0,
+            444,
+            444,
+            887
+          ],
+          [
+            444,
+            444,
+            887,
+            887
+          ],
+          [
+            887,
+            444,
+            1330,
+            887
+          ],
+          [
+            1330,
+            444,
+            1774,
+            887
+          ]
+        ],
+        "uniform_scale": 0.5242463958060288,
+        "ink_separation": "luminance>=128 and source alpha>=128; white plate with antialiased export edges",
+        "creative_method": "image_gen; technical crop, ink separation, uniform scale and sole registration only"
+      },
+      "reviews": [
+        {
+          "path": "art/mascot/wick-anim/previews/run-48px-dark.png",
+          "sha256": "d160c45d8495d8095e959f78f67bf4c780813c19ba1cae66434c2cb131e41590"
+        },
+        {
+          "path": "art/mascot/wick-anim/previews/run-48px-light.png",
+          "sha256": "904c1a00c905be85babf2273a42f7a58efdd08e9c9761539e68f54288311a631"
+        }
+      ]
+    }
+  },
+  "preview": {
+    "path": "art/mascot/wick-anim/preview.gif",
+    "sha256": "afc63526ae5c6963ae8215fb9c73833103f1ca3fb8eca564a7cb9573255925a7"
+  },
+  "playback_order": [
+    "run"
+  ],
+  "delivered_frames": 8
+}

@@ -1,6 +1,6 @@
 # Wick menu animations — production queue
 
-**No animation frames delivered yet.** The first run-sheet request reached the image tool’s daily usage limit before generating an image. Reported reset: **7 November 2026, 07:29:58 Asia/Bangkok** (`2026-11-07T00:29:58Z`). Do not retry before that time. Exact state is in [production-progress.json](production-progress.json).
+**8 of 36 frames delivered: run.** The reset has passed and drawing resumed. This is a review candidate, not production approval. Exact state is in [production-progress.json](production-progress.json); the previous quota response is retained in its limit history.
 
 Leon requested only the two animated Wick families in [sectionB of the brief](../../briefs/title-screen.md#b-wicks-menu-animations). Title-screen key art, its instructions and screen implementation are excluded from this run. The source brief is unchanged.
 
@@ -22,4 +22,4 @@ Registered frames keep baseline y240. A root-motion track and optional presentat
 
 On resume: fetch and safely integrate current implementer commits, read art/AGENTS.md and current guide/sectionB, inspect references and any saved sources, generate one sheet, show it in chat, export/validate and push it before the next sheet. Preserve sources and every revision; never redraw an existing rendered sheet just because its push failed. Deliver the required numbered-frame folders, horizontal strips, GIF and manifest only after actual artwork exists. Leave approval false until Leon reviews it.
 
-A one-time continuation is scheduled for **7 November 2026, 07:31 Asia/Bangkok**, after the reported reset. It is instructed to generate and push the work, not send a reminder.
+A one-time continuation resumed on **7 November 2026**. Each generated sheet is shown, technically exported, checked and pushed before the next render. The [manifest](manifest.json) records only actually delivered clips. [Sources](sources/v1/) retain original image-generated sheets and prompts; [masters](masters/v1/) preserve registered frames. Run `python3 scripts/validate_art.py --wick-anim-only` for incremental validation, and add `--complete-wick-anim` at handoff.

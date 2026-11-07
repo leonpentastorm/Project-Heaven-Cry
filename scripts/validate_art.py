@@ -391,6 +391,8 @@ def validate():
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
     validate_campaign_art(catalog)
+    from validate_wick_animation import validate_wick_animation
+    validate_wick_animation(complete=COMPLETE_WICK_ANIM)
     checksums = local('art/checksums.sha256').read_text().splitlines()
     for line in checksums:
         expected, path = line.split('  ', 1)
@@ -409,12 +411,18 @@ if __name__ == '__main__':
     parser.add_argument('--complete-icons', action='store_true', help='Require full 74-trait / 106-perk coverage.')
     parser.add_argument('--complete-campaign', action='store_true', help='Require the full current M813 campaign queue, including runtime followups.')
     parser.add_argument('--archetypes-only', action='store_true', help='Check the 46-card delivery without requiring unrelated historical assets.')
+    parser.add_argument('--wick-anim-only', action='store_true', help='Check delivered Wick animation clips and their technical assets.')
+    parser.add_argument('--complete-wick-anim', action='store_true', help='Require all five Wick clips and 36 frames.')
     args = parser.parse_args()
     PIXEL_ASSET = args.asset
     COMPLETE_ICONS = args.complete_icons
     COMPLETE_CAMPAIGN = args.complete_campaign
+    COMPLETE_WICK_ANIM = args.complete_wick_anim
     try:
-        if args.archetypes_only:
+        if args.wick_anim_only:
+            from validate_wick_animation import validate_wick_animation
+            validate_wick_animation(complete=COMPLETE_WICK_ANIM)
+        elif args.archetypes_only:
             validate_archetype_cards(json.loads(local('art/catalog.json').read_text()))
         else:
             validate()
