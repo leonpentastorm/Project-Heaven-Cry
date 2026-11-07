@@ -133,7 +133,7 @@ describe('missions', () => {
     g = turn(g, { endScene: { summary: 'The ramp: Keel sealed the hatch; the column stayed on the pad.' }, missions: [{ mission: 'the_ramp', objective: 'no_shots', status: 'done' }, { mission: 'the_ramp', objective: 'get_aboard', status: 'failed', note: 'the hatch sealed' }] });
     const ms = missionsOf(g)!;
     expect(ms.failed).toEqual(['the_ramp']); expect(ms.active).toEqual([]);
-    expect(ms.choose).toEqual({ from: 'the_ramp', options: ['the_years', 'the_crossing'] });
+    expect(ms.choose).toEqual({ from: 'the_ramp', options: ['the_years', 'the_demand'] });
     const e = ms.ending!;
     expect(e).toMatchObject({ kind: 'act', mission: 'the_ramp', title: 'Act 1 · The Last Ship', next: null });
     expect(e.recap.join(' ')).toMatch(/Keel sealed the hatch/);
@@ -141,7 +141,7 @@ describe('missions', () => {
     expect(e.choices).toEqual(['The medics gave Keel the platinum.']);
     expect(e.done).toContain('No shots fired');
     expect(actOpening(g)).toMatch(/not chosen yet/);
-    expect(missionBrief(g)).toMatch(/CHOOSE NEXT.*the_years.*the_crossing/);
+    expect(missionBrief(g)).toMatch(/CHOOSE NEXT.*the_years.*the_demand/);
     // the Narrator picks the branch: it activates, the card learns its title, the next turn is told to open it
     g = turn(g, { missionNext: 'the_years' });
     const ms2 = missionsOf(g)!;
@@ -153,7 +153,7 @@ describe('missions', () => {
     g = turn(g, { narration: 'Years.' });
     expect(actOpening(g)).toBe('');
     // a wrong branch is ignored
-    expect(missionsOf(turn(atRamp(), { missionNext: 'the_demand' }))!.active).toEqual(['the_ramp']);
+    expect(missionsOf(turn(atRamp(), { missionNext: 'the_shield_line' }))!.active).toEqual(['the_ramp']);
   });
 
   it('hidden objectives stay off the board and out of the open list until revealed', () => {
@@ -170,8 +170,7 @@ describe('missions', () => {
 
   it('campaign end: the Narrator gets one last turn, the epilogue, then the save is complete', () => {
     let g = atRamp();
-    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_crossing' });
-    g = turn(g, { missions: done('the_crossing', 'reach_outpost_1') });
+    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_demand' });
     expect(missionsOf(g)!.active).toEqual(['the_demand']);
     g = turn(g, { missions: done('the_demand', 'reach_colonel', 'make_demand', 'the_answer') });
     expect(missionsOf(g)!.ending!.kind).toBe('campaign');
@@ -188,8 +187,7 @@ describe('missions', () => {
 
   it('a campaign end during a fight waits for the fight\'s end before the epilogue', () => {
     let g = atRamp();
-    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_crossing' });
-    g = turn(g, { missions: done('the_crossing', 'reach_outpost_1') });
+    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_demand' });
     g = turn(g, { missions: done('the_demand', 'reach_colonel', 'make_demand', 'the_answer'), combat: { name: 'Station security', difficulty: 'hard', enemies: [{ name: 'Security guard', tier: 'soldier', weapon: 'decrkm_smg' }] } });
     expect(g.phase).toBe('combat'); expect(missionsOf(g)!.epilogueDue).toBe(true); expect(g.story.work).toBeNull();
     // the fight ends (as the engine would), the aftermath turn comes, then the epilogue
@@ -253,7 +251,7 @@ describe('campaign data', () => {
   it('the M813 missions validate, and the data follows the arc', () => {
     const c = builtInCampaign('m813')!;
     expect(validateCampaign(c)).toEqual([]);
-    expect(c.missions!.map((m) => m.id)).toEqual(['the_shield_line', 'the_ramp', 'the_years', 'the_crossing', 'the_demand']);
+    expect(c.missions!.map((m) => m.id)).toEqual(['the_shield_line', 'the_ramp', 'the_years', 'the_demand']);
     expect(c.missions!.find((m) => m.id === 'the_ramp')!.end!.kind).toBe('act');
     expect(c.missions!.find((m) => m.id === 'the_demand')!.end!.kind).toBe('campaign');
   });
@@ -269,8 +267,8 @@ describe('campaign data', () => {
     expect(errs).toMatch(/leads to unknown mission "nowhere"/);
     expect(errs).toMatch(/"the_ramp" needs at least one required objective/);
     expect(errs).toMatch(/end needs kind/);
-    expect(errs).toMatch(/"the_crossing" needs an act number/);
-    expect(validateMissions({ ...c, missions: [{ ...bad[4], next: 'the_demand' }] }).join()).toMatch(/No mission starts the campaign/);
+    expect(errs).toMatch(/"the_demand" needs an act number/);
+    expect(validateMissions({ ...c, missions: [{ ...JSON.parse(JSON.stringify(c.missions[3])), next: 'the_demand' }] }).join()).toMatch(/No mission starts the campaign/);
     expect(validateMissions({ ...c, board_npc: { name: 'Quartermaster', zone: 'mars', at: 'B2' } }).join()).toMatch(/unknown zone "mars"/);
   });
   it('a board NPC stands in its zone as a neutral token', () => {

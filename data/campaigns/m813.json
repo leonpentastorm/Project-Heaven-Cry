@@ -1594,7 +1594,8 @@
         {
           "id": "first_fight",
           "text": "Drive the scavenger drones off the fallen squad",
-          "done_when": "The drones picking at the fallen squad are destroyed, driven off or scared away (the tutorial fight Picking at the dead, or a way around it)."
+          "done_when": "The drones picking at the fallen squad are destroyed, driven off or scared away (the tutorial fight Picking at the dead, or a way around it).",
+          "optional": true
         },
         {
           "id": "who_stays",
@@ -1637,9 +1638,9 @@
       ],
       "next": [
         "the_years",
-        "the_crossing"
+        "the_demand"
       ],
-      "narrator_notes": "In the record, talk fails: the engineers seal the hatch, kill two medics and nineteen infantry with guns and grenades, and fly to the carrier. The players can change that; let them, and let it cost something either way. Every preparation that succeeds should change the talk or the fight. Branch: if the wounded are left behind (get_aboard failed), missionNext is the_years; if they board, the_crossing.",
+      "narrator_notes": "In the record, talk fails: the engineers seal the hatch, kill two medics and nineteen infantry with guns and grenades, and fly to the carrier. The players can change that; let them, and let it cost something either way. Every preparation that succeeds should change the talk or the fight. Branch: if the wounded are left behind (get_aboard failed), missionNext is the_years; if they board, the_demand: the crossing to Outpost-1 is a scene or two (a montage if time passes), not a mission of its own.",
       "end": {
         "kind": "act",
         "title": "Act 1 · The Last Ship"
@@ -1679,26 +1680,6 @@
       "end": {
         "kind": "act",
         "title": "Act 2 · The Years"
-      }
-    },
-    {
-      "id": "the_crossing",
-      "title": "The Crossing",
-      "act": 2,
-      "summary": "Aboard the last ship with the column. Regiment 093 answers to Outpost-1, and so does the Colonel who ordered the line held.",
-      "goal": "Bring the survivors before Colonel Novikov at Outpost-1.",
-      "objectives": [
-        {
-          "id": "reach_outpost_1",
-          "text": "Reach Outpost-1 with the survivors",
-          "done_when": "The party travels to outpost_1."
-        }
-      ],
-      "next": "the_demand",
-      "narrator_notes": "The record has no version where the wounded boarded, so the arc scripts nothing here. Keep it short (a scene or two, a montage if time passes) and bring them to Outpost-1; let the column's names carry it.",
-      "end": {
-        "kind": "act",
-        "title": "Act 2 · The Crossing"
       }
     },
     {

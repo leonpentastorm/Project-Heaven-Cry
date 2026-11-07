@@ -27,7 +27,7 @@ describe('the mission board view', () => {
     expect(b.current[0]).toMatchObject({ title: 'The Ramp', kicker: 'ACT 1 · CURRENT', goal: 'Get the wounded aboard the last ship.' });
     expect(b.current[0].rows.map((r) => r.mark + (r.optional ? '?' : ''))).toEqual(['☐', '☐?', '✕?']);
     expect(b.past.map((m) => m.kicker)).toEqual(['ACT 1 · COMPLETE']);
-    expect(b.past[0].rows.every((r) => r.mark === '✓')).toBe(true);
+    expect(b.past[0].rows.filter((r) => !r.optional).every((r) => r.mark === '✓')).toBe(true); // an optional one left undone stays open
   });
   it('toasts for mission lines only', () => {
     expect(toastFor({ id: 'e1', kind: 'system', mission: 'done', text: '✓ Objective: Get the wounded aboard' })).toEqual({ kicker: '✓ OBJECTIVE', text: 'Get the wounded aboard', tone: 'done' });
@@ -38,12 +38,11 @@ describe('the mission board view', () => {
   it('the act-end card shows once per viewer; the campaign end screen after the epilogue', () => {
     let g = started();
     g = turn(g, { missions: [{ mission: 'the_shield_line', status: 'done' }], xp: [{ charId: 'all', source: 'quest', amount: 120 }] });
-    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_crossing' });
+    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_demand' });
     const card = endingView(g, [])!;
-    expect(card).toMatchObject({ kind: 'act', title: 'Act 1 · The Last Ship', next: { title: 'The Crossing' } });
+    expect(card).toMatchObject({ kind: 'act', title: 'Act 1 · The Last Ship', next: { title: 'The Demand' } });
     expect(card.kind === 'act' && card.xp).toEqual([{ key: Object.keys(g.characters)[0], text: 'MPAT +120 XP' }]);
     expect(endingView(g, [card.seq])).toBeNull();
-    g = turn(g, { missions: [{ mission: 'the_crossing', status: 'done' }] });
     g = turn(g, { missions: [{ mission: 'the_demand', status: 'done' }] });
     expect(endingView(g, [])).toBeNull(); // the epilogue turn hasn't come yet
     g = turn(g, { narration: 'First.\n\nSecond.' });

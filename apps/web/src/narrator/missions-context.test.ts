@@ -39,9 +39,8 @@ describe('the Narrator\'s context', () => {
   it('an act end tells the next turn to open the next mission; the campaign end asks for the epilogue', () => {
     let g = started();
     g = turn(g, { missions: [{ mission: 'the_shield_line', status: 'done' }] });
-    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_crossing' });
-    expect(turnPrompt(ask(g))).toMatch(/ACT ENDED: open the next mission The Crossing/);
-    g = turn(g, { missions: [{ mission: 'the_crossing', status: 'done' }] });
+    g = turn(g, { missions: [{ mission: 'the_ramp', objective: 'get_aboard', status: 'done' }], missionNext: 'the_demand' });
+    expect(turnPrompt(ask(g))).toMatch(/ACT ENDED: open the next mission The Demand/);
     g = turn(g, { missions: [{ mission: 'the_demand', status: 'done' }] });
     expect(g.story.work).toEqual({ kind: 'epilogue' });
     expect(turnPrompt(g)).toMatch(/YOUR JOB NOW: THE CAMPAIGN HAS ENDED/);

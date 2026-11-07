@@ -56,7 +56,7 @@ The campaign's first missions are the ones no other mission leads to. A mission 
   "objectives": [
     { "id": "get_aboard", "text": "Get the wounded aboard", "done_when": "The hatch closes with the wounded inside. Failed if the ship leaves without them." },
     { "id": "no_shots", "text": "No shots fired", "optional": true, "done_when": "Settled without anyone firing." } ],
-  "next": ["the_years", "the_crossing"], "narrator_notes": "Left behind: the_years. Aboard: the_crossing.",
+  "next": ["the_years", "the_demand"], "narrator_notes": "Left behind: the_years. Aboard: the_demand.",
   "end": { "kind": "act", "title": "Act 1 · The Last Ship" } }
 ```
 
