@@ -9,7 +9,7 @@ import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../ga
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
-import { openProvingGround } from '../game/sandbox';
+import { openProvingGround, leaveProvingGround } from '../game/sandbox';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
@@ -61,7 +61,9 @@ export class RoomLogic extends DCLogic {
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },
       canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
         f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
-      leave: () => leaveRoom(), leaveLabel: isHost ? 'Save and leave' : 'Leave', leaveTitle: 'Back to the title screen. Resume this room any time from Saved sessions.',
+      // In the Proving Ground the host's Leave ends it and keeps the room (Leon: leaving it landed on the title screen).
+      leave: () => (g.sandbox && isHost ? leaveProvingGround(false) : leaveRoom()), leaveLabel: g.sandbox && isHost ? 'Leave the Proving Ground' : isHost ? 'Save and leave' : 'Leave',
+      leaveTitle: g.sandbox && isHost ? 'Back to this room, as it was before the Proving Ground.' : 'Back to the title screen. Resume this room any time from Saved sessions.',
       isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save',
       saveTitle: 'The game also saves itself after every action, in this browser and on the room server.',
       inSession: g.phase !== 'lobby', backToSession: () => go(g.phase === 'combat' ? 'combat' : 'main'),

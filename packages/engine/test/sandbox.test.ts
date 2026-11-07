@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, validateCampaign, zoneMap, active,
-  WEAPON, maxHp, classRank, packOf, hasEvoker, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable,
+  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf,
 } from '../src';
 
 const sheetFrom = (archId: string, name: string, kit = 'soldier'): Sheet => {
@@ -16,7 +16,10 @@ const lobby = (withChar = true) => {
   if (withChar) g = apply(g, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Vel') }, HOST);
   return g;
 };
-const start = (g = lobby()) => apply(g, { type: 'sandbox/start' }, HOST);
+/** Open the Proving Ground: gearing up, no fight. */
+const open = (g = lobby()) => apply(g, { type: 'sandbox/start' }, HOST);
+/** Open it and start the fight with what stands on the map (wave 1). */
+const start = (g = lobby()) => apply(open(g), { type: 'sandbox/fight' }, HOST);
 const pc = (g: GameState) => g.combat!.units.find((u) => u.side === 'pc')!;
 const charOf = (g: GameState) => Object.values(g.characters).find((c) => c.owner === HOST)!;
 const refused = (g: GameState, a: Action, by = HOST) => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -50,15 +53,60 @@ describe('waves', () => {
     expect(pts(8)).toBeGreaterThan(pts(2));
     expect(sandboxWave(7)).toEqual(sandboxWave(7)); // deterministic: a retried wave is the same wave
   });
-  it('start opens wave 1 with no Narrator work, no XP and no story', () => {
-    const before = lobby(), g = start(before);
+  it('opens gearing up: the squad and wave 1 stand on the map, no fight, no Narrator work', () => {
+    const g = open();
+    expect(g.phase).toBe('story'); expect(g.combat).toBeNull();
+    expect(g.sandbox).toMatchObject({ wave: 1, state: 'ready', ai: true, attempt: 1, auto: false, fights: 0 });
+    expect(sandboxNext(g.sandbox!)).toBe(1);
+    expect(g.story.work).toBeNull(); expect(g.story.await).toBe('players');
+    expect(g.story.zone).toBe('proving_ground');
+    const pos = positionsOf(g); expect(pos[charOf(g).id]).toBeTruthy();
+    const foes = npcsOf(g); expect(foes.map((n) => n.tier)).toEqual(sandboxWave(1).map((f) => f.tier));
+    expect(foes.every((n) => n.side === 'hostile' && !Object.values(pos).includes(n.pos))).toBe(true);
+  });
+  it('the fight starts from the map: Start the fight, wave 1, no XP, the Narrator never called', () => {
+    const g0 = apply(open(), { type: 'sandbox/ai', on: false }, HOST), g = apply(g0, { type: 'sandbox/fight' }, GUEST); // anyone in the room can start it
     expect(g.phase).toBe('combat');
-    expect(g.sandbox).toMatchObject({ wave: 1, state: 'fighting', ai: true, attempt: 1 });
-    expect(g.story.work).toBeNull();
-    expect(g.combat!.noXp).toBe(true);
-    expect(g.combat!.units.filter((u) => u.side === 'foe').length).toBe(sandboxWave(1).length);
-    expect(g.story.entries.length).toBe(before.story.entries.length);
+    expect(g.sandbox).toMatchObject({ wave: 1, state: 'fighting', attempt: 1, fights: 1 });
+    expect(g.story.work).toBeNull(); expect(g.combat!.noXp).toBe(true);
+    expect(g.combat!.name).toBe('Proving Ground · Wave 1');
+    // The drill units that stood on the map are the ones in the fight, where they stood.
+    const foes = g.combat!.units.filter((u) => u.side === 'foe');
+    expect(foes.map((u) => u.npcId).sort()).toEqual(npcsOf(g0).map((n) => n.id).sort());
+    for (const u of foes) expect(u.pos).toBe(npcsOf(g0).find((n) => n.id === u.npcId)!.pos);
+    expect(g.combat!.units.find((u) => u.charId)!.pos).toBe(positionsOf(g0)[charOf(g0).id]);
     expect(active(g.combat!)!.side).toBe('pc'); // enemies who rolled higher already acted
+    expect(refused(g, { type: 'sandbox/fight' })).toMatch(/already on/);
+  });
+  it('with nothing on the map, Start the fight brings the wave chosen', () => {
+    let g = apply(open(), { type: 'sandbox/clear' }, HOST);
+    expect(npcsOf(g).length).toBe(0);
+    g = apply(g, { type: 'sandbox/stage', wave: 4 }, HOST); expect(npcsOf(g).map((n) => n.tier)).toEqual(sandboxWave(4).map((f) => f.tier));
+    g = apply(g, { type: 'sandbox/clear' }, HOST);
+    g = apply(g, { type: 'sandbox/fight' }, HOST);
+    expect(g.sandbox!.wave).toBe(4);
+    expect(g.combat!.units.filter((u) => u.side === 'foe').map((u) => u.tier)).toEqual(sandboxWave(4).map((f) => f.tier));
+    expect(refused(open(), { type: 'sandbox/stage', wave: 3 }, GUEST)).toMatch(/host/);
+  });
+  it('attacking a drill unit on the area map starts the fight (as any overworld attack does), as the next wave', () => {
+    const g0 = open(), c = charOf(g0), me = positionsOf(g0)[c.id];
+    // Bring one drill unit next to us so a strike is in reach, then hit it.
+    const x: GameState = JSON.parse(JSON.stringify(g0)); const [mx, my] = me.split(',').map(Number);
+    const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (mx + dx) + ',' + (my + dy)).find((k) => standable(zoneMap(x), k) && !(x.story.objects || []).some((o) => o.pos === k))!;
+    x.story.npcs = [{ ...npcsOf(x)[0], pos: near }];
+    const g = apply(x, { type: 'world/act', charId: c.id, act: 'attack', targetId: npcsOf(x)[0].id, mode: 'melee' }, HOST);
+    expect(g.combat).toBeTruthy(); expect(g.sandbox!.fights).toBe(1); expect(g.story.work).toBeNull();
+    if (g.phase === 'combat') { expect(g.sandbox).toMatchObject({ state: 'fighting', wave: 1 }); expect(g.combat!.noXp).toBe(true); expect(g.combat!.name).toMatch(/Wave 1/); }
+    else expect(g.sandbox!.state).toBe('cleared'); // won in one blow
+  });
+  it('gearing up: moving costs nothing, no rounds close, no Narrator; Say and the story stay refused', () => {
+    const g0 = open(), c = charOf(g0), me = positionsOf(g0)[c.id], [mx, my] = me.split(',').map(Number);
+    let g = g0;
+    for (const dx of [1, 2, 1, 0]) { const k = (mx + dx) + ',' + my; if (!standable(zoneMap(g), k) || (g.story.objects || []).some((o) => o.pos === k)) continue; g = apply(g, { type: 'world/act', charId: c.id, act: 'move', to: refOf(k) }, HOST); }
+    expect(g.story.ap?.[c.id] ?? 6).toBe(6); expect(g.story.await).toBe('players'); expect(g.story.work).toBeNull(); expect(g.phase).toBe('story');
+    g = apply(g, { type: 'world/act', charId: c.id, act: 'end' }, HOST); expect(g.story.work).toBeNull(); expect(g.story.await).toBe('players');
+    expect(refused(g, { type: 'story/speak', text: 'Hello?' })).toMatch(/no Narrator/);
+    expect(refused(g, { type: 'combat/end-turn', unitId: 'pc-' + c.id })).toMatch(/No fight/);
   });
   it('a quick start with nobody locked in makes a test character (removed on leaving)', () => {
     const g = start(lobby(false));
@@ -72,12 +120,14 @@ describe('waves', () => {
     g = apply(g, { type: 'combat/prone', unitId: pc(g).id }, HOST);
     expect(g.combat!.over).toBe('win');
     expect(g.sandbox).toMatchObject({ state: 'cleared', best: 1 });
-    expect(g.phase).toBe('combat'); expect(g.story.work).toBeNull(); // no finishCombat, no Narrator call
-    expect(charOf(g).xp).toBe(0);
-    const hurt: GameState = JSON.parse(JSON.stringify(g)); const u = pc(hurt); u.hp = 40;
+    // Back to gearing up (the finished fight is kept for the combat screen); no finishCombat, no Narrator call.
+    expect(g.phase).toBe('story'); expect(g.story.work).toBeNull(); expect(g.story.await).toBe('players');
+    expect(charOf(g).xp).toBe(0); expect(sandboxNext(g.sandbox!)).toBe(2);
+    expect(positionsOf(g)[charOf(g).id]).toBe(pc(g).pos); // where the fight left them
+    const hurt: GameState = JSON.parse(JSON.stringify(g)); charOf(hurt).hp = 40;
     expect(refused(hurt, { type: 'sandbox/wave', wave: 4 }, GUEST)).toMatch(/host/);
     const g2 = apply(hurt, { type: 'sandbox/wave' }, GUEST);
-    expect(g2.sandbox).toMatchObject({ wave: 2, state: 'fighting', best: 1 });
+    expect(g2.sandbox).toMatchObject({ wave: 2, state: 'fighting', best: 1, attempt: 1 });
     expect(pc(g2).hp).toBe(40); // carried in
     expect(g2.combat!.name).toMatch(/Wave 2/);
     expect(g2.combat!.units.filter((x) => x.side === 'foe').map((x) => x.tier)).toEqual(sandboxWave(2).map((f) => f.tier));
@@ -115,7 +165,22 @@ describe('waves', () => {
     g = JSON.parse(JSON.stringify(g)); for (const u of g.combat!.units) if (u.side === 'pc') { u.hp = 0; u.downed = true; u.saves = { ok: 0, fail: 2 }; }
     // Ending the downed PC's turn runs the enemies; checkOver sees every PC down.
     g = apply(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id }, HOST);
-    expect(g.combat!.over).toBe('loss'); expect(g.sandbox!.state).toBe('fallen'); expect(g.phase).toBe('combat'); expect(g.story.work).toBeNull();
+    expect(g.combat!.over).toBe('loss'); expect(g.sandbox!.state).toBe('fallen'); expect(g.phase).toBe('story'); expect(g.story.work).toBeNull();
+    // Nothing is lost: everyone is back up and refilled at the start, the field empty; the next fight is the same wave.
+    const c = charOf(g); expect(c.dead).toBe(false); expect(c.hp).toBe(maxHp(c)); expect(npcsOf(g).length).toBe(0);
+    expect(sandboxNext(g.sandbox!)).toBe(1);
+    const again = apply(g, { type: 'sandbox/fight' }, GUEST);
+    expect(again.sandbox).toMatchObject({ wave: 1, attempt: 2, state: 'fighting', fights: 2 });
+    expect(again.combat!.units.filter((u) => u.side === 'foe').length).toBe(sandboxWave(1).length);
+  });
+  it('the host can stop a fight: back to gearing up, the enemies left where they stand', () => {
+    const g = start(), standing = g.combat!.units.filter((u) => u.side === 'foe' && !u.dead).length;
+    expect(refused(g, { type: 'sandbox/stop' }, GUEST)).toMatch(/host/);
+    const s = apply(g, { type: 'sandbox/stop' }, HOST);
+    expect(s.phase).toBe('story'); expect(s.combat).toBeNull(); expect(s.sandbox!.state).toBe('ready');
+    expect(npcsOf(s).length).toBe(standing);
+    expect(refused(s, { type: 'sandbox/stop' })).toMatch(/No fight/);
+    expect(apply(s, { type: 'sandbox/fight' }, HOST).sandbox!.attempt).toBe(2);
   });
 });
 
@@ -187,6 +252,61 @@ describe('the tools', () => {
     for (let i = 0; i < 3; i++) g = apply(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id }, HOST);
     expect(g.combat!.units.filter((u) => u.side === 'pc').map((u) => u.hp)).toEqual(hp);
   });
+  it('gearing up: the tools change the character itself, and a finished fight never writes over them', () => {
+    let g = killAll(start());
+    g = apply(g, { type: 'combat/prone', unitId: pc(g).id }, HOST);
+    expect(g.phase).toBe('story'); expect(g.combat!.over).toBe('win');
+    const c = charOf(g);
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'drifter_revolver', equip: true }, HOST);
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'field_helmet', equip: true }, HOST);
+    expect(charOf(g).weapon).toBe('drifter_revolver'); expect(charOf(g).loaded).toBe(6); expect(charOf(g).worn?.head).toBe('field_helmet');
+    // the ordinary gear actions work here too (the character sheet's own buttons)
+    g = apply(g, { type: 'gear/unequip', charId: c.id, slot: 'head' }, HOST); expect(charOf(g).worn?.head).toBeUndefined();
+    // the main hand empties to fists, and the weapon goes to the pack
+    g = apply(g, { type: 'sandbox/unequip', charId: c.id, slot: 'main' }, HOST);
+    expect(charOf(g).weapon).toBe('fists'); expect(packOf(charOf(g)).some((it) => it.weapon === 'drifter_revolver' && it.kind === 'weapon')).toBe(true);
+    expect(refused(g, { type: 'sandbox/unequip', charId: c.id, slot: 'main' })).toMatch(/empty/);
+    const idx = packOf(charOf(g)).findIndex((it) => it.weapon === 'drifter_revolver' && it.kind === 'weapon');
+    g = apply(g, { type: 'sandbox/equip', charId: c.id, idx, to: 'main' }, HOST);
+    g = apply(g, { type: 'sandbox/wave' }, HOST);
+    expect(pc(g).weapon).toBe('drifter_revolver'); expect(pc(g).ammo).toBe(6);
+  });
+  it('the magic kit: an Evoker in the off hand, cores, words, an Emanator, full MP and two designs; magic works at once', () => {
+    let g = open(); const c = charOf(g);
+    g = apply(g, { type: 'sandbox/kit', charId: c.id }, HOST);
+    const ch = charOf(g);
+    expect(hasEvoker(ch)).toBe(true); expect(hasEmanator(ch)).toBe(true);
+    // In the off hand where it fits; next to a two-handed weapon it is carried in the pack (carried is enough).
+    expect((WEAPON[ch.weapon] as any).hands === '2H' ? packOf(ch).some((it) => (it.item || it.id) === 'evoker') : ch.offHand?.id === 'evoker').toBe(true);
+    expect(packOf(ch).find((it) => (it.item || it.id) === 'standard_core')!.qty).toBeGreaterThanOrEqual(4);
+    expect(ch.sigils).toEqual(expect.arrayContaining(['fire', 'push']));
+    expect((ch.outbursts || []).map((d) => d.school)).toEqual(expect.arrayContaining(['damage', 'buff']));
+    expect(ch.mp).toBeGreaterThan(0);
+    // twice is harmless (no second Evoker, no duplicate designs)
+    const again = apply(g, { type: 'sandbox/kit', charId: c.id }, HOST);
+    expect((charOf(again).outbursts || []).length).toBe((ch.outbursts || []).length);
+    expect(packOf(charOf(again)).filter((it) => (it.item || it.id) === 'evoker').length + (charOf(again).offHand?.id === 'evoker' ? 1 : 0)).toBe(1);
+    // In the fight: draw FIRE on our own tile, and the Outburst designs are ready.
+    g = apply(apply(g, { type: 'sandbox/ai', on: false }, HOST), { type: 'sandbox/fight' }, HOST);
+    const u = pc(g);
+    expect(u.mg?.evoker).toBe(true); expect(u.mg!.words).toContain('fire'); expect(u.mg!.designs.length).toBeGreaterThanOrEqual(2);
+    for (let i = 0; i < 4 && active(g.combat!)!.id !== u.id; i++) g = apply(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id }, HOST);
+    g = apply(g, { type: 'combat/draw', unitId: u.id, word: 'fire', tile: refOf(u.pos) }, HOST);
+    expect((g.combat!.glyphs || []).some((x) => x.word === 'fire')).toBe(true);
+    // a Sigils-only kit for someone else, mid-fight
+    expect(refused(g, { type: 'sandbox/kit', charId: c.id }, GUEST)).toMatch(/Not your/);
+  });
+  it('spawning while gearing up puts an idle drill unit on the map; clearing empties it', () => {
+    let g = apply(open(), { type: 'sandbox/clear' }, HOST);
+    const map = zoneMap(g), taken = new Set(Object.values(positionsOf(g)));
+    const k = ['7,5', '9,5', '7,7', '8,6'].find((x) => standable(map, x) && !taken.has(x) && !(g.story.objects || []).some((o) => o.pos === x))!;
+    g = apply(g, { type: 'sandbox/spawn', tier: 'elite', weapon: 'war_axe', at: refOf(k) }, HOST);
+    expect(npcsOf(g)).toEqual([expect.objectContaining({ tier: 'elite', weapon: 'war_axe', side: 'hostile', pos: k })]);
+    expect(g.phase).toBe('story');
+    expect(refused(g, { type: 'sandbox/spawn', tier: 'minion', weapon: 'war_axe', at: refOf(k) })).toMatch(/stand/);
+    g = apply(g, { type: 'sandbox/fight' }, HOST);
+    expect(g.combat!.units.filter((u) => u.side === 'foe').map((u) => u.tier)).toEqual(['elite']);
+  });
   it('players use the tools on their own characters only; the host on anyone', () => {
     let g = lobby(); g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'Ona', 'medic') }, GUEST); g = start(g);
     const mine = Object.values(g.characters).find((c) => c.owner === GUEST)!, hosts = charOf(g);
@@ -207,6 +327,7 @@ describe('outside the Proving Ground, and leaving it', () => {
     expect(refused(g, { type: 'sandbox/start' }, GUEST)).toMatch(/host/);
     const story = apply(g, { type: 'session/start' }, HOST);
     expect(refused(story, { type: 'sandbox/start' })).toMatch(/room/);
+    for (const a of [{ type: 'sandbox/fight' }, { type: 'sandbox/stop' }, { type: 'sandbox/stage' }, { type: 'sandbox/kit', charId: c.id }] as Action[]) expect(refused(g, a), a.type).toMatch(/Proving Ground is not open/);
   });
   it('the Narrator and the story are refused inside it', () => {
     const g = start();
@@ -225,5 +346,20 @@ describe('outside the Proving Ground, and leaving it', () => {
     expect(back.campaign ?? null).toEqual(before.campaign ?? null); expect(back.story).toEqual(before.story);
     // and the room can start its real session afterwards
     expect(apply(back, { type: 'session/start' }, HOST).phase).toBe('story');
+  });
+  it('leaving while gearing up, after a fight, or mid-fight: back to the lobby with the room as it was, for everyone', () => {
+    const before = lobby(); before.memory = { pins: ['keep me'] } as any;
+    const fought = apply(killAll(start(before)), { type: 'combat/prone', unitId: pc(start(before)).id }, HOST);
+    for (const g of [open(before), start(before), fought]) {
+      const c = charOf(g);
+      const g2 = apply(g, { type: 'sandbox/kit', charId: c.id }, HOST);
+      expect(refused(g2, { type: 'sandbox/end' }, GUEST)).toMatch(/host/);
+      const back = apply(g2, { type: 'sandbox/end' }, HOST);
+      expect(back.phase).toBe('lobby'); expect(back.sandbox).toBeNull(); expect(back.combat).toBeNull();
+      expect(back.story).toEqual(before.story); expect(back.characters).toEqual(before.characters);
+      expect(back.memory).toEqual(before.memory);
+      // what a guest sees: the lobby
+      expect(viewFor(back, GUEST).phase).toBe('lobby');
+    }
   });
 });

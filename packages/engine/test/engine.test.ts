@@ -428,7 +428,7 @@ describe('music (spec: Music)', () => {
     expect(ytId(songLink)).toBe('dQw4w9WgXcQ'); expect(ytId('https://youtu.be/dQw4w9WgXcQ?si=x')).toBe('dQw4w9WgXcQ'); expect(ytId('not a link')).toBeNull();
     expect(ytStart(songLink)).toBe(65); expect(songOf({ identity: { song: songLink } } as any)!.start).toBe(65);
   });
-  it('area music comes from the zone, else the campaign; a fight switches to fight music', () => {
+  it('area music comes from the zone, else the campaign; a fight switches to the game\'s fight music', () => {
     const r = room();
     for (const z of r.g.campaign!.zones) delete z.music;
     r.g.campaign!.music = { ambient: { yt: 'aaaaaaaaaaa', title: 'Camp' }, combat: { yt: 'bbbbbbbbbbb', title: 'Fight' } } as any;
@@ -436,7 +436,7 @@ describe('music (spec: Music)', () => {
     r.g.campaign!.zones.find((z) => z.id === r.g.story.zone)!.music = { ambient: { yt: 'ccccccccccc', title: 'Zone', artist: '' } };
     expect(musicFor(r.g).track!.title).toBe('Zone'); expect(musicFor(r.g).layer).toBe('ambient');
     r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Odd fight', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
-    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Fight' } });
+    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Gunline', ost: 'gunline' } });
   });
   it('a spotlight: once per scene, never cuts off a playing song, ends after one play (host says so)', () => {
     const r = room(), log: string[] = [], g = r.g;

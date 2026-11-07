@@ -1,12 +1,40 @@
-// Music (spec: Music). The room hears one song at a time. Area and combat music come from the campaign; a player's
-// favourite song takes over for a spotlight (something amazing) and, for the music traits, can be pinned. The engine
-// decides what plays and why; each browser plays it (YouTube) and may pause it for itself, which changes nothing here.
+// Music (spec: Music). The room hears one song at a time. Area music comes from the campaign; fight music is the
+// game's own soundtrack (OST), chosen by how the fight stands; a player's favourite song takes over for a spotlight
+// (something amazing) and, for the music traits, can be pinned. The engine decides what plays and why; each browser
+// plays it (YouTube, or the game's own file) and may pause it for itself, which changes nothing here.
 import type { GameState } from './game';
 import type { Character } from './character';
+import type { Combat } from './combat';
 import { SKILL, TRAITS } from './data';
 
-/** A track: a YouTube video and its credit. */
-export interface Track { yt: string; title: string; artist: string; start?: number; length?: number; licence?: string }
+/** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
+export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds';
+/** A track: a YouTube video (yt), or one of the game's own tracks (ost), and its credit. */
+export interface Track { yt?: string; ost?: OstId; title: string; artist: string; start?: number; length?: number; licence?: string }
+export const OST_ARTIST = 'Project Heaven Cry OST';
+export const OST: Record<OstId, Track & { ost: OstId }> = {
+  gunline: { ost: 'gunline', title: 'Gunline', artist: OST_ARTIST, length: 70 },
+  heaven_falls: { ost: 'heaven_falls', title: 'Heaven Falls', artist: OST_ARTIST, length: 137 },
+  last_rounds: { ost: 'last_rounds', title: 'Last Rounds', artist: OST_ARTIST, length: 82 },
+};
+/** A track's identity, for "has the song changed?": the OST id or the YouTube id. */
+export const trackKey = (t: Track | null | undefined) => (t ? (t.ost ? 'ost:' + t.ost : 'yt:' + (t.yt || '')) : '');
+
+/**
+ * Which of the game's fight tracks fits this fight (spec: Music): Last Rounds while at least half the party is Downed
+ * (or dead), Heaven Falls in a fight with an elite or a boss in it (or a Hard or Boss fight), else Gunline. The party is
+ * every fighter on the players' side. Heaven Falls holds for the whole fight once an elite or boss has been in it;
+ * Last Rounds hands back as soon as enough of the party is up again.
+ */
+export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'>): { id: OstId; why: string } {
+  const party = cb.units.filter((u) => u.side === 'pc'), down = party.filter((u) => u.downed || u.dead).length;
+  if (party.length && down * 2 >= party.length) return { id: 'last_rounds', why: down === party.length ? 'Last rounds: the party is down' : 'Last rounds: half the party is down' };
+  const foes = cb.units.filter((u) => u.side === 'foe');
+  if (foes.some((u) => u.tier === 'boss')) return { id: 'heaven_falls', why: 'Fight: a boss' };
+  if (foes.some((u) => u.tier === 'elite')) return { id: 'heaven_falls', why: 'Fight: an elite' };
+  if (cb.difficulty === 'boss' || cb.difficulty === 'hard') return { id: 'heaven_falls', why: 'Fight: a hard one' };
+  return { id: 'gunline', why: 'Fight' };
+}
 export interface MusicNow {
   seq: number; layer: 'spotlight' | 'pin'; charId: string; track: Track; reason: string;
   /** Started during a fight: it plays until the fight ends. Otherwise one full play. */
@@ -56,19 +84,26 @@ export function musicOf(g: GameState): MusicState {
   return (g.music ||= { seq: 0, now: null, fight: 0, used: {}, silent: {} });
 }
 
-/** What the room should hear now: the spotlight or pin, else the fight's music, else the area's. */
+/**
+ * What the room should hear now: the spotlight or pin, else the fight's music, else the area's. Fight music: Last
+ * Rounds when half the party is down (over everything but a spotlight or pin), else the campaign's own theme for that
+ * named encounter, else the game's fight track (fightTheme). Campaigns' generic combat tracks are no longer played.
+ * A Proving Ground gearing up is in the story phase, so it has no fight music; nor has a fight with no enemies in it.
+ */
 export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin' | 'encounter' | 'combat' | 'ambient'; track: Track | null; reason: string; charId?: string; seq?: number } {
   const m = g.music?.now;
   if (m) return { key: 's' + m.seq, layer: m.layer, track: m.track, reason: m.reason, charId: m.charId, seq: m.seq };
   const camp = g.campaign, zone = camp?.zones.find((z) => z.id === (g.combat && g.phase === 'combat' ? g.combat.map.id : g.story.zone));
-  if (g.phase === 'combat' && g.combat) {
-    const enc = camp?.encounters?.find((e) => e.music && e.name.toLowerCase() === g.combat!.name.toLowerCase());
-    if (enc?.music) return { key: 'e:' + enc.name + ':' + enc.music.yt, layer: 'encounter', track: enc.music, reason: 'Fight: ' + enc.name };
-    const t = zone?.music?.combat || camp?.music?.combat || null;
-    return { key: 'c:' + (t?.yt || ''), layer: 'combat', track: t, reason: 'Fight' };
+  if (g.phase === 'combat' && g.combat && g.combat.units.some((u) => u.side === 'foe')) {
+    const th = fightTheme(g.combat);
+    if (th.id !== 'last_rounds') {
+      const enc = camp?.encounters?.find((e) => e.music && e.name.toLowerCase() === g.combat!.name.toLowerCase());
+      if (enc?.music) return { key: 'e:' + enc.name + ':' + trackKey(enc.music), layer: 'encounter', track: enc.music, reason: 'Fight: ' + enc.name };
+    }
+    return { key: 'c:' + th.id, layer: 'combat', track: OST[th.id], reason: th.why };
   }
   const t = zone?.music?.ambient || camp?.music?.ambient || null;
-  return { key: 'a:' + (t?.yt || ''), layer: 'ambient', track: t, reason: zone ? 'Area: ' + zone.name : 'Area' };
+  return { key: 'a:' + trackKey(t), layer: 'ambient', track: t, reason: zone ? 'Area: ' + zone.name : 'Area' };
 }
 
 const usedKey = (g: GameState) => (g.phase === 'combat' ? 'fight' + musicOf(g).fight : 'scene' + g.story.scene.n);

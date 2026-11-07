@@ -1186,7 +1186,7 @@ Every record can be edited, added or deleted, and every change is an engine acti
 
 ## Music
 
-The room hears one song at a time. The engine decides what plays and why; each player's browser plays it through YouTube's embedded player and can pause it or turn it down for that player alone. **Pausing changes nothing in the rules:** a song counts as playing for everyone while the room plays it.
+The room hears one song at a time. The engine decides what plays and why; each player's browser plays it (YouTube's embedded player, or the game's own files for the fight music) and can pause it or turn it down for that player alone (the music panel's volume, times Settings' music volume; mute silences it). **Pausing changes nothing in the rules:** a song counts as playing for everyone while the room plays it.
 
 **Layers** (the highest one playing wins):
 
@@ -1194,9 +1194,12 @@ The room hears one song at a time. The engine decides what plays and why; each p
 |---|---|---|
 | Pinned song | A music-trait holder's song, kept on | After 2 area changes, or when its holder stops it |
 | Spotlight | The favourite song of the character who did something amazing | One full play outside a fight; the end of the fight if it started in one |
-| Encounter | The campaign's encounter music (boss themes) | The end of the fight |
-| Combat | The zone's combat track, else the campaign's | The end of the fight |
+| Last Rounds | The game's own track, while at least half the party is Downed (or dead) | When enough of the party is up again: it hands back |
+| Encounter | The campaign's theme for that named encounter | The end of the fight |
+| Combat | The game's own fight music (Project Heaven Cry OST): **Heaven Falls** in a fight with an elite or a boss in it, or a Hard or Boss fight; else **Gunline**. Campaigns' generic combat tracks are not played | The end of the fight |
 | Ambient | The zone's ambient track, else the campaign's | Leaving the zone |
+
+The game's own tracks loop seamlessly, crossfade (about 1.2 s) when the fight's situation changes, and fade out when the fight ends. A Proving Ground still gearing up (no fight begun) has no fight music.
 
 **The spotlight.** These start the character's favourite song for the whole room:
 

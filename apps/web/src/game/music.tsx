@@ -1,9 +1,13 @@
-// The room's music (spec: Music). The engine says what plays (musicFor); this plays it through YouTube's embedded
-// player, shows the credit on every change, and lets each player pause or turn it down for themselves only.
+// The room's music (spec: Music). The engine says what plays (musicFor); this plays it: players' songs and campaign
+// tracks through YouTube's embedded player, the game's own fight music (Gunline, Heaven Falls, Last Rounds) from its
+// files (ost.ts). It shows the credit on every change, and lets each player pause or turn it down for themselves only.
+// The level is the panel's volume times Settings' music volume (silent when muted).
 // The host's browser tells the engine when a one-play song has finished (music/end).
 import React from 'react';
-import { musicFor, musicTraitOf, songOf, type GameState } from '@engine';
+import { musicFor, musicTraitOf, songOf, trackKey, type GameState } from '@engine';
 import { act, toast } from './store';
+import { uiPrefs, onUiPrefs } from './sfx';
+import { ostPlay, ostVolume, ostPause, ostResume, ostRunning, ostPreload } from './ost';
 import { onVoice, voiceState, voicePrefs, setVoicePrefs, loadVoice, NARRATOR_VOICES } from './voice';
 import { COMBAT_IN_MS, usePresence, presenceCls } from './presence';
 
@@ -24,6 +28,8 @@ const LS = 'phc.music';
 const prefs = (): { paused: boolean; vol: number } => { try { return { paused: false, vol: 60, ...JSON.parse(localStorage.getItem(LS) || '{}') }; } catch { return { paused: false, vol: 60 }; } };
 const savePrefs = (p: { paused: boolean; vol: number }) => localStorage.setItem(LS, JSON.stringify(p));
 const FADE_MS = 1200;
+/** The level for a panel volume (0 to 100): times Settings' music volume, silent when muted. */
+const level = (vol: number) => { const u = uiPrefs(); return u.mute ? 0 : Math.round(vol * (u.music ?? 70) / 100); };
 
 type Want = ReturnType<typeof musicFor>;
 
@@ -36,16 +42,16 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const [bad, setBadS] = React.useState<string | null>(null), badRef = React.useRef<string | null>(null);
   const setBad = (x: string | null) => { badRef.current = x; setBadS(x); if (x) setBlocked(false); };
   const holder = React.useRef<HTMLDivElement>(null);
-  const player = React.useRef<any>(null), ready = React.useRef(false), playing = React.useRef<string>('');
-  const live = React.useRef({ want, game, p, isHost }); live.current = { want, game, p, isHost };
+  const player = React.useRef<any>(null), ready = React.useRef(false), playing = React.useRef<string>(''), kind = React.useRef<'' | 'yt' | 'ost'>('');
+  const live = React.useRef({ want, game, p, isHost, ducked: false }); live.current = { ...live.current, want, game, p, isHost };
   // A fight just started: the screen plays its combat-in transition (App.tsx), so the old music fades out under it and
   // the fight's music fades in once it is over (COMBAT_IN_MS), not on top of it.
   const lastPhase = React.useRef(game?.phase), combatAt = React.useRef(0);
-  if (lastPhase.current !== game?.phase) { if (game?.phase === 'combat' && lastPhase.current === 'story') combatAt.current = Date.now(); lastPhase.current = game?.phase; }
+  if (lastPhase.current !== game?.phase) { if (game?.phase === 'combat' && lastPhase.current !== 'combat') combatAt.current = Date.now(); lastPhase.current = game?.phase; }
 
-  // One player for the whole session.
+  // One YouTube player for the whole session, made the first time a YouTube track is wanted.
   React.useEffect(() => {
-    if (!want?.track || player.current) return;
+    if (!want?.track?.yt || player.current) return;
     let gone = false;
     ytApi().then((YT) => {
       if (gone || player.current || !holder.current) return;
@@ -60,7 +66,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             const { want: w, game: g, isHost: h } = live.current, now = g?.music?.now;
             const onePlay = w?.layer === 'spotlight' && now && !(now.inCombat && g?.phase === 'combat');
             if (onePlay) { if (h) act({ type: 'music/end', seq: now!.seq }); return; }
-            if (w?.track) { player.current.seekTo(w.track.start || 0, true); if (!live.current.p.paused) player.current.playVideo(); }
+            if (w?.track?.yt) { player.current.seekTo(w.track.start || 0, true); if (!live.current.p.paused) player.current.playVideo(); }
           },
           onError: () => {
             const { want: w, game: g, isHost: h } = live.current;
@@ -71,14 +77,23 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
       });
     });
     return () => { gone = true; };
-  }, [!!want?.track]);
+  }, [!!want?.track?.yt]);
 
   // Browsers allow sound only after a click: the first click anywhere starts the music.
   React.useEffect(() => {
-    const go = () => { const pl = player.current; if (!pl || !ready.current) return; try { pl.unMute(); pl.setVolume(live.current.p.vol); if (!live.current.p.paused && live.current.want?.track) pl.playVideo(); } catch { /* */ } };
+    const go = () => {
+      const { p: pr, want: w } = live.current;
+      if (!pr.paused && kind.current === 'ost') ostResume().then((ok) => { if (ok) setBlocked(false); });
+      const pl = player.current; if (!pl || !ready.current || kind.current !== 'yt') return;
+      try { pl.unMute(); pl.setVolume(level(pr.vol)); if (!pr.paused && w?.track?.yt) pl.playVideo(); } catch { /* */ }
+    };
     window.addEventListener('pointerdown', go); window.addEventListener('keydown', go);
     return () => { window.removeEventListener('pointerdown', go); window.removeEventListener('keydown', go); };
   }, []);
+  // Leaving the game (back to the title): the fight music fades out with it.
+  React.useEffect(() => () => ostPlay(null, 600), []);
+  // The first fight's track is fetched while the story plays, so it is ready when the fight starts.
+  React.useEffect(() => { if (game && game.phase !== 'lobby') ostPreload('gunline'); }, [!!game && game.phase !== 'lobby']);
 
   function fadeTo(target: number, then?: () => void, ms = FADE_MS) {
     const pl = player.current; if (!pl?.getVolume) { then?.(); return; }
@@ -89,19 +104,38 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     requestAnimationFrame(step);
   }
   function sync() {
-    const pl = player.current, { want: w, p: pr } = live.current;
-    if (!pl || !ready.current) return;
-    const key = w?.track ? w.key + ':' + w.track.yt : '';
+    const pl = player.current, { want: w, p: pr } = live.current, ytReady = !!pl && ready.current;
+    const key = w?.track ? w.key + ':' + trackKey(w.track) : '';
     if (key === playing.current) return;
-    const had = !!playing.current; playing.current = key; setBad(null);
-    if (!w?.track) { fadeTo(0, () => { try { pl.stopVideo(); } catch { /* */ } }); return; }
+    const isOst = !!w?.track?.ost;
+    // A YouTube track waits for the player (its onReady calls sync again).
+    if (w?.track && !isOst && !ytReady) return;
+    const was = kind.current; playing.current = key; kind.current = !w?.track ? '' : isOst ? 'ost' : 'yt'; setBad(null);
+    const stopYt = (ms = FADE_MS) => { if (was === 'yt' && ytReady) fadeTo(0, () => { try { if (kind.current !== 'yt') pl.stopVideo(); } catch { /* */ } }, ms); };
+    const wait = COMBAT_IN_MS - (Date.now() - combatAt.current);
+    if (!w?.track) { stopYt(); ostPlay(null, FADE_MS); return; }
+    if (isOst) {
+      // The game's own track: crossfades from the one before. Under the combat-in transition, the old music goes out
+      // quickly and the fight's fades in after it.
+      const go = () => {
+        if (playing.current !== key) return;
+        ostVolume(level(live.current.p.vol) / 100 * (live.current.ducked ? 0.25 : 1), 0); ostPlay(w.track!.ost!, FADE_MS);
+        if (pr.paused) { ostPause(true); return; }
+        ostResume().then((ok) => { if (ok) setBlocked(false); });
+        setTimeout(() => { if (playing.current === key && !live.current.p.paused && !ostRunning()) setBlocked(true); }, 2500);
+      };
+      if (wait > 0) { const ms = Math.max(200, wait - 150); stopYt(ms); if (was === 'ost') ostPlay(null, ms); setTimeout(go, wait); }
+      else { stopYt(); go(); }
+      return;
+    }
+    if (was === 'ost') ostPlay(null, FADE_MS);
+    const had = was === 'yt';
     const start = () => {
       const opts = { videoId: w.track!.yt, startSeconds: w.track!.start || 0 };
-      if (pr.paused) pl.cueVideoById(opts); else { pl.loadVideoById(opts); pl.setVolume(0); fadeTo(pr.vol); }
+      if (pr.paused) pl.cueVideoById(opts); else { pl.loadVideoById(opts); pl.setVolume(0); fadeTo(level(pr.vol)); }
       // If the browser blocked sound, try muted and wait for the first click.
       setTimeout(() => { try { if (!live.current.p.paused && !badRef.current && playing.current === key && pl.getPlayerState() !== 1) { setBlocked(true); pl.mute(); pl.playVideo(); } } catch { /* */ } }, 2500);
     };
-    const wait = COMBAT_IN_MS - (Date.now() - combatAt.current);
     if (wait > 0) {
       // Under the combat-in transition: out quickly, then the fight's music fades in after it.
       const go = () => setTimeout(() => { if (playing.current === key) start(); }, Math.max(0, COMBAT_IN_MS - (Date.now() - combatAt.current)));
@@ -110,7 +144,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     }
     had ? fadeTo(0, start) : start();
   }
-  const key = want?.track ? want.key + ':' + want.track.yt : '';
+  const key = want?.track ? want.key + ':' + trackKey(want.track) : '';
   React.useEffect(() => {
     sync();
     if (want?.track) {
@@ -135,18 +169,29 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   }, [isHost, now?.seq, now?.layer]);
 
   const setPrefs = (x: Partial<{ paused: boolean; vol: number }>) => {
-    const n = { ...p, ...x }; setP(n); savePrefs(n); const pl = player.current; if (!pl || !ready.current) return;
-    if (x.vol != null) { pl.unMute(); pl.setVolume(n.vol); }
+    const n = { ...p, ...x }; setP(n); savePrefs(n); live.current.p = n;
+    if (x.vol != null) ostVolume(level(n.vol) / 100 * (live.current.ducked ? 0.25 : 1));
+    if (x.paused != null && kind.current === 'ost') { ostPause(x.paused); if (!x.paused) setBlocked(false); }
+    const pl = player.current; if (!pl || !ready.current) return;
+    if (x.vol != null) { pl.unMute(); pl.setVolume(level(n.vol)); }
     if (x.paused === true) pl.pauseVideo();
-    if (x.paused === false) { pl.unMute(); pl.setVolume(n.vol); pl.playVideo(); }
+    if (x.paused === false && kind.current === 'yt') { pl.unMute(); pl.setVolume(level(n.vol)); pl.playVideo(); }
   };
 
   // The Narrator speaks over the music: it ducks to a quarter while the voice plays (spec: The Narrator's voice).
   const [vs, setVs] = React.useState(voiceState()), [vp, setVp] = React.useState(voicePrefs());
   React.useEffect(() => onVoice(() => { setVs(voiceState()); setVp(voicePrefs()); }), []);
-  const ducked = !!vs.speaking;
+  const ducked = !!vs.speaking; live.current.ducked = ducked;
   const panel = usePresence(open), creditP = usePresence(credit && !open ? credit : null);
-  React.useEffect(() => { const pl = player.current; if (!pl || !ready.current || p.paused) return; fadeTo(ducked ? Math.round(p.vol * 0.25) : p.vol); }, [ducked]);
+  const applyLevel = (ms?: number) => {
+    const { p: pr, ducked: d } = live.current, v = level(pr.vol) * (d ? 0.25 : 1);
+    ostVolume(v / 100, ms);
+    const pl = player.current; if (!pl || !ready.current || pr.paused || kind.current !== 'yt') return;
+    if (ms) fadeTo(Math.round(v)); else { try { pl.setVolume(Math.round(v)); } catch { /* */ } }
+  };
+  React.useEffect(() => applyLevel(FADE_MS), [ducked]);
+  // Settings' music volume and mute apply at once.
+  React.useEffect(() => onUiPrefs(() => applyLevel()), []);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;
   const side = game.phase === 'combat' ? 'left' : 'right';
@@ -159,7 +204,8 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     <>
       {/* The panel (and the video in it) stays in the page: on screen when open, out of view when closed, so the music keeps playing. */}
       <div role="dialog" aria-label="Music" aria-hidden={!open} className={panel.shown ? presenceCls('phc-a-rise', panel.closing) : undefined} style={{ position: 'fixed', [side]: panel.shown ? 16 : -10000, bottom: 64, zIndex: 9, width: 380, padding: 12, borderRadius: 14, background: '#10151F', border: '1px solid #3B475D', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div ref={holder} style={{ width: 356, height: 200, borderRadius: 8, overflow: 'hidden', background: '#000' }} />
+          {/* The YouTube player; folded away while the game's own music plays (it has no video). */}
+          <div ref={holder} style={{ width: 356, height: track?.ost ? 0 : 200, borderRadius: 8, overflow: 'hidden', background: '#000' }} />
           <div style={label}>NOW PLAYING{want?.layer ? ' · ' + ({ spotlight: 'SPOTLIGHT', pin: 'KEPT ON', encounter: 'FIGHT THEME', combat: 'FIGHT', ambient: 'AREA' } as any)[want.layer] : ''}</div>
           {track ? <>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#E7EBF3' }}>{track.title}</div>
@@ -172,7 +218,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#A3AEC2' }}>Volume
               <input type="range" min={0} max={100} value={p.vol} onChange={(e) => setPrefs({ vol: Number(e.target.value) })} aria-label="Music volume" style={{ width: 110 }} />
             </label>
-            {track && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#7FD4FF' }}>Open on YouTube ↗</a>}
+            {track?.yt && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#7FD4FF' }}>Open on YouTube ↗</a>}
           </div>
           <div style={{ fontSize: 11, color: '#A3AEC2' }}>Pause and volume are yours only: the room's music goes on, and song bonuses still count.</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid #232D3F' }}>

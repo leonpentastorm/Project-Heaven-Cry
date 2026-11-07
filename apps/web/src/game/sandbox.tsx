@@ -1,18 +1,22 @@
-// The Proving Ground (practice mode): endless waves, infinite retry and a tools panel, over the combat screen.
-// Mounted once in App.tsx; it shows only while the game is in the Proving Ground (game.sandbox) on the combat screen.
-// Everything goes through the engine's sandbox/* actions (packages/engine/src/game.ts): no Narrator is ever called.
-//  · WAVE n: a slash banner across the screen whenever a wave (or a retry) begins, for everyone (shared state).
-//  · Wave cleared: a card with Next wave (anyone); with Auto on, the host's client calls it after a short pause.
-//  · Squad down: Retry wave n, or Restart from wave 1 (anyone), Leave (host).
-//  · Tools drawer (right edge): Squad (level, class and rank, skills, armour, refill), Gear (spawn any weapon or item,
-//    equip, drop), Magic (learn any word, school or module; designs), Field (host: spawn enemies on a clicked tile,
-//    clear them, enemy AI, auto waves, jump to a wave, the mana meter, leave).
+// The Proving Ground (practice mode): gear up on the map, then fight waves, with infinite retry and a tools panel.
+// Mounted once in App.tsx; it shows while the game is in the Proving Ground (game.sandbox), on the story screen (main,
+// gearing up) and the combat screen (fighting). Everything goes through the engine's sandbox/* actions
+// (packages/engine/src/game.ts): no Narrator is ever called.
+//  · Gearing up (phase 'story'): the squad and the wave's drill units stand on the area map, idle. The tools are open;
+//    Start the fight, a click on a drill unit in the mini map, or an attack on one from the area map begins the fight.
+//  · WAVE n: a slash banner across the screen whenever a fight begins, for everyone (shared state).
+//  · The fight ends (won or lost): the engine is gearing up again; the combat screen keeps the last blows and shows a
+//    card: Next wave / Retry (start at once), or Gear up first (back to the map with the tools open). With Auto on
+//    (endless waves) the host's client calls the next wave after a short pause.
+//  · Tools drawer: Gear (what is worn and carried, equip and unequip, give anything, the magic kit), Squad (level,
+//    class and rank, skills, armour, refill), Magic (words, schools, modules, designs), Field (host: spawn enemies on a
+//    clicked tile, clear them, enemy AI, endless waves, place or fight any wave, the mana meter, leave).
 import React from 'react';
 import {
   type GameState, type Character, type Rarity, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, ARCHETYPES, packOf, classRank, maxHp, RARITY,
+  ENEMIES, MANA_BANDS, SANDBOX_TIERS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT,
 } from '@engine';
-import { act, hostRoom, getState } from './store';
+import { act, hostRoom, getState, go } from './store';
 import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
@@ -28,6 +32,12 @@ export function startProvingGround(archetype?: string) {
 /** From the room (host): the room's locked-in characters, or a test character when the host has none. */
 export const openProvingGround = (archetype?: string) => act({ type: 'sandbox/start', ...(archetype ? { archetype } : {}) });
 export const QUICK_ARCHETYPES = ['sharpshooter', 'bulwark', 'sigilist', 'mender', 'brawler', 'heavy_gunner'].filter((id) => ARCHETYPES.some((a) => a.id === id));
+/** Leave the Proving Ground (host): the room comes back as it was, and everyone returns to the room screen. */
+export function leaveProvingGround(ask = true) {
+  if (ask && typeof confirm === 'function' && !confirm('Leave the Proving Ground? The room goes back to how it was before.')) return;
+  act({ type: 'sandbox/end' });
+  if (getState().game?.phase === 'lobby') go('room');
+}
 
 // ---------- look ----------
 const C = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', red: '#F65157', ok: '#6FEA77', white: '#FFFFFF', mp: '#5C9EFF', mind: '#4FC8DF', soul: '#AE9BFF', body: '#F2A54A' };
@@ -37,6 +47,7 @@ const primary: React.CSSProperties = { ...btn, border: 0, background: C.text, co
 const field: React.CSSProperties = { minHeight: 34, padding: '0 8px', borderRadius: 8, border: '1px solid #2E3A50', background: C.ground, color: C.text, fontFamily: UI, fontSize: 13, minWidth: 0 };
 const label: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: C.muted };
 const row: React.CSSProperties = { display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' };
+const small: React.CSSProperties = { ...btn, minHeight: 28, padding: '0 9px', fontSize: 12 };
 const CSS = `
 @keyframes phcSbSlash{0%{transform:translateX(-110%) skewX(-18deg);opacity:0}18%{transform:translateX(0) skewX(-18deg);opacity:1}82%{transform:translateX(0) skewX(-18deg);opacity:1}100%{transform:translateX(110%) skewX(-18deg);opacity:0}}
 @keyframes phcSbText{0%{letter-spacing:.9em;opacity:0}22%{letter-spacing:.32em;opacity:1}80%{opacity:1}100%{opacity:0}}
@@ -46,49 +57,71 @@ const CSS = `
 .phc-reduce .phc-sb-slash,.phc-reduce .phc-sb-text{animation:phcSbFade 1.2s ease-out both}
 .phc-sb-tab:hover{background:#1C2536!important}
 html.phc-sandbox div[role="dialog"][aria-label="The fight is over"]{display:none!important}
+.phc-sb-drawer{right:0}
+@media (min-width:1280px){.phc-sb-drawer.phc-sb-onmain{right:360px}}
 `;
 function useCss() { React.useEffect(() => { if (document.getElementById('phc-sandbox-css')) return; const s = document.createElement('style'); s.id = 'phc-sandbox-css'; s.textContent = CSS; document.head.appendChild(s); }, []); }
 
-type Tab = 'squad' | 'gear' | 'magic' | 'field';
+type Tab = 'gear' | 'squad' | 'magic' | 'field';
+/** The drill unit on a tile of the area map, while gearing up. */
+const foeAt = (game: GameState, ref: string) => (game.story.npcs || []).find((n) => n.side === 'hostile' && refOf(n.pos) === ref) || null;
 
 export function SandboxPanel({ game, meId, isHost, screen }: { game: GameState | null; meId: string; isHost: boolean; screen: string }) {
   useCss();
-  const sb = game?.sandbox, on = !!sb && screen === 'combat' && game!.phase === 'combat';
-  const [open, setOpen] = React.useState(false);
-  // The combat screen's own end-of-fight card (Back to the story) has no place here: the wave cards replace it.
+  const sb = game?.sandbox, gearing = !!sb && game!.phase === 'story', fighting = !!sb && game!.phase === 'combat';
+  const here = !!sb && (screen === 'combat' || screen === 'main');
+  const [open, setOpen] = React.useState(true);
+  // The combat screen's own end-of-fight card (Back to the story) has no place here: the wave card replaces it.
   React.useEffect(() => { document.documentElement.classList.toggle('phc-sandbox', !!sb); return () => document.documentElement.classList.remove('phc-sandbox'); }, [!!sb]);
-  const drawer = usePresence(on && open ? true : null);
+  React.useEffect(() => { document.documentElement.classList.toggle('phc-sb-gearing', gearing && screen === 'main'); return () => document.documentElement.classList.remove('phc-sb-gearing'); }, [gearing, screen]);
+  // The tools open whenever the squad is gearing up on the map (the start, and after each fight); a fight closes them.
+  React.useEffect(() => { if (gearing && screen === 'main') setOpen(true); }, [gearing, screen, sb?.fights]);
+  React.useEffect(() => { if (fighting) setOpen(false); }, [fighting, sb?.fights]);
+  // A fight the host stopped leaves nothing on the combat screen: back to the map.
+  React.useEffect(() => { if (sb && screen === 'combat' && game!.phase === 'story' && !game!.combat?.over) go('main'); }, [!!sb, screen, game?.phase, !!game?.combat?.over]);
+  // Gearing up: a click on a drill unit in the mini map starts the fight.
+  React.useEffect(() => {
+    if (!(gearing && screen === 'main')) return;
+    const f = (e: MouseEvent) => {
+      const el = (e.target as HTMLElement | null)?.closest?.('.phc-mini button.phc-tok') as HTMLElement | null; if (!el) return;
+      const ref = (el.getAttribute('aria-label') || '').split(':')[0].trim(), g = getState().game;
+      if (picking || !g?.sandbox || g.phase !== 'story' || !/^[A-Z]{1,2}\d{1,2}$/.test(ref) || !foeAt(g, ref)) return;
+      e.preventDefault(); e.stopPropagation(); sfx('start'); act({ type: 'sandbox/fight' });
+    };
+    window.addEventListener('click', f, true);
+    return () => window.removeEventListener('click', f, true);
+  }, [gearing, screen]);
+  const drawer = usePresence(here && open ? true : null);
   return <>
-    {on && <WaveBanner game={game!} />}
-    {on && <WaveEnd game={game!} isHost={isHost} />}
-    {on && !open && <button type="button" className="phc-sb-tab" onClick={() => { setOpen(true); sfx('slide'); }} aria-label="Open the Proving Ground tools"
+    {fighting && screen === 'combat' && <WaveBanner game={game!} />}
+    {!!sb && screen === 'combat' && !!game!.combat?.over && <WaveEnd game={game!} isHost={isHost} />}
+    {here && !open && <button type="button" className="phc-sb-tab" onClick={() => { setOpen(true); sfx('slide'); }} aria-label="Open the Proving Ground tools"
       style={{ position: 'fixed', right: 0, top: '38%', zIndex: 46, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: '10px 0 0 10px', border: '1px solid ' + C.line, borderRight: 0, background: C.panel, color: C.text, fontFamily: UI, cursor: 'pointer', boxShadow: '0 6px 24px rgba(0,0,0,.5)' }}>
       <span style={{ fontSize: 10, letterSpacing: '0.2em', color: C.muted }}>WAVE</span>
-      <span style={{ fontSize: 24, fontWeight: 700, lineHeight: 1 }}>{sb!.wave}</span>
+      <span style={{ fontSize: 24, fontWeight: 700, lineHeight: 1 }}>{gearing ? sandboxNext(sb!) : sb!.wave}</span>
       <span style={{ fontSize: 10, color: C.muted }}>best {sb!.best}</span>
       <span aria-hidden="true" style={{ fontSize: 18, marginTop: 4 }}>⚙</span>
-      <span style={{ fontSize: 10, letterSpacing: '0.16em', writingMode: 'vertical-rl' }}>TOOLS</span>
+      <span style={{ fontSize: 10, letterSpacing: '0.16em', writingMode: 'vertical-rl' }}>{gearing ? 'GEAR UP' : 'TOOLS'}</span>
     </button>}
-    {drawer.shown && game?.sandbox && <Drawer game={game} meId={meId} isHost={isHost} closing={drawer.closing} close={() => { setOpen(false); sfx('slide_back'); }} />}
+    {drawer.shown && game?.sandbox && <Drawer game={game} meId={meId} isHost={isHost} screen={screen} closing={drawer.closing} close={() => { setOpen(false); sfx('slide_back'); }} />}
   </>;
 }
 
 // ---------- WAVE n ----------
 function WaveBanner({ game }: { game: GameState }) {
-  const sb = game.sandbox!, key = sb.state === 'fighting' ? sb.wave + '|' + sb.attempt : null;
+  const sb = game.sandbox!, key = sb.state === 'fighting' ? (sb.fights || 0) + '|' + sb.wave + '|' + sb.attempt : null;
   const [shown, setShown] = React.useState<{ wave: number; retry: boolean; id: number } | null>(null);
   const mounted = React.useRef(false), last = React.useRef<string | null>(null);
   React.useEffect(() => {
     if (!key || key === last.current) return;
     last.current = key;
     if (document.hidden) return;
-    // The first wave comes in under the combat-in transition: wait for it.
+    // A fight comes in under the combat-in transition: wait for it.
     const wait = mounted.current ? 150 : 1000; mounted.current = true;
     const id = Date.now(), t1 = setTimeout(() => { setShown({ wave: sb.wave, retry: sb.attempt > 1, id }); sfx('slide'); }, wait);
     const t2 = setTimeout(() => setShown((s) => (s && s.id === id ? null : s)), wait + (reducedMotion() ? 1250 : 1650));
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [key]);
-  React.useEffect(() => { mounted.current = true; }, []);
   if (!shown) return null;
   const boss = shown.wave % 5 === 0;
   return <div aria-live="polite" style={{ position: 'fixed', left: 0, right: 0, top: '42%', zIndex: 52, pointerEvents: 'none', display: 'grid', placeItems: 'center', overflow: 'hidden', height: 120 }}>
@@ -100,10 +133,11 @@ function WaveBanner({ game }: { game: GameState }) {
   </div>;
 }
 
-// ---------- cleared / fallen ----------
+// ---------- cleared / fallen (on the combat screen, over the finished fight) ----------
 const AUTO_MS = 3000;
 function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
-  const sb = game.sandbox!, ended = sb.state === 'cleared' || sb.state === 'fallen' ? sb.state + '|' + sb.wave + '|' + sb.attempt : null;
+  const sb = game.sandbox!, over = !!game.combat?.over && (sb.state === 'cleared' || sb.state === 'fallen');
+  const ended = over ? sb.state + '|' + (sb.fights || 0) + '|' + sb.wave + '|' + sb.attempt : null;
   // Shown once the effects of the last blows have played (capped), so the card never covers the killing shot.
   const [ready, setReady] = React.useState<string | null>(null), [left, setLeft] = React.useState(0);
   React.useEffect(() => {
@@ -118,67 +152,102 @@ function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
     const at = Date.now() + AUTO_MS; setLeft(Math.ceil(AUTO_MS / 1000));
     const tick = setInterval(() => setLeft(Math.max(0, Math.ceil((at - Date.now()) / 1000))), 250);
     // Only the host's client calls the next wave (one action for the room); a hidden host tab still calls it.
-    const go = isHost ? setTimeout(() => { const g = getState().game; if (g?.sandbox?.state === 'cleared' && g.sandbox.wave === sb.wave) act({ type: 'sandbox/wave' }); }, AUTO_MS) : undefined;
-    return () => { clearInterval(tick); if (go) clearTimeout(go); };
+    const fire = isHost ? setTimeout(() => { const g = getState().game; if (g?.sandbox?.state === 'cleared' && g.phase === 'story' && g.sandbox.wave === sb.wave && g.sandbox.auto) act({ type: 'sandbox/wave' }); }, AUTO_MS) : undefined;
+    return () => { clearInterval(tick); if (fire) clearTimeout(fire); };
   }, [auto, ended]);
   const p = usePresence(ready && ready === ended ? sb.state : null);
   if (!p.shown) return null;
   const won = p.shown === 'cleared';
+  const gearUp = <button type="button" data-sfx="slide" style={{ ...btn, minHeight: 46 }} onClick={() => go('main')}>Gear up first</button>;
   return <div role="dialog" aria-modal="true" aria-label={won ? 'Wave cleared' : 'The squad fell'} className={presenceCls('phc-a-fade', p.closing)}
     style={{ position: 'fixed', inset: 0, zIndex: 48, display: 'grid', placeItems: 'center', padding: 16, background: 'rgba(5, 7, 11, 0.82)' }}>
-    <div className={presenceCls('phc-a-pop', p.closing)} style={{ width: 'min(520px, 100%)', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, borderTop: '4px solid ' + (won ? C.ok : C.red), fontFamily: UI, color: C.text }}>
+    <div className={presenceCls('phc-a-pop', p.closing)} style={{ width: 'min(540px, 100%)', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, borderTop: '4px solid ' + (won ? C.ok : C.red), fontFamily: UI, color: C.text }}>
       <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.22em', color: won ? C.ok : C.red }}>{won ? '✓ WAVE CLEARED' : '✕ THE SQUAD IS DOWN'}</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 30, fontWeight: 600 }}>Wave {sb.wave}{won ? ' cleared' : ''}</span>
       <span style={{ fontSize: 14, lineHeight: 1.5, color: '#C9D3E3' }}>
-        {won ? 'The squad carries its HP, ammo and magic into the next wave. Use the tools to refill or re-gear first.' : 'Nothing is lost here: retry the same wave with everyone refilled, or start again from wave 1.'} Best so far: wave {sb.best}.
+        {won ? 'The squad carries its HP, ammo and magic into the next wave. Gear up first to change weapons, refill or learn magic.' : 'Nothing is lost here: everyone is back up and refilled. Retry the wave now, or gear up first.'} Best so far: wave {sb.best}.
       </span>
       {won ? <div style={row}>
-        <button type="button" data-sfx="start" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => act({ type: 'sandbox/wave' })}>Next wave ›{auto && left > 0 ? ' · ' + left : ''}</button>
-        {isHost && <button type="button" style={{ ...btn, minHeight: 46 }} onClick={() => act({ type: 'sandbox/auto', on: !sb.auto })}>{sb.auto ? 'Hold here' : 'Auto next: off'}</button>}
+        <button type="button" data-sfx="start" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => act({ type: 'sandbox/wave' })}>Next wave {sandboxNext(sb)} ›{auto && left > 0 ? ' · ' + left : ''}</button>
+        {gearUp}
+        {isHost && <button type="button" style={{ ...btn, minHeight: 46 }} aria-pressed={sb.auto} onClick={() => act({ type: 'sandbox/auto', on: !sb.auto })}>{sb.auto ? 'Endless: on · hold here' : 'Endless: off'}</button>}
       </div> : <div style={row}>
         <button type="button" data-sfx="start" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => act({ type: 'sandbox/retry' })}>↻ Retry wave {sb.wave}</button>
+        {gearUp}
         <button type="button" style={{ ...btn, minHeight: 46 }} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>
       </div>}
-      {isHost && <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => act({ type: 'sandbox/end' })}>Leave the Proving Ground</button>}
+      {isHost && <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => leaveProvingGround()}>Leave the Proving Ground</button>}
     </div>
   </div>;
 }
 
 // ---------- the tools drawer ----------
-function Drawer({ game, meId, isHost, closing, close }: { game: GameState; meId: string; isHost: boolean; closing: boolean; close: () => void }) {
-  const sb = game.sandbox!;
+const HINT = 'phc.sbHint';
+function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameState; meId: string; isHost: boolean; screen: string; closing: boolean; close: () => void }) {
+  const sb = game.sandbox!, gearing = game.phase === 'story';
   const chars = Object.values(game.characters).filter((c) => isHost || c.owner === meId);
-  const [tab, setTab] = React.useState<Tab>('squad'), [cid, setCid] = React.useState<string>(chars[0]?.id || '');
+  const [tab, setTab] = React.useState<Tab>('gear'), [cid, setCid] = React.useState<string>(chars[0]?.id || '');
   const c = game.characters[cid] && chars.some((x) => x.id === cid) ? game.characters[cid] : chars[0];
-  React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
-  const tabs: [Tab, string][] = [['squad', 'Squad'], ['gear', 'Gear'], ['magic', 'Magic'], ...(isHost ? [['field', 'Field'] as [Tab, string]] : [])];
-  return <aside aria-label="Proving Ground tools" className={presenceCls('phc-a-right', closing)}
-    style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
-    <header style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderBottom: '1px solid ' + C.line }}>
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+  React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role="dialog"][aria-modal="true"]')) close(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
+  const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ...(isHost ? [['field', 'Field'] as [Tab, string]] : [])];
+  const status = gearing ? (sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared · gearing up' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave + ' · gearing up' : 'gearing up') : 'fighting';
+  return <aside aria-label="Proving Ground tools" className={presenceCls('phc-a-right', closing) + ' phc-sb-drawer' + (screen === 'main' ? ' phc-sb-onmain' : '')}
+    style={{ position: 'fixed', top: 0, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, borderRight: screen === 'main' ? '1px solid ' + C.line : 0, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
+    <header style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 16px', borderBottom: '1px solid ' + C.line }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         <span style={label}>THE PROVING GROUND · NO NARRATOR</span>
-        <span style={{ fontSize: 18, fontWeight: 700 }}>Wave {sb.wave} <span style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>· best {sb.best} · {sb.state === 'fighting' ? 'fighting' : sb.state === 'cleared' ? 'cleared' : 'squad down'}</span></span>
+        <span style={{ fontSize: 18, fontWeight: 700 }}>Wave {gearing ? sandboxNext(sb) : sb.wave} <span style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
       </div>
-      <button type="button" style={btn} onClick={close} aria-label="Close the tools">✕</button>
+      {isHost && <button type="button" style={{ ...btn, color: C.muted }} onClick={() => leaveProvingGround()} title="Back to the room, as it was before">Leave</button>}
+      <button type="button" style={btn} onClick={close} aria-label="Close the tools" title="Hide the tools (the tab on the right brings them back)">✕</button>
     </header>
-    <nav role="tablist" style={{ display: 'flex', gap: 4, padding: '8px 12px', borderBottom: '1px solid ' + C.line }}>
+    <FightBar game={game} isHost={isHost} />
+    <nav role="tablist" aria-label="Tools" style={{ display: 'flex', gap: 4, padding: '8px 12px', borderBottom: '1px solid ' + C.line }}>
       {tabs.map(([id, name]) => <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => { setTab(id); sfx('tab'); }}
         style={{ ...btn, flex: 1, border: '1px solid ' + (tab === id ? C.text : C.line), background: tab === id ? C.raised : 'transparent', color: tab === id ? C.text : C.muted }}>{name}</button>)}
     </nav>
-    {tab !== 'field' && <div style={{ ...row, padding: '10px 16px 0' }}>
+    {tab !== 'field' && <div role="group" aria-label="Character" style={{ ...row, padding: '10px 16px 0' }}>
       {chars.length ? chars.map((x) => <button key={x.id} type="button" aria-pressed={x.id === c?.id} onClick={() => setCid(x.id)} style={{ ...btn, border: '1px solid ' + (x.id === c?.id ? C.text : C.line), background: x.id === c?.id ? C.raised : 'transparent' }}>{x.name}</button>)
-        : <span style={{ fontSize: 13, color: C.muted }}>You have no character here. Lock one in from the room: it joins at the next wave.</span>}
+        : <span style={{ fontSize: 13, color: C.muted }}>You have no character here. Lock one in from the room: it joins the next fight.</span>}
     </div>}
     <div key={tab} className="phc-fade-in" style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {tab === 'squad' && c && <SquadTab game={game} c={c} isHost={isHost} />}
       {tab === 'gear' && c && <GearTab c={c} />}
+      {tab === 'squad' && c && <SquadTab game={game} c={c} isHost={isHost} />}
       {tab === 'magic' && c && <MagicTab c={c} />}
       {tab === 'field' && isHost && <FieldTab game={game} />}
     </div>
   </aside>;
 }
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><span style={label}>{title}</span>{children}</section>;
+/** The fight, on top of the tools: start it (gearing up), or stop it (host, fighting). */
+function FightBar({ game, isHost }: { game: GameState; isHost: boolean }) {
+  const sb = game.sandbox!, gearing = game.phase === 'story', n = sandboxNext(sb);
+  const onMap = (game.story.npcs || []).filter((x) => x.side === 'hostile').length;
+  const [hint, setHint] = React.useState(() => { try { return localStorage.getItem(HINT) !== '1'; } catch { return true; } });
+  const hide = () => { setHint(false); try { localStorage.setItem(HINT, '1'); } catch { /* */ } };
+  if (!gearing) return <div style={{ ...row, padding: '10px 16px', borderBottom: '1px solid ' + C.line }}>
+    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>Wave {sb.wave}{sb.attempt > 1 ? ' · attempt ' + sb.attempt : ''} is on. Gear changes here work mid-fight too.</span>
+    {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stop' })} title="End the fight now and go back to gearing up; the enemies stay where they stand">■ Stop the fight</button>}
+  </div>;
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 16px', borderBottom: '1px solid ' + C.line }}>
+    {sb.state === 'cleared' && <span style={{ fontSize: 13, fontWeight: 700, color: C.ok }}>✓ Wave {sb.wave} cleared. Next: wave {n}.</span>}
+    {sb.state === 'fallen' && <span style={{ fontSize: 13, fontWeight: 700, color: C.red }}>✕ The squad fell on wave {sb.wave}. Everyone is back up and refilled.</span>}
+    {hint && <div role="note" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 12px', borderRadius: 10, border: '1px solid ' + C.white, background: '#0D1119' }}>
+      <span style={{ flex: 1, fontSize: 13, lineHeight: 1.45 }}><b>Gear up here, then click the map to start a fight.</b> <span style={{ color: '#C9D3E3' }}>Click a drill unit on the map, attack one from the Area map, or press Start the fight. Gear is the first tab; the Magic kit gives you everything to cast at once.</span></span>
+      <button type="button" style={{ ...small, minHeight: 26 }} aria-label="Hide the hint" onClick={hide}>✕</button>
+    </div>}
+    <button type="button" data-sfx="start" style={{ ...primary, minHeight: 48, fontSize: 15, background: C.white }} onClick={() => act({ type: 'sandbox/fight' })}>
+      ⚔ Start the fight · {onMap ? onMap + ' on the map' : 'wave ' + n}
+    </button>
+    <div style={row}>
+      {!onMap && <span style={{ fontSize: 12, color: C.muted, flex: 1 }}>The map is empty: wave {n} ({sandboxWave(n).length} drill unit{sandboxWave(n).length === 1 ? '' : 's'}) comes in when the fight starts.</span>}
+      {isHost && <button type="button" style={small} onClick={() => act({ type: 'sandbox/stage', wave: n })}>{onMap ? 'Reset to wave ' + n : 'Place wave ' + n + ' on the map'}</button>}
+      {(isHost || sb.state === 'fallen') && sb.wave > 1 && <button type="button" style={small} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>}
+    </div>
+  </div>;
+}
+
+const Section = ({ title, children, aria }: { title: string; children: React.ReactNode; aria?: string }) => <section aria-label={aria} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><span style={label}>{title}</span>{children}</section>;
 const Stepper = ({ value, min, max, set, name }: { value: number; min: number; max: number; set: (n: number) => void; name: string }) => <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
   <button type="button" style={{ ...btn, padding: '0 10px' }} aria-label={'Lower ' + name} disabled={value <= min} onClick={() => set(value - 1)}>‹</button>
   <span style={{ minWidth: 34, textAlign: 'center', fontSize: 18, fontWeight: 700 }}>{value}</span>
@@ -186,7 +255,7 @@ const Stepper = ({ value, min, max, set, name }: { value: number; min: number; m
 </span>;
 
 function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: boolean }) {
-  const u = game.combat?.units.find((x) => x.charId === c.id), adv = game.sandbox!.advanced[c.id];
+  const u = game.phase === 'combat' ? game.combat?.units.find((x) => x.charId === c.id) : undefined, adv = game.sandbox!.advanced[c.id];
   const [skill, setSkill] = React.useState(SKILLS[0].id);
   const clsVal = adv ? 'adv:' + adv : c.classId || '';
   return <>
@@ -195,7 +264,8 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 13 }}>
         <span style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</span>
         <span style={{ color: C.muted }}>Level {c.level} · {adv ? ADVANCED_CLASSES.find((x) => x.id === adv)?.name : c.classId ? CLASS[c.classId]?.name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] : 'Classless'}</span>
-        {u && <span><span style={{ color: C.red }}>HP {u.hp}/{u.maxHp}</span> · AP {u.ap} · {WEAPON[u.weapon]?.name}{WEAPON[u.weapon]?.magazine != null ? ' ' + u.ammo + '/' + WEAPON[u.weapon].magazine : ''}{u.mg?.emanator ? <span style={{ color: C.mp }}> · MP {Math.round(u.mg.mp)}</span> : null}</span>}
+        {u ? <span><span style={{ color: C.red }}>HP {u.hp}/{u.maxHp}</span> · AP {u.ap} · {WEAPON[u.weapon]?.name}{WEAPON[u.weapon]?.magazine != null ? ' ' + u.ammo + '/' + WEAPON[u.weapon].magazine : ''}{u.mg?.emanator ? <span style={{ color: C.mp }}> · MP {Math.round(u.mg.mp)}</span> : null}</span>
+          : <span><span style={{ color: C.red }}>HP {c.hp}/{maxHp(c)}</span> · {WEAPON[c.weapon]?.name}{WEAPON[c.weapon]?.magazine != null ? ' ' + (c.loaded ?? 0) + '/' + WEAPON[c.weapon].magazine : ''}</span>}
       </div>
     </div>
     <div style={row}>
@@ -225,8 +295,58 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
   </>;
 }
 
+// ---------- gear ----------
 const RARITIES = Object.keys(RARITY) as Rarity[];
+type PackIt = ReturnType<typeof packOf>[number];
+/** Where a pack item can go: [slot, button label]. */
+function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
+  const w = it.weapon && it.kind === 'weapon' ? WEAPON[it.weapon] : null, d = ITEM[it.item || it.id] as any;
+  if (w) return [['main', 'Equip · main hand'], ...((w as any).hands === '1H' ? [['off', 'Off hand'] as ['off', string]] : [])];
+  if (d?.category === 'mod') return [['mod', 'Fit to weapon']];
+  if (d?.category === 'armour') return [['worn', 'Wear']];
+  if (d?.slot === 'off_hand') return [['off', 'Equip · off hand']];
+  return [];
+}
+const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
 function GearTab({ c }: { c: Character }) {
+  const pack = packOf(c), mainName = WEAPON[c.weapon]?.name || c.weapon;
+  const worn = Object.entries(c.worn || {});
+  return <>
+    <Section title="MAGIC KIT" aria="Magic kit">
+      <div style={row}>
+        <button type="button" data-sfx="start" style={{ ...primary, background: C.white }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'both' })}>✦ Magic kit</button>
+        <button type="button" style={{ ...small, color: C.mind, border: '1px solid ' + C.mind }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'sigil' })}>Sigils only</button>
+        <button type="button" style={{ ...small, color: C.soul, border: '1px solid ' + C.soul }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'soul' })}>Outbursts only</button>
+      </div>
+      <span style={{ fontSize: 12, lineHeight: 1.45, color: C.muted }}>
+        <span style={{ color: C.mind }}>Sigils:</span> an Evoker in the off hand, 4 mana cores, {MAGIC_KIT.words.map((w) => w.toUpperCase()).join(' · ')}.{' '}
+        <span style={{ color: C.soul }}>Outbursts:</span> an Emanator with full MP and two designs ({MAGIC_KIT.designs.map((d) => d.name).join(', ')}).
+        {' '}Now: {hasEvoker(c) ? '✓ Evoker' : 'no Evoker'} · {hasEmanator(c) ? '✓ Emanator' : 'no Emanator'} · {(c.sigils || []).length} words · {(c.outbursts || []).length} designs.
+      </span>
+    </Section>
+    <Section title="EQUIPPED" aria="Equipped">
+      <div style={slotRow}><span style={label}>MAIN HAND</span><span style={{ minWidth: 0 }}><b>{mainName}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? <span style={{ color: C.muted }}>{' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ')}</span> : null}</span>
+        {c.weapon !== 'fists' ? <button type="button" style={small} aria-label={'Unequip ' + mainName} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'main' })}>Unequip</button> : <span />}</div>
+      <div style={slotRow}><span style={label}>OFF HAND</span><span style={{ minWidth: 0, color: c.offHand ? C.text : C.muted }}>{c.offHand ? <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b> : 'empty'}</span>
+        {c.offHand ? <button type="button" style={small} aria-label={'Unequip ' + (WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'off' })}>Unequip</button> : <span />}</div>
+      {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={{ minWidth: 0 }}><b>{ITEM[id]?.name || id}</b></span>
+        <button type="button" style={small} aria-label={'Unequip ' + (ITEM[id]?.name || id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot })}>Unequip</button></div>)}
+      {!worn.length && <div style={slotRow}><span style={label}>ARMOUR</span><span style={{ color: C.muted }}>no armour pieces worn</span><span /></div>}
+      <span style={{ fontSize: 12, color: C.muted }}>Body armour class {c.armourClass ?? 0} (set it on Squad). A weapon taken in hand here comes loaded.</span>
+    </Section>
+    <Section title={'PACK (' + pack.length + ')'} aria="Pack">
+      {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
+        <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
+        {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
+        <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>
+      </div>)}
+      {!pack.length && <span style={{ fontSize: 13, color: C.muted }}>Empty. Give something below.</span>}
+      <span style={{ fontSize: 12, color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...small, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
+    </Section>
+    <GivePicker c={c} />
+  </>;
+}
+function GivePicker({ c }: { c: Character }) {
   const [q, setQ] = React.useState(''), [rarity, setRarity] = React.useState<Rarity>('standard');
   const s = q.trim().toLowerCase();
   const list = React.useMemo(() => [
@@ -234,59 +354,33 @@ function GearTab({ c }: { c: Character }) {
     ...Object.values(ITEM).map((it: any) => ({ id: it.id, name: it.name, what: (it.category || 'item') + (it.slot ? ' · ' + it.slot.replace(/_/g, ' ') : ''), weapon: false })),
   ], []);
   const hits = list.filter((x) => !s || x.name.toLowerCase().includes(s) || x.what.includes(s) || x.id.includes(s)).slice(0, 60);
-  const pack = packOf(c);
-  const equipTo = (it: ReturnType<typeof packOf>[number]): ['main' | 'off' | 'worn' | 'mod', string][] => {
-    const w = it.weapon && it.kind === 'weapon' ? WEAPON[it.weapon] : null, d = ITEM[it.item || it.id] as any;
-    if (w) return [['main', 'Hold'], ...((w as any).hands === '1H' ? [['off', 'Off hand'] as ['off', string]] : [])];
-    if (d?.category === 'mod') return [['mod', 'Fit']];
-    if (d?.category === 'armour') return [['worn', 'Wear']];
-    if (d?.slot === 'off_hand') return [['off', 'Off hand']];
-    return [];
-  };
-  return <>
-    <Section title="SPAWN AN ITEM INTO THE PACK">
-      <div style={row}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search weapons and items…" aria-label="Search weapons and items" style={{ ...field, flex: 1 }} />
-        <select value={rarity} onChange={(e) => setRarity(e.target.value as Rarity)} aria-label="Weapon rarity" style={field}>{RARITIES.map((r) => <option key={r} value={r}>{r}</option>)}</select>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 280, overflowY: 'auto' }}>
-        {hits.map((x) => <div key={(x.weapon ? 'w:' : 'i:') + x.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line }}>
-          <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 13, fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 11, color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
-          <button type="button" style={{ ...btn, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined })}>Give</button>
-          {(x.weapon || /armour|mod|off hand|shield|light|focus/.test(x.what)) && <button type="button" style={{ ...primary, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined, equip: true })}>Give + equip</button>}
-        </div>)}
-        {!hits.length && <span style={{ fontSize: 13, color: C.muted }}>Nothing matches.</span>}
-      </div>
-      <span style={{ fontSize: 12, color: C.muted }}>Weapons come with three magazines and loose rounds; a weapon taken in hand here comes loaded.</span>
-    </Section>
-    <Section title="EQUIPPED">
-      <div style={{ fontSize: 13, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span>Main hand: <b>{WEAPON[c.weapon]?.name || c.weapon}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? ' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ') : ''}</span>
-        {c.offHand && <span style={row}>Off hand: <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b><button type="button" style={{ ...btn, minHeight: 28 }} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'off' })}>Take off</button></span>}
-        {Object.entries(c.worn || {}).map(([slot, id]) => <span key={slot} style={row}>{slot.replace(/_/g, ' ')}: <b>{ITEM[id]?.name || id}</b><button type="button" style={{ ...btn, minHeight: 28 }} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot })}>Take off</button></span>)}
-      </div>
-    </Section>
-    <Section title={'PACK (' + pack.length + ')'}>
-      {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-        <span style={{ flex: 1, minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
-        {equipTo(it).map(([to, name]) => <button key={to} type="button" style={{ ...btn, minHeight: 28 }} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
-        <button type="button" style={{ ...btn, minHeight: 28, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>
+  return <Section title="GIVE… (ANY WEAPON OR ITEM)" aria="Give">
+    <div style={row}>
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search weapons and items…" aria-label="Search weapons and items" style={{ ...field, flex: 1 }} />
+      <select value={rarity} onChange={(e) => setRarity(e.target.value as Rarity)} aria-label="Weapon rarity" style={field}>{RARITIES.map((r) => <option key={r} value={r}>{r}</option>)}</select>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflowY: 'auto' }}>
+      {hits.map((x) => <div key={(x.weapon ? 'w:' : 'i:') + x.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line }}>
+        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 13, fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 11, color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
+        <button type="button" style={{ ...btn, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined })}>Give</button>
+        {(x.weapon || /armour|mod|off hand|shield|light|focus/.test(x.what)) && <button type="button" style={{ ...primary, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined, equip: true })}>Give + equip</button>}
       </div>)}
-      <span style={{ fontSize: 12, color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...btn, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
-    </Section>
-  </>;
+      {!hits.length && <span style={{ fontSize: 13, color: C.muted }}>Nothing matches.</span>}
+    </div>
+    <span style={{ fontSize: 12, color: C.muted }}>Weapons come with three magazines and loose rounds.</span>
+  </Section>;
 }
 
 function MagicTab({ c }: { c: Character }) {
   const known = c.sigils || [], k = c.soulKnown || { schools: [], modules: [] };
   const [school, setSchool] = React.useState(SCHOOLS[0]?.id || ''), [mods, setMods] = React.useState<string[]>([]), [name, setName] = React.useState('');
   const give = (item: string) => act({ type: 'sandbox/give', charId: c.id, item });
-  const has = (id: string) => c.weapon === id || c.offHand?.id === id || packOf(c).some((x) => (x.item || x.id) === id);
   return <>
     <Section title="FOCI">
       <div style={row}>
-        {!has('evoker') && <button type="button" style={btn} onClick={() => give('evoker')}>+ Evoker (Sigils)</button>}
-        {!has('emanator') && <button type="button" style={btn} onClick={() => give('emanator')}>+ Emanator (Outbursts)</button>}
+        <button type="button" style={{ ...primary, background: C.white }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'both' })}>✦ Magic kit</button>
+        {!hasEvoker(c) && <button type="button" style={btn} onClick={() => give('evoker')}>+ Evoker (Sigils)</button>}
+        {!hasEmanator(c) && <button type="button" style={btn} onClick={() => give('emanator')}>+ Emanator (Outbursts)</button>}
         <button type="button" style={btn} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'standard_core', qty: 4 })}>+4 mana cores</button>
       </div>
     </Section>
@@ -323,12 +417,14 @@ function MagicTab({ c }: { c: Character }) {
 }
 
 // ---------- the field (host) ----------
-/** While armed, a click on a grid tile spawns there instead of reaching the combat screen. Tiles are the combat
- *  template's button.phc-tok, whose aria-label starts with the grid reference ("C7 · …"). */
+/** While armed, a click on a free tile spawns there instead of reaching the screen. Tiles are the combat grid's and the
+ *  story screen's map buttons (button.phc-tok), whose aria-label starts with the grid reference ("C7 · …"). */
+let picking = false;
 function useTilePick(armed: boolean, pick: (ref: string) => void) {
   const cb = React.useRef(pick); cb.current = pick;
   React.useEffect(() => {
     if (!armed) return;
+    picking = true;
     const f = (e: MouseEvent) => {
       const el = (e.target as HTMLElement | null)?.closest?.('button.phc-tok') as HTMLElement | null; if (!el) return;
       const ref = (el.getAttribute('aria-label') || '').split(' · ')[0].trim(); if (!/^[A-Z]{1,2}\d{1,2}$/.test(ref)) return;
@@ -336,43 +432,46 @@ function useTilePick(armed: boolean, pick: (ref: string) => void) {
     };
     window.addEventListener('click', f, true);
     document.body.style.cursor = 'crosshair';
-    return () => { window.removeEventListener('click', f, true); document.body.style.cursor = ''; };
+    return () => { picking = false; window.removeEventListener('click', f, true); document.body.style.cursor = ''; };
   }, [armed]);
 }
 function FieldTab({ game }: { game: GameState }) {
-  const sb = game.sandbox!, cb = game.combat;
-  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sb.wave + 1);
+  const sb = game.sandbox!, gearing = game.phase === 'story', cb = gearing ? null : game.combat;
+  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb));
   useTilePick(armed, (r) => act({ type: 'sandbox/spawn', tier, weapon, at: r }));
   React.useEffect(() => { if (!armed) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArmed(false); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [armed]);
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);
-  const foes = (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
+  const foes = gearing ? (game.story.npcs || []).filter((n) => n.side === 'hostile').length : (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
   return <>
-    <Section title="SPAWN AN ENEMY">
+    <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'}>
       <div style={row}>
         <select value={tier} onChange={(e) => { setTier(e.target.value); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
       </div>
       <div style={row}>
-        <button type="button" style={armed ? { ...primary, background: C.red, color: C.white } : primary} aria-pressed={armed} onClick={() => setArmed(!armed)}>{armed ? 'Click tiles on the grid · stop' : 'Place by clicking the grid'}</button>
+        <button type="button" style={armed ? { ...primary, background: C.red, color: C.white } : primary} aria-pressed={armed} onClick={() => setArmed(!armed)}>{armed ? 'Click tiles on the map · stop' : 'Place by clicking the map'}</button>
         <input value={ref} onChange={(e) => setRef(e.target.value.toUpperCase())} placeholder="or a tile: H6" aria-label="Tile" style={{ ...field, width: 90 }} />
         <button type="button" style={btn} disabled={!ref} onClick={() => act({ type: 'sandbox/spawn', tier, weapon, at: ref })}>Spawn</button>
       </div>
-      {armed && <span style={{ fontSize: 12, color: C.text }}>Each click on a free tile spawns one. Esc or the button stops.</span>}
+      {armed && <span style={{ fontSize: 12, color: C.text }}>Each click on a free tile spawns one{gearing ? ' (open the Area map for the big grid)' : ''}. Esc or the button stops.</span>}
       <div style={row}><button type="button" style={btn} disabled={!foes} onClick={() => act({ type: 'sandbox/clear' })}>Clear all enemies ({foes})</button></div>
     </Section>
     <Section title="WAVES">
       <div style={row}>
         <button type="button" aria-pressed={sb.ai} style={{ ...btn, border: '1px solid ' + (sb.ai ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/ai', on: !sb.ai })}>Enemy AI: {sb.ai ? 'ON' : 'OFF (they pass)'}</button>
-        <button type="button" aria-pressed={sb.auto} style={{ ...btn, border: '1px solid ' + (sb.auto ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/auto', on: !sb.auto })}>Auto next wave: {sb.auto ? 'ON' : 'OFF'}</button>
+        <button type="button" aria-pressed={sb.auto} style={{ ...btn, border: '1px solid ' + (sb.auto ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/auto', on: !sb.auto })} title="After a cleared wave the next one comes by itself, with no gearing up between">Endless waves: {sb.auto ? 'ON' : 'OFF'}</button>
       </div>
-      <div style={row}><span style={{ fontSize: 13 }}>Jump to wave</span><Stepper name="wave" value={jump} min={1} max={99} set={setJump} /><button type="button" style={btn} onClick={() => act({ type: 'sandbox/wave', wave: jump })}>Go</button>
-        <button type="button" style={btn} onClick={() => act({ type: 'sandbox/retry' })}>↻ Retry this wave</button></div>
+      <div style={row}><span style={{ fontSize: 13 }}>Wave</span><Stepper name="wave" value={jump} min={1} max={99} set={setJump} />
+        {gearing && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stage', wave: jump })}>Place on the map</button>}
+        <button type="button" style={btn} onClick={() => act({ type: 'sandbox/wave', wave: jump })}>Fight it now</button>
+        <button type="button" style={btn} onClick={() => act({ type: 'sandbox/retry' })}>↻ Retry wave {sb.wave}</button></div>
+      <span style={{ fontSize: 12, color: C.muted }}>Wave {jump}: {sandboxWave(jump).map((f) => f.name).join(', ')}.</span>
     </Section>
     <Section title={'MANA METER · ' + mana + ' · ' + (band?.id || '').toUpperCase()}>
       <input type="range" min={0} max={40} value={mana} aria-label="Mana meter" onChange={(e) => act({ type: 'sandbox/mana', value: Number(e.target.value) })} />
       <span style={{ fontSize: 12, color: C.muted }}>{MANA_BANDS.map((b) => b.id + ' ' + b.min + '–' + b.max).join(' · ')}</span>
     </Section>
-    <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => { if (confirm('Leave the Proving Ground? The room goes back to how it was before.')) act({ type: 'sandbox/end' }); }}>Leave the Proving Ground</button>
+    <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => leaveProvingGround()}>Leave the Proving Ground</button>
   </>;
 }
 

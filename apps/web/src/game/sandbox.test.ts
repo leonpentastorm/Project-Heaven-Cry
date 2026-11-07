@@ -3,13 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES } from '@engine';
 
 const calls: any[] = [];
-let role: string | null = null;
+let role: string | null = null, phase = 'story';
 vi.mock('./store', () => ({
-  act: (a: any) => calls.push(a), hostRoom: () => { calls.push('hostRoom'); role = 'host'; }, getState: () => ({ role }),
+  act: (a: any) => { calls.push(a); if (a.type === 'sandbox/end') phase = 'lobby'; }, hostRoom: () => { calls.push('hostRoom'); role = 'host'; }, getState: () => ({ role, game: { phase } }),
+  go: (s: string) => calls.push('go:' + s),
 }));
 vi.mock('./fx/FxLayer', () => ({ fxBusyUntil: () => 0 }));
 vi.mock('./sfx', () => ({ sfx: () => {}, reducedMotion: () => false }));
-const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy } = await import('./sandbox');
+const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy, leaveProvingGround } = await import('./sandbox');
 
 describe('opening the Proving Ground', () => {
   it('from the title: a fresh room, then sandbox/start in the same tick', () => {
@@ -22,6 +23,11 @@ describe('opening the Proving Ground', () => {
     expect(calls).toEqual([{ type: 'sandbox/start' }]);
     expect(provingGroundWhy({ phase: 'lobby' } as any, false)).toMatch(/host/);
     expect(provingGroundWhy({ phase: 'lobby' } as any, true)).toBeNull();
+  });
+  it('leaving ends it and goes to the room screen, never the title', () => {
+    calls.length = 0; phase = 'story';
+    leaveProvingGround(false);
+    expect(calls).toEqual([{ type: 'sandbox/end' }, 'go:room']);
   });
   it('quick test characters are real archetypes', () => {
     expect(QUICK_ARCHETYPES.length).toBeGreaterThan(2);
