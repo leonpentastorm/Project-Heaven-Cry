@@ -130,7 +130,10 @@ describe('actions (plan 2.7)', () => {
     const s = storyWith([{ traits: ['heavyworlder'] }]);
     const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'heavyworlder', text: 'I lift the cargo pod.' });
-    expect(s.g.story.entries.at(-1)!.text).toMatch(/\[Heavyworlder · trait:heavyworlder\] I lift/);
+    // Players see the action's label and the words, never the item key; the key rides as ref (the Narrator's tag).
+    const line = s.g.story.entries.at(-1)!;
+    expect(line.text).toBe('I lift the cargo pod.'); expect(line.head).toBe(c.name + ' · Boast'); expect(line.ref).toBe('trait:heavyworlder');
+    expect(line.text + line.head).not.toMatch(/trait:|perk:|class:/);
     const r = s.g.story.rulings![0]; expect(r.use).toBeTruthy();
     expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'heavyworlder', text: 'Again.' })).toThrow(/Used/);
     s.act({ type: 'narrator/turn', turn: { narration: 'No.', perkRulings: [{ id: r.id, accepted: false }] } } as any);

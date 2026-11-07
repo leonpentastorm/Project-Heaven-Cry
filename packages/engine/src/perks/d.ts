@@ -740,7 +740,7 @@ register({
   actions: [
     {
       id: 'stolen_fire', label: 'Stolen Fire', scope: ['combat'], ap: 0, target: 'none',
-      text: 'Pray without kneeling: any patron\'s Blessing, on Will Power instead of Faith (3 AP). choice: patron:blessing.',
+      text: 'Pray without kneeling: any patron\'s Blessing, on Will Power instead of Faith (3 AP).',
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
       run: (h, args, rng) => {
         const c = charOf(h), u = h.u!, cb = h.cb!; if (!c) return 'Only a character can pray.';

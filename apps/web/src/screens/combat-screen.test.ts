@@ -305,4 +305,31 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     expect(G.combat!.units.find((x) => x.id === u.id)!.shield).toBeGreaterThan(0);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
+  it('a combat move that needs a pick is all chips: The Voice\'s orders, the engine\'s verdict, Confirm; no typed detail field', async () => {
+    vi.useFakeTimers();
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-voice');
+    doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'the_voice', tier: 'I' }];
+    doAct({ type: 'narrator/turn', turn: { narration: 'Halt.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'D4' }] } } } as any);
+    for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    const tab = el.querySelector('#phc-tab-perks') as HTMLElement; await React.act(async () => { tab.click(); });
+    await React.act(async () => { buttons(el, /The Voice/)[0].click(); });
+    expect(el.querySelector('.phc-pk-detail')).toBeNull();
+    const group = el.querySelector('.phc-cb-pick') as HTMLElement; expect(group).toBeTruthy();
+    expect(group.textContent).toMatch(/The order/);
+    const conf = () => buttons(el, /^Confirm$/)[0] as HTMLButtonElement;
+    expect(conf().disabled).toBe(true); expect(el.querySelector('.phc-cb-seltext')!.textContent).toMatch(/Pick the order/);
+    // "Something else" needs words: the box asks for them; Kneel is one click.
+    await React.act(async () => { buttons(group, /^Something else$/)[0].click(); });
+    expect(conf().disabled).toBe(true); expect(el.querySelector('.phc-cb-seltext')!.textContent).toMatch(/Write the order you give/);
+    await React.act(async () => { buttons(group, /^Kneel$/)[0].click(); });
+    expect(buttons(group, /^Kneel$/)[0].getAttribute('aria-pressed')).toBe('true');
+    expect(conf().disabled).toBe(false);
+    await React.act(async () => { conf().click(); });
+    expect(G.combat!.log.some((l) => /gives an order \(The Voice: kneel\)/.test(l))).toBe(true);
+    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
+  });
 });

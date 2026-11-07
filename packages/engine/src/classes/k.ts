@@ -532,7 +532,7 @@ register({
         return null;
       } },
     { id: 'beloved_design', label: 'Design a Beloved spell', scope: ['world', 'story'], target: 'text', ap: 0,
-      text: 'Make a Beloved design with one module more than your slots (text: "school: module, module").',
+      text: 'Make a Beloved design with one module more than your slots (the design itself: a school and its modules).',
       run: (h, a) => {
         const c = h.c!, list: string[] = cs(c).beloved || []; if (list.length >= 3) return 'Three designs are Beloved already.';
         if ((c.outbursts || []).length >= (2 + Math.floor((c.skills.empathy || 0) / 2))) return 'Your ready designs are full: forget one first.';
@@ -1193,7 +1193,7 @@ register({
   id: 'heartfed.four_hearts', claims: 'all',
   actions: [
     { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'designId:rage|grief|fear|devotion', scope: ['world', 'story'], target: 'none', ap: 0,
-      text: 'Key one of your designs to Rage, Grief, Fear or Devotion (choice: "designId:gauge").',
+      text: 'Key one of your designs to Rage, Grief, Fear or Devotion.',
       preview: (h, a) => { const [id, k] = String(a.choice || '').split(':'); return !(h.c?.outbursts || []).some((d) => d.id === id) || !GAUGES.includes(k as Gauge) ? { ok: false, why: 'Choose "designId:rage|grief|fear|devotion".' } : {}; },
       run: (h, a) => { const [id, k] = String(a.choice).split(':'); (charState(h.c).heartKeys ||= {})[id] = k; const d = h.c!.outbursts!.find((x) => x.id === id)!; const line = d.name + ' is keyed to ' + k + '.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
     { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
@@ -1268,7 +1268,7 @@ register({
       preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Link to someone else.' }; if (!unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: [links(h).length >= maxLinks(h.c) ? 'Replaces your oldest link.' : 'Linked for the scene.'] }; },
       run: (h, a) => { const t = unitById(h.cb!, a.targetId)!; addLink(h, linkId(t)); emitFx(h.cb!, 'stance', { unit: h.u!.id, at: h.u!.pos, what: 'link', target: t.id }); say(h.cb, h.u!.name + ' binds their heart to ' + t.name + ' (Link).'); return null; } },
     { id: 'link_story', label: 'Link', pick: 'squad', pickLabel: 'The squadmate', scope: ['story'], target: 'none', ap: 0,
-      text: 'Bind your heart to another character here (choice: their id) for the scene.',
+      text: 'Bind your heart to another character here for the scene.',
       preview: (h, a) => (!a.choice || !h.g?.characters?.[a.choice] || a.choice === h.c?.id ? { ok: false, why: 'Pick another character (choice).' } : {}),
       run: (h, a) => { addLink(h, a.choice!); const t = h.g.characters[a.choice!]; postStory(h, h.c!.name + ' binds their heart to ' + t.name + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Link in the story: is ' + t.name + ' close enough to bind to? (refuse to undo)'); return null; } },
   ],
@@ -1287,7 +1287,7 @@ register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
     { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Begin and release an Outburst from a linked ally\'s place (choice: the design; targetIds[0]: which link).',
+      text: 'Begin and release an Outburst from a linked ally\'s place.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
@@ -1322,8 +1322,8 @@ register({
 // Heals you give a linked ally are ×1.25. A linked ally Downed: you take 2 Strain (it can short).
 register({
   id: 'heartbinder.share', claims: 'all',
-  actions: [{ id: 'share_mode', label: 'Share: always / never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
-    text: 'Choose whether you take half of a linked ally\'s wounds automatically (choice: always or never).',
+  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
+    text: 'Choose whether you take half of a linked ally\'s wounds automatically: always or never.',
     preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
     run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } }],
   on: {
@@ -1370,8 +1370,8 @@ const maxForms = (c: Character | null | undefined) => ((c?.skills?.will_power ||
 register({
   id: 'vessel.inner_charge', claims: 'all',
   actions: [
-    { id: 'inner_charge', label: 'Inner Charge', scope: ['combat', 'world'], target: 'none', ap: (h) => Math.max(1, h.u?.mg?.soulAp ?? 2),
-      text: 'Take a body form (choice: iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
+    { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: (h) => Math.max(1, h.u?.mg?.soulAp ?? 2),
+      text: 'Take a body form (iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
       available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= maxForms(h.c) ? 'You hold ' + maxForms(h.c) + ' forms already.' : true),
       preview: (h, a) => {
         const f = a.choice as Form; if (!FORMS[f]) return { ok: false, why: 'Choose iron, surge, swift, pain, steady or heartbeat.' };
@@ -1387,7 +1387,7 @@ register({
         say(cb, u.name + ' draws the heart into the body: ' + FORMS[f] + ' (' + cost + ' MP' + (m.emanator ? '' : ' from the air') + ').' + strainUp(cb, rng, u, (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), 'Inner Charge'));
         return null;
       } },
-    { id: 'inner_charge_story', label: 'Inner Charge', scope: ['story'], target: 'none', ap: 0,
+    { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
       text: 'Take a body form before the trouble starts (20 MP): it lasts the scene and carries into a fight.',
       preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= maxForms(h.c) || formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: 'No room for that form.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
@@ -1481,7 +1481,7 @@ register({
   id: 'twinbound.manifest', claims: 'all',
   actions: [{
     id: 'manifest', label: 'Manifest the twin', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_campaign', n: 1 },
-    text: 'Once: three built-in Outbursts for the twin (text: "school: mod, mod; school; school: mod"; or JSON {portrait, designs}).',
+    text: 'Once: design the twin\'s three built-in Outbursts from the schools and modules you know. They are fixed for the campaign.',
     available: (h) => (!h.c ? false : cs(h.c).twin ? 'The twin is already manifest.' : h.cb && !overworld(h.cb) ? 'Out of a fight.' : true),
     preview: (h, a) => { const r = twinDesigns(h.c!, a.text); return typeof r === 'string' ? { ok: false, why: r } : { lines: ['The twin: ' + r.designs.map((d) => d.name).join(', ') + '.'] }; },
     run: (h, a) => {

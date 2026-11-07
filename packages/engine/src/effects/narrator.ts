@@ -36,9 +36,16 @@ let poster: ((g: any, e: any) => string) | null = null;
 export const setStoryPoster = (f: (g: any, e: any) => string) => { poster = f; };
 /** Post a story line for an item use: a player line headed "[Name · key]", private to the owner (and the Narrator) when
  * asked. Returns the entry id. */
+/** The label of the action being run (runPerkAction sets it), so a story line is headed "MPAT · Manifest the twin". */
+let acting: string | null = null;
+export const actingAs = (label: string | null) => { const was = acting; acting = label; return was; };
+/** An action label as a heading: no trailing ellipsis or AP note ("Open Hand: offer mercy…" → "Open Hand: offer mercy"). */
+const asHead = (label: string) => label.replace(/…$/, '').replace(/\s*\((?:\d+ AP|all AP)\)$/, '').trim();
+/** A story line from an item use. Players see "Name · action label" and the text; the item key rides as ref (never
+ *  shown to players: the Narrator's transcript tags the line with it, for its rulings and wiki lookups). */
 export function postStory(h: Holder, text: string, opts: { private?: boolean; kind?: string } = {}): string | null {
   const g = h.g ?? boundGame(); if (!g || !poster || !h.c) return null;
-  return poster(g, { kind: opts.kind || 'player', who: h.c.owner, head: h.c.name + ' · ' + h.info.name, charId: h.c.id, text: '[' + h.info.name + ' · ' + h.key + '] ' + text, ...(opts.private ? { to: h.c.owner } : {}) });
+  return poster(g, { kind: opts.kind || 'player', who: h.c.owner, head: h.c.name + ' · ' + asHead(acting || h.info.name), charId: h.c.id, ref: h.key, text, ...(opts.private ? { to: h.c.owner } : {}) });
 }
 
 /** The Pending rulings block for the next turn prompt (empty string when there is nothing owed). */

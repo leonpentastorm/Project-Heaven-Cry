@@ -305,7 +305,7 @@ register({
   id: 'origami_hands', claims: 'all',
   actions: [
     { id: 'improvise', label: 'Improvise', scope: ['combat', 'world'], ap: (h) => (tierII(h) ? 1 : 2), target: 'none',
-      text: 'One spare-parts charge: a tripwire on a tile next to you (choice trap + tile), a sling shot (choice sling + target), or a one-use tool (choice tool + what).',
+      text: 'One spare-parts charge: a tripwire on a tile next to you, a sling shot at an enemy, or a one-use tool.',
       available: (h) => (!h.u ? false : !(h.u.parts || 0) ? 'No spare parts (scraps).' : true),
       preview: (h, args) => {
         const u = h.u!, cb = h.cb!, ch = args.choice || 'trap';
@@ -779,7 +779,7 @@ register({
     // weights, spec 14: objects carry none in the data). It lands there (or the nearest free tile), and it and whoever
     // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
     id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'tile', range: 1,
-    pickLabel: 'Where it lands (a grid reference)',
+    pickLabel: 'Where it lands',
     text: 'Throw an adjacent object under your carry weight to a tile in range: it and whoever it lands on take damage by weight.',
     preview: (h, args) => {
       const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile), o = k0 ? objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null && !(x as any).dead) : null;
@@ -925,7 +925,7 @@ register({
   id: 'slicer', claims: [2, 3],
   actions: [
     { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 2, target: 'tile',
-      text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Proficiency against its tier. A door: choice open, close or lock.',
+      text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Proficiency against its tier. A door: open, close or lock it.',
       preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'proficiency'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, d = deviceAt(h, args); if (typeof d === 'string') return d;
