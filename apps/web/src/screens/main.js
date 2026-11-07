@@ -69,7 +69,7 @@ function magicNow(g, c) {
  *  unit afterwards. The UI learns reasons and costs from the engine without computing a rule itself. */
 function dryMagic(cbx, uid, fn) {
   const units = cbx.units.map((x) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
-  const c = { ...cbx, units, log: [], notes: [], glyphs: [...(cbx.glyphs || [])], zones: (cbx.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })) };
+  const c = { ...cbx, units, log: [], notes: [], fx: [], glyphs: [...(cbx.glyphs || [])], zones: (cbx.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })) };
   const u = units.find((x) => x.id === uid);
   let err = null;
   try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }

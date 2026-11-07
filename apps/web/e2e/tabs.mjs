@@ -110,8 +110,6 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     // The last tab is remembered for this character across turns; a command on the turn card switches the tab.
     await p.locator('[role="tab"][data-tab="utility"]').click(); await p.waitForTimeout(150);
     await p.getByRole('button', { name: 'End turn', exact: true }).click();
-    for (let k = 0; k < 10; k++) { await p.waitForTimeout(600); console.log('DBG', JSON.stringify(await p.evaluate(() => { const s = window.__phc.getState(), cb = s.game.combat; return { screen: s.screen, phase: s.game.phase, turn: cb && cb.order[cb.turn], round: cb?.round, ap: cb?.units.find((u)=>u.side==='pc')?.ap, cut: !!document.querySelector('[data-phc-cutin]'), dlg: !!document.querySelector('[data-phc-cmds-dialog]'), hidden: document.hidden, over: cb?.over }; }))); }
-    await p.screenshot({ path: OUT + 'dbg-endturn.png' });
     await p.waitForSelector('[data-phc-cutin]', { timeout: 6000 });
     await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 8000 });
     await p.waitForTimeout(300);
