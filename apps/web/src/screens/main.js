@@ -859,7 +859,7 @@ export class MainLogic extends DCLogic {
     return {
       ...epccgVals(this), ...lightboxVals(this), code: g.code, roomText: 'ROOM ' + g.code + (SB ? '' : ' · '), withNarrator: !SB, report: openReport, spend: openSpend, costText: (u.calls ? '$' + u.costUsd.toFixed(2) + ' · ' + u.calls + ' Narrator turn' + (u.calls === 1 ? '' : 's') : 'no Narrator turns yet'),
       toRoom: () => go('room'), isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save', toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
-      narrChip: SB ? 'PROVING GROUND · NO NARRATOR' : 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
+      narrChip: SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS') : 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
       narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],

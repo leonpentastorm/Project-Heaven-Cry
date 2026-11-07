@@ -133,12 +133,19 @@ function onMessage(m: any) {
     }
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
   } else {
-    if (m.t === 'view') { const prev = S.game; set({ game: m.state, conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); }
+    if (m.t === 'view') { const prev = S.game; set({ game: m.state, conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
     if (m.t === 'err') toast(m.message);
     if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
   }
 }
 
+/** A guest sees the host close the Proving Ground: opened from the title, the room closes too (to the title); opened
+ *  from a room, everyone is back in it. */
+function provingClosed(prev: GameState | null, g: GameState) {
+  if (!prev?.sandbox || g.sandbox) return;
+  if (prev.sandbox.standalone) { const code = g.code; toast('The host closed the Proving Ground.'); leaveRoom(); forgetSession(code); }
+  else toast('The host closed the Proving Ground: back to the room.');
+}
 /** Where a player should be, given the game: combat follows the fight, story otherwise. */
 function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : 'main'; }
 function followPhase(prev: GameState | null, g: GameState) {
