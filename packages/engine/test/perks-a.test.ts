@@ -277,7 +277,7 @@ describe('Siege Engine', () => {
     const u = f.turn(f.pc); at(f, u, '3,5'); at(f, f.foe, '4,5');
     pcAct(f, { type: 'combat/shove', targetId: f.foe.id });
     expect(f.pc.ap).toBe(5);
-    const foe = f.foe; foe.strength = 30; at(f, foe, '4,5');
+    const foe = f.foe; foe.strength = 30; foe.ap = 6; at(f, foe, '4,5');
     withGame(f.g, () => shove(f.cb, rng(3), foe, f.pc));
     expect(f.pc.pos).toBe('3,5'); expect(logHas(f.cb, /Siege Engine/)).toBe(true);
   });
@@ -357,7 +357,7 @@ describe('Right of Way', () => {
 describe('Heavyworlder', () => {
   it('carry ×2, −0.5 Movement, +2 to hit against them, and no hiding in the light', () => {
     const f = fightWith([{ traits: ['heavyworlder'] }, {}]);
-    const [me, plain] = f.pcs;
+    const [me, plain] = f.pcs; at(f, f.foe, '3,4');
     expect(me.movement).toBe(plain.movement - 0.5);
     const c = f.g.characters[me.charId!]; expect(carryLimit(c)).toBe(2 * carryLimit({ ...c, traits: [] }));
     const pv = withGame(f.g, () => previewAttack(f.cb, f.foe, me, 'shot', { free: true }));
@@ -432,9 +432,14 @@ describe('Squad Anchor', () => {
     const term = () => withGame(f.g, () => previewAttack(f.cb, f.foe, f.unit(ally.id), 'shot', { free: true })).terms!.some((t) => /Squad Anchor/.test(t.label));
     expect(term()).toBe(true);
     const save = (seed: number) => withGame(f.g, () => { const a = f.unit(ally.id); delete a.conds?.pinned; return applyCond(f.cb, rng(seed), f.foe, a, 'pinned'); });
-    const near = save(5); at(f, me, '1,10'); const far = save(5); at(f, me, '1,4');
     const num = (s: string) => Number(/save (-?\d+) vs/.exec(s)?.[1] ?? NaN);
-    if (!Number.isNaN(num(near))) expect(num(near)).toBe(num(far) + 1);
+    let compared = 0;
+    for (let seed = 1; seed < 30; seed++) {
+      const near = num(save(seed)); at(f, me, '1,10'); const far = num(save(seed)); at(f, me, '1,4');
+      if (Number.isNaN(near) || Number.isNaN(far)) continue;
+      expect(near).toBe(far + 1); compared++;
+    }
+    expect(compared).toBeGreaterThan(0);
     f.turn(me);
     pcAct(f, { type: 'combat/move', to: '1,0' });
     expect(term()).toBe(false);
