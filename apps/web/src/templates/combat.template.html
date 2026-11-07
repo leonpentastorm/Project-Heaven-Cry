@@ -58,10 +58,23 @@
 </div>
 </section>
 
-<aside aria-label="Turn" class="phc-cb-aside phc-col-scroll" style="flex: 1 1 380px; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 14px 6px 4px; margin: 0 -6px; overflow-x: hidden; overflow-y: auto">
+<sc-if value="{{panelOpen}}">
+<aside aria-label="Turn" id="phc-cb-aside" class="phc-cb-aside phc-col-scroll {{asideCls}}" style="flex: 1 1 380px; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 6px 4px; margin: 0 -6px; overflow-x: hidden; overflow-y: auto">
+<div class="phc-cb-bar" style="flex: none; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<sc-if value="{{hasMe}}"><div class="phc-me-mini" aria-label="You: {{me.name}}, HP {{me.hp}}, {{me.miniLine}}" style="flex: 0 1 auto; min-width: 0; display: none; align-items: center; gap: 7px">
+<button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #000; display: block"></button>
+<span style="flex: none; max-width: 96px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.name}}</span>
+<span aria-hidden="true" style="position: relative; display: block; flex: 0 1 56px; min-width: 24px; height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{me.hpChip}}"></span><span class="phc-hp-fill" style="{{me.hpFill}}"></span></span>
+<span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; color: #F65157">HP</span> {{me.hp}} · {{me.miniLine}}</span>
+</div></sc-if>
+<span style="flex: none; margin-left: auto; display: flex; gap: 6px">
+<sc-if value="{{canCustomise}}"><button type="button" class="phc-cb-link" onClick="{{customise}}" aria-haspopup="dialog" title="Choose the four commands your turn card offers (keys 1–4)" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">⚙ Customise</button></sc-if>
+<button type="button" class="phc-cb-hide" onClick="{{togglePanel}}" aria-controls="phc-cb-aside" aria-expanded="true" aria-keyshortcuts="H" title="Hide the panel: the map takes the full width (key H)" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">Hide panel ⟩</button>
+</span>
+</div>
 <div class="phc-cb-top phc-col-scroll" style="flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px">
 <sc-if value="{{hasMe}}">
-<div aria-label="You" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<div aria-label="You" class="phc-me-full" style="flex: none; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="display: flex; gap: 10px; align-items: flex-start">
 <button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #000"></button>
 <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px">
@@ -86,12 +99,6 @@
 <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{me.fx}}" as="f"><span title="{{f.t}}" style="{{f.style}}">{{f.k}}</span></sc-for></div>
 </div>
 </sc-if>
-<sc-if value="{{say.can}}">
-<div style="display: flex; gap: 6px">
-<input aria-label="Say something (the Narrator hears it after the fight)" value="{{say.value}}" onChange="{{say.onChange}}" placeholder="Say or attempt something… (0 AP)" maxlength="300" style="flex: 1; min-width: 0; min-height: 38px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 14px">
-<button type="button" onClick="{{say.send}}" title="Goes in the combat log; the Narrator rules on it after the fight" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Say</button>
-</div>
-</sc-if>
 <sc-if value="{{hasAllies}}">
 <div aria-label="Allies" style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SQUAD · HOVER FOR DETAILS</span>
@@ -103,6 +110,12 @@
 </div>
 </sc-if>
 </div>
+<sc-if value="{{say.can}}">
+<form class="phc-cb-say" onSubmit="{{say.submit}}" style="flex: none; position: sticky; top: 0; z-index: 3; display: flex; gap: 6px; margin: 0; background: #0A0D13">
+<input class="phc-say-in" aria-label="Say something (the Narrator hears it after the fight)" value="{{say.value}}" onChange="{{say.onChange}}" placeholder="Say or attempt something… (0 AP)" maxlength="300" style="flex: 1; min-width: 0; min-height: 38px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 14px">
+<button type="submit" title="Goes in the combat log; the Narrator rules on it after the fight" style="flex: none; min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Say</button>
+</form>
+</sc-if>
 <div aria-label="Turn panel" class="phc-cb-turnbox" style="{{turnBoxStyle}}">
 <sc-for list="{{turnPanels}}" as="T">
 <div class="{{T.cls}} phc-cb-turn" aria-hidden="{{T.hidden}}" style="{{T.style}}">
@@ -127,17 +140,23 @@
 </div>
 </sc-if>
 <div style="flex: none; display: flex; flex-direction: column; gap: 5px">
-<div style="display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2"><span>ACTION POINTS</span><span style="color: #E7EBF3; font-weight: 700">{{T.apText}}</span></div>
+<div class="phc-cb-aplabel" style="display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2"><span>ACTION POINTS</span><span style="color: #E7EBF3; font-weight: 700">{{T.apText}}</span></div>
 <div class="phc-stagger phc-pips" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px">
 <sc-for list="{{T.apPips}}" as="p" hint-placeholder-count="6"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for>
 </div>
 </div>
 <div class="phc-cb-dock" style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-if value="{{say.can}}">
+<form class="phc-cb-say2" onSubmit="{{say.submit}}" style="flex: none; display: none; gap: 6px; margin: 0">
+<input aria-label="Docked Say box: say or attempt something (the Narrator hears it after the fight)" value="{{say.value}}" onChange="{{say.onChange}}" placeholder="Say or attempt something… (0 AP)" maxlength="300" style="flex: 1; min-width: 0; min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 14px">
+<button type="submit" title="Goes in the combat log; the Narrator rules on it after the fight" style="flex: none; min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Say</button>
+</form>
+</sc-if>
 <div role="tablist" aria-label="Actions" class="phc-cb-tabs" style="flex: none; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none">
 <sc-for list="{{T.tabs}}" as="tb" hint-placeholder-count="5"><button type="button" role="tab" id="{{tb.id}}" aria-controls="phc-tabpanel" aria-selected="{{tb.selected}}" aria-label="{{tb.label}}" aria-keyshortcuts="{{tb.keys}}" tabindex="{{tb.tabindex}}" title="{{tb.title}}" data-tab="{{tb.key}}" onClick="{{tb.pick}}" onKeyDown="{{tb.onKey}}" style="{{tb.style}}"><span aria-hidden="true" style="{{tb.numStyle}}">{{tb.num}}</span><span style="overflow: hidden; text-overflow: ellipsis">{{tb.name}}</span><span style="{{tb.countStyle}}">{{tb.count}}</span><sc-if value="{{tb.holds}}"><span aria-hidden="true" style="{{tb.holdStyle}}"></span></sc-if></button></sc-for>
 </div>
 <sc-for list="{{T.tabPanel}}" as="tp">
-<div role="tabpanel" id="phc-tabpanel" aria-labelledby="{{tp.tab}}" tabindex="0" class="{{tp.cls}}" style="position: relative; flex: 1 1 auto; min-height: 96px; overflow-y: auto; overflow-x: hidden; padding: 2px 4px 2px 0; outline: none">
+<div role="tabpanel" id="phc-tabpanel" aria-labelledby="{{tp.tab}}" tabindex="0" class="{{tp.cls}}" style="position: relative; flex: 1 1 auto; min-height: 56px; overflow-y: auto; overflow-x: hidden; padding: 2px 4px 2px 0; outline: none">
 <div class="{{tp.innerCls}}" style="display: flex; flex-direction: column; gap: 6px">
 <span style="{{tp.nameStyle}}">{{tp.name}}</span>
 <sc-for list="{{tp.items}}" as="a" hint-placeholder-count="4">
@@ -176,12 +195,12 @@
 <div aria-label="Chosen action" class="phc-cb-foot" style="flex: none; display: flex; flex-direction: column; gap: 8px">
 <div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 14px; font-weight: 700">{{T.sel.name}}</span>
-<span title="{{T.sel.text}}" style="font-size: 12px; line-height: 1.4; color: #C9D3E3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden">{{T.sel.text}}</span>
-<sc-if value="{{T.sel.extra}}"><span title="{{T.sel.extra}}" style="font-size: 11px; color: #A3AEC2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden">{{T.sel.extra}}</span></sc-if>
+<span class="phc-cb-seltext" title="{{T.sel.text}}" style="font-size: 12px; line-height: 1.4; color: #C9D3E3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden">{{T.sel.text}}</span>
+<sc-if value="{{T.sel.extra}}"><span class="phc-cb-selextra" title="{{T.sel.extra}}" style="font-size: 11px; color: #A3AEC2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden">{{T.sel.extra}}</span></sc-if>
 </div>
 <sc-for list="{{T.tgtList}}" as="target">
 <div aria-label="Target" class="{{target.cls}}" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #10151F; border: 1px solid #F65157">
-<sc-if value="{{target.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{target.zoom}}" aria-label="Enlarge {{target.name}}" style="{{zoomBtn}}"><img src="{{target.img}}" alt="" style="width: 40px; height: 50px; object-fit: cover; border-radius: 6px; background: #000"></button></sc-if>
+<sc-if value="{{target.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" class="phc-cb-tgtimg" onClick="{{target.zoom}}" aria-label="Enlarge {{target.name}}" style="{{zoomBtn}}"><img src="{{target.img}}" alt="" style="width: 40px; height: 50px; object-fit: cover; border-radius: 6px; background: #000"></button></sc-if>
 <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0">
 <span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 11px; letter-spacing: 0.14em; color: #F65157">TARGET</span><span style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{target.name}}</span></span>
 <sc-if value="{{target.known}}"><div style="position: relative; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><div class="phc-hp-fill" style="{{target.hpFill}}"></div></div></sc-if>
@@ -201,7 +220,23 @@
 </sc-for>
 </div>
 </aside>
+</sc-if>
+<sc-if value="{{panelHidden}}"><button type="button" class="phc-cb-show" onClick="{{togglePanel}}" aria-expanded="false" aria-keyshortcuts="H" aria-label="Show the turn panel" title="Show the panel (key H)" style="flex: none; align-self: flex-start; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; padding: 12px 6px; border-radius: 10px 0 0 10px; border: 1px solid #2E3A50; border-right: 0; background: #10151F; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer"><span aria-hidden="true" style="font-size: 16px">⟨</span><span style="writing-mode: vertical-rl; font-size: 11px; letter-spacing: 0.16em">SHOW PANEL</span></button></sc-if>
 </div>
+<sc-if value="{{mini.show}}">
+<div role="region" aria-label="Your turn (panel hidden)" class="phc-cb-mini" style="{{mini.style}}">
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 13px; font-weight: 700; font-style: italic; letter-spacing: 0.16em; color: #FFFFFF">YOUR TURN</span><span style="margin-left: auto; font-size: 11px; font-weight: 700; color: #E7EBF3">{{apText}}</span><button type="button" class="phc-cb-show" onClick="{{togglePanel}}" aria-label="Show the turn panel" title="Show the panel (key H)" style="min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer">⟨ Panel</button></div>
+<div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for></div>
+<div role="group" aria-label="Quick commands (keys 1–4)" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{mini.cmds}}" as="c"><button type="button" class="phc-cb-act" data-act="{{c.action}}" onClick="{{c.pick}}" disabled="{{c.off}}" aria-pressed="{{c.pressed}}" aria-keyshortcuts="{{c.key}}" title="{{c.title}}" style="{{c.style}}"><span aria-hidden="true" style="font-size: 9px; font-weight: 700; color: #A3AEC2">{{c.key}}</span><span style="max-width: 100%; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.label}}</span></button></sc-for>
+</div>
+<span title="{{sel.text}}" style="font-size: 12px; line-height: 1.35; color: #C9D3E3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden"><span style="font-weight: 700; color: #E7EBF3">{{sel.name}}</span> · {{sel.text}}</span>
+<div style="display: flex; gap: 8px">
+<button type="button" class="phc-cb-act" onClick="{{confirm}}" disabled="{{cantConfirm}}" data-sfx="{{confirmSfx}}" style="flex: 1; min-height: 40px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{confirmText}}</button>
+<button type="button" class="phc-cb-act" onClick="{{endTurn}}" disabled="{{notMine}}" style="flex: 1; min-height: 40px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
+</div>
+</div>
+</sc-if>
 <div class="phc-cb-spacer" aria-hidden="true" style="display: none"></div>
 <sc-if value="{{over}}" hint-placeholder-val="{{false}}">
 <div role="dialog" aria-modal="true" aria-label="The fight is over" class="phc-m-backdrop" style="position: fixed; inset: 0; z-index: 15; display: grid; place-items: center; padding: 16px; background: rgba(5, 7, 11, 0.86)">

@@ -11,6 +11,7 @@ import { act, getState, go } from '../game/store';
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
+import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED } from '../game/commands';
 
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
 
@@ -22,7 +23,6 @@ const HOSTILE_INK = '#F65157';
 /** Wall tints by element (a wall also carries its words in the tile label). */
 const WALL_TINT = { fire: 'rgba(246, 138, 56, 0.24)', freeze: 'rgba(139, 222, 238, 0.22)', shock: 'rgba(227, 191, 81, 0.22)', stone: 'rgba(140, 111, 58, 0.32)', gale: 'rgba(163, 174, 194, 0.2)' };
 const BOONS = ['guarded', 'inspired'];
-const BAND_NAME = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
 /** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), and the unit afterwards.
  *  How the UI learns costs and reasons without computing any rule itself. */
 function dryRun(cb, uid, fn) {
@@ -65,13 +65,29 @@ const COMBAT_CSS = [
   '.phc-cb-tabs>[role=tab]:focus-visible,.phc-cb-tabpanel:focus-visible{outline:2px solid #FFFFFF;outline-offset:-2px}',
   // Short windows (1280×720): a slimmer header and initiative strip, so the grid keeps its size.
   '@media (max-height:800px) and (min-width:1000px){.phc-cb-head{padding-top:6px!important;padding-bottom:6px!important}.phc-init{padding-top:5px!important;padding-bottom:5px!important}.phc-init [data-init]{padding-top:3px!important;padding-bottom:3px!important}.phc-init [data-init] img,.phc-init [data-init]>span:first-child{width:28px!important;height:28px!important}.phc-cb-row{padding-bottom:8px!important}.phc-cb-turn .phc-yt{padding-top:5px!important;padding-bottom:5px!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}.phc-cb-tline{display:none!important}}',
+  // The column, top to bottom: a bar (You in one line on short windows · Customise · Hide panel), the You card and the
+  // squad (capped on your turn, scrolling on their own), the Say row (pinned), then the turn box (YOUR TURN, AP, the tabs,
+  // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
+  // The cap leaves the turn box what it needs (about 550 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
+  '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(34%, calc(100% - 560px))}.phc-cb-top:empty{display:none}',
+  '.phc-cb-hide,.phc-cb-link,.phc-cb-show{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-hide:hover,.phc-cb-link:hover,.phc-cb-show:hover{background:#1C2536!important;color:#FFFFFF!important;border-color:#A3AEC2!important}',
+  '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
+  // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
+  // initiative strip and the grid still show everyone's HP), so the turn box keeps its room.
+  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{display:none!important}.phc-me-mini{display:flex!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}}',
+  // Very short windows (1093×526): the squad list goes (the initiative strip and the grid still show it), one line of
+  // action text, slimmer tabs, pips and buttons, no portrait on the target card. The tab panel keeps at least 44 px.
+  '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
   // Narrow windows: the column stacks under the grid; the tabs, the tab panel and Confirm dock at the bottom of the screen.
   '@media (max-width:999px){.phc-cb-head{flex-wrap:wrap!important}.phc-cb-root{height:auto!important;overflow:visible!important}.phc-cb-row{flex-wrap:wrap!important;min-height:auto!important}.phc-cb-left{flex:1 1 100%!important;overflow:visible!important;padding-right:0!important}.phc-cb-aside{flex:1 1 100%!important;overflow:visible!important;margin:0!important;padding:12px 0 0!important}.phc-cb-top{overflow:visible!important}',
   // The turn box lifts the docked actions over the grid, but stays under the dialogs (the fight's end is z 15, votes 14).
-  '.phc-cb-turnbox{min-height:0!important;z-index:12}',
+  '.phc-cb-turnbox{min-height:0!important;flex:0 0 auto!important;z-index:12}.phc-cb-aside.phc-mine>.phc-cb-top{max-height:none!important}',
+  // The Say row: on your turn it rides in the dock (its copy there); otherwise it docks at the bottom on its own.
+  '.phc-cb-say2{display:flex!important}.phc-cb-aside.phc-mine .phc-cb-say{display:none!important}.phc-cb-aside:not(.phc-mine) .phc-cb-say{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:30;padding:8px 12px calc(8px + env(safe-area-inset-bottom));border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}',
+  '.phc-cb-mini{right:12px!important;bottom:12px!important}',
   // The dock scrolls inside itself when its content is taller than it may be (a landscape phone), and the Confirm row
   // sticks to its bottom edge, so it never sits below the screen.
-  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn .22s ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut .2s ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 240px)}}',
+  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn .22s ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut .2s ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 290px)}}',
   '@media (prefers-reduced-motion: reduce){.phc-yt,.phc-plan,.phc-pips>span.phc-pip-drain,.phc-cur-ring,.phc-tgt-ring,.phc-wait-dots>span{animation:none}.phc-yt::after{display:none}.phc-hp-chip,.phc-hp-fill,.phc-cb-act{transition:none}}',
 ].join('');
 ensureMotionCss();
@@ -103,13 +119,14 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–6 flip the action tabs on your turn; a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) LIVE.numKey(e); });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.panelKey(e); LIVE.numKey(e); } });
+  // The turn card's commands were customised (game/commandsDialog.tsx): the mini-bar's quick commands follow.
+  window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
 }
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
 // and the last tab each character used (kept across turns, and across reloads in this browser).
-const TAB_NAME = { move: 'Move', attack: 'Attack', utility: 'Utility', sigils: 'Sigils', outbursts: 'Outbursts' };
 const TAB_INK = { attack: HOSTILE_INK, sigils: SIGIL_GLOW, outbursts: SOUL_INK };
 const TAB_MEM = (() => { try { return JSON.parse(localStorage.getItem('phc.combatTabs') || '{}') || {}; } catch { return {}; } })();
 function tabMem(charId, tab) {
@@ -118,9 +135,15 @@ function tabMem(charId, tab) {
   if (TAB_MEM[charId] !== tab) { TAB_MEM[charId] = tab; try { localStorage.setItem('phc.combatTabs', JSON.stringify(TAB_MEM)); } catch { /* */ } }
   return tab;
 }
-/** A key that switches tabs (1–6) only when nobody is typing, no dialog or turn card is up, and it is your turn. */
 /** The action column never gets narrower than this beside the grid (the grid zooms down first). */
 const ASIDE_MIN = 410;
+// The whole column can be hidden (the map takes the full width): remembered in this browser. While it is hidden a
+// mini-bar near the bottom-right keeps the turn playable (AP, the chosen action, the four quick commands, Confirm,
+// End turn), and keys 1–4 pick the quick commands instead of the (hidden) tabs. H or \ toggles it.
+const PANEL_KEY = 'phc.combatPanel';
+let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
+/** How far the grid may zoom in when the column is hidden and the map has the room. */
+const ZOOM_MAX_WIDE = 1.4;
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
 const patternShape = (p) => (p.shape === 'stack' ? 'Stack of ' + p.glyphs.length : p.shape === 'line' ? 'Line of ' + p.tiles.length : 'Ring of ' + p.tiles.length + ' around ' + refOf(p.centre));
@@ -195,10 +218,15 @@ export class CombatLogic extends DCLogic {
     if (j < 0) return;
     e.preventDefault(); this.setTab(ids[j], true); sfx('tab');
   }
-  /** Number keys 1–6 anywhere on the combat screen, on your turn. */
+  /** Number keys 1–6 anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
   numKey(e) {
     if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[1-6]$/.test(e.key) || !this._mine) return;
     if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (PANEL_HIDDEN) {
+      const c = (this._quick || [])[Number(e.key) - 1];
+      if (c && !c.off) { e.preventDefault(); this.pickAction(c.action); sfx('tab'); }
+      return;
+    }
     const id = (this._tabs || [])[Number(e.key) - 1];
     if (!id) return;
     // Focus follows into the tab bar when it is there, or when it sits in the tab panel that is about to be replaced
@@ -206,6 +234,29 @@ export class CombatLogic extends DCLogic {
     const ae = document.activeElement, inTabs = !!ae && ae.getAttribute && ae.getAttribute('role') === 'tab';
     const inPanel = !!ae && typeof ae.closest === 'function' && !!ae.closest('.phc-cb-tabpanel');
     e.preventDefault(); this.setTab(id, inTabs || (inPanel && id !== this.state.tab)); sfx('tab');
+  }
+  /** Hide or show the whole action column (the map takes the full width). Focus moves to the control that undoes it. */
+  togglePanel(hide) {
+    const next = typeof hide === 'boolean' ? hide : !PANEL_HIDDEN;
+    if (next === PANEL_HIDDEN) return;
+    PANEL_HIDDEN = next;
+    try { localStorage.setItem(PANEL_KEY, next ? 'hidden' : 'shown'); } catch { /* private mode: kept for this visit */ }
+    // Keyboard users keep their place: focus was on the toggle (or in the column that goes away), so it moves to the other one.
+    const ae = typeof document !== 'undefined' ? document.activeElement : null;
+    const wasOn = !!ae && typeof ae.closest === 'function' && !!ae.closest('.phc-cb-hide, .phc-cb-show, .phc-cb-aside');
+    this._fitKey = null; this._tabShown = null;
+    this.setState({});
+    if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => {
+      this.fitGrid();
+      const el = wasOn ? document.querySelector(next ? '.phc-cb-show' : '.phc-cb-hide') : null; if (el && el.focus) el.focus();
+    });
+  }
+  /** H or \ (not while typing, not under a dialog or the turn card): hide or show the column. */
+  panelKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !(e.key === 'h' || e.key === 'H' || e.key === '\\')) return;
+    if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    const cb = getState().game?.combat; if (!cb) return;
+    e.preventDefault(); sfx(PANEL_HIDDEN ? 'slide_back' : 'slide'); this.togglePanel();
   }
   /** Bring the chosen action (and the picker under it: glyph keyboard, Outburst designs) into view inside its tab. */
   revealAction() {
@@ -228,8 +279,8 @@ export class CombatLogic extends DCLogic {
     if (this._roEl !== sec && typeof ResizeObserver !== 'undefined') { if (this._ro) this._ro.disconnect(); this._ro = new ResizeObserver(() => { if (LIVE === this) this.fitGrid(); }); this._ro.observe(sec); this._roEl = sec; }
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
-    const availW = narrow ? rowW : rowW - ASIDE_MIN - 34, availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
-    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, Math.min(1, availW / natW, availH / natH)) * 100) / 100;
+    const availW = narrow ? rowW : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
+    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, Math.min(PANEL_HIDDEN && !narrow ? ZOOM_MAX_WIDE : 1, availW / natW, availH / natH)) * 100) / 100;
     if (z !== (this._zoom || 1)) { this._zoom = z; this.setState({}); }
   }
 
@@ -466,53 +517,8 @@ export class CombatLogic extends DCLogic {
     const dr = this._drain;
     const apPips = Array.from({ length: maxAp }, (_, i) => ({ key: 'p' + i + (dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? '-' + dr.seq : ''), cls: dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? 'phc-pip-drain' : '', style: 'height: 14px; border-radius: 4px; ' + (i < ap - cost ? 'background: #E7EBF3' : i < ap ? 'background: transparent; border: 2px solid #FFFFFF; box-sizing: border-box' : 'background: #1C2536') }));
     const mv = cur ? cur.movement : 1;
-    const heavy = w && /heavy/.test(w.category) && !isMelee(w), modes = (w && w.modes) || [];
-    const offW = cur && cur.offWeapon ? WEAPON[cur.offWeapon] : null;
-    const ITEMS = [
-      ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + ' tiles', 'Each AP moves you ' + mv + ' tiles (Movement). Rough tiles count double. Leaving an enemy\'s reach without Disengaging invites an opportunity attack.'],
-        ['sprint', 'Sprint', '2 AP', cur && cur.noSprint ? 'Not while Overburdened or in Juggernaut armour.' : 'Up to ' + Math.floor(3 * mv) + ' tiles (3 × Movement) for 2 AP.'],
-        ['disengage', 'Disengage', '1 AP', 'Step 1 tile with no opportunity attacks.'],
-        ['prone', cur && cur.prone ? 'Stand up' : 'Drop prone', '1 AP', 'Prone: ranged attacks against you −2, melee +2; you can\'t move until you stand.']], null, 'move'],
-      ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), [
-        ...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.']]
-          : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity vs Defense; −5 if they\'re behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'],
-            ['aimed', 'Aimed shot', '3 AP', '+2 to hit; crits on 19–20.'],
-            ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', '3 rounds at one target, each later round −1 more.']] : []),
-            ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.']] : []),
-            ['melee', 'Melee (fists)', '2 AP', 'd20 + Raw Power vs Defense. 10 damage.']]),
-        ...(sk ? [['skill', sk.name + (skPassive ? ' (always on)' : ''), skRuns ? skFx.ap + ' AP' : skPassive ? '—' : 'Narrator', sk.text + (skPassive ? ' The engine applies it on every attack.' : skRuns ? '' : ' The engine doesn\'t run this one yet: use Say, and the Narrator rules it after the fight.')]] : []),
-        ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).']] : []),
-        ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
-        ['overwatch', 'Overwatch', (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) + ' AP', 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.'],
-        ...(heavy ? [['brace', 'Brace', '1 AP', 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved. Moving ends it.']] : []),
-        ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
-      ['UTILITY', [['reload', 'Reload', '2 AP', !w || w.magazine == null ? 'Nothing to reload.' : w.reload === 'loose' ? 'Top up from loose rounds (' + (cur.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + (w.reload_unit || 'magazine') + ' (' + (cur.mags ? cur.mags.length + ' left' : 'unlimited') + '). The one in the gun drops on the floor with any rounds left in it. ' + cur.ammo + ' / ' + w.magazine + ' loaded now.'],
-        ['load', 'Load a magazine', loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : 'Load loose rounds into an empty or part-empty magazine, 1 AP per ' + ROUNDS_PER_AP + ' rounds. You need both.'],
-        ['clear', 'Clear a jam', '2 AP', 'A jammed gun can\'t fire until cleared.'],
-        ['repair', 'Field Repair', '2 AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.'],
-        ['pickup', 'Pick up', '1 AP', 'Take everything on your tile or one adjacent tile (marked ▪): dropped magazines, empty or not.'],
-        ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],
-        ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Medic, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
-        ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor: your favourite song takes over the room until the fight ends, and your music trait\'s bonus is on while it plays. It can replace another holder\'s kept-on song, never a spotlight.']] : []),
-        ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
-    ];
-    // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
-    if (hasMagic) {
-      const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;
-      const MG = [];
-      if (sig) MG.push(['MAGIC · SIGILS', [
-        ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then your own tile or one next to you. It costs the word\'s charge from your Evoker and adds 1 Flux.'],
-        ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a pattern of glyphs: a Stack (2 on one tile), a Line (a straight row, fired from its far end) or a Ring (around one empty tile). Stand on or next to it. Charge ' + mg.charge + '/' + CORE_CHARGE + '.'],
-        ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
-        ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, SPELL_AP.vent + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.'],
-        ['core', 'Swap core', SPELL_AP.core + ' AP', 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);
-      if (soul) MG.push(['MAGIC · OUTBURSTS', [
-        ...(designs.length ? [['outburst', 'Outburst', designs.length === 1 ? designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: pick a design, then let it go at once or hold it. Held, it grows a stage each turn and strains you.']] : []),
-        ...(held ? [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held ' + (heldD ? heldD.name : 'Outburst') + ' go at stage ' + held.stage + ' (×' + stageMult(held.stage) + ').']] : []),
-        ...(mg.emanator ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air (' + band.syphon_mp + ' in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus). The meter drops.'],
-          ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.']] : [])], SOUL_INK, 'outbursts']);
-      ITEMS.push(...MG.filter((gr) => gr[1].length)); // tab order: Move · Attack · Utility · Sigils · Outbursts
-    }
+    // The one action list (game/commands.ts): the tabs show it, the turn card's commands and their customise dialog pick from it.
+    const ITEMS = actionGroups(cb, cur, ch);
     const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text]) => ({
       name: label, cost: costText, text, locked: !mineTurn, key: id, pressed: S.action === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, glyphTile: null }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
@@ -606,6 +612,8 @@ export class CombatLogic extends DCLogic {
       mp: myU.mg && myU.mg.emanator ? Math.round(myU.mg.mp) + ' / ' + myU.mg.mpMax : 'no Emanator', mpFill: bar(myU.mg && myU.mg.emanator ? myU.mg.mp / Math.max(1, myU.mg.mpMax) * 100 : 0, '#5C9EFF'),
       ...meMagic(myU),
       line: 'AP ' + myU.ap + ' · Movement ' + myU.movement + (mw && mw.magazine != null ? ' · Ammo ' + myU.ammo + '/' + mw.magazine + (mw.reload === 'loose' ? ' · ' + (myU.loose ?? 0) + ' loose' : myU.mags ? ' · ' + myU.mags.length + ' spare' : '') : '') + (myU.maxDur ? ' · Weapon ' + ((myU.dur ?? myU.maxDur) <= 0 ? 'BROKEN' : (myU.dur ?? myU.maxDur) + '/' + myU.maxDur) : '') + ' · Stims ' + mc.stims + ' · Echo ' + mc.echo,
+      // The one-line summary that stands in for the card on short windows (the bar at the top of the column).
+      miniLine: 'AP ' + myU.ap + (mw && mw.magazine != null ? ' · ' + (myU.jammed ? 'JAMMED' : 'Ammo ' + myU.ammo + '/' + mw.magazine) : '') + (myU.mg && myU.mg.emanator ? ' · MP ' + Math.round(myU.mg.mp) + '/' + myU.mg.mpMax : '') + (myU.mg && myU.mg.evoker ? ' · Flux ' + myU.mg.flux + '/' + FLUX_MAX : '') + (myU.mg && myU.mg.held ? ' · HOLDING' : '') + (effectsOf(myU).length || condChips(myU).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU).map((c) => c.k)].join(' · ') : ''),
       fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU)], noFx: !effectsOf(myU).length && !condChips(myU).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: ART(u.img) || u.img || '', hasImg: !!u.img, short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
@@ -614,6 +622,7 @@ export class CombatLogic extends DCLogic {
     const squad = true;
     const say = { can: !!myU && !cb.over, value: S.say || '', onChange: (e) => this.setState({ say: e.target.value }),
       send: () => { const text = (this.state.say || '').trim(); if (!text || !myU) return; act({ type: 'combat/say', charId: myU.charId, text }); this.setState({ say: '' }); } };
+    say.submit = (e) => { if (e && e.preventDefault) e.preventDefault(); say.send(); }; // the Say button, or Enter in the box
     // The magic pads under the action list: the glyph keyboard (Draw) and your Outburst designs.
     const padBtn = (on, ink) => 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid ' + ink + '; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: #10151F; color: #A3AEC2');
     const pad = {
@@ -698,15 +707,31 @@ export class CombatLogic extends DCLogic {
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
     if (fitKey !== this._fitKey && typeof requestAnimationFrame !== 'undefined') { this._fitKey = fitKey; requestAnimationFrame(() => this.fitGrid()); }
+    // ---------- the column hidden: a mini-bar keeps the turn playable ----------
+    const hidden = PANEL_HIDDEN;
+    const quick = mineTurn ? resolveCommands(cb, cur, ch, readPrefs(cur.charId)) : [];
+    this._quick = hidden ? quick : null;
+    const mini = { show: hidden && mineTurn,
+      style: 'position: fixed; right: ' + (g.sandbox ? 64 : 20) + 'px; bottom: 16px; z-index: 12; width: min(380px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; border-radius: 12px; background: rgba(16, 21, 31, 0.97); border: 1px solid #2E3A50; border-top: 3px solid #FFFFFF; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6)',
+      pips: apPips.map((p) => ({ ...p, style: p.style.replace('height: 14px', 'height: 8px') })),
+      cmds: quick.map((c) => { const on = S.action === c.action || (c.action === 'shot' && melee && S.action === 'melee');
+        return { key: c.key, label: c.label, title: c.key + ' · ' + c.label + ' · ' + c.sub, off: !!c.off, pressed: on ? 'true' : 'false', action: c.action,
+          pick: () => this.pickAction(c.action),
+          style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-width: 0; min-height: 40px; padding: 4px 6px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
+            + (on ? 'border: 1px solid #FFFFFF; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') + (c.off ? '; opacity: 0.45; cursor: default' : '') }; }) };
     const turnPanels = this.panels(mineTurn ? 'mine:' + cur.id + ':' + cb.round + ':' + cb.turn : 'wait:' + (cb.over ? 'over' : cur ? cur.id + ':' + cb.round + ':' + cb.turn : 'none'), T);
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
-      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom < 1 ? '; zoom: ' + zoom : ''),
+      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto' : ''),
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
       rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px',
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
-      leftStyle: 'flex: 0 1 ' + Math.ceil((48 * cb.map.w + 36) * zoom + 34) + 'px; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
-      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: ' + (mineTurn ? 'min(460px, 80%)' : '0') + '; flex: ' + (mineTurn ? '1 1 auto' : '0 0 auto'),
+      leftStyle: 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + Math.ceil((48 * cb.map.w + 36) * zoom + 34) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
+      // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
+      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
+      panelOpen: !hidden, panelHidden: hidden, togglePanel: () => this.togglePanel(), asideCls: mineTurn ? 'phc-mine' : '', mini, quick,
+      canCustomise: !!myU && !cb.over, customise: () => openCustomise(myU && myU.charId),
       pad, magicLegend, hasMagicLegend: magicLegend.length > 0,
       manaText: 'MANA ' + mana + ' · ' + BAND_NAME[band.id], manaTitle: 'The ambient mana meter (0 to 40): ' + BAND_NAME[band.id] + ' air. Deaths and vented Flux raise it; Outbursts, Syphon and Crystallise draw it down.',
       manaStyle: 'padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid #232D3F; color: #A3AEC2', showMana: anyMagic,

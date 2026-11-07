@@ -4,7 +4,7 @@
 //  · Combat: a banner drops from the top on every turn, allies and enemies alike (the engine's fx "turn" events, so
 //    enemy turns that the host resolves in one go still get theirs, spaced like the effects layer plays them). It
 //    holds ~0.9 s and goes back up. A unit you own: "YOUR TURN", then a large character card slides in from the left
-//    with the unit's numbers and four big commands.
+//    with the unit's numbers and four big commands (the player's own picks per character, else a smart default).
 //  · Area map (story mode): a banner when a new overworld round opens ("ROUND 3 · YOUR MOVE").
 //
 // Events (window CustomEvents) for the combat screen (combat.js) and the effects layer:
@@ -14,6 +14,10 @@
 //  · 'phc:focus-tile' {key, unit, mine}   a turn starts on tile key ("x,y"): scroll / zoom the grid to it (mine = the
 //                                         player's own unit: zoom in; otherwise a gentle pan is enough).
 //  · 'phc:turn-shown' {unit, side, mine, round}   a turn banner has just appeared (for anyone who wants to sync).
+//  · Listened to: 'phc:customise-cmds' {charId}   open the dialog that chooses a character's four commands (the combat
+//                                         panel's "⚙ Customise"; the cut-in's own button or C opens it directly). The
+//                                         choice lives in this browser (game/commands.ts); while the dialog is open no
+//                                         cut-in comes up.
 //  · Listened to: 'phc:fx-at' {n, stream} the effects layer dispatches this as it starts playing fx event n of stream
 //                                         (FxLayer's key; only the current fight's counts, and the clock starts over
 //                                         with each fight): banners for enemy turns wait for their own "turn" event
@@ -21,13 +25,15 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, attackApCost, isMelee, visibility } from '@engine';
+import { type GameState, WEAPON, CLASS, FLUX_MAX, visibility } from '@engine';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
 import { bigPortrait } from './charfile';
 import { sfx, SFX_FILES, reducedMotion, uiPrefs, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
+import { resolveCommands, readPrefs, EV_CUSTOMISE, type Command } from './commands';
+import { CommandsDialog } from './commandsDialog';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -71,8 +77,7 @@ export function cue(name: Cue) {
 
 // ---------- what a banner and a cut-in show ----------
 interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number }
-interface Command { action: string; label: string; sub: string; key: string; off?: boolean }
-interface Cut { id: string; unitId: string; name: string; line: string; img: string; color: string; kicker: string;
+interface Cut { id: string; unitId: string; charId: string; name: string; line: string; img: string; color: string; kicker: string;
   hp: [number, number]; mp: [number, number] | null; ap: number; weapon: string; ammo: string; magic: string[]; cmds: Command[]; at?: string; right?: boolean }
 
 const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
@@ -105,28 +110,16 @@ function underLeftCard(key: string | undefined): boolean {
 function cutFor(g: GameState, cb: any, unitId: string): Cut | null {
   const u = cb.units.find((x: any) => x.id === unitId), ch = u?.charId ? g.characters[u.charId] : null;
   if (!u || !ch || u.downed || u.dead || cb.over) return null;
-  const owner = g.players.find((p) => p.id === ch.owner), w = WEAPON[u.weapon], melee = w ? isMelee(w) : true, mg = u.mg;
+  const owner = g.players.find((p) => p.id === ch.owner), w = WEAPON[u.weapon], mg = u.mg;
   const portrait = ch.portrait || u.img || '';
   const img = ART_BIG(portrait) || ART(portrait) || portrait || IMG['wick-welcome'];
-  const sk: any = w && (w as any).grants, skFx: any = sk?.effect || {};
-  const cmds: Command[] = [];
-  if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
-  else if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
-  else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
-  cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
-  if (w && w.magazine != null && !u.jammed) cmds.push({ action: 'reload', label: 'Reload', sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
-  else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an adjacent enemy', key: '3' });
-  else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
-  if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });
-  else if (mg && (mg.emanator || mg.designs?.length) && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: Math.round(mg.mp) + ' MP in the heart', key: '4' });
-  else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
-  else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every adjacent enemy'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });
-  else cmds.push({ action: 'overwatch', label: 'Overwatch', sub: 'Hold a shot for their move', key: '4' });
+  // The four commands: the player's own picks for this character (game/commandsDialog.tsx), else the smart default.
+  const cmds: Command[] = resolveCommands(cb, u, ch, readPrefs(u.charId));
   const magic: string[] = [];
   if (mg?.held) { const d = mg.designs?.find((x: any) => x.id === mg.held.design); magic.push('HOLDING ' + (d ? d.name : 'an Outburst').toUpperCase() + ' · STAGE ' + mg.held.stage); }
   if (mg?.evoker || (mg?.words?.length && mg.flux)) magic.push('FLUX ' + mg.flux + ' / ' + FLUX_MAX + (mg.flux >= FLUX_MAX - 1 ? ' · NEAR OVERLOAD' : ''));
   return {
-    id: 'c' + unitId + ':' + cb.round + ':' + Date.now(), unitId, at: u.pos, name: ch.name || u.name, img, color: owner?.color || '#FFFFFF', kicker: 'YOUR TURN · ROUND ' + cb.round,
+    id: 'c' + unitId + ':' + cb.round + ':' + Date.now(), unitId, charId: u.charId, at: u.pos, name: ch.name || u.name, img, color: owner?.color || '#FFFFFF', kicker: 'YOUR TURN · ROUND ' + cb.round,
     line: 'Level ' + ch.level + ' · ' + (ch.classId && CLASS[ch.classId] ? CLASS[ch.classId].name : 'Classless'),
     hp: [u.hp, u.maxHp], mp: mg?.emanator ? [Math.round(mg.mp), mg.mpMax] : null, ap: u.ap,
     weapon: w ? w.name : 'Unarmed', ammo: w && w.magazine != null ? (u.jammed ? 'JAMMED' : u.ammo + ' / ' + w.magazine) : '', magic, cmds,
@@ -153,6 +146,13 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const [banner, setBanner] = React.useState<Banner | null>(null);
   const [cut, setCut] = React.useState<Cut | null>(null), [cutOut, setCutOut] = React.useState(false), [cutImg, setCutImg] = React.useState('');
   const live = React.useRef({ game, meId, screen }); live.current = { game, meId, screen };
+  // The customise dialog for a character's four commands (null: closed). While it is open no cut-in comes up.
+  const [custom, setCustom] = React.useState<string | null>(null);
+  const customOpen = React.useRef(false); customOpen.current = !!custom;
+  React.useEffect(() => {
+    const f = (e: Event) => { const id = (e as CustomEvent).detail?.charId; if (id) setCustom(id); };
+    window.addEventListener(EV_CUSTOMISE, f); return () => window.removeEventListener(EV_CUSTOMISE, f);
+  }, []);
   const timers = React.useRef(new Set<ReturnType<typeof setTimeout>>());
   const later = (f: () => void, ms: number) => { const t = setTimeout(() => { timers.current.delete(t); f(); }, Math.max(0, ms)); timers.current.add(t); return t; };
   const clearAll = () => { for (const t of timers.current) clearTimeout(t); timers.current.clear(); };
@@ -188,7 +188,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     // Yours: the card follows the banner in, once the turn is still yours.
     if (b.mine) later(() => {
       const { game: g2 } = live.current, cb2 = g2?.combat;
-      if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden) return;
+      if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden || customOpen.current) return;
       const c = cutFor(g2, castFight(g2, cb2, ART) || cb2, unitId); if (!c) return;
       c.right = underLeftCard(c.at);
       setCutOut(false); setCut(c); setCutImg(c.img); cue('cutin');
@@ -274,6 +274,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const hovering = React.useRef(false);
   const dismiss = React.useCallback(() => { setCutOut(true); later(() => { setCut(null); setCutOut(false); }, reducedMotion() ? 150 : 320); }, []);
   const pick = React.useCallback((c: Cut, cmd: Command) => { dispatch(EV_ACTION, { action: cmd.action, unit: c.unitId }); dismiss(); }, [dismiss]);
+  const customise = React.useCallback((c: Cut) => { setCustom(c.charId); dismiss(); }, [dismiss]);
   React.useEffect(() => {
     if (!cut || cutOut) return;
     hovering.current = false;
@@ -282,7 +283,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const onKey = (e: KeyboardEvent) => {
       const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target as HTMLElement)?.tagName || '');
       const cmd = !typing && cut.cmds.find((c) => c.key === e.key);
-      if (cmd && !cmd.off) { e.preventDefault(); pick(cut, cmd); } else dismiss();
+      if (cmd && !cmd.off) { e.preventDefault(); pick(cut, cmd); } else if (!typing && (e.key === 'c' || e.key === 'C') && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); customise(cut); } else dismiss();
     };
     const onDown = (e: PointerEvent) => { if (!(e.target as Element)?.closest?.('[data-phc-cutin]')) dismiss(); };
     // Registered a beat late, so the click that ended the last turn doesn't close this one.
@@ -293,12 +294,13 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const activeId = cb ? cb.order[cb.turn] : null;
   React.useEffect(() => { if (cut && (activeId !== cut.unitId || screen !== 'combat')) dismiss(); }, [activeId, screen]);
 
-  if (!banner && !cut) return null;
+  if (!banner && !cut && !custom) return null;
   const rm = reducedMotion();
   return (
     <>
       {banner && <TurnBanner key={banner.id} b={banner} rm={rm} />}
-      {cut && <CutIn key={cut.id} c={cut} img={cutImg} out={cutOut} rm={rm} onPick={pick} onHover={(h) => { hovering.current = h; }} />}
+      {cut && <CutIn key={cut.id} c={cut} img={cutImg} out={cutOut} rm={rm} onPick={pick} onCustomise={customise} onHover={(h) => { hovering.current = h; }} />}
+      {custom && <CommandsDialog key={custom} game={game} charId={custom} onClose={() => setCustom(null)} />}
     </>
   );
 }
@@ -359,7 +361,7 @@ function Bar({ label, v, max, color }: { label: string; v: number; max: number; 
   );
 }
 
-function CutIn({ c, img, out, rm, onPick, onHover }: { c: Cut; img: string; out: boolean; rm: boolean; onPick: (c: Cut, cmd: Command) => void; onHover: (h: boolean) => void }) {
+function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img: string; out: boolean; rm: boolean; onPick: (c: Cut, cmd: Command) => void; onCustomise: (c: Cut) => void; onHover: (h: boolean) => void }) {
   ensureCss();
   // Mirrored (from the right) when the left card would cover the unit itself.
   const R = !!c.right, sfx2 = R ? 'R' : '';
@@ -391,8 +393,8 @@ function CutIn({ c, img, out, rm, onPick, onHover }: { c: Cut; img: string; out:
           {c.magic.map((m) => <span key={m} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: m.startsWith('FLUX') ? '#8BDEEE' : '#AE9BFF' }}>{m}</span>)}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
-              <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', border: '1px solid #3B475D', borderLeft: '4px solid ' + (i === 0 ? '#F65157' : c.color), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' .3s cubic-bezier(.2,.8,.2,1) ' + (260 + i * 60) + 'ms both' }}>
+              <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} title={cmd.off ? cmd.label + ': ' + cmd.sub : undefined}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' .3s cubic-bezier(.2,.8,.2,1) ' + (260 + i * 60) + 'ms both' }}>
                 <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{cmd.key}</span>
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{cmd.label}</span>
@@ -401,7 +403,11 @@ function CutIn({ c, img, out, rm, onPick, onHover }: { c: Cut; img: string; out:
               </button>
             ))}
           </div>
-          <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
+            <button type="button" data-phc-customise="" onClick={() => onCustomise(c)} aria-keyshortcuts="C" aria-haspopup="dialog" title="Choose which four commands this card offers"
+              style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
+          </span>
         </div>
       </div>
     </>

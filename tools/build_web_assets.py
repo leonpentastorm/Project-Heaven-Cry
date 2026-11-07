@@ -53,16 +53,41 @@ for mid, a in C.get("maps", {}).items():
 for sid, a in C.get("sprites", {}).items():
     w, h = a.get("dimensions", [256, 256])
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
-# Title screen (art/briefs/title-screen.md): the three parallax layers and Wick's menu animations, once delivered.
+# Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
+# overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
+# widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
+# Back is opaque; mid (and front, fx) keep their alpha. Stack order: back, mid, front, fx.
 TITLE = ROOT / "art/ui/title-screen"
+# Leon, 7 Nov 2026: title-front.png is being remade. Take "front" out of this set when the new one lands; the title
+# shows a layer as soon as it is in assets.json, so nothing else changes.
+TITLE_HELD = {"front"}
+
+def emit_widths(name, src, widths, quality, alpha):
+    src = pathlib.Path(src)
+    for suffix, w in zip(("", "-lg", "-xl"), widths):
+        dst = OUT / f"{name}{suffix}.webp"
+        fresh = dst.exists() and dst.stat().st_mtime >= src.stat().st_mtime
+        if fresh:
+            with Image.open(dst) as d:
+                fresh = d.width == w
+        if not fresh:
+            im = Image.open(src)
+            im = im.convert("RGBA") if alpha else im.convert("RGB")
+            im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+            im.save(dst, "WEBP", quality=quality, method=6, **({"alpha_quality": 90} if alpha else {}))
+        assets[name + suffix] = f"/assets/{name}{suffix}.webp"
+
 for layer in ("back", "mid", "front", "fx"):
     f = TITLE / f"title-{layer}.png"
-    if f.exists():
-        emit("title-" + layer, f, (1440, 810), (2560, 1440), 84)
+    if f.exists() and layer not in TITLE_HELD:
+        emit_widths("title-" + layer, f, (1600, 2560, 3840), 80 if layer == "back" else 84, layer != "back")
+# Wick's menu animations (art/mascot/wick-anim, manifest.json): five clips, each a horizontal strip of 256 x 256
+# frames. We use the presentation strips (the hello's jump is baked in), never the root-motion track as well.
 WICK = ROOT / "art/mascot/wick-anim"
-for seq in ("run", "stop", "idle", "hello", "wave"):
-    f = WICK / f"{seq}.png"
-    if f.exists():  # a horizontal strip of 256 x 256 frames; keep it lossless-ish and full size
-        emit("wick-" + seq, f, (256 * 16, 256), None, 92)
+WICK_CLIPS = json.loads((WICK / "manifest.json").read_text())["clips"] if (WICK / "manifest.json").exists() else {}
+for seq, clip in WICK_CLIPS.items():
+    f = ROOT / clip.get("presentation_strip", clip["strip"])["path"]
+    if f.exists():
+        emit("wick-" + seq, f, (256 * clip["count"], 256), None, 92)
 MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n")
 print(f"{len(assets)} assets -> {OUT.relative_to(ROOT)}")

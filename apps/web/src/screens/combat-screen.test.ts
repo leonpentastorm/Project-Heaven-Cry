@@ -154,4 +154,110 @@ describe('combat screen', () => {
     L.pickAction('no-such-action', u.id); expect(L.state.action).toBe('reload');
     L.pickAction('shot', u.id); expect(L.state.action).toBe('shot');
   });
+
+  it('the Say row is pinned: outside the scrolling You card and the tab panel, right above the turn box, on every turn', async () => {
+    vi.useFakeTimers();
+    fight('say-pin', 'service_pistol');
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    const say = el.querySelector('form.phc-cb-say') as HTMLElement;
+    expect(say).toBeTruthy();
+    expect(say.closest('.phc-cb-top')).toBeNull();
+    expect(say.closest('.phc-cb-tabpanel')).toBeNull();
+    expect(say.parentElement!.classList.contains('phc-cb-aside')).toBe(true);
+    expect(say.nextElementSibling!.classList.contains('phc-cb-turnbox')).toBe(true);
+    expect(say.style.position).toBe('sticky');
+    // On your turn the column is marked (its You card is capped) and the turn box takes the room under the Say row.
+    if (active(G.combat!)!.side === 'pc') {
+      expect(el.querySelector('.phc-cb-aside')!.classList.contains('phc-mine')).toBe(true);
+      expect((el.querySelector('.phc-cb-turnbox') as HTMLElement).style.flex).toMatch(/^1 1 0/);
+      // The dock's copy (shown on narrow windows) and the compact You line (short windows) are there for the CSS to use.
+      expect(el.querySelector('.phc-cb-dock form.phc-cb-say2')).toBeTruthy();
+      expect(el.querySelector('.phc-cb-bar .phc-me-mini')).toBeTruthy();
+    }
+    // Saying something: Enter (submit) or the button, then the box clears.
+    const input = say.querySelector('input') as HTMLInputElement;
+    const setVal = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+    await React.act(async () => { setVal.call(input, 'I shout for them to drop it'); input.dispatchEvent(new Event('input', { bubbles: true })); });
+    await React.act(async () => { say.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
+    expect(G.combat!.log.some((l) => /drop it/.test(l))).toBe(true);
+    await React.act(async () => { root.unmount(); });
+    el.remove(); vi.useRealTimers();
+  });
+
+  it('hide the panel: the map takes the room, a mini-bar keeps the turn playable, keys 1–4 pick its commands, H brings it back', () => {
+    fight('hide', 'service_pistol');
+    const L = new CombatLogic({}) as any;
+    let r = L.renderVals();
+    expect(r).toMatchObject({ panelOpen: true, panelHidden: false });
+    expect(r.mini.show).toBe(false);
+    L.togglePanel(true); r = L.renderVals();
+    expect(localStorage.getItem('phc.combatPanel')).toBe('hidden');
+    expect(r).toMatchObject({ panelOpen: false, panelHidden: true });
+    expect(r.leftStyle).toMatch(/^flex: 1 1 auto/);
+    if (!r.notMine) {
+      expect(r.mini.show).toBe(true);
+      expect(r.mini.cmds.map((c: any) => c.key)).toEqual(['1', '2', '3', '4']);
+      expect(r.mini.cmds[1].action).toBe('move');
+      expect(r.mini.pips.length).toBe(r.apPips.length);
+      const key = (k: string, target: any = document.body) => ({ key: k, target, preventDefault() {}, defaultPrevented: false });
+      const third = r.mini.cmds[2];
+      L.numKey(key('3')); r = L.renderVals();
+      if (!third.off) expect(L.state.action).toBe(third.action === 'shot' ? 'shot' : third.action);
+      L.numKey(key('2')); r = L.renderVals(); expect(L.state.action).toBe('move');
+      expect(r.mini.cmds[1].pressed).toBe('true');
+      // H toggles, but not while typing.
+      L.panelKey(key('h', document.createElement('input'))); expect(L.renderVals().panelHidden).toBe(true);
+      L.panelKey(key('H')); r = L.renderVals();
+      expect(r.panelOpen).toBe(true); expect(localStorage.getItem('phc.combatPanel')).toBe('shown');
+      L.panelKey(key('\\')); expect(L.renderVals().panelHidden).toBe(true);
+    }
+    L.togglePanel(false); expect(L.renderVals().panelOpen).toBe(true);
+  });
+
+  it('customise the turn card: the panel\'s Customise opens the dialog, a pick and Save change the four commands', async () => {
+    vi.useFakeTimers();
+    const c = fight('custom', 'service_pistol');
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    const open = buttons(el, /Customise/).find((b) => b.classList.contains('phc-cb-link'))!;
+    expect(open).toBeTruthy();
+    await React.act(async () => { open.click(); });
+    const dlg = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
+    expect(dlg).toBeTruthy();
+    expect(dlg.getAttribute('aria-modal')).toBe('true');
+    expect(document.activeElement).toBe(dlg.querySelector('[data-slot="1"]'));
+    // Every panel action is on offer (the weapon's tabs: Move, Attack, Utility).
+    for (const a of ['move', 'sprint', 'shot', 'aimed', 'overwatch', 'reload', 'analyze']) expect(dlg.querySelector('[data-cmd="' + a + '"]')).toBeTruthy();
+    // Slot 1 ← Overwatch, then slot 2 (it moves on by itself) ← Analyze; then swap them with the arrows.
+    await React.act(async () => { (dlg.querySelector('[data-cmd="overwatch"]') as HTMLElement).click(); });
+    await React.act(async () => { (dlg.querySelector('[data-cmd="analyze"]') as HTMLElement).click(); });
+    await React.act(async () => { (dlg.querySelector('[aria-label="Move slot 2 left"]') as HTMLElement).click(); });
+    const save = Array.from(dlg.querySelectorAll('button')).find((b) => b.textContent === 'Save')!;
+    await React.act(async () => { save.click(); });
+    expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toEqual(['analyze', 'overwatch', null, null]);
+    const L = new CombatLogic({}) as any; L.togglePanel(true);
+    const r = L.renderVals();
+    if (!r.notMine) expect(r.mini.cmds.slice(0, 2).map((x: any) => x.action)).toEqual(['analyze', 'overwatch']);
+    L.togglePanel(false);
+    // Reset to smart default, saved: the preference is gone.
+    await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
+    const dlg2 = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
+    await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => /Reset to smart/.test(b.textContent || ''))!.click(); });
+    await React.act(async () => { Array.from(dlg2.querySelectorAll('button')).find((b) => b.textContent === 'Save')!.click(); });
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toBeUndefined();
+    // Escape closes without saving.
+    await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
+    const dlg3 = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
+    await React.act(async () => { (dlg3.querySelector('[data-cmd="sprint"]') as HTMLElement).click(); });
+    await React.act(async () => { dlg3.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); });
+    expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')[c.id]).toBeUndefined();
+    await React.act(async () => { root.unmount(); });
+    el.remove(); vi.useRealTimers();
+    expect(errors).toEqual([]);
+  });
 });

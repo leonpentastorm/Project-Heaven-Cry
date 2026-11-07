@@ -1,7 +1,7 @@
-// The title screen (spec: docs/design/title-screen.md; art: art/briefs/title-screen.md). Full bleed, three painted
-// layers that follow the pointer, the big title, a menu with Wick as the selector, press -> Wick says hello -> slide.
-// Until the painted layers and Wick's frames are delivered it runs on stand-ins (an approved illustration, a drawn
-// Celestial glow, Wick's welcome mark).
+// The title screen (spec: docs/design/title-screen.md; art: art/briefs/title-screen.md). Full bleed, the painted layers
+// (back: sky, city and the Celestial; mid: the battlefield; front: the squad, when the remade one lands) placed by the
+// art's safe rect and moved by the pointer, the big title fitted to the window, a menu with Wick as the selector,
+// press -> Wick says hello -> slide. Wick is the artist's five clips (art/mascot/wick-anim): run, stop, idle, hello, wave.
 import React from 'react';
 import { ART } from '../screens/shared';
 import { startProvingGround } from '../game/sandbox';
@@ -13,6 +13,7 @@ import { NARRATOR_VOICES, voicePrefs, setVoicePrefs, onVoice } from '../game/voi
 import { resetTips } from '../game/tips';
 import { CREDITS } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
+import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
 
 type Panel = null | 'name' | 'join' | 'characters' | 'saved' | 'settings' | 'credits';
 type Item = { id: string; label: string; sub?: string; start?: boolean; bubble: string; run: () => void };
@@ -23,9 +24,31 @@ const PRESSED = 'phc.pressedAnyKey', BACK_TO = 'phc.titlePanel';
 /** A ?room= invite opens Join once per page load, not every time the title comes back. */
 let inviteUsed = false;
 const toCreate = (draft: any) => { try { sessionStorage.setItem(BACK_TO, 'characters'); } catch { /* */ } go('create', { draft }); };
-const WICK_H = 48;
-/** A sprite strip if the artist's frames are in, else null (the stand-in is used). */
-const strip = (seq: string) => ART('wick-' + seq) || null;
+
+/** The image set for a layer: 1600, 2560 and 3840 px wide (tools/build_web_assets.py); the browser picks by size. */
+const srcSet = (l: string) => [['', 1600], ['-lg', 2560], ['-xl', 3840]].map(([k, w]) => ART('title-' + l + k) && ART('title-' + l + k) + ' ' + w + 'w').filter(Boolean).join(', ');
+
+// ---------- Wick (art/mascot/wick-anim/manifest.json; presentation strips, the hello's jump baked in) ----------
+/** Wick's frame on screen, px: the drawing is ~200 of 256, so Wick stands about 47 px tall. */
+const F = 60;
+type Clip = 'run' | 'stop' | 'idle' | 'hello' | 'wave';
+const FRAMES: Record<Clip, number> = { run: 8, stop: 4, idle: 4, hello: 16, wave: 4 };
+type Act = 'run' | 'stop' | 'idle' | 'hello' | 'greet';
+/** What each act plays: [clip, first frame, last frame, fps, times (0 = loop)]. The press hello is the native 16
+ *  frames sped up to fit the slide (the art leaves that to us); the greeting holds the apex with the wave loop. */
+type Seg = [Clip, number, number, number, number];
+const PROGRAM: Record<Act, Seg[]> = {
+  run: [['run', 0, 7, 12, 0]],
+  stop: [['stop', 0, 3, 12, 1], ['idle', 0, 3, 8, 0]],
+  idle: [['idle', 0, 3, 8, 0]],
+  hello: [['hello', 0, 15, 20, 1], ['idle', 0, 3, 8, 0]],
+  greet: [['hello', 0, 10, 12, 1], ['wave', 0, 3, 10, 3], ['hello', 11, 15, 12, 1], ['idle', 0, 3, 8, 0]],
+};
+const GREET_MS = Math.round((11 / 12 + (3 * 4) / 10 + 5 / 12) * 1000), GREET_APEX_MS = Math.round((7 / 12) * 1000);
+const STOP_MS = Math.round((4 / 12) * 1000), HELLO_APEX_MS = Math.round((6 / 20) * 1000);
+/** Wick idles this long on one item before waving at you (once per item). */
+const WAVE_AFTER_MS = 14000;
+const hasStrips = () => !!ART('wick-run') && !!ART('wick-idle');
 
 export function Title() {
   const st = React.useSyncExternalStore(subscribe, getState);
@@ -38,24 +61,38 @@ export function Title() {
   const [after, setAfter] = React.useState<null | string>(null); // what the name prompt continues into: 'host' or 'resume:CODE'
   const [code, setCode] = React.useState(roomParam);
   const [sel, setSel] = React.useState(0);
-  const [hello, setHello] = React.useState<null | string>(null);
+  /** The item being pressed (Wick says hello beside it) until the slide finishes; hover keeps working meanwhile. */
+  const [pressIdx, setPressIdx] = React.useState<number | null>(null);
+  const [bubble, setBubble] = React.useState<null | string>(null);
   const [leaving, setLeaving] = React.useState(false);
   const [wickY, setWickY] = React.useState<number | null>(null);
-  const [running, setRunning] = React.useState(false);
+  const [wickX, setWickX] = React.useState(0);
+  const [moveMs, setMoveMs] = React.useState(0);
+  const wickYRef = React.useRef<number | null>(null); wickYRef.current = wickY;
+  const [act, setAct] = React.useState<Act>('idle');
+  const [nonce, setNonce] = React.useState(0);
   const [burst, setBurst] = React.useState<null | { x: number; y: number; k: number }>(null);
+  const [geo, setGeo] = React.useState(() => titleGeometry(innerWidth, innerHeight));
+  const [titlePx, setTitlePx] = React.useState<number | null>(null);
   const pending = React.useRef<null | (() => void)>(null);
   const timers = React.useRef<number[]>([]);
-  const menuRef = React.useRef<HTMLDivElement>(null);
+  const wickTimers = React.useRef<number[]>([]);
+  const menuRef = React.useRef<HTMLDivElement>(null), colRef = React.useRef<HTMLDivElement>(null), titleRef = React.useRef<HTMLHeadingElement>(null), tagRef = React.useRef<HTMLSpanElement>(null);
+  const greetNext = React.useRef(false), wavedOn = React.useRef(-1);
   const motion = !reducedMotion();
-  React.useEffect(() => () => { timers.current.forEach(clearTimeout); }, []);
+  React.useEffect(() => () => { timers.current.forEach(clearTimeout); wickTimers.current.forEach(clearTimeout); }, []);
   const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)); };
+  /** Wick's own timers (arrive, stop, wave) are separate from the press, so a press never strands him mid-act. */
+  const wickLater = (ms: number, f: () => void) => { wickTimers.current.push(window.setTimeout(f, ms)); };
+  const wickClear = () => { wickTimers.current.forEach(clearTimeout); wickTimers.current = []; };
+  const play = (a: Act) => { setAct(a); setNonce((n) => n + 1); };
   // The tap that begins must not also press a menu item (touch fires the click after pointerdown).
   const armedAt = React.useRef(0);
 
   // ---------- press any key ----------
   React.useEffect(() => {
     if (pressed) return;
-    const begin = () => { armedAt.current = performance.now() + 450; setPressed(true); try { sessionStorage.setItem(PRESSED, '1'); } catch { /* */ } later(30, () => sfx('start')); };
+    const begin = () => { armedAt.current = performance.now() + 450; greetNext.current = true; setPressed(true); try { sessionStorage.setItem(PRESSED, '1'); } catch { /* */ } later(30, () => sfx('start')); };
     window.addEventListener('keydown', begin, { once: true }); window.addEventListener('pointerdown', begin, { once: true });
     return () => { window.removeEventListener('keydown', begin); window.removeEventListener('pointerdown', begin); };
   }, [pressed]);
@@ -80,42 +117,81 @@ export function Title() {
     { id: 'credits', label: 'CREDITS', bubble: 'Thank you!', run: () => setPanel('credits') },
   ];
   const selIdx = Math.min(sel, items.length - 1);
+  /** Wick stays beside the pressed item through its hello; otherwise he follows the selection. */
+  const wickIdx = pressIdx ?? selIdx;
+  const itemEl = (i: number) => menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[i];
+  const yFor = (i: number) => { const el = itemEl(i); return el ? Math.round(el.offsetTop + el.offsetHeight / 2 - F * 0.56) : null; };
 
-  // Wick runs along the gutter to the selected item.
-  const place = React.useCallback((i: number, silent = false) => {
-    const el = menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[i]; if (!el) return;
-    const y = el.offsetTop + el.offsetHeight / 2 - WICK_H / 2 - 2;
-    setWickY((prev) => { if (!silent && prev !== y && motion) { setRunning(true); sfx('wick_steps'); } return y; });
-  }, [motion]);
-  React.useLayoutEffect(() => { if (pressed && !panel) place(selIdx); }, [pressed, panel, selIdx, items.length, place]);
+  // ---------- Wick ----------
+  /** Arrived: the skid, then idle (the stop clip runs into the idle loop by itself); the first time after the key
+   *  press, a hello with a held wave as the greeting. */
+  const arrive = () => {
+    play('stop');
+    if (greetNext.current && motion) { greetNext.current = false; wavedOn.current = selIdx; wickLater(STOP_MS + 250, () => greet('Hi!', true)); }
+  };
+  const greet = (text: string | null, chirp: boolean) => {
+    wickClear(); play('greet'); setBubble(text);
+    if (chirp) wickLater(GREET_APEX_MS, () => sfx('wick_hello'));
+    wickLater(GREET_MS, () => { setBubble(null); play('idle'); });
+  };
+  React.useLayoutEffect(() => {
+    if (!pressed || panel) return;
+    const y = yFor(wickIdx); if (y == null) return;
+    if (wickY === null) {
+      // The first time: Wick runs in from off-screen left (about 900 px/s), stops beside the item.
+      if (!motion) { setMoveMs(0); setWickY(y); setWickX(0); play('idle'); return; }
+      const off = -Math.round((menuRef.current?.getBoundingClientRect().left || 0) + F + 24), ms = clamp(-off / 0.9, 350, 900);
+      setMoveMs(0); setWickY(y); setWickX(off); play('run');
+      requestAnimationFrame(() => requestAnimationFrame(() => { setMoveMs(ms); setWickX(0); sfx('wick_steps'); }));
+      wickClear(); wickLater(ms + 40, arrive);
+      return;
+    }
+    if (Math.abs(y - wickY) < 1) return;
+    if (!motion) { setMoveMs(0); setWickY(y); return; }
+    const ms = clamp(Math.abs(y - wickY) / 0.9, 180, 500);
+    setMoveMs(ms); setWickY(y);
+    if (pressIdx !== null) return; // mid-hello he hops over without changing clip
+    setBubble(null); wickClear(); play('run'); sfx('wick_steps'); wickLater(ms, arrive);
+  }, [pressed, panel, wickIdx, items.length]);
   // Fonts loading or the window resizing move the items: Wick follows quietly.
   React.useEffect(() => {
     const nav = menuRef.current; if (!pressed || panel || !nav || typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(() => place(selIdx, true)); ro.observe(nav); return () => ro.disconnect();
-  }, [pressed, panel, selIdx, place]);
-  const runMs = 260;
-  React.useEffect(() => { if (!running) return; const t = window.setTimeout(() => setRunning(false), runMs); return () => clearTimeout(t); }, [running, wickY]);
+    const ro = new ResizeObserver(() => { const y = yFor(wickIdx), p = wickYRef.current; if (y != null && p !== null && Math.abs(p - y) >= 1) { setMoveMs(0); setWickY(y); } });
+    ro.observe(nav); return () => ro.disconnect();
+  }, [pressed, panel, wickIdx]);
+  // Waiting on one item a while: Wick waves at you (once per item).
+  React.useEffect(() => {
+    if (!motion || panel || pressIdx !== null || (act !== 'idle' && act !== 'stop') || wavedOn.current === selIdx) return;
+    const t = window.setTimeout(() => { wavedOn.current = selIdx; greet(null, false); }, WAVE_AFTER_MS);
+    return () => clearTimeout(t);
+  }, [act, nonce, panel, pressIdx, selIdx, motion]);
+  // The strips are small: fetch them all up front so no clip starts blank.
+  React.useEffect(() => { (Object.keys(FRAMES) as Clip[]).forEach((c) => { const u = ART('wick-' + c); if (u) new Image().src = u; }); }, []);
 
-  const itemEl = (i: number) => menuRef.current?.querySelectorAll<HTMLElement>('[data-item]')[i];
-  // Keep DOM focus on the highlighted item, so Enter always presses what Wick stands beside.
+  /** Hover and focus always respond, even during a press's hello and slide: only Wick stays put until it ends. */
   const choose = (i: number, focus = false) => { if (focus) itemEl(i)?.focus({ preventScroll: true }); if (i === selIdx) return; setSel(i); sfx('hover'); };
-  /** The press: click effect, Wick says hello, then the slide (spec §4). A second press skips ahead. */
-  const press = (it: Item, e?: React.MouseEvent | React.KeyboardEvent) => {
+  /** The press: click effect, Wick says hello, then the slide (spec §4). Pressing the same item again skips ahead;
+   *  pressing another one during the hello switches to it. */
+  const press = (it: Item, i: number, e?: React.MouseEvent | React.KeyboardEvent) => {
     if (performance.now() < armedAt.current) return;
-    if (hello) { finish(); return; }
+    if (pressIdx !== null) {
+      if (i === pressIdx) { finish(); return; }
+      timers.current.forEach(clearTimeout); timers.current = []; setLeaving(false);
+    }
     sfx(it.start ? 'start' : 'click');
-    const r = (e && 'clientX' in e && e.clientX) ? { x: e.clientX, y: e.clientY } : (() => { const b = (e?.currentTarget as HTMLElement | undefined)?.getBoundingClientRect(); return b ? { x: b.left + 40, y: b.top + b.height / 2 } : { x: 200, y: 400 }; })();
+    const r = (e && 'clientX' in e && e.clientX) ? { x: e.clientX, y: e.clientY } : (() => { const b = (e?.currentTarget as HTMLElement | undefined)?.getBoundingClientRect() || itemEl(i)?.getBoundingClientRect(); return b ? { x: b.left + 40, y: b.top + b.height / 2 } : { x: 200, y: 400 }; })();
     setBurst({ ...r, k: Date.now() });
-    setHello(it.bubble); pending.current = it.run;
+    setSel(i); setPressIdx(i); setBubble(it.bubble); pending.current = it.run;
     if (!motion) { finish(); return; }
-    later(260, () => sfx('wick_hello'));
+    wickClear(); play('hello');
+    later(HELLO_APEX_MS, () => sfx('wick_hello'));
     later(550, () => { setLeaving(true); sfx('slide'); });
     later(950, finish);
   };
   const finish = () => {
     timers.current.forEach(clearTimeout); timers.current = [];
     const f = pending.current; pending.current = null;
-    setHello(null); setLeaving(false);
+    setPressIdx(null); setBubble(null); setLeaving(false); play('idle');
     if (f) f();
   };
   const back = () => { sfx('back'); sfx('slide_back'); setPanel(null); setAfter(null); later(30, () => itemEl(selIdx)?.focus({ preventScroll: true })); };
@@ -132,24 +208,63 @@ export function Title() {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault(); const n = (selIdx + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
         choose(n, true);
-      } else if (e.key === 'Enter' && !(t && t.hasAttribute('data-item'))) { e.preventDefault(); press(items[selIdx]); }
+      } else if (e.key === 'Enter' && !(t && t.hasAttribute('data-item'))) { e.preventDefault(); press(items[selIdx], selIdx); }
     };
     window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true);
   });
 
-  // ---------- parallax ----------
-  const stage = React.useRef<HTMLDivElement>(null), layers = React.useRef<(HTMLDivElement | null)[]>([]);
+  // ---------- the title always fits ----------
+  // Measured, not guessed: the widest word at 100 px against the column's width, and the room the menu leaves in the
+  // column's height (before the key press, the menu's height is estimated so the title doesn't jump when it appears).
+  const fitTitle = React.useCallback(() => {
+    const col = colRef.current, h = titleRef.current; if (!col || !h) return;
+    const words = Array.from(h.querySelectorAll<HTMLElement>('.phc-word')); if (!words.length) return;
+    const was = h.style.fontSize; h.style.fontSize = '100px';
+    const widest = Math.max(...words.map((w) => w.getBoundingClientRect().width));
+    h.style.fontSize = was;
+    const cs = getComputedStyle(col), padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    const nav = menuRef.current, rowPx = clamp(innerWidth * 0.017, 19, 26) * 1.25 + 18;
+    const menuH = nav ? nav.offsetHeight : items.length * rowPx + items.filter((x) => x.sub).length * 16;
+    const tagH = (tagRef.current?.offsetHeight || 18) + 16, gap = parseFloat(cs.rowGap) || 28;
+    const byW = widest > 0 ? ((col.clientWidth - padX) / widest) * 100 * 0.98 : 128;
+    const byH = (col.clientHeight - padY - gap - menuH - tagH - 8) / (3 * 0.92);
+    const px = Math.floor(clamp(Math.min(byW, byH), 28, 128));
+    setTitlePx((p) => (p === px ? p : px));
+  }, [items.length, pressed]);
+  React.useLayoutEffect(() => { fitTitle(); }, [fitTitle, pressed, panel, items.length]);
   React.useEffect(() => {
-    if (!motion || panel) return;
+    const col = colRef.current; if (!col) return;
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => fitTitle()) : null;
+    ro?.observe(col); if (menuRef.current) ro?.observe(menuRef.current);
+    const fonts = (document as any).fonts; fonts?.ready?.then(() => fitTitle()); fonts?.addEventListener?.('loadingdone', fitTitle);
+    addEventListener('resize', fitTitle);
+    return () => { ro?.disconnect(); fonts?.removeEventListener?.('loadingdone', fitTitle); removeEventListener('resize', fitTitle); };
+  }, [fitTitle, pressed]);
+
+  // ---------- the art: geometry and parallax ----------
+  React.useEffect(() => { const r = () => setGeo(titleGeometry(innerWidth, innerHeight)); addEventListener('resize', r); return () => removeEventListener('resize', r); }, []);
+  const geoRef = React.useRef(geo); geoRef.current = geo;
+  const stage = React.useRef<HTMLDivElement>(null), layers = React.useRef<Record<string, HTMLDivElement | null>>({});
+  React.useEffect(() => {
+    if (!motion) {
+      Object.values(layers.current).forEach((el) => { if (el) el.style.transform = 'none'; });
+      if (stage.current) stage.current.style.transform = 'none';
+      return;
+    }
+    if (panel) return; // a sub-screen holds the picture where it is
     let tx = 0, ty = 0, x = 0, y = 0, raf = 0, idle = 0, lastMove = performance.now();
     const move = (e: PointerEvent) => { tx = (e.clientX / innerWidth) * 2 - 1; ty = (e.clientY / innerHeight) * 2 - 1; lastMove = performance.now(); };
-    const tilt = (e: DeviceOrientationEvent) => { if (e.gamma == null) return; tx = Math.max(-1, Math.min(1, e.gamma / 25)); ty = Math.max(-1, Math.min(1, ((e.beta || 45) - 45) / 25)); lastMove = performance.now(); };
-    const depth = [0.008, 0.025, 0.05];
+    const tilt = (e: DeviceOrientationEvent) => { if (e.gamma == null) return; tx = clamp(e.gamma / 25, -1, 1); ty = clamp(((e.beta || 45) - 45) / 25, -1, 1); lastMove = performance.now(); };
     const tick = (t: number) => {
       const resting = t - lastMove > 2500; idle = t / 20000 * Math.PI * 2;
       const gx = resting ? Math.sin(idle) * 0.35 : tx, gy = resting ? Math.cos(idle * 0.7) * 0.2 : ty;
       x += (gx - x) * 0.08; y += (gy - y) * 0.08;
-      layers.current.forEach((el, i) => { if (el) el.style.transform = `translate3d(${(-x * depth[i] * 100).toFixed(3)}vw, ${(-y * depth[i] * 50).toFixed(3)}vh, 0) scale(${[1.02, 1.05, 1.08][i]})`; });
+      const g = geoRef.current;
+      for (const [l, d] of LAYERS) {
+        const el = layers.current[l]; if (!el) continue;
+        const [mx, my] = layerShift(g, d);
+        el.style.transform = `translate3d(${(-x * mx).toFixed(2)}px, ${(-y * my).toFixed(2)}px, 0)`;
+      }
       if (stage.current) stage.current.style.transform = `rotateY(${(x * 1.5).toFixed(3)}deg) rotateX(${(-y * 1.5).toFixed(3)}deg)`;
       raf = requestAnimationFrame(tick);
     };
@@ -162,7 +277,7 @@ export function Title() {
   const canvas = React.useRef<HTMLCanvasElement>(null);
   React.useEffect(() => {
     const c = canvas.current; if (!c || !motion || panel) return;
-    const g = c.getContext('2d')!; let raf = 0;
+    const g = c.getContext('2d'); if (!g) return; let raf = 0;
     const fit = () => { c.width = innerWidth; c.height = innerHeight; }; fit(); addEventListener('resize', fit);
     const P = Array.from({ length: 70 }, (_, i) => ({ x: Math.random(), y: Math.random(), v: 0.0006 + Math.random() * 0.0016, s: 1 + Math.random() * 2.5, sq: i % 3 === 0, a: Math.random() * Math.PI * 2 }));
     const draw = () => {
@@ -180,47 +295,51 @@ export function Title() {
     return () => { cancelAnimationFrame(raf); removeEventListener('resize', fit); };
   }, [motion, panel]);
 
-  const back0 = ART('title-back-lg') || ART('title-back') || ART('world-outpost813-lg') || ART('world-outpost813');
-  const mid = ART('title-mid'), front = ART('title-front'), fx = ART('title-fx');
-  const standIn = !ART('title-back');
+  const present = LAYERS.map(([l]) => l).filter((l) => ART('title-' + l));
+  const layer = (l: string) => (
+    <div key={l} ref={(el) => { layers.current[l] = el; }} className={'phc-layer phc-l-' + l} style={{ mixBlendMode: l === 'fx' ? 'screen' : undefined }}>
+      <img src={ART('title-' + l)} srcSet={srcSet(l)} sizes={Math.ceil(geo.w) + 'px'} alt="" draggable={false} decoding="async" className="phc-layer-img"
+        ref={(el) => { if (el?.complete && el.naturalWidth) el.style.opacity = '1'; }} onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }} />
+    </div>
+  );
 
   return (
-    <div className="phc-title" style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: '#05070B', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", perspective: 1200 }}>
+    <div className="phc-title" style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: 'radial-gradient(ellipse at 68% 30%, #1A1C22 0%, #05070B 70%)', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", perspective: 1200 }}>
       <style>{CSS}</style>
-      {/* the art */}
-      <div ref={stage} aria-hidden style={{ position: 'absolute', inset: '-4%', transformStyle: 'preserve-3d', transition: motion ? undefined : 'none' }}>
-        <div ref={(el) => { layers.current[0] = el; }} style={{ position: 'absolute', inset: 0, backgroundImage: `url(${back0})`, backgroundSize: 'cover', backgroundPosition: standIn ? '60% center' : 'center top', filter: standIn ? 'brightness(0.62) saturate(0.85)' : undefined, transition: 'transform 0.4s ease-out' }}>
-          {standIn && <div className="phc-celestial" />}
-        </div>
-        <div ref={(el) => { layers.current[1] = el; }} style={{ position: 'absolute', inset: 0, backgroundImage: mid ? `url(${mid})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        <canvas ref={canvas} style={{ position: 'absolute', inset: '4%', width: '92%', height: '92%' }} />
-        <div ref={(el) => { layers.current[2] = el; }} className={leaving && motion ? 'phc-front-out' : ''} style={{ position: 'absolute', inset: 0, backgroundImage: front ? `url(${front})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        {fx && <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fx})`, backgroundSize: 'cover', mixBlendMode: 'screen' }} />}
+      {/* the art: the whole painted canvas, placed so its safe rect covers the window */}
+      <div ref={stage} aria-hidden className={leaving && motion ? 'phc-leaving' : ''} style={{ position: 'absolute', left: geo.left, top: geo.top, width: geo.w, height: geo.h, transformStyle: 'preserve-3d', transformOrigin: `${geo.cx * geo.s}px ${geo.cy * geo.s}px` }}>
+        {present.filter((l) => l === 'back' || l === 'mid').map(layer)}
+        <canvas ref={canvas} style={{ position: 'absolute', left: -geo.left, top: -geo.top, width: geo.vw, height: geo.vh, pointerEvents: 'none' }} />
+        {present.filter((l) => l === 'front' || l === 'fx').map(layer)}
       </div>
       {/* keep the left third dark for the title */}
-      <div aria-hidden className="phc-shade" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,7,11,0.88) 0%, rgba(5,7,11,0.62) 32%, rgba(5,7,11,0.0) 58%), linear-gradient(0deg, rgba(5,7,11,0.7) 0%, rgba(5,7,11,0) 30%)', pointerEvents: 'none' }} />
+      <div aria-hidden className="phc-shade" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,7,11,0.86) 0%, rgba(5,7,11,0.6) 32%, rgba(5,7,11,0.0) 58%), linear-gradient(0deg, rgba(5,7,11,0.7) 0%, rgba(5,7,11,0) 30%)', pointerEvents: 'none' }} />
       {panel && <div aria-hidden style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(6px)', background: 'rgba(5,7,11,0.45)' }} />}
 
-      {/* the title and menu */}
-      <div inert={!!panel} className={'phc-col' + (leaving && motion ? ' phc-col-out' : '') + (panel ? ' phc-col-away' : '')} style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', top: 0, bottom: 0, width: 'min(560px, 88vw)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingTop: 16, paddingBottom: 56, boxSizing: 'border-box', gap: 28 }}>
-        <h1 className={'phc-wordmark' + (pressed ? ' phc-wordmark-up' : '')} style={{ margin: 0, marginTop: 'auto', fontFamily: "'Spectral', serif", fontWeight: 600, lineHeight: 0.92, letterSpacing: '0.06em', fontSize: 'clamp(36px, min(7.4vw, 13vh), 128px)', color: '#F4ECDD' }}>
-          PROJECT<br />HEAVEN<br /><span style={{ letterSpacing: '0.22em' }}>CRY</span>
-          <span style={{ display: 'block', marginTop: 16, fontFamily: "'Chakra Petch', sans-serif", fontSize: 'clamp(12px, 1vw, 15px)', fontWeight: 500, letterSpacing: '0.24em', color: ink.muted }}>A TACTICAL RPG WITH AN AI NARRATOR</span>
+      {/* the title and menu: the column starts at the window's edge (its padding is the margin), so Wick can run in
+          from off-screen and the column's scroll fallback never clips him at the margin */}
+      <div ref={colRef} inert={!!panel} className={'phc-col' + (leaving && motion ? ' phc-col-out' : '') + (panel ? ' phc-col-away' : '')} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, paddingLeft: 'clamp(24px, 6vw, 120px)', width: 'calc(clamp(24px, 6vw, 120px) + min(560px, 100vw - clamp(24px, 6vw, 120px) - 16px))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', overflowX: 'hidden', paddingTop: 16, paddingBottom: 56, boxSizing: 'border-box', gap: 28 }}>
+        <h1 ref={titleRef} className={'phc-wordmark' + (pressed ? ' phc-wordmark-up' : '')} style={{ margin: 0, marginTop: 'auto', fontFamily: "'Spectral', serif", fontWeight: 600, lineHeight: 0.92, letterSpacing: '0.06em', fontSize: titlePx ? titlePx + 'px' : 'clamp(28px, min(6.2vw, 10vh), 112px)', color: '#F4ECDD' }}>
+          <span className="phc-word">PROJECT</span>
+          <span className="phc-word">HEAVEN</span>
+          <span className="phc-word" style={{ letterSpacing: '0.22em' }}>CRY</span>
+          <span ref={tagRef} style={{ display: 'block', marginTop: 16, fontFamily: "'Chakra Petch', sans-serif", fontSize: 'clamp(12px, 1vw, 15px)', fontWeight: 500, letterSpacing: '0.24em', lineHeight: 1.3, color: ink.muted }}>A TACTICAL RPG WITH AN AI NARRATOR</span>
         </h1>
         {!pressed && <div className="phc-press" role="status" style={{ marginBottom: 'auto', fontSize: 16, letterSpacing: '0.32em', color: '#FFFFFF' }}>{'ontouchstart' in window ? 'TAP TO BEGIN' : 'PRESS ANY KEY'}</div>}
         {pressed && (
-          <nav aria-label="Main menu" ref={menuRef} style={{ marginBottom: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 64 }}>
+          <nav aria-label="Main menu" ref={menuRef} style={{ marginBottom: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 64, flexShrink: 0 }}>
             {items.map((it, i) => (
-              <button key={it.id} type="button" data-item data-sfx="none" className={'phc-item' + (i === selIdx ? ' on' : '')} style={{ animationDelay: (i * 40) + 'ms' }}
-                onMouseEnter={() => choose(i, true)} onFocus={() => choose(i)} onClick={(e) => press(it, e)}>
+              <button key={it.id} type="button" data-item={it.id} data-sfx="none" className={'phc-item' + (i === selIdx ? ' on' : '') + (i === pressIdx ? ' pressed' : '')} style={{ animationDelay: (i * 40) + 'ms' }}
+                onMouseEnter={() => choose(i, true)} onFocus={() => choose(i)} onClick={(e) => press(it, i, e)}>
                 <span className="phc-label">{it.label}</span>
                 {it.sub && <span style={{ display: 'block', fontSize: 12, letterSpacing: '0.12em', color: ink.dim, marginTop: 2 }}>{it.sub}</span>}
               </button>
             ))}
             {wickY !== null && (
-              <div className={'phc-wick' + (running ? ' run' : '') + (hello ? ' hello' : '')} style={{ top: wickY, transitionDuration: motion ? runMs + 'ms' : '0ms' }} aria-hidden>
-                <Wick seq={hello ? 'hello' : running ? 'run' : 'idle'} />
-                {hello && <span className="phc-bubble">{hello}</span>}
+              <div className={'phc-wick' + (act === 'run' ? ' run' : '') + (pressIdx !== null ? ' hello' : '') + (act === 'greet' ? ' greet' : '')} data-act={act}
+                style={{ top: wickY, transform: `translateX(${wickX}px)`, transitionDuration: `${moveMs}ms, ${moveMs}ms` }} aria-hidden>
+                {hasStrips() ? <WickSprite act={act} nonce={nonce} still={!motion} /> : <img src={ART('wick-welcome')} alt="" className={'phc-wick-img s-' + (act === 'greet' ? 'hello' : act === 'stop' ? 'idle' : act)} />}
+                {bubble && <span key={bubble + nonce} className="phc-bubble">{bubble}</span>}
               </div>
             )}
           </nav>
@@ -250,11 +369,36 @@ export function Title() {
   );
 }
 
-/** Wick: the artist's sprite strip when delivered, else the welcome mark doing its best. */
-function Wick({ seq }: { seq: 'run' | 'idle' | 'hello' }) {
-  const sheet = strip(seq), frames = { run: 8, idle: 4, hello: 16 }[seq], fps = { run: 12, idle: 8, hello: 12 }[seq];
-  if (sheet) return <span className={'phc-sprite s-' + seq} style={{ backgroundImage: `url(${sheet})`, backgroundSize: `${frames * WICK_H}px ${WICK_H}px`, animation: `phc-frames-${frames} ${frames / fps}s steps(${frames}) ${seq === 'hello' ? 1 : 'infinite'}` }} />;
-  return <img src={ART('wick-welcome')} alt="" className={'phc-wick-img s-' + seq} />;
+/** Wick from the artist's strips: one element, frames stepped by requestAnimationFrame (no React render per frame),
+ *  so the menu's hover state never waits on him. */
+function WickSprite({ act, nonce, still }: { act: Act; nonce: number; still: boolean }) {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  React.useEffect(() => {
+    const el = ref.current; if (!el) return;
+    let shown = '', raf = 0;
+    const show = (clip: Clip, f: number) => {
+      const k = clip + f; if (k === shown) return; shown = k;
+      el.style.backgroundImage = `url(${ART('wick-' + clip)})`;
+      el.style.backgroundSize = `${FRAMES[clip] * F}px ${F}px`;
+      el.style.backgroundPosition = `${-f * F}px 0`;
+    };
+    if (still) { show('idle', 0); return; }
+    const prog = PROGRAM[act], t0 = performance.now();
+    const tick = (now: number) => {
+      let t = (now - t0) / 1000, done = true;
+      for (const [clip, a, b, fps, times] of prog) {
+        const n = b - a + 1, dur = n / fps;
+        if (times === 0 || t < dur * times) { show(clip, a + (Math.floor(t * fps) % n)); done = false; break; }
+        t -= dur * times;
+      }
+      if (done) { const [clip, , b] = prog[prog.length - 1]; show(clip, b); return; }
+      raf = requestAnimationFrame(tick);
+    };
+    show(prog[0][0], prog[0][1]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [act, nonce, still]);
+  return <span ref={ref} className={'phc-sprite s-' + act} />;
 }
 
 /** The press burst: a handful of square bots jumping out from the pointer. */
@@ -365,15 +509,13 @@ function CreditsPanel() {
 }
 
 const CSS = `
-.phc-celestial { position: absolute; left: 58%; top: 2%; width: 30vw; height: 52vh; pointer-events: none;
-  background: radial-gradient(ellipse 22% 38% at 50% 42%, rgba(255,246,222,0.95), rgba(255,226,170,0.55) 35%, rgba(255,210,150,0.12) 65%, transparent 72%);
-  filter: blur(2px); animation: phc-breathe 6s ease-in-out infinite; }
-.phc-celestial::before, .phc-celestial::after { content: ''; position: absolute; left: 50%; top: 42%; width: 70%; aspect-ratio: 1; border: 2px solid rgba(255,236,200,0.35); border-radius: 50%;
-  transform: translate(-50%, -50%) rotateX(70deg); animation: phc-spin 18s linear infinite; }
-.phc-celestial::after { width: 95%; border-style: dashed; animation-duration: 30s; animation-direction: reverse; }
-@keyframes phc-breathe { 0%,100% { opacity: 0.85 } 50% { opacity: 1 } }
-@keyframes phc-spin { to { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg) } }
+.phc-layer { position: absolute; top: 0; bottom: 0; left: 0; right: 0; transition: left 0.4s cubic-bezier(.65,0,.35,1), right 0.4s cubic-bezier(.65,0,.35,1); will-change: transform; }
+.phc-layer-img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.6s ease-out; user-select: none; pointer-events: none; }
+.phc-leaving .phc-l-back { left: -0.8vw; right: 0.8vw; }
+.phc-leaving .phc-l-mid { left: -2.5vw; right: 2.5vw; }
+.phc-leaving .phc-l-front, .phc-leaving .phc-l-fx { left: -6vw; right: 6vw; }
 .phc-wordmark { text-shadow: 0 0 28px rgba(255,230,190,0.25), 0 2px 0 rgba(0,0,0,0.6); transition: transform 0.6s cubic-bezier(.2,.8,.2,1); }
+.phc-wordmark .phc-word { display: block; width: max-content; max-width: none; white-space: nowrap; }
 .phc-wordmark-up { transform: translateY(-6px); }
 .phc-press { animation: phc-pulse 1.6s ease-in-out infinite; }
 @keyframes phc-pulse { 0%,100% { opacity: 0.35 } 50% { opacity: 1 } }
@@ -381,33 +523,33 @@ const CSS = `
   font-size: clamp(19px, 1.7vw, 26px); font-weight: 600; letter-spacing: 0.14em; cursor: pointer; opacity: 0; animation: phc-in 0.4s ease-out forwards; outline: none; }
 .phc-item .phc-label { position: relative; transition: color 0.15s, letter-spacing 0.15s, text-shadow 0.15s; }
 .phc-item .phc-label::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; background: #FFFFFF; transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease-out; }
-.phc-item.on .phc-label { color: #FFFFFF; letter-spacing: 0.18em; text-shadow: 0 0 18px rgba(255,255,255,0.35); }
-.phc-item.on .phc-label::after { transform: scaleX(1); }
+.phc-item.on .phc-label, .phc-item.pressed .phc-label { color: #FFFFFF; letter-spacing: 0.18em; text-shadow: 0 0 18px rgba(255,255,255,0.35); }
+.phc-item.on .phc-label::after, .phc-item.pressed .phc-label::after { transform: scaleX(1); }
+.phc-item.pressed .phc-label::after { animation: phc-flash 0.3s ease-out; }
+@keyframes phc-flash { 0% { box-shadow: 0 0 0 rgba(255,255,255,0) } 30% { box-shadow: 0 0 12px rgba(255,255,255,0.9) } 100% { box-shadow: 0 0 0 rgba(255,255,255,0) } }
 .phc-item:active .phc-label { display: inline-block; transform: scale(0.97); }
 .phc-item:focus-visible .phc-label { color: #FFFFFF; }
 @keyframes phc-in { from { opacity: 0; transform: translateX(-12px) } to { opacity: 1; transform: none } }
-.phc-wick { position: absolute; left: 0; width: ${WICK_H}px; height: ${WICK_H}px; transition-property: top; transition-timing-function: cubic-bezier(.4,0,.2,1); pointer-events: none; }
-.phc-wick-img { width: ${WICK_H}px; height: ${WICK_H}px; display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+.phc-wick { position: absolute; left: 0; width: ${F}px; height: ${F}px; transition-property: top, transform; transition-timing-function: cubic-bezier(.4,0,.2,1), linear; pointer-events: none; }
+.phc-sprite { display: block; width: ${F}px; height: ${F}px; background-repeat: no-repeat; image-rendering: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+.phc-wick-img { width: ${F - 12}px; height: ${F - 12}px; margin: 6px; display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
 .phc-wick-img.s-idle { animation: phc-idle 1.2s ease-in-out infinite; }
 .phc-wick-img.s-run { animation: phc-run 0.18s linear infinite; }
 .phc-wick-img.s-hello { animation: phc-hello 0.7s cubic-bezier(.3,.7,.3,1) forwards; }
 @keyframes phc-idle { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
 @keyframes phc-run { 0% { transform: translateY(0) rotate(-6deg) } 50% { transform: translateY(-4px) rotate(6deg) } 100% { transform: translateY(0) rotate(-6deg) } }
 @keyframes phc-hello { 0% { transform: translateY(0) scale(1, 1) } 15% { transform: translateY(3px) scale(1.12, 0.86) } 45% { transform: translateY(-26px) rotate(-8deg) } 60% { transform: translateY(-26px) rotate(8deg) } 75% { transform: translateY(-20px) rotate(-6deg) } 92% { transform: translateY(2px) scale(1.1, 0.9) } 100% { transform: none } }
-.phc-sprite { display: block; width: ${WICK_H}px; height: ${WICK_H}px; background-repeat: no-repeat; image-rendering: auto; }
-${[4, 8, 16].map((n) => `@keyframes phc-frames-${n} { to { background-position: -${n * WICK_H}px 0 } }`).join('\n')}
-.phc-bubble { position: absolute; left: 30px; top: -30px; white-space: nowrap; padding: 4px 10px; border-radius: 10px; background: #FFFFFF; color: #0A0D13; font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+.phc-bubble { position: absolute; left: 36px; top: -26px; white-space: nowrap; padding: 4px 10px; border-radius: 10px; background: #FFFFFF; color: #0A0D13; font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
   animation: phc-pop 0.25s cubic-bezier(.3,1.6,.5,1) both; }
 .phc-bubble::after { content: ''; position: absolute; left: 8px; bottom: -6px; border: 6px solid transparent; border-top-color: #FFFFFF; border-bottom: 0; }
 @keyframes phc-pop { from { transform: scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
 .phc-col { transition: transform 0.4s cubic-bezier(.65,0,.35,1), opacity 0.4s; }
 .phc-col-out { transform: translateX(-110%); opacity: 0; }
 .phc-col-away { transform: translateX(-115%); opacity: 0; pointer-events: none; }
-.phc-front-out { margin-left: -8vw; transition: margin 0.4s cubic-bezier(.65,0,.35,1); }
 .phc-panel { animation: phc-slide-in 0.4s cubic-bezier(.2,.8,.2,1); }
 @keyframes phc-slide-in { from { transform: translateX(40px); opacity: 0 } to { transform: none; opacity: 1 } }
 .phc-bit { position: absolute; left: 0; top: 0; background: #FFFFFF; animation: phc-bit 0.5s ease-out forwards; }
 @keyframes phc-bit { from { transform: translate(0, 0); opacity: 1 } to { transform: translate(var(--dx), var(--dy)); opacity: 0 } }
-@media (max-width: 760px) { .phc-shade { background: linear-gradient(180deg, rgba(5,7,11,0.35) 0%, rgba(5,7,11,0.72) 30%, rgba(5,7,11,0.86) 70%, rgba(5,7,11,0.92) 100%) !important; } }
-@media (prefers-reduced-motion: reduce) { .phc-item, .phc-panel { animation: none; opacity: 1 } .phc-col { transition: opacity 0.15s } .phc-celestial, .phc-celestial::before, .phc-celestial::after { animation: none } }
+@media (max-width: 760px) { .phc-shade { background: linear-gradient(180deg, rgba(5,7,11,0.5) 0%, rgba(5,7,11,0.76) 30%, rgba(5,7,11,0.86) 70%, rgba(5,7,11,0.92) 100%) !important; } }
+@media (prefers-reduced-motion: reduce) { .phc-item, .phc-panel { animation: none; opacity: 1 } .phc-col { transition: opacity 0.15s } .phc-layer { position: absolute; top: 0; bottom: 0; left: 0; right: 0; transition: none } }
 `;

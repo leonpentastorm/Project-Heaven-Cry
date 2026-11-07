@@ -1,4 +1,4 @@
-<div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
+<div data-phc-create="" style="min-height: 100vh; overflow-x: clip; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
 
 <header style="display: flex; align-items: center; gap: 18px; padding: 18px 32px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
 <img src="__WICKMARK__" alt="Wick, the EPCCG mascot, holding out a hand in welcome" style="width: 48px; height: 48px">
@@ -327,8 +327,11 @@
 <section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 24px 32px">
 <div style="flex: 999 1 760px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
 
-<div style="position: relative; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
-<img src="__SEAL__" alt="Stamped by the Anti-Heaven Operation Commands" style="position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; transform: rotate(-12deg); opacity: 0.55">
+<div data-phc-record="" style="position: relative; display: flex; gap: 22px; flex-wrap: wrap; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<img src="__SEAL__" alt="Stamped by the Anti-Heaven Operation Commands" style="{{sealStyle}}">
+<sc-if value="{{stamped}}" hint-placeholder-val="{{false}}">
+<div class="phc-stamp" data-stamp="{{stampMode}}" role="img" aria-label="Approved: the Anti-Heaven Operations Command seal, stamped in red"><span class="phc-stamp-ring"></span><span class="phc-stamp-ink"></span><span class="phc-stamp-word">APPROVED</span></div>
+</sc-if>
 <button type="button" onClick="{{zoomPortrait}}" aria-label="Enlarge your portrait" style="{{zoomBtn}}"><img src="{{portrait.img}}" alt="{{portrait.alt}}" style="width: 220px; height: 275px; object-fit: cover; border-radius: 10px; background: #000"></button>
 <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; padding-right: 110px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">EPCCG · PERSONNEL RECORD</span>
@@ -439,7 +442,7 @@
 <sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
 <div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="{{c.markStyle}}">{{c.mark}}</span><span>{{c.label}}</span></div>
 </sc-for>
-<button type="button" onClick="{{lockIn}}" disabled="{{cantLock}}" style="{{lockStyle}}">{{lockLabel}}</button>
+<button type="button" data-sfx="none" onClick="{{lockIn}}" disabled="{{lockOff}}" style="{{lockStyle}}">{{lockLabel}}</button>
 <button type="button" onClick="{{saveDraft}}" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Save as draft</button>
 <span style="font-size: 12px; color: #A3AEC2">Drafts can be brought into any room. Once locked in, this record is what the Narrator and the squad see.</span>
 </aside>

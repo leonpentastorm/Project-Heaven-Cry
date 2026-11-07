@@ -5,6 +5,8 @@ import { voiceState } from './voice';
 
 export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' | 'error' | 'toggle' | 'tab' | 'wick_hello' | 'wick_steps'
   | 'shot' | 'hit' | 'miss' | 'reload' | 'melee' | 'down'
+  // The creation Lock in: the AHOC seal stamped onto the record (screens/create.js).
+  | 'stamp'
   // Magic (docs/design/magic-presentation.md): Sigils are synthetic and snap; Outbursts are organic and swell.
   | 'draw' | 'evoke' | 'overload' | 'outburst' | 'release' | 'short'
   // Combat feel (game/fx/FxLayer.tsx plays these from the engine's presentation events, in sync with the visuals).
@@ -23,7 +25,7 @@ const CB = (...n: string[]) => n.map((x) => '/sfx/cb/' + x + '.ogg');
 export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   hover: '/sfx/select_001.ogg', click: '/sfx/click_001.ogg', start: '/sfx/confirmation_002.ogg',
   back: '/sfx/back_001.ogg', slide: '/sfx/maximize_004.ogg', slide_back: '/sfx/minimize_004.ogg', error: '/sfx/error_004.ogg',
-  toggle: ['/sfx/toggle_001.ogg', '/sfx/toggle_002.ogg'], tab: '/sfx/pluck_001.ogg', wick_hello: '/sfx/wick_hello.ogg',
+  toggle: ['/sfx/toggle_001.ogg', '/sfx/toggle_002.ogg'], tab: '/sfx/pluck_001.ogg', wick_hello: '/sfx/wick_hello.ogg', stamp: '/sfx/stamp.ogg',
   gun_pistol: CB('shot_pistol_1', 'shot_pistol_2', 'shot_pistol_3'), gun_revolver: CB('shot_revolver_1', 'shot_revolver_2'), gun_magnum: CB('shot_magnum'),
   gun_smg: CB('shot_smg'), gun_rifle: CB('shot_rifle_1', 'shot_rifle_2'), gun_sniper: CB('shot_sniper'), gun_lever: CB('shot_lever'),
   gun_shotgun: CB('shot_shotgun_1', 'shot_shotgun_2'), gun_heavy: CB('shot_heavy'),
@@ -51,7 +53,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   reload_pistol: 0.45, reload_mag: 0.45, reload_rifle: 0.45, reload_shells: 0.45, rack: 0.45, jam_clear: 0.5, round_in: 0.35, mag_in: 0.4, dry_click: 0.35,
   hit_flesh: 0.45, hit_heavy: 0.5, hit_metal: 0.35, hit_wood: 0.35, body_fall: 0.5, step: 0.2, swish: 0.4, whiz: 0.25, slice: 0.4, chop: 0.45,
   explosion: 0.65, explosion_boom: 0.6, door_open: 0.4, door_close: 0.4, stim: 0.35,
-  sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5 };
+  sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
 // ---------- settings (shared with the title screen's Settings) ----------
@@ -162,6 +164,7 @@ function synth(ac: AudioContext, dest: GainNode, name: Sfx) {
     case 'toggle': tone(1200, 1000, 0.04, 'square', 0.05); break;
     case 'tab': noise(0.05, 2400, 0.08); break;
     case 'wick_hello': tone(880, 1320, 0.07, 'square', 0.06); tone(1320, 1760, 0.09, 'square', 0.06, 0.09); tone(1760, 2200, 0.06, 'square', 0.05, 0.2); break;
+    case 'stamp': tone(110, 38, 0.32, 'sine', 0.45); noise(0.09, 700, 0.3); noise(0.03, 2600, 0.12); break;
     case 'wick_steps': for (let i = 0; i < 4; i++) noise(0.025, 3200, 0.05, i * 0.07); break;
     // Combat stand-ins until real files are chosen (spec: more effects later).
     case 'shot': noise(0.09, 1800, 0.35); tone(140, 50, 0.12, 'sine', 0.3); break;

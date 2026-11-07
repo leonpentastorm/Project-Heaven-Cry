@@ -1,11 +1,59 @@
 // Character creation (EPCCG), ported from design/canvas-build/create.logic.js. Same rules code as the prototype;
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
-import { D, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
+import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { validateSheet, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
+import { sfx, reducedMotion } from '../game/sfx';
+
+// ---------- the lock-in stamp ----------
+// Pressing Lock in slams a big red AHOC seal onto the personnel record where the white one sits, with APPROVED across it,
+// then files the record (STAMP_MS later, so the stamp is seen). Reduced motion: it fades in, no shake.
+const STAMP_RED = '#D9343B'; // stamp ink (art, not a UI state colour)
+/** Slam: the stamp lands at 60% of 300 ms (≈180 ms); the record is filed STAMP_MS after the press. */
+export const STAMP_LAND_MS = 180, STAMP_MS = 900, STAMP_MS_REDUCED = 700;
+const SEAL_STYLE = 'position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; transform: rotate(-12deg); transition: opacity 120ms linear; opacity: ';
+/** The stamp's ink (an SVG filter: a ragged edge and patches where the ink didn't take) and its keyframes, added to the page once. */
+function ensureStampKit() {
+  if (typeof document === 'undefined' || !document.body || document.getElementById('phc-stamp-kit')) return;
+  const seal = ART('emblem-ahoc-seal-lg') || ART('emblem-ahoc-seal');
+  const box = document.createElement('div');
+  box.id = 'phc-stamp-kit'; box.setAttribute('aria-hidden', 'true'); box.style.cssText = 'position: absolute; width: 0; height: 0; overflow: hidden';
+  box.innerHTML = '<svg width="0" height="0" focusable="false"><filter id="phc-stamp-rough" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">'
+    + '<feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="7" result="grain"/>'
+    + '<feDisplacementMap in="SourceGraphic" in2="grain" scale="4" xChannelSelector="R" yChannelSelector="G" result="rough"/>'
+    + '<feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="3" result="blot"/>'
+    + '<feColorMatrix in="blot" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -5 0 0 0 3.6" result="blotA"/>'
+    + '<feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="11" result="speck"/>'
+    + '<feColorMatrix in="speck" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -7 0 0 0 5.5" result="speckA"/>'
+    + '<feComposite in="blotA" in2="speckA" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="holes"/>'
+    + '<feComposite in="rough" in2="holes" operator="in"/></filter></svg>'
+    + '<style>'
+    + '.phc-stamp{position:absolute;top:-70px;right:-34px;width:330px;height:330px;pointer-events:none;z-index:3;transform:rotate(-12deg);filter:url(#phc-stamp-rough);opacity:.94}'
+    + '.phc-stamp[data-stamp="slam"]{animation:phc-stamp-slam 300ms both}'
+    + '.phc-stamp[data-stamp="fade"]{animation:phc-stamp-fade 260ms ease-out both}'
+    + '.phc-stamp-ink{position:absolute;inset:0;background:' + STAMP_RED + ';-webkit-mask:url("' + seal + '") center/contain no-repeat;mask:url("' + seal + '") center/contain no-repeat}'
+    + '.phc-stamp-ring{position:absolute;inset:3%;border-radius:50%;border:12px solid ' + STAMP_RED + ';opacity:0}'
+    + '.phc-stamp[data-stamp="slam"] .phc-stamp-ring{animation:phc-stamp-ring 560ms ' + (STAMP_LAND_MS - 10) + 'ms cubic-bezier(.1,.7,.3,1) both}'
+    + '.phc-stamp-word{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px 4px 16px;background:' + STAMP_RED + ';color:#10151F;'
+    + 'font:700 40px/1 "Chakra Petch",sans-serif;letter-spacing:.16em;white-space:nowrap;outline:4px solid ' + STAMP_RED + ';outline-offset:5px}'
+    + '@keyframes phc-stamp-slam{0%{opacity:0;transform:rotate(-26deg) scale(3.2);animation-timing-function:cubic-bezier(.55,0,1,.55)}'
+    + '35%{opacity:.35}60%{opacity:1;transform:rotate(-12deg) scale(.9);animation-timing-function:cubic-bezier(.2,.8,.4,1)}'
+    + '78%{transform:rotate(-12deg) scale(1.06)}100%{opacity:.94;transform:rotate(-12deg) scale(1)}}'
+    + '@keyframes phc-stamp-fade{from{opacity:0}to{opacity:.94}}'
+    + '@keyframes phc-stamp-ring{from{opacity:.8;transform:scale(.94)}to{opacity:0;transform:scale(1.55)}}'
+    + '</style>';
+  document.body.appendChild(box);
+}
+/** The thump shakes the page for a moment. */
+function shakePage() {
+  // The page's parts shake, not its root: the root clips sideways overflow, so the shake never flashes a scrollbar.
+  const parts = typeof document !== 'undefined' ? document.querySelectorAll('[data-phc-create] > *') : [];
+  for (const el of parts) if (el.animate) el.animate([{ transform: 'translate(0, 0)' }, { transform: 'translate(-8px, 6px)' }, { transform: 'translate(7px, -5px)' }, { transform: 'translate(-4px, 3px)' }, { transform: 'translate(2px, -1px)' }, { transform: 'translate(0, 0)' }],
+    { duration: 280, easing: 'ease-out' });
+}
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
@@ -106,6 +154,7 @@ export class CreateLogic extends DCLogic {
   setState(x) { const before = this.state.step; super.setState(x); if (this.state.step !== before) window.scrollTo(0, 0); }
   constructor(props) {
     super(props);
+    CreateLogic.current = this; ensureStampKit();
     const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? pIdx('mpat') : pIdx('mallow-3'),
@@ -364,7 +413,8 @@ export class CreateLogic extends DCLogic {
       trainedSkills, traitNames, leanText: der.leans.length ? der.leans.map((l) => l.name).join(' or ') : 'Place some points first',
       record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, kitItems, kitName: kit ? kit.name : 'No kit yet', voiceList, hasVoices: voiceList.length > 0, leanCards,
       originName: o ? o.name : 'No origin yet', hasOriginRows: !!o,
-      checks, cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; ' + (cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
+      checks, cantLock, lockOff: cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: ' + (S.stamp ? 'default' : 'pointer') + '; ' + (S.stamp ? 'background: ' + STAMP_RED + '; color: #FFFFFF' : cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
+      stamped: !!S.stamp, stampMode: S.stamp || 'on', sealStyle: SEAL_STYLE + (S.stamp ? '0' : '0.55'),
       ...(() => { const yt = ytId(S.idv.song), st = S.songState;
         const note = !S.idv.song ? 'Played for the whole room when you do something amazing. Pick a video that allows embedding.' : !yt ? 'Not a YouTube link: it stays as text and won\'t play.' : st === 'checking' ? 'Checking the video…' : st === 'bad' ? '✗ This video doesn\'t allow embedding, so it can\'t play in the game. Try another upload of the song.' : st === 'ok' ? '✓ Plays in the game' + (ytStart(S.idv.song) ? ' from ' + Math.floor(ytStart(S.idv.song) / 60) + ':' + String(ytStart(S.idv.song) % 60).padStart(2, '0') : '') + '.' : 'Leave the field to check the link.';
         return { songHas: !!yt, songNote: note, songNoteStyle: 'font-size: 12px; color: ' + (st === 'ok' && yt ? '#6FEA77' : st === 'bad' && yt ? '#F65157' : '#A3AEC2'),
@@ -377,7 +427,7 @@ export class CreateLogic extends DCLogic {
             } catch { this.setState({ songState: null }); } } }; })(),
       idv: S.idv, idc: { ...Object.fromEntries(ID_KEYS.map((k) => [k, (e) => this.setState({ idv: { ...this.state.idv, [k]: e.target.value } })])), song: (e) => this.setState({ songState: null, idv: { ...this.state.idv, song: e.target.value, ...(ytId(e.target.value) !== ytId(this.state.idv.song) ? { songTitle: '', songArtist: '' } : {}) } }) },
       lockIn: () => this.lockIn(der), saveDraft: () => this.saveDraft(der), exit: () => go(getState().code ? 'room' : 'home', { draft: null }), exitLabel: getState().code ? 'Back to the room' : 'Home',
-      lockLabel: getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
+      lockLabel: S.stamp ? 'Approved ✓' : getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
       generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length), upload: null }),
       upload: () => uploadPortrait((url) => this.setState({ upload: url })),
       back: set({ step: STEPS[Math.max(0, stepIdx - 1)][0] }), next: set({ step: STEPS[Math.min(STEPS.length - 1, stepIdx + 1)][0] }), atStart: stepIdx === 0, atEnd: stepIdx === STEPS.length - 1,
@@ -392,14 +442,36 @@ export class CreateLogic extends DCLogic {
       ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
       ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}) }; })() } : {}) };
   }
+  /** Lock in: validate, stamp the record, then file it (bring it to the room or save it to the library). A refused
+   *  record gets no stamp, only the reason; a second press while the stamp is down does nothing. */
   lockIn() {
+    if (this.state.stamp || this.locking) return;
     CORE_PTS = BASE_CORE_PTS + (this.state.traits.includes('mind_without_fog') ? 2 : 0);
     const sheet = this.sheet(), err = validateSheet(sheet);
-    if (err) return toast(err);
+    if (err) { sfx('error'); return toast(err); }
+    this.locking = true;
     saveToLibrary(sheet);
-    const st = getState();
-    if (st.code && st.game && st.game.phase === 'lobby') { act({ type: 'char/add', sheet }); go('room', { draft: null }); }
-    else { toast(sheet.name + ' is saved to your library.', true); go(st.code ? 'room' : 'home', { draft: null }); }
+    const motion = !reducedMotion();
+    // On a narrow screen the button sits below the record: bring the record into view first, so the stamp is seen.
+    const rec = typeof document !== 'undefined' && document.querySelector('[data-phc-record]');
+    const r = rec && rec.getBoundingClientRect ? rec.getBoundingClientRect() : null;
+    const away = !!r && typeof window !== 'undefined' && window.innerHeight > 0 && (r.top < 0 || r.top + Math.min(r.height, 260) > window.innerHeight);
+    if (away) rec.scrollIntoView({ behavior: motion ? 'smooth' : 'auto', block: 'start' });
+    const wait = away && motion ? 380 : 0;
+    const stamp = () => {
+      if (CreateLogic.current !== this) return;
+      this.setState({ stamp: motion ? 'slam' : 'fade' });
+      sfx('stamp', { delay: motion ? STAMP_LAND_MS - 10 : 0 });
+      if (motion) setTimeout(shakePage, STAMP_LAND_MS);
+      setTimeout(() => this.file(sheet), motion ? STAMP_MS : STAMP_MS_REDUCED);
+    };
+    if (wait) setTimeout(stamp, wait); else stamp();
+  }
+  /** After the stamp: bring the record into the room's lobby, or save it; leave the screen only if the player is still on it. */
+  file(sheet) {
+    const st = getState(), here = CreateLogic.current === this && st.screen === 'create';
+    if (st.code && st.game && st.game.phase === 'lobby') { act({ type: 'char/add', sheet }); if (here) go('room', { draft: null }); }
+    else { toast(sheet.name + ' is saved to your library.', true); if (here) go(st.code ? 'room' : 'home', { draft: null }); }
   }
   saveDraft() { const sheet = this.sheet(); if (!sheet.name) return toast('Give the draft a name first.'); saveToLibrary({ ...sheet, draft: true }); toast('Draft saved: ' + sheet.name, true); }
 }
