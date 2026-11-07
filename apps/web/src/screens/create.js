@@ -2,7 +2,7 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet, roomSheetError, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
+import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, moduleSlots, PUSH_RANGE, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -300,10 +300,11 @@ export class CreateLogic extends DCLogic {
     const blocked = new Set(); picked.forEach((id) => { const t = D.traits.find((x) => x.id === id); (t ? t.ex : []).forEach((e) => blocked.add(e)); });
     D.traits.forEach((t) => { if (t.ex.some((e) => picked.includes(e))) blocked.add(t.id); });
     const traitCards = D.traits.filter((t) => S.tcat === 'All' || t.cat === S.tcat).map((t) => {
-      const on = picked.includes(t.id), ex = blocked.has(t.id) && !on, full = picked.length >= 2 && !on;
+      // One music trait per character (engine: Only one music trait.): once one is picked the others are shut.
+      const on = picked.includes(t.id), music = !on && isMusicTrait(t.id) && picked.some(isMusicTrait), ex = (blocked.has(t.id) || music) && !on, full = picked.length >= 2 && !on;
       return { zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
         toggle: () => this.setState({ traits: on ? picked.filter((x) => x !== t.id) : [...picked, t.id] }), disabled: ex || full, pressed: on ? 'true' : 'false',
-        btn: on ? 'Remove' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
+        btn: on ? 'Remove' : music ? 'Only one music trait' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
         btnStyle: 'margin-top: auto; min-height: 40px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid ' + (on ? '#E7EBF3' : '#232D3F') + (ex ? '; opacity: 0.55' : '') };
     });

@@ -124,6 +124,7 @@ MAP OBJECTS AND POINTS OF INTEREST
 LOOT
 - Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a body searched, a locker opened, a reward). Relic and celestial are rare events.
 - Item ids: ${Object.keys(ITEM).join(', ')}.
+- Anything else (a key, a letter, a keepsake) is a plot item: give it with item "" and its name and text (one line); it holds no stats. When the story uses one up, send it back with its [plot:id] and a negative qty. text is "" for real items.
 
 INJURIES
 - The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
@@ -230,6 +231,7 @@ function standingBrief(g: GameState, c: Character): string {
   if (c.tutors?.length) bits.push('tutors for ' + c.tutors.join(', '));
   if (c.companions?.length) bits.push('companions ' + c.companions.map((x) => x.name + ' (' + x.kind + (x.hp === 0 ? ', destroyed' : '') + ')').join(', '));
   const conds = storyConds(g, c); if (conds.length) bits.push('conditions ' + conds.join(', '));
+  const plot = (c.pack || []).filter((x) => x.kind === 'plot'); if (plot.length) bits.push('plot items ' + plot.map((x) => (x.qty > 1 ? x.qty + ' × ' : '') + x.name + ' [' + x.id + ']').join(', '));
   const st = Object.entries(c.state || {}); if (st.length) bits.push('state ' + st.map(([k, v]) => k + '=' + (typeof v === 'string' ? v : JSON.stringify(v))).join('; ').slice(0, 160));
   return bits.length ? '\n  Standing: ' + bits.join('; ') + '.' : '';
 }
@@ -290,7 +292,7 @@ function liveMagic(g: GameState, c: Character): string {
 export function turnSchema(g: GameState) {
   const charIds = Object.keys(g.characters);
   const skill = { type: 'string', description: 'A skill id from SKILL IDS' };
-  // Long id lists (weapons, items, perks) stay out of the schema: the grammar would get too large. The prompt lists them; the engine ignores unknown ids.
+  // Long id lists (weapons, items, perks) stay out of the schema: the grammar would get too large. The prompt lists them; an unknown loot id becomes a plot item, other unknown ids are ignored.
   const obj = (props: Record<string, any>) => ({ type: 'object', additionalProperties: false, properties: props, required: Object.keys(props) });
   const tn = { type: 'integer', enum: [8, 12, 16, 20] };
   const charId = { type: 'string', enum: charIds.length ? charIds : ['none'] };
@@ -309,7 +311,7 @@ export function turnSchema(g: GameState) {
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
-    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' } }) },
+    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' }, text: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });

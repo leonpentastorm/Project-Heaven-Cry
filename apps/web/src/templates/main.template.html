@@ -141,17 +141,19 @@
 <span style="color: #A3AEC2">{{r.kg}}</span></button>
 <sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
+<sc-if value="{{hasPlot}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">PLOT ITEMS</span>
+<div role="list" aria-label="Plot items" style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{plotView}}" as="r"><div role="listitem" style="display: flex; flex-direction: column"><button type="button" onClick="{{r.toggle}}" onMouseEnter="{{r.hover}}" onMouseLeave="{{r.leave}}" onFocus="{{r.hover}}" onBlur="{{r.leave}}" style="{{r.style}}; font-family: inherit; text-align: left; color: inherit">
+<span style="display: grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
+<span style="font-size: 13px; font-weight: 600; min-width: 0">{{r.name}} <span style="font-weight: 400; color: #A3AEC2">{{r.qty}}</span></span>
+<span style="color: #A3AEC2">{{r.kg}}</span></button>
+<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
+</div></sc-if>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
 <span style="font-size: 12px; line-height: 1.4; color: #7F8BA1; flex: 1 1 160px">{{eoe.why}}</span>
 <button type="button" disabled="{{eoe.locked}}" title="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 12px; font-weight: 600">Crack the Essence</button>
 </div>
 </div>
-<sc-if value="{{tipOpen}}"><div role="tooltip" class="{{tipCls}}" style="{{tipCard.style}}">
-<div style="display: flex; gap: 10px; align-items: center"><span style="display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; overflow: hidden; font-size: 24px; color: #A3AEC2"><sc-if value="{{tipCard.hasImg}}"><img src="{{tipCard.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{tipCard.noImg}}">{{tipCard.glyph}}</sc-if></span>
-<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{tipCard.title}}</span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2; text-transform: uppercase">{{tipCard.sub}}</span></span></div>
-<sc-for list="{{tipCard.lines}}" as="l"><span style="font-size: 12px; line-height: 1.45; color: #C9D3E3">{{l.t}}</span></sc-for>
-<sc-if value="{{tipCard.hasLore}}"><span style="font-family: 'Spectral', serif; font-style: italic; font-size: 13px; color: #A3AEC2">{{tipCard.lore}}</span></sc-if>
-</div></sc-if>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 8px">WEAPON MASTERY</span>
 <sc-if value="{{noMastery}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">No kills yet. Weapon mastery grows with kills per weapon family.</span></sc-if>
 <sc-for list="{{mastery}}" as="m" hint-placeholder-count="2">
@@ -281,6 +283,7 @@
 <div class="phc-input" style="flex: none; border-top: 1px solid #232D3F; background: #0A0D13; padding: 14px 32px; display: flex; flex-direction: column; gap: 10px; max-height: 45vh; overflow-y: auto">
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-if value="{{hasChecks}}" hint-placeholder-val="{{false}}"><span style="width: 100%; font-size: 11px; letter-spacing: 0.18em; color: #FFFFFF">THE NARRATOR CALLS FOR A CHECK · CLICK TO ROLL</span></sc-if>
+<sc-if value="{{hasWaitRolls}}" hint-placeholder-val="{{false}}"><sc-for list="{{waitRolls}}" as="w"><span role="status" style="width: 100%; font-size: 12px; color: #A3AEC2">🎲 {{w.text}}</span></sc-for></sc-if>
 <sc-for list="{{actions}}" as="a" hint-placeholder-count="4">
 <button type="button" class="phc-m-rise" onClick="{{a.roll}}" style="{{a.style}}"><span style="font-weight: 600">{{a.title}}</span><span style="{{a.tagStyle}}">{{a.tag}}</span></button>
 </sc-for>
@@ -492,4 +495,11 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 </sc-if>
 <!--EPCCG-->
 <!--LIGHTBOX-->
+<!-- Item tooltips live at the root (a fixed layer no column or animated tab can clip). -->
+<sc-if value="{{tipOpen}}"><div role="tooltip" class="{{tipCls}}" style="{{tipCard.style}}">
+<div style="display: flex; gap: 10px; align-items: center"><span style="display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; overflow: hidden; font-size: 24px; color: #A3AEC2"><sc-if value="{{tipCard.hasImg}}"><img src="{{tipCard.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{tipCard.noImg}}">{{tipCard.glyph}}</sc-if></span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{tipCard.title}}</span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2; text-transform: uppercase">{{tipCard.sub}}</span></span></div>
+<sc-for list="{{tipCard.lines}}" as="l"><span style="font-size: 12px; line-height: 1.45; color: #C9D3E3">{{l.t}}</span></sc-for>
+<sc-if value="{{tipCard.hasLore}}"><span style="font-family: 'Spectral', serif; font-style: italic; font-size: 13px; color: #A3AEC2">{{tipCard.lore}}</span></sc-if>
+</div></sc-if>
 </div>

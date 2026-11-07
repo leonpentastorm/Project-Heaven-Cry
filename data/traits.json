@@ -1546,7 +1546,10 @@
         }
       ],
       "adjudication": "engine",
-      "excludes": [],
+      "excludes": [
+        "headbanger",
+        "underground_sound"
+      ],
       "requires": []
     },
     {
@@ -1595,7 +1598,10 @@
         }
       ],
       "adjudication": "engine",
-      "excludes": [],
+      "excludes": [
+        "the_soundscape_of_the_soul",
+        "underground_sound"
+      ],
       "requires": []
     },
     {
@@ -1644,7 +1650,10 @@
         }
       ],
       "adjudication": "engine",
-      "excludes": [],
+      "excludes": [
+        "the_soundscape_of_the_soul",
+        "headbanger"
+      ],
       "requires": []
     },
     {

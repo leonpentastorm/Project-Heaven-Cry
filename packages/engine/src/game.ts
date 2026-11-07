@@ -5,7 +5,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone } from './magic';
 import { reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
@@ -186,7 +186,8 @@ export type NarratorTurn = {
   /** Move the whole party to another zone of the campaign (its id), or "". */
   travel?: string;
   /** Things found or given: a weapon or item id, how many, and for weapons a rarity and an optional name. */
-  loot?: { charId: string; item: string; qty: number; rarity?: Rarity; name?: string }[];
+  /** An unknown or empty item id gives a plot item (name, and text as its one-line description); a negative qty takes a plot item back. */
+  loot?: { charId: string; item: string; qty: number; rarity?: Rarity; name?: string; text?: string }[];
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: { label: string; skills: string[]; tn: number; stakes: string; success: Approach['success'] }[] }[];
@@ -227,6 +228,8 @@ export type Action =
   | { type: 'combat/hide'; unitId: string } | { type: 'combat/extinguish'; unitId: string; targetId?: string } | { type: 'combat/escape'; unitId: string } | { type: 'combat/recover'; unitId: string }
   | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
+  // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
+  | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
@@ -632,6 +635,20 @@ function reduce(g: GameState, a: Action, by: string) {
       const err = a.type === 'gear/equip' ? equip(c!, a.idx, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, a.idx);
       if (err) fail(err); return;
     }
+    case 'gear/give': case 'gear/drop': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Hand things over after the fight.');
+      const pack = packOf(c!).map((x) => ({ ...x })), it = pack[a.idx]; if (!it) fail('Nothing there.');
+      if (it!.kind !== 'plot') fail('Only plot items can be handed over or dropped for now.');
+      const k = Math.max(1, Math.min(it!.qty, Math.round(a.qty || it!.qty)));
+      let to: Character | undefined;
+      if (a.type === 'gear/give') { to = g.characters[a.to]; if (!to || to.id === c!.id) fail('Give it to whom?'); if (to!.dead) fail(to!.name + ' is dead.'); }
+      it!.qty -= k; if (it!.qty <= 0) pack.splice(a.idx, 1); c!.pack = pack;
+      if (to) { const tp = packOf(to).map((x) => ({ ...x })), ex = tp.find((x) => x.kind === 'plot' && x.id === it!.id); if (ex) ex.qty += k; else tp.push({ ...it!, qty: k }); to.pack = tp; }
+      push(g, { kind: 'system', text: c!.name + (to ? ' gives ' + to.name + ' ' : ' drops ') + (k > 1 ? k + ' × ' : '') + it!.name + '.' });
+      if (g.phase === 'story') canon(g, c!.name + (to ? ' gave ' + to.name + ' ' : ' dropped ') + it!.name + ' (scene ' + g.story.scene.n + ').', [], 1);
+      return;
+    }
     case 'gear/load': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('In a fight, load magazines from the combat screen (1 AP per 5 rounds).');
@@ -640,6 +657,36 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     default: combatAction(g, a, by);
   }
+}
+
+/**
+ * One loot entry from the Narrator (spec: Loot; Plot items). A weapon or item id the engine knows gives that real thing
+ * (an item with its own in-world name keeps the name); anything else (an unknown or empty id) becomes a plot item named
+ * as the Narrator named it, with its one-line text. A negative qty takes that many of a plot item back (the story used
+ * it up). The log line says exactly what was given or taken; nothing is dropped silently.
+ */
+function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
+  const c = g.characters[l?.charId]; if (!c || c.dead) return;
+  const raw = Math.round(Number(l.qty) || 1), n = Math.max(1, Math.min(20, Math.abs(raw))), pack = packOf(c).map((x) => ({ ...x }));
+  const id = String(l.item || '').trim(), label = String(l.name || '').trim();
+  if (raw < 0) {
+    const want = label ? plotId(label) : id.startsWith('plot:') ? id : plotId(id.replace(/_/g, ' '));
+    const i = pack.findIndex((x) => x.kind === 'plot' && (x.id === want || x.id === id || x.name.toLowerCase() === (label || id).toLowerCase()));
+    if (i < 0) return;
+    const it = pack[i], k = Math.min(n, it.qty); it.qty -= k; if (it.qty <= 0) pack.splice(i, 1);
+    c.pack = pack; push(g, { kind: 'system', text: c.name + ' no longer has ' + (k > 1 ? k + ' × ' : '') + it.name + '.' }); return;
+  }
+  const rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? l.rarity : 'standard') as Rarity;
+  let given = '';
+  if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); if (rarity !== 'standard') given += ' (' + rarity + ')'; }
+  else if (ITEM[id]) { given = (label || ITEM[id].name).slice(0, 60); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool' }); }
+  else {
+    const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
+    const it = plotItem(name, l.text || '', n), ex = pack.find((x) => x.kind === 'plot' && x.id === it.id);
+    if (ex) { ex.qty += n; if (it.text && !ex.text) ex.text = it.text; } else pack.push(it);
+    given = it.name;
+  }
+  c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + given + '.' });
 }
 
 function closeRoundIfDone(g: GameState) {
@@ -890,16 +937,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (typeof t.mana === 'number') g.story.mana = Math.max(0, Math.min(40, Math.round(t.mana)));
   for (const m of t.magic || []) { const c = g.characters[m.charId]; if (c) teach(g, c, m, m.reason || 'the story'); }
   if ((t.npcs || []).length) noticeAll(g);
-  for (const l of t.loot || []) {
-    const c = g.characters[l.charId]; if (!c || c.dead) continue;
-    const n = Math.max(1, Math.min(20, Math.round(l.qty || 1))), pack = packOf(c).map((x) => ({ ...x }));
-    const rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? l.rarity : 'standard') as Rarity;
-    if (WEAPON[l.item]) { for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id: l.item, name: (l.name || WEAPON[l.item].name).slice(0, 60), qty: 1, kind: 'weapon', weapon: l.item, rarity }); }
-    else if (ITEM[l.item]) { const ex = pack.find((x) => (x.item || x.id) === l.item && !x.rarity); if (ex) ex.qty += n; else pack.push({ id: l.item, item: l.item, name: ITEM[l.item].name, qty: n, kind: (ITEM[l.item] as any).category === 'consumable' ? 'med' : 'tool' }); }
-    else if (l.item === 'stim_injector') { c.stims += n; continue; }
-    else continue;
-    c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + (n > 1 ? n + ' × ' : '') + (l.name || WEAPON[l.item]?.name || ITEM[l.item]?.name) + (rarity !== 'standard' && WEAPON[l.item] ? ' (' + rarity + ')' : '') + '.' });
-  }
+  for (const l of t.loot || []) giveLoot(g, l);
   if (t.endScene?.summary) { g.story.journal.push(t.endScene.summary); noteScene(g, g.story.scene.title, t.endScene.summary); }
   for (const op of (t.memory || []).slice(0, 16)) applyMemOp(g, op);
   // Chapters (recursive summaries): when due, the Narrator writes one; if it keeps not doing so, the engine folds the

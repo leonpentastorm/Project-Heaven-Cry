@@ -185,6 +185,8 @@ export function tokenVals(u, opt) {
 //   .phc-m-pop        a button or badge that appears (Level up): pops in, then .phc-m-glow pulses its outline
 //   .phc-m-flip       a value that just changed (a reroll result): flips in
 export const MOTION_MS = 180;
+// Entrances fill backwards only: a transform animation still filling forwards turns its element into the containing
+// block of every position: fixed child (Chrome), so a tooltip inside an animated tab was clipped by its column.
 export const MOTION_CSS = [
   '@keyframes phcMFadeIn{from{opacity:0}to{opacity:1}}@keyframes phcMFadeOut{from{opacity:1}to{opacity:0}}',
   '@keyframes phcMCardIn{from{opacity:0;transform:translateY(22px) scale(.965)}to{opacity:1;transform:none}}',
@@ -197,13 +199,13 @@ export const MOTION_CSS = [
   '@keyframes phcMFlip{0%{opacity:0;transform:rotateX(90deg)}100%{opacity:1;transform:none}}',
   '.phc-m-backdrop{animation:phcMFadeIn .2s ease-out both}',
   '.phc-m-backdrop.phc-m-closing{animation:phcMFadeOut ' + MOTION_MS + 'ms ease-in both;pointer-events:none}',
-  '.phc-m-card{animation:phcMCardIn .3s cubic-bezier(.2,.8,.2,1) both}',
+  '.phc-m-card{animation:phcMCardIn .3s cubic-bezier(.2,.8,.2,1) backwards}',
   '.phc-m-closing .phc-m-card{animation:phcMCardOut ' + MOTION_MS + 'ms ease-in both}',
-  '.phc-m-rise{animation:phcMRise .32s cubic-bezier(.2,.8,.2,1) both}',
-  '.phc-m-tab-l{animation:phcMFromL .24s cubic-bezier(.2,.8,.2,1) both}.phc-m-tab-r{animation:phcMFromR .24s cubic-bezier(.2,.8,.2,1) both}',
-  '.phc-m-tip{animation:phcMDrop .14s ease-out both}',
-  '.phc-m-pop{animation:phcMPop .36s cubic-bezier(.2,.8,.2,1) both,phcMGlow 2.4s ease-in-out .4s infinite}',
-  '.phc-m-flip{animation:phcMFlip .3s ease-out both}',
+  '.phc-m-rise{animation:phcMRise .32s cubic-bezier(.2,.8,.2,1) backwards}',
+  '.phc-m-tab-l{animation:phcMFromL .24s cubic-bezier(.2,.8,.2,1) backwards}.phc-m-tab-r{animation:phcMFromR .24s cubic-bezier(.2,.8,.2,1) backwards}',
+  '.phc-m-tip{animation:phcMDrop .14s ease-out backwards}',
+  '.phc-m-pop{animation:phcMPop .36s cubic-bezier(.2,.8,.2,1) backwards,phcMGlow 2.4s ease-in-out .4s infinite}',
+  '.phc-m-flip{animation:phcMFlip .3s ease-out backwards}',
   // Reduce motion (the app's own toggle): every slide becomes a plain fade.
   '.phc-rm .phc-m-card,.phc-rm .phc-m-rise,.phc-rm .phc-m-tab-l,.phc-rm .phc-m-tab-r,.phc-rm .phc-m-tip,.phc-rm .phc-m-pop,.phc-rm .phc-m-flip{animation:phcMFadeIn .15s ease-out both}',
   '.phc-rm .phc-m-closing .phc-m-card{animation:phcMFadeOut .15s ease-in both}',

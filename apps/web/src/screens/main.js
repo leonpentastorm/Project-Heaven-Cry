@@ -36,7 +36,7 @@ const ARMOUR_NAMES = ['No armour', 'Light (Class I)', 'Medium (Class II)', 'Heav
 const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V'];
 const SLOTS = [['main', 'MAIN HAND'], ['off', 'OFF HAND'], ['head', 'HEAD'], ['headAcc', 'HEAD ACC.'], ['outer', 'OUTER TORSO'], ['inner', 'INNER TORSO'], ['lower', 'LOWER TORSO'],
   ['legs', 'LEGS'], ['hands', 'HANDS'], ['feet', 'FOOTWEAR'], ['veil', 'VEIL'], ['pack', 'BACKPACK']];
-const KIND = { weapon: 'WEAPON', ammo: 'AMMO', med: 'MED', tool: 'TOOL', focus: 'FOCUS', food: 'FOOD', loot: 'LOOT' };
+const KIND = { weapon: 'WEAPON', ammo: 'AMMO', med: 'MED', tool: 'TOOL', focus: 'FOCUS', food: 'FOOD', loot: 'LOOT', plot: 'PLOT ITEM' };
 const REGIONS = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
   ['ENGINEERS’ SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]];
 const TRAIT = {}; D.traits.forEach((t) => { TRAIT[t.id] = t; });
@@ -264,10 +264,13 @@ export class MainLogic extends DCLogic {
           else if (def.slot === 'off_hand') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) });
           else if (def.category === 'armour') acts.push({ key: 'w', label: 'Wear', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'worn' }) });
           else if (def.category === 'mod') acts.push({ key: 'f', label: 'Fit', go: () => act({ type: 'gear/mod', charId: c.id, idx: pi }) });
+          else if (it.kind === 'plot') { // a plot item: hand it to someone in the party, or drop it
+            Object.values(g.characters).filter((x) => x.id !== c.id && !x.dead).forEach((x) => acts.push({ key: 'g' + x.id, label: 'Give to ' + x.name, go: () => act({ type: 'gear/give', charId: c.id, idx: pi, to: x.id }) }));
+            acts.push({ key: 'd', label: 'Drop', go: () => act({ type: 'gear/drop', charId: c.id, idx: pi }) }); }
         }
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
         return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
-          note: wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, wdef.grants ? wdef.grants.name + ': ' + wdef.grants.text : ''].filter(Boolean).join(' · ') : it.note || def.text || '', acts, hasActs: acts.length > 0, src: it }]; }
+          note: wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, wdef.grants ? wdef.grants.name + ': ' + wdef.grants.text : ''].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || '', acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
@@ -291,8 +294,11 @@ export class MainLogic extends DCLogic {
           wd.weight_kg + ' kg · ' + Math.round((wd.price_credits || 0) * (RARITY[r]?.price || 1)) + ' credits'].filter(Boolean), lore: wd.lore || '' }; };
     const itemTip = (id, extra = {}) => { const it = ITEM[id]; if (!it) return null;
       return { title: it.name, sub: (it.slot ? it.slot.replace('_', ' ') : it.category || 'item'), img: artOf(id), glyph: glyphOf(id), lines: [it.text, it.weight_kg + ' kg' + (it.price_credits ? ' · ' + it.price_credits + ' credits' : '')].filter(Boolean), lore: '', ...extra }; };
-    const tipHandlers = (key) => ({ hover: (e) => { const r = e.currentTarget.getBoundingClientRect(), x = r.right + 270 > window.innerWidth ? Math.max(8, r.left - 268) : r.right + 8;
-      if (!this.state.tip || this.state.tip.key !== key) this.setState({ tip: { key, x, y: Math.min(r.top, window.innerHeight - 280) } }); }, leave: () => this.setState({ tip: null }) });
+    // Tooltips sit in a fixed layer at the screen's root (no column clips them): beside the hovered row, flipped left
+    // when there's no room on the right, and growing down from the row in the top half of the screen, up from it below.
+    const tipHandlers = (key) => ({ hover: (e) => { const r = e.currentTarget.getBoundingClientRect(), W = window.innerWidth, H = window.innerHeight;
+      const x = r.right + 270 > W ? Math.max(8, Math.min(W - 268, r.left - 268)) : r.right + 8, up = r.top > H / 2;
+      if (!this.state.tip || this.state.tip.key !== key) this.setState({ tip: { key, x, ...(up ? { b: Math.max(8, H - r.bottom) } : { y: Math.max(8, r.top) }) } }); }, leave: () => this.setState({ tip: null }) });
     const menuFor = (key) => ({ open: S.gearMenu === key, toggle: () => this.setState({ gearMenu: S.gearMenu === key ? null : key, tip: null }) });
     const pk = c ? packOf(c) : [];
     const cand = (pred, label, to) => pk.map((it, i) => ({ it, i })).filter(({ it }) => pred(it)).map(({ it, i }) => ({ key: to + i, label: label + ' ' + it.name, go: () => { act({ type: 'gear/equip', charId: c.id, idx: i, to }); this.setState({ gearMenu: null }); } }));
@@ -324,14 +330,16 @@ export class MainLogic extends DCLogic {
     });
     // (backpack rows: hover for details, click for actions)
     const rigView = rig.map((r) => { const key = 'rig-' + r.key, it = r.src || {}, id = it.item || it.id;
-      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : '▪', img: '', lines: [r.note, r.kg].filter(Boolean), lore: '' };
+      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: '', lines: [r.note, r.kg].filter(Boolean), lore: '' };
       const acts = [...r.acts.map((a) => ({ ...a, go: () => { a.go(); this.setState({ gearMenu: null }); } })), ...((it.mags || it.calibre) && canLoad && !gearLocked ? [{ key: 'load', label: 'Load magazines', go: () => { act({ type: 'gear/load', charId: c.id }); this.setState({ gearMenu: null }); } }] : [])];
       return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? 'Change gear after the fight.' : 'Nothing to do with it here yet.',
         img: tips[key].img, hasImg: !!tips[key].img, noImg: !tips[key].img, glyph: tips[key].glyph,
         style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 8px; align-items: center; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 12px; background: ' + (S.gearMenu === key ? '#1C2536' : '#0D1119') + '; border: 1px solid #1C2536' }; });
+    // Plot items (the Narrator's story things) get their own group under the backpack.
+    const plotView = rigView.filter((r) => r.src && r.src.kind === 'plot'), packView = rigView.filter((r) => !(r.src && r.src.kind === 'plot'));
     const TIP = S.tip && tips[S.tip.key];
     const tipCard = TIP ? { ...TIP, lines: TIP.lines.map((t, i) => ({ key: i, t })), hasImg: !!TIP.img, noImg: !TIP.img, hasLore: !!TIP.lore,
-      style: 'position: fixed; z-index: 40; left: ' + S.tip.x + 'px; top: ' + S.tip.y + 'px; width: 260px; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); pointer-events: none' } : null;
+      style: 'position: fixed; z-index: 40; left: ' + S.tip.x + 'px; ' + (S.tip.b != null ? 'bottom: ' + S.tip.b + 'px; max-height: calc(100vh - ' + (S.tip.b + 8) + 'px)' : 'top: ' + S.tip.y + 'px; max-height: calc(100vh - ' + ((S.tip.y || 0) + 8) + 'px)') + '; overflow: hidden; box-sizing: border-box; width: 260px; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); pointer-events: none' } : null;
 
     const lvlOf = (k) => { let l = D.wm.levels[0]; D.wm.levels.forEach((x) => { if (k >= x.kills) l = x; }); return l; };
     const mastery = c ? Object.entries(c.weaponKills).filter(([, k]) => k > 0).map(([fid, kills]) => {
@@ -427,12 +435,19 @@ export class MainLogic extends DCLogic {
     // on a rerolled check, replays the throw and shows the new result until the player presses Continue. The last check
     // shown is kept, so the table survives the round clearing its checks while the player is still looking at it.
     const keepOpen = (k) => !!(k && k.roll && k.roll.rerolled);
-    const watchCk = !S.dice ? g.checks.find((k) => (!k.done || (keepOpen(k) && S.watchSeen === k.id)) && charOf(k.charId) && charOf(k.charId).owner !== me && !(S.dismissed || {})['k' + k.id]) : null;
+    // Someone else's check opens here only once its owner has thrown (everyone then watches the same roll land, and an
+    // Echo reroll replays for all); until then the others get a quiet "Waiting for … to roll …" line, not the table.
+    // A thrown check stays open for a watcher who saw it, even once its owner accepts, until they close it.
+    const watchCk = !S.dice ? g.checks.find((k) => k.roll && (!k.done || S.watchSeen === k.id) && charOf(k.charId) && charOf(k.charId).owner !== me && !(S.dismissed || {})['k' + k.id]) : null;
+    const waitRolls = g.checks.filter((k) => !k.done && !k.roll && charOf(k.charId) && charOf(k.charId).owner !== me).map((k) => ({ key: 'w' + k.id,
+      text: 'Waiting for ' + charOf(k.charId).name + ' to roll ' + k.skills.map((i) => SK[i]?.name || i).join(' + ') + (k.poi ? '' : ' (TN ' + k.tn + ')') + '…' }));
+    // My own Narrator check pops the table up once (the bar above the chat reopens it after a close).
+    if (!S.dice) { const nk = myChecks.find((k) => !k.poi && !k.roll && !(S.autoOpened || {})[k.id]); if (nk) queueMicrotask(() => { if (!this.state.dice) this.setState({ dice: nk.id, autoOpened: { ...(this.state.autoOpened || {}), [nk.id]: true } }); }); }
     const ownCk = S.dice ? g.checks.find((k) => k.id === S.dice) || (S.diceSnap && S.diceSnap.id === S.dice && (keepOpen(S.diceSnap) || (S.closing || {}).dice) ? S.diceSnap : null) : null;
     const ck = S.dice ? ownCk : watchCk;
     if (S.dice && !(S.closing || {}).dice && (!ownCk || (ownCk.done && !keepOpen(ownCk)))) queueMicrotask(() => { if (!(this.state.closing || {}).dice) this.setState({ dice: null }); });
     if (ck && ck.roll) this.state.diceSnap = ck; // a cache, not a render input of its own
-    if (ck && !S.dice && !ck.done && S.watchSeen !== ck.id) this.state.watchSeen = ck.id;
+    if (ck && !S.dice && ck.roll && S.watchSeen !== ck.id) this.state.watchSeen = ck.id;
     const diceOwner = ck ? playerOf(charOf(ck.charId)?.owner) : null, watching = !!(ck && !S.dice);
     let roll = { kicker: '', head: '', headStyle: '', pre: '', die: '', math: '', verdict: '', verdictStyle: '', after: '' };
     if (ck) {
@@ -831,11 +846,11 @@ export class MainLogic extends DCLogic {
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c),
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
-      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !rig.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
       hero, stream, pushes,
-      hasChecks: actions.length > 0, actions,
+      hasChecks: actions.length > 0, actions, waitRolls, hasWaitRolls: waitRolls.length > 0,
       dice: !!ck, roll, diceCls: modalCls(this, 'dice'),
       closeDice: () => { const id = ck && ck.id; if (watching) return closeAnim(this, 'dice', () => this.setState({ dismissed: { ...(this.state.dismissed || {}), ['k' + id]: true } }));
         const accept = !!(ck && ck.roll && !ck.done); closeAnim(this, 'dice', () => { if (this.state.dice === id) this.setState({ dice: null }); }); if (accept) act({ type: 'check/accept', checkId: id }); },

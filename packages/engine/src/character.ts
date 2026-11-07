@@ -83,7 +83,9 @@ export const gearHas = (c: Character, op: string) => gearEffects(c).some((e) => 
 export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
 export interface Injury { loc: InjuryLoc; side?: 'left' | 'right' }
 export interface PackItem {
-  id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string;
+  id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot' | 'plot'; weapon?: string; note?: string;
+  /** A plot item's description (kind 'plot': the Narrator's own thing; no weight, no stats, never equipped). */
+  text?: string;
   /** Special ammo (rules 1.3): the type of each spare magazine (null standard), and of loose rounds; a stowed weapon's loaded rounds. */
   magTypes?: (string | null)[]; ammoType?: string | null; loaded?: number;
   /** Spare magazines for `weapon`: rounds in each. Loose rounds use `calibre` and qty = rounds. `item` names the items.json entry for weight. */
@@ -114,12 +116,25 @@ export function deriveCreation(skills: Record<string, number>, aSet: Record<stri
   return { attr, core, spent, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
 
+/** A music trait: one whose effects set the character's song (op song_state). A character holds at most one. */
+export const isMusicTrait = (id: string) => !!TRAITS.find((t) => t.id === id)?.effects?.some((e: any) => e?.op === 'song_state');
+export const musicTraitCount = (traits: string[] | null | undefined) => (traits || []).filter(isMusicTrait).length;
+/** Why a character can't gain this trait now (null: it can): any path that adds a trait after creation asks this. */
+export function traitGainError(have: string[] | null | undefined, id: string): string | null {
+  const held = have || [];
+  if (held.includes(id)) return 'Already held.';
+  if (isMusicTrait(id) && musicTraitCount(held) > 0) return 'Only one music trait.';
+  const t = TRAITS.find((x) => x.id === id), ex = held.find((h) => (t?.excludes || []).includes(h) || (TRAITS.find((x) => x.id === h)?.excludes || []).includes(id));
+  return ex ? (t as any)?.name + ' and ' + ((TRAITS.find((x) => x.id === ex) as any)?.name || ex) + ' can\'t be taken together.' : null;
+}
+
 /** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
   if (!s.origin) return 'Pick an origin.';
   if (!s.kit) return 'Pick a starting kit.';
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
+  if (musicTraitCount(s.traits) > 1) return 'Only one music trait.';
   // Traits marked as excluding each other can't be taken together (spec: Traits).
   for (const t of s.traits || []) { const ex = (TRAITS.find((x) => x.id === t)?.excludes || []).find((x) => (s.traits || []).includes(x)); if (ex) return (TRAITS.find((x) => x.id === t) as any)?.name + ' and ' + ((TRAITS.find((x) => x.id === ex) as any)?.name || ex) + ' can\'t be taken together.'; }
   const whole = (o: Record<string, unknown> = {}) => Object.values(o).every((v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 10);
@@ -429,8 +444,19 @@ export function comboEligible(c: Character, perkId: string): string | null {
 
 // ---------- equipping (spec: Hands; Slot armour) ----------
 /** Move a pack item into the main hand, the off hand, or its armour slot; what was there goes back to the pack. Returns an error or null. */
+// ---------- plot items (spec: Plot items): story things the engine has no entry for ----------
+/** A plot item's id: "plot:" and its name as a slug, so the same thing given twice stacks. */
+export const plotId = (name: string) => 'plot:' + (String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40) || 'thing');
+/** A plot item for the pack: the Narrator's name and one-line description; weighs nothing, does nothing in the engine. */
+export function plotItem(name: string, text = '', qty = 1): PackItem {
+  const n = String(name || '').trim().slice(0, 60) || 'Something';
+  return { id: plotId(n), name: n, qty: Math.max(1, Math.round(qty)), kind: 'plot', ...(String(text || '').trim() ? { text: String(text).trim().slice(0, 200) } : {}) };
+}
+export const isPlotItem = (it: PackItem | null | undefined) => !!it && it.kind === 'plot';
+
 export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
+  if (isPlotItem(it)) return 'A plot item can\'t be equipped.';
   const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
   const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
   const putBack = (id: string, st: GearState | undefined, loaded?: number) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}), ...(loaded ? { loaded } : {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };

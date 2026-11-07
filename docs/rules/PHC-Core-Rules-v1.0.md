@@ -446,6 +446,8 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 
 **Magazines and rounds are inventory.** The backpack lists loaded, part-loaded and empty magazines, and loose rounds, separately, each with its weight. Reload only takes a magazine with rounds in it. **Picking up** (1 AP) takes everything on your tile or one adjacent tile: dropped magazines, empty or not, go back in the pack. **Loading** a magazine from loose rounds costs 1 AP per 5 rounds in combat (load part of one if you're short of AP), and nothing out of combat. Starting kits also carry loose rounds: 24 for the pistols, 48 rifle rounds for the line soldier, 12 for the revolver. Provisional (item 58).
 
+**Plot items.** The Narrator's loot names a weapon or item id the engine knows, and the character gets that thing (with the Narrator's in-world name, if given). Anything else (an unknown or empty id) becomes a **plot item**: the Narrator's name and one-line description, no weight, no stats, never equipped, listed under PLOT ITEMS in the backpack. A player can give one to another character or drop it out of a fight; the Narrator takes one back when the story uses it up (its plot id with a negative quantity). The log line always says what was actually given.
+
 **Starter weapons** (damage before multipliers; range in tiles)
 
 | Weapon | Type | Damage | Range | Magazine | Heat limit | Modes | Weight |
@@ -1282,7 +1284,7 @@ Each character gets one spotlight per scene, and one per fight. A song that is a
 
 **The favourite song** is a YouTube link on the character's identity (Favourite Song), with its title, artist, start time and length. The link must allow embedding. What a player picks is up to the player.
 
-**Music traits** (Soundscape of the Soul, Headbanger, Underground Sound; see the traits) add to this:
+**Music traits** (Soundscape of the Soul, Headbanger, Underground Sound; see the traits) add to this. A character holds **only one music trait**: they exclude each other, at creation and on any later gain.
 
 - You start with a **Musek Blestor** (0.3 kg, 120 credits).
 - **Play my song:** 2 AP in a fight; free once per scene outside one. It can take over another holder's pinned song, but never a spotlight.
