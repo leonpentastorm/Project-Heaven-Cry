@@ -2,7 +2,7 @@
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
-import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -153,6 +153,16 @@ MEMORY (you keep the campaign's records; a campaign can run 50 hours)
 STORY MOMENTS
 - Some campaigns have illustrated moments. When the story reaches one the turn lists as open, set moment to its id: the players see the picture right after your narration. Once each; otherwise an empty string.
 
+OUT OF CHARACTER (OOC)
+- Players sometimes step out of the story to ask you something ("what do we do now?", "is the quest done?"). Those questions come in their own block, OUT-OF-CHARACTER QUESTIONS, never in the transcript. Answer them in ooc: plain, short and friendly, as a game master at the table, not as the story. Name the current objectives, give two or three concrete options (who to talk to, where to go and how: "the exit at P6 leads to the rear pad"; what to try: "the hatch panel has approaches"), and what the game can do. At most about 80 words. No prose, no hidden objectives, no secrets. ooc is an empty string when nobody asked.
+
+MISSIONS AND PACING
+- When the campaign has missions, the turn carries a MISSION block: the active mission, its goal, its open objectives. Keep them in mind every turn and move the story toward them; every scene offers a visible way forward.
+- When players stall, repeat themselves or ask what to do, name two or three concrete options tied to the open objectives, first in character through the scene. If the confusion repeats, or anyone asks OOC, answer plainly in ooc.
+- When an objective is clearly achieved (see its "done when" in MISSIONS), mark it in missions[] that same turn (status done, or failed when it can no longer happen) and frame the next step; don't linger on a finished scene. Reveal a hidden objective (status revealed) when the party finds it. Mark optional objectives too.
+- When a mission completes, close the scene (endScene) and open the next mission's scene. When a closed mission offers several next missions, set missionNext once the story has decided. You may add side jobs (side[]: id, title, text; status done or failed to settle one); you never edit main missions.
+- Never resolve or skip the players' choices for them: give options, not answers.
+
 SCENES
 - sceneTitle: set a short new title (2-6 words) when the scene changes location or time; otherwise an empty string. endScene: when a scene closes, a 1-3 sentence summary of what matters later (facts, NPCs, promises, open threads); otherwise null.
 
@@ -185,6 +195,7 @@ export function campaignPrompt(g: GameState): string {
     c.cast?.length ? '\nCAST:\n' + c.cast.map((x) => `- ${x.name} (${x.role}): ${x.text}`).join('\n') : '',
     '\nZONES (move the party between them with travel):\n' + zones,
     act ? '\nACTS:\n' + c.acts!.map((a) => (a === act ? '▶ NOW: ' : '- ') + a.title + ': ' + a.summary).join('\n') : '',
+    missionsCampaign(c) ? '\n' + missionsCampaign(c) : '',
     c.encounters?.some((e) => here(e.zone)) ? '\nPREPARED FIGHTS (use when the story gets there; adapt freely):\n' + c.encounters.filter((e) => here(e.zone)).map((e) => `- ${e.name} in ${e.zone}, ${e.difficulty}: ${e.when} Enemies: ${e.enemies.map((f) => f.name + ' (' + f.tier + ', ' + f.weapon + (f.at ? ', at ' + f.at : '') + ')').join(', ')}.`).join('\n') : '',
     c.lore === 'docs/lore/MPAT-and-M813.md' ? '\nCAMPAIGN SOURCE (the canon behind this campaign; the incident is history the players are about to live):\n' + clean(drop(m813, ['Use in the game'])) : c.lore ? '\nCAMPAIGN LORE:\n' + c.lore : '',
     '\nWORLD BIBLE (Narrator only; never reveal its truths outright; only the parts this campaign needs):\n' + clean(bibleFor(g)),
@@ -255,6 +266,7 @@ export function turnPrompt(g: GameState): string {
   const job = w.kind === 'opening'
     ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
     : w.kind === 'round' ? `Round ${g.story.round} has closed: every player has used their turn. Answer what needs you since your last turn (lines said, examines, attempts, travel requests, anyone spotted), all together. Request checks where outcomes are uncertain.`
+    : w.kind === 'epilogue' ? epilogueJob(g)
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
     : `The fight is over. The engine's report:\n${w.note || ''}\nNarrate the aftermath from these moments (who did what, who is hurt and where they stand), rule on anything said or attempted mid-fight, then open the next round. The engine already gave combat XP.`;
   const hurt = Object.values(g.characters).map((c) => `${c.name}: ${c.dead ? 'dead' : c.hp + '/' + maxHp(c) + ' HP, Echo ' + c.echo + ', ' + c.xp + ' XP (level ' + (c.level + 1) + ' at ' + xpForLevel(c.level + 1) + ')'}${c.injuries?.length ? ', injured ' + c.injuries.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(', ') : ''}${c.dead ? '' : liveMagic(g, c)}`).join('; ') + `. Mana here: ${g.story.mana ?? 15} (${manaBand(g.story.mana ?? 15).id})`;
@@ -274,8 +286,10 @@ export function turnPrompt(g: GameState): string {
   const lookFor = [recent, g.story.scene.title, zoneMap(g).name, people, objs.map((o) => o.name).join(' ')].join('\n');
   const active = memoryBlock(selectMemory({ ...g }, lookFor, ACTIVE_MEMORY_CHARS));
   const chapterJob = chapterDue(g) ? `\n\nCHAPTER DUE: also fill chapter. Roll these ${SCENES_PER_CHAPTER} oldest scenes into one chapter (title, and a summary of at most 1,200 characters keeping names, promises, debts, deaths and open questions), and rewrite the saga, the story so far, in at most 3,500 characters with this chapter folded in:\n${M.scenes.slice(0, SCENES_PER_CHAPTER).map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n')}` : '';
+  const mission = missionBrief(g), opening = w.kind === 'epilogue' ? '' : actOpening(g);
+  const ooc = (g.story.oocAsk || []).map((q) => `- ${Object.values(g.characters).filter((c) => c.owner === q.who).map((c) => c.name).join(' & ') || 'A spectator'}: ${q.text}`).join('\n');
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
-  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${redo}`;
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
 }
 
 /** A caster's live magic for PARTY CONDITION: MP, Evoker charge and cores, Flux, Strain, a held Outburst. */
@@ -396,6 +410,11 @@ export function submitTool(g: GameState) {
   schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
   schema.properties.patrons = opt({ charId: S, patron: { type: 'string', description: 'patron id to make a pact' }, devotion: { type: 'integer', description: 'Devotion change' } }, ['charId']);
   schema.properties.patronMood = opt({ patron: S, tn: I }, ['patron', 'tn']);
+  // OOC and missions: optional and enum-free like the fields above (the tool never changes, the cache holds).
+  schema.properties.ooc = { type: 'string', description: 'A plain out-of-character answer to OUT-OF-CHARACTER QUESTIONS (at most about 80 words); empty when none' };
+  schema.properties.missions = opt({ mission: { type: 'string', description: 'mission id' }, objective: { type: 'string', description: 'objective id; omit to settle or reveal the whole mission' }, status: { type: 'string', description: 'done, failed or revealed' }, note: S }, ['mission', 'status']);
+  schema.properties.missionNext = { type: 'string', description: 'The next mission id, when a closed mission offers several (CHOOSE NEXT); else omit' };
+  schema.properties.side = opt({ id: S, title: S, text: S, status: { type: 'string', description: 'open, done or failed' } }, ['id']);
   schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }
