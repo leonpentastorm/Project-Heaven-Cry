@@ -143,7 +143,10 @@
         }
       ],
       "adjudication": "hybrid",
-      "excludes": [],
+      "excludes": [
+        "symbol_of_order",
+        "rogue_element"
+      ],
       "requires": []
     },
     {
@@ -379,7 +382,8 @@
       "effects": [
         {
           "op": "weapon_mastery_rate",
-          "value_pct": 25
+          "value_pct": 25,
+          "context": "named_weapon_family"
         },
         {
           "op": "narrator",
@@ -1264,7 +1268,7 @@
         },
         {
           "op": "xp_mod",
-          "source": "conversation",
+          "source": "dialogue",
           "value_pct": -100
         },
         {
@@ -1447,7 +1451,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [
-        "rogue_element"
+        "rogue_element",
+        "mind_without_fog"
       ],
       "requires": []
     },
@@ -1490,7 +1495,8 @@
       ],
       "adjudication": "hybrid",
       "excludes": [
-        "symbol_of_order"
+        "symbol_of_order",
+        "mind_without_fog"
       ],
       "requires": []
     },

@@ -59,5 +59,37 @@
       "endurance": 7,
       "spare_mags": 4
     }
+  ],
+  "companions": [
+    {
+      "id": "drone",
+      "name": "Combat drone",
+      "kind": "drone",
+      "hp": 40,
+      "defense": 12,
+      "attack_bonus": 3,
+      "armour": 5,
+      "movement": 2,
+      "weapon": "service_pistol",
+      "tags": [
+        "electronic"
+      ],
+      "provisional": true,
+      "text": "A Drone Handler's drone: it acts right after its owner, on the owner's orders (move, attack, Overwatch). At 0 HP it is destroyed, not Downed; Field Repair or a workshop brings it back."
+    },
+    {
+      "id": "beast",
+      "name": "Beast companion",
+      "kind": "beast",
+      "hp": 50,
+      "defense": 12,
+      "attack_bonus": 3,
+      "armour": 0,
+      "movement": 2.5,
+      "weapon": "beast_bite",
+      "tags": [],
+      "provisional": true,
+      "text": "A Beast Handler's animal: it acts right after its owner, on the owner's orders. At 0 HP it is out (destroyed for the fight); rest and care bring it back."
+    }
   ]
 }

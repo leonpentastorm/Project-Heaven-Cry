@@ -346,7 +346,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
-      "text": "50% chance each action targets someone at random.",
+      "text": "Each attack has a 50% chance to go at someone at random (anyone else it could attack).",
       "effects": [
         {
           "op": "stat_mod",
@@ -472,7 +472,8 @@
         "set_by": "source"
       },
       "ends_on": [
-        "source rule"
+        "source rule",
+        "end of fight"
       ],
       "stacks": false,
       "adjudication": "engine"
@@ -788,6 +789,104 @@
       ],
       "stacks": true,
       "adjudication": "hybrid"
+    },
+    {
+      "id": "suppressed",
+      "name": "Suppressed",
+      "kind": "debuff",
+      "family": "body",
+      "save": "body",
+      "text": "−1 AP and no reactions (Spray and Pray; lighter than Pinned).",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap",
+          "value": -1
+        },
+        {
+          "op": "forbid",
+          "action": "reaction"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "adjudication": "engine",
+      "stacks": false,
+      "provisional": true
+    },
+    {
+      "id": "withdrawing",
+      "name": "Withdrawing",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "+2 Defense until the end of your next turn (a fighting retreat).",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "adjudication": "engine",
+      "stacks": false,
+      "provisional": true
+    },
+    {
+      "id": "lowered",
+      "name": "Weapon lowered",
+      "kind": "debuff",
+      "family": "heart",
+      "save": "heart",
+      "text": "Your weapon is lowered (the light Disarmed): raising it costs 1 AP; until then you strike with your fists.",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "weapon_attack"
+        }
+      ],
+      "duration": {
+        "until": "raised"
+      },
+      "ends_on": [
+        "recover_weapon"
+      ],
+      "adjudication": "engine",
+      "stacks": false,
+      "provisional": true
+    },
+    {
+      "id": "last_turn",
+      "name": "Last Turn",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Standing on borrowed time (Bite the Bullet): hits add death-save failures.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "set and run by the perk"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "adjudication": "engine",
+      "stacks": false,
+      "provisional": true
     }
   ],
   "families": {

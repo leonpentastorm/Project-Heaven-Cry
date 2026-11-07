@@ -4,17 +4,19 @@ import { ARCHETYPES, CLASS, PERK, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SI
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
-  type Character, type Sheet, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
+  type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, spellTargets, type Glyph, type Zone } from './magic';
-import { type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone } from './magic';
+import { reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 import { bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, type FoeTraits } from './tactics';
+import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import './perks';
 import './classes';
 
@@ -41,6 +43,9 @@ export interface Check {
   /** What kind of check this is, for items that apply only to some (dialogue, crowd, military…; effects/core.ts
    * TAG_VOCAB), the NPC it is against, and items the Narrator says apply. Optional; the Narrator sets them. */
   tags?: string[]; target?: string; applies?: string[];
+  /** Rules 1.3 check fields: a save (kind 'save', with its family), an ally who helps (footnote: their charId), doubled
+   * stakes (Gambler), and a result the Narrator or an item settles without the die (auto). */
+  kind?: 'save'; family?: 'body' | 'brain' | 'heart'; footnote?: string; double?: boolean; auto?: 'success' | 'fail';
   /** Item modifiers that went into the roll, by name (shown in the check's head). */
   mods?: { add: number; label: string }[];
   roll?: { die: number; mod: number; total: number; ok: boolean; crit: boolean; fumble: boolean; rerolled: boolean; first?: number };
@@ -60,7 +65,9 @@ export interface GameState {
     await: 'none' | 'players' | 'narrator' | 'rolls' | 'choices';
     scene: { title: string; n: number; hooks: Hook[]; revealed: string[]; asked: Record<string, string[]>; fired: Record<string, string[]>;
       /** In a player's view only: for each of their characters, the skills with a voice hook not yet revealed to it (no lines, no TNs). */
-      voiced?: Record<string, string[]> };
+      voiced?: Record<string, string[]>;
+      /** NPCs' conditions for this scene (rules 1.3: Shaken out of combat lasts the rest of the scene), by NPC id or name. */
+      npcConds?: Record<string, string[]> };
     journal: string[]; work: NarratorWork;
     /** Where the story happens (a map id) and where each character stands on it, by tile key (spec: Grid references). */
     zone?: string; positions?: Record<string, string>;
@@ -78,7 +85,7 @@ export interface GameState {
     /** Magic on the story map (spec: Mana): glyphs and zones (and the zone they're drawn in), the mana meter, and each
      * character's Flux, Strain, held Outburst, conditions and shield between overworld actions. */
     glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number;
-    magic?: Record<string, { flux: number; strain: number; held: { design: string; stage: number; cost: number } | null; conds?: Record<string, number>; shield?: number; cast?: boolean }>;
+    magic?: Record<string, { flux: number; strain: number; held: { design: string; stage: number; cost: number } | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string> }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
     /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
@@ -95,6 +102,8 @@ export interface GameState {
     rulings?: PendingRuling[];
     /** Item state between overworld actions (units are rebuilt every action), by character: uses, per-item state. */
     ps?: Record<string, any>;
+    /** Patrons' moods: the TN of a prayer to each (12 by default; the Narrator moves it). */
+    patronMood?: Record<string, number>;
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
@@ -135,9 +144,32 @@ export function newGame(code: string, host: { id: string; name: string }, seed?:
 export type NarratorTurn = {
   narration: string; sceneTitle?: string;
   hooks?: { skill: string; tn: number; truth: string; line: string }[];
-  checks?: { charId: string; skills: string[]; tn: number; stakes: string; tags?: string[]; target?: string; applies?: string[] }[];
+  checks?: { charId: string; skills: string[]; tn: number; stakes: string; tags?: string[]; target?: string; applies?: string[]; kind?: 'save'; family?: 'body' | 'brain' | 'heart'; footnote?: string; double?: boolean; auto?: 'success' | 'fail' }[];
   /** Answers to Pending rulings (perks and traits): accepted or not; a refused story use is refunded. */
   perkRulings?: { id: string; accepted: boolean; note?: string }[];
+  // ---------- rules 1.3: optional fields for perks, traits and classes (all ignored when absent) ----------
+  /** Private lines an item owes its holder (Detective's Eye details, a Cold Read tell): shown only to that player,
+   * outside the 2-voice cap. key names the item ("perk:detectives_eye"). */
+  perkLines?: { charId: string; key?: string; text: string }[];
+  /** Conditions in the story: on an NPC (target its id or name) for the scene, or on a character for the scene, the
+   * session or the arc (Shaken for the rest of the scene, a curse until the arc ends). end: true removes it. */
+  conditions?: { target: string; id: string; scope?: 'scene' | 'session' | 'arc'; end?: boolean; note?: string }[];
+  /** State an item keeps that only the Narrator can set (a grudge's target, a cover identity, a rival, a case). */
+  traitState?: { charId: string; key: string; value: any }[];
+  /** Echo the story gives or takes (within 0..3). */
+  echo?: { charId: string; n: number; why?: string }[];
+  /** Karma awards (spec: Karma): amount, and whether the act was unlawful (traits that lock Karma read it). */
+  karma?: { charId: string; amount: number; unlawful?: boolean; why?: string }[];
+  /** The party rests (spec: Rest): short (1 hour) or long (8 hours); settlement: somewhere safe and supplied. */
+  rest?: { kind: 'short' | 'long'; settlement?: boolean } | null;
+  /** Things a character now understands (Lab Coat's identified rules, an item's nature): by name. */
+  identify?: { charId: string; what: string }[];
+  /** A tutor met (spec: Classes, advanced classes): the advanced class id it can teach. */
+  tutors?: { charId: string; classId: string }[];
+  /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or change Devotion by delta. */
+  patrons?: { charId: string; patron?: string; devotion?: number }[];
+  /** The patron's mood: the TN of prayers to it (12 by default). */
+  patronMood?: { patron: string; tn: number }[];
   overreach?: { charId: string; skill: string; push: string }[];
   xp?: { charId: string; source: string; amount: number; reason?: string }[];
   deeds?: { charId: string; perkId: string; deed: string }[];
@@ -147,8 +179,8 @@ export type NarratorTurn = {
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
   actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean }[];
   /** Place, move, update or remove people and enemies on the overworld map. */
-  npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string }[];
-  combat?: { name: string; map?: string; difficulty?: string; enemies: { name: string; tier: string; weapon: string; at?: string }[] } | null;
+  npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[] }[];
+  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string } & FoeTraits)[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
   /** Move the whole party to another zone of the campaign (its id), or "". */
@@ -187,7 +219,14 @@ export type Action =
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
   | { type: 'gear/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number }
-  | { type: 'combat/reload'; unitId: string } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
+  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both' } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
+  // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
+  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number }
+  | { type: 'combat/pray'; unitId: string; choice?: string; targetId?: string; miracle?: boolean }
+  | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
+  | { type: 'combat/hide'; unitId: string } | { type: 'combat/extinguish'; unitId: string; targetId?: string } | { type: 'combat/escape'; unitId: string } | { type: 'combat/recover'; unitId: string }
+  | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string }
+  | { type: 'gear/ammo'; charId: string; ammo: string }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
@@ -211,6 +250,10 @@ export type Action =
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
+  /** What it is and its tags (rules 1.3: human, robot, crawler…; military, hunter, no_surrender…); a prisoner who gave up. */
+  kind?: string; tags?: string[]; prisoner?: boolean;
+  /** Its scene conditions out of combat (Shaken for the rest of the scene…): id → the scene number it lasts through. */
+  conds?: Record<string, number>;
   /** HP carried from a fight it walked away from (the Proving Ground's stopped fight); absent = full. */
   hp?: number }
 
@@ -294,7 +337,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'lobby') fail('Already started.');
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
       g.phase = 'story'; g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
-      for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); if (hasEmanator(c)) c.mp = maxMp(c); }
+      for (const c of Object.values(g.characters)) { c.echo = 1; c.hp = maxHp(c); if (hasEmanator(c)) c.mp = maxMp(c); restockResources(c); } // session start counts as a long rest
       emitStory(g, 'session_start', { g, n: g.sessionN }); // 'session_start' {g, n}: start items, Echo, faction starts (lanes)
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
@@ -420,6 +463,43 @@ function reduce(g: GameState, a: Action, by: string) {
       c!.classId = a.classId;
       push(g, { kind: 'system', text: c!.name + ' earns a class: ' + CLASS[a.classId].name + '.' });
       return;
+    }
+    case 'levelup/advanced': {
+      // Learning an advanced class (spec: Classes): 15 + 9 in its parents' signatures and a tutor the Narrator placed.
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      const adv = (classesJ as any).advanced?.find((x: any) => x.id === a.classId);
+      const why = advancedClassError(c!, a.classId, adv); if (why) fail(why);
+      c!.advancedClass = a.classId;
+      push(g, { kind: 'system', text: c!.name + ' learns the ' + adv.name + ': ' + (adv.moves || []).map((m: any) => m.name).join(', ') + '.' });
+      return;
+    }
+    case 'rest': {
+      if (!isHost(g, by)) fail('Only the host calls a rest.');
+      if (g.phase !== 'story') fail('Rest out of combat.');
+      applyRest(g, a.kind === 'long' ? 'long' : 'short'); return;
+    }
+    case 'story/pray': {
+      // A prayer in the story (spec: Patrons and prayer): the patron is the Narrator's to play, so it is a ruling.
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase !== 'story') fail('In a fight, pray on your turn (3 AP).');
+      if (!c!.patron || !PATRON[c!.patron]) fail('You have no patron.'); if ((c!.skills.faith || 0) < 3) fail('Prayer needs Faith 3.');
+      const p = PATRON[c!.patron!], text = String(a.text || '').trim().slice(0, 300);
+      const die = d20(g.rng), m = mod(c!.skills.faith || 0) + Math.floor(devotionOf(c!) / 2), tn = g.story.patronMood?.[p.id] ?? 12, ok = die === 20 || (die !== 1 && die + m >= tn);
+      if (die === 1) changeDevotion(c!, -1);
+      push(g, { kind: 'check', charId: c!.id, ok, head: 'FAITH · PRAYER TO ' + p.name.toUpperCase() + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ HEARD' : '✕ SILENCE'), text: c!.name + ' prays' + (text ? ': "' + text + '"' : '.') });
+      if (ok) pendRuling(g, c!, 'patron:' + p.id, c!.name + ' prayed and was heard: ' + p.name + ' answers with a Blessing (' + (p.blessings || []).map((b: any) => b.name).join(', ') + ') × ' + (1 + 0.1 * (c!.skills.faith || 0)).toFixed(1) + (text ? '. They asked: "' + text + '"' : ''));
+      g.story.needs = true; closeRoundIfDone(g); return;
+    }
+    case 'gear/ammo': {
+      // Load special rounds (rules 1.3): fill the loaded magazine with carried rounds of that type (out of combat, free).
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Load special rounds out of combat.');
+      const type = ammoId(a.ammo) || ''; if (!type || (type !== 'standard' && !AMMO_TYPES[type])) fail('No such ammo type.');
+      const w = WEAPON[c!.weapon]; if (!w || w.magazine == null || !w.ammo) fail('Your weapon takes no rounds.');
+      if (type === 'standard') { c!.loadedType = null; push(g, { kind: 'system', text: c!.name + ' loads standard rounds.' }); return; }
+      const pack = packOf(c!).map((x) => ({ ...x })), it = pack.find((x) => (x.item || x.id) === 'ammo_' + type && x.qty > 0); if (!it) fail('You carry no ' + type.replace(/_/g, '-') + ' rounds.');
+      const n = Math.min(it!.qty, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!); it!.qty -= n; c!.loaded = n; c!.loadedType = type; c!.pack = pack.filter((x) => x.qty > 0 || x.mags);
+      push(g, { kind: 'system', text: c!.name + ' loads ' + n + ' ' + type.replace(/_/g, '-') + ' rounds.' }); return;
     }
     case 'levelup/perk': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
@@ -577,14 +657,14 @@ function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   const tags = [...(ck.tags || []), ...zoneTags(g)], cctx = { tags, check: ck, target: ck.target, applies: ck.applies || [], roll: 'check' };
   const sk = ck.skills.map((s) => ({ s, m: mod(c.skills[s] || 0) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
   const mods = sk.map((x) => x.m + x.it.add), low = Math.min(...mods), lowIx = mods.indexOf(low);
-  const whole = checkQuery({ c }, ck, cctx);
+  const whole = [...checkQuery({ c }, ck, cctx), ...storyCondMods(g, c, ck)];
   // 'check_mod' {c, ck, tags, add: CheckMod[], tn}: handlers push { add, label } or change tn (tn_mod, in the ladder).
   const cm: any = emitStory(g, 'check_mod', { c, ck, tags, add: [] as { add: number; label: string }[], tn: ck.tn, g });
   const itemMods = [...sk[lowIx].it.labels, ...whole, ...cm.add];
   const m = low + 2 * ck.skills.filter((s, i) => i !== lowIx && (c.skills[s] || 0) > 0).length + whole.reduce((t, x) => t + x.add, 0) + cm.add.reduce((t: number, x: any) => t + x.add, 0);
   const tn = Math.max(TN_LADDER[0], Math.min(TN_LADDER[TN_LADDER.length - 1] + 4, cm.tn ?? ck.tn));
   // 'check_post' {c, ck, die, total, tn, ok, crit, fumble, auto, double}: auto 'success'/'fail', a floor, a reroll.
-  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: null as null | 'success' | 'fail', labels: [] as string[], g });
+  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: (ck.auto || null) as null | 'success' | 'fail', labels: [] as string[], g });
   const die = cp.die, total = die + m, crit = die === 20 && cp.auto !== 'fail', fumble = die === 1 && cp.auto !== 'success';
   const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : crit || (!fumble && total >= tn);
   const first = reroll ? ck.roll!.die : undefined;
@@ -598,7 +678,88 @@ function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
 /** Tags of the zone the story is in (terrain, in_city, urban…; campaign zones may set them), for items gated on them. */
 export function zoneTags(g: GameState): string[] {
   const z: any = campaignOf(g)?.zones.find((x) => x.id === g.story.zone); if (!z) return [];
-  return [...(z.tags || []), ...(z.terrain ? ['terrain:' + z.terrain] : []), ...(z.in_city ? ['in_city'] : z.in_city === false ? ['outside_city'] : []), ...(z.urban ? ['urban'] : [])];
+  return [...(z.tags || []), ...(z.terrain ? ['terrain:' + z.terrain] : []), ...(z.in_city ? ['in_city'] : z.in_city === false ? ['outside_city'] : []), ...(z.urban ? ['urban'] : []), ...(z.fear ? ['fear'] : []), ...(z.upper_realm ? ['upper_realm'] : []), ...(z.faction ? ['faction:' + z.faction] : [])];
+}
+
+// ---------- story plumbing (rules 1.3): conditions out of combat, rest, Karma, the Narrator's optional fields ----------
+const SOCIAL_TAGS = ['dialogue', 'crowd', 'official', 'merchant', 'military', 'underworld'];
+const SOCIAL_SKILLS = new Set(['charisma', 'eloquence', 'implication', 'intimidation', 'empathy', 'authority']);
+/** A character's story conditions now (persistent ones whose scope still holds). */
+export function storyConds(g: GameState, c: Character): string[] {
+  return (c.persistentConds || []).filter((p) => p.scope === 'arc' || (p.scope === 'session' && (p.session ?? 1) === (g.sessionN ?? 1)) || (p.scope === 'scene' && p.scene === g.story.scene.n)).map((p) => p.id);
+}
+/** An NPC's conditions this scene (by its id or name). */
+export const npcConds = (g: GameState, who: string | undefined): string[] => (who ? g.story.scene.npcConds?.[who] || g.story.scene.npcConds?.[String(who).toLowerCase()] || [] : []);
+/** What story conditions do to a check (spec: Shaken −2 on Heart saves and social checks; the Brain debuffs −2 on
+ * their skills): named mods, like an item's. */
+function storyCondMods(g: GameState, c: Character, ck: Check): { add: number; label: string }[] {
+  const on = storyConds(g, c), out: { add: number; label: string }[] = [];
+  if (!on.length) return out;
+  const social = (ck.tags || []).some((t) => SOCIAL_TAGS.includes(t)) || ck.skills.some((s) => SOCIAL_SKILLS.has(s));
+  if (on.includes('shaken') && (social || (ck.kind === 'save' && ck.family === 'heart'))) out.push({ add: -2, label: 'Shaken' });
+  if (on.includes('ldebuff') && ck.skills.some((s) => SKILL[s]?.core === 'mind')) out.push({ add: -2, label: 'Left Brain Debuff' });
+  if (on.includes('rdebuff') && ck.skills.some((s) => SKILL[s]?.core === 'soul' || SKILL[s]?.attribute === 'expression')) out.push({ add: -2, label: 'Right Brain Debuff' });
+  return out;
+}
+/** Put a condition on a character for the scene, session or arc (or take it off). */
+export function setStoryCond(g: GameState, c: Character, id: string, scope: 'scene' | 'session' | 'arc' = 'scene', end = false, by?: string) {
+  const list = (c.persistentConds ||= []).filter((p) => p.id !== id);
+  if (!end) list.push({ id, scope, scene: g.story.scene.n, session: g.sessionN ?? 1, ...(by ? { by } : {}) });
+  c.persistentConds = list;
+}
+/** Karma (spec: Karma): −100 Chaotic to +100 Lawful, −29..29 Neutral. Each point of Conscience adds 1 to every award
+ * (in the award's direction). 'karma_award' {c, amount, unlawful, mult} lets Karma-locking traits double the cost of
+ * leaving their band. Returns the change made. */
+export function applyKarma(g: GameState, c: Character, amount: number, opts: { unlawful?: boolean; why?: string } = {}): number {
+  if (!amount) return 0;
+  const consc = (c.skills.conscience || 0) * Math.sign(amount);
+  const ctx: any = emitStory(g, 'karma_award', { c, amount: amount + consc, unlawful: !!opts.unlawful, mult: 1, why: opts.why || '', g }, [c]);
+  const was = c.karma || 0; c.karma = Math.max(-100, Math.min(100, Math.round(was + ctx.amount * (ctx.mult || 1))));
+  const d = c.karma - was; if (d) push(g, { kind: 'system', text: c.name + ' ' + (d > 0 ? '+' : '') + d + ' Karma (' + karmaBand(c.karma) + (opts.why ? ': ' + opts.why : '') + ').', ooc: true });
+  return d;
+}
+export const karmaBand = (k: number) => (k <= -30 ? 'Chaotic' : k >= 30 ? 'Lawful' : 'Neutral');
+/** Rest (spec: Rest): short (1 hour: 25% of max HP back; Heat, Flux and Strain reset) or long (8 hours: all HP, MP
+ * full if the air is Normal or richer, Supplies and toxins restocked). Each rest starts a new per-rest window for item
+ * uses. 'rest' {g, kind, chars} lets items change it (Insomniac, Old Timer…). */
+export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?: boolean } = {}) {
+  g.restN = (g.restN || 0) + 1;
+  const chars = Object.values(g.characters).filter((c) => !c.dead);
+  const ctx: any = emitStory(g, 'rest', { g, kind, chars, settlement: !!o.settlement, hpMult: 1 });
+  const band = MANA_BANDS.find((b) => (g.story.mana ?? MANA_START) >= b.min && (g.story.mana ?? MANA_START) <= b.max)?.id || 'normal';
+  for (const c of chars) {
+    const max = maxHp(c), back = kind === 'long' ? max : Math.ceil(max * 0.25 * (ctx.hpMult || 1));
+    if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
+    if (g.story.heat) g.story.heat[c.id] = 0;
+    const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
+    if (kind === 'long') { if (hasEmanator(c) && band !== 'thin') c.mp = maxMp(c); restockResources(c); }
+  }
+  push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
+}
+/** The optional rules-1.3 fields of a Narrator turn (each ignored when absent or invalid). */
+function storyFields(g: GameState, t: NarratorTurn) {
+  for (const l of (t.perkLines || []).slice(0, 8)) { const c = g.characters[l.charId]; if (!c || !l.text) continue;
+    push(g, { kind: 'voice', charId: c.id, to: c.owner, head: (l.key ? itemName(l.key).toUpperCase() + ' · ' : '') + 'ONLY YOU', text: String(l.text).slice(0, 600), ok: true }); }
+  for (const x of (t.conditions || []).slice(0, 12)) {
+    const id = String(x.id || ''); if (!isCondition(id)) continue;
+    const c = g.characters[x.target] || Object.values(g.characters).find((y) => y.name.toLowerCase() === String(x.target).toLowerCase());
+    if (c) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, x.scope || 'scene', !!x.end); continue; }
+    const n = npcsOf(g).find((y) => y.id === x.target || y.name.toLowerCase() === String(x.target).toLowerCase()), k = n ? n.id : String(x.target).toLowerCase().slice(0, 40);
+    const list = ((g.story.scene.npcConds ||= {})[k] ||= []);
+    if (x.end) g.story.scene.npcConds[k] = list.filter((y) => y !== id); else if (!list.includes(id)) list.push(id);
+  }
+  for (const x of (t.traitState || []).slice(0, 12)) { const c = g.characters[x.charId]; if (!c || !x.key) continue; const st = (c.state ||= {}); if (x.value == null) delete st[String(x.key).slice(0, 40)]; else st[String(x.key).slice(0, 40)] = JSON.parse(JSON.stringify(x.value)); }
+  for (const x of (t.echo || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && Number.isFinite(x.n)) gainEcho(c, Math.max(-3, Math.min(3, Math.round(x.n))), x.why || 'the story', g); }
+  for (const x of (t.karma || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && Number.isFinite(x.amount)) applyKarma(g, c, Math.max(-30, Math.min(30, Math.round(x.amount))), { unlawful: !!x.unlawful, why: x.why }); }
+  for (const x of (t.identify || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && x.what) { const st = (c.state ||= {}), l: string[] = (st.identified ||= []); if (!l.includes(x.what)) l.push(String(x.what).slice(0, 60)); } }
+  for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
+  for (const x of (t.patrons || []).slice(0, 4)) {
+    const c = g.characters[x.charId]; if (!c) continue;
+    if (x.patron && PATRON[x.patron] && c.patron !== x.patron) { c.patron = x.patron; c.devotion = 3; push(g, { kind: 'system', text: c.name + ' makes a pact with ' + PATRON[x.patron].name + ' (Devotion 3).' }); }
+    if (Number.isFinite(x.devotion) && x.devotion && c.patron) { changeDevotion(c, Math.max(-3, Math.min(3, Math.round(x.devotion!)))); push(g, { kind: 'system', text: c.name + '\'s Devotion is ' + devotionOf(c) + '.', ooc: true }); }
+  }
+  for (const x of (t.patronMood || []).slice(0, 4)) if (PATRON[x.patron] && TN_LADDER.includes(x.tn)) (g.story.patronMood ||= {})[x.patron] = x.tn;
+  if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
 }
 
 function afterPending(g: GameState) {
@@ -652,15 +813,17 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
   const hooks: Hook[] = (t.hooks || []).filter((h) => SKILL[h.skill] && TN_LADDER.includes(h.tn) && h.line).map((h) => ({ id: id(g, 'h'), skill: h.skill, tn: h.tn, truth: (['true', 'partial', 'misleading'].includes(h.truth) ? h.truth : 'true') as Hook['truth'], line: h.line }));
   g.story.scene.hooks.push(...hooks);
-  for (const p of g.players) {
+  // Rules 1.3: the cap is per character (2 lines a beat; Crowded Head raises it for its holder), so a player with two
+  // characters hears each one's voices.
+  for (const p of g.players) for (const c0 of charsOf(g, p.id)) {
     const cands: { c: Character; h: Hook; margin: number }[] = [];
-    for (const c of charsOf(g, p.id)) for (const h of hooks) {
+    for (const c of [c0]) for (const h of hooks) {
       if ((c.skills[h.skill] || 0) < 1) continue;
-      const margin = passive(c, h.skill) - h.tn;
+      const margin = passive(c, h.skill, { tags: zoneTags(g) }) - h.tn;
       if (margin >= 0) cands.push({ c, h, margin });
     }
-    // 'voice_cap' {player, chars, cap}: lines a player hears per beat (2; Crowded Head raises it for its holder).
-    const vc: any = emitStory(g, 'voice_cap', { player: p.id, chars: charsOf(g, p.id), cap: 2, g });
+    // 'voice_cap' {player, c, chars, cap}: lines this character hears per beat (2; Crowded Head raises it).
+    const vc: any = emitStory(g, 'voice_cap', { player: p.id, c: c0, chars: [c0], cap: 2, g });
     cands.sort((x, y) => y.margin - x.margin).slice(0, Math.max(0, vc.cap)).forEach(({ c, h }) => {
       g.story.scene.revealed.push(c.id + ':' + h.id);
       push(g, { kind: 'voice', skill: h.skill, charId: c.id, to: p.id, head: SKILL[h.skill].name.toUpperCase() + ' · PASSIVE ' + passive(c, h.skill) + ' vs ' + h.tn + ' · ONLY YOU', text: h.line, ok: true });
@@ -672,7 +835,9 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     if (!c || c.dead || !skills.length || !TN_LADDER.includes(ck.tn)) continue;
     const tags = Array.isArray(ck.tags) ? ck.tags.filter((x) => typeof x === 'string').slice(0, 8).map((x) => x.slice(0, 40)) : undefined;
     const applies = Array.isArray(ck.applies) ? ck.applies.filter((x) => typeof x === 'string').slice(0, 6) : undefined;
-    const nc: Check = { id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false, ...(tags?.length ? { tags } : {}), ...(ck.target ? { target: String(ck.target).slice(0, 40) } : {}), ...(applies?.length ? { applies } : {}) };
+    const nc: Check = { id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false, ...(tags?.length ? { tags } : {}), ...(ck.target ? { target: String(ck.target).slice(0, 40) } : {}), ...(applies?.length ? { applies } : {}),
+      ...(ck.kind === 'save' ? { kind: 'save' as const, ...(['body', 'brain', 'heart'].includes(ck.family || '') ? { family: ck.family } : {}) } : {}), ...(ck.footnote && g.characters[ck.footnote] ? { footnote: ck.footnote } : {}),
+      ...(ck.double ? { double: true } : {}), ...(ck.auto === 'success' || ck.auto === 'fail' ? { auto: ck.auto } : {}) };
     emitStory(g, 'check_build', { c, ck: nc, g }); // 'check_build' {c, ck}: items may add tags or flags to a new check
     g.checks.push(nc);
   }
@@ -705,6 +870,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     c.injuries = x.loc === 'all' ? [] : c.injuries.filter((i) => i.loc !== x.loc);
     if (c.injuries.length < before) push(g, { kind: 'system', text: c.name + '’s ' + (x.loc === 'all' ? 'injuries are' : x.loc + ' injury is') + ' treated.' });
   }
+  storyFields(g, t);
   for (const mv of t.moves || []) {
     const c = g.characters[mv.charId], map = zoneMap(g), k = keyOf(mv.to, map), pos = positionsOf(g);
     if (!c || c.dead || !k || !standable(map, k) || Object.entries(pos).some(([id, p]) => id !== c.id && p === k)) continue;
@@ -743,13 +909,13 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (t.combat && t.combat.enemies?.length) {
     const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-    let foes = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '' }));
+    let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
     // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
     if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
       const used = new Set<number>();
-      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+      for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait, kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])] }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
       g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
-    g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined); magicIn(g, g.combat);
+    g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined, { fear: !!t.combat.fear }); magicIn(g, g.combat);
     g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
     // Every enemy gets a stable NPC id (its face and its survival after the fight follow it); a story NPC keeps its own.
     g.combat.units.filter((u) => u.side === 'foe').forEach((u, i) => { const f: any = foes[i]; u.npcId = (f && f.id) || 'n' + (++g.seq); if (f && f.portrait) u.img = f.portrait; });
@@ -771,8 +937,12 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (cb!.over) fail('The fight is over.');
   const u = active(cb!)!;
   if (!('unitId' in a) || a.unitId !== u.id) fail('It\'s ' + u.name + '\'s turn.');
-  const c = u.charId ? g.characters[u.charId] : null;
+  // Who gives this unit its orders: its character's player; a companion's owner; a Puppeted enemy's puppeteer (rules 1.3).
+  const pup = u.side === 'foe' ? puppeteerOf(g, cb!, u) : null;
+  const c = u.charId ? g.characters[u.charId] : u.ctrl ? g.characters[u.ctrl] : pup;
   if (!c || c.owner !== by) fail('Not your unit.');
+  if ((u.companion || pup) && !COMPANION_ACTS.has(a.type)) fail((u.companion ? 'A companion' : 'A puppet') + ' can move, attack, hold Overwatch and end its turn.');
+  const who = u.charId ? c : null; // a companion or puppet fights with its own numbers
   let err: string | null = null;
   const before = cb!.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
   // Toggles the player set on this action (Ricochet, Nonlethal…), read by items' hooks through modOn(); cleared after.
@@ -786,18 +956,27 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); err = shove(cb!, g.rng, u, t!); break; }
     case 'combat/prone': err = toggleProne(cb!, u); break;
     case 'combat/brace': err = brace(cb!, u); break;
-    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, c); break; }
+    case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/repair': err = fieldRepair(cb!, u); break;
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
     case 'combat/overwatch': err = setOverwatch(cb!, u, a.mode); break;
     case 'combat/attack': {
       const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.');
-      if (a.mode === 'burst') { err = fireBurst(cb!, g.rng, u, t!, c); break; }
-      if (a.mode === 'auto') { err = fireAuto(cb!, g.rng, u, t!, c); break; }
+      if (pup && t!.id === u.id) fail('A puppet can\'t be made to harm itself.');
+      if (a.mode === 'burst') { err = fireBurst(cb!, g.rng, u, t!, who); break; }
+      if (a.mode === 'auto') { err = fireAuto(cb!, g.rng, u, t!, who); break; }
       const pv = previewAttack(cb!, u, t!, a.mode); if (!pv.ok) fail(pv.why!);
-      resolveAttack(cb!, g.rng, u, t!, a.mode, c); break;
+      resolveAttack(cb!, g.rng, u, t!, a.mode, who); break;
     }
-    case 'combat/reload': err = reload(cb!, u); break;
+    case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand) : reload(cb!, u); break;
+    case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;
+    case 'combat/swap': err = swapWeapon(g, cb!, u, c!, a); break;
+    case 'combat/pray': err = pray(cb!, g.rng, u, { choice: a.choice, targetId: a.targetId, miracle: a.miracle }); break;
+    case 'combat/parley': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = parley(cb!, g.rng, u, t!, a.kind, a.text || ''); break; }
+    case 'combat/hide': err = hideAction(cb!, u); break;
+    case 'combat/extinguish': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) : u; if (!t) fail('Pick someone burning.'); err = extinguish(cb!, u, t!); break; }
+    case 'combat/escape': err = escapeGrapple(cb!, g.rng, u); break;
+    case 'combat/recover': err = recoverWeapon(cb!, u); break;
     case 'combat/pickup': err = pickUp(cb!, u, a.tile); break;
     case 'combat/door': err = toggleDoor(cb!, u, a.tile); break;
     case 'combat/load': err = loadMagazine(cb!, u); break;
@@ -854,7 +1033,40 @@ function syncSong(g: GameState) {
 }
 
 /** Anyone and anything is a target (spec: Anyone is a target): any unit but yourself, alive. */
-const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead;
+const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
+/** What a companion or a puppet may do (rules 1.3). */
+const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
+/** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
+function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Character | null {
+  const by = condSource(u, 'puppeted'); if (!by) return null;
+  const p = cb.units.find((x) => x.id === by); return p && p.charId && !p.dead && g.characters[p.charId] ? g.characters[p.charId] : null;
+}
+/** Swap what a hand holds mid-fight (spec: 1 AP per hand): the off hand into the main hand, or a weapon or mod from
+ * the pack. The unit's weapon numbers are rebuilt from the character; the old weapon keeps its rounds and wear. */
+function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number }): string | null {
+  if (u.companion) return 'A companion has no pack.';
+  const ctx: any = emitHook(cb, 'swap', { u, c, from: a.from, mod: a.mod, ap: 1, cb });
+  const ap = Math.max(0, ctx.ap); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  unitToCharacter(g, u, false);
+  let err: string | null = null;
+  if (a.mod != null) err = fitMod(c, Number(a.mod));
+  else if (a.from === 'off') {
+    if (!c.offHand || !WEAPON[c.offHand.id] || (WEAPON[c.offHand.id] as any).hands !== '1H') return 'Your off hand holds no one-handed weapon.';
+    if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
+    const main = { id: c.weapon, ...(c.weaponState || {}) }, off = c.offHand, offRounds = u.offAmmo ?? 0;
+    c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods }; c.offHand = { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods };
+    const wasLoaded = c.loaded ?? 0; c.loaded = offRounds; u.offAmmo = wasLoaded;
+  } else if (typeof a.from === 'number' || /^\d+$/.test(String(a.from))) err = equip(c, Number(a.from), 'main');
+  else return 'Swap from your off hand, or a weapon in your pack.';
+  if (err) return err;
+  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state });
+  for (const k of ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'mags', 'loose', 'ammoType', 'magTypes', 'unarmedBonus', 'def'] as const) (u as any)[k] = (fresh as any)[k];
+  if (a.from !== 'off') u.offAmmo = fresh.offAmmo;
+  u.heat = 0; u.jammed = false; u.braced = false; u.ap -= ap;
+  cb.log.push(c.name + (a.mod != null ? ' fits a mod' : ' swaps to the ' + (WEAPON[u.weapon]?.name || u.weapon)) + ' (' + ap + ' AP).');
+  syncSong(g);
+  return null;
+}
 
 /** Enemies act on their own turns until a PC is up or the fight ends. */
 function runEnemies(g: GameState) {
@@ -862,6 +1074,7 @@ function runEnemies(g: GameState) {
   for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
     const u = active(cb)!;
     if (u.side !== 'foe') break;
+    if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
     if (!checkOver(cb)) endTurn(cb, g.rng);
@@ -872,6 +1085,8 @@ function runEnemies(g: GameState) {
 function finishCombat(g: GameState) {
   const cb = g.combat!;
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
+  // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
+  for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
   noteDeaths(cb); magicOut(g, cb, true);
   const won = cb.over === 'win';
   emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
@@ -890,7 +1105,9 @@ function finishCombat(g: GameState) {
   // Enemies still standing go back on the map as hostile tokens where they ended.
   { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
     const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
-    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined }); } }
+    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}) }); }
+    // Surrendered and subdued foes stay as neutral prisoners where they gave up (rules 1.3), for the Narrator to deal with.
+    for (const u of cb.units) if (u.side === 'foe' && u.surrendered && !u.dead) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'neutral', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, hp: Math.max(1, u.hp), prisoner: true, tags: ['prisoner', ...(u.tags || []).filter((t) => t !== 'prisoner' && t !== 'humanoid')], ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}) }); } }
   g.phase = 'story'; g.story.await = 'narrator'; g.story.work = { kind: 'combat_end', note: combatReport(cb) };
   musicAfterFight(g);
   g.combat = { ...cb };
@@ -900,7 +1117,7 @@ function finishCombat(g: GameState) {
 export function combatReport(cb: Combat): string {
   const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns/;
   const moments = cb.log.filter((l) => key.test(l)).slice(-14);
-  const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
+  const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : u.surrendered ? (u.subdued ? 'subdued' : 'surrendered') + ' (a prisoner) at ' + refOf(u.pos) : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
     + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));
   return [cb.summary || '', 'Key moments:\n' + (moments.map((m) => '- ' + m).join('\n') || '- none'), 'At the end:\n' + where.map((w) => '- ' + w).join('\n'),
     ...(cb.notes?.length ? ['Said or attempted mid-fight (yours to judge):\n' + cb.notes.map((n) => '- ' + n).join('\n')] : [])].join('\n');
@@ -1024,6 +1241,13 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     const w = WEAPON[c.weapon];
     if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
     for (const x of u.extra || []) { let it = pack.find((p) => p.weapon === x.weapon && p.mags); if (!it) { it = { ...magsOf(x.weapon, 0), mags: [] }; pack.push(it); } it.mags!.push(x.rounds); it.qty = it.mags!.length; }
+    // Rules 1.3: the off-hand gun's spares, thrown items used, special ammo, persisting class resources.
+    if (u.offMags && c.offHand) { const oi = pack.findIndex((it) => it.weapon === c.offHand!.id && it.mags); if (oi >= 0) { pack[oi].mags = [...u.offMags]; pack[oi].qty = u.offMags.length; } }
+    if (u.throwables) for (const [item, left] of Object.entries(u.throwables)) { let have = pack.filter((it) => (it.weapon || it.id) === item && !it.mags).reduce((t, it) => t + it.qty, 0), drop = have - left;
+      for (const it of pack) { if (drop <= 0) break; if ((it.weapon || it.id) !== item || it.mags) continue; const n = Math.min(drop, it.qty); it.qty -= n; drop -= n; } void have; }
+    c.loadedType = u.ammoType || null;
+    if (mi >= 0 && u.magTypes) pack[mi].magTypes = [...u.magTypes];
+    if (u.res && u.resMax) for (const r of Object.keys(u.res)) if (r === 'supplies' || r === 'toxins') (c.res ||= {})[r] = u.res[r];
     c.pack = pack.filter((it) => it.qty > 0 || it.mags);
     const fam = WEAPON[u.weapon]?.mastery_family; if (afterFight && fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
 }
@@ -1055,7 +1279,8 @@ const FACE: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], E: [1, 0
 export function initialNpcs(g: GameState): Npc[] {
   const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
   const seen: Record<string, number> = {};
-  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined }));
+  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
+    ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}) }));
 }
 export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
 function facingToward(from: string, to: string): [number, number] { const [a, b] = from.split(',').map(Number), [c, d] = to.split(',').map(Number); return [Math.sign(c - a), Math.sign(d - b)]; }
@@ -1066,14 +1291,15 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
   if (op.action === 'place') {
     const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k) || !op.name) return;
     const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
-    list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)) });
+    list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)),
+      ...(op.kind && KINDS.includes(op.kind) ? { kind: op.kind } : {}), ...(Array.isArray(op.tags) ? { tags: op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6) } : {}) });
     push(g, { kind: 'system', text: op.name + ' at ' + refOf(k) + '.' });
     if (!GENERIC.test(op.name)) applyMemOp(g, { op: 'person', name: op.name, where: zoneMap(g).id, ...(op.side === 'hostile' ? { attitude: -2 } : {}) });
     return;
   }
   const n = list.find((x) => x.id === op.id); if (!n) return;
   if (op.action === 'remove') { g.story.npcs = list.filter((x) => x !== n); return; }
-  if (op.action === 'update') { if (op.side) n.side = op.side === 'hostile' ? 'hostile' : 'neutral'; if (op.name) n.name = op.name.slice(0, 40); return; }
+  if (op.action === 'update') { if (op.side) n.side = op.side === 'hostile' ? 'hostile' : 'neutral'; if (op.name) n.name = op.name.slice(0, 40); if (op.kind && KINDS.includes(op.kind)) n.kind = op.kind; if (Array.isArray(op.tags)) n.tags = op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6); return; }
   if (op.action === 'move') { const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k)) return; n.facing = facingToward(n.pos, k); n.pos = k; }
 }
 const ENEMY_TIERS = ['minion', 'soldier', 'elite', 'boss'];
@@ -1107,6 +1333,7 @@ function magicIn(g: GameState, cb: Combat) {
   for (const u of cb.units) {
     const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held || null; u.mg.cast = !!s.cast; }
+    if (s.condBy) u.condBy = { ...s.condBy };
     if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
   }
@@ -1117,7 +1344,10 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   const m = (g.story.magic ||= {});
   for (const u of cb.units) if (u.charId) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };
-    m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast };
+    m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
+      ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
+    // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
+    if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c) setStoryCond(g, c, 'shaken', 'scene'); }
   }
 }
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
@@ -1127,7 +1357,7 @@ function storyMagicRound(g: GameState) {
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
-  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); if (u.mg) u.mg.cast = false; }
+  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u); if (u.mg) u.mg.cast = false; }
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
   magicOut(g, cb, false);
   storyFx(g, cb);
@@ -1322,14 +1552,16 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id] }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; });
   if (!wasHostile) cbx.noXp = true;
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
-  if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); }
+  if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
+  // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
+  for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
   else { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
   att.ap = apNow; if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
@@ -1555,7 +1787,8 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init'] as const;
+  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
+  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */

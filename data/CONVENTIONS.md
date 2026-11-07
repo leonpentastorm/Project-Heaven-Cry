@@ -55,6 +55,20 @@ Every rule-bearing item carries both:
 - `handling` (optional): `{"grant": ["clear", "brace"], "deny": ["load"]}` overrides that, by action id
   (`reload`, `load`, `clear`, `brace`, `repair`, `overwatch`, `burst`, `auto`, `skill`).
 
+- `damage_type` (rules 1.3): `physical` (default), `elemental`, `fire`, `lightning`, `emp`, `sigil`, `soul`, `true`. Fire and lightning
+  count as Elemental for Elemental damage taken. `explosive: true` for grenades, launchers and satchels; `area_radius_<n>`
+  in `properties` gives the blast radius. `tags`: `electronic`, `evoker_linked`, `lever` (items read them).
+- Special ammo (rules.json `weapons_rules.ammo_types`): items with `ammo_type` (`ammo_armor_piercing` etc.) are loaded out of
+  combat; a pack magazine entry may carry `magTypes` (one per spare magazine, null for standard).
+
+## Shared subsystems (rules 1.3)
+- `start_item` (traits): an items.json or weapons.json id; an item with `category: "armour"` and a `slot` is worn at creation.
+- `enemies.json` `companions`: stat blocks for companions (`id`, `kind`, `hp`, `defense`, `attack_bonus`, `armour`,
+  `movement`, `weapon`), used by a character's `companions: [{id, kind, name, hp?}]`.
+- `objects.json` `electronic: true` marks devices (terminal, lamp, camera, alarm, turret).
+- Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`).
+- Campaign zones may carry `tags`, `terrain`, `in_city`, `urban`, `fear`, `upper_realm`, `faction`; zone NPCs `kind` and `tags`.
+
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.

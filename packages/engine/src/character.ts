@@ -1,6 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
 import { statQuery, setRankRule } from './effects/hooks';
 import { skillRollMod } from './effects/core';
 
@@ -10,6 +10,8 @@ export interface Sheet {
   downedFails?: number;
   skills: Record<string, number>; attrs: Record<string, number>; cores: Record<CoreId, number>;
   identity: Record<string, string>; archetype?: string | null;
+  /** Race, as free text (rules 1.3; The Old Blood reads it): human unless the player says otherwise. */
+  race?: string;
   /** Starting magic chosen at creation (spec: The Magic panel): 2 Sigil words that make a Stack, and 1 Outburst design. */
   sigils?: string[]; outburst?: { name?: string; school: string; modules: string[]; option?: string } | null;
 }
@@ -42,7 +44,25 @@ export interface Character extends Sheet {
   advancedClass?: string | null;
   /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
   uses?: Record<string, { s: string; n: number }>;
+  // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
+  /** Tutors met (Narrator-granted, by advanced class id or tutor name): an advanced class needs one (spec: Classes). */
+  tutors?: string[];
+  /** A patron pact (spec: Patrons and prayer): the patron's id, Devotion 0-10, the Miracle's session stamp. */
+  patron?: string | null; devotion?: number; miracleSession?: number;
+  /** Karma −100 (Chaotic) to +100 (Lawful) (spec: Karma); 0 for old saves. */
+  karma?: number;
+  /** Companions who fight beside the character (a drone, a beast): their kind, name and HP between fights. */
+  companions?: Companion[];
+  /** Conditions that outlive a scene (scope 'session' or 'arc'), set by the Narrator or an item. */
+  persistentConds?: { id: string; scope: 'scene' | 'session' | 'arc'; scene?: number; session?: number; by?: string; note?: string }[];
+  /** Class resources that persist between fights (Supplies, toxins), refilled at a long rest. */
+  res?: Record<string, number>;
+  /** The ammo type in the loaded magazine (null: standard). Spare magazines' types ride on their pack entry. */
+  loadedType?: string | null;
+  /** Item and trait state the Narrator sets (traitState: a grudge, a cover identity, a rival…), by key. */
+  state?: Record<string, any>;
 }
+export interface Companion { id: string; kind: 'drone' | 'beast' | string; name: string; hp?: number }
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
@@ -64,6 +84,8 @@ export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
 export interface Injury { loc: InjuryLoc; side?: 'left' | 'right' }
 export interface PackItem {
   id: string; name: string; qty: number; kind: 'weapon' | 'ammo' | 'tool' | 'focus' | 'food' | 'med' | 'loot'; weapon?: string; note?: string;
+  /** Special ammo (rules 1.3): the type of each spare magazine (null standard), and of loose rounds; a stowed weapon's loaded rounds. */
+  magTypes?: (string | null)[]; ammoType?: string | null; loaded?: number;
   /** Spare magazines for `weapon`: rounds in each. Loose rounds use `calibre` and qty = rounds. `item` names the items.json entry for weight. */
   mags?: number[]; calibre?: string; item?: string;
   rarity?: Rarity; dur?: number; mods?: string[];
@@ -98,6 +120,8 @@ export function validateSheet(s: Sheet): string | null {
   if (!s.origin) return 'Pick an origin.';
   if (!s.kit) return 'Pick a starting kit.';
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
+  // Traits marked as excluding each other can't be taken together (spec: Traits).
+  for (const t of s.traits || []) { const ex = (TRAITS.find((x) => x.id === t)?.excludes || []).find((x) => (s.traits || []).includes(x)); if (ex) return (TRAITS.find((x) => x.id === t) as any)?.name + ' and ' + ((TRAITS.find((x) => x.id === ex) as any)?.name || ex) + ' can\'t be taken together.'; }
   const whole = (o: Record<string, unknown> = {}) => Object.values(o).every((v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 10);
   if (!whole(s.skills) || !whole(s.attrs) || !whole(s.cores)) return 'Points must be whole numbers from 0 to 10.';
   for (const [id, p] of Object.entries(s.skills)) { if (!SKILL[id]) return 'Unknown skill ' + id; if (p < 0 || p > 10) return 'Skills run 0–10.'; }
@@ -146,7 +170,24 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   };
   c.hp = maxHp(c);
   startingMagic(c);
+  grantStartItems(c);
+  if (!c.race) c.race = 'human';
   return c;
+}
+/** Items traits start you with (op start_item; rules 1.3): into the pack, and worn at once when the item has an armour
+ * slot (prescription glasses, the smiling mask). An item already carried isn't doubled. */
+export function grantStartItems(c: Character) {
+  const want: string[] = [];
+  for (const t of c.traits || []) for (const e of (TRAITS.find((x) => x.id === t)?.effects || []) as any[]) if (e.op === 'start_item' && e.item) want.push(e.item);
+  if (!want.length) return;
+  const pack = packOf(c).map((x) => ({ ...x })), worn = { ...(c.worn || {}) };
+  for (const id of want) {
+    const it: any = ITEM[id]; if (!it) continue;
+    if (Object.values(worn).includes(id) || pack.some((x) => (x.item || x.id) === id)) continue;
+    if (it.category === 'armour' && it.slot && !worn[it.slot]) { worn[it.slot] = id; continue; }
+    pack.push({ id, item: id, name: it.name, qty: 1, kind: 'tool' });
+  }
+  c.pack = pack; c.worn = worn;
 }
 
 /** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */
@@ -258,6 +299,30 @@ export const mpNow = (c: Character) => (hasEmanator(c) ? Math.min(maxMp(c), c.mp
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (hasEvoker(c) ? c.evoCharge ?? 10 : 0);
 export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + mod(P(c, skill)) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
+// ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
+/** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
+const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
+/** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
+export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'durability')));
+/** Elemental damage taken: −10% × Pain Threshold. */
+export const elementalTakenPct = (c: Character) => cap60(fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold')));
+/** Ambush damage taken: −10% × Reaction Speed. */
+export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'reaction_speed')));
+/** Healing and shields received: +10% × Sensory. */
+export const healReceivedMult = (c: Character) => fx(c, 'heal_received', 1 + 0.1 * P(c, 'sensory'));
+/** Counter bonus: mod(Raw Power), minimum 0. */
+export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P(c, 'raw_power'))));
+/** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
+export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
+/** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
+export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + 0.05 * P(c, 'ingenuity'));
+/** Blessing power: 1 + 0.1 × Faith. */
+export const blessingPower = (c: Character) => fx(c, 'blessing_power', 1 + 0.1 * P(c, 'faith'));
+/** Prayer cooldown in turns: 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 (rounded up). */
+export const prayerCooldown = (c: Character) => Math.max(1, Math.ceil(4 - 0.5 * (A(c, 'virtue') - 1) - 0.5 * P(c, 'faith')));
+/** Detection range 2 + Vigilant; Stealth 0.5 × Ingenuity (subtracted from enemies' Detection range against you). */
+export const detectionRange = (c: Character) => 2 + P(c, 'vigilant');
+export const stealthOf = (c: Character) => Math.floor(0.5 * P(c, 'ingenuity'));
 export const masteryOf = (p: number) => (p >= 10 ? 5 : p >= 9 ? 4 : p >= 7 ? 3 : p >= 5 ? 2 : p >= 3 ? 1 : 0);
 
 // ---------- levels (spec: Levels and XP) ----------
@@ -368,13 +433,13 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
   const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
   const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
-  const putBack = (id: string, st: GearState | undefined) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };
+  const putBack = (id: string, st: GearState | undefined, loaded?: number) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}), ...(loaded ? { loaded } : {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };
   if (to === 'main') {
     if (!wid) return 'Only weapons go in the main hand.';
     const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
-    take(); putBack(c.weapon, c.weaponState);
+    take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined); // a stowed gun keeps the rounds in it (rules 1.3)
     if ((WEAPON[wid] as any).hands === '2H' && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
-    c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = 0;
+    c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
   } else if (to === 'off') {
     if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
@@ -405,3 +470,44 @@ export function fitMod(c: Character, idx: number): string | null {
 }
 export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
 export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };
+
+// ---------- class resources and advanced classes (spec: Classes; rules 1.3 shared subsystems) ----------
+/** A class resource: id, maximum now, and whether it persists between fights (Supplies, toxins; refilled at a long
+ * rest) or starts each fight at 0 (Momentum, Guard, Marks, Charges). Heat, Flux and Strain are shared rules that
+ * every gun, Evoker or Emanator user already runs; they aren't listed here. */
+export interface ClassResource { id: string; max: number; persist: boolean }
+const RES_RULES: Record<string, (c: Character) => ClassResource> = {
+  momentum: () => ({ id: 'momentum', max: 5, persist: false }),
+  guard: () => ({ id: 'guard', max: 5, persist: false }),
+  marks: () => ({ id: 'marks', max: 3, persist: false }),
+  supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
+  toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
+  charges: () => ({ id: 'charges', max: 3, persist: false }),
+};
+/** Which resources a class brings (base class) and which an advanced class carries over from a parent it needs
+ * (Adamantile Knight: Guard; Shade: Marks; Storm Hand: Charges), provisional (spec 14). */
+const CLASS_RES: Record<string, string[]> = { fighter: ['momentum'], defender: ['guard'], medic: ['supplies'], assassin: ['marks', 'toxins'],
+  adamantile_knight: ['guard'], shade: ['marks'], storm_hand: ['charges'], gunslinger: ['momentum'], banner_dancer: ['momentum', 'supplies'], rtc_contractor: ['supplies'], ccec_ballistician: ['marks'] };
+export function classResources(c: Character): ClassResource[] {
+  const ids = [...new Set([...(c.classId ? CLASS_RES[c.classId] || [] : []), ...(c.advancedClass ? CLASS_RES[c.advancedClass] || [] : [])])];
+  return ids.map((id) => RES_RULES[id](c));
+}
+/** Refill the persisting resources (a long rest). */
+export function restockResources(c: Character) { for (const r of classResources(c)) if (r.persist) (c.res ||= {})[r.id] = r.max; }
+
+/** Can this character learn this advanced class (spec: Classes)? A signature total of 15 in one parent class and 9 in
+ * the other (or an alternative parent pair), the tutor met (c.tutors, granted by the Narrator), and a patron where
+ * the class needs one. Returns why not, or null. */
+export function advancedClassError(c: Character, advId: string, adv: any): string | null {
+  if (!adv) return 'No such advanced class.';
+  if (c.advancedClass === advId) return 'Already learned.';
+  if (c.advancedClass) return 'One advanced class at a time (provisional).';
+  const tot = Object.fromEntries(classTotals(c.skills).map((t) => [t.id, t.total]));
+  const pairs: string[][] = [adv.parents || [], ...(adv.alt_parents || [])];
+  const ok = pairs.some(([a, b]) => (tot[a] >= 15 && tot[b] >= 9) || (tot[b] >= 15 && tot[a] >= 9));
+  if (!ok) { const [a, b] = adv.parents || []; return 'Needs a signature total of 15 in one parent and 9 in the other (' + a + ' ' + (tot[a] || 0) + ', ' + b + ' ' + (tot[b] || 0) + ').'; }
+  const tutor = adv.tutor || '';
+  if (!(c.tutors || []).some((t) => t === advId || t === tutor)) return 'Needs a tutor: ' + tutor + ' (the Narrator places one in the story).';
+  if ((adv.requires || []).some((r: any) => r.patron) && !c.patron) return 'Needs a patron.';
+  return null;
+}

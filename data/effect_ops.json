@@ -630,7 +630,7 @@
     {
       "id": "damage_reduction",
       "tier": "core",
-      "summary": "Reduce damage taken by a flat amount.",
+      "summary": "Reduce damage taken: value is a fraction 0-1 (0.25 = a quarter less) unless type is flat (then it is points).",
       "count": 8,
       "params": [
         "context",
@@ -719,7 +719,7 @@
     {
       "id": "start_item",
       "tier": "core",
-      "summary": "Start play with an item.",
+      "summary": "Start play with an item (items.json id); an item with an armour slot is worn at once.",
       "count": 7,
       "params": [
         "item"

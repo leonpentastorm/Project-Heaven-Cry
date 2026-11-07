@@ -990,7 +990,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: threaten someone with one specific, physical detail and they must answer one question or take a Body Debuff (Shaken). II: works on a group; the leader answers for all of them.",
+      "text": "I: threaten someone with one specific, physical detail and they must answer one question or take a Heart debuff (Shaken). II: works on a group; the leader answers for all of them.",
       "effects": [
         {
           "op": "narrator",
@@ -1012,7 +1012,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "threaten someone with one specific, physical detail and they must answer one question or take a Body Debuff (Shaken).",
+          "text": "threaten someone with one specific, physical detail and they must answer one question or take a Heart debuff (Shaken).",
           "effects": [
             {
               "op": "narrator",
@@ -1210,7 +1210,7 @@
       "id": "origami_hands",
       "name": "Origami Hands",
       "tier": "acquired",
-      "perk_type": "passive",
+      "perk_type": "active_skill",
       "skills": [
         "dexterity"
       ],
@@ -2028,7 +2028,7 @@
       "id": "hold_the_stroke",
       "name": "Hold the Stroke",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "passive",
       "skills": [
         "brain_power"
       ],
@@ -2316,7 +2316,7 @@
               "min": 5
             }
           ],
-          "ap_cost": null,
+          "ap_cost": 2,
           "text": "2 AP, neutralise one of them for the allies around you.",
           "effects": [
             {
@@ -2347,7 +2347,7 @@
       "id": "overruled",
       "name": "Overruled!",
       "tier": "acquired",
-      "perk_type": "combat_starter",
+      "perk_type": "ap_mod",
       "skills": [
         "eloquence"
       ],
@@ -2749,7 +2749,7 @@
       "id": "pattern_lock",
       "name": "Pattern Lock",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "analysis"
       ],
@@ -3540,7 +3540,7 @@
       "id": "heart_overload",
       "name": "Heart Overload",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "passive",
       "skills": [
         "will_power"
       ],
@@ -4359,7 +4359,7 @@
       "id": "outclassed",
       "name": "Outclassed",
       "tier": "acquired",
-      "perk_type": "combat_starter",
+      "perk_type": "ap_mod",
       "skills": [
         "authority"
       ],

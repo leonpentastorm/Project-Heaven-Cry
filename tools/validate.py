@@ -235,6 +235,52 @@ if isinstance(arch, dict):
         if sorted(a.get("leans", [])) != leans:
             errors.append(f"archetype {aid}: leans should be {leans}")
 
+# rules 1.3 (lane 0B): start items, companions, trait excludes, damage types, weapon tags, special ammo, devices
+item_ids = ids_of(items("items")) | ids_of(items("weapons"))
+def start_items(o, where):
+    if isinstance(o, dict):
+        if o.get("op") == "start_item" and o.get("item") not in item_ids:
+            errors.append(f"{where}: start_item '{o.get('item')}' is not in items.json or weapons.json")
+        for v in o.values(): start_items(v, where)
+    elif isinstance(o, list):
+        for v in o: start_items(v, where)
+for name in ("traits", "perks"):
+    for x in items(name):
+        start_items(x, f"{name}:{x.get('id')}")
+for b in base + adv:
+    start_items(b, f"classes:{b.get('id')}")
+wids = ids_of(items("weapons"))
+for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(data.get("enemies"), dict) else []:
+    if k.get("weapon") not in wids:
+        errors.append(f"enemies.companions:{k.get('id')}: unknown weapon {k.get('weapon')}")
+    for f in ("hp", "defense", "attack_bonus", "armour", "movement"):
+        if not isinstance(k.get(f), (int, float)):
+            errors.append(f"enemies.companions:{k.get('id')}: {f} must be a number")
+tmap = {t.get("id"): t for t in items("traits")}
+for t in items("traits"):
+    for x in t.get("excludes", []) or []:
+        if x not in tmap:
+            errors.append(f"traits:{t.get('id')}: excludes unknown trait {x}")
+        elif t.get("id") not in (tmap[x].get("excludes") or []):
+            errors.append(f"traits:{t.get('id')}: excludes {x}, but {x} doesn't exclude it back")
+DMG_TYPES = {"physical", "elemental", "fire", "lightning", "emp", "sigil", "soul", "true"}
+WTAGS = {"electronic", "evoker_linked", "lever"}
+for w in items("weapons"):
+    if w.get("damage_type") is not None and w.get("damage_type") not in DMG_TYPES:
+        errors.append(f"weapons:{w.get('id')}: damage_type {w.get('damage_type')} is not one of {sorted(DMG_TYPES)}")
+    if "explosive" in w and not isinstance(w["explosive"], bool):
+        errors.append(f"weapons:{w.get('id')}: explosive must be true or false")
+    for tg in w.get("tags", []) or []:
+        if tg not in WTAGS:
+            errors.append(f"weapons:{w.get('id')}: unknown tag {tg}")
+ammo_ids = {a.get("id") for a in (data.get("rules", {}).get("weapons_rules", {}) or {}).get("ammo_types", [])}
+for x in items("items"):
+    if x.get("ammo_type") and x["ammo_type"] not in ammo_ids:
+        errors.append(f"items:{x.get('id')}: ammo_type {x['ammo_type']} is not in rules.weapons_rules.ammo_types")
+for o in items("objects"):
+    if "electronic" in o and not isinstance(o["electronic"], bool):
+        errors.append(f"objects:{o.get('id')}: electronic must be true or false")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

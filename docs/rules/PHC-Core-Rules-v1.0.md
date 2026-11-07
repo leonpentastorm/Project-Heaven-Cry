@@ -192,7 +192,7 @@ Classes aren't picked; skills earn them. Each base class has three **signature s
 
 **Class rank** follows that total: rank I when you gain the class, rank II at a signature total of 13, rank III at 18. Each rank unlocks the class's next signature move. On the pacing target, a focused character reaches rank II around level 5 and rank III around level 11; a spread-out one later.
 
-**Advanced classes** mix two base classes. To learn one you need a signature total of 15 in one parent class and 9 in the other, plus a tutor from the faction that teaches it (the Narrator places the tutor in the story). You don't need to hold either parent class yourself.
+**Advanced classes** mix two base classes. To learn one you need a signature total of 15 in one parent class and 9 in the other, plus a tutor from the faction that teaches it (the Narrator places the tutor in the story). You don't need to hold either parent class yourself. When the Narrator marks the tutor as met, the player learns the class from the level-up screen; the engine checks the totals then (rules 1.3). You hold it alongside your base class, with all three of its moves at once, one advanced class at a time (item 80, item 96).
 
 | Core | Class | Role | Signature skills | Resource |
 |---|---|---|---|---|
@@ -257,6 +257,8 @@ The party moves between zones when the Narrator says it travels, and each zone k
 | Rubble | | | | Slow ground (2 per tile) |
 | Container · Terminal | movement | half · none | 40 · 30 | Using it is a check |
 | Point of interest · Way out | | | | Markers with text |
+| Camera · Alarm panel | | | 10 | Electronic devices (rules 1.3): Slicers work on them; shot, they go dark |
+| Emplaced turret | movement | half | 60 | Electronic; the Narrator runs it as an enemy |
 
 Shooting any object with HP works like shooting cover. Hidden objects (unspotted traps) are never shown to players. All numbers are provisional (item 59).
 
@@ -297,6 +299,11 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Pray | 3 |
 | Speak a sentence | 0 |
 | Persuade, threaten or parley mid-fight (a skill check) | 2 |
+| Hide (only out of every enemy's sight; rules 1.3) | 2 |
+| Put out Burning (yourself or an adjacent ally) | 1 |
+| Break a grapple | 2 |
+| Recover a dropped weapon (raise a lowered one) | 2 (1) |
+| Reload both guns | 3 |
 | Shove an adjacent enemy | 2 |
 | Brace (set a heavy weapon) | 1 |
 | Field Repair | 2 |
@@ -812,6 +819,8 @@ Weapon mastery is the second way a character grows, beside character level. It's
 
 **Stacking.** The same condition never stacks; a second application resets it to the longer duration.
 
+**When conditions tick** (rules 1.3, provisional, item 82). A duration in rounds counts the ends of the bearer's own turns: a 2-round condition lasts until the end of your second turn after it lands. One that lands during your own turn doesn't lose a round at that turn's end. Damage over time (Bleeding, Burning) still bites at the start of your turn. Every condition remembers who put it on you (its **source**): Fear, Taunted, Grappled and Marked depend on it, and kill credit for Bleeding and Burning goes to it.
+
 | Condition | Family | Effect | Lasts |
 |---|---|---|---|
 | Bleeding | Body | 5 damage at the start of each turn; a stim ends it | 3 rounds |
@@ -827,17 +836,25 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Prone | Body | melee against you +2, ranged against you −2; 1 AP to stand | until you stand |
 | Left Brain Debuff | Brain | −2 on Mind skill checks; Sigils cost +1 AP | 2 rounds |
 | Right Brain Debuff | Brain | −2 on Expression and Soul checks; Soul spells cost +20% mana | 2 rounds |
-| Confused | Brain | 50% chance each action targets someone at random | 1 round |
+| Confused | Brain | each attack has a 50% chance to go at someone at random (anyone else it could attack) | 1 round |
 | Fear | Heart | can't move toward or attack the source; −2 to hit anyone else | 2 rounds |
 | Shaken | Heart | −2 on Heart saves and social checks | 3 rounds, or the rest of the scene out of combat |
+| Grappled | Body | held by an adjacent enemy: you can't move; −2 to attacks against anyone but the grappler. Break free: 2 AP, d20 + the better of your Raw Power and Athletics modifiers against the grappler's | until you break free, or the grappler is down or not adjacent |
+| Suppressed | Body | −1 AP and no reactions (lighter than Pinned; item 83) | 1 round |
+| Taunted | Heart | your attacks must go at the one who taunted you while you can see them | 1 round, or until you attack them |
+| Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator | 1 round |
+| Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
+| Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
+| Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
 
 **Helpful states**
 
 | State | Effect |
 |---|---|
-| Hidden | enemies can't target you until they spot you; your first attack from Hidden uses the Ambush multiplier, then you're revealed |
-| Marked | the marker's squad gets +1 to hit you, and you can't become Hidden |
-| Braced / Emplaced | set by class moves and heavy weapons; ends when you move |
+| Hidden | enemies can't target you until they spot you; your first attack from Hidden uses the Ambush multiplier, then you're revealed (see Hidden in a fight) |
+| Marked | the marker's squad gets +1 to hit you, and you can't become Hidden; lasts until its source rule ends it or the fight ends |
+| Braced / Emplaced | set by class moves and heavy weapons; ends when you move. Emplaced: +2 to attacks with the weapon and Recoil halved |
+| Withdrawing | +2 Defense until the end of your next turn (a fighting retreat) |
 | Overwatch | AP held for one reaction shot before your next turn |
 | Witnessed | your patron is watching (see Mana) |
 
@@ -995,6 +1012,8 @@ A **patron** is a Celestial in a pact with you, played by the Narrator. They hav
 | 5 | **Witnessed:** after a successful prayer, until your next turn, on-theme actions get +2 and off-theme ones cost 1 Devotion each. |
 | 7 | **Miracle:** once per session, spend all your Devotion (at least 5) for a Blessing at triple power, or a story-sized intervention the Narrator designs. |
 
+The Narrator makes a pact (the patron's id; Devotion starts at 3), moves Devotion, and sets a patron's mood (the prayer's TN). Out of a fight a prayer is rolled the same way and the Narrator answers it. In a fight the engine runs the Blessing's numbers (rules 1.3).
+
 ## Skills, traits and perks in play
 
 **Skill unlocks.** Every skill has two unlocks of its own, at 3 and 5 points, plus its per-point combat bonus and its Overreach trigger. They're automatic. All of it is in skills.json.
@@ -1013,6 +1032,54 @@ A **patron** is a Celestial in a pact with you, played by the Narrator. They hav
 - **Ultimate** (6): granted automatically when you hold both of the Achieved perks it names. **They're secret:** no screen lists them, hints at them or shows progress toward them until one is granted, which gets its own award screen. The AI Narrator never mentions an Ultimate the player doesn't hold.
 - Every AP gain from perks obeys the AP ceiling: +3 per turn at most, 9 AP at most, 2 AP at least.
 
+## Shared rules for perks, traits and classes (rules 1.3)
+
+Written 7 Nov 2026 so every perk, trait and class move has the base rules it stands on. All provisional (items 82–100).
+
+**Damage, in order.** Every loss of HP goes through one chain: the attack (or blast, spell, hazard) works out its damage and its armour, then **reductions** (percentages and flat ones, immunities), then the **shield**, then the **last-HP check** (a rule that keeps you standing at 1 HP acts here; several such rules apply in this order: Angel of the Trenches, Bite the Bullet, Last Wall), then HP, then what follows (wounds, Downs, kills). Kill credit goes to whoever took the last HP; Bleeding and Burning credit whoever caused them, a broken barrel whoever broke it.
+
+**Damage types.** Physical by default. Each weapon names its type (weapons.json `damage_type`): the flamer and incendiary rounds deal fire, the core rifle and Enhanced rounds Elemental, SHOCK and SPARK lightning, the bot-scrambler emp. Fire and lightning count as Elemental for *Elemental damage taken*. Grenades, launchers, satchels and barrels are **explosive**. The derived reductions apply in the chain: Elemental damage taken −10% × Pain Threshold, Ambush damage taken −10% × Reaction Speed, Critical damage taken −10% × (Perception − 1) − 5% × Durability (it shrinks the critical multiplier's bonus), each capped at 60%. Healing and shields received get +10% × Sensory. The air's Healing given multiplier applies to magical healing.
+
+**Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
+
+**Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
+
+**Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
+
+**Guns that can't jam.** Only weapons with a Heat limit jam. Bows, crossbows, the flamer, the breacher tube and the core rifle build no Heat; a natural 1 is a fumble (−1 AP next turn).
+
+**Reactions.** One per round, counted (an opportunity attack, an Overwatch shot, a perk reaction). Items may grant more. A Suppressed or Stunned unit has none. Overwatch may hold more than one shot when a class move says so; all of them fire on the one reaction.
+
+**Moving, tile by tile.** A move is walked one tile at a time. Opportunity attacks and Overwatch are checked at every step, so Overwatch fires the moment you come into its line, not only where you stop. A walk can stop early (a trap, a reaction that Downs or Pins you, a rule that says stop); the tiles you paid for and didn't walk stay in your turn's bank. **Sprint is once per turn.** Rules can open paths: run along a wall or over a hole, jump one blocked tile (2 tiles of movement), pass through an ally, ignore rough ground. A unit avoids the traps its side knows about: the enemy knows its own traps, you know the ones you set or spotted.
+
+**Hidden in a fight.** You are Hidden when a fight opens on your ambush (and so is anyone else still sneaking unseen), or when a rule hides you. **Hide** (2 AP) works only out of every enemy's sight, never while Marked. While Hidden, enemies can't target you and draw no line to you; you draw no opportunity attacks or Overwatch. Your **first attack from each time you hide** is an **ambush**: it crits on 19–20 and multiplies its damage by your Ambush multiplier (1.5 + 0.05 × Ingenuity). Any attack reveals you unless the weapon is silent (bows, the suppressor); taking damage reveals you. **Spotting:** at the end of each turn, the unit whose turn it was looks for Hidden enemies whose tile it can see: d20 + its notice (enemies by tier: minion +0, soldier +2, elite +4, boss +6; characters their Vigilant modifier) against 10 + your Ingenuity modifier + your Stealth; ending a turn next to you finds you outright.
+
+**What things are.** Every combatant and NPC has a **kind** (human by default; robot, crawler, ork, upper_realm, cursed, beast, machine, turret, drone, celestial) and **tags** (humanoid, military, hunter, lawful, unaware, no_surrender, prisoner…). The Narrator sets them when it starts a fight or places someone; campaigns can set them in their data. Robots, machines, turrets and drones put +2 on the meter when they die, not +5. An **unaware** enemy loses round 1.
+
+**Surrender and subdue.** Talking a beaten enemy down (Parley, below) calls its **surrender save**: a Heart save against 12 + the speaker's Heart debuff strength, only when it is at half HP or less or every ally of its is down, and only once per enemy a fight. Bosses, machines, robots, turrets, drones and anyone tagged no_surrender never surrender. A non-lethal blow that takes a foe's last HP **subdues** it instead. Surrendered and subdued foes are out of the fight: not targets, counted as defeated, no kill credit and no rise on the meter. After the fight they stay on the map as neutral prisoners, for the Narrator to deal with. The fight's XP counts them as defeated.
+
+**Talking in a fight** (the action table's 2 AP): within 8 tiles of someone who can hear you. **Persuade** (Eloquence): a Left Brain Debuff against a Brain save. **Threaten** (Intimidation): Shaken against a Body save. **Parley** (offer terms): the surrender save. What you say goes to the Narrator with the fight report.
+
+**Throwing** (2 AP): a grenade at a tile within Throwing range (6 + 0.5 × Dexterity) and line of sight; a satchel is placed on your tile or next to you. Frag: 40 to everyone within 2 tiles, and the objects there. Smoke: blocks sight within 3 tiles for 2 rounds. Flashbang: Blinded 1 round within 2 tiles (Body save). Incendiary: 15 and Burning (no save) within 2, and the tile burns. Bot-scrambler: robots, machines and drones within 2 are Stunned (no save), mana arms there jam, and Sigils drawn there cost +1 AP for 2 rounds. Satchel: 120 within 2. Explosive weapons (the thumper, the breacher tube) splash everyone else within their radius of the target on a hit, and the flamer's cone gives everyone in 3 tiles its own attack.
+
+**Swapping weapons** (1 AP a hand): bring the off-hand weapon to the main hand (the two change places), draw a weapon from the pack, or fit a mod. A stowed gun keeps the rounds in it. Reloading both of two guns is 3 AP.
+
+**Burning, grapples and dropped weapons.** Putting out Burning is 1 AP (yourself or someone next to you). Breaking a grapple is 2 AP. Recovering a weapon is 2 AP (1 for a lowered one).
+
+**Companions.** A drone or a beast fights beside its owner: it acts right after the owner in the order, on the owner's player's orders (move, attack, Overwatch, reload, end its turn), with its own numbers (enemies.json `companions`). At 0 HP it is destroyed, not Downed; its HP carries between fights, and a destroyed one is out until the story repairs or heals it.
+
+**Prayer** (see Patrons and prayer): 3 AP; not while Silenced; the roll is d20 + Faith modifier + half your Devotion against the patron's mood. A Blessing's numbers × Blessing power; what the engine can't run of a Blessing goes to the Narrator with its text. The cooldown counts rounds.
+
+**Class resources.** Momentum (Fighter, max 5): +1 for each melee hit; it drops to 0 when you end a turn without attacking. Guard (Defender, max 5), Marks (Assassin, max 3) and Charges (Storm Hand, max 3) start each fight at 0 and are spent by the class's moves. Supplies (Medic, 3 + floor(Proficiency ÷ 2)) and toxins (Assassin, 2 + floor(Ingenuity ÷ 3)) carry over between fights and are restocked at a long rest. Heat, Flux and Strain are shared rules every gun, Evoker or Emanator user already has. An advanced class that leans on a parent's resource carries it (Adamantile Knight: Guard; Shade: Marks).
+
+**Item modifiers on every d20.** A trait's or perk's bonus to a skill applies to every d20 roll that uses that skill's modifier: checks, passives, saves, weapon attacks, Sigil and Soul strikes, initiative. Never to stats worked out per point. Conditions do the same: the Left Brain Debuff's −2 reaches every Mind skill roll, the Right Brain Debuff's every Expression and Soul skill roll (Brain saves use Charisma, Heart saves Composure).
+
+**Conditions in the story.** Out of a fight, the Narrator can put a condition on an NPC for the scene, or on a character for the scene, the session or the arc. A character still Shaken when a fight ends stays Shaken for the rest of the scene. Story conditions change checks like items do (Shaken −2 on social checks and Heart saves).
+
+**Voices per character.** The cap of 2 voice lines a beat is per character (item 36): a player with two characters hears each one's voices.
+
+**Start items.** A trait's start item is in the pack at creation, and worn at once when it has an armour slot (prescription glasses, the smiling mask). Traits marked as excluding each other can't be taken together; the creation check refuses them.
+
 ## Exploration, social play, rest, and the Narrator
 
 **Social checks** use the target's disposition as the TN.
@@ -1026,7 +1093,7 @@ A **patron** is a Celestial in a pact with you, played by the Narrator. They hav
 
 Threats, arguments and seduction that aim to break someone rather than persuade them work like debuffs: Intimidation, Eloquence or Implication against the target's Body, Brain or Heart save.
 
-**Karma** is one score from −100 (Chaotic) to +100 (Lawful). −29 to +29 is Neutral. Traits that lock Karma double the cost of leaving the locked band.
+**Karma** is one score from −100 (Chaotic) to +100 (Lawful). −29 to +29 is Neutral. Traits that lock Karma double the cost of leaving the locked band. The Narrator awards it (at most 30 a time) and flags unlawful acts; the engine adds Conscience and keeps the score (rules 1.3).
 
 **Reputation** is tracked per faction, from −100 to +100: Hated (−60 or less), Hostile (−59 to −20), Unknown (−19 to +19), Known (+20 to +59), Revered (+60 or more).
 
@@ -1036,6 +1103,8 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 |---|---|---|
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
 | Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Medic can treat injuries |
+
+The Narrator calls a rest (or the host does, from the Room). The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3).
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 
@@ -1363,3 +1432,25 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 79. **Weapon-granted actions (provisional):** a weapon shows only the actions it grants (Reload by its own name: Swap magazine, Speedloader, Swap drum, Feed belt, Nock an arrow, Load a bolt…; Load a magazine; Clear jam; Brace; Field Repair; Overwatch or Hold a strike). Only weapons with a Heat limit jam; the rest fumble on a natural 1 (−1 AP next turn) and build no Heat. Brace only for weapons that need or reward it. The breacher tube reloads for 3 AP (data `reload_ap`).
 80. **Holding an advanced class (provisional):** held alongside the base class, with all three moves at once; it doesn't replace the base class's moves.
 81. **AP bookkeeping (provisional):** AP banked for next turn counts toward that turn's +3 perk AP; debt comes off after the floor of 2, at most 4; out-of-turn pools (windows, Supreme Command) are not perk AP. Bleeding that kills credits whoever opened the wound.
+
+**Added in rules 1.3: the shared rules for perks, traits and classes (7 Nov 2026, provisional, settle in playtest)**
+
+82. **Conditions tick at the end of the bearer's turn**, a condition landed on your own turn loses no round that turn, and conditions keep their source. Durations follow the conditions table: Pinned 1 round (until the end of your next turn), Blinded 1, Shaken 3, Confused 1, Silenced 1, Burning until put out (10 a turn, ignoring armour). Shaken and Confused no longer touch the attack roll; Pinned is −2 and Blinded −4 to hit. The Right Brain Debuff is a Brain condition. Stunned loses the whole next turn (a Mana Short now Stuns); a fumble stays −1 AP.
+83. **Suppressed** (plan 6a-13, the fix for Spray and Pray's soft lock): −1 AP and no reactions, a Body save, 1 round, no stacking. **Withdrawing** +2 Defense for 1 round. **Weapon lowered**: the light Disarmed, 1 AP to raise.
+84. **Commanded against enemies** runs from a menu (halt, hold, drop, kneel, flee); **Puppeted** enemies are run by the caster's player for one turn, with no self-harm.
+85. **Target-specific damage bonuses add, capped at ×2.0** (plan 6a-1: True Name + Judgement Day + Case Closed + Weak Point reached about ×3.7 on one boss). Self multipliers still multiply.
+86. **Derived damage stats now run:** Critical, Elemental and Ambush damage taken (each capped at 60%), Healing and shields received (+10% × Sensory), the air's Healing given multiplier on magical healing.
+87. **Special ammo:** the five ammo types' effects as listed, one type per magazine, special rounds bought or found as items (ammo_*) and loaded out of combat; Enhanced and mana-arm hits put +1 on the meter.
+88. **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
+89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned); Overwatch can hold several shots on one reaction (class moves).
+90. **The walk is tile by tile:** opportunity attacks and Overwatch on every step; a walk cut short keeps its unwalked tiles in the bank; **one Sprint per turn for everyone** (plan 6a-12, the Drill Echo fix). Path options (wall running, a 2-tile jump, passing allies, rough ground) are opened by items. Traps a side set itself or spotted are known to that side only.
+91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
+92. **Kinds and tags** on every unit and NPC (human by default); robots, machines, turrets and drones give +2 on the meter when they die; unaware enemies lose round 1.
+93. **Surrender** (plan 6a-3, the fix for The Name They Whisper): one surrender save per enemy per fight, Heart save vs 12 + the speaker's Heart debuff strength, only at half HP or less or alone; Bosses, machines and no_surrender never. Surrendered and subdued foes count as defeated (XP too) but give no kill credit and no meter rise; they stay as neutral prisoners.
+94. **Talking in a fight:** 2 AP, within 8 tiles; Persuade (Eloquence → Left Brain Debuff, Brain save), Threaten (Intimidation → Shaken, Body save), Parley (the surrender save).
+95. **Throwing and blasts:** Throwing range 6 + 0.5 × Dexterity (Derived stats; item 17 settles on it); the six thrown items as listed (an incendiary burns only its centre tile); explosive weapons splash their radius on a hit; the flamer's cone attacks everyone in 3 tiles. Enemies don't throw yet.
+96. **Swaps and companions:** 1 AP a hand; a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 40, Defense 12, +3, armour 5, Movement 2, a service pistol) and beast (HP 50, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP. One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
+97. **Prayer in the engine:** the cooldown counts rounds; a Blessing's hp numbers heal (positive) or deal Soul damage (negative), its shield numbers shield, all × Blessing power; a Miracle is a guaranteed success at ×3. Out of combat a heard prayer goes to the Narrator.
+98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks.
+99. **Story plumbing:** Narrator-set conditions on NPCs (scene) and characters (scene, session or arc); Karma awards capped at 30 a turn, Conscience added; rests from the Narrator or the host; the voice cap per character, not per player; private perk lines outside the voice cap; Narrator-set item state (traitState).
+100. **Data fixes:** perk type labels (item 23: Origami Hands active, Hold the Stroke passive, Overruled and Outclassed AP mods, Pattern Lock and Heart Overload passive); Lab Coat II costs 2 AP; Born Performer's −100% is on dialogue XP; Bone Talk's Shaken is a Heart debuff (item 24); Mind Without Fog excludes Symbol of Order and Rogue Element (its Karma lock would contradict theirs); the start items (prescription glasses, smiling mask, prosthetic arm, Central City ID, bank card, contraband, grimoire) and a toolbox, spirits, cigarettes, a drone frame and the four special-ammo items exist now; cameras, alarm panels and emplaced turrets are map objects; terminals and lamps are electronic.

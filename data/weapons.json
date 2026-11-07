@@ -231,7 +231,10 @@
         }
       },
       "lore": "Old, honest, and never needs a battery.",
-      "type": "lever_carbine"
+      "type": "lever_carbine",
+      "tags": [
+        "lever"
+      ]
     },
     {
       "id": "lumeri_scattergun",
@@ -772,7 +775,8 @@
         }
       },
       "lore": "Pull, count, apologise.",
-      "type": "frag_grenade"
+      "type": "frag_grenade",
+      "explosive": true
     },
     {
       "id": "smoke_grenade",
@@ -1548,7 +1552,8 @@
       "lore": "Smetanita property. Return it or else.",
       "type": "smetanita_thumper",
       "provisional": true,
-      "reload": "loose"
+      "reload": "loose",
+      "explosive": true
     },
     {
       "id": "breacher_tube",
@@ -1593,14 +1598,15 @@
       "type": "breacher_tube",
       "provisional": true,
       "reload": "loose",
-      "reload_ap": 3
+      "reload_ap": 3,
+      "explosive": true
     },
     {
       "id": "purifier_flamer",
       "name": "Purifier flamer",
       "category": "heavy",
       "damage": 20,
-      "damage_type": "elemental",
+      "damage_type": "fire",
       "range_tiles": 3,
       "magazine": 10,
       "heat_limit": null,
@@ -1676,7 +1682,8 @@
       },
       "lore": "Some problems are best solved from the next room.",
       "type": "satchel_charge",
-      "provisional": true
+      "provisional": true,
+      "explosive": true
     },
     {
       "id": "longbow",
@@ -2177,14 +2184,17 @@
       "provisional": true,
       "requires": {
         "proficiency": 3
-      }
+      },
+      "tags": [
+        "electronic"
+      ]
     },
     {
       "id": "incendiary_grenade",
       "name": "Incendiary grenade",
       "category": "thrown",
       "damage": 15,
-      "damage_type": "physical",
+      "damage_type": "fire",
       "range_tiles": 1,
       "magazine": null,
       "heat_limit": null,
@@ -2217,14 +2227,15 @@
       },
       "lore": "The frontier's least favourite smell.",
       "type": "incendiary_grenade",
-      "provisional": true
+      "provisional": true,
+      "explosive": true
     },
     {
       "id": "bot_scrambler",
       "name": "Bot-scrambler",
       "category": "thrown",
       "damage": 0,
-      "damage_type": "physical",
+      "damage_type": "emp",
       "range_tiles": 1,
       "magazine": null,
       "heat_limit": null,
@@ -2256,7 +2267,10 @@
       },
       "lore": "Science Team surplus, sold out the back door.",
       "type": "bot_scrambler",
-      "provisional": true
+      "provisional": true,
+      "tags": [
+        "electronic"
+      ]
     },
     {
       "id": "core_rifle",
@@ -2303,7 +2317,10 @@
       "reload": "loose",
       "requires": {
         "proficiency": 3
-      }
+      },
+      "tags": [
+        "electronic"
+      ]
     },
     {
       "id": "spellslinger_pistol",
@@ -2350,7 +2367,10 @@
       "magazine_kg": 0.1,
       "requires": {
         "brain_power": 3
-      }
+      },
+      "tags": [
+        "evoker_linked"
+      ]
     },
     {
       "id": "evoker_blade",
@@ -2394,7 +2414,10 @@
       "provisional": true,
       "requires": {
         "brain_power": 3
-      }
+      },
+      "tags": [
+        "evoker_linked"
+      ]
     },
     {
       "id": "emanator_gauntlet",
@@ -2530,6 +2553,34 @@
       "requires": {
         "camaraderie": 3
       }
+    },
+    {
+      "id": "beast_bite",
+      "name": "Bite and claws",
+      "category": "unarmed",
+      "damage": 18,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "grants": null,
+      "lore": "A beast companion's own weapon (rules 1.3; provisional).",
+      "type": "fists",
+      "companion_only": true,
+      "provisional": true
     }
   ]
 }

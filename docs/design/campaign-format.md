@@ -46,6 +46,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
 | `art` | no | `{ map, banner }`: the painting under this zone's grid (the whole grid, `w` × `h` tiles) and the banner over the story while the party is here. |
 | `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
+| `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…). |
 
 ## Objects and points of interest
 

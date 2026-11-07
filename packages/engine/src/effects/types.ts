@@ -55,6 +55,8 @@ export type HookName =
   | 'reload' | 'jam_clear' | 'swap'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release'
   | 'analyze' | 'action_cost' | 'combat_end'
+  // rules 1.3 shared subsystems (lane 0B)
+  | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung'
   // story
   | 'check_build' | 'check_mod' | 'check_post' | 'check_result' | 'passive'
   | 'voice_cap' | 'ask_limit' | 'overreach_cost' | 'echo_gain'

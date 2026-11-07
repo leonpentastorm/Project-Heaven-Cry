@@ -7,8 +7,10 @@
 import { describe, expect, it } from 'vitest';
 import { coverageGaps, coverageReport, coverageSummary, allItems } from '../src';
 
-/** Gaps when the runtime landed (lane 0A, before any lane registered a handler). Lower it as lanes finish. */
-const BASELINE = 369;
+/** Gaps when the runtime landed (lane 0A, before any lane registered a handler): 369. Lane 0B fixed the perk_type
+ * labels of spec item 23, so Hold the Stroke and Heart Overload (both tiers) are passives now, not actions whose
+ * effects an action would run: 4 honest gaps more (lane D runs them). Lower it as lanes finish. */
+const BASELINE = 373;
 const strict = !!(globalThis as any).process?.env?.PHC_COVERAGE_STRICT;
 
 const listGaps = () => {

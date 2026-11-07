@@ -2,7 +2,7 @@
 // make (Stack, Line, Ring), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
-import { SIGIL, SCHOOL, MODULE, MANA_BANDS, type SigilDef } from './data';
+import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, type SigilDef } from './data';
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
@@ -16,7 +16,7 @@ import { itemWords, wordCostMods } from './effects/core';
 
 type Fam = 'body' | 'brain' | 'heart';
 export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string }
-export interface Zone { id: string; kind: 'wall' | 'veil' | 'light'; tiles: string[]; words: string[]; by: string; side: 'pc' | 'foe'; left: number; mult: number; who: string; hit?: Record<string, number> }
+export interface Zone { id: string; kind: 'wall' | 'veil' | 'light' | 'scramble'; tiles: string[]; words: string[]; by: string; side: 'pc' | 'foe'; left: number; mult: number; who: string; hit?: Record<string, number> }
 /** A unit's magic: what it knows and carries, and its running state. */
 export interface MagicUnit {
   words: string[]; designs: OutburstDesign[]; evoker: boolean; emanator: boolean;
@@ -71,6 +71,7 @@ const CONDS: Record<string, CondDef> = {
   withdrawing: { name: 'Withdrawing (+2 Defense)', fam: 'body', rounds: 1, boon: true, text: '+2 Defense until your next turn ends.' },
   emplaced: { name: 'Emplaced', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 to attacks with the weapon; Recoil halved; moving ends it.' },
   last_turn: { name: 'Last Turn', fam: 'body', rounds: 1, boon: true, text: 'Still standing on borrowed time.' },
+  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 1, boon: true, text: 'Your patron is watching: on-theme actions +2, off-theme ones cost 1 Devotion (the Narrator judges).' },
 };
 /** Data and older ids for the same conditions (conditions.json uses the long names). */
 const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
@@ -101,7 +102,7 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
 /** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. */
 export function noteDeaths(cb: Combat) {
   const seen = new Set(cb.deadSeen || []);
-  for (const u of cb.units) if (u.dead && !seen.has(u.id)) { seen.add(u.id); shiftMana(cb, /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell'); }
+  for (const u of cb.units) if (u.dead && !seen.has(u.id)) { seen.add(u.id); shiftMana(cb, ['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell'); }
   cb.deadSeen = [...seen];
 }
 
@@ -135,58 +136,163 @@ export function magicToCharacter(c: Character, u: Unit) {
     m.cores = want; m.coresMade = 0;
   }
 }
-const saveOf = (u: Unit, fam: Fam) => (u.mg ? u.mg.saves[fam] : ({ minion: 0, soldier: 1, elite: 2, boss: 3 } as Record<string, number>)[u.tier || 'minion'] ?? 0);
-const debuffOf = (u: Unit, fam: Fam) => (u.mg ? u.mg.debuff[fam] : ({ minion: 0, soldier: 1, elite: 2, boss: 2 } as Record<string, number>)[u.tier || 'minion'] ?? 0);
-export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[id] > 0);
-/** To-hit change from conditions: Shaken, Afraid and Confused −2 each; Inspired +2. */
-export const condHit = (u: Unit) => (condOn(u, 'shaken') ? -2 : 0) + (condOn(u, 'fear') ? -2 : 0) + (condOn(u, 'confused') ? -2 : 0) + (condOn(u, 'inspired') ? 2 : 0);
+/** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Charisma | Composure) + items, from the unit (u.sv,
+ * fixed when the unit is built, so every PC has it, casters or not); enemies by tier (+0 / +1 / +2 / +3). Shaken is −2
+ * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
+const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
+const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
+export function unitSave(u: Unit, fam: Fam): number {
+  const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : TIER_SAVE[u.tier || 'minion'] ?? 0;
+  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'charisma') : fam === 'heart' ? condSkillMod(u, 'composure') : 0);
+}
+/** Conditions on skill rolls (spec): Left Brain Debuff −2 on Mind skills, Right Brain Debuff −2 on Expression and Soul
+ * skills. Reaches every d20 that uses the skill (attacks, Sigil and Soul strikes, saves). */
+export function condSkillMod(u: Unit, skill: string): number {
+  const s = SKILL[skill]; if (!s) return 0;
+  return (condOn(u, 'ldebuff') && s.core === 'mind' ? -2 : 0) + (condOn(u, 'rdebuff') && (s.core === 'soul' || s.attribute === 'expression') ? -2 : 0);
+}
+export function unitDebuff(u: Unit, fam: Fam): number { return u.dbf ? u.dbf[fam] : u.mg ? u.mg.debuff[fam] : TIER_DEBUFF[u.tier || 'minion'] ?? 0; }
+const saveOf = unitSave;
+const debuffOf = unitDebuff;
+export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[condId(id)] > 0);
+/** Who put a condition on a unit (its unit id), if anyone. */
+export const condSource = (u: Unit, id: string): string | null => (condOn(u, id) && u.condBy?.[condId(id)]) || null;
+/** The order or variant a condition carries (Commanded's order). */
+export const condArg = (u: Unit, id: string): string | null => (condOn(u, id) && u.condArg?.[condId(id)]) || null;
+/** To-hit change from the attacker's conditions (spec: Conditions): Pinned −2, Blinded −4, Afraid −2 against anyone but
+ * the source, Grappled −2 against anyone but the grappler, Inspired +2. With a target, the target's Marked adds +1 for
+ * the marker's squad. Shaken and Confused no longer touch the roll (spec). */
+export function condHit(u: Unit, tgt?: Unit | null, cb?: Combat | null): number {
+  let n = 0;
+  if (condOn(u, 'pinned')) n -= 2;
+  if (condOn(u, 'blinded')) n -= 4;
+  if (condOn(u, 'fear') && (!tgt || condSource(u, 'fear') !== tgt.id)) n -= 2;
+  if (condOn(u, 'grappled') && (!tgt || condSource(u, 'grappled') !== tgt.id)) n -= 2;
+  if (condOn(u, 'inspired')) n += 2;
+  if (tgt && condOn(tgt, 'marked')) { const by = condSource(tgt, 'marked'), m = by && cb ? cb.units.find((x) => x.id === by) : null; if (!by || !cb || (m && m.side === u.side)) n += 1; }
+  return n;
+}
+/** The body-family debuffs a unit carries now (Shrug It Off, Iron Stomach…), and any family's. */
+export const debuffsOf = (u: Unit, fam?: Fam) => [...Object.keys(u.conds || {}).filter((id) => condOn(u, id) && !isBoon(id) && (!fam || CONDS[id]?.fam === fam)),
+  ...(!fam || fam === 'body' ? [...(u.bleed ? ['bleeding'] : []), ...(u.dazedNext ? ['dazed'] : []), ...(u.prone ? ['prone'] : [])] : [])];
+export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 
 // ---------- conditions, shields, harm ----------
+export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string }
 /** Apply a condition: the target saves (d20 + its save) against 12 + the caster's debuff strength (spec: Conditions
- * and saves). Boons (Guarded, Inspired) need no save. No stacking: a second dose resets to the longer duration. */
-export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, rounds?: number, fam?: Fam): string {
+ * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
+ * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
+export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: string, rounds?: number, fam?: Fam, opts: CondOpts = {}): string {
+  const id = condId(id0);
+  if (FLAG_CONDS.has(id)) return flagCond(cb, rng, by, t, id, rounds, opts);
   const def = CONDS[id]; if (!def || t.dead) return '';
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, cb, rng });
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
   const f: Fam = ca.fam || fam || def.fam;
-  if (!BOOST.has(id) && !ca.skipSave) {
+  if (!BOOST.has(id) && !def.noSave && !ca.skipSave) {
     const r = d20(rng), m = saveOf(t, f) + (ca.saveAdd || 0), tn = 12 + (by ? debuffOf(by, f) : 0) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
     if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
   }
+  if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
   emitFx(cb, 'cond', { target: t.id, at: t.pos, id });
-  (t.conds ||= {})[id] = Math.max(t.conds[id] || 0, n);
+  (t.conds ||= {})[id] = def.noTick && !rounds ? 99 : Math.max(had ? t.conds[id] || 0 : 0, n);
+  if (by) (t.condBy ||= {})[id] = by.id; else if (t.condBy) delete t.condBy[id];
+  if (ca.arg ?? opts.arg) (t.condArg ||= {})[id] = String(ca.arg ?? opts.arg);
+  // Put on during the bearer's own turn: that turn's end doesn't count (rounds are the bearer's turn ends after this one).
+  const onOwnTurn = cb.order?.[cb.turn] === t.id && !cb.window && !cb.overworld;
+  if (onOwnTurn) { const fr = (t.condFresh ||= []); if (!fr.includes(id)) fr.push(id); }
   if (!had) {
     if (id === 'slowed') { t.baseMove ??= t.movement; t.movement = t.baseMove / 2; }
     if (id === 'blinded') { t.baseVision ??= t.vision || 12; t.vision = 1; }
-    if (id === 'guarded') t.def += 2;
+    if (id === 'guarded' || id === 'withdrawing') t.def += 2;
+    if (id === 'grappled' || id === 'stunned') { t.overwatch = null; }
   }
   emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
-  return ' · ' + t.name + ' is ' + def.name + ' (' + n + ' round' + (n === 1 ? '' : 's') + ')';
+  return ' · ' + t.name + ' is ' + def.name + (def.noTick && !rounds ? '' : ' (' + n + ' round' + (n === 1 ? '' : 's') + ')');
+}
+/** Conditions the engine keeps as unit flags: Dazed (−2 AP next turn), Prone, Bleeding (3 rounds; a hit's rider, no
+ * save), Hidden (see combat.ts hide), Injured (a d6 location, no resistance). */
+function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, rounds: number | undefined, opts: CondOpts): string {
+  if (t.dead) return '';
+  const fam: Fam = 'body', noSave = id === 'bleeding' || id === 'injured' || id === 'hidden' || id === 'prone';
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || 1, skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, cb, rng });
+  if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
+  if (!ca.skipSave) { const r = d20(rng), m = saveOf(t, fam) + (ca.saveAdd || 0), tn = 12 + (by ? debuffOf(by, fam) : 0) + (ca.tnAdd || 0);
+    if (r === 20 || (r !== 1 && r + m >= tn)) return ' · ' + t.name + ' resists (body save ' + (r + m) + ' vs ' + tn + ')'; }
+  if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed'; }
+  if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone'; }
+  if (id === 'bleeding') { t.bleed = Math.max(t.bleed || 0, ca.rounds || 3); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'injured') { const inj = injureUnit(rng, t); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
+  return '';
+}
+/** An injury with no resistance roll (the Injured condition): the same d6 table as a critical's (spec: Injuries). */
+function injureUnit(rng: Rng, t: Unit): string {
+  const d = die(rng, 6), inj = t.injuries || (t.injuries = []);
+  if (d === 1) { t.dazedNext = 1; return ' · INJURY (d6 1): head, Dazed'; }
+  if (d <= 3) { t.bleed = 3; return ' · INJURY (d6 ' + d + '): torso, Bleeding'; }
+  const side: 'left' | 'right' = die(rng, 2) === 1 ? 'left' : 'right';
+  if (d === 4) { inj.push({ loc: 'arm', side }); return ' · INJURY (d6 4): ' + side + ' arm'; }
+  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
+  inj.push({ loc: 'leg', side }); return ' · INJURY (d6 ' + d + '): ' + side + ' leg';
 }
 /** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
 export function endCond(u: Unit, id: string, cb?: Combat) {
+  id = condId(id);
+  if (id === 'hidden') { u.hidden = false; return; }
+  if (id === 'prone') { u.prone = false; return; }
+  if (id === 'bleeding') { u.bleed = 0; return; }
+  if (id === 'dazed') { u.dazedNext = 0; return; }
+  if (!u.conds || !(id in u.conds)) return;
   endCondRaw(u, id); if (cb) emit(cb, 'cond_end', { u, id, cb });
 }
 function endCondRaw(u: Unit, id: string) {
   if (id === 'slowed' && u.baseMove != null) { u.movement = u.baseMove; delete u.baseMove; }
   if (id === 'blinded' && u.baseVision != null) { u.vision = u.baseVision; delete u.baseVision; }
-  if (id === 'guarded') u.def -= 2;
+  if (id === 'guarded' || id === 'withdrawing') u.def -= 2;
   delete u.conds![id];
+  if (u.condBy) delete u.condBy[id];
+  if (u.condArg) delete u.condArg[id];
+  if (u.condFresh) u.condFresh = u.condFresh.filter((x) => x !== id);
+}
+/** The end of a unit's turn (spec: Conditions tick at the end of the bearer's turn, rules 1.3): every timed condition
+ * loses a round, except one put on during this same turn; at 0 it ends. Grappled ends if the grappler is gone or no
+ * longer adjacent; Taunted when the taunter is down. */
+export function condTurnEnd(cb: Combat, u: Unit) {
+  if (u.dead || !u.conds) return;
+  const fresh = new Set(u.condFresh || []); u.condFresh = [];
+  for (const id of Object.keys(u.conds)) {
+    const def = CONDS[id]; if (!def) continue;
+    if (def.noTick && u.conds[id] >= 99) continue;
+    if (fresh.has(id)) continue;
+    u.conds[id]--;
+    if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
+  }
+}
+/** Conditions whose source is gone end (Grappled when the grappler is down or not adjacent; Taunted, Fear and Marked
+ * when the source is dead). Called before a unit acts. */
+export function condSourcesCheck(cb: Combat, u: Unit) {
+  for (const id of ['grappled', 'taunted', 'fear', 'commanded', 'puppeted']) {
+    if (!condOn(u, id)) continue;
+    const by = condSource(u, id), s = by ? cb.units.find((x) => x.id === by) : null;
+    const gone = !!by && (!s || s.dead || (id !== 'fear' && s.downed) || (id === 'grappled' && Math.max(...s.pos.split(',').map((v, i) => Math.abs(+v - +u.pos.split(',')[i]))) > 1));
+    if (gone) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
+  }
 }
 /** Damage from magic (or a wall zone): the shield first, then armour (Sigil damage takes full armour, Elemental half,
  * Soul none), then HP, Downed or dead, kill credit. A held Outburst may slip. Returns a log suffix. */
 /** Why the next harm() hurts, for the effects layer only (burn, short, overload, wall); reset after each call. */
 let hurtWhy = '';
 const harmFor = (why: string, f: () => string) => { hurtWhy = why; try { return f(); } finally { hurtWhy = ''; } };
-export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true'): string {
+export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true' | 'physical', dmgType?: string): string {
   if (t.dead) return '';
   let dmg = Math.floor(raw), out = '';
-  const arm = type === 'sigil' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
+  const arm = type === 'sigil' || type === 'physical' ? t.armour : type === 'elemental' ? Math.floor(t.armour / 2) : 0;
   dmg = Math.max(1, dmg - arm);
-  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: type, shield: true, credit: 'hp' } as any);
+  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp' } as any);
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;
@@ -200,7 +306,8 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
 }
 export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null): string {
   if (t.dead) return '';
-  const r = healUnit(cb || null, t, n, by, 'soul');
+  // The air's Healing given multiplier (spec: the meter bands) applies to magical healing.
+  const r = healUnit(cb || null, t, n * (cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1), by, 'soul');
   if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
   if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
 }
@@ -225,10 +332,9 @@ function shove(cb: Combat, t: Unit, from: string, n: number): string {
 export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (u.dead) return;
   noteDeaths(cb);
-  if (u.conds) for (const id of Object.keys(u.conds)) {
-    if (id === 'burning' && !u.downed) cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, null, u, 5, 'true')));
-    u.conds[id]--; if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
-  }
+  // Burning burns at the start of each turn (spec: 10, until put out; it ignores armour). Timed conditions tick at the
+  // end of the bearer's turn (condTurnEnd, rules 1.3).
+  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, 10, 'true', 'fire'))); }
   const m = u.mg;
   if (m && !u.downed) {
     if (m.held) {
@@ -293,7 +399,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile: str
 }
 /** A glyph's price for this unit: 'glyph_cost' {u, word, ap, charge, flux, preview} (mutable), after word_cost items. */
 export function glyphCost(cb: Combat, u: Unit, word: string, preview = false): { ap: number; charge: number; flux: number } {
-  const w = SIGIL[word], base = { u, word, ap: glyphApOf(u), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: 1, preview, cb };
+  const w = SIGIL[word], base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(u.pos)) ? 1 : 0), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: 1, preview, cb };
   const c: any = emit(cb, 'glyph_cost', base);
   return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux) };
 }
@@ -399,7 +505,7 @@ function subjectEffect(cb: Combat, rng: Rng, by: Unit | null, t: Unit, w: SigilD
   if (w.class === 'subject_element') {
     let roll = 0, crit = false;
     if (!auto && by) {
-      const r = d20(rng), cover = !opts.seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + (by.mg?.brain ?? 0) + condHit(by) - cover;
+      const r = d20(rng), cover = !opts.seek && w.id !== 'shock' && coverTileFor(cb, src, t.pos) ? 5 : 0, tot = r + (by.mg?.brain ?? 0) + (by.sk?.brain_power ?? 0) + condSkillMod(by, 'brain_power') + condHit(by, t, cb) - cover;
       crit = r === 20; roll = r;
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: w.id }); return ' · ' + w.word + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (cover ? ', cover' : '') + ')'; }
     }
@@ -508,7 +614,7 @@ function manaShort(cb: Combat, rng: Rng, u: Unit) {
   }
   if (r !== 20 && tot < tn) {
     cb.log.push('MANA SHORT: ' + u.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')' + harmFor('short', () => harm(cb, rng, null, u, 15 * m.strain, 'true')) + ', Stunned.');
-    u.stunnedNext = 1;
+    if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true }); // spec: Stunned loses the next turn (rules 1.3)
     if (m.held && !u.dead && !u.downed) wildRelease(cb, rng, u);
   } else cb.log.push(u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ').');
 }
@@ -535,7 +641,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   const d = m.designs.find((x) => x.id === designId); if (!d) return no('No such design.');
   // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the price
   // (pay HP instead of MP, a free cast, more reach). hp > 0 is taken from the caster's HP when the cast is paid.
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)), ap: designAp(m, d), range: designRange(m, d), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), hp: 0, release, preview: true, cb });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), hp: 0, release, preview: true, cb });
   const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 1, hp };
   if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 1, hp };
@@ -586,13 +692,16 @@ function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string
   const radius = has('rain') ? 2 : 0, size = has('size') ? 1 : 0, area = radius + size;
   let targets = area ? cb.units.filter((v) => !v.dead && dist(v.pos, aim) <= area) : cb.units.filter((v) => !v.dead && v.pos === aim);
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, school: d.school, option: d.option || null, stage, wild, area, targets: targets.map((t) => t.id) });
-  const school = d.school, line: string[] = [];
-  const one = (t: Unit, f: number) => {
+  const line: string[] = [];
+  // A design with two schools (Twin Souls, plan 2.8-19) runs both at release, the second school after the first.
+  const schools = [d.school, ...(d.school2 && d.school2 !== d.school ? [d.school2] : [])];
+  const one = (t: Unit, f: number) => { for (const school of schools) { if (t.dead) break; oneSchool(t, f, school); } };
+  const oneSchool = (t: Unit, f: number, school: string) => {
     if (school === 'damage') {
       const base = (SCHOOL.damage.damage || 25) * m.soulMult * sm * f * (has('rain') ? 0.6 : 1) * (has('at_once') ? 0.5 : 1);
       if (has('inverse') && t.side === u.side) { const s = grantShield(cb, t, base, u); line.push(t.name + ' is shielded (' + s + ')'); return; }
       if (!has('at_once')) {
-        const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (has('homing') ? 2 : 0) + condHit(u) - cover;
+        const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (has('homing') ? 2 : 0) + condHit(u, t, cb) - cover;
         if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); line.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return; }
         line.push('hits ' + t.name + ' (d20 ' + r + (r === 20 ? ', CRITICAL' : '') + ')' + harm(cb, rng, u, t, base * (r === 20 ? 2 : 1), 'soul'));
       } else line.push(harm(cb, rng, u, t, base, 'soul').replace(/^ · /, ''));

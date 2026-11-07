@@ -2,7 +2,7 @@
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
-import { holdersOf, briefOf, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -92,6 +92,7 @@ XP (per character, or charId "all")
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
 - Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
+- Optional fields (use only when they apply): perkLines (private lines an item owes its holder), conditions (an NPC Shaken for the scene; a character's condition for the scene, session or arc), traitState (what only you can set: a grudge, a cover, a rival), echo, karma (unlawful acts flagged), rest (short or long), identify, tutors (a tutor met for an advanced class), patrons (a pact, Devotion changes), patronMood (a prayer's TN). Start-of-fight enemies can carry kind, tags, unaware, no_surrender, hidden; combat.fear marks a frightening place. In a fight the engine runs surrender, Hidden, prayer and throws; you rule what they mean after.
 ${PERK_GUIDANCE ? PERK_GUIDANCE + '\n' : ''}
 COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
@@ -215,11 +216,23 @@ export function characterBrief(g: GameState, c: Character): string {
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
-  Perks: ${perks}. Overreach triggers: ${over}${magicBrief(c)}
+  Perks: ${perks}. Overreach triggers: ${over}${magicBrief(c)}${standingBrief(g, c)}
   Voices:
 ${voices}`;
 }
 
+/** Rules 1.3 standing: patron and Devotion, Karma, tutors, companions, story conditions, Narrator-set item state. One
+ * short line, only what is set (nothing for most characters). */
+function standingBrief(g: GameState, c: Character): string {
+  const bits: string[] = [];
+  if (c.patron) bits.push('patron ' + c.patron + ' (Devotion ' + (c.devotion ?? 3) + ')');
+  if (c.karma) bits.push('Karma ' + c.karma);
+  if (c.tutors?.length) bits.push('tutors for ' + c.tutors.join(', '));
+  if (c.companions?.length) bits.push('companions ' + c.companions.map((x) => x.name + ' (' + x.kind + (x.hp === 0 ? ', destroyed' : '') + ')').join(', '));
+  const conds = storyConds(g, c); if (conds.length) bits.push('conditions ' + conds.join(', '));
+  const st = Object.entries(c.state || {}); if (st.length) bits.push('state ' + st.map(([k, v]) => k + '=' + (typeof v === 'string' ? v : JSON.stringify(v))).join('; ').slice(0, 160));
+  return bits.length ? '\n  Standing: ' + bits.join('; ') + '.' : '';
+}
 export function partyPrompt(g: GameState): string {
   // Only combos someone in the party can earn right now (5+ in every skill, not yet held): the rest is noise and a spoiler.
   const combos = PERKS.filter((p: any) => p.tier === 'achieved' && Object.values(g.characters).some((c) => !c.dead && !comboEligible(c, p.id))).map((p: any) => `${p.id} (${p.skills.map((s: string) => SKILL[s].name).join(' + ')} 5 each): deed "${p.deed}"`).join('\n');
@@ -360,6 +373,27 @@ export function submitTool(g: GameState) {
     standing: { type: 'integer' }, change: { type: 'integer' },
   }, required: ['op'] } };
   schema.properties.chapter = { anyOf: [{ type: 'null' }, { type: 'object', properties: { title: { type: 'string' }, summary: { type: 'string' }, saga: { type: 'string' } }, required: ['title', 'summary', 'saga'] }], description: 'Only when the turn says CHAPTER DUE' };
+  // Rules 1.3: optional fields for perks, traits and classes (plan 4.3). Not required and enum-free, so the tool stays
+  // the same for the whole session (the prompt cache holds) and turns that don't use them cost nothing.
+  const S = { type: 'string' }, I = { type: 'integer' }, B = { type: 'boolean' };
+  const opt = (props: Record<string, any>, req: string[]) => ({ type: 'array', items: { type: 'object', properties: props, required: req } });
+  Object.assign(schema.properties.checks.items.properties, { target: { type: 'string', description: 'The NPC id or name the check is against' }, applies: { type: 'array', items: S, description: 'Item ids you rule apply to this check' },
+    kind: { type: 'string', description: '"save" for a save, else omit' }, family: { type: 'string', description: 'save family: body, brain, heart' }, footnote: { type: 'string', description: 'charId of an ally who helps' }, double: B, auto: { type: 'string', description: 'success or fail when the fiction settles it (an item said so)' } });
+  Object.assign(schema.properties.combat.anyOf[1].properties, { fear: { type: 'boolean', description: 'The place itself is frightening' } });
+  Object.assign(schema.properties.combat.anyOf[1].properties.enemies.items.properties, { kind: { type: 'string', description: 'human (default), robot, crawler, ork, upper_realm, cursed, beast, machine, turret' }, tags: { type: 'array', items: S, description: 'military, hunter, lawful, no_surrender, underworld, official…' }, unaware: B, no_surrender: B, hidden: B });
+  Object.assign(schema.properties.npcs.items.properties, { kind: S, tags: { type: 'array', items: S } });
+  schema.properties.actions.items.properties.act.enum.push('perk');
+  Object.assign(schema.properties.actions.items.properties, { id: { type: 'string', description: 'perk: the item key (perk:id, trait:id, class:id.move)' }, actionId: S, choice: S, text: S });
+  schema.properties.perkLines = opt({ charId: S, key: S, text: S }, ['charId', 'text']);
+  schema.properties.conditions = opt({ target: { type: 'string', description: 'NPC id or name, or a charId' }, id: { type: 'string', description: 'condition id' }, scope: { type: 'string', description: 'scene (default), session, arc' }, end: B }, ['target', 'id']);
+  schema.properties.traitState = opt({ charId: S, key: S, value: {} }, ['charId', 'key', 'value']);
+  schema.properties.echo = opt({ charId: S, n: I, why: S }, ['charId', 'n']);
+  schema.properties.karma = opt({ charId: S, amount: I, unlawful: B, why: S }, ['charId', 'amount']);
+  schema.properties.rest = { anyOf: [{ type: 'null' }, { type: 'object', properties: { kind: { type: 'string', description: 'short or long' }, settlement: B }, required: ['kind'] }] };
+  schema.properties.identify = opt({ charId: S, what: S }, ['charId', 'what']);
+  schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
+  schema.properties.patrons = opt({ charId: S, patron: { type: 'string', description: 'patron id to make a pact' }, devotion: { type: 'integer', description: 'Devotion change' } }, ['charId']);
+  schema.properties.patronMood = opt({ patron: S, tn: I }, ['patron', 'tn']);
   schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
   return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
 }

@@ -28,9 +28,15 @@ export interface DamageSrc {
   credit?: 'hp' | 'all' | 'none';
   /** The attack or spell's own context, for handlers. */
   mode?: string; weapon?: string;
-  /** The damage type (physical, elemental, lightning, emp…; plan 2.8 item 2 adds it to weapons). */
+  /** The damage type (physical, elemental, lightning, emp, fire, sigil, soul, true…; weapons.json damage_type). */
   dmgType?: string;
+  /** A non-lethal blow: taking a foe's last HP subdues it instead of killing it (rules 1.3). */
+  nonlethal?: boolean;
+  /** The special ammo the shot carried (armor_piercing, hollow_point, incendiary, enhanced), if any. */
+  ammo?: string | null;
 }
+/** Damage types that count as Elemental for 'Elemental damage taken' (spec: Derived stats). */
+export const ELEMENTAL_TYPES = new Set(['elemental', 'fire', 'lightning', 'frost', 'cold']);
 export interface DamageResult { dealt: number; shielded: number; killed: boolean; downedHit: boolean; prevented: boolean;
   /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
   amount: number }
@@ -42,7 +48,12 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;
   const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb };
-  if (cb) { emit(cb, 'damage_in', ctx); ctx.dmg = Math.max(0, Math.floor(ctx.dmg)); }
+  // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
+  // (−10% × Reaction Speed), each capped at 60%, before items.
+  if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
+  if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
+  if (cb) { emit(cb, 'damage_in', ctx); }
+  ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
   if (src.shield !== false && !t.downed) {
     ctx.phase = 'shield'; if (cb) emit(cb, 'damage_in', ctx);
@@ -64,7 +75,11 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   const prevHp = t.hp; res.amount = ctx.dmg;
   t.hp = Math.max(0, t.hp - ctx.dmg); res.dealt = prevHp - t.hp;
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
-  if (t.hp === 0) { if (t.side === 'foe') t.dead = true; else t.downed = true; res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
+  if (t.hidden && res.dealt > 0) t.hidden = false; // damage reveals a Hidden unit (rules 1.3)
+  if (t.hp === 0) {
+    if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); cb.log.push(t.name + ' is subdued, not killed.'); } }
+    else { if (t.side === 'foe' || t.companion) t.dead = true; else t.downed = true; res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
+  }
   if (cb) {
     ctx.phase = 'after'; ctx.dealt = res.dealt; ctx.killed = res.killed; emit(cb, 'damage_in', ctx);
     if (res.dealt > 0) emit(cb, 'on_damaged', { t, src, dmg: res.dealt, prevHp, cb });
@@ -84,7 +99,8 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
  * actually restored (a Downed unit is brought back up at max(1, n)). */
 export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string): { restored: number; revived: boolean } {
   if (t.dead) return { restored: 0, revived: false };
-  const ctx: any = { t, by, n: Math.floor(n), kind, cb };
+  // Healing received: +10% × Sensory (spec: Derived stats).
+  const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
   let restored = 0, revived = false;
   if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
@@ -94,6 +110,6 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
 }
 /** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
-  const ctx: any = { t, by, n: Math.floor(n), cb }; if (cb) emit(cb, 'shield_grant', ctx);
+  const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx);
   const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v); return v;
 }

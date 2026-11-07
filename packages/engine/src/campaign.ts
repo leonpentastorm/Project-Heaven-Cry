@@ -27,11 +27,14 @@ export interface CampaignZone {
   /** Dark zones halve sight except near light sources (spec: Vision). */
   dark?: boolean;
   /** People and enemies standing on this zone's overworld map (spec: Overworld rounds). Facing: N, E, S or W. */
-  npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W' }[];
+  npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W'; kind?: string; tags?: string[] }[];
   /** Art: the map painting under the grid and the zone's banner (asset ids). */
   art?: { map?: string; banner?: string };
   /** Area and fight music for this zone (spec: Music). */
   music?: { ambient?: Track; combat?: Track };
+  /** Zone tags items read (rules 1.3): free tags, terrain (open, forest, urban…), inside a city or not, urban,
+   * frightening (fear), the upper realm, the faction that holds it. */
+  tags?: string[]; terrain?: string; in_city?: boolean; urban?: boolean; fear?: boolean; upper_realm?: boolean; faction?: string;
 }
 export interface Campaign {
   id: string; title: string; short: string; kicker: string; art?: string; artNote?: string; focus?: string;

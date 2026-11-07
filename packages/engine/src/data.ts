@@ -17,7 +17,7 @@ export const CORES: CoreId[] = ['body', 'mind', 'soul'];
 
 export interface SkillDef { id: string; name: string; attribute: string; core: CoreId; slot: string; summary: string; overreach?: any; voice: any }
 export interface AttrDef { id: string; name: string; core: CoreId }
-export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[]; ammo?: string | null; weight_kg?: number; reload?: 'magazine' | 'loose'; magazine_kg?: number; reload_unit?: string }
+export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[]; ammo?: string | null; weight_kg?: number; reload?: 'magazine' | 'loose'; magazine_kg?: number; reload_unit?: string; reload_ap?: number | null; damage_type?: string; explosive?: boolean; tags?: string[] }
 export interface ClassDef { id: string; name: string; core: CoreId; role: string; signature: string[]; ranks: any; resource: any }
 export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastered' | 'achieved' | 'ultimate'; skills: string[]; requires: any[]; text: string; tiers?: any; deed?: string; flavour?: string }
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }

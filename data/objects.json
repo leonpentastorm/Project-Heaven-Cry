@@ -177,7 +177,8 @@
       "text": "A console or machine. Using it is a check, usually Proficiency.",
       "adjudication": "hybrid",
       "provisional": true,
-      "light": 1
+      "light": 1,
+      "electronic": true
     },
     {
       "id": "lamp",
@@ -190,7 +191,8 @@
       "light": 3,
       "text": "A work lamp, flare or brazier: lights 3 tiles around it, so darkness doesn't halve sight there. Shoot it out to make the dark.",
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "electronic": true
     },
     {
       "id": "poi",
@@ -215,6 +217,42 @@
       "text": "Where this map leads elsewhere. Travel is the Narrator's call.",
       "adjudication": "hybrid",
       "provisional": true
+    },
+    {
+      "id": "camera",
+      "name": "Camera",
+      "glyph": "◉",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": 10,
+      "electronic": true,
+      "provisional": true,
+      "text": "Watches a cone of the room. Slicers can blind it; shot, it goes dark."
+    },
+    {
+      "id": "alarm",
+      "name": "Alarm panel",
+      "glyph": "⚠",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": 10,
+      "electronic": true,
+      "provisional": true,
+      "text": "Raises the alarm when tripped. Slicers can silence it."
+    },
+    {
+      "id": "turret",
+      "name": "Emplaced turret",
+      "glyph": "⊕",
+      "blocks_move": true,
+      "blocks_sight": false,
+      "cover": "half",
+      "hp": 60,
+      "electronic": true,
+      "provisional": true,
+      "text": "A fixed gun on a mount. The Narrator runs it as an enemy; Slicers can take it over (a static device)."
     }
   ]
 }

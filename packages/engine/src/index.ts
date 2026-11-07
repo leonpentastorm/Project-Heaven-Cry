@@ -9,4 +9,5 @@ export * from './music';
 export * from './glossary';
 export * from './memory';
 export * from './magic';
+export * from './tactics';
 export * from './effects';
