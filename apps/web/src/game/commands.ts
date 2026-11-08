@@ -281,6 +281,19 @@ export function writePrefs(g: { code?: string } | null | undefined, charId: stri
   try { localStorage.setItem(PREF_KEY, JSON.stringify(all)); } catch { /* private mode: kept for this visit */ }
   try { window.dispatchEvent(new CustomEvent(EV_CMDS_CHANGED, { detail: { charId } })); } catch { /* */ }
 }
+// ---------- which side of the screen the turn card comes in on (this browser, every character) ----------
+export type CardSide = 'auto' | 'left' | 'right';
+const SIDE_KEY = 'phc.cutinSide';
+/** Auto (the default): the left, unless the card would cover your unit there; then the right. */
+export function readCardSide(): CardSide {
+  try { const v = typeof localStorage !== 'undefined' ? localStorage.getItem(SIDE_KEY) : null; return v === 'left' || v === 'right' ? v : 'auto'; } catch { return 'auto'; }
+}
+export function writeCardSide(side: CardSide) {
+  try { if (side === 'auto') localStorage.removeItem(SIDE_KEY); else localStorage.setItem(SIDE_KEY, side); } catch { /* private mode: kept for this visit */ }
+  try { window.dispatchEvent(new CustomEvent(EV_CMDS_CHANGED, { detail: { side } })); } catch { /* */ }
+}
+/** Does the card come in from the right? Auto asks whether the left would cover the unit (underLeft). */
+export const cardOnRight = (side: CardSide, underLeft: () => boolean) => (side === 'right' ? true : side === 'left' ? false : underLeft());
 /** Ask the turn intro (mounted over every screen) to open the customise dialog for a character. */
 export function openCustomise(charId: string | null | undefined) {
   if (!charId) return;
