@@ -57,7 +57,7 @@ export type HookName =
   | 'analyze' | 'action_cost' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
-  | 'evoked' | 'release_cost' | 'outburst_hold' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
+  | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
   | 'stim_start' | 'volley_end' | 'weapon_actions'
   // rules 1.3 shared subsystems (lane 0B)
   | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung'

@@ -441,7 +441,8 @@ describe('Bard', () => {
     const f = fightWith([cls('bard', 2, SOUL), {}], [{}]);
     const [bd, ally] = f.pcs; line(f, [bd, 3], [ally, 5], [f.foe, 13]);
     const u = f.turn(bd), d = designOf(f.unit(bd.id), 'buff', 'heal'); f.unit(ally.id).hp = 10;
-    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '5,2' });
+    // Rules 1.5: Begin, Pump to stage 1 (×1), Release.
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/release', aim: '5,2' });
     const hm = f.unit(bd.id).mg!.healMult, recv = f.unit(ally.id).healRecv || 1;
     expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(30 * hm * recv) * 40 / 30));
   });

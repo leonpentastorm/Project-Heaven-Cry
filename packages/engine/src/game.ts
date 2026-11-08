@@ -1,14 +1,14 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, CLASS, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, ENEMY, MANA_BANDS } from './data';
+import { ARCHETYPES, CLASS, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils } from './character';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { migrateCharacterSigils, migrateCharacterSoul, migrateDesign } from './character';
 import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -100,7 +100,8 @@ export interface GameState {
     /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
-    magic?: Record<string, { flux: number; strain: number; held: { design: string; stage: number; cost: number } | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string> }>;
+    magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>;
+      /** Rules 1.5: free Pumps left this round, the calming ways used this round. */ freePumps?: number; calmFight?: boolean; calmTend?: boolean }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
     /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
@@ -198,7 +199,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }[];
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }[];
   /** Place, move, update or remove people and enemies on the overworld map. */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[]; hidden?: boolean }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
@@ -272,9 +273,13 @@ export type Action =
   | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string }
   // Magic (spec: Mana, rules 1.2)
   | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
-  | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean }
+  | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
-  | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/forget'; charId: string; designId: string }
+  // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
+  // cast, Begin + Release at once at stage 0 (3 AP, ×0.6); then Pump, Release, Let go, Steady the heart, Feed (a glyph on your tile), Heart Overwatch.
+  | { type: 'combat/pump'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
+  | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
+  | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/forget'; charId: string; designId: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
   | { type: 'vote/suggest'; kind: 'reroll' | 'edit'; entryId: string; note?: string } | { type: 'vote/dismiss'; id: string }
   | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
@@ -300,7 +305,7 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
   hidden?: boolean }
 
 export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk'
-  | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise';
+  | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise' | 'pump' | 'letgo' | 'steady' | 'feed' | 'heartwatch';
 export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
 export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
   /** A Foreseen rewind (Conscience Mastered): the character whose once-a-session use it is (kept spent after the rewind). */
@@ -339,7 +344,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
-  for (const c of Object.values(g.characters || {})) { const notes = migrateCharacterSigils(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441)
+  for (const c of Object.values(g.characters || {})) { const notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c)]; if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441), rules 1.5 designs
   try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
@@ -616,7 +621,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase === 'combat') fail('Learn after the fight.');
       if (c!.learnedScene === g.story.scene.n && g.phase === 'story') fail('One new thing a scene: it takes a rest to sink in.');
       if (a.from === 'ally') {
-        const ok = Object.values(g.characters).some((x) => x.id !== c!.id && !x.dead && (a.word ? (x.sigils || []).includes(a.word) : a.module ? (x.soulKnown?.modules || []).includes(a.module) : (x.soulKnown?.schools || []).includes(a.school || '')));
+        const ok = Object.values(g.characters).some((x) => x.id !== c!.id && !x.dead && (a.word ? (x.sigils || []).includes(a.word) : a.module ? (x.soulKnown?.modules || []).includes(a.module) : a.tone ? (x.soulKnown?.tones || []).includes(a.tone) : (x.soulKnown?.schools || []).includes(a.school || '')));
         if (!ok) fail('Nobody in the squad knows that to teach it.');
       } else {
         if (!a.word) fail('A Sigil plate teaches a word.');
@@ -637,10 +642,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (d.school2) { if ((c!.skills.will_power || 0) < 5) fail('Two schools need Will Power 5.'); if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) fail('Pick a second school you know.'); }
       const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) fail('Use only modules you know.');
       if (mods.length > moduleSlots(c!)) fail('At most ' + moduleSlots(c!) + ' module' + (moduleSlots(c!) === 1 ? '' : 's') + ' (Will Power).');
-      const opts = (SCHOOL[d.school] as any).options as string[] | undefined;
-      const option = d.option && opts && opts.some((o) => o.replace(/^to_/, '').startsWith(d.option!)) ? d.option : undefined;
+      { const why = designShapeError(mods); if (why) fail(why); }
+      // A tone (rules 1.5): one you know; the first one is free at Visualization 1 (learned with this design).
+      const tone = d.tone && d.tone !== 'raw' ? d.tone : undefined;
+      if (tone) { if (!TONE[tone]) fail('No such tone.'); const kt = (k.tones ||= []); if (!kt.includes(tone)) { if ((c!.skills.visualization || 0) >= 1 && !kt.length) { kt.push(tone); c!.soulKnown = { ...k, tones: kt }; } else fail('You haven\'t learned the ' + TONE[tone].name + ' tone.'); } }
+      const option = optionOf(d.school, d.option), option2 = d.school2 ? optionOf(d.school2, d.option2) : undefined;
       const list = (c!.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
-      const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}) };
+      const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}), ...(option2 ? { option2 } : {}), ...(tone ? { tone } : {}) };
       if (at >= 0) list[at] = clean; else { if (list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.'); list.push(clean); }
       return;
     }
@@ -1147,7 +1155,12 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/scuff': err = scuffGlyph(cb!, u); break;
     case 'combat/vent': err = ventFlux(cb!, u); break;
     case 'combat/core': err = swapCore(cb!, u); break;
-    case 'combat/outburst': err = beginOutburst(cb!, g.rng, u, a.design, a.aim ? tileKey(g, a.aim) : undefined, !!a.hold); break;
+    case 'combat/outburst': err = beginOutburst(cb!, g.rng, u, a.design, a.aim ? tileKey(g, a.aim) : undefined, a.hold ?? !a.aim, { watch: !!a.watch }); break;
+    case 'combat/pump': err = pumpOutburst(cb!, g.rng, u); break;
+    case 'combat/letgo': err = letGo(cb!, u); break;
+    case 'combat/steady': err = steadyHeart(cb!, u); break;
+    case 'combat/feed': err = feedOutburst(cb!, u); break;
+    case 'combat/heartwatch': err = setHeartWatch(cb!, u, a.on !== false); break;
     case 'combat/release': err = releaseOutburst(cb!, g.rng, u, a.aim ? tileKey(g, a.aim) : undefined); break;
     case 'combat/syphon': err = syphonMana(cb!, u); break;
     case 'combat/crystallise': err = crystalliseCore(cb!, u); break;
@@ -1541,7 +1554,7 @@ const ENEMY_TIERS = ['minion', 'soldier', 'elite', 'boss'];
 const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard captain|hostile|soldier|trooper|enemy rearguard trooper)$/i;
 
 // ---------- magic on the story map and between the story and fights (spec: Mana, rules 1.2) ----------
-const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'];
+const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise', 'pump', 'letgo', 'steady', 'feed', 'heartwatch'];
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
@@ -1549,14 +1562,19 @@ function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: 
   return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
     case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
     case 'scuff': return scuffGlyph(cb, u);
     case 'vent': return ventFlux(cb, u);
     case 'core': return swapCore(cb, u);
-    case 'outburst': return a.design ? beginOutburst(cb, rng, u, a.design, aim, !!a.hold) : 'Pick a design.';
+    case 'outburst': return a.design ? beginOutburst(cb, rng, u, a.design, aim, a.hold ?? !aim, { watch: !!a.watch }) : 'Pick a design.';
+    case 'pump': return pumpOutburst(cb, rng, u);
+    case 'letgo': return letGo(cb, u);
+    case 'steady': return steadyHeart(cb, u);
+    case 'feed': return feedOutburst(cb, u);
+    case 'heartwatch': return setHeartWatch(cb, u, a.on !== false);
     case 'release': return releaseOutburst(cb, rng, u, aim);
     case 'syphon': return syphonMana(cb, u);
     case 'crystallise': return crystalliseCore(cb, u);
@@ -1575,7 +1593,8 @@ function magicIn(g: GameState, cb: Combat) {
   cb.glyphSeq = Math.max(0, g.story.glyphSeq || 0, ...[...(cb.glyphs || []), ...(cb.zones || []), ...walls].map((x) => +String(x.id).replace(/\D/g, '') || 0));
   for (const u of cb.units) {
     const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
-    if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held || null; u.mg.cast = !!s.cast; }
+    if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
+      if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; }
     if (s.condBy) u.condBy = { ...s.condBy };
     if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
@@ -1601,6 +1620,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   for (const u of cb.units) if (u.charId) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };
     m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
+      ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
       ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
     if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
@@ -1613,7 +1633,8 @@ function storyMagicRound(g: GameState) {
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
-  for (const u of cb.units) if (u.charId) { magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u, g.rng); if (u.mg) u.mg.cast = false; }
+  // Rules 1.5: the round that ends is the area map's turn: the burn and stillness first, then the new turn's start.
+  for (const u of cb.units) if (u.charId) { if (u.mg) magicTurnEnd(cb, g.rng, u); magicTurnStart(cb, g.rng, u); condTurnEnd(cb, u, g.rng); if (u.mg) u.mg.cast = false; }
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, false, true);
   magicOut(g, cb, false);
   g.story.objects = cb.objects; // RAISE walls crumble on the area map too
@@ -1628,8 +1649,20 @@ function storyFx(g: GameState, cb: Combat) {
   for (const e of cb.fx) list.push({ ...e, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) });
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
 }
-/** Learn a word, a school or a module (spec: The Magic panel). */
-function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string }, why: string): string {
+/** A school's option as the design stores it ('heal', 'hit', 'defense', 'push', 'pinned', 'fear'…), or undefined. */
+function optionOf(school: string, o?: string): string | undefined {
+  const opts = (SCHOOL[school] as any)?.options as string[] | undefined;
+  return o && opts && opts.some((x) => x.replace(/^to_/, '').startsWith(o)) ? o : undefined;
+}
+/** Rules 1.5: one form module (Wave, Burst, Aura, Lance) at most; Size needs a shape. */
+export function designShapeError(mods: string[]): string | null {
+  const forms = mods.filter((m) => (MODULE[m] as any)?.form);
+  if (forms.length > 1) return 'One shape a design (' + forms.map((m) => MODULE[m].name).join(' or ') + ').';
+  if (mods.includes('size') && !forms.length) return 'Size needs a shape (Wave, Burst, Aura or Lance).';
+  return null;
+}
+/** Learn a word, a school, a module or a tone (spec: The Magic panel). */
+function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string; tone?: string }, why: string): string {
   if (m.word) {
     const word = m.word.trim().toLowerCase(); // the Narrator may write the word as it is drawn (FIRE)
     if (!SIGIL[word]) return 'No such word.';
@@ -1640,6 +1673,7 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
   const k = (c.soulKnown ||= { schools: [], modules: [] });
   if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
   if (m.module) { if (!MODULE[m.module]) return 'No such module.'; if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
+  if (m.tone) { if (!TONE[m.tone] || m.tone === 'raw') return 'No such tone.'; const kt = (k.tones ||= []); if (!kt.includes(m.tone)) { kt.push(m.tone); push(g, { kind: 'system', text: c.name + ' learns the ' + TONE[m.tone].name + ' tone of Outbursts (' + why + ').' }); } return ''; }
   return 'Nothing to learn.';
 }
 
@@ -1809,7 +1843,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     // The action's toggles (Verse of War's "In verse"…) ride on the map the spell runs on, the fight's too.
     const run = (cbx: Combat, uu: Combat['units'][number], rng: Rng) => { (cbx as any).mods = a.mods || []; try { return performMagic(cbx, rng, uu, a, tile, aim, g); } finally { delete (cbx as any).mods; } };
     // A spell that would touch a person on the map starts a fight, as an attack does (spec: Overworld rounds).
-    if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !a.hold)) {
+    if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !(a.hold ?? !a.aim))) {
       // Check it would work at all (on a copy, without touching the dice), then see whether it aims at anyone on the map.
       const dry: Combat = JSON.parse(JSON.stringify(cb)), e0 = run(dry, dry.units.find((x) => x.id === u.id)!, { state: g.rng.state }); if (e0) fail(e0);
       const npc = (a.act === 'evoke' && tile ? evokeTargets(cb, u, tile, aim, evokeOptsOf(g, a)) : spellTargets(cb, u, a.act, tile, aim, a.design)).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
@@ -2143,7 +2177,7 @@ export type SandboxAction =
   | { type: 'sandbox/level'; charId: string; level: number } | { type: 'sandbox/skill'; charId: string; skill: string; points: number }
   | { type: 'sandbox/perk'; charId: string; perk: string; tier?: 'I' | 'II' | null } | { type: 'sandbox/trait'; charId: string; trait: string; on?: boolean }
   | { type: 'sandbox/refill'; charId?: string }
-  | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string }
+  | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
   | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number };
@@ -2706,27 +2740,31 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     }
     case 'sandbox/learn': {
       const c = mine(a.charId);
-      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.');
-      if (!a.word && !a.school && !a.module) fail('Pick a word, a school or a module.');
+      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.'); if (a.tone && (!TONE[a.tone] || a.tone === 'raw')) fail('No such tone.');
+      if (!a.word && !a.school && !a.module && !a.tone) fail('Pick a word, a school, a module or a tone.');
       sbChange(g, c, () => {
         if (a.word && !(c.sigils ||= []).includes(a.word)) c.sigils.push(a.word); // the Proving Ground ignores the Brain Power cap
         const k = (c.soulKnown ||= { schools: [], modules: [] });
         if (a.school && !k.schools.includes(a.school)) k.schools.push(a.school);
         if (a.module && !k.modules.includes(a.module)) k.modules.push(a.module);
+        if (a.tone && !(k.tones ||= []).includes(a.tone)) k.tones.push(a.tone);
       });
-      sbLog(g, c.name + ' learns ' + [a.word && SIGIL[a.word].word, a.school && SCHOOL[a.school].name + ' (school)', a.module && MODULE[a.module].name + ' (module)'].filter(Boolean).join(', ') + '.');
+      sbLog(g, c.name + ' learns ' + [a.word && SIGIL[a.word].word, a.school && SCHOOL[a.school].name + ' (school)', a.module && MODULE[a.module].name + ' (module)', a.tone && TONE[a.tone].name + ' (tone)'].filter(Boolean).join(', ') + '.');
       return;
     }
     case 'sandbox/design': {
       const c = mine(a.charId), d = a.design;
       if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
-      const mods = [...new Set(d.modules || [])].filter((x) => MODULE[x]).slice(0, 4);
+      const mods = migrateDesign({ id: '', name: '', school: d.school, modules: [...new Set(d.modules || [])] }).modules.filter((x) => MODULE[x]).slice(0, 4);
+      { const why = designShapeError(mods); if (why) fail(why); }
+      const tone = d.tone && d.tone !== 'raw' && TONE[d.tone] ? d.tone : undefined;
       sbChange(g, c, () => {
         const k = (c.soulKnown ||= { schools: [], modules: [] });
         for (const s of [d.school, d.school2].filter(Boolean) as string[]) if (!k.schools.includes(s)) k.schools.push(s);
         for (const m of mods) if (!k.modules.includes(m)) k.modules.push(m);
+        if (tone && !(k.tones ||= []).includes(tone)) k.tones.push(tone);
         const list = (c.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
-        const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}) };
+        const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}), ...(d.school2 && d.option2 ? { option2: d.option2 } : {}), ...(tone ? { tone } : {}) };
         if (at >= 0) list[at] = clean; else { if (list.length >= 8) fail('Eight designs at most here: forget one first.'); list.push(clean); }
       });
       return;

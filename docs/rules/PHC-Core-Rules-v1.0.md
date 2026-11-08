@@ -159,7 +159,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Physical | 1 + 0.1 × (Strength − 1) + 0.05 × Raw Power |
 | Elemental | 1 + 0.2 × (Expression − 1) + 0.1 × Visualization |
 | Sigil | 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power |
-| Soul | 1 + 0.1 × (Determination − 1) + 0.15 × Will Power |
+| Soul | 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (rules 1.5; 2.45 maxed) |
 | Healing and shields given | 1 + 0.1 × (Insight − 1) + 0.1 × Camaraderie |
 | Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Athletics |
 | Ambush | 1.5 + 0.05 × Ingenuity |
@@ -176,7 +176,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Sigil range bonus | +0.5 tile × Rumination, rounded down; added once to a Reach word's range, never to Touch (rules 1.4) |
 | Sigil duration bonus | +0.5 round × Brain Power |
 | Max MP (Emanator charge) | 100 + 100 × (Virtue − 1) |
-| Soul cast AP | 3 − 0.5 × Empathy, minimum 1 |
+| Soul cast AP | 2 (rules 1.5: Begin, and class moves cast like an Outburst; Swift 1). Empathy instead gives free Pumps: 1 a round from Empathy 3, 2 from 7 |
 | Soul mana cost | −5% × (Insight − 1) |
 | Soul range bonus | +0.5 tile × Lore Master |
 | Mana Syphon bonus | +10% × (Determination − 1) + 10% × Will Power |
@@ -221,7 +221,7 @@ Each class's three signature moves, and all 21 advanced classes (six added in ru
 
 **A turn.**
 
-1. **Start:** you get 6 AP. Conditions tick. Your weapon loses 2 Heat. If you didn't cast a Soul spell last turn, Strain drops by 1.
+1. **Start:** you get 6 AP. Conditions tick. Your weapon loses 2 Heat. Strain drops by 1 (always; rules 1.5), then a held Outburst swells.
 2. **Act:** spend AP on actions, in any order.
 3. **End:** unspent AP is lost, except AP held for Overwatch.
 
@@ -292,8 +292,9 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Overwatch: hold AP for one shot at the first enemy that moves into your line | AP of the shot |
 | Draw a Sigil glyph (on your own tile only, rules 1.4) | Glyph AP cost, see Derived stats (draft 1.2) |
 | Evoke a Sigil Line (within 1 tile of a glyph, not on a middle one; rules 1.4) | 1 (draft 1.2) |
-| Begin an Outburst / Release one | Soul cast AP / 1, free on the turn you Begin (draft 1.2) |
-| Cast a Soul spell | Soul cast AP |
+| Begin an Outburst / Pump / Release (rules 1.5) | 2 (Swift 1) / 1 (free while Empathy's free Pumps last) / 1 |
+| Steady the heart / Feed a glyph / Let it go / Heart Overwatch on | 1 / 1 / free / free |
+| Cast a Soul class move | Soul cast AP (2) |
 | Syphon (refill MP from the air) | 1 |
 | Vent (dump Flux into the air) | 1 |
 | Crystallise (make a mana core) | 3 |
@@ -892,9 +893,9 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 **Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
 
-> **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). **Its Sigil part is replaced by rules revision 1.4** (below); its Soul part stands.
+> **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). **Its Sigil part is replaced by rules revision 1.4** (below); its Soul part is replaced by **rules revision 1.5** (Outburst 2.0, below).
 
-> **Rules revision 1.4: Sigil magic (accepted 7 Nov 2026, with Leon's answers; decision 98).** It replaces the 1.2 Sigil rules: 40 words in five groups, the Line as the only shape, glyphs drawn only on your own tile, Reach words for range and the facing rule for aim. The mana meter, cores, Flux, the Evoker and Soul magic (rules 1.2, items 68–76) are unchanged. Every new number is provisional (items 415–491). The design is in `docs/design/sigil-1.4-proposal.md`; what it changes in classes, perks and traits is in `docs/design/sigil-1.4-impact.md`.
+> **Rules revision 1.4: Sigil magic (accepted 7 Nov 2026, with Leon's answers; decision 98).** It replaces the 1.2 Sigil rules: 40 words in five groups, the Line as the only shape, glyphs drawn only on your own tile, Reach words for range and the facing rule for aim. The mana meter, cores, Flux and the Evoker are unchanged; Soul magic is now rules revision 1.5 (Outburst 2.0, below). Every new number is provisional (items 415–491). The design is in `docs/design/sigil-1.4-proposal.md`; what it changes in classes, perks and traits is in `docs/design/sigil-1.4-impact.md`.
 
 ### The Magic panel and learning
 
@@ -1127,26 +1128,135 @@ Each element has one identity, used by every spell that carries it. Sigil magic 
 
 Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per kind: Afflictions bind and cage, Boons rise, Workings build or unbuild the ground.
 
-### Soul magic: Outbursts, charged and released (Soul, through an Emanator)
+### Soul magic: Outbursts, the heart (Soul, through an Emanator)
 
-An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0 and every Outburst pays straight from the air at +2 Strain. Designs, schools and modules work as before (rules below); what changed is **how an Outburst leaves you**. Every Soul mage holds it in the heart and chooses when to let go.
+> **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
-1. **Begin** (Soul cast AP): pick a ready design, pay its MP and take 1 Strain (2 in Flooded air). The Outburst is now **held**: your heart glows, and everyone can see it.
-2. **Release** (1 AP; free on the turn you Begin): it fires. Damage rolls Will Power against Defense; Control and Status call for saves.
-3. **Hold and grow.** At the start of each of your turns while you hold it, the Outburst grows one **stage** and you take 1 Strain (2 in Flooded air). Released at stage *n*, its effect is × (1 + 0.5 × (n − 1)), up to stage 4 (×2.5). While holding you can move, shoot or Syphon, but not Begin another Outburst.
-4. **Slipping.** Each time you take damage while holding, make a Will Power check against 10 + damage ÷ 10. Fail and it releases wild at a random creature within its range.
-5. **Strain and the Mana Short** are as before: if Strain passes your Strain limit, make the Mana Short check (d20 + Will Power modifier against 10 + 2 × the excess). Fail: 15 damage per point of Strain and Stunned, and anything held releases wild. **Natural 1: your heart bursts. You drop to 0 HP and are Downed, not dead:** the death-save and stim rules apply (Leon: no unlucky character eats rock). Strain falls by 1 at the start of a turn after one where you neither cast nor held, and resets after combat.
-6. **Design.** Out of combat, design Outbursts from one **school** plus **modules** (soul_modules.json). From Will Power 5 a design may combine two schools. Module slots: 1 + floor(Will Power ÷ 3). Improvising a new design in combat costs +1 AP.
-7. **Cost:** school base + modules (+20 for a second school), × the ambient multiplier, − your Insight saving. Paid from MP when you Begin.
-8. **Syphon** (1 AP): refill MP from the air (see table), × your Mana Syphon bonus.
-9. **Crystallise** (3 AP, needs the meter at 10 or more): the meter drops 10 and you make one standard core.
+An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0 and every Begin pays straight from the air at +2 Strain. You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
 
-| School | Base cost | Effect |
+#### 1. The heart cycle: Begin, Pump, Release
+
+1. **Begin** (2 AP; **Swift**: 1 AP): open a ready design. Pay its MP (cost below) and take **1 Strain** (2 in Flooded air). It is now **held at stage 0**: your heart glows and everyone can see it. You hold one Outburst at a time.
+2. **Pump** (1 AP each): +1 stage, up to **stage 4**. Every AP you don't spend moving or shooting can go into the heart. Pumping adds no Strain.
+3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers: 0 → ×0.6, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2.** The multiplier scales damage and healing; conditions keep their durations.
+4. **A snap cast** is Begin and Release at once (3 AP, ×0.6). A full turn (Begin, Pump × 3, Release) is ×1.8. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.2.
+5. **Holding past your turn keeps the stage.** At the start of each of your next turns the held Outburst **swells**: +1 stage for free and +1 Strain (+2 in Flooded air). While holding you can move, shoot, Syphon, Steady or Feed, but not Begin another.
+6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)).
+7. **Every Pump has its heartbeat** (section 9): pumping must feel like the heart filling.
+8. **Silenced:** no Begin, Pump, Feed or Release.
+9. **No slipping.** Taking damage while holding no longer makes the Outburst slip (1.2's check is gone): the Strain is the risk now.
+
+#### 2. Damage
+
+1. **Damage school base 20** × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
+2. Maxed (2.45): a snap cast 29, a full turn's stage 3 88, a held stage 4 108 (a long rifle is 120 a shot every turn; fixed Sigil FIRE 114). Outburst trades damage per turn for one chosen, unblockable big moment.
+3. **Raw** (no tone): Soul damage, **armour ignored**. **An element:** Elemental damage, **armour counts half** (Stone from stage 1: in full).
+4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 doubles the damage, a natural 1 misses). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. Control and Status call for saves (12 + your debuff strength), as before.
+
+#### 3. Strain, the burn, the Mana Short and calming the heart
+
+1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator.
+2. **Every turn start: −1 Strain, always** (whatever you did), before the swell.
+3. **Over the limit, no roll:** each point over **burns your heart for 8 true damage at the end of your turn**. It Downs, never kills (a foe is subdued).
+4. **The Mana Short is automatic at 3 over the limit:** you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. Will Power raises the limit; it no longer rolls you out of trouble.
+5. **No vent** (Leon: "feels like ripping off Sigil"). Strain falls by **calming the heart**, through what the body does, so fighting mages and support mages each have their own way. All five add to the turn-start −1:
+   1. **A turn of stillness:** end a turn in which you didn't Begin, Pump or Feed: −1 more.
+   2. **Fighting it out:** your first weapon attack each turn (melee or shot): −1.
+   3. **Tending others:** your first heal, stim, shield or cleanse given to an ally each turn: −1.
+   4. **Let it go** (free, on your turn): drop the held Outburst without releasing it: Strain falls by **its stage**; the built power is lost (a harmless violet sigh, the mana meter +1).
+   5. **Steady the heart** (1 AP, only while holding): −1 Strain, and the held Outburst **doesn't swell** at the start of your next turn. Growth traded for safety: keep a charged heart ready (for Heart Overwatch or the right moment) without drifting over the limit. (Leon, 8 Nov 2026: the first draft, Breathe for 2 AP with a Strain debt, was a net zero for 2 AP.)
+6. Strain and a held Outburst reset after combat. **Syphon** (1 AP) still draws the air into MP (see the meter table, × your Mana Syphon bonus). **Crystallise** (3 AP, the meter at 10 or more) still turns the air into a core (the meter −10).
+
+#### 4. Designs, schools and the second school
+
+1. **Design out of combat** from one **school** plus **modules** (soul_modules.json) and a **tone**. Module slots: 1 + floor(Will Power ÷ 3). **One shape a design** (a shape is a module and takes a slot); a tone takes no slot.
+2. **The second school** (from Will Power 5): a design has a **primary school** (full effect) and may add a **secondary school** with **its own option** at **half strength**, as a rider after the first. They must be different schools. Damage + Control (push) = damage, then a 1-tile push; Buff (heal) + Status (Inspired) = the heal, then Inspired 1 round; Control (Pinned) + Damage = Pinned and half damage (no roll). The rider lands only where the primary did (a Bolt that misses carries nothing). Half strength: half damage or healing, half the push (rounded down, at least 1), half the rounds (at least 1).
+3. **Cost** (paid at Begin): school base + modules + 10 for a second school + the tone's cost (an element 5, Raw 0), × the meter band's Soul cost, × (1 − 5% × (Insight − 1)), minimum 5; +20% under a Right Brain Debuff. Pumps cost no MP.
+4. **Learning.** Schools, modules and tones come from tutors, plates and the Narrator's grants after a moment that shakes you. **Tones:** one at Visualization 1 (picked with the starting design, or with your first toned design), more from tutors or plates.
+
+| School | Base cost | Effect (at ×1) |
 |---|---|---|
-| Damage | 20 | 25 Soul damage |
-| Buff | 20 | one ally: +2 to hit, or +2 Defense, or heal 30 × Healing multiplier; 2 rounds |
-| Control | 25 | push or pull 3 tiles, or Pinned, or Slowed (Body save) |
-| Status | 20 | Fear, Shaken, Confused, or a Left or Right Brain Debuff (Heart or Brain save) |
+| Damage | 20 | 20 damage × the Soul multiplier |
+| Buff | 20 | allies: heal 30 × Healing multiplier, or Inspired (+2 to hit), or Guarded (+2 Defense), 2 rounds |
+| Control | 25 | push or pull 3 tiles (Body save), or Pinned, or Slowed, 2 rounds |
+| Status | 20 | Fear, Shaken, Confused, or a Left or Right Brain Debuff, 2 rounds (Heart or Brain save) |
+
+#### 5. Elements (tones)
+
+The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), in the Soul style: violet heat blooming into the element's colour. A design's **tone** is Raw (default) or Fire, Storm (shock), Frost (freeze), Stone, Gale or Acid. An element's rider grows with the stage and lands on **enemies** it reaches (never allies):
+
+| Element | Stage 1 | Stage 2–3 | Stage 4 |
+|---|---|---|---|
+| Fire | — | Burning 2 rounds | Burning 2 rounds; it spreads to foes next to each target; the ground under the target burns (a fire tile) |
+| Storm | Ignores half cover | + chains to 1 more enemy within 2 tiles at half (no roll) | + 2 chains, and Shaken (Heart save) |
+| Frost | Slowed (Body save) | Slowed (no save) | Slowed and Pinned 1 round (no save) |
+| Stone | Armour counts in full, +10 damage | + Prone (Body save) | + rubble on the empty tiles around the target |
+| Gale | Push 2 | Push 3 | Push 3, and everyone else within 1 of the target pushed 2 |
+| Acid | Corroded (Body save) | Corroded (no save) | Corroded (no save), and Defense −2 more while it lasts |
+
+- **Stage 0** carries no rider (Stone's armour counts half there). Raw: no rider.
+- **The air shifts riders:** in Flooded air riders count one stage higher; in Thin air one lower (0 to 4).
+- Pushes go away from you (a Burst's away from where it landed).
+
+#### 6. Holding is gameplay
+
+1. **The aura:** holding an elemental Outburst leaks it: enemies adjacent to you at the start of your turn take **5 Elemental** and the tone's **stage-1 rider** (shifted by the air). Holding next to enemies is a threat. Raw leaks nothing.
+2. **Heart Overwatch:** while holding, turn on **watching** (free, Heart Overwatch). The first enemy who **enters your design's reach** in your sight (Ether: through walls) draws the release **as your reaction**, at the stage reached, aimed at it (an Aura around you). It uses your one reaction for the round.
+3. **Resonance:** an ally who releases after another ally's release in the same round gets **+0.2 on the stage multiplier for each earlier ally releaser** that round (the first release has already landed, so the bonus goes to the later ones).
+4. **Feeding** (1 AP): absorb a glyph on your own tile (yours, an ally's or an enemy's; never a Keystone) into your held Outburst: **+1 stage**; the glyph is gone. The one bridge between the two magics.
+
+#### 7. Shapes (forms) and showing them
+
+| Shape | Area | Reach and aim | Damage | How |
+|---|---|---|---|---|
+| Bolt | one target at the aim | 4 tiles (Far: 8) + the Soul range bonus, in sight | ×1, rolls | default |
+| Wave | a 3-tile cone from you toward the aim (Size: 4) | a direction | ×0.7, no roll | module |
+| Burst | radius 1 around the aimed tile (Size: radius 2) | 4 tiles (Far: 8) + range bonus, in sight | ×0.7, no roll | module |
+| Aura | radius 1 around you, all at once (Size: radius 2); your tile spared | none | ×0.6, no roll | module |
+| Lance | a straight line of 4 tiles from you toward the aim (8 directions), piercing everyone on it (Size: 6); walls and cover stop it | a direction | ×0.8, rolls each | module |
+
+- **Who is reached:** Damage, Control and Status reach **everyone in the area but you** (friendly fire); Buff reaches **allies only** (you too in an Aura); Inverse damage shields allies only. The cone uses the same test as Sigil's (within its length, about 45 degrees of the line to the aim); areas need sight from their centre unless Ether.
+- **Design cards** carry a shape icon and read like "WAVE · cone 3 · reach 4 · Fire".
+- **The preview standard (as Sigil 1.4's "What the player must see"):** before a Begin or a Release, and while holding, the grid shows the **reach ring**, the **tinted area**, **everyone affected** (allies and enemies marked) with **expected numbers after the multipliers and armour**, the **roll's chance** where it rolls, the **saves** with their TNs, **this stage's rider** in words, the AP, MP and **Strain after** with the **burn** (8 a point over) and **Short** warnings, and **Resonance** when it applies. The engine's `previewOutburstPlan` is the one source; the screen never computes its own numbers.
+
+**Modules under 1.5** (soul_modules.json; old designs convert on load):
+
+| Module | 1.5 |
+|---|---|
+| Move (Far) | survives: Bolt and Burst reach 8 |
+| Homing | survives: +2 to the roll, ignores half cover |
+| Swift | changed: Begin 1 AP |
+| Ether | survives: no sight needed; absorbs Teleport |
+| Right, Left | survive: the Status save family |
+| Time | survives: conditions +2 rounds (the "half again next turn" damage is gone) |
+| Inverse | survives: damage becomes a shield on allies |
+| Size | changed: a shape +1 (Lance +2); a Bolt can't take it |
+| Random | survives: the aim picked among creatures within reach |
+| Impact | survives (no effect: the default) |
+| At Once | survives: a Bolt or Lance with no roll, half damage |
+| **Wave, Burst, Aura, Lance** | **new: the shapes** |
+| Rain | **replaced by Burst** (Rain + Size → Burst + Size) |
+| Size alone on a single target | **becomes Burst** |
+| Teleport | **retired into Ether** |
+| Duplicate, Bounce, Periodic, Proximity, Expire, Mastery | **retired** (shapes and Storm's chains, Fire and Acid over time, Heart Overwatch, holding, stages) |
+
+A 1.2 held Outburst keeps its stage (stage *n* under 1.2 was × (1 + 0.5 × (*n* − 1)); it is read at the 1.5 table from now on).
+
+#### 8. Storm Hand (rules 1.5)
+
+1. **Charged by Battle:** each **melee hit** gives 1 Charge (max 3), not each kill (Leon: "need to be ATTACK").
+2. **Gauntlet Infusion:** melee hits carry the infused element's stage-1 rider with its effect and sound (Fire: Burning 1 round on a critical, else +5; Shock: chains to one adjacent enemy for half; Freeze: Slowed, Body save; Spark: +1 AP on a kill), plus the existing +10 Elemental for 5 MP.
+3. **Discharge:** spend all Charges with a melee hit: everyone adjacent takes 20 Elemental per Charge and the element's stage-N rider (N = Charges; fire Fire, shock Storm, freeze Frost from the table above; Spark none), with full effects and screen shake. The discharging hit gains no Charge.
+
+#### 9. Effects and sounds
+
+- **Pump:** a heartbeat thump and a violet ring pulse from the chest; pitch and brightness rise with each stage; at stage 4 the screen edge throbs. **Begin:** a breath in and the heart lights. **Swell:** a slow beat at turn start.
+- **Holding:** the token's heart glows by stage; an elemental aura ring (embers, static, frost mist, dust, wind, acid drip) around the token; aura ticks flash on adjacent enemies.
+- **Release:** per shape (bolt, wave, burst, aura, lance), Soul style per element (the Sigil 1.4 element module, family 'soul'). **Heart Overwatch:** a sharp gasp and the release snaps out of turn. **Resonance:** two hearts beat in sync, a linked ring. **Feeding:** the glyph's cyan squares drawn into the violet heart. **Mana Short:** the heartbeat stops, the screen desaturates, silence, then a crack. **Calming and Steady:** a long exhale and the glow cools. **Let go:** a violet sigh.
+
+#### 10. Resources on screen (all classes)
+
+Every class resource shows **below the HP bar** in the combat You card, the area-map HUD and the turn cut-in, large and labelled: ammo (loaded / spare, the ammo type), Evoker charge and spare cores, Flux, MP, **Strain (with its limit)**, **the held Outburst (design, stage, tone)**, Momentum, Charges, Devotion, Guard, Heat, and any other class or perk resource the runtime tracks. Each is a bar or pips with its name in words and a colour per the colour system, and a clear warning state (EMPTY, RELOAD, OVERLOAD SOON, OVER THE LIMIT). (Leon: testers asked "where does it say I need to reload my Sigil core? Oh, it's that 10 px line.")
 
 ### Magic advanced classes (draft)
 
@@ -2087,7 +2197,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 68. **Rules 1.2: Sigils on the map** (Leon; superseded by rules 1.4 where it names shapes, Line range or 2 glyphs a tile: items 415–452). Glyph AP (1 − 0.1 per Expression above 1, min 0.5), Evoke 1 AP, word charge on drawing plus 1 a glyph on firing, Line range 4 / 8 / 12 by length, glyphs lasting 2 rounds + duration bonus, Scuff 1 AP, reading at TN 12, 2 glyphs a tile, the three shapes and their ranges, enemy Sigil users Evoking your patterns.
 69. **The three new words** (SPARK 15 damage at 1 charge, PULL 3 tiles, SILENCE 1 round) replacing LINE, WALL and CONE.
 70. **Learning magic:** 2 starting words that must make a Stack (rules 1.4: a spell with a Reach word, item 438), 1 starting design, 4 + Brain Power words known, one word per long rest, Sigil plates, Narrator-granted modules.
-71. **Charge and release:** stages up to 4 (×1 to ×2.5), 1 Strain per held turn, the slip check (10 + damage ÷ 10), wild release.
+71. **Charge and release:** stages up to 4 (×1 to ×2.5), 1 Strain per held turn, the slip check (10 + damage ÷ 10), wild release. *(Superseded by rules 1.5: items 492–521.)*
 72. **Heart burst Downs, never kills** (Leon), using the existing death saves.
 73. **Glyph Mason and Grand Sigilist:** the Keystone's cost (2 AP + a core), Survey's 2 tiles, Enlarge (3 AP + 3 charge, once a combat, radius 2) and all 24 Grand forms.
 74. **Heartfed and Heartbinder:** the four gauges and what fills them, 10% per point, Link range 6, Share half, 2 Strain when a link is Downed.
@@ -3612,4 +3722,38 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 489. **Sigil log and previews (completeness batch 2).** (a) **Every save is logged:** a failed save shows its roll and TN beside the condition ("Pinned (1 round; body save 7 vs 14)"), every Affliction, FREEZE's Slowed and STEP's Body save included, and the conditions perks and traits set. (b) **A Stack's area** is centred on the caster (the facing rule). (c) **Class moves that cast Sigils** (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell) paint their area, the tiles they cover and who they affect on the grid before you confirm, as an Evoke does. (d) **Turrets** show their reach on both maps (item 480 c). PROVISIONAL.
 490. **Enemy COMMAND orders** (completeness batch 3; Leon's answers 4 and 8). An enemy caster's COMMAND gives the order that fits the creature at its aim, checked in this order: **move** (single-target spells only: no Burst, one missile, no CHAIN) a player standing next to one of the caster's side to the tile it can walk to in 3 tiles that is farthest from the caster's side, at least 2 tiles from all of them, never onto a tile under a field, trap, turret or wall of either side (the order never sends it into harm), worth 18 + 2 for each of the caster's side it stood next to; **halt** a player charging in with a melee weapon (item 469's test), worth 20; **drop** the weapon of an armed player who could shoot one of the caster's side (a ranged weapon, one of them in its range and sight), worth 16, or who stands next to one of them, worth 14; else **kneel** (Prone), worth 9. A burst whose aim tile holds nobody halts whoever it catches. The worth replaces item 469's flat 14 and is × the target's chance to fail its Brain save, as every condition's. So that a cheap control word is still weighed, the caster keeps, in each group of harmful spells, the strongest spell for each Affliction it knows beside the 6 strongest. The target obeys on its turn by the Commanded rules (item 481). Ties break by tile key; deterministic. PROVISIONAL.
 491. **The boss-tier caster** (completeness batch 3). enemies.json `casters` adds the *Sigil magister* (boss, magistrate pistol, spell bias ×1.2): the boss tier's nine default words (FIRE, SHOCK, SEEK, ARC, SPREAD, CHAIN, KIN, WARD, NULL; sigils.json `enemy_ai`) plus ACID, CONDENSE, MEND, STEP and COMMAND, Max Sigil words 4 (item 453). A boss foe given `sigils: true` still gets the nine default words. In the Proving Ground, from wave 10, on every champion wave (every 5th), the first Proving champion is a Sigil magister (same tier, same points). **The spells the AI weighs are kept per length:** with many words the strongest spells on paper are all 4 glyphs long, and a 4-glyph Line (4 glyphs, 3 steps and the Evoke: 8 AP at Glyph AP 1) never fits an enemy's 6 AP turn, so a caster with a large word set (the warden, the magister) cast nothing; item 469's pruning now keeps the strongest few of each length. PROVISIONAL.
+
+**Rules revision 1.5: Soul magic, Outburst 2.0 (accepted 8 Nov 2026; decision 99). Every number below is PROVISIONAL until the damage balance pass.**
+
+492. **Stage multipliers** 0 → ×0.6, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2 (soul_modules.json `cycle.stage_mult`); they scale damage and healing only, never durations.
+493. **The cycle's AP:** Begin 2 (Swift 1), Pump 1, Release 1; a snap cast (Begin + Release, `combat/outburst` with an aim) 3 AP at ×0.6. Class moves "at Soul cast AP" cost 2.
+494. **The swell:** +1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding, after the turn-start −1.
+495. **Empathy's free Pumps:** 1 a round from Empathy 3, 2 from 7 (`free_pumps` stat for items). Flagged strong (Leon's caveat): with the swell a held heart gains 2–3 stages a turn for Strain alone.
+496. **Damage:** school base 20 × the Soul multiplier 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed: snap 29, stage 3 88, stage 4 108).
+497. **Shape damage:** Bolt ×1, Lance ×0.8, Wave ×0.7, Burst ×0.7, Aura ×0.6; Bolt and Lance roll Will Power against Defense, the areas don't roll. Not in the proposal: added so an unrolled area isn't a full-damage Bolt on everyone.
+498. **Strain falls by 1 at the start of every one of your turns, always** (Leon), and the five calming ways add to it.
+499. **The burn:** 8 true damage a point over the limit at the end of your turn; it Downs, never kills (a foe is subdued).
+500. **The automatic Mana Short at 3 over:** Stunned 1 turn, a held Outburst wild, its element's stage-1 rider on your own tile (conditions only), then **Strain falls to the limit** (not in the proposal: otherwise the Short would repeat on every point).
+501. **Stillness:** a turn with no Begin, Pump or Feed (class casts count as a Begin). With the turn-start −1, a held heart that only waits nets −1 Strain a turn (+1 swell, −1, −1): holding still is cheap. Watch it at the table.
+502. **Fighting it out and Tending others** are once each per turn, on your own turn only (reaction shots and heals out of turn don't calm). Tending counts a heal or shield that lands, a stim, and each CLEANSE that ends a condition.
+503. **Let it go:** free, on your own turn; Strain −stage (0 at stage 0); the meter +1.
+504. **Steady the heart:** 1 AP, while holding, once per turn: −1 Strain and no swell at your next turn start (the Strain of the swell is skipped too).
+505. **The second school:** from Will Power 5, its own option, half strength (damage, healing, push rounded down to at least 1, rounds halved to at least 1), +10 MP (was +20); it lands only where the primary landed.
+506. **Tone cost** 5 MP for an element, 0 for Raw. One tone at Visualization 1, learned with the starting design or the first toned design; more by `magic/learn` (tone) from an ally, a tutor or the Narrator.
+507. **The riders table** (soul_modules.json `tones`): stage 0 none; enemies only; Fire's Burning has no save; Storm's Shaken at 4 has a Heart save; Stone's +10 and full armour from stage 1; Stone 4 puts rubble (difficult ground, no cover) on every empty tile around the target; Acid 4's Defense −2 more lasts as long as that Corroded.
+508. **The air's shift:** riders read one stage higher in Flooded air, one lower in Thin (0 to 4); the multiplier doesn't shift.
+509. **The aura:** 5 Elemental (Stone 15, armour in full) and the stage-1 rider (shifted) to enemies within 1 at your turn start, after the swell.
+510. **Heart Overwatch** is opt-in (`combat/heartwatch`, or Begin with `watch`): an enemy that steps from outside your design's reach to inside it, in sight, draws the release as your reaction. Reach: Bolt and Burst their range, Wave and Lance their length, Aura its radius.
+511. **Resonance:** +0.2 on the stage multiplier for each earlier ally releaser in the same round, on the later release (the first has already landed: "give each other" is credited forward). With 4 players the fourth gets +0.6. A wild release neither gives nor gets it.
+512. **Feeding:** 1 AP, +1 stage, any glyph on your own tile but a Keystone (an enemy's too).
+513. **Shapes:** areas as in section 7 (Wave cone 3, Burst radius 1, Aura radius 1, Lance 4; Size +1, Lance +2); hostile schools reach allies in the area (friendly fire), Buff allies only; a Lance stops at walls and cover tiles.
+514. **Module conversions:** Rain → Burst; Size alone → Burst; Rain + Size → Burst + Size; Teleport → Ether; Duplicate, Bounce, Periodic, Proximity, Expire and Mastery retire (soul_modules.json `retired`). Shape costs: Wave 15, Burst 20, Aura 15, Lance 15.
+515. **No slipping:** 1.2's Will Power check when hurt while holding is gone (not named in the proposal; Will Power "no longer rolls you out of trouble").
+516. **Raw on a Short's backlash:** no rider. A wild release from a Short picks among every creature within the design's reach (at least 1 tile).
+517. **Storm Hand:** Infusion's riders as section 8 (Fire +5 when not a critical; Shock's arc 5 × Elemental multiplier; Spark +1 AP within the ceiling of 9); Discharge's rider at stage N = Charges (max 3, so a Discharge never reaches a stage-4 rider); the discharging hit gains no Charge.
+518. **Hollow Heart** under 1.5: the burn ('strain' damage) is what Downs you; the trait's stability now hears it as well as a Short. To be re-derived with the Soul classes.
+519. **Vessel's body forms** keep the 1.2 stage table (×1 / ×1.5 / ×2 / ×2.5) until the class is re-derived.
+520. **Will Power's Overdraw (3) and Pure Heart (5)** name a Mana Short check, which no longer exists: to be re-derived (perks lane).
+521. **Old saves:** a 1.2 held Outburst keeps its stage number; designs and learned modules convert once (`c.soulRev = 15`).
+
 

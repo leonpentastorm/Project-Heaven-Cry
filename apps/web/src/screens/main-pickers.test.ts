@@ -50,7 +50,7 @@ describe('the Perks strip opens an action\'s own panel', () => {
     const { c, L } = story();
     const ch = G.characters[c.id] as any;
     ch.classId = 'medic'; ch.advancedClass = 'twinbound'; ch.skills.will_power = 3;
-    ch.soulKnown = { schools: ['damage', 'buff', 'control'], modules: ['homing', 'rain', 'swift'] };
+    ch.soulKnown = { schools: ['damage', 'buff', 'control'], modules: ['homing', 'burst', 'swift'] };
     const sp = () => L.renderVals().storyPerks.find((p: any) => /Manifest the twin/.test(p.label));
     expect(sp()).toBeTruthy(); sp().pick(); await tick();
     let P = L.renderVals().stripPick;
@@ -58,10 +58,10 @@ describe('the Perks strip opens an action\'s own panel', () => {
     let slots = P.fields[0].slots; expect(slots).toHaveLength(3);
     expect(slots[0].schools.map((o: any) => o.label)).toEqual(['Damage', 'Buff', 'Control']);
     expect(P.cantConfirm).toBe(true); expect(P.verdict).toMatch(/Pick a school for Outburst 1/);
-    // Slot 1: Damage + Homing + Rain (2 slots at Will Power 3: a third is locked).
+    // Slot 1: Damage + Homing + Burst (2 slots at Will Power 3: a third is locked).
     slots[0].schools[0].pick(); await tick();
     L.renderVals().stripPick.fields[0].slots[0].modules.find((m: any) => /Homing/.test(m.label)).pick(); await tick();
-    L.renderVals().stripPick.fields[0].slots[0].modules.find((m: any) => /Rain/.test(m.label)).pick(); await tick();
+    L.renderVals().stripPick.fields[0].slots[0].modules.find((m: any) => /Burst/.test(m.label)).pick(); await tick();
     slots = L.renderVals().stripPick.fields[0].slots;
     expect(slots[0].modsHead).toBe('MODULES · 2 / 2'); expect(slots[0].modules.find((m: any) => /Swift/.test(m.label)).locked).toBe(true);
     // Slot 2: Buff, its option (the school's first is preset; pick +2 Defense); slot 3: Control.
@@ -73,7 +73,7 @@ describe('the Perks strip opens an action\'s own panel', () => {
     expect(P.cantConfirm).toBe(false); expect(P.verdict).toMatch(/^The twin: /);
     P.confirm(); await tick();
     const tw = (G.characters[c.id] as any).state.twin;
-    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'rain'], ''], ['buff', [], 'defense'], ['control', [], 'push']]);
+    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'burst'], ''], ['buff', [], 'defense'], ['control', [], 'push']]);
     expect(G.story.entries.some((e: any) => /twin leans through for the first time/.test(e.text))).toBe(true);
     expect(sp().off).toBe(true);
   });

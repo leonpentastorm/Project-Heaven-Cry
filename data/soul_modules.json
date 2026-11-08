@@ -157,9 +157,9 @@
       "base_cost": 20,
       "text": "Allies: heal 30 × Healing multiplier × the stage multiplier, or Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds.",
       "options": [
-        "heal_30",
         "to_hit_2",
-        "defense_2"
+        "defense_2",
+        "heal_30"
       ],
       "duration_rounds": 2,
       "heal": 30,

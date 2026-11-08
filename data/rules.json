@@ -325,7 +325,7 @@
       "physical": "1 + 0.1*(strength-1) + 0.05*raw_power",
       "elemental": "1 + 0.2*(expression-1) + 0.1*visualization",
       "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
-      "soul": "1 + 0.1*(determination-1) + 0.15*will_power",
+      "soul": "1 + 0.05*(determination-1) + 0.1*will_power",
       "healing_given": "1 + 0.1*(insight-1) + 0.1*camaraderie",
       "critical": "2 + 0.1*(perception-1) + 0.05*athletics",
       "ambush": "1.5 + 0.05*ingenuity",
@@ -338,7 +338,8 @@
       "sigil_range_bonus_tiles": "0.5*rumination",
       "sigil_duration_bonus_rounds": "0.5*brain_power",
       "max_mp": "100 + 100*(virtue-1)",
-      "soul_cast_ap": "max(1, 3 - 0.5*empathy)",
+      "soul_cast_ap": "2 (Begin; Swift 1; rules 1.5)",
+      "free_pumps_per_round": "1 from empathy 3, 2 from empathy 7",
       "soul_cost_pct": "-5*(insight-1)",
       "soul_range_bonus_tiles": "0.5*lore_master",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
@@ -421,7 +422,7 @@
         "gain 6 AP",
         "conditions tick",
         "weapon heat -2",
-        "strain -1 if no soul cast last turn"
+        "strain -1 (always; rules 1.5), then a held Outburst swells (+1 stage, +1 Strain)"
       ],
       "end": "unspent AP lost except AP held for Overwatch"
     },
@@ -1089,36 +1090,58 @@
         "out_of_combat": true,
         "schools_per_spell": 1,
         "two_schools_from_will_power": 5,
-        "second_school_extra_cost": 20,
+        "second_school_extra_cost": 10,
         "module_slots": "1 + floor(will_power/3)",
         "ready_designs": "2 + floor(empathy/2)",
-        "improvise_in_combat_extra_ap": 1
+        "improvise_in_combat_extra_ap": 1,
+        "second_school": "a rider at half strength with its own option",
+        "forms_per_design": 1
       },
-      "cost": "(school base + modules + 20 if second school) * band soul_cost_mult * (1 + soul_cost_pct/100)",
+      "cost": "(school base + modules + 10 if second school + tone cost) * band soul_cost_mult * (1 + soul_cost_pct/100), min 5",
       "syphon": "band syphon_mp * (1 + syphon_bonus_pct/100)",
       "strain": {
-        "per_cast": 1,
-        "per_cast_flooded": 2,
+        "per_begin": 1,
+        "per_begin_flooded": 2,
+        "per_held_turn": 1,
+        "per_held_turn_flooded": 2,
         "limit": "strain_limit",
-        "decay": "-1 at start of a turn after one with no cast",
-        "reset": "after combat",
+        "decay": "-1 at the start of every one of your turns, always",
+        "burn": "8 true damage per point over the limit at the end of your turn",
         "mana_short": {
-          "check": "d20 + mod(will_power) >= 10 + 2*excess",
-          "fail": {
-            "damage_per_strain": 15,
-            "condition": "stunned"
-          },
-          "nat1": "heart bursts: drop to 0 HP"
-        }
+          "automatic_at_over": 3,
+          "effect": "Stunned 1 turn; a held Outburst goes off wild with its element's stage-1 rider on your own tile; Strain falls to the limit"
+        },
+        "calming": [
+          "stillness -1",
+          "first weapon attack each turn -1",
+          "first heal/stim/shield/cleanse given each turn -1",
+          "let it go -stage",
+          "steady the heart (1 AP, holding) -1 and no swell next turn"
+        ],
+        "reset": "after combat"
       },
-      "hit": "damage: will_power vs defense; control/status: saves",
+      "hit": "damage: Bolt and Lance roll will_power vs defense; Wave, Burst and Aura don't roll; control/status: saves",
       "crystallise": {
         "ap": 3,
         "meter_min": 10,
         "meter_delta": -10,
         "yields": "standard core"
       },
-      "data": "soul_modules.json"
+      "data": "soul_modules.json",
+      "revision": "1.5",
+      "cycle": {
+        "begin_ap": 2,
+        "pump_ap": 1,
+        "release_ap": 1,
+        "stage_mult": [
+          0.6,
+          1,
+          1.4,
+          1.8,
+          2.2
+        ],
+        "swell": "+1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding"
+      }
     },
     "prayer": {
       "requires": {

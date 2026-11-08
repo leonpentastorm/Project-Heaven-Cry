@@ -150,7 +150,7 @@ describe('The Twin Pays', () => {
     f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, hold: true, mods: ['twin'] } as any);
     expect(f.pc.mg!.mp).toBe(mp); expect(manaOf(f.cb)).toBe(mana); expect(f.pc.mg!.strain).toBe(0);
     withGame(f.g, () => emit(f.cb, 'turn_end', { u: f.pc, cb: f.cb, rng: f.g.rng }));
-    const u = f.turn(f.pc); expect(u.mg!.held!.stage).toBe(2); expect(u.mg!.strain).toBe(0);
+    const u = f.turn(f.pc); expect(u.mg!.held!.stage).toBe(1); expect(u.mg!.strain).toBe(0); // rules 1.5: Begin at stage 0, the swell to 1
     // A second cast this fight pays as usual.
     u.ap = 9; f.act({ type: 'combat/release', unitId: u.id, aim: f.foe.pos });
     const mp2 = f.pc.mg!.mp; f.pc.ap = 9; f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, hold: true, mods: ['twin'] } as any);
@@ -281,9 +281,10 @@ describe('Sigil Savant', () => {
 
 describe('Hollow Heart', () => {
   it('a Mana Short leaves you Downed but stable: death saves never fail, hits add no failures', () => {
-    const f = soulFight({}, { traits: ['hollow_heart'] }); f.pc.mg!.strain = f.pc.mg!.strainLimit;
+    // Rules 1.5: no roll; the heart's burn at the turn's end (8 a point over the limit) is what Downs you.
+    const f = soulFight({}, { traits: ['hollow_heart'] }); f.pc.mg!.strain = f.pc.mg!.strainLimit + 2; f.pc.hp = 10;
     f.g.rng.state = rngFor(1).state;
-    f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, hold: true });
+    f.act({ type: 'combat/end-turn', unitId: f.pc.id });
     expect(f.pc.downed).toBe(true); expect(logHas(f.cb, /hollow and stable/)).toBe(true);
     withGame(f.g, () => applyDamage(f.cb, f.pc, 30, { by: f.foe, type: 'weapon' }));
     expect(f.pc.saves.fail).toBe(0);

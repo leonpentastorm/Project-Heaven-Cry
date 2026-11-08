@@ -14,6 +14,8 @@
 import type { Combat, Unit } from '../combat';
 import { emit } from './hooks';
 
+/** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
+export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
 export interface DamageSrc {
   /** Who did it (null: a hazard, a trap, bleeding, burning). */
   by?: Unit | null;
@@ -106,10 +108,13 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
   if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
   else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
   if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });
+  if (cb && by && (restored > 0 || revived)) tendHook.f?.(cb, by, t);
   return { restored, revived };
 }
 /** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx);
-  const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v); return v;
+  const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v);
+  if (cb && by && v > 0) tendHook.f?.(cb, by, t);
+  return v;
 }

@@ -294,6 +294,7 @@ register({
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 /** One extra school's effect at release, for the targets the design reaches (Twin Souls' third school). */
 function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, aim: string): string {
+  // TODO(outburst-2.0): Twin Souls' third school runs its own 1.2 release maths (25 base, Rain, no shapes or tones); re-derive on magic.ts outburstArea/outburstDamage.
   const m = u.mg!, has = (x: string) => (d.modules || []).includes(x), area = (has('rain') ? 2 : 0) + (has('size') ? 1 : 0);
   const targets = cb.units.filter((v) => !v.dead && (area ? dist(v.pos, aim) <= area : v.pos === aim));
   const out: string[] = [];
@@ -416,6 +417,7 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
     for (const x of hits) {
       const t = x.unit; if (t.dead) continue;
       s.fusing = { mult: x.mult };
+      // TODO(outburst-2.0): this release filters 1.2 modules (Rain); under 1.5 the shapes (wave/burst/aura/lance) decide the area.
       m.held = { ...held }; d.modules = [...mods0.filter((y) => !['rain', 'size', 'random', 'move'].includes(y)), 'ether']; m.soulRange = range0 + 99;
       u.ap += SPELL_AP.release; const err = releaseOutburst(cb, rng, u, t.pos); if (err) { u.ap -= SPELL_AP.release; break; }
     }
@@ -697,7 +699,7 @@ register({
   id: 'hollow_heart', claims: 'all',
   stat: (h, stat) => (stat === 'death_save' && h.u?.downed && stateOf(h).stable ? 20 : 0),
   on: {
-    on_downed: (ctx, h) => { if (me(h, ctx.victim) && !ctx.victim.dead && ctx.src?.type === 'short') { stateOf(h).stable = true; log(ctx.cb, h.u!.name + ' falls unconscious, hollow and stable (Hollow Heart).'); } },
+    on_downed: (ctx, h) => { if (me(h, ctx.victim) && !ctx.victim.dead && (ctx.src?.type === 'short' || ctx.src?.type === 'strain')) { /* TODO(outburst-2.0): rules 1.5 has no Downing Short; the heart's burn ('strain') is what Downs now */ stateOf(h).stable = true; log(ctx.cb, h.u!.name + ' falls unconscious, hollow and stable (Hollow Heart).'); } },
     turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (!h.u!.downed) s.stable = false; else if (s.stable) h.u!.saves.ok = 0; },
     damage_in: (ctx, h) => {
       if (ctx.phase !== 'reduce') return;

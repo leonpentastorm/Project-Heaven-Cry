@@ -20,7 +20,7 @@ import { WEAPON, SIGIL, SCHOOL, MODULE } from '../data';
 import { mod, moduleSlots, packOf, maxHp } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
-  evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, manaBand, manaOf,
+  evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
@@ -78,32 +78,15 @@ const sigilBlock = (cb: Combat, u: Unit): string | null => {
   if (u.downed || u.dead) return 'Downed.'; if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
   return null;
 };
-/** Strain (the engine's addStrain and Mana Short, magic.ts; MISSING EXPORT: addStrain): over the limit, d20 + Will Power
- * vs 10 + 2 × the excess; a natural 1 Downs you; a failure hurts 15 × Strain and Stuns, and anything held goes wild.
- * A Vessel's body forms all end on a failed short (K23). */
+/** Strain through the engine's addStrain (rules 1.5: the Mana Short is automatic at 3 over the limit, no roll). A
+ * Vessel's body forms all end on a Short (K23). */
 export function strainUp(cb: Combat, rng: Rng, u: Unit, n: number, why: string): string {
   const m = u.mg; if (!m || n <= 0) return '';
-  // The engine's 'strain' hook {u, n, why, limit} hears this Strain too (Heart's Own, The Twin Pays: hooks gap K1/K6).
-  const sc: any = emit(cb, 'strain', { u, n, why, limit: m.strainLimit, cb }); n = Math.max(0, sc.n); if (!n) return '';
-  m.strain += n;
-  if (m.strain <= (sc.limit ?? m.strainLimit)) return '';
-  const over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
-  emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
-  if (r === 1) {
-    applyDamage(cb, u, u.hp, { type: 'short', shield: false, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
-    say(cb, 'MANA SHORT (' + why + '): ' + u.name + "'s heart bursts (d20 1 vs " + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed') + '.');
-    m.held = null; endForms(cb, u, 'the heart burst'); return ' · MANA SHORT';
-  }
-  if (r !== 20 && tot < tn) {
-    say(cb, 'MANA SHORT (' + why + '): ' + u.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')' + harm(cb, rng, null, u, 15 * m.strain, 'true') + ', Stunned.');
-    if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true });
-    if (m.held && !u.dead && !u.downed) wild(cb, rng, u);
-    endForms(cb, u, 'the Mana Short');
-    return ' · MANA SHORT';
-  }
-  say(cb, u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ').');
-  return '';
+  const out = addStrain(cb, rng, u, n, why); // rules 1.5: the automatic Mana Short at 3 over the limit, no roll
+  if (out) endForms(cb, u, 'the Mana Short');
+  return out;
 }
+// TODO(outburst-2.0): unused since strainUp delegates to magic.ts addStrain (the 1.5 Short calls wildRelease); remove when the class is re-derived.
 function wild(cb: Combat, rng: Rng, u: Unit) {
   const m = u.mg!, d = m.designs.find((x) => x.id === m.held?.design); if (!d) { m.held = null; return; }
   const near = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= designRange(m, d));
@@ -1240,6 +1223,7 @@ register({
       g.overflow = null; g.ovScene = sceneOf(h); stateOf(h).ov = ctx.design.id; say(ctx.cb, 'Overflow: ' + ctx.design.name + ' Begins at stage 2.');
     },
     turn_start_pre: (ctx, h) => { const u = h.u, st = stateOf(h); if (ctx.u !== u || !st.ov) return; const hd = u!.mg?.held; if (hd && hd.design === st.ov && hd.stage < 2) hd.stage = 2; delete st.ov; },
+    // TODO(outburst-2.0): Heartfed Overflow 'Begins at stage 2' is applied as a multiplier at release (×1.4 floor); under 1.5 it could set the held stage instead.
     outburst_release: (ctx, h) => { const st = stateOf(h); if (ctx.u !== h.u || st.ov !== ctx.design?.id) return; delete st.ov; if (ctx.stage < 2) ctx.mult *= stageMult(2) / stageMult(ctx.stage); },
   },
   brief: () => null,
@@ -1353,7 +1337,9 @@ type Form = 'iron' | 'surge' | 'swift' | 'pain' | 'steady' | 'heartbeat';
 const FORMS: Record<Form, string> = { iron: 'Iron', surge: 'Surge', swift: 'Swift', pain: 'Pain to Power', steady: 'Steady', heartbeat: 'Heartbeat' };
 function formsOf(h: { c?: Character | null; g?: any }): { form: Form; stage: number }[] { const st = cs(h.c).vessel; return st && st.scene === sceneOf(h) ? st.forms : []; }
 function setForms(h: { c?: Character | null; g?: any }, forms: { form: Form; stage: number }[]) { charState(h.c).vessel = { scene: sceneOf(h), forms }; }
-const fm = (h: Holder, f: Form) => { const x = formsOf(h).find((y) => y.form === f); return x ? stageMult(x.stage) : 0; };
+// TODO(outburst-2.0): the Vessel's forms keep the 1.2 stage table (×1 / ×1.5 / ×2 / ×2.5) until the class is re-derived.
+const vesselMult = (stage: number) => 1 + 0.5 * (stage - 1);
+const fm = (h: Holder, f: Form) => { const x = formsOf(h).find((y) => y.form === f); return x ? vesselMult(x.stage) : 0; };
 /** Apply the forms' standing numbers to the unit (armour, Movement), idempotently. */
 function vSync(h: Holder) {
   const u: any = h.u; if (!u) return; const d = u.vsl || { armour: 0, move: 0 };

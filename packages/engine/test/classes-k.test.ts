@@ -140,9 +140,9 @@ describe('Devoted', () => {
     s.act({ type: 'story/perk', charId: c.id, id: 'devoted.beloved_spells', actionId: 'beloved', choice: 'o1' } as any);
     expect((s.g.characters[c.id] as any).state.beloved).toEqual(['o1']);
     // module slots 1 + floor(4/3) = 2; the Beloved design may hold 3
-    s.g.characters[c.id].soulKnown = { schools: ['damage'], modules: ['move', 'rain', 'homing'] };
+    s.g.characters[c.id].soulKnown = { schools: ['damage'], modules: ['move', 'burst', 'homing'] };
     s.g.characters[c.id].skills.empathy = 4;
-    s.act({ type: 'story/perk', charId: c.id, id: 'devoted.beloved_spells', actionId: 'beloved_design', text: 'damage: move, rain, homing' } as any);
+    s.act({ type: 'story/perk', charId: c.id, id: 'devoted.beloved_spells', actionId: 'beloved_design', text: 'damage: move, burst, homing' } as any);
     const d = s.g.characters[c.id].outbursts!.find((x) => x.modules.length === 3)!; expect(d).toBeTruthy();
     expect((s.g.characters[c.id] as any).state.beloved).toContain(d.id);
     expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'devoted.beloved_spells', actionId: 'beloved', choice: d.id } as any)).toThrow(/edit it down/);
@@ -359,7 +359,7 @@ describe('Vessel', () => {
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
     expect(logHas(f.cb, /RELEASE \(1 stages\)/)).toBe(true);
-    expect(999 - f.unit(foe.id).hp).toBeGreaterThanOrEqual(20 + 15 + 15);
+    expect(999 - f.unit(foe.id).hp).toBeGreaterThanOrEqual(20 + 15 + 13) // rules 1.5: the lower Soul multiplier (TODO(outburst-2.0): Vessel re-derived);
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

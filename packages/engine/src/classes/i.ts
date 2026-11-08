@@ -21,7 +21,7 @@ import {
 import { WEAPON, SIGIL, SCHOOL } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
   type EvokePreview, type Spell,
 } from '../magic';
 import { d20, die, type Rng } from '../rng';
@@ -114,21 +114,11 @@ function soulPay(h: Holder, rng: Rng, p: { mp: number; strain: number }): string
   shiftMana(cb, -Math.ceil(p.mp / 10));
   return strainUp(cb, rng, u, p.strain);
 }
+// Rules 1.5: the engine's addStrain (the 'strain' hook, the automatic Mana Short at 3 over, no roll).
 function strainUp(cb: Combat, rng: Rng, u: Unit, n: number): string {
   const m = u.mg; if (!m || n <= 0) return '';
-  const sc: any = emit(cb, 'strain', { u, n, why: 'class cast', limit: m.strainLimit, cb }); n = Math.max(0, sc.n); if (!n) return ''; // the engine's Strain hook (hooks gap I8)
-  m.strain += n; if (m.strain <= (sc.limit ?? m.strainLimit)) return ' · Strain ' + m.strain + '/' + m.strainLimit;
-  const over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
-  emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
-  if (r === 1) { applyDamage(cb, u, u.hp, { type: 'short', shield: false, credit: 'none' }); if (u.hp === 0) fxFell(cb, u); m.held = null; return ' · MANA SHORT: the heart bursts (d20 1 vs ' + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed'); }
-  if (r !== 20 && tot < tn) {
-    const d = applyDamage(cb, u, 15 * m.strain, { type: 'short', shield: true, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
-    let out = ' · MANA SHORT (d20 ' + r + ' → ' + tot + ' vs ' + tn + '): ' + d.amount + ' damage, Stunned';
-    if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true });
-    if (m.held) { m.held = null; out += ', the held Outburst bursts into the air'; }
-    return out;
-  }
-  return ' · ' + u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')';
+  const out = addStrain(cb, rng, u, n, 'class cast');
+  return out || ' · Strain ' + m.strain + '/' + m.strainLimit;
 }
 const soulAim = (h: Holder, tile: string, range: number): string | null => {
   const u = h.u!, cb = h.cb!;
@@ -1209,6 +1199,7 @@ register({
 // +10 MP (flat, after the air and your saving, PROVISIONAL), paid at Begin: when the Damage Outburst releases it also
 // hits up to 2 more enemies within 2 tiles of the first target's tile (nearest first; one roll each). Single-target
 // designs only: not with Rain, Size or At Once (PROVISIONAL). Enemies only.
+// TODO(outburst-2.0): Storm Front reads the retired Rain module; re-derive with the 1.5 shapes (Burst/Wave) and tones.
 const stormable = (d: any) => isDamageDesign(d) && !(d.modules || []).some((m: string) => ['rain', 'size', 'at_once'].includes(m));
 register({
   id: 'channeler.storm_front', claims: 'all',
@@ -1335,6 +1326,7 @@ register({
   on: {
     damage_in: (ctx, h) => {
       const z: any = (h.cb?.zones || []).find((x: any) => x.id === stateOf(h).zone); if (!z || ctx.phase !== 'reduce') return;
+      // TODO(outburst-2.0): Sanctuary's 'own Mana Short' exception: the 1.5 self-harm is the burn (src.type 'strain'), not a Short.
       const t: Unit = ctx.t; if (t.side !== z.side || !z.tiles.includes(t.pos) || (ctx.src?.type === 'short' && t === h.u)) return;
       ctx.dmg = Math.ceil(ctx.dmg * 0.5);
     },
@@ -1420,6 +1412,7 @@ export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId:
   // Cast from the ally's tile with the Bard's numbers: swap positions for the release, then back.
   const was = bard.pos; bard.pos = ally.pos;
   const held = m.held, apWas = bard.ap;
+  // TODO(outburst-2.0): the Bard's lent cast holds the design at stage 1 (×1) for an instant release; decide its 1.5 stage (a snap is ×0.6).
   try { m.held = { design: d.id, stage: 1, cost }; bard.ap = Math.max(bard.ap, SPELL_AP.release); releaseOutburst(cb, rng, bard, aim); } finally { bard.pos = was; bard.ap = apWas; m.held = held; }
   cb.log.push(ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb)));
   return null;

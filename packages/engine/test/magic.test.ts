@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, MAPS, newCharacter, validateSheet, startCombat, apply, newGame, positionsOf, zoneMap, npcsOf, refOf, keyOf,
-  drawGlyph, evoke, findPattern, previewEvoke, scuff, vent, beginOutburst, releaseOutburst, syphon, crystallise, magicTurnStart, moveUnit,
+  drawGlyph, evoke, findPattern, previewEvoke, scuff, vent, beginOutburst, releaseOutburst, addStrain, syphon, crystallise, magicTurnStart, moveUnit,
   designCost, manaOf, coresCarried, packOf, type Sheet, type GameState, type Combat,
 } from '../src';
 
@@ -29,7 +29,7 @@ describe('starting magic (spec: The Magic panel, rules 1.4)', () => {
     expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'push'] }))).toMatch(/Reach word/);
     expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'arc'] }))).toBeNull();
     expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['seek', 'arc'] }))).toMatch(/Subject|Reach/);
-    expect(validateSheet(sheet('stormcaller', 'W', { kit: 'soul', outburst: { school: 'damage', modules: ['move', 'homing', 'swift', 'rain'] } }))).toMatch(/slot/);
+    expect(validateSheet(sheet('stormcaller', 'W', { kit: 'soul', outburst: { school: 'damage', modules: ['move', 'homing', 'swift', 'burst'] } }))).toMatch(/slot/);
   });
 });
 
@@ -65,21 +65,21 @@ describe('Sigils on the map (spec: Sigils, rules 1.4)', () => {
 });
 
 describe('Outbursts (spec: Soul magic)', () => {
-  it('held, it grows a stage each turn and strains the heart; released at stage 2 it hits harder', () => {
+  it('rules 1.5: Begin holds at stage 0; the swell adds a stage at the turn start (Strain −1 then +1); released at stage 1', () => {
     const { cb, u, e, rng } = fight(sheet('stormcaller', 'W', { kit: 'soul' }));
     const d = u.mg!.designs[0], cost = designCost(u.mg!, d, manaOf(cb)), mp = u.mg!.mp;
     expect(beginOutburst(cb, rng, u, d.id, undefined, true)).toBeNull();
-    expect(u.mg!.mp).toBe(mp - cost); expect(u.mg!.held!.stage).toBe(1); expect(u.mg!.strain).toBe(1);
-    magicTurnStart(cb, rng, u); expect(u.mg!.held!.stage).toBe(2); expect(u.mg!.strain).toBe(2);
+    expect(u.mg!.mp).toBe(mp - cost); expect(u.mg!.held!.stage).toBe(0); expect(u.mg!.strain).toBe(1);
+    magicTurnStart(cb, rng, u); expect(u.mg!.held!.stage).toBe(1); expect(u.mg!.strain).toBe(1);
     u.ap = 9; expect(releaseOutburst(cb, rng, u, e.pos)).toBeNull();
-    expect(u.mg!.held).toBeNull(); expect(cb.log.at(-1)).toMatch(/releases .* at stage 2/);
+    expect(u.mg!.held).toBeNull(); expect(cb.log.at(-1)).toMatch(/releases .* at stage 1/);
   });
-  it('past the Strain limit comes the Mana Short; a burst heart Downs, never kills', () => {
+  it('rules 1.5: 3 over the limit is an automatic Mana Short (no roll): Stunned, the held one goes wild; never dead', () => {
     const { cb, u, rng } = fight(sheet('stormcaller', 'W', { kit: 'soul' }));
-    u.mg!.strain = u.mg!.strainLimit; u.mg!.held = { design: u.mg!.designs[0].id, stage: 1, cost: 20 };
-    for (let i = 0; i < 40 && !u.downed; i++) { u.hp = u.maxHp; u.mg!.strain = u.mg!.strainLimit; u.mg!.held = { design: u.mg!.designs[0].id, stage: 1, cost: 20 }; magicTurnStart(cb, { state: 1000 + i }, u); }
-    expect(cb.log.join(' ')).toMatch(/MANA SHORT|holds the Strain/);
-    if (u.downed) expect(u.dead).toBe(false);
+    u.mg!.strain = u.mg!.strainLimit + 2; u.mg!.held = { design: u.mg!.designs[0].id, stage: 1, cost: 20 };
+    addStrain(cb, rng, u, 1, 'test');
+    expect(cb.log.join(' ')).toMatch(/MANA SHORT/); expect(u.mg!.held).toBeNull(); expect(u.conds?.stunned).toBeGreaterThan(0);
+    expect(u.mg!.strain).toBe(u.mg!.strainLimit); expect(u.dead).toBe(false);
   });
   it('Syphon refills MP and thins the air; Crystallise makes a core, written to the pack', () => {
     const { c, cb, u } = fight(sheet('stormcaller', 'W', { kit: 'soul' }));

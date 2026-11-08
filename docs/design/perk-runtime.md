@@ -21,6 +21,15 @@ core hooks, switched the lanes' workarounds to them, and applied the data deltas
 | `evoked` {u, pattern, targets, impact, stay, zone} after a real Evoke | magic.ts | (Parallel Thought, Clean Draw can move to it) | D3 |
 | `release_cost` {u, design, ap, range, fail} | magic.ts `releaseOutburst` | (Verse of War's held release can move to it) | D4 |
 | `outburst_hold` {u, strain} | magic.ts `magicTurnStart` | (The Twin Pays can move to it) | D7 |
+| **Rules 1.5 (Outburst 2.0)** `outburst_cost` {u, design, mp, ap, range, strain, hp, release, preview, fail}: `ap` is now the **Begin's** (2, Swift 1); a snap cast adds the Release's 1 after the hook | magic.ts `previewOutburst` | every Soul perk and class that prices a cast | 1.5 |
+| `outburst_begin` {u, design, hold, cost, hp, stage: 0} | magic.ts `beginOutburst` | as before; the held one starts at stage 0 | 1.5 |
+| `outburst_pump` {u, design, stage, ap, free, fail, preview} (mutable `ap`, `free`, `fail`; a second emit with `preview: false` after the Pump, `stage` the new one) | magic.ts `previewPump` / `pumpOutburst` | (new: Empathy-like perks, Heartfed gauges) | 1.5 |
+| `outburst_release` {u, design, stage, aim, wild, mult, form, tone, reaction} (`mult` multiplies the stage multiplier + Resonance) | magic.ts `releaseAt` | as before; `form`, `tone`, `reaction` (Heart Overwatch) new | 1.5 |
+| `strain_change` {u, from, to, why, limit} after every Strain change (`why`: begin, holding, class cast, short, turn, still, fight, tend, letgo, steady) | magic.ts `addStrain` / `easeStrain` | (new: Heart's Own, Strain-reading perks, the resources panel) | 1.5 |
+| `held_turn_start` {u, held, cb, rng} after the swell and the aura at a holder's turn start | magic.ts `heartTurnStart` | (new: Vessel-like held effects, Twinbound) | 1.5 |
+| `reaction_window` kind `heart_overwatch` before a Heart Overwatch release (cancel stops it) | magic.ts `heartOverwatch` | (as the other reactions) | 1.5 |
+| `outburst_hold` {u, strain} now fires only on a turn the held Outburst swells (not after Steady the heart) | magic.ts `heartTurnStart` | The Twin Pays | 1.5 |
+| Exports (1.5): `pumpOutburst`, `previewPump`, `letGo`, `steadyHeart`, `feedOutburst`, `setHeartWatch`, `heartOverwatch`, `magicTurnEnd`, `calmFight`, `calmTend`, `applyToneRiders`, `toneRiders`, `riderStage`, `outburstArea`, `outburstDamage`, `previewOutburstPlan`, `resonanceFor`, `formOf`, `toneOf`, `toneElement`, `heartReach`, `migrateHeld`, `STAGE_MULT`, `SOUL_AP`; character.ts `freePumps`, `migrateDesign`, `migrateCharacterSoul` | magic.ts, character.ts | the UI, the classes and perks lanes | 1.5 |
 | `strain` {u, n, why, limit} in `addStrain` and in i.ts/k.ts copies | magic.ts, classes | Heart's Own, The Twin Pays | K6, I8 |
 | Exports: `flux`, `addStrain`, `manaShort`, `wildRelease`, `magicShove` (`subjectEffect` removed in 1.4) | magic.ts | k.ts `fluxUp` now calls `flux` | I8, J4, K1 |
 | Magic push/pull: knockback immunity + `forced_move` (how `magic`) | magic.ts `magicShove` | Siege Engine | A3 |

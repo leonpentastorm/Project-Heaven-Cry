@@ -643,7 +643,7 @@
                     "shock",
                     "freeze",
                     "stone",
-            "acid"
+                    "acid"
                   ],
                   "value": -1
                 }
@@ -1060,7 +1060,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]
@@ -1166,7 +1166,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]
@@ -1269,7 +1269,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]
@@ -1373,7 +1373,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each cast adds 1 Strain (2 in Flooded air). Past the limit, Mana Short check: d20 + Will Power modifier vs 10 + 2 x excess. Fail: 15 damage per Strain and Stunned; natural 1: drop to 0 HP. Falls by 1 at the start of a turn after a turn with no cast; resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]
@@ -2144,7 +2144,7 @@
         "channeler"
       ],
       "tutor": "Kemizuchi Military Academy",
-      "summary": "One element infused into a weapon through an Emanator gauntlet; kills charge it.",
+      "summary": "One element infused into a weapon through an Emanator gauntlet; melee hits charge it and carry the element's rider.",
       "requires": [
         {
           "signature_total": {
@@ -2168,7 +2168,7 @@
           "name": "Gauntlet Infusion",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Choose one element at each rest. Your melee hits deal +10 Elemental damage of it, paying 5 MP per hit and adding no Strain.",
+          "text": "Choose one element at each rest (fire, freeze, shock or spark). Your melee hits deal +10 Elemental damage of it for 5 MP a hit (no Strain) and carry its stage-1 rider, with its effect and sound: Fire sets Burning 1 round on a critical, else +5 more; Shock chains to one enemy next to the target for half; Freeze Slows (Body save); Spark gives +1 AP on a kill (rules 1.5).",
           "effects": [
             {
               "op": "damage_mod",
@@ -2186,17 +2186,17 @@
           "provisional": true
         },
         {
-          "id": "charged_by_death",
-          "name": "Charged by Death",
+          "id": "charged_by_battle",
+          "name": "Charged by Battle",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Each kill you make gives 1 Charge (max 3). Charges fade after combat.",
+          "text": "Each melee hit you land gives 1 Charge (max 3). Charges fade after combat (rules 1.5: battle, not kills).",
           "effects": [
             {
               "op": "resource",
               "resource": "storm_charge",
               "value": 1,
-              "when": "on_kill",
+              "when": "on_hit",
               "max": 3
             }
           ],
@@ -2208,7 +2208,7 @@
           "name": "Discharge",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Spend all Charges with a melee hit: everyone adjacent to the target takes 20 Elemental damage per Charge.",
+          "text": "Spend all Charges with a melee hit: everyone adjacent to the target takes 20 Elemental damage per Charge and the infused element's rider at stage N (N = the Charges spent; the Outburst tone table: fire Fire, shock Storm, freeze Frost; spark has none), with full effects and screen shake (rules 1.5).",
           "effects": [
             {
               "op": "damage_mod",
