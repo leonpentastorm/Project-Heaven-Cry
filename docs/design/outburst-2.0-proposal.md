@@ -45,9 +45,10 @@ this work (Leon: "after Outburst 2.0 is in we will start balancing damage number
 - **Over the limit, no roll:** each point over burns your heart for **8 true damage** at the end of your turn.
 - **Mana Short is automatic at 3 over:** Stunned for a turn, and a held Outburst goes off wild (random target, its
   element's stage-1 rider on your own tile). Will Power raises the limit; it no longer rolls you out of trouble.
-- **No vent (Leon: "feels like ripping off Sigil").** Strain falls by **calming the heart**, through what the body does,
-  so fighting mages and support mages each have their own way:
-  1. **A turn of stillness:** end a turn in which you didn't Begin or Pump: −1 Strain (as today).
+- **Strain still falls by 1 at the start of every one of your turns**, always. **No vent (Leon: "feels like ripping off
+  Sigil").** On top of that, Strain falls further by **calming the heart**, through what the body does, so fighting mages
+  and support mages each have their own way (all in addition to the −1 a round):
+  1. **A turn of stillness:** end a turn in which you didn't Begin or Pump: a further −1 Strain.
   2. **Fighting it out:** your first weapon attack each turn (melee or shot): −1 Strain. The blood finds another way out.
   3. **Tending others:** your first heal, stim, shield or cleanse given to an ally each turn: −1 Strain.
   4. **Let it go:** drop a held Outburst without releasing it: Strain falls by its stage (the built power is lost; a
