@@ -1278,7 +1278,7 @@ function finishCombat(g: GameState) {
   if (won && !cb.noXp) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
   // Where everyone ends up becomes the story's positions.
   if (g.story.zone && g.story.zone !== cb.map.id) { const zn = (g.story.zoneNpcs ||= {}); zn[g.story.zone] = npcsOf(g); g.story.npcs = zn[cb.map.id]; delete zn[cb.map.id]; }
-  g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
+  g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify((cb.objects || []).filter((o: any) => !o.grandWall)));
   for (const u of cb.units) if (u.side === 'foe' && u.dead && u.npcId) for (const o of g.story.objects!) if (o.npcId === u.npcId) { o.dead = true; o.resolved = true; }
   for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
   for (const u of cb.units) if (u.companion && COMPANION_ROUND_AP[u.companion] != null && u.ctrl && !u.dead && !u.downed && u.hp > 0) g.story.positions[u.id] = u.pos; // a drone or beast stays where it ended
@@ -1615,7 +1615,9 @@ function magicIn(g: GameState, cb: Combat) {
 }
 /** And back out. After a fight Strain and held Outbursts reset (spec: Strain resets after combat). */
 function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
-  g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = cb.zones || []; g.story.glyphMap = cb.map.id;
+  // A Grand form (and the smoke, light and ramparts its staff raised) ends with the fight: never carried to the story
+  // map after one (on the area map itself, where it can be planted too, it stays).
+  g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = afterFight ? (cb.zones || []).filter((z: any) => z.kind !== 'grand' && !z.grandOf) : cb.zones || []; g.story.glyphMap = cb.map.id;
   g.story.glyphSeq = Math.max(g.story.glyphSeq || 0, cb.glyphSeq || 0);
   const m = (g.story.magic ||= {});
   for (const u of cb.units) if (u.charId) {
@@ -2437,7 +2439,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
   const pos: Record<string, string> = {}; for (const u of cb.units) if (u.charId && !u.dead) pos[u.charId] = u.pos;
   sbCollect(g);
   if (how !== 'fell') {
-    g.story.positions = pos; g.story.objects = JSON.parse(JSON.stringify(cb.objects || []));
+    g.story.positions = pos; g.story.objects = JSON.parse(JSON.stringify((cb.objects || []).filter((o: any) => !o.grandWall)));
     // The seated foes still standing go back as tokens with the HP they have left; everyone the fight did not seat
     // (overflow units, people who were not hostile) stays on the map as they were, moved aside if a fighter ended on their tile.
     const back = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos,

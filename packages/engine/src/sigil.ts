@@ -974,7 +974,10 @@ export function placedMagic(cb: Combat, side: 'pc' | 'foe') {
   migrateSigil(cb);
   const out: { id: string; kind: string; tiles: string[]; left: number; by: string; who: string; side: 'pc' | 'foe'; words: string[]; element: string | null; mine: boolean; hidden: boolean; hp?: number; triggers?: number; reach?: string[]; range?: number; next?: string[] }[] = [];
   for (const z of cb.zones || []) {
-    const zz: any = z; if (!['field', 'trap', 'turret', 'wall', 'veil', 'light'].includes(z.kind)) continue;
+    const zz: any = z;
+    // A Grand form (the Grand Sigilist's planted staff): everyone sees it; its centre is the staff.
+    if (z.kind === ('grand' as any)) { out.push({ id: z.id, kind: 'grand', tiles: z.tiles, left: z.left, by: z.by, who: z.who, side: z.side, words: z.words, element: z.words.find(isElement) || null, mine: z.side === side, hidden: false, centre: zz.centre } as any); continue; }
+    if (!['field', 'trap', 'turret', 'wall', 'veil', 'light'].includes(z.kind)) continue;
     const secret = z.kind === 'trap' || (z.kind === 'turret' && zz.hidden);
     if (secret && z.side !== side && !(zz.spotted || []).includes(side)) continue;
     out.push({ id: z.id, kind: z.kind === 'wall' ? 'field' : z.kind, tiles: z.tiles, left: z.left, by: z.by, who: z.who, side: z.side, words: z.words, element: zz.element ?? (z.words.find(isElement) || null), mine: z.side === side, hidden: !!secret, ...(zz.hp != null ? { hp: zz.hp } : {}), ...(zz.triggers != null ? { triggers: zz.triggers } : {}),

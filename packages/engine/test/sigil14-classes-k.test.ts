@@ -321,6 +321,16 @@ describe('Grand Sigilist under 1.4', () => {
     const ev = () => withGame(t.g, () => emit(t.cb, 'evoked', { u: t.unit(t.pcs[1].id), impact: '5,2', targets: [t.unit(t.foe.id)], dealt: 40, cb: t.cb, rng: t.g.rng }));
     ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20); ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20);
   });
+  it('a Grand form ends with the fight: after it, nothing of it (zone, VEIL smoke, RAISE ramparts) is left on the story map', () => {
+    for (const word of ['veil', 'raise', 'ward']) {
+      const f = grand(word, '12,2'); for (const x of f.foes) { const v = f.unit(x.id); v.hp = 0; v.dead = true; }
+      expect((f.cb.zones || []).some((z: any) => z.kind === 'grand')).toBe(true);
+      try { act(f, f.unit(f.pc.id), { type: 'combat/end-turn' }); } catch { /* the fight may already be over */ }
+      const g = f.g as any; expect(g.phase).toBe('story');
+      expect((g.story.zones || []).some((z: any) => z.kind === 'grand' || z.grandOf)).toBe(false);
+      expect((g.story.objects || []).some((o: any) => o.grandWall)).toBe(false);
+    }
+  });
   it('the staff still forbids drawing and Evoking; a Grand form needs 3 charge and is once a fight', () => {
     const f = grand('quicken');
     expect(withGame(f.g, () => glyphCost(f.cb, f.pc, 'quicken')).fail).toMatch(/staff is planted/);

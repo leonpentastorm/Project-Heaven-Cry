@@ -979,7 +979,7 @@ register({
         const seq = () => 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
         const z: any = { id: seq(), kind: 'grand', tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, centre: t };
         const extra: string[] = []; cb.zones = [...(cb.zones || []), z];
-        if (w === 'veil' || w === 'light') { const x: any = { id: seq(), kind: w, tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name }; cb.zones.push(x); extra.push(x.id); }
+        if (w === 'veil' || w === 'light') { const x: any = { id: seq(), kind: w, tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, grandOf: z.id }; cb.zones.push(x); extra.push(x.id); }
         stateOf(h).staff = { at: t, zone: z.id, extra };
         emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: 'grand', tiles, src: t, impact: t, targets: [], words: [w], element: w, stay: true, side: u.side });
         let line = '';

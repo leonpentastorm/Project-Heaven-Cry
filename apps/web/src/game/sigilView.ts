@@ -6,6 +6,7 @@
 // come with the element's word.
 import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf } from '@engine';
 import { glyphUri, scratchUri, SIGIL_INK, SIGIL_GLOW } from './glyphs';
+import { grandLook, grandTint } from './fx/grand';
 
 export const HOSTILE_INK = '#F65157', ALLY_INK = '#FFFFFF', SPARED_INK = '#6FEA77', MUTED_INK = '#A3AEC2';
 /** The 8 directions as arrows (dx,dy). */
@@ -354,6 +355,20 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<
     kinds.add(z.kind);
     const ink = z.mine ? SIGIL_GLOW : HOSTILE_INK, owner = z.mine ? 'yours' : 'hostile', rounds = z.left >= 90 ? 'for the scene' : z.left + (z.left === 1 ? ' round' : ' rounds') + ' left';
     const words = (z.words || []).filter((w: string) => SIGIL[w]).map(up).join(' · ');
+    // A Grand form (the Grand Sigilist's staff): its word's tint on every tile, a bright edge ring, the staff badge
+    // (◎ WORD and rounds left) and the form's one line in every tile's tooltip. The moving look is fx/grand.ts.
+    if (z.kind === 'grand') {
+      const w = (z.words || [])[0] || '', L = grandLook(w), c: string = z.centre || z.tiles[0], [cx, cy] = c.split(',').map(Number);
+      const form = (SIGIL as any)[w]?.grand || '', gtext = 'Grand ' + up(w) + ' (' + (z.who || owner) + '\'s staff at ' + refOf(c) + ', ' + rounds + '): ' + form;
+      rows.push({ key: z.id, kind: 'grand', label: 'Grand ' + up(w), who: z.who || '', mine: !!z.mine, tiles: z.tiles, text: gtext });
+      for (const k of z.tiles) {
+        const [x, y] = k.split(',').map(Number), edge = Math.max(Math.abs(x - cx), Math.abs(y - cy)) >= 2, t = T(k);
+        t.layer = 'background: ' + grandTint(w, 0.16) + (edge ? '; box-shadow: inset 0 0 0 2px ' + L.tint : '');
+        t.note += (t.note ? ' · ' : '') + gtext;
+        if (k === c) t.marks.push({ key: 'gs' + z.id, text: '◎ ' + up(w) + ' ' + z.left, style: badge(L.tint) + '; ' + CORNER.br, title: gtext });
+      }
+      continue;
+    }
     let label = '', layer = '', text = '', badgeText = '';
     if (z.kind === 'field') { label = (z.element ? up(z.element) + ' ' : '') + 'field'; layer = 'background: ' + tintOf(z.element) + '; box-shadow: inset 0 0 0 2px ' + ink; badgeText = '▦' + z.left; text = words + ' field (' + owner + '): hits whoever enters or starts a turn there, full the first time, half after, ' + rounds; }
     else if (z.kind === 'trap') { label = z.mine ? 'Your trap' : 'Spotted trap'; layer = 'box-shadow: inset 0 0 0 2px ' + ink + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.08) 0 4px, transparent 4px 8px)'; badgeText = '⧗' + (z.triggers != null ? '×' + z.triggers : ''); text = (z.mine ? words + ' trap (yours, hidden from the other side)' : 'hostile Sigil trap (spotted)' + (words ? ': ' + words : '')) + ', goes off when someone steps on it, ' + rounds; }
@@ -386,6 +401,7 @@ export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: stri
   if (kinds.has('turret')) out.push({ key: 'zu', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▲ Turret (rounds left, HP)' });
   if (kinds.has('raise')) out.push({ key: 'zr', box: box('background: rgba(201, 211, 227, 0.32)'), name: '▇ RAISE wall (HP)' });
   if (kinds.has('veil')) out.push({ key: 'zv', box: box('background: rgba(120, 128, 142, 0.55)'), name: 'Smoke (blocks sight)' });
+  if (kinds.has('grand')) out.push({ key: 'zg', box: box('background: rgba(79, 200, 223, 0.16); box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '◎ Grand form (radius 2 round the planted staff; hover a tile for what it does)' });
   if (kinds.has('light')) out.push({ key: 'zl', box: box('background: rgba(255, 248, 225, 0.12); box-shadow: inset 0 0 6px rgba(255, 248, 225, 0.5)'), name: 'Magic light' });
   return out;
 }
