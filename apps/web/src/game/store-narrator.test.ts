@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 let onMsg: (m: any) => void = () => {};
 vi.mock('./net', () => ({ connect: (_o: any, m: (x: any) => void) => { onMsg = m; return { send: () => {}, close: () => {}, state: 'open' }; } }));
 const turn = vi.fn(async () => { throw new Error('the Narrator was called'); });
-vi.mock('../narrator/anthropic', () => ({ anthropicProvider: () => ({ turn }), scriptedProvider: () => ({ turn }), polish: async () => '' }));
+vi.mock('../narrator/anthropic', () => ({ anthropicProvider: () => ({ turn }), scriptedProvider: () => ({ turn }), polish: async () => '', MODELS: [{ id: 'claude-opus-5-5', label: 'Opus', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 }] }));
 const store = await import('./store');
 const tick = () => new Promise((r) => setTimeout(r, 0));
 

@@ -2,7 +2,8 @@
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
 import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom } from '@engine';
-import { type NarratorProvider, anthropicProvider, scriptedProvider, polish } from '../narrator/anthropic';
+import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
+import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
 
 export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate';
@@ -12,7 +13,8 @@ export interface ClientState {
   conn: 'offline' | 'connecting' | 'online' | 'host-away' | 'error'; connNote: string;
   library: (Sheet & { savedAt: number })[]; draft: Partial<Sheet> | null;
   screen: Screen; levelupChar: string | null; toast: { text: string; at: number; ok?: boolean } | null; savedAt?: number;
-  narrator: { key: string; model: string; effort: 'low' | 'medium' | 'high'; remember: boolean; scripted: boolean };
+  /** The host's AI Narrator settings. provider: which service; baseUrl: the address, for local and third-party sites. */
+  narrator: { provider: ProviderId; key: string; model: string; baseUrl: string; effort: 'low' | 'medium' | 'high'; remember: boolean; scripted: boolean };
 }
 
 const LS = { me: 'phc.me', lib: 'phc.library', key: 'phc.narrator', room: 'phc.room', sessions: 'phc.sessions', game: (c: string) => 'phc.game.' + c };
@@ -33,7 +35,9 @@ const savedNarr = read(LS.key, null);
 let S: ClientState = {
   me: read(LS.me, null) || { id: 'p' + rid(), name: '' }, role: null, code: null, game: null, conn: 'offline', connNote: '',
   library: read(LS.lib, []), draft: null, screen: 'home', levelupChar: null, toast: null,
-  narrator: { key: savedNarr?.key || '', model: savedNarr?.model || 'claude-opus-5-5', effort: savedNarr?.effort || 'medium', remember: !!savedNarr?.key, scripted: false },
+  // Saves from before providers existed have no provider: they were Anthropic.
+  narrator: { provider: providerInfo(savedNarr?.provider).id, key: savedNarr?.key || '', model: savedNarr?.model || 'claude-opus-5-5', baseUrl: savedNarr?.baseUrl || '',
+    effort: savedNarr?.effort || 'medium', remember: !!savedNarr?.key, scripted: false },
 };
 write(LS.me, S.me);
 
@@ -55,9 +59,18 @@ export function saveToLibrary(sheet: Sheet) {
 }
 export function removeFromLibrary(name: string) { const lib = S.library.filter((x) => x.name !== name); set({ library: lib }); write(LS.lib, lib); }
 export function setNarrator(patch: Partial<ClientState['narrator']>) {
-  const n = { ...S.narrator, ...patch }; set({ narrator: n });
-  if (n.remember) write(LS.key, { key: n.key, model: n.model, effort: n.effort }); else write(LS.key, { model: n.model, effort: n.effort });
-  if (S.role === 'host' && hostState?.narrator.error && n.key) act({ type: 'narrator/retry' });
+  const n = { ...S.narrator, ...patch };
+  // A new service starts on its own default model (an Anthropic model id means nothing to OpenRouter). The key stays:
+  // players often paste it before picking the service. A local address is no use to a website, and the reverse.
+  if (patch.provider && patch.provider !== S.narrator.provider) {
+    const p = providerInfo(patch.provider);
+    if (!('model' in patch)) n.model = p.defaultModel;
+    if (!('baseUrl' in patch) && (p.id === 'ollama' || S.narrator.provider === 'ollama')) n.baseUrl = '';
+  }
+  set({ narrator: n });
+  const keep = { provider: n.provider, model: n.model, baseUrl: n.baseUrl, effort: n.effort };
+  write(LS.key, n.remember ? { ...keep, key: n.key } : keep);
+  if (S.role === 'host' && hostState?.narrator.error && !notReadyReason(n)) act({ type: 'narrator/retry' });
 }
 
 // ---------- rooms ----------
@@ -195,7 +208,7 @@ function broadcast(force: boolean) {
 let narrating = false;
 export function provider(): NarratorProvider | null {
   if (S.narrator.scripted) return scriptedProvider();
-  return S.narrator.key ? anthropicProvider(S.narrator.key, S.narrator.model, S.narrator.effort) : null;
+  return makeProvider(S.narrator);
 }
 async function maybeNarrate() {
   const g = hostState;
@@ -203,7 +216,7 @@ async function maybeNarrate() {
   if (g.sandbox) return; // the Proving Ground never calls the Narrator
   if (g.settings.mode !== 'ai') return;
   const p = provider();
-  if (!p) { runHost({ type: 'narrator/error', message: 'Add your Anthropic API key in the Narrator settings (Room screen) so the AI Narrator can answer.' }, S.me.id, null); return; }
+  if (!p) { runHost({ type: 'narrator/error', message: (notReadyReason(S.narrator) || 'Set up the AI Narrator').replace(/ to start$/, '') + ' in the Narrator settings (Room screen) so the AI Narrator can answer.' }, S.me.id, null); return; }
   narrating = true;
   runHost({ type: 'narrator/begin' }, S.me.id, null);
   try {
@@ -223,8 +236,8 @@ async function maybeNarrate() {
 }
 export const retryNarrator = () => act({ type: 'narrator/retry' });
 export async function polishText(text: string, charName: string) {
-  if (S.role !== 'host' || !S.narrator.key) throw new Error('Only the host\'s key can polish.');
-  return polish(S.narrator.key, text, charName);
+  if (S.role !== 'host' || notReadyReason(S.narrator)) throw new Error('Only the host\'s key can polish.');
+  return polishWith(S.narrator, text, charName);
 }
 
 // A refresh drops you back into your room (unless an invite link points somewhere else).
