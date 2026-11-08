@@ -519,6 +519,39 @@ for o in items("objects"):
     if "electronic" in o and not isinstance(o["electronic"], bool):
         errors.append(f"objects:{o.get('id')}: electronic must be true or false")
 
+# World Play, rules revision 1.7: kinds and weights, avatar pools (ids in art/catalog.json), the hurt table, hazards
+wp = data.get("world_play", {})
+if wp:
+    cat_path = root.parent / "art" / "catalog.json"
+    cat_ids = set("char-" + k for k in (json.loads(cat_path.read_text()).get("characters") or {}).keys()) if cat_path.exists() else None
+    pools = wp.get("avatar_pools") or {}
+    for pid, lst in pools.items():
+        for a in lst or []:
+            if cat_ids is not None and a not in cat_ids:
+                errors.append(f"world_play: avatar pool {pid}: {a} is not a character in art/catalog.json")
+    for k in items("world_play"):
+        if not isinstance(k.get("weight_kg"), (int, float)) or k["weight_kg"] <= 0:
+            errors.append(f"world_play: kind {k.get('id')} needs a positive weight_kg")
+        if k.get("avatar_pool") is not None and k["avatar_pool"] not in pools:
+            errors.append(f"world_play: kind {k.get('id')} names unknown avatar pool {k['avatar_pool']}")
+    if sorted((wp.get("fail_hurt") or {}).keys(), key=int) != ["8", "12", "16", "20"]:
+        errors.append("world_play: fail_hurt must give damage for TN 8, 12, 16 and 20")
+    for h in wp.get("hazards") or []:
+        for sev in ("light", "heavy"):
+            if not isinstance((h.get("damage") or {}).get(sev), (int, float)):
+                errors.append(f"world_play: hazard {h.get('id')} has no {sev} damage")
+            cnd = (h.get("condition") or {}).get(sev)
+            if cnd and cnd not in known["condition"] and cnd not in ("prone",):
+                errors.append(f"world_play: hazard {h.get('id')} {sev}: unknown condition {cnd}")
+        if h.get("save") and h["save"] not in ("body", "brain", "heart"):
+            errors.append(f"world_play: hazard {h.get('id')}: save must be body, brain or heart")
+    for a in wp.get("hazard_approaches") or []:
+        for sk in a.get("skills") or []:
+            if sk not in SKILLS:
+                errors.append(f"world_play: hazard approach {a.get('id')}: unknown skill {sk}")
+    if "cache" not in ids_of(items("objects")):
+        errors.append("objects: the cache kind (World Play) is missing")
+
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})
 if soul:

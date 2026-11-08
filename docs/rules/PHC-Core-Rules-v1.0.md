@@ -2087,6 +2087,52 @@ It's an RPG: players can attack anyone and anything. The game never refuses an a
 - **The Narrator** puts every person the party can see or reach on the map as a token, maps a declared attack to actions (a target can be named by id or by exact name), and never refuses or softens one.
 - A fight that has no foes can never end as a win.
 
+## World Play (rules revision 1.7)
+
+> **Rules revision 1.7: World Play (accepted direction, Leon, 8 Nov 2026; decision 105; design `docs/design/world-play-spec.md`).** The principle: **anything the story says is there is on the map, and the engine owns what it does.** The Narrator places things and writes their choices; the engine runs the rolls, the costs and the effects, and typing can't skip a check. Every number below is provisional (items 636–668). Data: `data/world_play.json` (kinds, weights, avatar pools, the hurt table, hazards), the `cache` kind in `data/objects.json`.
+
+**People on the map have a face.** Every token has a **kind** (human, robot, drone, crawler, beast, machine; default human) and an **avatar** (an art id). The Narrator may name the avatar; otherwise the engine picks one: the campaign's portrait for that name, else the kind's pool (world-character portraits for humans and crawlers, the drone art for drones and machines, the infantry-robot art for robots; beasts have none yet and show their kind badge). The web draws every token with its avatar and a kind badge.
+
+**Carrying people and things.**
+- **Carry** (1 AP, area map): pick up an adjacent creature that is not hostile, or is a prisoner, or is at 0 HP. Its token leaves the map and rides in the carrier's inventory with a weight by kind: robot 40 kg, drone 15, human 70, crawler 70, beast 80, machine 40 (any other kind 70). The weight counts against Carry weight; the overweight rules apply (−1 Movement per started 5 kg over, no Sprint).
+- **Put down** (1 AP, area map): onto an adjacent free tile (the nearest free one when none is named). The token comes back with its name, kind, avatar, side and state.
+- **In a fight** carried creatures come along (their weight stays). A carrier who is **Downed** drops them on the nearest free tiles; in a fight they lie there and are tokens again when it ends. Out of a fight they are tokens at once.
+- **The Narrator** carries and drops in the story with `npcs[]` `carry` (id, charId) and `drop` (id, charId, at): no AP, no adjacency. Typed lines map to `actions[]` `carry` (targetId) and `put_down` (targetId, to).
+
+**Caches.** A new object kind, `cache` (a crate, a body, a locker), holds `items[]` in the loot shape (an item or weapon id, qty, rarity, name; a plot item is a name and a line of text). **Search** (1 AP, adjacent, in a fight too) moves everything into the searcher's pack and empties it. A locked cache opens through its approaches first. Players see that a cache holds something, not what, until it is searched. `loot[]` stays for direct gifts.
+
+**Approaches with consequences.** An approach (on an object, a hazard or a person) has a success effect and a failure effect, and the engine applies both.
+- **Success:** remove (break or clear it), open (unlock), reveal (the object and every hidden token, object and hazard within 3 tiles of it), disarm (the object and any hazard on its tile), loot (the actor gets its items), advance (the objective named in `objective` is done), "" (the Narrator narrates). On people also ally (hostile becomes neutral, neutral becomes an ally) and inform (the hint and a map marker).
+- **Failure (`fail`):** hurt (Physical damage by the approach's TN: 8 → 10, 12 → 20, 16 → 35, 20 → 50, armour applies), alarm (every hidden hostile in the zone is revealed and alerted; the Narrator is called and may start the fight), condition (`failCondition`, e.g. Bleeding, Shaken, Slowed), jam (the object locks for the rest of the scene and that approach is gone), lose (one `failItem` leaves the actor's pack), "" (nothing more). On people also hostile (the person turns hostile).
+- The Narrator never writes these numbers. Each character tries each approach once (the old once-per-scene retry is gone). An attempt costs 2 AP.
+
+**Hazards.** The Narrator places and removes hazards with `hazards[]`: a kind, a severity (light or heavy), an area (tiles, or a rectangle `from`–`to`; at most 64 tiles) and `hidden` (until spotted). **The engine runs them on every tile entered, in a fight or on the area map, at any speed** (moves, sprints and the Narrator's own moves walk the path):
+
+| Kind | Light | Heavy | Also |
+|---|---|---|---|
+| minefield | 25 | 45 | Body save (TN 12 / 16) halves; armour applies; that tile's mine is spent; the walk stops |
+| fire | 10 | 20 | Burning (no save); ignores armour |
+| radiation | 5 | 10 | Weakened from the 3rd tile a unit enters in it; ignores armour |
+| gas | – | – | Heart save (TN 12 / 16) or Shaken (light) or Stunned (heavy, the walk stops) |
+| collapse | 20 | 35 | Prone; armour applies; the walk stops |
+
+- **Every hazard has two approaches the engine writes itself** (TN 12 light, 16 heavy; 2 AP; within 1 tile of it): **Find a safe path** (the better of Vigilant and Sensory) marks a one-tile lane through it that doesn't trigger for the squad; **Disarm** (put it out, vent it, shore it up: the better of Proficiency and Ingenuity) removes it, and failing it gives the actor one tile of the hazard's effect.
+- **Hidden hazards** are found by passive Vigilant (10 + modifier) against the hazard's TN within 2 tiles after a move, by stepping in, or by a reveal. Their approaches open once they are seen. Players' views never carry an unseen hazard.
+- Enemies set hazards off too. Tokens on the area map are not hurt by them (the Narrator's call).
+
+**Triggers.** The Narrator sets triggers with `triggers[]` that fire without a Narrator call, once each:
+- **when:** `enter` (a party member steps on one of its tiles or its rectangle), `examine` (any interaction with an object: examine, search or an attempt), `objective` (an objective is done);
+- **then:** `spawn` (people in the `npcs[]` place shape, hidden or not), `fight` (spawn, then start a fight with its `difficulty`; every hostile token on the map joins), `reveal` (the ids it lists, or everything hidden on and next to its tiles);
+- the turn after, the Narrator is told what fired and narrates it. Triggers are never shown to players. At most 16 a zone; area-map only.
+
+**Talking without typing.** People take `wants` (one plain line), `knows` (an objective id and a one-line hint) and `talk[]` (2 to 4 approaches). Clicking a token opens its **Talk panel**: **Ask what they want** (1 AP, shows `wants`), **Ask about the objective** (1 AP, shows the hint and puts a marker on the map), and the talk approaches, rolled like any approach. Talking needs the person within 3 tiles and seen. Every choice also goes into the round's lines, so the Narrator answers in character. Free typing still works.
+
+**A clear aim in every area.** Objectives take an optional **`where`**: a zone id and references (token ids, object ids, grid references), set by the campaign or by the Narrator's `missions[]` `where`. The **HERE card** shows up to 3 open objectives in this zone (the first open one elsewhere when none is here) and what moves each forward. Each reference, and each hint a person gave, puts a **marker** on the map.
+
+**Typing can't skip a check.** A typed attempt at something an approach, a hazard or a check covers maps to `actions[]` `attempt` (an object, hazard or person id and the approach's number as listed) and the engine rolls it like the button. The Narrator never grants it by fiat. People who give a task say what, where and why, plainly.
+
+**In the Proving Ground** the tools place caches, hazards, triggers, people (kind, avatar, wants, knows, talk) and objectives with `where`; attempts roll at once (there is no Narrator).
+
 ## Rerolls and edits
 
 The room can redo or reword the AI Narrator's answers, **only if everyone agrees**.

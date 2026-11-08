@@ -265,6 +265,18 @@
       "text": "A wall of packed bots raised by a RAISE Sigil (rules 1.4): blocks movement and sight, 30 HP, crumbles after 3 rounds + the caster's Sigil duration bonus; NULL unmakes it.",
       "adjudication": "engine",
       "provisional": true
+    },
+    {
+      "id": "cache",
+      "name": "Cache",
+      "glyph": "▥",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "A crate, a body, a locker: something holding things. Search it (1 AP, adjacent) to take everything inside; a locked one opens through its approaches first.",
+      "adjudication": "engine",
+      "provisional": true
     }
   ]
 }

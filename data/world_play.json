@@ -1,0 +1,274 @@
+{
+  "$schema_version": "1.0",
+  "kind": "world_play",
+  "source": "PHC Core Rules v1.0, rules revision 1.7: World Play (provisional, items 636-668; docs/design/world-play-spec.md)",
+  "adjudication": "engine",
+  "items": [
+    {
+      "id": "human",
+      "name": "Human",
+      "weight_kg": 70,
+      "avatar_pool": "world",
+      "provisional": true
+    },
+    {
+      "id": "robot",
+      "name": "Robot",
+      "weight_kg": 40,
+      "avatar_pool": "robot",
+      "provisional": true
+    },
+    {
+      "id": "drone",
+      "name": "Drone",
+      "weight_kg": 15,
+      "avatar_pool": "drone",
+      "provisional": true
+    },
+    {
+      "id": "crawler",
+      "name": "Crawler",
+      "weight_kg": 70,
+      "avatar_pool": "world",
+      "provisional": true
+    },
+    {
+      "id": "beast",
+      "name": "Beast",
+      "weight_kg": 80,
+      "avatar_pool": null,
+      "provisional": true
+    },
+    {
+      "id": "machine",
+      "name": "Machine",
+      "weight_kg": 40,
+      "avatar_pool": "drone",
+      "provisional": true
+    }
+  ],
+  "other_kind_kg": 70,
+  "avatar_pools": {
+    "world": [
+      "char-orren-vask",
+      "char-ivara-drenn",
+      "char-nemi-sol",
+      "char-basko-rell",
+      "char-tessa-rook",
+      "char-veyra-salt",
+      "char-ketta-flint",
+      "char-sera-venn",
+      "char-milo-quill",
+      "char-pell-morrow",
+      "char-drava-keel",
+      "char-asher-fen",
+      "char-ilyen-taal",
+      "char-marden-silt",
+      "char-yara-voss",
+      "char-osa-reed",
+      "char-inspectant-latch-7",
+      "char-juniper-vale",
+      "char-mallow-3",
+      "char-dema-brin",
+      "char-selka-noon",
+      "char-ruen-ash",
+      "char-anka-moss",
+      "char-tal-ren",
+      "char-brother-halden",
+      "char-eris-ward",
+      "char-captain-nara-dusk",
+      "char-original-heavenprint--durability",
+      "char-original-heavenprint--pain-threshold",
+      "char-original-heavenprint--sensory",
+      "char-original-heavenprint--raw-power",
+      "char-original-heavenprint--guts",
+      "char-original-heavenprint--intimidation",
+      "char-original-heavenprint--athletics",
+      "char-original-heavenprint--dexterity",
+      "char-original-heavenprint--reaction-speed",
+      "char-original-heavenprint--ingenuity",
+      "char-original-heavenprint--proficiency",
+      "char-original-heavenprint--vigilant",
+      "char-original-heavenprint--brain-power",
+      "char-original-heavenprint--rumination",
+      "char-original-heavenprint--eloquence",
+      "char-original-heavenprint--visualization",
+      "char-original-heavenprint--analysis",
+      "char-original-heavenprint--charisma",
+      "char-original-heavenprint--empathy",
+      "char-original-heavenprint--camaraderie",
+      "char-original-heavenprint--implication",
+      "char-original-heavenprint--will-power",
+      "char-original-heavenprint--lore-master",
+      "char-original-heavenprint--composure",
+      "char-original-heavenprint--faith",
+      "char-original-heavenprint--conscience",
+      "char-original-heavenprint--authority"
+    ],
+    "robot": [
+      "char-m813-hum",
+      "char-m813-lantern",
+      "char-m813-seven-seven"
+    ],
+    "drone": [
+      "char-m813-scavenger-drone"
+    ]
+  },
+  "ap": {
+    "carry": 1,
+    "put_down": 1,
+    "search": 1,
+    "ask": 1,
+    "attempt": 2
+  },
+  "talk_range": 3,
+  "reveal_radius": 3,
+  "fail_hurt": {
+    "8": 10,
+    "12": 20,
+    "16": 35,
+    "20": 50
+  },
+  "success": [
+    "",
+    "remove",
+    "open",
+    "reveal",
+    "disarm",
+    "loot",
+    "advance",
+    "ally",
+    "inform"
+  ],
+  "fail": [
+    "",
+    "hurt",
+    "alarm",
+    "condition",
+    "jam",
+    "lose",
+    "hostile"
+  ],
+  "limits": {
+    "hazard_tiles": 64,
+    "hazards_per_zone": 12,
+    "triggers_per_zone": 16,
+    "spawn": 6,
+    "cache_items": 12,
+    "talk": 4,
+    "here": 3,
+    "events": 20
+  },
+  "hazard_tn": {
+    "light": 12,
+    "heavy": 16
+  },
+  "hazard_spot_range": 2,
+  "hazards": [
+    {
+      "id": "minefield",
+      "name": "Minefield",
+      "damage": {
+        "light": 25,
+        "heavy": 45
+      },
+      "armour": true,
+      "save": "body",
+      "save_halves": true,
+      "spent": true,
+      "stops": true,
+      "disarm": "Disarm the mines",
+      "text": "Light 25, heavy 45 damage; a Body save halves it; armour applies; that tile's mine is spent; the walk stops."
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "damage": {
+        "light": 10,
+        "heavy": 20
+      },
+      "armour": false,
+      "condition": {
+        "light": "burning",
+        "heavy": "burning"
+      },
+      "disarm": "Put out the fire",
+      "text": "Light 10, heavy 20 damage and Burning; ignores armour."
+    },
+    {
+      "id": "radiation",
+      "name": "Radiation",
+      "damage": {
+        "light": 5,
+        "heavy": 10
+      },
+      "armour": false,
+      "after_tiles": 3,
+      "condition": {
+        "light": "weakened",
+        "heavy": "weakened"
+      },
+      "disarm": "Seal the source",
+      "text": "Light 5, heavy 10 damage; ignores armour; Weakened from the third tile a creature enters in it."
+    },
+    {
+      "id": "gas",
+      "name": "Gas",
+      "damage": {
+        "light": 0,
+        "heavy": 0
+      },
+      "armour": false,
+      "save": "heart",
+      "condition": {
+        "light": "shaken",
+        "heavy": "stunned"
+      },
+      "stops_on": [
+        "stunned"
+      ],
+      "disarm": "Vent the gas",
+      "text": "A Heart save, or Shaken (light) or Stunned (heavy)."
+    },
+    {
+      "id": "collapse",
+      "name": "Collapse",
+      "damage": {
+        "light": 20,
+        "heavy": 35
+      },
+      "armour": true,
+      "condition": {
+        "light": "prone",
+        "heavy": "prone"
+      },
+      "stops": true,
+      "disarm": "Shore it up",
+      "text": "Light 20, heavy 35 damage and Prone; armour applies; the walk stops."
+    }
+  ],
+  "hazard_approaches": [
+    {
+      "id": "safe_path",
+      "label": "Find a safe path",
+      "skills": [
+        "vigilant",
+        "sensory"
+      ],
+      "pick": "best",
+      "success": "safe",
+      "fail": ""
+    },
+    {
+      "id": "disarm",
+      "label": "Disarm",
+      "skills": [
+        "proficiency",
+        "ingenuity"
+      ],
+      "pick": "best",
+      "success": "disarm",
+      "fail": "hazard"
+    }
+  ]
+}
