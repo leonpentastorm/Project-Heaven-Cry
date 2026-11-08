@@ -15,7 +15,7 @@ import { actionAp, pushAway } from './effects/core';
 import { sessionN } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
-import { apDebt, bankAp } from './effects/ap';
+import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, canSurrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
 import { d20, die, type Rng } from './rng';
@@ -237,6 +237,7 @@ export interface FaithView {
   hymns: { key: string; patron: string; patronName: string; id: string; name: string; tier: number; text: string; source: 'patron' | 'kept' | 'learned'; preview: PrayerPreview }[];
   miracle: { id: string; name: string; text: string; usedThisSession: boolean; preview: PrayerPreview } | null;
   pieces: Record<string, number>;
+  /** The vow sworn this fight (null out of a fight). */
   vow: Vow | null; vows: { id: string; name: string; words: string; brokenWhen: string; needsAlly: boolean }[];
   rites: { id: string; name: string; text: string; engine: boolean; keptThisSession: boolean; available: boolean; why?: string }[];
   rule: 'open' | 'jealous' | null;
@@ -263,7 +264,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
-    vow: u?.vow || c.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, needsAlly: !!v.needs_ally })),
+    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g) },
@@ -286,7 +287,7 @@ export function tithable(x: any, check: any): boolean { return !!x && x.qty > 0 
 
 
 // ======================================================================================================================
-// The rules (rules 1.6). Readings where the design was silent are spec section 14, items 592-619.
+// The rules (rules 1.6). Readings where the design was silent are spec section 14, items 592-629.
 // ======================================================================================================================
 
 /** One Devotion move: clamped 0-10, logged, an fx event. Only the Faithful have Devotion. */
@@ -328,6 +329,7 @@ const actionKey = (cb: Combat) => String((G() as any)?.v ?? '') + ':' + cb.round
 export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ctx: { victimHelpless?: boolean } = {}) {
   if (!u || !u.charId) return;
   const c = unitChar(u); if (!c) return; const p = patronOf(c); if (!p) return;
+  if ((p.taboos || []).includes(tag) && p.taboo_notes?.[tag] && !ctx.victimHelpless) return; // the Toll-Keeper's and Matchmaker's "kill" is of the helpless (item 597)
   const st = fs(u), k = actionKey(cb), seen = (st.tags ||= {});
   if (seen[tag] === k) return; seen[tag] = k;
   const g = G(), rng = rngOf();
@@ -335,12 +337,17 @@ export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ct
     if ((st.liked || 0) >= LIKE_CAP) return;
     st.liked = (st.liked || 0) + 1; shiftDevotion(g, cb, c, 1, FAITH_TAG[tag]?.name || tag, tag);
   } else if ((p.taboos || []).includes(tag)) {
-    if (p.taboo_notes?.[tag] && !ctx.victimHelpless) return; // the Toll-Keeper's and Matchmaker's "kill" is of the helpless (item 597)
     const w = condOn(u, 'witnessed'); shiftDevotion(g, cb, c, w ? -2 : -1, (FAITH_TAG[tag]?.name || tag) + (w ? ', while Witnessed' : ''), tag);
     speak(g, cb, rng, c, p, 'taboo');
   }
 }
 const helpless = (t: Unit) => !!(t.downed || t.surrendered);
+/** Someone harmed a surrendered or Downed creature: judge marks them; the Mercy vow breaks; Nerukhan answers. */
+function harmedHelpless(cb: Combat, by: Unit, t: Unit) {
+  fs(by).harmedHelpless = true;
+  if (vowOn(by, 'mercy')) breakVow(cb, by, 'harmed ' + t.name + ', who ' + (t.surrendered ? 'had yielded' : 'was down'));
+  for (const f of intervening(cb, 'nerukhan')) { if (f.side === by.side || by.dead) continue; intervene(cb, f, 'enemy_harms_helpless', by, () => harmLine(cb, f, by, 20 * (f.blessPower || 1), 'soul')); break; }
+}
 const nearestEnemy = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v)).reduce((m, v) => Math.min(m, dist(v.pos, u.pos)), 99);
 
 // ---------- vows (spec 1.6 §5; item 602) ----------
@@ -376,6 +383,8 @@ export function registerFaithHooks() {
     const t: Unit = ctx.t, src = ctx.src || {}, by: Unit | null = src.by || null;
     if (ctx.phase === 'reduce') {
       ctx.faithHelpless = helpless(t);
+      // A Downed creature takes the hit as a failed death save (no 'after' phase): it is harmed here.
+      if (t.downed && ctx.dmg > 0 && by && by.side !== t.side) { ctx.faithHelplessDone = true; harmedHelpless(cb, by, t); }
       if (ctx.dmg > 0 && !src.faithShare && ctx.hostile) {
         // Red Thread: half of a hit on one of a linked pair moves to the other (item 615).
         const link = (cb as any).faithLinks?.find((l: any) => l.until >= cb.round && (l.a === t.id || l.b === t.id));
@@ -396,11 +405,7 @@ export function registerFaithHooks() {
       for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; intervene(cb, f, 'ally_would_die', t, () => ': ' + t.name + ' stays at 1 HP'); break; }
     }
     if (ctx.phase === 'after' && ctx.dealt > 0 && by) {
-      if (ctx.faithHelpless && by.side !== t.side) {
-        fs(by).harmedHelpless = true;
-        if (vowOn(by, 'mercy')) breakVow(cb, by, 'damaged ' + t.name + ', who was down');
-        for (const f of intervening(cb, 'nerukhan')) { if (f.side === by.side || by.dead) continue; intervene(cb, f, 'enemy_harms_helpless', by, () => harmLine(cb, f, by, 20 * (f.blessPower || 1), 'soul')); break; }
-      }
+      if (ctx.faithHelpless && !ctx.faithHelplessDone && by.side !== t.side) harmedHelpless(cb, by, t);
       if (by !== t && by.side === t.side && !src.faithShare && !['hazard', 'trap', 'bleed', 'burn', 'short'].includes(src.type)) faithTag(cb, by, 'betray');
       if (src.dmgType === 'fire') faithTag(cb, by, 'burn');
       if (src.dmgType === 'lightning' || src.dmgType === 'storm') faithTag(cb, by, 'storm');
@@ -413,12 +418,12 @@ export function registerFaithHooks() {
   onHook('on_downed', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit | null = ctx.by;
     if (by && v.side !== by.side && fs(v).harmedHelpless) faithTag(cb, by, 'judge');
-    if (by && v.side !== by.side && (v.surrendered || ctx.faithHelpless)) faithTag(cb, by, 'kill', { victimHelpless: true });
+    if (by && v.side !== by.side && (v.surrendered || (v.dead && v.downed))) faithTag(cb, by, 'kill', { victimHelpless: true });
     for (const u of cb.units) if (u.vow?.state === 'sworn' && u.vow.id === 'shield' && (u.vow.allyId === v.id || u.vow.allyId === v.charId) && !v.dead === !!v.downed) breakVow(cb, u, v.name + ' is down');
   });
   onHook('on_kill', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit = ctx.by;
-    faithTag(cb, by, 'kill', { victimHelpless: !!v.surrendered });
+    faithTag(cb, by, 'kill', { victimHelpless: !!(v.surrendered || v.downed) });
     for (const f of intervening(cb, 'old_overcast')) {
       if (f !== by) continue;
       const n = cb.units.filter((x) => x.side !== f.side && alive(x) && x !== v).sort((a, b) => dist(a.pos, v.pos) - dist(b.pos, v.pos))[0]; if (!n) break;
@@ -564,8 +569,9 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   }
   const power = u.blessPower || blessingPower(c);
   emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
-  if (kind === 'miracle') { emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? area3(a.tile) : null, unit: u.id }); shiftDevotion(g, cb, c, -devotionNow(c), 'the Miracle spends it all'); }
+  if (kind === 'miracle') emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? area3(a.tile) : null, unit: u.id });
   line += runEntry(cb, rng, u, kind, pe, t, a, power);
+  if (kind === 'miracle') shiftDevotion(g, cb, c, -devotionNow(c), 'the Miracle spends it all'); // after the effect: its own tags give nothing back
   cb.log.push(line + '.');
   if (patron && kind !== 'whisper') speak(g, cb, rng, c, patron, kind === 'miracle' ? 'miracle' : 'answered');
   // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604).
@@ -668,7 +674,7 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 40 * pw));
     case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: P(10) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
-    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(9, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
+    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(AP_MAX, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { let out = ''; for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += ' · ' + v.name + healLine(cb, u, v, v.maxHp); return out; }
     // Old Overcast
     case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && dist(x.pos, a.tile!) <= 2)) out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); return out || ' · nobody there'; }

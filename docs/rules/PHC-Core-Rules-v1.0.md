@@ -1414,7 +1414,7 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 
 > **Rules revision 1.6 (8 Nov 2026; design `docs/design/blessing-2.0-spec.md`, decision 102).** Faith is a relationship:
 > someone is watching. Sigils own space, Outbursts own time and the body, Blessings own a relationship and are paid for
-> with obedience (vows, rites, taboos). Every number here is PROVISIONAL (section 14, items 592–619). The patron's mood
+> with obedience (vows, rites, taboos). Every number here is PROVISIONAL (section 14, items 592–629). The patron's mood
 > (the old prayer TN) is retired. The data is `patrons.json` (version 2); the engine is `faith.ts`.
 
 **Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
@@ -4074,14 +4074,24 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 606. **Apostasy** (design open item 1): Devotion 0, Atheist; the old patron's Hymns stay as pieces, one for each Hymn gate the Devotion had reached (3, 5, 7), at least 1, and never fewer than the pieces already held.
 607. **Changing patrons** (a pact while Faithful) is apostasy from the old patron, then the pact; the new patron's Jealous rule applies to everything kept.
 608. **The Miracle** takes no roll and doesn't wait on the Hymn cooldown; it makes you Witnessed (Faith 5) like a Hymn. Whispers never make you Witnessed.
-609. **Luck and Lucky Break** act on attack rolls in a fight and on checks in the story: Luck's +2 on the next one; Lucky Break rerolls the next failed one at +5. Saves aren't touched.
+609. **Luck and Lucky Break** act on attack rolls in a fight and on checks in the story. Luck: +2 on the next one. Lucky Break: in a fight the next failed attack roll is rerolled at +5; in the story it is +5 on the next check (a story check has no reroll step the engine can hook). Saves aren't touched.
 610. **Guidance** reveals Hidden enemies within 6 tiles and hidden traps there; the +2 goes on the character's next spotting roll in the fight, or next notice check in the story.
 611. **Safe Passage** makes your next move this turn draw no opportunity attacks (Overwatch still fires).
 612. **Dig In** gives the half-cover penalty (−5 to shots at the ally) and Braced until the ally moves (the engine has no cover on a unit's own tile; this reads it as a state).
 613. **Switcheroo** swaps two units in your sight, each within 6 tiles of you; an enemy among them makes a Brain save and the swap fails if it saves.
-614. **Encore** gives every ally back, as banked AP now, the AP of the last action they took this round (the AP ceiling applies). **Rewoven** puts every living ally into the order right after the current turn, once each, in initiative order, this round only.
+614. **Encore** banks for every ally's next turn the AP of the last action they took this round (the AP ceiling applies when it arrives). **Rewoven** puts every living ally into the order right after the current turn, once each, in initiative order, this round only.
 615. **Hearthlight, Hold the Gate, Gather the Clouds and Together** last until the caster's next turn, except Hearthlight (3 rounds). **Red Thread** lasts 2 rounds: half of each hit on one of the pair moves to the other.
 616. **Foreknowing** lasts until the ally is next attacked or the fight ends. **Unravel** ends every boon condition, the shield, Braced, Overwatch and Hidden. **Cut Short** is Stunned 1 round (Heart save); a boss instead loses 2 AP on its next turn.
 617. **Last Crossing** kills outright on a failed save (no Downed state); **Turned Back at the Shore** brings an ally who died this fight back standing at 1 HP. **Love Conquers** uses the surrender rules: bosses, machines and the no_surrender never yield.
 618. **Enemy faithful:** one enemy type that prays (a Whisper and a Hymn) is deferred; enemies don't pray yet.
 619. **Judgement (Guardian)** still spends 1 Devotion, the only spend besides a Miracle (design open item 3); Blessed Shells' story prayer now uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood.
+620. **Interventions scale with Blessing power** like Hymns: Nerukhan's 20 Soul, Mother Ember's 15 heal and Old Overcast's 20 lightning are × the praying character's Blessing power.
+621. **The Miracle spends Devotion after its effect:** tags its own effect carries (a heal for Mother Ember) give nothing back; Devotion is 0 when it ends.
+622. **Harming the helpless** (judge, the Mercy vow, Nerukhan's intervention) counts any hostile hit on a Downed creature, even though a Downed creature takes the hit as a failed death save rather than HP, and any HP damage to a surrendered one. Killing a Downed creature (its third failed save) or a surrendered one is the "kill of the helpless" taboo.
+623. **Mercy at the fight's end** is one tag per fighter (not one per spared enemy), given when a surrendered enemy is alive and that fighter never harmed the helpless this fight. **Flee** on Extraction is one tag per fighter still standing.
+624. **Story prayers that need a tile or an enemy** (Thunderclap, Covering Fire, Judgement, Love Conquers…) and Whispers with no story meaning (Protection, Safe Passage) are paid and rolled as usual; what they do goes to the Narrator as a pending ruling. A story Hymn or Miracle also fires the items' `story_blessing` hook (Upper-Touched's d6). The old `story/pray` is a Hymn I of your patron through `faith/pray` (it now costs 3 AP while rounds run).
+625. **Knowledge pieces of your own patron** are refused (standing is what counts); a Faithful of a Jealous patron is refused pieces of other patrons; a fourth piece of a patron is refused.
+626. **Rites:** an engine rite is kept only from its button (the Narrator can't mark it), a Narrator rite only by the Narrator; a tithe takes one matching item (an item whose kind or id is the category, such as food).
+627. **The Narrator's Devotion move** is refused above ±2 and without a reason when the host sends `faith/devotion`; in the Narrator's turn (`patrons`, `faith`) it is clamped to ±2 instead. The turn's `patronMood` is no longer applied.
+628. **Heretic's Stolen Fire** prays a stolen Hymn as an Atheist prays a learned one (d20 + Will Power against 14, 16 or 18; no Witnessed), with the Hymn's own target, second unit or tile. In the story it is d20 + Will Power against the same TN, and the Narrator rules the answer.
+629. **Old-shape patrons** (a patron added at run time with `blessings` and no `hymns`) still work: their Blessings are Hymns (tier 1 unless given), aimed at you or an ally, and run their data effects.
