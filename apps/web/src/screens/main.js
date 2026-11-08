@@ -7,7 +7,7 @@ import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
-import { voiceState, speak, stopVoice, CORE_VOICE } from '../game/voice';
+import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
@@ -462,7 +462,7 @@ export class MainLogic extends DCLogic {
       }
       if (e.kind === 'voice' || e.kind === 'overreach') {
         const s = SK[e.skill] || D.skills[0], ink = ATTR[s.attr].ink, ch = charOf(e.charId);
-        return { ...base, ...readFor(e, CORE_VOICE[SKILL[e.skill]?.core] || undefined), isVoice: true, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill'), head: (mine.length > 1 && ch ? ch.name.toUpperCase() + ' · ' : '') + e.head, headStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
+        return { ...base, ...readFor(e, coreVoice(SKILL[e.skill]?.core)), isVoice: true, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill'), head: (mine.length > 1 && ch ? ch.name.toUpperCase() + ' · ' : '') + e.head, headStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
           style: 'display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink };
       }
       if (e.kind === 'check') return { ...base, isCheck: true, headStyle: 'font-weight: 700; letter-spacing: 0.06em; color: ' + (e.ok ? '#6FEA77' : '#A3AEC2') };
@@ -1090,6 +1090,10 @@ export class MainLogic extends DCLogic {
     return {
       ...epccgVals(this), ...lightboxVals(this), code: g.code, roomText: 'ROOM ' + g.code + (SB ? '' : ' · '), withNarrator: !SB, report: openReport, spend: openSpend, costText: (u.calls ? '$' + u.costUsd.toFixed(2) + ' · ' + u.calls + ' Narrator turn' + (u.calls === 1 ? '' : 's') : 'no Narrator turns yet'),
       toRoom: () => go('room'), isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save', toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
+      // The voice chip: who reads the Narrator here (spec: The Narrator's voice), always in words.
+      ...(() => { const VS2 = voiceState(), txt = voiceChip(VS2, voicePrefs()), live = /Loading|Installing/.test(txt), kok = /Kokoro/.test(txt);
+        return { voiceChip: txt, voiceChipTitle: VS2.status === 'ready' ? 'Kokoro on ' + (VS2.device === 'webgpu' ? 'WebGPU · ' + VS2.gpu : 'the CPU' + (VS2.fellBack ? ' (WebGPU failed: ' + VS2.fellBack + ')' : '')) + ' · ' + VS2.dtype : VS2.status === 'failed' ? 'Kokoro failed: ' + VS2.error : 'Settings › Voice: install Kokoro, or pick a voice',
+          voiceChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; white-space: nowrap; border: 1px ' + (live ? 'dashed #FFFFFF; color: #FFFFFF' : kok ? 'solid #2E3A50; color: #E7EBF3' : 'solid #232D3F; color: #A3AEC2') }; })(),
       narrChip: SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS') : 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
       narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
+    "@huggingface/transformers": "^3.8.1",
     "fflate": "^0.8.3",
     "kokoro-js": "^1.2.1",
     "react": "^19.3.1",
