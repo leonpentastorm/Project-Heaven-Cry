@@ -131,7 +131,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const out: ResRow[] = [];
   const s = hh.strain, L = hh.limit, shortAt = Number(SOUL().strain?.short_at_over) || 3, burn = Number(SOUL().strain?.burn_per_point) || 8;
   const held = !!hh.held, steady = !!hh.held?.steady, b = hh.beginStrain;
-  const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart on top of that −1: a still turn with nothing held, your first weapon attack of the turn, tending an ally, letting go (by its stage) or Steady (1 AP).';
+  const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart on top of that −1: a still turn with nothing held, your first weapon attack of the turn, tending an ally, letting go (by its stage, at most what its swells cost) or Steady (1 AP).';
   const sgn = (n: number) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '±0');
   const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + (Number(SOUL().cycle?.no_emanator_strain) || 2) + ' from the air: no Emanator)');
   // Where Strain stands when your next turn starts (its −1 first; then a held Outburst swells), and the next step:

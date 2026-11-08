@@ -37,10 +37,11 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Spell sounds: healing (MEND)', who: 'haeldb', licence: 'CC0', url: 'https://opengameart.org/content/spell-sounds' },
   { what: 'Magic Spell SFX (WARD, COMMAND, a trap set and sprung, LIGHT, CLEANSE)', who: 'jaggedstone', licence: 'CC0', url: 'https://opengameart.org/content/magic-spell-sfx' },
   // Outburst 2.0 (rules 1.5): the heart (public/sfx/cb/soul_*.ogg; trimmed, mono, levelled). The aura beds reuse the field loops above, slowed and filtered.
-  { what: 'Heartbeat single sound (the Pump\'s thump)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/heartbeat-single-sound' },
+  { what: 'Heartbeat single sound (the Pump\'s thump)', who: 'Independent.nu (submitted by qubodup)', licence: 'CC0', url: 'https://opengameart.org/content/heartbeat-single-sound' },
   { what: 'Sound Effects Pack: breath-male and gasp1 (Begin\'s breath in, the long breath out of a calming heart, Heart Overwatch\'s gasp), earthquake (the stone aura\'s rumble)', who: 'OwlishMedia', licence: 'CC0', url: 'https://opengameart.org/content/sound-effects-pack' },
   { what: 'Ghost Breath (Let go\'s violet sigh)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/ghost-breath' },
-  { what: 'Wisdom Magic (the choir swell under a big release and a resonance)', who: 'qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
+  // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
+  { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
   { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

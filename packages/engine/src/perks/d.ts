@@ -293,7 +293,9 @@ register({
       ctx.mp = 0; ctx.strain = 0; ctx.hp = 0;
     },
     outburst_begin: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'twin') || !uses(h).take('per_combat', 1, h.key + '#twin')) return;
+      if (!me(h, ctx.u)) return;
+      // Any other Begin is an ordinary paid one: the free hold of an earlier, let-go twin cast ends here.
+      if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1, h.key + '#twin')) { stateOf(h).free = null; return; }
       if (ctx.hold) stateOf(h).free = ctx.design.id;
       log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no mana, no Strain).');
     },

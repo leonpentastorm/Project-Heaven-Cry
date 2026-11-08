@@ -219,6 +219,53 @@ export function migrateDesign(d: OutburstDesign): OutburstDesign {
   const n: OutburstDesign = { ...d, modules: keep }; if (tone) n.tone = tone; else delete n.tone;
   return n;
 }
+/** Rules 1.5: one form module (Wave, Burst, Aura, Lance) at most; Size needs a shape. */
+export function designShapeError(mods: string[]): string | null {
+  const forms = mods.filter((m) => (MODULE[m] as any)?.form);
+  if (forms.length > 1) return 'One shape a design (' + forms.map((m) => MODULE[m].name).join(' or ') + ').';
+  if (mods.includes('size') && !forms.length) return 'Size needs a shape (Wave, Burst, Aura or Lance).';
+  return null;
+}
+/** A school's option as the design stores it ('heal', 'hit', 'defense', 'push', 'pinned', 'fear'…), or undefined. */
+export function optionOf(school: string, o?: string): string | undefined {
+  const opts = (SCHOOL[school] as any)?.options as string[] | undefined;
+  return o && opts && opts.some((x) => x.replace(/^to_/, '').startsWith(o)) ? o : undefined;
+}
+/** The side a school works on (rules 1.5, section 4.2): Buff, and Damage with Inverse (a shield), on allies; Damage,
+ * Control and Status on foes. */
+export const schoolSide = (school: string, mods: string[]): 'ally' | 'foe' => (school === 'buff' || (school === 'damage' && mods.includes('inverse')) ? 'ally' : 'foe');
+/** A second school must work on the same side as the first (rules 1.5, section 4.2): a Buff design's heal and a hostile
+ * rider (or the reverse) would land harm on allies or help on foes. */
+export function pairingError(school: string, school2: string | undefined, mods: string[]): string | null {
+  if (!school2 || school2 === school || schoolSide(school, mods) === schoolSide(school2, mods)) return null;
+  return 'The second school must work on the same side as the first (' + (SCHOOL[school]?.name || school) + ' works on ' + (schoolSide(school, mods) === 'ally' ? 'allies' : 'foes') + ', ' + (SCHOOL[school2]?.name || school2) + ' on ' + (schoolSide(school2, mods) === 'ally' ? 'allies' : 'foes') + ').';
+}
+/** Every design rule of rules 1.5 (magic/design, Beloved Spells, the Twinbound twin): schools known, a second school at
+ * Will Power 5 on the same side, modules known and within `slots`, one shape (Size needs one), a known tone (the first
+ * is free at Visualization 1: `learnTone` names it), options checked. Pure: returns the clean design or an error. */
+export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | null | undefined, slots: number, id: string): { design: OutburstDesign; learnTone?: string } | string {
+  if (!d || !d.school || !SCHOOL[d.school]) return 'Pick a school.';
+  const k = c.soulKnown || { schools: [], modules: [] };
+  if (!k.schools.includes(d.school)) return 'You haven\'t learned the ' + SCHOOL[d.school].name + ' school.';
+  const mods = [...new Set(d.modules || [])];
+  if (d.school2) {
+    if ((c.skills.will_power || 0) < 5) return 'Two schools need Will Power 5.';
+    if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) return 'Pick a second school you know.';
+    const pe = pairingError(d.school, d.school2, mods); if (pe) return pe;
+  }
+  if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
+  if (mods.length > slots) return 'At most ' + slots + ' module' + (slots === 1 ? '' : 's') + ' (Will Power).';
+  { const why = designShapeError(mods); if (why) return why; }
+  const tone = d.tone && d.tone !== 'raw' ? d.tone : undefined; let learnTone: string | undefined;
+  if (tone) {
+    if (!TONE[tone]) return 'No such tone.';
+    const kt = k.tones || [];
+    if (!kt.includes(tone)) { if ((c.skills.visualization || 0) >= 1 && !kt.length) learnTone = tone; else return 'You haven\'t learned the ' + TONE[tone].name + ' tone.'; }
+  }
+  const option = optionOf(d.school, d.option), option2 = d.school2 ? optionOf(d.school2, d.option2) : undefined;
+  const design: OutburstDesign = { id, name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}), ...(option2 ? { option2 } : {}), ...(tone ? { tone } : {}) };
+  return learnTone ? { design, learnTone } : { design };
+}
 /** An old character's Outburst designs and learned modules under rules 1.5 (runs once: c.soulRev). Returns log notes. */
 export function migrateCharacterSoul(c: Character): string[] {
   if (c.soulRev === SOUL_REV) return [];

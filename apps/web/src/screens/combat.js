@@ -459,14 +459,19 @@ export class CombatLogic extends DCLogic {
     const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
     const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? designCards(pcb, cur) : [];
     const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
-    const hp = mineTurn && held ? heartPanel(pcb, cur) : null;
+    // Toggles items put on the chosen action (Ricochet, Nonlethal, Heart Surge…): chips under the action; their ids ride
+    // as mods (and into the Outburst preview, so a surged release shows its stage).
+    const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', release: 'combat/release', pump: 'combat/pump', evoke: 'combat/evoke' };
+    const tgls = mineTurn && TOGGLE_ON[S.action] ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, TOGGLE_ON[S.action], { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
+    this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+    const hp = mineTurn && held ? heartPanel(pcb, cur, this._mods) : null;
     // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
     // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
     let hz = noOverlay(), hzPlan = null;
     if (mineTurn && mg) {
       const at = S.aim || S.hover || null;
-      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(pcb, cur, dsel.id, obMode === 'snap' ? at : null); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(pcb, cur, dsel.id, S.aim).plan : null; }
-      else if (S.action === 'release' && held) { hz = aimOverlay(pcb, cur, 'held', at); hzPlan = aimOverlay(pcb, cur, 'held', S.aim).plan; }
+      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(pcb, cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(pcb, cur, dsel.id, S.aim, this._mods).plan : null; }
+      else if (S.action === 'release' && held) { hz = aimOverlay(pcb, cur, 'held', at, this._mods); hzPlan = aimOverlay(pcb, cur, 'held', S.aim, this._mods).plan; }
       else if (held && (HEART_ACTS.includes(S.action) || S.tab === 'outbursts')) hz = idleOverlay(pcb, cur);
     }
     const SIMPLE = { scuff: scuffGlyph, vent: ventFlux, core: swapCore, syphon: syphonMp, crystallise: crystalliseCore };
@@ -510,11 +515,7 @@ export class CombatLogic extends DCLogic {
     const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
     const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })()) : null;
     this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
-    // Toggles items put on the chosen action (Ricochet, Nonlethal…): chips under the action; their ids ride as mods.
-    const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', evoke: 'combat/evoke' };
-    const tgls = mineTurn && TOGGLE_ON[S.action] ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, TOGGLE_ON[S.action], { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
-    this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
-    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp && hp.pump.ok && hp.pump.free ? 0 : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : SPELL_AP[S.action] || 0;
+    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : SPELL_AP[S.action] || 0;
     const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap : undefined; // the weapon's own AP
     const cost = pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' || S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
@@ -779,7 +780,7 @@ export class CombatLogic extends DCLogic {
           stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
           style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
-      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
+      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true, ...(this._mods && this._mods.length ? { mods: this._mods } : {}) }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
       beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×0.6: hover to preview, click a tile to aim, then Confirm.',
@@ -925,7 +926,7 @@ export class CombatLogic extends DCLogic {
   heartAct(id) {
     const cb = getState().game?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
     if (id === 'heartwatch') return act({ type: 'combat/heartwatch', unitId: cur.id, on: !(cur.mg.held && cur.mg.held.watch) });
-    if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id });
+    if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id, ...(id === 'pump' && this._mods && this._mods.length ? { mods: this._mods } : {}) });
     if (id === 'letgo') this.setState({ action: 'outburst', aim: null, obMode: 'begin' });
   }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
@@ -946,9 +947,10 @@ export class CombatLogic extends DCLogic {
     const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
     if (MAGIC.includes(a) && cur && cur.mg) {
       if (a === 'evoke') { if (m.evV && m.evV.payload) act({ type: 'combat/evoke', unitId: cur.id, ...m.evV.payload }); return this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }); }
-      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true }); return this.setState({ aim: null, obMode: 'begin', ...(S.obMode === 'snap' ? {} : { action: 'pump' }) }); }
+      const mx = this._mods && this._mods.length ? { mods: this._mods } : {};
+      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false, ...mx } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true, ...mx }); return this.setState({ aim: null, obMode: 'begin', ...(S.obMode === 'snap' ? {} : { action: 'pump' }) }); }
       if (HEART_ACTS.includes(a)) return this.heartAct(a);
-      if (a === 'release') { act({ type: 'combat/release', unitId: cur.id, aim: S.aim || undefined }); return this.setState({ aim: null }); }
+      if (a === 'release') { act({ type: 'combat/release', unitId: cur.id, aim: S.aim || undefined, ...mx }); return this.setState({ aim: null }); }
       if (['scuff', 'vent', 'core', 'syphon', 'crystallise'].includes(a)) return act({ type: 'combat/' + a, unitId: cur.id });
       return;
     }

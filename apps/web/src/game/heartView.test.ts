@@ -55,7 +55,7 @@ describe('design cards', () => {
 });
 
 describe('the HEART panel', () => {
-  it('Begin, then the panel: stage meter, Pump cost (free from Empathy 3), Strain, Let go removes the stage', () => {
+  it('Begin, then the panel: stage meter, Pump cost (free from Empathy 3), Strain, Let go gives back only what swells cost', () => {
     const { cb, u } = fight();
     expect(beginOutburst(cb, rng, u, 'fb', undefined, true)).toBeNull();
     let p = heartPanel(cb, u)!;
@@ -67,7 +67,8 @@ describe('the HEART panel', () => {
     for (let i = 0; i < 3; i++) expect(pumpOutburst(cb, rng, u)).toBeNull();
     p = heartPanel(cb, u)!;
     expect(p.stage).toBe(3); expect(p.mult).toBe(1.8);
-    expect(p.letgo.strainOff).toBe(Math.min(3, u.mg.strain));
+    expect(p.letgo.strainOff).toBe(0); // pumped stages give no Strain back (spec item 541)
+    u.mg.held.paid = 2; expect(heartPanel(cb, u)!.letgo.strainOff).toBe(Math.min(2, u.mg.strain)); p = heartPanel(cb, u)!;
     const v: any = heartVals(p, () => {});
     expect(v.stageText).toBe('STAGE 3 / 4'); expect(v.btns.map((b: any) => b.key)).toEqual(['pump', 'release', 'steady', 'letgo', 'heartwatch']);
     u.ap = 0;

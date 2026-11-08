@@ -643,7 +643,9 @@ export class MainLogic extends DCLogic {
       }
       if (W === 'outburst') return this.setState({ wAim: k, wObMode: 'snap' }); // a tile click means a snap at it
       if (W === 'release') return this.setState({ wAim: k });
-      if (HEART_W.includes(W)) return magicConfirm();
+      // A heart move (Pump, Steady, Let go, Feed, Heart Overwatch) needs no tile: a stray click never spends it (as on
+      // the combat grid); it goes through Confirm or the HEART panel.
+      if (HEART_W.includes(W)) return toast('No tile needed: use the HEART panel or Confirm.');
       return toast('No tile needed: Confirm.');
     };
     const magicConfirm = () => {

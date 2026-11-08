@@ -265,7 +265,9 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
     },
     // Release: the form (Bolt, Wave, Burst, Aura, Lance) in the violet that warms into the tone's element, by stage.
     release(e) {
-      const from = at(e.at), to = centre(e.to), el = toneEl(e), st = Math.max(0, Math.min(4, e.stage ?? 1)), R = releaseLook(st, el), form = e.form || 'burst';
+      // The impact goes through at() (fog-aware): a release at a creature in the fog (a wild one, an Ether Heart Overwatch)
+      // draws nothing where the squad can't see. Only a Wave's direction reads the raw aim.
+      const from = at(e.at), to = at(e.to), toward = centre(e.to), el = toneEl(e), st = Math.max(0, Math.min(4, e.stage ?? 1)), R = releaseLook(st, el), form = e.form || 'burst';
       const tiles = tilesOf(e), wild = !!e.wild;
       play('soul_release', from || to, { rate: (wild ? 0.85 : 1.05) - 0.05 * st, gain: 0.7 + 0.08 * st });
       if (R.choir) play('soul_choir', from || to, { gain: 0.35 + 0.2 * (st - 3), rate: el.id === 'raw' ? 0.95 : 1 });
@@ -298,7 +300,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
           }
           case 'wave': {
             const reach = from ? Math.max(...tiles.map((k) => { const q = at(k); return q ? Math.hypot(q.x - from.x, q.y - from.y) : 0; }), 0) + from.s * 0.6 : 0;
-            if (from && to) { cone(from, to, reach, el, 800); cone(from, to, reach * 0.7, ELEMENTS.raw, 600); }
+            if (from && toward) { cone(from, toward, reach, el, 800); cone(from, toward, reach * 0.7, ELEMENTS.raw, 600); }
             if (from) hit(from, 80, 60); else if (to) cloud(to, el, R.power, 0, snd);
             if (from && tiles.length) snd(el.sound.impact, { rate: el.sound.rate * 0.82, gain: 0.8, delay: 140 });
             break;
@@ -312,7 +314,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
             break;
           }
           default: { // burst: the heart flies to the target and blooms there.
-            const o = to || from!;
+            const o = to || tiles.map((k) => at(k)).find(Boolean) || null; if (!o) break;
             const fly = from && to && from !== to ? 360 : 0;
             if (from && to && fly) for (let i = 0; i < 7 + st * 2; i++) { const sz = 6 + Math.random() * 5, wob = (Math.random() - 0.5) * 40; particle(from, sz, 'border-radius:50%;background:' + (i % 2 ? SOUL_INK : col) + ';box-shadow:0 0 10px ' + col + ';filter:blur(.6px)', [{ transform: 'translate(0,0)', opacity: 0.2 }, { transform: 'translate(' + ((to.x - from.x) / 2 + wob) + 'px,' + ((to.y - from.y) / 2 - wob - from.s * 0.4) + 'px)', opacity: 1, offset: 0.5 }, { transform: 'translate(' + (to.x - from.x) + 'px,' + (to.y - from.y) + 'px)', opacity: 0.5 }], fly + Math.random() * 100, i * 20); }
             after(() => {
@@ -335,7 +337,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
     },
     // Heart Overwatch: a sharp gasp; the eye snaps open; the heart lets go out of turn.
     heart_overwatch(e) {
-      const p = at(e.at), q = centre(e.to), el = toneEl(e);
+      const p = at(e.at), q = at(e.to), el = toneEl(e); // the mover's tile only where the squad sees it
       play('soul_gasp', p || q, { gain: 1 });
       if (!p) return;
       flash(tokOf(e.unit, e.at), 'white');

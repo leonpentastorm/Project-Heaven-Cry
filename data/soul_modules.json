@@ -67,7 +67,7 @@
       {
         "id": "letgo",
         "strain": "-stage",
-        "text": "Let it go (free, on your turn): drop the held Outburst; Strain falls by its stage; the meter +1."
+        "text": "Let it go (free, on your turn): drop the held Outburst; Strain falls by its stage, at most the Strain its swells cost (item 541); the meter +1."
       },
       {
         "id": "steady",

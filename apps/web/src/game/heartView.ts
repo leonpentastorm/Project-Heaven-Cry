@@ -79,8 +79,8 @@ export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
 /** One school's effect at a stage multiplier, in words with its numbers (f: 1 primary, the second school's strength). */
 function schoolEffect(m: any, d: any, school: string, opt: string | undefined, sm: number, f: number): string {
   const S: any = (SCHOOL as any)[school] || {}, o = opt || DEFAULT_OPT[school] || '';
-  if (school === 'damage') return (d.modules.includes('inverse') ? 'a shield of ' : '') + Math.round(outburstDamage(m, d, sm) * f) + (d.modules.includes('inverse') ? ' on an ally' : ' damage');
-  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.round((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
+  if (school === 'damage') return (d.modules.includes('inverse') ? 'a shield of ' : '') + Math.floor(outburstDamage(m, d, sm) * f) + (d.modules.includes('inverse') ? ' on an ally' : ' damage');
+  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
   if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (Body save)';
   if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save)';
   return S.name || school;
@@ -89,7 +89,7 @@ function schoolEffect(m: any, d: any, school: string, opt: string | undefined, s
 export function designVerdict(m: any, d0: any, mana?: number): { effects: string; rider: string; line: string } {
   const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) };
   const one = schoolEffect(mm, d, d.school, d.option, 1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, 1, SECOND_SCHOOL.strength) : '';
-  const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ×' + STAGE_MULT[0] + ' ' + Math.round(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage 4 ×' + STAGE_MULT[MAX_STAGE] + ' ' + Math.round(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
+  const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ×' + STAGE_MULT[0] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage 4 ×' + STAGE_MULT[MAX_STAGE] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
   const tone = toneOf(d), rider = tone === 'raw' ? 'Raw: Soul damage, armour ignored; no rider.' : toneName(tone) + ': armour counts half; stage 2–3 ' + toneRiders(tone, 2).text + ' Stage 4: ' + toneRiders(tone, MAX_STAGE).text;
   return { effects: 'At stage 1: ' + one + dmgRange + (two ? '; then ' + two : '') + '.', rider, line: designInfo(mm, d, mana).line };
 }
@@ -126,14 +126,15 @@ export interface HeartPanel {
   stages: { n: number; mult: number; on: boolean; now: boolean; next: boolean }[];
   freePumps: number | null; strain: number; limit: number; warn: string; warnLevel: '' | 'caution' | 'alert'; swell: string;
   watch: boolean; steady: boolean; rider: string; feedShow: boolean;
-  pump: HeartBtn; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
+  pump: HeartBtn & { ap: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
 }
-export function heartPanel(cb: any, u: any): HeartPanel | null {
+/** mods: the toggles on the release being planned (Heart Surge…), as the action would carry them. */
+export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null {
   const m = u?.mg; if (!m || !m.held) return null;
   const H = heldOutburstOf(m, m.designs, undefined, { cb, u }), h = H.held!;
   const d = (m.designs || []).find((x: any) => x.id === m.held.design);
   const info = d ? designInfo(m, d, cb?.mana) : null;
-  const plan = previewOutburstPlan(cb, u, 'held', undefined);
+  const plan = previewOutburstPlan(cb, u, 'held', undefined, mods ? { mods } : {});
   const pp = previewPump(cb, u);
   const stage = h.stage, maxStage = h.maxStage || MAX_STAGE;
   const dry = (fn: (c: any, x: any) => string | null) => dryHeart(cb, u.id, fn);
@@ -151,9 +152,9 @@ export function heartPanel(cb: any, u: any): HeartPanel | null {
     stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === stage + 1 })),
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
-    pump: { id: 'pump', label: 'Pump', cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
+    pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
       title: pp.ok ? 'Stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.free ? ': a free Pump (Empathy), ' + freeLeft + ' left this round.' : '.') : pp.why || '' },
-    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + stage + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + (info?.form === 'aura' ? ': all around you, no aim.' : ': pick the aim on the grid.') },
+    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (info?.form === 'aura' ? ': all around you, no aim.' : ': pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: '−1 Strain, and no swell at the start of your next turn.' },
     letgo: { id: 'letgo', label: 'Let go', cost: 'FREE', ok: !lg.err, why: lg.err || '', strainOff: off, title: 'Drop it unreleased: the built power is lost; Strain −' + off + '.' },
     feed: { id: 'feed', label: 'Feed', cost: SOUL_AP.feed + ' AP', ok: !fd.err, why: fd.err || '', title: 'Absorb the glyph on your tile: +1 stage, the glyph is gone.' },
@@ -190,8 +191,8 @@ export function affectedMark(a: OutburstAffected): UnitMark {
   return { tag, text: short, ink, harm, title: a.name + ' (' + tag.toLowerCase().replace('!', ', friendly fire') + '): ' + (bits.join(' · ') || 'touched') + '.' };
 }
 /** The overlay for an aimed release (a snap cast of a design, or the held one) at `aim` (aura: no aim). */
-export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string | null): HeartOverlay {
-  const plan = previewOutburstPlan(cb, u, src, aim || undefined);
+export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string | null, mods?: string[]): HeartOverlay {
+  const plan = previewOutburstPlan(cb, u, src, aim || undefined, mods ? { mods } : {});
   const form = plan.form as Form, ink = toneInk(plan.tone), isArea = form !== 'bolt';
   const area = new Set<string>(plan.area || []), marks = new Map<string, UnitMark>();
   for (const a of plan.affected || []) marks.set(a.unit, affectedMark(a));

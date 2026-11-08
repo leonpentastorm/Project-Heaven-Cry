@@ -27,7 +27,7 @@ import { type Combat, type Unit, dist, paths, apForTiles, moveUnit } from './com
 import { type Rng } from './rng';
 import {
   type MagicUnit, type OutburstPlan, previewOutburstPlan, previewOutburst, beginOutburst, pumpOutburst, releaseOutburst,
-  setHeartWatch, steadyHeart, letGo, syphon, condOn, condSource, formOf, heartReach, manaOf, manaBand, SOUL_AP, MAX_STAGE, SHORT_AT_OVER,
+  setHeartWatch, steadyHeart, letGo, syphon, pumpsAp, condOn, condSource, formOf, heartReach, manaOf, manaBand, SOUL_AP, MAX_STAGE, SHORT_AT_OVER,
 } from './magic';
 import { aiRouteRisk } from './ai-sigil';
 
@@ -153,11 +153,14 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
 /** The highest stage the caster's AP buys for a release of `src` this turn (Begin + Pumps + Release from a design;
  * Pumps + Release when held), free Pumps first. −1 when it can't release at all. */
 function stageFor(cb: Combat, u: Unit, src: string, d: OutburstDesign): number {
-  const m = u.mg!, free = m.freePumps || 0;
-  if (src === 'held') { const left = u.ap - SOUL_AP.release; if (left < 0) return -1; return Math.min(MAX_STAGE, (m.held?.stage ?? 0) + free + Math.floor(left / SOUL_AP.pump)); }
-  const b = previewOutburst(cb, u, d.id, undefined, false); if (!b.ok && !/AP/.test(b.why || '')) return -1;
-  const left = u.ap - b.ap - SOUL_AP.release; if (left < 0) return -1;
-  return Math.min(MAX_STAGE, free + Math.floor(left / SOUL_AP.pump));
+  const m = u.mg!, from = src === 'held' ? m.held?.stage ?? 0 : 0;
+  let left: number;
+  if (src === 'held') left = u.ap - SOUL_AP.release;
+  else { const b = previewOutburst(cb, u, d.id, undefined, false); if (!b.ok && !/AP/.test(b.why || '')) return -1; left = u.ap - b.ap - SOUL_AP.release; }
+  if (left < 0) return -1;
+  // The Pumps priced as the engine prices them (free Pumps first; Shape's free Pump through 'outburst_pump').
+  let n = MAX_STAGE - from; while (n > 0 && pumpsAp(cb, u, d, n, from) > left) n--;
+  return from + n;
 }
 
 // ---------- the step ----------

@@ -8,7 +8,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils, migrateCharacterSoul, migrateDesign } from './character';
+import { migrateCharacterSigils, migrateCharacterSoul, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -637,20 +637,15 @@ function reduce(g: GameState, a: Action, by: string) {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('Design Outbursts out of combat.');
       { const why = designBan(c!); if (why) fail(why); }
-      const d = a.design, k = c!.soulKnown || { schools: [], modules: [] };
-      if (!d || !SCHOOL[d.school]) fail('Pick a school.');
-      if (!k.schools.includes(d.school)) fail('You haven\'t learned the ' + SCHOOL[d.school].name + ' school.');
-      if (d.school2) { if ((c!.skills.will_power || 0) < 5) fail('Two schools need Will Power 5.'); if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) fail('Pick a second school you know.'); }
-      const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) fail('Use only modules you know.');
-      if (mods.length > moduleSlots(c!)) fail('At most ' + moduleSlots(c!) + ' module' + (moduleSlots(c!) === 1 ? '' : 's') + ' (Will Power).');
-      { const why = designShapeError(mods); if (why) fail(why); }
-      // A tone (rules 1.5): one you know; the first one is free at Visualization 1 (learned with this design).
-      const tone = d.tone && d.tone !== 'raw' ? d.tone : undefined;
-      if (tone) { if (!TONE[tone]) fail('No such tone.'); const kt = (k.tones ||= []); if (!kt.includes(tone)) { if ((c!.skills.visualization || 0) >= 1 && !kt.length) { kt.push(tone); c!.soulKnown = { ...k, tones: kt }; } else fail('You haven\'t learned the ' + TONE[tone].name + ' tone.'); } }
-      const option = optionOf(d.school, d.option), option2 = d.school2 ? optionOf(d.school2, d.option2) : undefined;
-      const list = (c!.outbursts ||= []), at = list.findIndex((x) => x.id === d.id);
-      const clean: OutburstDesign = { id: at >= 0 ? d.id : 'o' + (++g.seq), name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}), ...(option2 ? { option2 } : {}), ...(tone ? { tone } : {}) };
-      if (at >= 0) list[at] = clean; else { if (list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.'); list.push(clean); }
+      const d = a.design, list = (c!.outbursts ||= []), at = d ? list.findIndex((x) => x.id === d.id) : -1;
+      // A held design can't change under the hold (its tone, form and price were set at Begin), as magic/forget.
+      if (at >= 0 && g.story.magic?.[c!.id]?.held?.design === d.id) fail('You are holding that Outburst: release it or let it go first.');
+      const r = checkOutburstDesign(c!, d, moduleSlots(c!), at >= 0 ? d.id : 'o' + (g.seq + 1)); if (typeof r === 'string') fail(r);
+      const { design: clean, learnTone } = r as Exclude<typeof r, string>;
+      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.');
+      if (at < 0) g.seq++;
+      if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
+      if (at >= 0) list[at] = clean; else list.push(clean);
       return;
     }
     case 'magic/forget': {
@@ -1649,18 +1644,6 @@ function storyFx(g: GameState, cb: Combat) {
   const list = (g.story.fx ||= []);
   for (const e of cb.fx) list.push({ ...e, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) });
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
-}
-/** A school's option as the design stores it ('heal', 'hit', 'defense', 'push', 'pinned', 'fear'…), or undefined. */
-function optionOf(school: string, o?: string): string | undefined {
-  const opts = (SCHOOL[school] as any)?.options as string[] | undefined;
-  return o && opts && opts.some((x) => x.replace(/^to_/, '').startsWith(o)) ? o : undefined;
-}
-/** Rules 1.5: one form module (Wave, Burst, Aura, Lance) at most; Size needs a shape. */
-export function designShapeError(mods: string[]): string | null {
-  const forms = mods.filter((m) => (MODULE[m] as any)?.form);
-  if (forms.length > 1) return 'One shape a design (' + forms.map((m) => MODULE[m].name).join(' or ') + ').';
-  if (mods.includes('size') && !forms.length) return 'Size needs a shape (Wave, Burst, Aura or Lance).';
-  return null;
 }
 /** Learn a word, a school, a module or a tone (spec: The Magic panel). */
 function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string; tone?: string }, why: string): string {
@@ -2764,7 +2747,8 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId), d = a.design;
       if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
       const mods = migrateDesign({ id: '', name: '', school: d.school, modules: [...new Set(d.modules || [])] }).modules.filter((x) => MODULE[x]).slice(0, 4);
-      { const why = designShapeError(mods); if (why) fail(why); }
+      { const why = designShapeError(mods) || (d.school2 ? pairingError(d.school, d.school2, mods) : null); if (why) fail(why); }
+      if (d.id && cb?.units.find((x) => x.charId === c.id)?.mg?.held?.design === d.id) fail('That Outburst is being held: release it first.');
       const tone = d.tone && d.tone !== 'raw' && TONE[d.tone] ? d.tone : undefined;
       sbChange(g, c, () => {
         const k = (c.soulKnown ||= { schools: [], modules: [] });

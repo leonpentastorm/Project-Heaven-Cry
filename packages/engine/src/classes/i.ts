@@ -1247,7 +1247,11 @@ register({
   priority: 60,
   on: {
     // A held release: the stage itself rises (the release_cost of the real release, not a preview).
+    // The preview (rules 1.5: the same standard as Sigil's) shows the surged stage: ctx.surge true below stage 4, past
+    // it the multiplier; nothing is spent.
+    outburst_cost: (ctx, h) => { if (ctx.u === h.u && ctx.preview && ctx.release && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) ctx.relMult = (ctx.relMult || 1) * stageMult(1) / stageMult(0); },
     release_cost: (ctx, h) => {
+      const m0 = h.u?.mg; if (ctx.u === h.u && ctx.preview && m0?.held && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) { ctx.surge = m0.held.stage < MAX_STAGE ? true : SURGE_PAST; return; }
       const m = h.u?.mg; if (ctx.u !== h.u || ctx.preview || !m?.held || !modOn(h, 'surge') || !uses(h).take('per_turn', 1, h.key + '#surge')) return;
       const st = stateOf(h); if (m.held.stage < MAX_STAGE) { m.held.stage++; st.surge = 'stage'; } else st.surge = 'past';
       say(h.cb, h.u!.name + '\'s heart surges' + (st.surge === 'stage' ? ': stage ' + m.held.stage + '.' : ' past the full heart.'));

@@ -17,7 +17,7 @@ import {
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
-import { mod, moduleSlots, packOf, maxHp, migrateDesign } from '../character';
+import { mod, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -468,16 +468,14 @@ function parseDesign(text: string | undefined): Partial<OutburstDesign> | null {
   try { const j = JSON.parse(s); if (j && typeof j === 'object') return j; } catch { /* plain text */ }
   const [school, rest] = s.split(/[:;]/); return { school: (school || '').trim().toLowerCase(), modules: (rest || '').split(/[,\s]+/).map((x) => x.trim().toLowerCase()).filter(Boolean) };
 }
-/** The magic/design checks (game.ts) with a slot allowance: schools and modules known, module slots + extra, a second
- * school only at Will Power 5. Returns the clean design or an error. */
+/** The magic/design checks (rules 1.5, character.ts checkOutburstDesign) with a slot allowance: schools and modules
+ * known, module slots + extra, a second school at Will Power 5 on the same side, one shape (Size needs one), a known
+ * tone (the first free at Visualization 1), options checked; tone and option2 kept. Returns the clean design or an error. */
 function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: number, id: string): OutburstDesign | string {
-  if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: rain, homing".';
-  const k = c.soulKnown || { schools: [], modules: [] };
-  if (!k.schools.includes(d.school)) return 'You haven\'t learned the ' + SCHOOL[d.school].name + ' school.';
-  if (d.school2) { if ((c.skills.will_power || 0) < 5) return 'Two schools need Will Power 5.'; if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) return 'Pick a second school you know.'; }
-  const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
-  const slots = baseSlots(c) + extra; if (mods.length > slots) return 'At most ' + slots + ' module' + (slots === 1 ? '' : 's') + '.';
-  return { id, name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}) };
+  if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: burst, homing".';
+  const r = checkOutburstDesign(c, d, baseSlots(c) + extra, id); if (typeof r === 'string') return r;
+  if (r.learnTone) { const k = (c.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(r.learnTone); }
+  return r.design;
 }
 // Beloved Spells (K10, PROVISIONAL, audit 1-3): out of a fight (the area map or the story), mark up to 3 ready designs
 // Beloved, or make a new Beloved design with one module slot more than your Module slots. A Beloved design costs 30% less

@@ -6,11 +6,11 @@ import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, t
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
-  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign,
+  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
-import { emit } from './effects/hooks';
+import { emit, boundGame } from './effects/hooks';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
@@ -474,7 +474,9 @@ export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 2
 export type OutburstForm = 'bolt' | 'wave' | 'burst' | 'aura' | 'lance';
 export const FORMS: OutburstForm[] = ['bolt', 'wave', 'burst', 'aura', 'lance'];
 /** The held Outburst (rules 1.5). v: 15 (a 1.2 hold has none and is read as it is: its stage 1–4 keeps its number). */
-export interface HeldOutburst { design: string; stage: number; cost: number; tone?: string; form?: OutburstForm; watch?: boolean; steady?: boolean; turns?: number; v?: number }
+export interface HeldOutburst { design: string; stage: number; cost: number; tone?: string; form?: OutburstForm; watch?: boolean; steady?: boolean; turns?: number; v?: number;
+  /** The Strain the swells have cost so far (Let it go gives back no more than this; an old hold without it: its stage). */
+  paid?: number }
 /** Read any held Outburst (an old save's included) in the 1.5 shape. */
 export function migrateHeld(h: any, d?: OutburstDesign): HeldOutburst | null {
   if (!h || !h.design) return null;
@@ -492,7 +494,11 @@ const findDesign = (m: MagicUnit, id?: string | null): OutburstDesign | null => 
 function heart(u: Unit): MagicUnit | undefined {
   const m = u.mg; if (!m) return m;
   if (m.held && m.held.v !== SOUL_REV) m.held = migrateHeld(m.held, m.designs.find((x) => x.id === m.held!.design));
-  if (m.freePumpsMax == null) m.freePumpsMax = 0;
+  if (m.freePumpsMax == null) {
+    // A fight saved under 1.2: its unit's free Pumps and Soul multiplier from the character (1.5's numbers).
+    const c = u.charId ? boundGame()?.characters?.[u.charId] : null;
+    m.freePumpsMax = c ? freePumps(c) : 0; if (c) m.soulMult = soulMult(c);
+  }
   if (m.freePumps == null) m.freePumps = m.freePumpsMax;
   return m;
 }
@@ -606,14 +612,14 @@ function calm(cb: Combat, u: Unit, n: number, way: string, quiet = false): numbe
 }
 /** Fighting it out: the first weapon attack of a caster's own turn (melee or shot) eases 1 Strain (combat.ts calls it). */
 export function calmFight(cb: Combat, u: Unit) {
-  const m = heart(u); if (!m || m.calmFight || m.strain <= 0 || !onTurn(cb, u)) return;
-  m.calmFight = true; calm(cb, u, 1, 'fight');
+  const m = heart(u); if (!m || m.calmFight || !onTurn(cb, u)) return;
+  m.calmFight = true; if (m.strain > 0) calm(cb, u, 1, 'fight'); // the first attack of the turn, Strain or not
 }
 /** Tending others: the first heal, stim, shield or cleanse a caster gives an ally on its own turn eases 1 Strain. */
 export function calmTend(cb: Combat | null, by: Unit | null, t: Unit) {
   if (!cb || !by || by === t || by.side !== t.side) return;
-  const m = heart(by); if (!m || m.calmTend || m.strain <= 0 || !onTurn(cb, by)) return;
-  m.calmTend = true; calm(cb, by, 1, 'tend');
+  const m = heart(by); if (!m || m.calmTend || !onTurn(cb, by)) return;
+  m.calmTend = true; if (m.strain > 0) calm(cb, by, 1, 'tend'); // the first tending of the turn, Strain or not
 }
 tendHook.f = calmTend;
 /** The Mana Short (rules 1.5): automatic at 3 over the limit, no roll. Stunned for a turn; a held Outburst goes off wild
@@ -638,6 +644,8 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
  * stillness (Leon 8 Nov 2026), so an idle held turn nets 0 (+1 swell, −1 turn start). fx 'burn' {unit, at, over, dmg}. */
 export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
   const m = heart(u); if (!m || u.dead) return;
+  // The Short is a state (rules 1.5: automatic at 3 over): a limit that fell this turn (Heart's Own) is checked here.
+  if (rng && m.strain - m.strainLimit >= SHORT_AT_OVER && !u.downed) cb.log.push(u.name + "'s heart is 3 over its limit" + manaShort(cb, rng, u) + '.');
   const over = m.strain - m.strainLimit;
   if (over > 0 && !u.downed) {
     const r = applyDamage(cb, u, STRAIN_BURN * over, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any);
@@ -646,11 +654,11 @@ export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
     cb.log.push(u.name + "'s heart burns: " + r.dealt + ' damage (' + over + ' over the Strain limit)' + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
   }
   if (!m.cast && !m.held && m.strain > 0) calm(cb, u, 1, 'still');
-  void rng;
 }
 
 // ----- the cycle -----
-export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number; hp?: number }
+export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number; hp?: number;
+  /** A snap cast's multiplier from items (Heart Surge's snap: ×1, not ×0.6), 1 when none. */ relMult?: number }
 /** The Begin's price (and, with release, the snap cast's: Begin + Release at stage 0). Kept for class moves. */
 export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: string, release = true): OutburstPreview {
   const m = u.mg ? heart(u) : undefined, no = (why: string): OutburstPreview => ({ ok: false, why, cost: 0, ap: 0, range: 0, strain: 0, stage: 0 });
@@ -660,14 +668,15 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   const d = findDesign(m, designId); if (!d) return no('No such design.');
   // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the Begin's price
   // (pay HP instead of MP, a free cast, more reach). ap is the Begin's; a snap cast adds the Release (1 AP).
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', cb });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, cb });
   if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap) + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
   if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 0, hp };
   if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 0, hp };
-  if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 0, hp }; }
-  return { ok: true, cost, ap, range, strain, stage: 0, hp };
+  const relMult = release ? oc.relMult || 1 : 1;
+  if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 0, hp, relMult }; }
+  return { ok: true, cost, ap, range, strain, stage: 0, hp, relMult };
 }
 export interface BeginOpts { /** Heart Overwatch on from the start. */ watch?: boolean }
 /** Begin (rules 1.5): pay MP, +1 Strain (2 Flooded; +2 from the air without an Emanator), hold the design at stage 0.
@@ -680,7 +689,7 @@ export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, a
   if (pv.hp) applyDamage(cb, u, pv.hp, { by: u, type: 'heart', shield: false, credit: 'none' });
   emit(cb, 'outburst_begin', { u, design: d, hold, cost: pv.cost, hp: pv.hp || 0, stage: 0, cb, rng }); // 'outburst_begin' {u, design, hold, cost, hp, stage}
   shiftMana(cb, -Math.ceil(pv.cost / 10));
-  m.held = { design: d.id, stage: 0, cost: pv.cost, tone: toneOf(d), form: formOf(d), turns: 0, v: SOUL_REV, ...(opts.watch ? { watch: true } : {}) };
+  m.held = { design: d.id, stage: 0, cost: pv.cost, tone: toneOf(d), form: formOf(d), turns: 0, paid: 0, v: SOUL_REV, ...(opts.watch ? { watch: true } : {}) };
   emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: d.id, school: d.school, form: formOf(d), tone: toneOf(d), element: toneElement(toneOf(d)), hold, stage: 0, watch: !!opts.watch });
   cb.log.push(u.name + ' begins ' + d.name + ' (' + pv.cost + ' MP' + (m.emanator ? '' : ' from the air') + ', ' + (pv.ap - (hold ? 0 : SOUL_AP.release)) + ' AP): the heart lights.');
   addStrain(cb, rng, u, pv.strain + (m.debt || 0), 'begin'); m.debt = 0;
@@ -714,26 +723,42 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit): string | null {
   cb.log.push(u.name + ' pumps the heart: ' + d.name + ' at stage ' + h.stage + ' (×' + stageMult(h.stage) + ')' + (pv.free ? ', a free Pump (Empathy)' : '') + '.');
   return null;
 }
+/** The AP of n Pumps of design d from stage0 (the preview's and the AI's): the round's free Pumps first, then 1 AP each;
+ * the first Pump that still costs AP goes through 'outburst_pump' (preview), so items that price it (Shape) count.
+ * Toggles that change a Pump's stages (Overdraw) are not planned. */
+export function pumpsAp(cb: Combat, u: Unit, d: OutburstDesign, n: number, stage0: number): number {
+  const m = u.mg!; let ap = 0, free = m.freePumps || 0, hooked = false;
+  for (let i = 0; i < n; i++) {
+    if (free > 0) { free--; continue; }
+    if (!hooked) { hooked = true; const op: any = emit(cb, 'outburst_pump', { u, design: d, stage: stage0 + i, ap: SOUL_AP.pump, free: false, fail: '', preview: true, cb }); ap += Math.max(0, op.ap); continue; }
+    ap += SOUL_AP.pump;
+  }
+  return ap;
+}
 /** Release a held Outburst (1 AP) at the stage reached. 'release_cost' {u, design, ap, range, fail} (hooks gap D4). */
 export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): string | null {
   const m = u.mg ? heart(u) : undefined; if (!m || !m.held) return 'Nothing held.';
   const e = canCast(u, cb); if (e) return e;
   const d = findDesign(m, m.held.design); if (!d) { m.held = null; return 'That design is gone.'; }
+  // Checked on a preview first: the real 'release_cost' may spend a use (Heart Surge raises the stage), so a refused
+  // release must not reach it.
+  const pc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', preview: true, cb });
+  if (pc.fail) return pc.fail;
+  const pap = Math.max(0, pc.ap); if (u.ap < pap) return 'Needs ' + pap + ' AP.';
+  const why = aimError(cb, u, d, aim, pc.range); if (why) return why;
   const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', cb });
-  if (rc.fail) return rc.fail;
-  const rap = Math.max(0, rc.ap); if (u.ap < rap) return 'Needs ' + rap + ' AP.';
-  const why = aimError(cb, u, d, aim, rc.range); if (why) return why;
-  u.ap -= rap;
+  u.ap -= Math.min(u.ap, Math.max(0, rc.ap));
   releaseAt(cb, rng, u, d, formOf(d) === 'aura' ? u.pos : aim!, false);
   return null;
 }
-/** Let it go (rules 1.5, calming 4): free, on your turn. The held Outburst is dropped; Strain falls by its stage; the
- * meter +1. fx 'letgo' {unit, at, stage, by}. */
+/** Let it go (rules 1.5, calming 4): free, on your turn. The held Outburst is dropped; Strain falls by its stage, but
+ * never by more than the Strain its swells cost (item 541: stages bought with AP or free Pumps give nothing back, or
+ * Pump-then-let-go would be a vent); the meter +1. fx 'letgo' {unit, at, stage, by}. */
 export function letGo(cb: Combat, u: Unit): string | null {
   const m = u.mg ? heart(u) : undefined; if (!m || !m.held) return 'Nothing held.';
   if (!onTurn(cb, u)) return 'On your own turn.';
-  const st = m.held.stage, d = findDesign(m, m.held.design); m.held = null;
-  const by = easeStrain(cb, u, st, 'letgo');
+  const st = m.held.stage, back = Math.min(st, m.held.paid ?? st), d = findDesign(m, m.held.design); m.held = null;
+  const by = easeStrain(cb, u, back, 'letgo');
   emitFx(cb, 'letgo', { unit: u.id, at: u.pos, stage: st, by, strain: m.strain });
   if (by) emitFx(cb, 'calm', { unit: u.id, at: u.pos, way: 'letgo', by, strain: m.strain });
   cb.log.push(u.name + ' lets ' + (d ? d.name : 'the Outburst') + ' go: a violet sigh (Strain −' + by + ', ' + m.strain + '/' + m.strainLimit + ').');
@@ -813,6 +838,8 @@ const OPT_COND: Record<string, string> = { left_brain_debuff: 'ldebuff', right_b
 const optOf = (school: string, o?: string) => o || ({ buff: 'heal', control: 'push', status: 'shaken' } as Record<string, string>)[school] || '';
 /** The second school's rider strength (rules 1.5): half. */
 const half = SECOND_SCHOOL.strength;
+/** A design's second school, when it may ride (a different school, on the same side as the first), else null. */
+const secondOf = (d: OutburstDesign) => (d.school2 && d.school2 !== d.school && schoolSide(d.school, d.modules) === schoolSide(d.school2, d.modules) ? d.school2 : null);
 interface Hit { landed: boolean; crit: boolean; line: string }
 function rollFor(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, ignoreCover: boolean) {
   const homing = d.modules.includes('homing'), cover = !homing && !ignoreCover && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
@@ -853,16 +880,21 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
   if (school === 'control') {
     if (opt === 'push' || opt === 'pull') {
       const ca: any = emit(cb, 'cond_apply', { by: u, t, id: 'shoved', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-      if (ca.cancel) { out.push(t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '')); return { landed: true, crit: false, line: '' }; }
+      if (ca.cancel) { out.push(t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '')); return { landed: false, crit: false, line: '' }; }
       const r = d20(rng), ok = !ca.skipSave && (r === 20 || (r !== 1 && r + saveOf(t, 'body') + (ca.saveAdd || 0) >= 12 + m.debuff.body + (ca.tnAdd || 0)));
       const n = Math.max(1, Math.floor(((SCHOOL.control as any)?.push_tiles ?? 3) * f));
       out.push(ok ? t.name + ' holds its ground (Body save)' : (magicShove(cb, t, u.pos, opt === 'push' ? n : -n, u).replace(/^ · /, '') || t.name + ' can\'t be moved'));
-    } else out.push(applyCond(cb, rng, u, t, opt === 'pinned' ? 'pinned' : 'slowed', rounds(2)).replace(/^ · /, ''));
-    return { landed: true, crit: false, line: '' };
+      return { landed: !ok, crit: false, line: '' }; // a saved push has not landed: it carries no rider (item 505)
+    }
+    // A condition lands when it takes hold (cb.condSeq moves only then): one resisted or cancelled carries no rider.
+    const seq = cb.condSeq || 0;
+    out.push(applyCond(cb, rng, u, t, opt === 'pinned' ? 'pinned' : 'slowed', rounds(2)).replace(/^ · /, ''));
+    return { landed: (cb.condSeq || 0) !== seq, crit: false, line: '' };
   }
   if (school === 'status') {
+    const seq = cb.condSeq || 0;
     out.push(applyCond(cb, rng, u, t, OPT_COND[opt] || opt, rounds(2), has('left') ? 'brain' : has('right') ? 'heart' : undefined).replace(/^ · /, ''));
-    return { landed: true, crit: false, line: '' };
+    return { landed: (cb.condSeq || 0) !== seq, crit: false, line: '' };
   }
   return { landed: false, crit: false, line: '' };
 }
@@ -924,7 +956,9 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: targets.map((t) => t.id) });
   const line: string[] = [], hitFoes: Unit[] = [], hits: Unit[] = [];
-  const s2 = d.school2 && d.school2 !== d.school ? d.school2 : null;
+  // The second school rides only where it works on the same side as the first (rules 1.5, 4.2; the workshop refuses
+  // the rest): a Buff design's heal never carries a push, a Status or damage onto the ally it healed.
+  const s2 = secondOf(d);
   for (const t of targets) {
     if (t.dead) continue;
     const h = schoolOn(cb, rng, u, d, t, d.school, d.option, sm, 1, true, rs, tone, line);
@@ -969,7 +1003,7 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
     if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); cb.log.push(u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
     // 'outburst_hold' {u, strain} (mutable): the Strain of holding one more turn (hooks gap D7).
     const oh: any = emit(cb, 'outburst_hold', { u, strain: flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.swell_strain ?? 1, cb });
-    if (oh.strain > 0) addStrain(cb, rng, u, oh.strain, 'holding');
+    if (oh.strain > 0) { if (h.paid != null) h.paid += oh.strain; addStrain(cb, rng, u, oh.strain, 'holding'); }
   }
   m.cast = false;
   if (!m.held || u.dead || u.downed) return;
@@ -1008,7 +1042,13 @@ export interface OutburstPlan {
 /** The full preview (rules 1.5, section 7): what a snap cast of a design, or a release of the held Outburst, would do
  * at its stage (or at opts.stage: "if I pump twice"): AP, MP, Strain after and the warnings, the multiplier, the reach
  * ring, the tinted area, everyone affected with their expected numbers, saves and this stage's rider, resonance. */
-export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', aim?: string, opts: { stage?: number } = {}): OutburstPlan {
+export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', aim?: string, opts: { stage?: number; mods?: string[] } = {}): OutburstPlan {
+  // The toggles on the action being planned (Heart Surge, Verse…) are read as the real action reads them (cb.mods).
+  if (!opts.mods) return planInner(cb, u, src, aim, opts);
+  const c: any = cb, had = 'mods' in c, was = c.mods; c.mods = opts.mods;
+  try { return planInner(cb, u, src, aim, opts); } finally { if (had) c.mods = was; else delete c.mods; }
+}
+function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | undefined, opts: { stage?: number }): OutburstPlan {
   const m = u.mg ? heart(u) : undefined;
   const no = (why: string, extra: Partial<OutburstPlan> = {}): OutburstPlan => ({ ok: false, why, ap: 0, mp: 0, strain: 0, strainAfter: m?.strain ?? 0, strainLimit: m?.strainLimit ?? 0, burnWarning: 0, shortWarning: false, stage: 0, mult: stageMult(0), riderStage: 0,
     form: 'bolt', tone: 'raw', element: null, reach: 0, reachTiles: [], area: [], affected: [], resonance: false, resonanceBonus: 0, riderText: '', needsAim: true, ...extra });
@@ -1016,21 +1056,29 @@ export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', a
   // 'held' previews the held Outburst; a design id (even the held design's) previews a fresh snap of that design.
   const held = src === 'held';
   const d = findDesign(m, src === 'held' ? m.held?.design : src); if (!d) return no(src === 'held' ? 'Nothing held.' : 'No such design.');
-  const form = formOf(d), tone = toneOf(d), stage0 = held && m.held ? m.held.stage : 0, stage = Math.max(0, Math.min(MAX_STAGE, opts.stage ?? stage0));
-  const res = resonanceFor(cb, u), sm = stageMult(stage) + res.bonus, rs = riderStage(cb, stage), reach = heartReach(m, d);
-  const reachTiles: string[] = []; { const [x, y] = XY(u.pos); for (let i = x - reach; i <= x + reach; i++) for (let j = y - reach; j <= y + reach; j++) { const k = i + ',' + j; if (onGrid(cb, k) && k !== u.pos && standable(cb.map, k)) reachTiles.push(k); } }
-  let ap = 0, mp = 0, strain = 0, why: string | undefined;
+  const form = formOf(d), tone = toneOf(d), stage0 = held && m.held ? m.held.stage : 0;
+  let stage = Math.max(0, Math.min(MAX_STAGE, opts.stage ?? stage0)), itemMult = 1;
+  const res = resonanceFor(cb, u);
+  let ap = 0, mp = 0, strain = 0, range = designRange(m, d), why: string | undefined;
   if (held && m.held) {
     const e = canCast(u, cb); if (e) why = e;
-    const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', preview: true, cb });
-    ap = Math.max(0, rc.ap) + Math.max(0, stage - stage0) * SOUL_AP.pump - Math.min(m.freePumps || 0, Math.max(0, stage - stage0)) * SOUL_AP.pump;
+    // 'release_cost' (preview) {…, surge}: an item that raises the release's stage says so (Heart Surge: true below
+    // stage 4; past it, the multiplier to use).
+    const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', preview: true, surge: 0, cb });
+    ap = Math.max(0, rc.ap) + pumpsAp(cb, u, d, Math.max(0, stage - stage0), stage0); range = rc.range;
     if (rc.fail) why ||= rc.fail; else if (u.ap < ap) why ||= 'Needs ' + ap + ' AP.';
     if (!why) why = aimError(cb, u, d, form === 'aura' ? u.pos : aim, rc.range) || undefined;
+    if (rc.surge) { if (stage < MAX_STAGE) stage++; else itemMult = typeof rc.surge === 'number' ? rc.surge / stageMult(MAX_STAGE) : 1; }
   } else {
     const pv = previewOutburst(cb, u, d.id, form === 'aura' ? u.pos : aim, true);
-    ap = pv.ap + stage * SOUL_AP.pump - Math.min(m.freePumps || 0, stage) * SOUL_AP.pump; mp = pv.cost; strain = pv.strain + (m.debt || 0);
+    ap = pv.ap + pumpsAp(cb, u, d, stage, 0); mp = pv.cost; strain = pv.strain + (m.debt || 0); if (pv.range) range = pv.range;
+    if (!stage) itemMult = pv.relMult || 1; // a snap cast's item multiplier (Heart Surge's snap)
     if (!pv.ok) why = pv.why; else if (u.ap < ap) why = 'Needs ' + ap + ' AP.';
   }
+  const sm = (stageMult(stage) + res.bonus) * itemMult, rs = riderStage(cb, stage);
+  // The reach ring is the range the aim check uses (items' changes included): Bolt and Burst; the shapes their size.
+  const reach = form === 'bolt' || form === 'burst' ? range : heartReach(m, d);
+  const reachTiles: string[] = []; { const [x, y] = XY(u.pos); for (let i = x - reach; i <= x + reach; i++) for (let j = y - reach; j <= y + reach; j++) { const k = i + ',' + j; if (onGrid(cb, k) && k !== u.pos && standable(cb.map, k)) reachTiles.push(k); } }
   const strainAfter = m.strain + strain, over = strainAfter - m.strainLimit;
   const at = form === 'aura' ? u.pos : aim;
   const base: Partial<OutburstPlan> = { ap, mp, strain, strainAfter, strainLimit: m.strainLimit, burnWarning: Math.max(0, over) * STRAIN_BURN, shortWarning: over >= SHORT_AT_OVER, stage, mult: Math.round(sm * 100) / 100, riderStage: rs, form, tone, element: toneElement(tone),
@@ -1042,16 +1090,17 @@ export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', a
     const one = (school: string, option: string | undefined, f: number, primary: boolean) => {
       if (school === 'damage') {
         const raw = outburstDamage(m, d, sm) * f;
-        if (d.modules.includes('inverse')) { if (t.side === u.side) a.shield += Math.round(raw); return; }
-        const n = Math.round(raw + (primary ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
+        if (d.modules.includes('inverse')) { if (t.side === u.side) a.shield += Math.floor(raw); return; }
+        // Floored as harm() floors it, so the chip reads the engine's number.
+        const n = Math.floor(raw + (primary ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
         a.dmg += n; a.dmgAfterArmour += Math.max(1, n - arm);
         if (primary && rolls(d)) a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover'));
-      } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.round(((SCHOOL.buff as any)?.heal ?? 30) * m.healMult * sm * f * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
+      } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.floor(((SCHOOL.buff as any)?.heal ?? 30) * m.healMult * sm * f * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
       else if (school === 'control') { const o = optOf('control', option); a.saves.push({ cond: o === 'push' || o === 'pull' ? o : o, fam: 'body', tn: 12 + m.debuff.body }); }
       else if (school === 'status') { const o = optOf('status', option), fam: Fam = d.modules.includes('left') ? 'brain' : d.modules.includes('right') ? 'heart' : (condFamily(OPT_COND[o] || o) || 'heart'); a.saves.push({ cond: OPT_COND[o] || o, fam, tn: 12 + m.debuff[fam] }); }
     };
     one(d.school, d.option, 1, true);
-    if (d.school2 && d.school2 !== d.school) { one(d.school2, d.option2, half, false); a.second = (SCHOOL[d.school2]?.name || d.school2) + ' (' + optOf(d.school2, d.option2) + ') at half'; }
+    if (secondOf(d)) { one(d.school2!, d.option2, half, false); a.second = (SCHOOL[d.school2!]?.name || d.school2) + ' (' + optOf(d.school2!, d.option2) + ') at half'; }
     if (tone !== 'raw' && t.side !== u.side) { a.rider = toneRiders(tone, rs).text; for (const r of toneRiders(tone, rs).riders) if (r.rider === 'cond' && r.save && r.condition) { const fam = condFamily(r.condition) || 'body'; a.saves.push({ cond: r.condition, fam, tn: 12 + m.debuff[fam] }); } }
     return a;
   });

@@ -164,8 +164,9 @@ describe('calming the heart: the five ways, on top of the turn-start −1 (secti
     withGame(f.g, () => healUnit(f.cb, f.unit(ally.id), 5, me(f), 'test')); expect(me(f).mg!.strain).toBe(3);
     expect(fx(f.cb, 'calm').filter((e) => e.way === 'tend').length).toBe(1);
   });
-  it('let it go (combat/letgo, free, your turn): the held one is dropped; Strain falls by its stage; the meter +1', () => {
-    const f = rig(); const d = give(f.pc, {}); begin(f, d); pump(f, 3); me(f).mg!.strain = 5; const ap = me(f).ap, mana = f.cb.mana!;
+  it('let it go (combat/letgo, free, your turn): the held one is dropped; Strain falls by its stage (as far as its swells paid); the meter +1', () => {
+    const f = rig(); const d = give(f.pc, {}); begin(f, d); f.turn(f.pc); f.turn(f.pc); f.turn(f.pc); // three swells: stage 3, 3 Strain paid
+    expect(me(f).mg!.held!.stage).toBe(3); me(f).mg!.strain = 5; const ap = me(f).ap, mana = f.cb.mana!;
     A(f, { type: 'combat/letgo' }); expect(me(f).mg!.held).toBeNull(); expect(me(f).mg!.strain).toBe(2); expect(me(f).ap).toBe(ap); expect(f.cb.mana).toBe(mana + 1);
     expect(fx(f.cb, 'letgo').at(-1)).toMatchObject({ stage: 3, by: 3 }); expect(lost(f.foe)).toBe(0);
   });
@@ -179,11 +180,11 @@ describe('the second school: a rider at half strength with its own option (secti
     const f = rig(); const d = give(f.pc, { school2: 'control', option2: 'push' });
     begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBe(20); expect(f.foe.pos).toBe('7,5');
   });
-  it('Buff (heal) + Status (Inspired) on an ally: the heal, then Inspired for 1 round', () => {
+  it('Buff (heal) + Damage with Inverse on an ally: the heal, then a shield of half the damage', () => {
     const f = rig(['12,5'], ['4,5']); const ally = f.pcs[1]; ally.hp = 100;
-    const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'status', option2: 'inspired' });
+    const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'damage', modules: ['inverse'] });
     begin(f, d); pump(f); release(f, '4,5');
-    expect(f.unit(ally.id).hp).toBe(130); expect(condOn(f.unit(ally.id), 'inspired')).toBe(true); expect(f.unit(ally.id).conds!.inspired).toBe(1);
+    expect(f.unit(ally.id).hp).toBe(130); expect(f.unit(ally.id).shield).toBe(10);
   });
   it('Control (Pinned) + Damage: Pinned, and half damage with no roll', () => {
     const f = rig(); const d = give(f.pc, { school: 'control', option: 'pinned', school2: 'damage' });

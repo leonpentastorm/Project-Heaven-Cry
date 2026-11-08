@@ -177,6 +177,9 @@ describe('the heart\'s sounds are real files, small, mono and credited', () => {
     const credited = SFX_CREDITS.map((c) => c.what + ' ' + (c.url || '') + ' ' + (c.licence || '')).join(' ');
     for (const k of ['heartbeat-single-sound', 'sound-effects-pack', 'ghost-breath', 'wisdom-magic', 'deep-bone-crackbreak-sfx']) expect(credited).toContain(k);
     expect(SFX_CREDITS.find((c) => /wisdom-magic/.test(c.url || ''))?.licence).toBe('CC-BY 3.0');
+    // Credited as the authors ask: Wisdom Magic "by Iwan Gabovitch http://opengameart.org/users/qubodup"; the heartbeat is Independent.nu's.
+    expect(SFX_CREDITS.find((c) => /wisdom-magic/.test(c.url || ''))?.who).toMatch(/Iwan Gabovitch.*opengameart\.org\/users\/qubodup/);
+    expect(SFX_CREDITS.find((c) => /heartbeat-single-sound/.test(c.url || ''))?.who).toMatch(/^Independent\.nu/);
   });
 });
 

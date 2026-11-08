@@ -63,7 +63,7 @@ this work (Leon: "after Outburst 2.0 is in we will start balancing damage number
 
 A design has a **primary school** (full effect) and, from Will Power 5, a **secondary school** with its **own option**,
 at **half strength** as a rider. They must be different schools. Damage + Control (push) = damage then a 1-tile push;
-Buff (heal) + Status (Inspired) = heal then Inspired 1 round; Control (Pinned) + Damage = Pinned + half damage.
+Damage + Status (Shaken) = damage then Shaken 1 round; Buff (heal) + Damage with Inverse = heal then a half shield (the two schools work on the same side: spec item 542; the first draft's "Buff (heal) + Status (Inspired)" was impossible, Inspired being a Buff option); Control (Pinned) + Damage = Pinned + half damage.
 The workshop shows two separate option rows; the verdict shows both effects with numbers.
 
 ## 5. Elements (tones)
