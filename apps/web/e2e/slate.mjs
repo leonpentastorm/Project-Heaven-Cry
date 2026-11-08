@@ -101,6 +101,8 @@ await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await p.wa
 ok('Save closes the dialog and stores the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), (await dlg.count()) === 0 && /reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
 await p.waitForSelector('[data-phc-cutin]', { timeout: 10000 });
+// Keep the card up while the checks run (it closes itself after 2 s unless hovered).
+await p.locator('[data-phc-cutin]').first().hover().catch(() => {});
 const card = await p.locator('[data-phc-cutin] button[data-act]').allTextContents();
 const first = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
 ok('the next turn card leads with Reload: ' + card.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | ') + ' (' + first + ')', first === 'reload');
