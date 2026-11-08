@@ -24,6 +24,15 @@ const entries = (f: any, u: Unit) => { const was = bindGame(f.g); try { return p
 const ctx = (f: any, u: Unit) => ({ g: f.g, c: f.g.characters[u.charId!], how: 'combat' as const, cb: f.cb, u: f.unit(u.id) });
 
 describe('pickers for the new moves (buttons only)', () => {
+  it('Rewrite in the story: whose and what they rely on are both buttons (no typed field)', () => {
+    const x: any = { g: { story: { npcs: [{ id: 'n1', name: 'Brother Ash', side: 'neutral' }] } }, c: null, how: 'story' };
+    const P = pickerFor({ id: 'class:trickster.rewrite', actionId: 'rewrite_story', label: 'Rewrite', text: 'Flip a blessing, ward or advantage someone relies on (pick who and what).', target: 'text' } as any, x)!;
+    expect(P.fields.map((f) => f.kind)).toEqual(['chips', 'chips']);
+    expect(P.hint).not.toMatch(/pick who and what/);
+    const what = P.fields[1] as any; expect(what.options.map((o: any) => o.label)).toContain('A ward');
+    expect(buildArgs(P, { npc: ['n1'] }, x)).toMatch(/^Pick /); // a missing pick is refused, nothing typed
+    expect(buildArgs(P, { npc: ['n1'], what: ['ward'] }, x)).toEqual({ text: 'Brother Ash: a ward', npc: 'Brother Ash' });
+  });
   it('Command: the squadmate is the grid target, the walk\'s end a second click on a tile', () => {
     const f = fightWith([cls('guardian', 3, { skills: { authority: 1 } }), {}], [{}]);
     const u = f.turn(f.pcs[0]), e = entries(f, u).find((x) => x.actionId === 'command')!;
@@ -116,6 +125,17 @@ describe('the grid marks what stands', () => {
     f.cb.objects = [...(f.cb.objects || []), { id: 'rigX', kind: 'trap', name: 'Rigged tile', pos: '9,9', rig: 'class:infiltrator.sabotage', side: 'foe', owner: f.foe.id } as any, { id: 'rigY', kind: 'trap', name: 'Rigged tile', pos: '8,9', rig: 'class:infiltrator.sabotage', side: 'pc', owner: f.pc.id } as any];
     const v = viewFor(f.g, 'host');
     expect((v.combat!.objects || []).some((o: any) => o.id === 'rigX')).toBe(false); expect((v.combat!.objects || []).some((o: any) => o.id === 'rigY')).toBe(true);
+  });
+  it('a Proving Ground team fight: team B\'s screen marks team B\'s own rigged tile, never team A\'s', () => {
+    const f = fightWith([cls('infiltrator', 8), {}], [{}]);
+    const [a, b] = f.pcs; f.turn(a); f.act({ type: 'combat/perk', unitId: a.id, id: 'class:infiltrator.sabotage', actionId: 'rig' } as any);
+    const g: any = JSON.parse(JSON.stringify(f.g)); g.sandbox = { mode: 'teams', team: { p2: 'B' }, saved: {} };
+    g.combat.units.find((x: any) => x.id === b.id).side = 'foe';
+    g.combat.objects.push({ id: 'rigB', kind: 'trap', name: 'Rigged tile', pos: '9,9', rig: 'class:infiltrator.sabotage', side: 'foe', owner: b.id, damage: 30 });
+    const aPos = g.combat.objects.find((o: any) => o.rig && o.side === 'pc').pos;
+    const MB = classMarks(viewFor(g, 'p2').combat, 'pc', {}), MA = classMarks(viewFor(g, 'host').combat, 'pc', {});
+    expect(MB['9,9'].marks[0].text).toBe('✱ RIG'); expect(MB[aPos]?.marks.some((x) => x.key.startsWith('rig')) || false).toBe(false);
+    expect(MA[aPos].marks[0].text).toBe('✱ RIG'); expect(MA['9,9']).toBeUndefined();
   });
   it('Read: an arrow on the enemy toward its target and a ring on the target, until its turn ends', () => {
     const f = fightWith([cls('trickster', 3, MIND)], [{}]);

@@ -245,7 +245,7 @@ All shelved moves stay in the engine and tests, and can't be learned. The full l
 - **Saves:**
   - Old classes map to new ones: medic → bard, scribe → mage, warden → trickster, hexer → channeler, assassin → infiltrator. The rest keep their id.
   - Moves the new class doesn't have stop working.
-  - A character with an advanced class keeps it working (grandfathered).
+  - A character with an advanced class keeps it in the save, but it gives nothing (no moves, resources or effects) while advanced classes are shelved: not grandfathered (spec item 556).
 - **Data and spec:** the Classes section and classes.json are rewritten.
 - **UI:** the level-up picker and class panel. Old emblems are reused; the Infiltrator needs one new emblem.
 - **Narrator: lighter.** It knows 9 classes instead of 34, and places no tutors.

@@ -1142,7 +1142,7 @@ register({
     },
     {
       id: 'rewrite_story', label: 'Rewrite', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Flip a blessing, ward or advantage someone relies on (say who and what). The engine rolls their Brain save; the Narrator rules the flip.',
+      text: 'Flip a blessing, ward or advantage someone relies on (pick who and what). The engine rolls their Brain save; the Narrator rules the flip.',
       available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'You need an Evoker.'),
       run: (h, args) => {
         const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + debuffStrength(c, 'brain'), ok = r === 20 || (r !== 1 && r >= tn);

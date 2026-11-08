@@ -4,7 +4,7 @@
 // rigged tile) goes through the engine functions its turn uses, with the game bound, as the lane tests do.
 import { describe, expect, it } from 'vitest';
 import {
-  CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf,
+  CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
 } from '../src';
 import { makeObject } from '../src/objects';
@@ -226,12 +226,14 @@ describe('Infiltrator', () => {
     expect(f.unit(foe.id).hp).toBe(999 - 30); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true);
     expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
   });
-  it('Sabotage: a barricade stops blocking the way for 2 rounds', () => {
+  it('Sabotage: a barricade stops blocking the way for 2 rounds (a way through, not a place to stop: item 568)', () => {
     const f = fightWith([cls('infiltrator', 8)], [{ at: 'P11' }]);
     const u = at(f, f.pc, '4,2'); f.cb.objects = [...objectsOf(f.cb), makeObject('bx', 'barricade', '5,2')]; f.turn(u);
     perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage_object', tile: '5,2' });
-    act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' });
-    expect(f.unit(u.id).pos).toBe('5,2');
+    expect(paths(f.cb, '4,2', u.id).dist['6,2']).toBe(2); // straight through it
+    expect(() => act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' })).toThrow();
+    act(f, f.unit(u.id), { type: 'combat/move', to: '6,2' });
+    expect(f.unit(u.id).pos).toBe('6,2');
   });
 });
 

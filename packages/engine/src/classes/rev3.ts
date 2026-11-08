@@ -219,16 +219,18 @@ register({
 
 // ======================================================================================================== MARKSMAN
 // ---------- Speed Loader (rank I, passive) ----------
-// Your first reload each turn costs 1 AP less, never below 1 (stat 'ap_cost:reload'; a Special Ammo load is a reload).
-// The turn's first reload spends it even when it was already 1 AP (a quick-release magazine).
+// Your first main-hand reload each turn costs 1 AP less, never below 1 (stat 'ap_cost:reload'; a Special Ammo load is a
+// reload). The turn's first reload spends it even when it was already 1 AP (a quick-release magazine). The off-hand gun
+// (priced with ctx.hand 'off') and the reload of both guns at once (3 AP, its own price) neither get it nor spend it; a
+// refused reload (full, nothing to load) spends nothing either (spec item 564).
 register({
   id: 'marksman.speed_loader', claims: 'all',
   stat: (h, stat, ctx) => {
-    if (stat !== 'ap_cost:reload') return 0; const cb = fightOf(h); if (!cb || overworld(cb) || !h.u) return 0;
+    if (stat !== 'ap_cost:reload' || ctx?.hand === 'off') return 0; const cb = fightOf(h); if (!cb || overworld(cb) || !h.u) return 0;
     if (uses({ ...h, cb }).left('per_turn', 1, h.key) <= 0) return 0;
     return -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1));
   },
-  on: { reload: (ctx, h) => { if (ctx.u === h.u && inFight(h)) uses(h).take('per_turn', 1, h.key); } },
+  on: { reload: (ctx, h) => { if (ctx.u === h.u && !ctx.both && inFight(h)) uses(h).take('per_turn', 1, h.key); } },
   brief: () => null,
 });
 
@@ -554,7 +556,10 @@ register({
       id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
       text: 'Swap places with your False Image within 6 tiles (once a scene, with the squadmate swap).',
       available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
-      preview: (h) => { const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' }; return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
+      preview: (h) => {
+        const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' };
+        if (h.cb!.units.some((x) => x !== h.u && !x.dead && x.pos === img.pos)) return { ok: false, why: 'Someone stands on your image.' };
+        return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
       run: (h, _args, rng) => {
         const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
         u.pos = to; img.pos = from; u.braced = false;
