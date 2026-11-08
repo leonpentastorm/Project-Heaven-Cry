@@ -20,6 +20,7 @@ describe('browser voices: natural first', () => {
   it('orders English voices natural first and drops other languages', () => {
     expect(rankVoices(CHROME).map((v) => v.name)).toEqual(['Google US English', 'Google UK English Female', 'Microsoft David - English (United States)', 'Microsoft Zira - English (United States)']);
     expect(rankVoices(EDGE)[0].name).toMatch(/Aria Online \(Natural\)/);
+    expect(rankVoices([...EDGE, V('Microsoft Christopher Online (Natural) - English (United States)', 'en-US', false)])[0].name).toMatch(/Christopher Online \(Natural\)/);
     expect(rankVoices(EDGE).some((v) => /German/.test(v.name))).toBe(false);
   });
   it('the fallback is the best natural voice, not the default', () => {

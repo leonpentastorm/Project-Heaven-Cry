@@ -77,7 +77,8 @@ export const isEdgeNatural = (v: BVoice) => /^Microsoft .*Online \(Natural\)/i.t
 export const isGoogle = (v: BVoice) => /^Google /i.test(v.name);
 /** How natural a browser voice sounds (higher first): Edge's natural voices, Chrome's Google voices, other neural ones. */
 export function voiceScore(v: BVoice): number {
-  return (isEdgeNatural(v) ? 300 : isGoogle(v) ? 200 : /natural|neural|premium|enhanced|siri/i.test(v.name) ? 150 : 0)
+  // Leon (8 Nov 2026): Edge's en-US-ChristopherNeural is the house browser voice; it leads whenever the browser has it.
+  return (isEdgeNatural(v) && /Christopher/i.test(v.name) ? 400 : isEdgeNatural(v) ? 300 : isGoogle(v) ? 200 : /natural|neural|premium|enhanced|siri/i.test(v.name) ? 150 : 0)
     + (/^en-US/i.test(v.lang) ? 20 : /^en-GB/i.test(v.lang) ? 15 : /^en/i.test(v.lang) ? 10 : 0) + (v.localService === false ? 5 : 0) + (v.default ? 1 : 0);
 }
 /** English voices, natural first (then by name). */
