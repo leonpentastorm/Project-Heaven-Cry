@@ -14,6 +14,9 @@
 import React from 'react';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { OPT_LABEL, optValue } from './actionPickers';
+import { wordRows } from './sigilView';
+import { glyphUri, SIGIL_INK } from './glyphs';
+import { glyphKeyNav } from './glyphKeys';
 import {
   magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
@@ -450,10 +453,16 @@ function MagicTab({ c }: { c: Character }) {
       </div>
     </Section>
     <Section title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {SIGILS.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" title={w.text} aria-pressed={on}
-          style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
-          onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}>{w.word}</button>; })}
+      {/* One labelled row per Sigil 1.4 word group (Elements … Filter), the same rows as the combat glyph keyboard. */}
+      <div role="group" aria-label="Sigil words" data-glyph-keyboard="1" style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+        {wordRows(SIGILS, (w) => w.id).map((r) => <div key={r.key} role="group" aria-label={r.label + ' words'} data-word-row={r.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+          <span aria-hidden="true" style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: '#8BDEEE' }}>{r.label.toUpperCase()}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
+            {r.items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
+              style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
+              onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
+          </div>
+        </div>)}
       </div>
     </Section>
     <Section title="OUTBURST SCHOOLS, TONES AND MODULES">

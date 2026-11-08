@@ -148,9 +148,31 @@ await p.waitForSelector('div[aria-label="Glyph keyboard"]');
 const key = (w) => p.locator('div[aria-label="Glyph keyboard"] button', { hasText: new RegExp('^\\s*' + w) }).first();
 await key('FIRE').click(); await p.waitForTimeout(150);
 const kbFire = ((await key('FIRE').textContent()) || '').replace(/\s+/g, ' ');
-ok('the keyboard shows the word\'s cost and effect: ' + kbFire, /ch · \d AP · starts/.test(kbFire));
+ok('the keyboard shows the word\'s cost and effect: ' + kbFire, /ch · \d AP\s*starts/.test(kbFire));
+// The keyboard is split into labelled rows by Sigil 1.4 word group, in order (empty groups left out), and fits its column.
+const ROW_ORDER = ['ELEMENTS', 'AFFLICTIONS', 'BOONS', 'WORKINGS', 'REACH', 'DELIVERY', 'BURST', 'FILTER'];
+const kb = await p.evaluate(() => { const pad = document.querySelector('div[aria-label="Glyph keyboard"]');
+  const rows = [...pad.querySelectorAll('[data-word-row]')].map((r) => ({ label: (r.querySelector('span[aria-hidden]')?.textContent || '').trim(), words: [...r.querySelectorAll('button[data-word]')].map((b) => b.dataset.word) }));
+  const box = pad.getBoundingClientRect(), keys = [...pad.querySelectorAll('button[data-word]')];
+  return { rows, over: pad.scrollWidth > pad.clientWidth + 1 || keys.some((b) => { const r = b.getBoundingClientRect(); return r.right > box.right + 1 || r.left < box.left - 1; }) }; });
+ok('the keyboard rows, in order: ' + kb.rows.map((r) => r.label + ' ' + r.words.join('/')).join(' · '), kb.rows.length >= 5 && kb.rows.every((r) => r.words.length > 0) && kb.rows.map((r) => r.label).join() === ROW_ORDER.filter((l) => kb.rows.some((r) => r.label === l)).join());
+ok('FIRE, SHOCK and SPARK sit in ELEMENTS; SEEK in REACH; KIN in FILTER', ['fire', 'shock', 'spark'].every((w) => kb.rows.find((r) => r.label === 'ELEMENTS')?.words.includes(w)) && kb.rows.find((r) => r.label === 'REACH')?.words.includes('seek') && kb.rows.find((r) => r.label === 'FILTER')?.words.includes('kin'));
+ok('no key runs past the keyboard\'s edge (rows wrap)', !kb.over);
+// Arrow keys: Right steps to the next key, Down drops to the row below, Home and End go to the ends.
+await key('FIRE').focus();
+const focused = () => p.evaluate(() => document.activeElement?.dataset?.word || '');
+const flat = kb.rows.flatMap((r) => r.words);
+await p.keyboard.press('ArrowRight'); const fRight = await focused();
+await p.keyboard.press('Home'); await p.keyboard.press('ArrowDown'); const fDown = await focused();
+await p.keyboard.press('End'); const fEnd = await focused();
+const rowOf = (w) => kb.rows.findIndex((r) => r.words.includes(w));
+ok('arrow keys move through the keys: Right ' + fRight + ', Down ' + fDown + ', End ' + fEnd, fRight === flat[1] && (rowOf(fDown) === 1 || (rowOf(fDown) === 0 && flat.indexOf(fDown) > 0)) && fEnd === flat[flat.length - 1]);
+await p.screenshot({ path: OUT + 'sigil14-01b-keyboard-rows.png' });
 await tok(L(4)).hover(); await p.waitForTimeout(150); await snap('01-keyboard');
 await tok(L(4)).click(); await p.waitForTimeout(300);
+// Our own tile now holds FIRE: every key is refused, and says why on the key, in its tooltip and its aria label.
+const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.title, aria: x.getAttribute('aria-label') })) : null; });
+if (refused) ok('on a tile with a glyph every key says "tile taken": ' + refused[0].text + ' | ' + refused[0].aria, refused.every((k) => k.off === 'true' && /tile taken/.test(k.text) && /One glyph per tile/.test(k.title) && /can't draw now/.test(k.aria)));
 await moveTo(L(3));
 await pickAct(/^Draw a glyph/).catch(() => {});
 await key('SEEK').click(); await p.waitForTimeout(150);
