@@ -683,13 +683,13 @@ export class CombatLogic extends DCLogic {
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
         sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×0.6' : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
-        sel.text = !dsel ? 'You have no Outburst designs.' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
-          : !S.aim && !aura ? (card.snapWhy || 'Snap: hover to preview, click a tile to aim (' + card.line + ').') : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
+        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
+          : !S.aim && !aura ? (card.snapWhy || (hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').')) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line + ' · ' + heart : heart;
       } else if (S.action === 'release') {
         const pl = hzPlan, aura = hp && hp.form === 'aura';
         sel.name = 'Release' + (heldD ? ' · ' + heldD.name : '') + (hp ? ' · stage ' + hp.stage + ' ×' + hp.mult : '') + ' · ' + (pl ? pl.ap : SPELL_AP.release) + ' AP';
-        sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.' : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
+        sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? (hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.') : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
         sel.extra = (hp && hp.rider ? hp.rider + ' · ' : '') + heart;
       } else if (HEART_ACTS.includes(S.action)) {
         const B = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn }[S.action] : null;
@@ -779,7 +779,7 @@ export class CombatLogic extends DCLogic {
           stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
           style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
-      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true }); this.setState({ aim: null, obMode: 'begin' }); } },
+      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
       beginLabel: 'Begin · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×0.6: hover to preview, click a tile to aim, then Confirm.',
@@ -946,7 +946,7 @@ export class CombatLogic extends DCLogic {
     const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
     if (MAGIC.includes(a) && cur && cur.mg) {
       if (a === 'evoke') { if (m.evV && m.evV.payload) act({ type: 'combat/evoke', unitId: cur.id, ...m.evV.payload }); return this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }); }
-      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true }); return this.setState({ aim: null, obMode: 'begin' }); }
+      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true }); return this.setState({ aim: null, obMode: 'begin', ...(S.obMode === 'snap' ? {} : { action: 'pump' }) }); }
       if (HEART_ACTS.includes(a)) return this.heartAct(a);
       if (a === 'release') { act({ type: 'combat/release', unitId: cur.id, aim: S.aim || undefined }); return this.setState({ aim: null }); }
       if (['scuff', 'vent', 'core', 'syphon', 'crystallise'].includes(a)) return act({ type: 'combat/' + a, unitId: cur.id });

@@ -109,6 +109,11 @@ describe('the Outbursts tab (rules 1.5)', () => {
     const { u } = soulFight('heart-c');
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     await React.act(async () => { root.render(React.createElement(App)); });
+    window.dispatchEvent(new CustomEvent('phc:combat-action', { detail: { action: 'outburst' } }));
+    await React.act(async () => { snap = view(); listeners.forEach((f) => f()); });
+    const pad = el.querySelector('[aria-label="Your Outbursts"]');
+    expect(pad).toBeTruthy(); expect(pad!.textContent).toMatch(/BURST · radius 1/); expect(pad!.textContent).toMatch(/Begin · 2 AP/);
+    expect(el.querySelector('[role="tabpanel"] [data-act="syphon"], [role="tabpanel"] [data-act="outburst"]')).toBeTruthy();
     doAct({ type: 'combat/outburst', unitId: u.id, design: 'fb', hold: true });
     window.dispatchEvent(new CustomEvent('phc:combat-action', { detail: { action: 'pump' } }));
     await React.act(async () => { snap = view(); listeners.forEach((f) => f()); });
@@ -116,6 +121,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(panel).toBeTruthy();
     expect(panel!.textContent).toMatch(/HEART · BURST · FIRE/);
     expect(panel!.textContent).toMatch(/STRAIN \d+ \/ \d+/);
+    expect(panel!.querySelectorAll('button[data-hact]').length).toBe(5);
     await React.act(async () => { root.unmount(); });
     expect(errors.filter((e) => !/act\(/.test(e))).toEqual([]);
   });

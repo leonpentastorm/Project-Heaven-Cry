@@ -161,8 +161,8 @@ await dlg.locator('div[aria-label="Your Outburst designs"]').waitFor();
 await tile(raider.pos).click(); await host.waitForTimeout(250);
 const obHint = await hint();
 ok('the hint warns that this starts a fight', /starts a fight/.test(obHint));
-const letGo = dlg.getByRole('button', { name: /^Let it go ·/ }).first();
-ok('Confirm reads "Let it go · AP"', await letGo.count() > 0);
+const letGo = dlg.getByRole('button', { name: /^Snap ·/ }).first(); // rules 1.5: a click on a tile is a snap cast at it
+ok('Confirm reads "Snap · AP"', await letGo.count() > 0);
 await snap('06b-area-outburst-aim');
 await letGo.click();
 await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 10000 });
@@ -246,12 +246,11 @@ if (u.ap < 3 && !cb.over) {
 }
 await pickAction(host, /^Outburst/);
 await host.waitForSelector('div[aria-label="Your Outbursts"]');
-await host.locator('div[aria-label="Release now or hold"] button', { hasText: 'Hold' }).click();
-await host.waitForTimeout(200);
 await snap('11-combat-outburst-hold');
-const conf3 = host.getByRole('button', { name: /^Confirm/ }).first();
-console.log('  confirm:', await conf3.textContent(), 'enabled', await conf3.isEnabled(), 'AP', u.ap);
-if (await conf3.isEnabled()) await conf3.click();
+// Rules 1.5: Begin from the design pad (hold at stage 0); the HEART panel takes over.
+const begin3 = host.locator('div[aria-label="Begin or snap"] button', { hasText: 'Begin' });
+console.log('  begin enabled', await begin3.isEnabled(), 'AP', u.ap);
+if (await begin3.isEnabled()) await begin3.click();
 await host.waitForTimeout(500);
 ({ cb, u } = await CB());
 ok('the Outburst is held: ' + JSON.stringify(u.mg?.held), !!u.mg?.held);
@@ -265,7 +264,7 @@ if (back !== 'mine') console.log('  state:', await host.evaluate(() => { const c
 ({ cb, u } = await CB());
 console.log('  held now', JSON.stringify(u.mg?.held), 'strain', u.mg?.strain, 'AP', u.ap);
 await host.evaluate(() => scrollTo(0, 0)); await snap('13-combat-held-next-turn');
-const relOk = await pickAction(host, /^Release ·/, { timeout: 4000 }).then(() => true, () => false);
+const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 4000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 4000 }).then(() => true, () => false));
 ok('Release appears while holding', relOk);
 if (relOk) {
   await host.waitForTimeout(200);

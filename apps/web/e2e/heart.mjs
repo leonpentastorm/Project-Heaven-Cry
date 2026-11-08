@@ -97,7 +97,7 @@ ok('the HEART panel is at the top of the tab', await p.locator('.phc-heart-panel
 for (let i = 1; i <= 3; i++) {
   s = await st(); if (s.u.ap < 1 && !(s.u.mg.freePumps > 0)) { await newRound(); await tab('Outbursts'); }
   s = await st(); if ((s.u.mg?.held?.stage || 0) >= 3) break;
-  const b = p.locator('.phc-heart-panel button[data-act="pump"]');
+  const b = p.locator('.phc-heart-panel button[data-hact="pump"]');
   await b.click(); await p.waitForTimeout(500);
 }
 s = await st(); ok('pumped to stage 3: ' + JSON.stringify(s.u.mg?.held) + ' AP ' + s.u.ap, (s.u.mg?.held?.stage || 0) >= 3);
@@ -105,7 +105,7 @@ await snap('2-heart');
 
 // ---------- 3. the Release preview of the Burst over the two drill units ----------
 await ensureAp(1); await tab('Outbursts');
-await p.locator('.phc-heart-panel button[data-act="release"]').click(); await p.waitForTimeout(250);
+await p.locator('.phc-heart-panel button[data-hact="release"]').click(); await p.waitForTimeout(250);
 await tileOf(foeAt).hover(); await p.waitForTimeout(400);
 const chips = await p.locator('.phc-grid .phc-plan[title]').evaluateAll((ns) => ns.map((n) => n.textContent));
 ok('both drill units marked with their numbers: ' + JSON.stringify(chips), chips.filter((t) => /^ENEMY −\d+/.test(t)).length >= 2);
