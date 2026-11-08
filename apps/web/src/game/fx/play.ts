@@ -9,6 +9,7 @@ import { soulHandlers, soulBeat, discharge } from './soul';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
+import { worldHandlers, worldBeat } from './world';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -19,17 +20,19 @@ export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hol
 interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean; charId?: string }
 let units = new Map<string, UnitInfo>();
 let seenTiles: Set<string> | null = null;
+/** World Play 1.7 kinds that are machines (a robot bleeds sparks, not blood). */
+const MACHINE_KIND = new Set(['robot', 'drone', 'machine']);
 const ROBOT = /drone|robot|\bbot\b|turret|automaton|mech\b|android|construct|sentry/i;
 /** Called by FxLayer before playing a batch: where everyone is now, and (in a fight) what the squad can see. */
 export function setContext(g: GameState | null, screen: string) {
   units = new Map(); seenTiles = null;
   if (!g) return;
   if (screen === 'combat' && g.combat) {
-    for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name), dead: !!u.dead, charId: u.charId || undefined });
+    for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
     try { seenTiles = visibility(g.combat, 'pc').tiles; } catch { seenTiles = null; }
   } else {
     for (const c of Object.values(g.characters)) { const p = g.story.positions?.[c.id]; if (p) units.set('pc-' + c.id, { pos: p, name: c.name, side: 'pc', robot: false, charId: c.id }); }
-    for (const n of g.story.npcs || []) units.set(n.id, { pos: n.pos, name: n.name, side: 'foe', robot: ROBOT.test(n.name) });
+    for (const n of g.story.npcs || []) units.set(n.id, { pos: n.pos, name: n.name, side: 'foe', robot: ROBOT.test(n.name) || MACHINE_KIND.has(n.kind || '') });
   }
 }
 const unit = (id: string | null | undefined) => (id ? units.get(id) : undefined);
@@ -753,6 +756,8 @@ function chipShatter(p: Pt, word: string) {
   after(() => { shards(q, { ...ELEMENTS.freeze, ink: MUTED, core: WHITE }, 'sigil', 10, 0.8, 520); floatText('CLEANSED', p, OK, { small: true }); }, 300);
 }
 
+// World Play 1.7 (fx/world.ts): carrying, searches, hazards, triggers, the alarm, approaches, talk, markers.
+Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }));
 // Class Roster Revision 3's moves (fx/classes.ts): the same kit as the Soul handlers, plus a few particles from here.
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
 
@@ -763,6 +768,7 @@ function beatOf(e: FxEvent): number {
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const kb = classBeat(e); if (kb !== undefined) return kb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
+  const wb = worldBeat(e); if (wb !== undefined) return wb;
   if (e.k === 'explode' && e.what === 'discharge') return 520;
   switch (e.k) {
     case 'turn': return 140;

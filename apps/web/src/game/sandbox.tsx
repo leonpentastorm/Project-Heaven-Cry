@@ -29,6 +29,10 @@ import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
+import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
+const ITEMS = Object.values(ITEM);
+import { ART } from '../screens/shared';
 
 // ---------- starting it ----------
 /** From the title: open a fresh room and go straight into the Proving Ground with a test character (or the host's
@@ -90,7 +94,7 @@ html.phc-sandbox div[role="dialog"][aria-label="The fight is over"]{display:none
 `;
 function useCss() { React.useEffect(() => { if (document.getElementById('phc-sandbox-css')) return; const s = document.createElement('style'); s.id = 'phc-sandbox-css'; s.textContent = CSS; document.head.appendChild(s); }, []); }
 
-type Tab = 'gear' | 'squad' | 'magic' | 'faith' | 'field';
+type Tab = 'gear' | 'squad' | 'magic' | 'faith' | 'field' | 'world';
 /** The drill unit on a tile of the area map, while gearing up. */
 const foeAt = (game: GameState, ref: string) => (game.story.npcs || []).find((n) => n.side === 'hostile' && refOf(n.pos) === ref) || null;
 
@@ -221,7 +225,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
   const c = game.characters[cid] && chars.some((x) => x.id === cid) ? game.characters[cid] : chars[0];
   React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role="dialog"][aria-modal="true"]')) close(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
   const field = isHost || !!sb.spawnAll;
-  const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(field ? [['field', 'Field'] as [Tab, string]] : [])];
+  const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(field ? [['field', 'Field'] as [Tab, string], ['world', 'World'] as [Tab, string]] : [])];
   const status = gearing ? (sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared · gearing up' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave + ' · gearing up' : 'gearing up') : 'fighting';
   return <aside aria-label="Proving Ground tools" className={presenceCls('phc-a-right', closing) + ' phc-sb-drawer' + (screen === 'main' ? ' phc-sb-onmain' : '')}
     style={{ position: 'fixed', top: 0, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, borderRight: screen === 'main' ? '1px solid ' + C.line : 0, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
@@ -238,7 +242,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
       {tabs.map(([id, name]) => <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => { setTab(id); sfx('tab'); }}
         style={{ ...btn, flex: 1, border: '1px solid ' + (tab === id ? C.text : C.line), background: tab === id ? C.raised : 'transparent', color: tab === id ? C.text : C.muted }}>{name}</button>)}
     </nav>
-    {tab !== 'field' && <div role="group" aria-label="Character" style={{ ...row, padding: '10px 16px 0' }}>
+    {tab !== 'field' && tab !== 'world' && <div role="group" aria-label="Character" style={{ ...row, padding: '10px 16px 0' }}>
       {chars.length ? chars.map((x) => <button key={x.id} type="button" aria-pressed={x.id === c?.id} onClick={() => setCid(x.id)} style={{ ...btn, border: '1px solid ' + (x.id === c?.id ? C.text : C.line), background: x.id === c?.id ? C.raised : 'transparent' }}>{x.name}</button>)
         : <NoFighter gearing={gearing} />}
     </div>}
@@ -249,6 +253,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
       {tab === 'magic' && c && <MagicTab c={c} />}
       {tab === 'faith' && c && <FaithTab game={game} c={c} />}
       {tab === 'field' && field && <FieldTab game={game} isHost={isHost} />}
+      {tab === 'world' && field && <WorldTab game={game} />}
     </div>
   </aside>;
 }
@@ -648,6 +653,108 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
       <span style={{ fontSize: 12, color: C.muted }}>{MANA_BANDS.map((b) => b.id + ' ' + b.min + '–' + b.max).join(' · ')}</span>
     </Section>
     {isHost && <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => leaveProvingGround()}>Leave the Proving Ground</button>}
+  </>;
+}
+
+
+// ---------- the world (rules 1.7): people, caches, hazards, triggers, objectives ----------
+/** One approach's fields (label, skills, TN, what success and failure do). */
+function ApproachEdit({ a, set, name }: { a: ApproachForm; set: (a: ApproachForm) => void; name: string }) {
+  const sk = (v: string, k: 'skill' | 'skill2') => <select value={v} aria-label={name + ' ' + (k === 'skill' ? 'skill' : 'second skill')} style={{ ...field, flex: 1 }} onChange={(e) => set({ ...a, [k]: e.target.value })}>{k === 'skill2' && <option value="">(one skill)</option>}{SKILLS.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>;
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 8, borderRadius: 8, border: '1px solid ' + C.line }}>
+    <input value={a.label} aria-label={name + ' label'} onChange={(e) => set({ ...a, label: e.target.value })} style={field} />
+    <div style={row}>{sk(a.skill, 'skill')}{sk(a.skill2, 'skill2')}<select value={a.tn} aria-label={name + ' TN'} style={field} onChange={(e) => set({ ...a, tn: Number(e.target.value) })}>{TN_LADDER.map((t) => <option key={t} value={t}>TN {t}</option>)}</select></div>
+    <div style={row}><span style={{ fontSize: 12, color: C.muted }}>Success</span><select value={a.success} aria-label={name + ' success'} style={field} onChange={(e) => set({ ...a, success: e.target.value })}>{SUCCESSES.map((x) => <option key={x} value={x}>{x || '(the Narrator says)'}</option>)}</select>
+      <span style={{ fontSize: 12, color: C.muted }}>Fail</span><select value={a.fail} aria-label={name + ' fail'} style={field} onChange={(e) => set({ ...a, fail: e.target.value })}>{FAILS.map((x) => <option key={x} value={x}>{x || '(nothing more)'}</option>)}</select></div>
+    {a.success === 'advance' && <input value={a.objective} placeholder="objective id (drill objective)" aria-label={name + ' objective'} onChange={(e) => set({ ...a, objective: e.target.value })} style={field} />}
+    {a.fail === 'condition' && <select value={a.failCondition} aria-label={name + ' condition'} style={field} onChange={(e) => set({ ...a, failCondition: e.target.value })}><option value="">Pick a condition</option>{CONDITION_IDS.map((x) => <option key={x} value={x}>{condName(x)}</option>)}</select>}
+    {a.fail === 'lose' && <input value={a.failItem} placeholder="item id it takes" aria-label={name + ' item lost'} onChange={(e) => set({ ...a, failItem: e.target.value })} style={field} />}
+  </div>;
+}
+type Arm = { what: 'npc' | 'cache' | 'hazard' | 'trigger'; pts: string[] } | null;
+function WorldTab({ game }: { game: GameState }) {
+  const gearing = game.phase === 'story';
+  const [npc, setNpc] = React.useState(blankNpc()), [cache, setCache] = React.useState(blankCache()), [hz, setHz] = React.useState(blankHazard()), [tg, setTg] = React.useState(blankTrigger()), [ob, setOb] = React.useState(blankObjective());
+  const [arm, setArm] = React.useState<Arm>(null), [refs, setRefs] = React.useState<Record<string, string>>({}), [addItem, setAddItem] = React.useState('stim_injector'), [refPick, setRefPick] = React.useState('');
+  const R = (k: string) => (refs[k] || '').trim().toUpperCase(), setR = (k: string, v: string) => setRefs({ ...refs, [k]: v.toUpperCase() });
+  const two = (v: string): [string, string] => { const [a, b] = v.split(/[:\-–\s]+/).filter(Boolean); return [a || '', b || a || '']; };
+  const fire = (what: NonNullable<Arm>['what'], pts: string[]) => {
+    if (what === 'npc') act(npcAction(npc, pts[0]));
+    if (what === 'cache') act(cacheAction(cache, pts[0]));
+    if (what === 'hazard') act(hazardAction(hz, pts[0], pts[1]));
+    if (what === 'trigger') act(triggerAction(tg, pts[0], pts[1]));
+  };
+  const needs = (w: NonNullable<Arm>['what']) => (w === 'hazard' || (w === 'trigger' && tg.when === 'enter') ? 2 : 1);
+  useTilePick(!!arm && gearing, (r) => { if (!arm) return; const pts = [...arm.pts, r]; if (pts.length < needs(arm.what)) { setArm({ ...arm, pts }); return; } fire(arm.what, pts); setArm(null); });
+  React.useEffect(() => { if (!arm) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArm(null); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [arm]);
+  const armBtn = (w: NonNullable<Arm>['what'], label: string) => { const on = arm?.what === w;
+    return <button type="button" data-world-arm={w} disabled={!gearing} aria-pressed={on} style={on ? { ...primary, background: C.red, color: C.white } : primary} onClick={() => setArm(on ? null : { what: w, pts: [] })}>{on ? (needs(w) === 2 ? (arm!.pts.length ? 'Click the far corner · stop' : 'Click the first corner · stop') : 'Click a tile · stop') : label}</button>; };
+  const placeBtn = (w: NonNullable<Arm>['what'], key: string, hint: string) => <><input value={refs[key] || ''} onChange={(e) => setR(key, e.target.value)} placeholder={hint} aria-label={'Tile for ' + w} style={{ ...field, width: needs(w) === 2 ? 110 : 80 }} />
+    <button type="button" data-world-place={w} disabled={!gearing || (needs(w) === 2 ? !two(R(key))[0] : !R(key)) || (w === 'trigger' && tg.when === 'examine' && !tg.objId)} style={btn} onClick={() => fire(w, needs(w) === 2 ? two(R(key)) : [R(key)])}>Place</button></>;
+  const objs = (game.story.objects || []).filter((o) => !o.hidden), npcs = (game.story.npcs || []).filter((n) => !n.hidden), hzs = (game.story.hazards || []);
+  const ents = [...npcs.map((n) => ({ id: n.id, label: n.name + ' (' + refOf(n.pos) + ')' })), ...objs.map((o) => ({ id: o.id, label: o.name + ' (' + refOf(o.pos) + ')' })), ...hzs.map((h) => ({ id: h.id, label: (h.name || HAZARD[h.kind]?.name || h.kind) + ' (' + refOf(h.tiles[0]) + ')' }))];
+  const avs = avatarChoices(npc.kind);
+  return <>
+    {!gearing && <span style={{ fontSize: 12, color: C.text }}>Stop the fight to place things.</span>}
+    {arm && <span role="status" style={{ fontSize: 12, color: C.text }}>Click {needs(arm.what) === 2 ? (arm.pts.length ? 'the far corner' : 'the first corner') : 'a free tile'} on the map (open the Area map for the big grid). Esc stops.</span>}
+    <Section title="A PERSON (KIND, FACE, TALK)" aria="World: a person">
+      <div style={row}><input value={npc.name} aria-label="Person name" onChange={(e) => setNpc({ ...npc, name: e.target.value })} style={{ ...field, flex: 1 }} />
+        <select value={npc.kind} aria-label="Kind" style={field} onChange={(e) => setNpc({ ...npc, kind: e.target.value, avatar: '' })}>{WORLD_KIND_IDS.map((k) => <option key={k} value={k}>{k}</option>)}</select>
+        <select value={npc.side} aria-label="Side" style={field} onChange={(e) => setNpc({ ...npc, side: e.target.value as any })}><option value="neutral">neutral</option><option value="hostile">hostile</option></select></div>
+      <div role="group" aria-label="Avatar" style={{ ...row, gap: 4 }}>
+        <button type="button" aria-pressed={!npc.avatar} style={{ ...small, border: '1px solid ' + (!npc.avatar ? C.text : C.line) }} onClick={() => setNpc({ ...npc, avatar: '' })}>{avs.length ? 'Auto' : 'Badge only'}</button>
+        {avs.slice(0, 12).map((id) => <button key={id} type="button" data-avatar={id} aria-pressed={npc.avatar === id} title={id} onClick={() => setNpc({ ...npc, avatar: id })} style={{ padding: 0, width: 34, height: 42, borderRadius: 6, overflow: 'hidden', cursor: 'pointer', border: '2px solid ' + (npc.avatar === id ? C.white : C.line), background: C.ground }}><img src={ART(id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></button>)}
+      </div>
+      <div style={row}><label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.prisoner} onChange={(e) => setNpc({ ...npc, prisoner: e.target.checked })} />Prisoner</label>
+        <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.hidden} onChange={(e) => setNpc({ ...npc, hidden: e.target.checked })} />Hidden</label></div>
+      <input value={npc.wants} placeholder="What they want (one plain line)" aria-label="Wants" onChange={(e) => setNpc({ ...npc, wants: e.target.value })} style={field} />
+      <div style={row}><input value={npc.objective} placeholder="knows: objective id" aria-label="Knows objective" onChange={(e) => setNpc({ ...npc, objective: e.target.value })} style={{ ...field, width: 130 }} />
+        <input value={npc.hintAt} placeholder="at (H6)" aria-label="Hint tile" onChange={(e) => setNpc({ ...npc, hintAt: e.target.value })} style={{ ...field, width: 70 }} /></div>
+      <input value={npc.hint} placeholder="The hint they give, plainly" aria-label="Hint" onChange={(e) => setNpc({ ...npc, hint: e.target.value })} style={field} />
+      {npc.talk.map((a, i) => <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><ApproachEdit a={a} name={'Talk ' + (i + 1)} set={(x) => setNpc({ ...npc, talk: npc.talk.map((y, j) => (j === i ? x : y)) })} />
+        <button type="button" style={{ ...small, alignSelf: 'flex-start', color: C.muted }} onClick={() => setNpc({ ...npc, talk: npc.talk.filter((_, j) => j !== i) })}>Remove this talk approach</button></div>)}
+      {npc.talk.length < 4 && <button type="button" style={{ ...small, alignSelf: 'flex-start' }} onClick={() => setNpc({ ...npc, talk: [...npc.talk, { label: 'Lean on them', skill: 'intimidation', skill2: '', tn: 12, success: 'ally', fail: 'hostile', objective: '', failCondition: '', failItem: '', stakes: '' }] })}>+ Talk approach</button>}
+      <div style={row}>{armBtn('npc', 'Place by clicking the map')}{placeBtn('npc', 'npc', 'or H6')}</div>
+    </Section>
+    <Section title="A CACHE (LOOT ON THE GROUND)" aria="World: a cache">
+      <input value={cache.name} aria-label="Cache name" onChange={(e) => setCache({ ...cache, name: e.target.value })} style={field} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{cache.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{ITEM[x.item]?.name || WEAPON[x.item]?.name || x.item}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={1} max={20} set={(n) => setCache({ ...cache, items: cache.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
+        <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item} onClick={() => setCache({ ...cache, items: cache.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
+      <div style={row}><select value={addItem} aria-label="Item to add" style={{ ...field, flex: 1 }} onChange={(e) => setAddItem(e.target.value)}>{ITEMS.map((x: any) => <option key={x.id} value={x.id}>{x.name}</option>)}{WEAPONS.map((w) => <option key={w.id} value={w.id}>{w.name} (weapon)</option>)}</select>
+        <button type="button" style={small} disabled={cache.items.length >= 12} onClick={() => setCache({ ...cache, items: [...cache.items, { item: addItem, qty: 1 }] })}>+ Add</button></div>
+      <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={cache.locked} onChange={(e) => setCache({ ...cache, locked: e.target.checked })} />Locked (needs its way in first)</label>
+      {cache.locked && <ApproachEdit a={cache.way} name="Way in" set={(x) => setCache({ ...cache, way: x })} />}
+      <div style={row}>{armBtn('cache', 'Place by clicking the map')}{placeBtn('cache', 'cache', 'or H6')}</div>
+    </Section>
+    <Section title="A HAZARD (AN AREA OF TILES)" aria="World: a hazard">
+      <div style={row}><select value={hz.kind} aria-label="Hazard kind" style={field} onChange={(e) => setHz({ ...hz, kind: e.target.value })}>{HAZARD_KINDS.map((k) => <option key={k} value={k}>{HAZARD[k]?.name || k}</option>)}</select>
+        {(['light', 'heavy'] as const).map((v) => <button key={v} type="button" aria-pressed={hz.severity === v} style={{ ...small, border: '1px solid ' + (hz.severity === v ? C.text : C.line) }} onClick={() => setHz({ ...hz, severity: v })}>{v}</button>)}
+        <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={hz.hidden} onChange={(e) => setHz({ ...hz, hidden: e.target.checked })} />Hidden</label></div>
+      <span style={{ fontSize: 12, color: C.muted }}>{HAZARD[hz.kind]?.text || ''}</span>
+      <div style={row}>{armBtn('hazard', 'Place: click two corners')}{placeBtn('hazard', 'hazard', 'or C3:E5')}</div>
+      {hzs.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{hzs.map((h) => <div key={h.id} style={row}><span style={{ flex: 1, fontSize: 12 }}>{(h.name || HAZARD[h.kind]?.name || h.kind) + ' · ' + h.severity + ' · ' + h.tiles.length + ' tiles at ' + refOf(h.tiles[0]) + ' [' + h.id + ']'}</span>
+        <button type="button" style={{ ...small, color: C.muted }} disabled={!gearing} onClick={() => act({ type: 'sandbox/hazard', remove: h.id } as any)}>Remove</button></div>)}</div>}
+    </Section>
+    <Section title="A TRIGGER (AMBUSH, ARRIVAL, REVEAL)" aria="World: a trigger">
+      <div style={row}><span style={{ fontSize: 12, color: C.muted }}>When</span>{(['enter', 'examine'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.when === v} style={{ ...small, border: '1px solid ' + (tg.when === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, when: v })}>{v === 'enter' ? 'someone enters tiles' : 'an object is dealt with'}</button>)}</div>
+      {tg.when === 'examine' && <select value={tg.objId} aria-label="Trigger object" style={field} onChange={(e) => setTg({ ...tg, objId: e.target.value })}><option value="">Pick an object</option>{objs.map((o) => <option key={o.id} value={o.id}>{o.name + ' (' + refOf(o.pos) + ')'}</option>)}</select>}
+      <div style={row}><span style={{ fontSize: 12, color: C.muted }}>Then</span>{(['fight', 'spawn', 'reveal'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.then === v} style={{ ...small, border: '1px solid ' + (tg.then === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, then: v })}>{v === 'fight' ? 'ambush (fight)' : v === 'spawn' ? 'someone arrives' : 'reveal hidden'}</button>)}</div>
+      {tg.then !== 'reveal' && <div style={row}><Stepper name="how many" value={tg.count} min={1} max={6} set={(n) => setTg({ ...tg, count: n })} /><input value={tg.name} aria-label="Who comes" onChange={(e) => setTg({ ...tg, name: e.target.value })} style={{ ...field, width: 110 }} />
+        <select value={tg.kind} aria-label="Their kind" style={field} onChange={(e) => setTg({ ...tg, kind: e.target.value })}>{WORLD_KIND_IDS.map((k) => <option key={k} value={k}>{k}</option>)}</select>
+        <select value={tg.tier} aria-label="Their tier" style={field} onChange={(e) => setTg({ ...tg, tier: e.target.value })}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></div>}
+      <input value={tg.text} placeholder="What everyone sees when it fires" aria-label="Trigger text" onChange={(e) => setTg({ ...tg, text: e.target.value })} style={field} />
+      <div style={row}>{tg.when === 'enter' ? armBtn('trigger', 'Place: click two corners') : <button type="button" style={primary} disabled={!gearing || !tg.objId} onClick={() => fire('trigger', [])}>Set the trigger</button>}{tg.when === 'enter' && placeBtn('trigger', 'trigger', 'or F4:G5')}</div>
+      <span style={{ fontSize: 12, color: C.muted }}>Triggers are invisible to players; the log shows the new one's id. Each fires once.</span>
+    </Section>
+    <Section title="AN OBJECTIVE AND WHERE IT IS" aria="World: an objective">
+      <div style={row}><input value={ob.id} aria-label="Objective id" onChange={(e) => setOb({ ...ob, id: e.target.value })} style={{ ...field, width: 130 }} /><input value={ob.text} aria-label="Objective text" onChange={(e) => setOb({ ...ob, text: e.target.value })} style={{ ...field, flex: 1 }} /></div>
+      <div style={row}><select value={refPick} aria-label="Where: a thing on the map" style={{ ...field, flex: 1 }} onChange={(e) => setRefPick(e.target.value)}><option value="">A person, object or hazard…</option>{ents.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select>
+        <button type="button" style={small} disabled={!refPick || ob.refs.includes(refPick)} onClick={() => setOb({ ...ob, refs: [...ob.refs, refPick] })}>+ Where</button>
+        <input value={refs.obj || ''} onChange={(e) => setR('obj', e.target.value)} placeholder="or H6" aria-label="Where: a tile" style={{ ...field, width: 70 }} /><button type="button" style={small} disabled={!R('obj')} onClick={() => { setOb({ ...ob, refs: [...ob.refs, R('obj')] }); setR('obj', ''); }}>+ Tile</button></div>
+      {ob.refs.length > 0 && <span style={{ fontSize: 12 }}>Where: {ob.refs.map((r) => ents.find((x) => x.id === r)?.label || r).join(', ')} <button type="button" style={{ ...small, minHeight: 22 }} onClick={() => setOb({ ...ob, refs: [] })}>Clear</button></span>}
+      <div style={row}><button type="button" data-world-objective="open" style={primary} disabled={!gearing} onClick={() => act(objectiveAction({ ...ob, status: 'open' }))}>Set objective</button>
+        <button type="button" style={btn} disabled={!gearing} onClick={() => act(objectiveAction({ ...ob, status: 'done' }))}>Mark it done</button></div>
+    </Section>
   </>;
 }
 

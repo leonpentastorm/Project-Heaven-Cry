@@ -28,6 +28,8 @@ import { missionsButton } from '../game/missionView';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard } from './faithTab';
+import { NOT_PERSON, faceOf, kindBadge, worldLayer, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach } from '../game/worldView';
+import { approachOptions } from '@engine';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
@@ -543,7 +545,11 @@ export class MainLogic extends DCLogic {
     const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe') && (u.side === 'pc' || seenNow.has(u.id)))
       : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }))
-        .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden), faces = castMany(g, ns.map((n) => ({ key: n.id, current: ART(n.portrait) || null, tags: npcTags(n.name, n.tier, n.weapon) })), taken); return ns.map((n) => ({ id: n.id, side: 'foe', npc: n, name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: faces.get(n.id) || '',
+        .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden);
+          // World Play 1.7: every token shows its face (its avatar, or the engine's pick by kind). People are cast from the
+          // player-card pool only when a player holds that card; robots, drones and machines keep their own art; beasts badge only.
+          const faces = castMany(g, ns.filter((n) => !NOT_PERSON.has(n.kind || 'human')).map((n) => ({ key: n.id, current: ART(n.portrait || faceOf(g, n)) || null, tags: npcTags(n.name, n.tier, n.weapon) })), taken);
+          return ns.map((n) => ({ id: n.id, side: 'foe', npc: n, kind: n.kind || 'human', name: n.name, short: n.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), img: NOT_PERSON.has(n.kind || 'human') ? ART(faceOf(g, n)) || '' : faces.get(n.id) || '',
           pos: n.pos, hp: ENEMY[n.tier]?.hp || 30, maxHp: ENEMY[n.tier]?.hp || 30, analyzedBy: n.analyzed ? 'party' : undefined, injuries: [], downed: false, dead: false })); })());
     // Drones stand on the area map as tokens of their own (Drone Handler): the engine places them (positionsOf).
     if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : (COMPANION_KINDS[k.kind]?.hp ?? 30); units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
@@ -552,7 +558,7 @@ export class MainLogic extends DCLogic {
     objs.forEach((o) => { if (!objAt[o.pos] || kindOf(o).blocks_move) objAt[o.pos] = o; });
     const cov = {}; objs.forEach((o) => { const k = coverKind(o); if (k) cov[o.pos] = { kind: k }; });
     const solid = new Set(map.solid), diff = new Set([...map.difficult, ...objs.filter(isDifficult).map((o) => o.pos)]);
-    const interesting = (o) => o && (o.approaches.length || ['poi', 'door', 'barricade', 'container', 'terminal', 'exit', 'trap', 'hole'].includes(o.kind));
+    const interesting = (o) => o && (o.approaches.length || isCacheV(o) || ['poi', 'door', 'barricade', 'container', 'terminal', 'exit', 'trap', 'hole'].includes(o.kind));
     const mapArt = ART(zoneOf(g)?.art?.map);
     const cellBg = (k) => (mapArt
       ? tileBg(mapArt, k, map.w, map.h, solid.has(k) ? 'rgba(10, 13, 19, 0.55)' : diff.has(k) ? 'rgba(22, 28, 40, 0.3)' : 'rgba(10, 13, 19, 0.08)')
@@ -729,6 +735,11 @@ export class MainLogic extends DCLogic {
         plan.reachText = (melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (melee ? (plan.red.size ? 'the tiles next to you' : 'none') : 'up to ' + Math.round(effectiveRange(useW) * (3 + ((u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0))) + ' tiles in sight (−2 to hit per range band past ' + effectiveRange(useW) + ')') + '.';
       }
     }
+    // World Play 1.7 on the map (game/worldView.ts): hazards per tile (no hidden ones: the view drops them), safe-path tiles,
+    // objective and hint markers, caches with their count, and the free tiles for a Put down being placed.
+    const WLs = { big: worldLayer(g, true), small: worldLayer(g, false) };
+    const pdOn = !!(S.putDown && c && !inFight && (c.carried || []).some((x) => x.npc.id === S.putDown)), pdSet = pdOn ? new Set(putDownTiles(g, c.id)) : new Set();
+    if (S.putDown && !pdOn) queueMicrotask(() => this.setState({ putDown: null }));
     const sgTiles = evW ? mergeTiles((placedW && placedW.tiles) || {}, evW.tiles) : (placedW && placedW.tiles) || {};
     const cellsFor = (labels, onClick) => {
       const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
@@ -738,12 +749,14 @@ export class MainLogic extends DCLogic {
         for (let x = 0; x < map.w; x++) { const k = x + ',' + y, u = tok[k], p = u && u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null, ref = refOf(k), note = notesAt(map, k)[0] || '', o = objAt[k];
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
           const spr = o ? spriteOf(g, o) : '';
+          const wc = (labels ? WLs.big : WLs.small).cells.get(k) || {}, kb = u && u.npc ? kindBadge(u.kind, labels) : null, pdHere = labels && pdSet.has(k);
+          const wWhat = (wc.hz ? ' · ' + wc.hz.title : '') + (wc.mark ? ' · ' + wc.mark.title.replace(/\n/g, ' · ') : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (u && u.npc ? ' · ' + (kb && kb.title ? kb.title.toLowerCase() : 'person') + ' · click to talk' : '') + (pdHere ? ' · put them down here' : '');
           const gl = glAt[k] || [], held = u ? heldOf(u) : null, sgT = sgTiles[k];
           const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && !evW.orderTo.has(k) && k !== myAt;
           const sgLayer = [sgT && sgT.layer, sgDim ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
           const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
           const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');
-          const glyph = o && !u && !spr && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
+          const glyph = o && !u && !spr && !wc.cache && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
           const hzU = labels && u && mHz.on ? mHz.marks.get(u.id) : null, hzL = labels && mHz.on ? overlayTileStyle(mHz, k) : '';
           // The planning layer (area map only): reachable tiles and the path; an attack's red reach and its targets.
           const pT = labels && plan.isAtk ? plan.tgt[k] : null, inRed = labels && plan.isAtk && plan.red.has(k), canGo = labels && plan.isMove && plan.reach.has(k) && !u;
@@ -753,6 +766,11 @@ export class MainLogic extends DCLogic {
             : inRed ? 'border: 1px dashed ' + epRgba(RANGE_RED, [0.9, 0.55, 0.35, 0.25][Math.min(3, plan.red.get(k) || 0)]) + '; background: ' + epRgba(RANGE_RED, plan.hv === k ? 0.3 : [0.2, 0.11, 0.06, 0.04][Math.min(3, plan.red.get(k) || 0)]) : '';
           const tgtMark = !pT ? '' : pT.inRange ? (S.wTarget && u && u.id === S.wTarget ? '' : '; outline: 2px solid ' + RANGE_RED + '; outline-offset: -2px') : '; filter: grayscale(0.7) brightness(0.55)';
           out.push({ key: k, cls: 'phc-tok' + (pT && pT.inRange ? ' phc-plan-target' : ''),
+            hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
+            hasMk: !!wc.mark, mkText: wc.mark ? wc.mark.text : '', mkStyle: wc.mark ? wc.mark.style : '', hasMkChip: labels && !!wc.mark && !u, mkChip: wc.mark ? wc.mark.chip : '', mkChipStyle: wc.mark ? wc.mark.chipStyle : '',
+            hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
+            hasKind: !!(kb && kb.has), kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
+            hasPd: pdHere, pdStyle: 'position: absolute; inset: 1px; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 2px; border: 2px dashed #FFFFFF; background: rgba(255, 255, 255, 0.16)',
             hasHzL: !!hzL || !!hzU, hzLayer: hzU ? 'position: absolute; inset: 0; z-index: 2; border-radius: 2px; pointer-events: none; box-sizing: border-box; border: 3px solid ' + hzU.ink + '; box-shadow: 0 0 8px ' + hzU.ink : hzL,
             hasHz: !!hzU, hzText: hzU ? markChipText(hzU) : '', hzStyle: hzU ? markChipStyle(hzU) : '', hzTitle: hzU ? hzU.title : '',
             hasHzChip: labels && mHz.on && mHz.mode === 'aim' && !!mHz.chip && mHz.aim === k, hzChip: mHz.chip,
@@ -760,7 +778,7 @@ export class MainLogic extends DCLogic {
             hasArrow: labels && !!plan.route[k] && k !== myAt, arrow: plan.route[k] || '', hasCost: labels && plan.hv === k && !!plan.cost, cost: plan.cost,
             costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 6; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; '
               + (plan.isAtk ? 'background: ' + RANGE_RED + '; color: #0A0D13' : 'background: #FFFFFF; color: #0A0D13'), isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
-            click: interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
+            click: labels && pdOn ? onClick(k) : u && u.npc && labels && W === 'move' ? () => openTalk(u.id) : interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
             t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
@@ -770,7 +788,7 @@ export class MainLogic extends DCLogic {
             hasZone: !!sgLayer, zoneStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + sgLayer,
             hasSg: labels && !!(sgT && sgT.marks.length), sg: labels && sgT ? sgT.marks : [],
             hasHeart: !!held, heart: held ? heartUri(held.stage) : '', heartStyle: 'position: absolute; z-index: 4; right: -6%; top: -6%; width: 40%; height: 40%; pointer-events: none; filter: drop-shadow(0 0 3px ' + SOUL_VIOLET + ')',
-            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat, title: u ? '' : ref + ' · ' + what + mWhat + (note ? '\n' + note : ''),
+            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat + wWhat, title: u ? '' : ref + ' · ' + what + mWhat + wWhat + (note ? '\n' + note : ''),
             style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle + tgtMark });
         }
       }
@@ -786,6 +804,9 @@ export class MainLogic extends DCLogic {
     const spectating = !S.objPanel && !!(F && F.objId && !fMine && !(S.dismissed || {})['f' + F.seq]);
     const P0 = S.objPanel ? objs.find((o) => o.id === S.objPanel && !o.hidden) : spectating ? objs.find((o) => o.id === F.objId && !o.hidden) : null;
     if (S.objPanel && !P0) queueMicrotask(() => this.setState({ objPanel: null }));
+    // World Play 1.7 panels: a person's Talk panel (click their token or a Talk button) and a hazard's ways through.
+    const openTalk = (id) => { this.setState({ wp: { t: 'npc', id } }); };
+    const openHazard = (id) => { this.setState({ wp: { t: 'hazard', id } }); };
     const openObj = (o) => { this.setState({ objPanel: o.id }); if (c && !inFight && g.phase === 'story') act({ type: 'story/focus', charId: c.id, objId: o.id }); };
     const fOwner = fChar ? playerOf(fChar.owner) : null;
     const isNear = !!(P0 && near.includes(P0));
@@ -819,10 +840,55 @@ export class MainLogic extends DCLogic {
         if (best) act({ type: 'story/move', charId: mover.id, to: best }); else toast('No free tile next to it.'); },
       close: () => { if (spectating) { const seq = F.seq; return closeAnim(this, 'obj', () => this.setState({ dismissed: { ...(this.state.dismissed || {}), ['f' + seq]: true } })); }
         closeAnim(this, 'obj', () => { this.setState({ objPanel: null }); if (fMine) act({ type: 'story/unfocus' }); }); } } : null;
+    // ---------- World Play 1.7: the panels (Talk, a hazard's ways through, an object's odds), near you, HERE, carried ----------
+    const inkOf = (sk) => (SK[sk] ? ATTR[SK[sk].attr].ink : '#A3AEC2');
+    const wBusy = !c ? 'You have no character here.' : c.dead || c.hp <= 0 ? c.name + ' can\'t act now.' : g.phase !== 'story' ? 'After the fight.' : g.story.await !== 'players' ? 'Wait for the round to open.'
+      : (g.story.ended || {})[c.id] ? 'You ended your turn this round.' : g.checks.some((k) => !k.done && k.poi && k.charId === c.id) ? 'Roll your check first.' : '';
+    if (objPanel && P0) {
+      const rows = approachRows(g, P0.id, approachOptions(g, P0.id, c ? c.id : undefined), inkOf, '');
+      objPanel.approaches = objPanel.approaches.filter((a) => !(P0.approaches[a.key] || {}).gone).map((a) => { const r = rows.find((x) => x.idx === a.key);
+        return { ...a, odds: r ? r.odds : '', hasOdds: !!(r && r.hasOdds), oddsStyle: r ? r.oddsStyle : '', success: r ? r.success : '', fail: r ? r.fail : '', hasFail: !!(r && r.fail),
+          label2: a.cant && r && r.hasWhy && !spectating ? (r.tried ? 'Tried' : a.label2) : a.label2, why: r && r.hasWhy && !r.tried ? r.why : '', hasWhy2: !!(r && r.hasWhy && !r.tried && a.cant) }; });
+      const cv = isCacheV(P0), n = P0.itemCount ?? (P0.items || []).length;
+      objPanel.isCache = cv; objPanel.holds = cv ? holdsText(n, P0.searched) : '';
+      const sWhy = !cv ? '' : P0.searched || !n ? 'Nothing left.' : P0.locked ? 'Locked: open it with a way in first.' : spectating ? '' : !isNear ? 'Walk up to it first.' : wBusy || (apLeft(g, c) < 1 ? 'No AP left.' : '');
+      objPanel.cantSearch = !cv || !!sWhy || spectating; objPanel.searchWhy = sWhy; objPanel.hasSearchWhy = !!sWhy && !spectating;
+      objPanel.search = () => { if (c) act({ type: 'world/act', charId: c.id, act: 'search', objId: P0.id }); };
+    }
+    const tryRow = (r, targetId, kind) => ({ ...r, go: () => { if (!c) return;
+      if (r.kind === 'ask') act({ type: 'talk/ask', charId: c.id, npcId: targetId, what: r.what });
+      else if (kind === 'npc') { act({ type: 'talk/try', charId: c.id, npcId: targetId, idx: r.idx }); this.setState({ awaitPoi: targetId }); }
+      else { act({ type: 'poi/try', charId: c.id, objId: targetId, idx: r.idx }); this.setState({ awaitPoi: targetId }); } } });
+    const wpS = !inFight ? S.wp : null, wpT = wpS && wpS.t === 'npc' ? talkVals(g, wpS.id, c ? c.id : undefined, ART, inkOf, wBusy) : null, wpH = wpS && wpS.t === 'hazard' ? hazardVals(g, wpS.id, c ? c.id : undefined, inkOf, wBusy) : null;
+    if (S.wp && !wpT && !wpH) queueMicrotask(() => this.setState({ wp: null }));
+    const wpClose = () => closeAnim(this, 'wp', () => this.setState({ wp: null }));
+    const wpPend = (() => { const id = wpT ? wpT.id : wpH ? wpH.id : null, pk = id ? myChecks.find((k) => k.poi && k.poi.objId === id) : null; return { hasPending: !!pk, pendingLabel: pk ? '🎲 Roll it: ' + pk.stakes : '', rollPending: () => pk && this.setState({ dice: pk.id }) }; })();
+    const wp = wpT ? { open: true, isNpc: true, isHazard: false, name: wpT.name, kicker: wpT.kicker, hasImg: wpT.hasImg, img: wpT.img, noImg: !wpT.hasImg, badge: wpT.badge, glyph: '', glyphStyle: '', text: '', hasText: false,
+        lines: [...(wpT.hasWants ? [{ key: 'w', text: wpT.wants }] : []), ...(wpT.hasHint ? [{ key: 'h', text: wpT.hint + ' (marked on the map)' }] : [])], rows: wpT.rows.map((r) => tryRow(r, wpT.id, 'npc')), none: wpT.none,
+        noneText: 'Nothing to ask them right now. Type to them in the story instead.', canCarry: wpT.canCarry, cantCarry: !wpT.canCarry, hasCarry: wpT.canCarry || !!wpT.carryWhy, carryWhy: wpT.carryWhy, carryLabel: 'Carry ' + wpT.name + ' · 1 AP',
+        carry: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'carry', targetId: wpT.id }); wpClose(); }, head: 'TALK', ...wpPend, close: wpClose,
+        zoom: zoomer(this, wpT.img, wpT.name, 'portrait'), sideStyle: wpT.sideStyle }
+      : wpH ? { open: true, isNpc: false, isHazard: true, name: wpH.name, kicker: wpH.kicker, hasImg: false, img: '', noImg: false, badge: '', glyph: wpH.glyph, glyphStyle: wpH.glyphStyle, text: wpH.text, hasText: !!wpH.text,
+        lines: [{ key: 'hit', text: wpH.hit }], rows: wpH.rows.map((r) => tryRow(r, wpH.id, 'hazard')), none: !wpH.hasRows, noneText: 'No way through known.', canCarry: false, cantCarry: true, hasCarry: false, carryWhy: '', carryLabel: '', carry: () => {}, head: 'WAYS THROUGH', ...wpPend, close: wpClose, zoom: () => {}, sideStyle: '' }
+      : { open: false, rows: [], lines: [] };
+    // Near you: people to talk to and carry, caches to search, hazards in sight, and the points of interest next to you.
+    const nearW = nearItems(g, c && !inFight ? c.id : undefined, wBusy).map((x) => ({ key: x.key, label: x.label, sub: x.sub, hasSub: !!x.sub, off: x.off, title: x.why || x.label, style: x.style + (x.off ? '; opacity: 0.55; cursor: default' : ''),
+      open: () => { if (x.off) return toast(x.why); if (!c) return;
+        if (x.kind === 'npc') openTalk(x.id); else if (x.kind === 'hazard') openHazard(x.id);
+        else if (x.kind === 'carry') act({ type: 'world/act', charId: c.id, act: 'carry', targetId: x.id });
+        else if (x.kind === 'cache') act({ type: 'world/act', charId: c.id, act: 'search', objId: x.id }); } }));
+    const nearAll = [...nearW, ...nearby.filter((n) => !nearW.some((w) => w.key === 's' + n.key)).map((n) => ({ ...n, sub: '', hasSub: false, off: false, title: n.label, style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer' }))];
+    const here = !inFight ? hereVals(g) : { has: false, zone: '', rows: [] };
+    const carried = carriedRows(c, ART).map((r) => ({ ...r, noImg: !r.hasImg, cantPut: !!wBusy || inFight || (c && apLeft(g, c) < 1), putWhy: inFight ? 'After the fight.' : wBusy || (c && apLeft(g, c) < 1 ? 'Needs 1 AP.' : ''),
+      put: () => this.setState({ putDown: r.id, area: true, wAct: 'move' }), putNear: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'put_down', targetId: r.id }); } }));
+    const LL = loadLine(c);
+    const pdHint = pdOn ? 'Put ' + ((c.carried || []).find((x) => x.npc.id === S.putDown)?.npc.name || 'them') + ' down: click a dashed tile next to you (1 AP).' + (pdSet.size ? '' : ' No free tile next to you.') : '';
     const mini = cellsFor(false, () => () => this.setState({ area: true }));
     const worldClick = (k) => () => {
       if (!mover) return toast(inFight ? 'A fight is on: act on the combat grid.' : 'You have no character to act with.');
       const u = tok[k];
+      // Put down (World Play 1.7): the free tiles next to you are dashed; a click there puts the carried creature down.
+      if (pdOn) { if (!pdSet.has(k)) return toast('Pick a free tile next to you (dashed white).'); act({ type: 'world/act', charId: c.id, act: 'put_down', targetId: S.putDown, to: k }); return this.setState({ putDown: null }); }
       if (isMagicW) return magicClick(k);
       if (pkTargeted) { if (!u || u.charId === mover.id) return toast('Click someone else.'); if (wPkE.target === 'ally' && u.side !== 'pc') return toast('Click an ally.'); return this.setState({ wTarget: u.id }); }
       if (pkTile) return this.setState({ wTile: k });
@@ -1087,7 +1153,9 @@ export class MainLogic extends DCLogic {
       zoneLabel: 'ZONE · ' + map.name.toUpperCase(), zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
       zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
       miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
-      objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby, hasNearby: nearby.length > 0,
+      objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby: nearAll, hasNearby: nearAll.length > 0,
+      wpOpen: !!wp.open, wp, wpCls: modalCls(this, 'wp'), here, hasHere: here.has, carried, hasCarried: carried.length > 0, carryLoad: LL.text, carryLoadStyle: 'font-size: 12px; font-weight: 700; line-height: 1.4; color: ' + (LL.over ? '#F65157' : '#A3AEC2'),
+      worldLegend: WLs.big.legend, hasWorldLegend: WLs.big.legend.length > 0, pdOn, pdHint, cancelPd: () => this.setState({ putDown: null }),
       areaMagic: { has: GLY.length + ZON.length > 0 || Object.values(g.story.magic || {}).some((x) => x && x.held), legend: [
         ...(GLY.some((x) => x.side === 'pc') ? [{ key: 'g', img: glyphUri('fire', SIGIL_INK), swatch: '', text: 'Squad glyph' }] : []), ...(GLY.some((x) => x.side !== 'pc') ? [{ key: 'f', img: scratchUri('#F65157'), swatch: '', text: 'Enemy glyph' }] : []),
         ...placedLegend((placedW && placedW.kinds) || new Set(), false).map((l) => ({ key: l.key, img: l.img || '', swatch: l.box || '', text: l.name })),
@@ -1097,7 +1165,7 @@ export class MainLogic extends DCLogic {
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
         const cell = areaCells.find((c) => c.key === k); return (plan.info && plan.hv === k ? plan.info + ' · ' : '') + cell.label; })(),
-      areaHint: mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
+      areaHint: pdOn ? pdHint : mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + (SB ? 'PROVING GROUND' : st0.short.toUpperCase() + ' · ' + map.name.toUpperCase()), inFight,
       hud: (() => { if (!c) return { has: false, bars: [], res: resView([]), magic: [] };
@@ -1107,7 +1175,7 @@ export class MainLogic extends DCLogic {
         const ml = [{ key: 'mana', text: 'MANA ' + MN.mana + ' · ' + bandName(MN.band), style: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
         return { has: true, bars: hb, res: resView(resourcesOf(MN.cu || null, c, g)), magic: ml }; })(),
       ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
-        const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim|learns the|Outburst module|school of Outbursts/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
+        const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && !e.ooc && /hidden|spots|Downed|stim|learns the|Outburst module|school of Outbursts|alarm|Revealed|wants:|picks up|puts .+ down|drops|search|sets off|hazard|safe path|trigger|ambush|appears|told|marker| gets | no longer has /i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
           style: 'font-size: 12px; line-height: 1.4; color: ' + (magicInk(e.text) || (e.act && /\b(fires|shoots|aimed shot|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3')) }));
         return { areaLog: L, noAreaLog: !L.length }; })(),
       areaNote: inFight ? 'Fight on: round ' + cb.round + '. Tokens show where everyone stands.' : 'Grid references: columns A–' + refOf((map.w - 1) + ',0').replace(/\d+$/, '') + ', rows 1–' + map.h + (SB ? '. Click a tile to move there.' : '. Tell the Narrator "I move to C7", or click a tile.'),

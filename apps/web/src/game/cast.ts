@@ -7,6 +7,7 @@ import PD from './protodata.json';
 
 interface Card { id: string; img: string; skill?: string | null; tags?: string[]; archetype?: string | null }
 const POOL: Card[] = (PD as any).portraits;
+const THING_KINDS = new Set(['robot', 'drone', 'machine', 'beast']);
 const NOT_PEOPLE = /\b(drone|turret|bot|robot|mech|rats?|dogs?|hound|beast|swarm|spider|creature|machine|camera|vehicle)\b/i;
 
 /** What kind of person each historical skill's painting shows (for cards without tags of their own). */
@@ -80,9 +81,10 @@ export function castMany(g: GameState | null, list: { key: string; current: stri
 /** A fight's units with every non-player face cast (images as URLs). Returns the same fight when nothing changes. */
 export function castFight<T extends { units: any[] }>(g: GameState | null, cb: T | null | undefined, art: (n: string) => string): T | null | undefined {
   if (!cb) return cb;
-  const npcs = cb.units.filter((u) => u.side !== 'pc');
+  // World Play 1.7: robots, drones, machines and beasts keep their own art (a robot looks like a robot); only people are cast.
+  const npcs = cb.units.filter((u) => u.side !== 'pc' && !THING_KINDS.has(u.kind));
   const faces = castMany(g, npcs.map((u) => ({ key: u.npcId || u.id, current: (u.img && (art(u.img) || u.img)) || null, tags: npcTags(u.name, u.tier, u.weapon) })));
   let changed = false;
-  const units = cb.units.map((u) => { if (u.side === 'pc') return u; const img = faces.get(u.npcId || u.id) || ''; if (img === (u.img || '')) return u; changed = true; return { ...u, img }; });
+  const units = cb.units.map((u) => { if (u.side === 'pc' || THING_KINDS.has(u.kind)) return u; const img = faces.get(u.npcId || u.id) || ''; if (img === (u.img || '')) return u; changed = true; return { ...u, img }; });
   return changed ? { ...cb, units } : cb;
 }
