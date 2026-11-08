@@ -364,7 +364,7 @@ export function Title() {
 
       <footer style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', bottom: 16, display: 'flex', gap: 16, alignItems: 'center', fontSize: 12, color: ink.dim, flexWrap: 'wrap' }}>
         <button type="button" onClick={openReport} style={{ padding: 0, border: 0, background: 'none', color: ink.dim, fontFamily: 'inherit', fontSize: 12, textDecoration: 'underline', cursor: 'pointer' }}>⚑ Report a problem</button>
-        <span>Your API key stays in your browser and goes only to Anthropic.</span>
+        <span>Your API key stays in your browser and goes only to the AI service you pick.</span>
       </footer>
     </div>
   );
@@ -425,7 +425,7 @@ function NamePanel({ after }: { after: null | string }) {
     <h2 style={h2}>Who's playing?</h2>
     <NameInput />
     <button type="button" data-sfx="start" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => (resume ? resumeSession(resume) : prove ? startProvingGround() : hostRoom())}>{resume ? 'Continue ›' : prove ? 'To the Proving Ground ›' : 'Open a room ›'}</button>
-    <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>You run the Narrator with your Anthropic key. Share the room code; friends join from anywhere.</span>
+    <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>You run the Narrator with your own API key (Anthropic, OpenRouter, OpenAI, Gemini, local or another site). Share the room code; friends join from anywhere.</span>
   </>;
 }
 /** PROVING GROUND: alone (as it always was), or with friends (the room code shown big once inside). */

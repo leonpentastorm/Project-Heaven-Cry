@@ -5,6 +5,7 @@ import { D, IMG, lightboxVals, zoomer, closeAnim } from './shared';
 import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
+import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels } from '../narrator/providers';
 import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
@@ -15,7 +16,42 @@ import { classOf } from '../game/commands';
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
 export class RoomLogic extends DCLogic {
-  constructor(props) { super(props); this.state = { bring: false, copied: false }; }
+  constructor(props) { super(props); this.state = { bring: false, copied: false, loaded: null, loading: false, loadNote: '' }; }
+  /** "Load models": ask the picked service which models this key can use. */
+  loadModels() {
+    const n = getState().narrator, p = providerInfo(n.provider), at = p.id + '|' + n.baseUrl;
+    this.setState({ loading: true, loadNote: 'Asking ' + p.label + '…' });
+    listModels(n).then((ids) => {
+      if (providerInfo(getState().narrator.provider).id + '|' + getState().narrator.baseUrl !== at) return;
+      this.setState({ loading: false, loaded: { at, ids }, loadNote: ids.length ? ids.length + ' models · type to filter, or pick one' : 'The service listed no models: type the model name it shows.' });
+      if (ids.length && !getState().narrator.model) setNarrator({ model: ids[0] });
+    }, (e) => this.setState({ loading: false, loadNote: String((e && e.message) || e) }));
+  }
+  /** The Narrator settings (host, AI mode): which service, its address, the key, the model. */
+  narratorVals() {
+    const n = getState().narrator, p = providerInfo(n.provider), anth = p.id === 'anthropic';
+    const mis = keyMismatch(p.id, n.key), loaded = this.state.loaded && this.state.loaded.at === p.id + '|' + n.baseUrl ? this.state.loaded.ids : null;
+    const model = MODELS.find((m) => m.id === n.model) || MODELS[0];
+    return {
+      provider: p.id, providers: PROVIDERS.map((x) => ({ id: x.id, label: x.label })),
+      onProvider: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ provider: e.target.value }); },
+      editableBase: p.editableBase, baseUrl: n.baseUrl, basePlaceholder: p.baseUrl || 'https://… (from the site, usually ending in /v1)',
+      onBase: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ baseUrl: e.target.value.trim() }); },
+      keyLabel: p.needsKey ? 'API KEY' : 'API KEY (OPTIONAL)', keyPlaceholder: p.keyPlaceholder,
+      keyHint: mis ? mis.text + ' Switch to ' + providerInfo(mis.to).label + '?' : '', switchLabel: mis ? 'Use ' + providerInfo(mis.to).label : '',
+      switchToGuess: () => { if (mis) { this.setState({ loaded: null, loadNote: '' }); setNarrator({ provider: mis.to, key: n.key }); } },
+      modelPick: anth, modelFree: !anth, models: MODELS.map((m) => ({ id: m.id, label: m.label + ' · $' + m.input + ' / $' + m.output + ' per M tokens' })), model: n.model,
+      onModel: (e) => setNarrator({ model: e.target.value }), onModelText: (e) => setNarrator({ model: e.target.value.trim() }),
+      modelPlaceholder: p.modelPlaceholder, modelSuggest: (loaded || p.suggest).map((id) => ({ key: id, id })),
+      loadModels: () => this.loadModels(), loadDisabled: this.state.loading || (p.needsKey && !n.key) || (p.editableBase && !n.baseUrl && !p.baseUrl),
+      loadLabel: this.state.loading ? 'Loading…' : 'Load models', loadNote: this.state.loadNote || (p.needsKey && !n.key ? 'Add the key first, then load the models it can use.' : ''),
+      showEffort: p.format === 'anthropic', effort: n.effort, onEffort: (e) => setNarrator({ effort: e.target.value }),
+      privacyNote: p.id === 'ollama' ? 'Nothing leaves your computer.' : 'The key stays in this browser and goes only to ' + (p.editableBase ? 'the address above' : p.label.replace(/ \(.*\)$/, '')) + '.',
+      providerNote: p.note,
+      costNote: isPriced(n) ? 'Estimated cost with ' + model.label + ': about $' + (model.input <= 0.1 ? '0.40' : model.input <= 2 ? '5' : model.input <= 4 ? '10' : '25') + ' per 3-hour session for the whole room.'
+        : 'The spend meter counts tokens; the service bills you.',
+    };
+  }
   renderVals() {
     const st = getState(), g = st.game, isHost = st.role === 'host';
     if (!g) return { ...lightboxVals(this), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', leave: () => leaveRoom(), create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
@@ -44,7 +80,7 @@ export class RoomLogic extends DCLogic {
     const starts = startsFor(g).map((x) => ({ short: x.short + (x.soon ? ' · soon' : ''), pick: x.soon ? () => toast(x.title + ' is coming after the systems are done. Play M813 or load your own campaign.') : hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
     const startImg = IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
     const start = { zoom: zoomer(this, ART_BIG(st0.art) || startImg, st0.title + ' · ' + st0.artNote, 'world'), kicker: st0.kicker, title: st0.title, img: startImg, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st0.focus, artNote: st0.artNote, lore: st0.lore.map((text) => ({ text })), meta: st0.meta };
-    const modes = [['ai', 'AI Narrator', 'Your own Anthropic key. Plays every start.'], ['human', "I'll narrate", 'Coming soon: a private Narrator screen.']].map(([id, name, desc]) => ({ name, desc, pick: id === 'human' ? () => toast('Human Narrator mode is coming soon. Use the AI Narrator for now.') : hostPick({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
+    const modes = [['ai', 'AI Narrator', 'Your own API key: Anthropic, OpenRouter, OpenAI, Gemini, a local model or another site. Plays every start.'], ['human', "I'll narrate", 'Coming soon: a private Narrator screen.']].map(([id, name, desc]) => ({ name, desc, pick: id === 'human' ? () => toast('Human Narrator mode is coming soon. Use the AI Narrator for now.') : hostPick({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
       style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F' + (id === 'human' ? '; opacity: 0.6' : '')) }));
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: hostPick({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
     // Start: host only, at least one locked-in character, and (AI) a key.
@@ -53,10 +89,9 @@ export class RoomLogic extends DCLogic {
     const why = g.story && g.story.complete ? 'Campaign complete ✓ · ' + ((g.campaign && g.campaign.title) || 'the story') + ' is finished'
       : !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
       : g.phase !== 'lobby' ? 'In session' : !squad.length ? 'Lock in a character to start'
-      : !st.narrator.key && !st.narrator.scripted ? 'Add your Anthropic API key to start' : null;
+      : S.mode === 'ai' && !st.narrator.scripted ? notReadyReason(st.narrator) : null;
     const notReady = !!why;
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
-    const model = MODELS.find((m) => m.id === st.narrator.model) || MODELS[0];
     return {
       ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : '● RECONNECTING',
       connStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
@@ -77,9 +112,7 @@ export class RoomLogic extends DCLogic {
       bringCls: 'phc-a-drop' + ((this.state.closing || {}).bring ? ' phc-closing' : ''), noSaved: !lib.length,
       saved: lib.map((c) => ({ key: c.name, name: c.name, img: c.portrait, line: c.origin, bring: () => { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } })),
       key: st.narrator.key, onKey: (e) => setNarrator({ key: e.target.value.trim() }), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),
-      models: MODELS.map((m) => ({ id: m.id, label: m.label + ' · $' + m.input + ' / $' + m.output + ' per M tokens' })), model: st.narrator.model, onModel: (e) => setNarrator({ model: e.target.value }),
-      effort: st.narrator.effort, onEffort: (e) => setNarrator({ effort: e.target.value }),
-      costNote: 'Estimated cost with ' + model.label + ': about $' + (model.input <= 0.1 ? '0.40' : model.input <= 2 ? '5' : model.input <= 4 ? '10' : '25') + ' per 3-hour session for the whole room.',
+      ...this.narratorVals(),
       notReady, startLabel: why || (g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
       startSession: () => act({ type: 'session/start' }),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.

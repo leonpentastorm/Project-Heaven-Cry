@@ -1,13 +1,12 @@
 // The Anthropic provider for the AI Narrator. Runs in the host's browser: the API key stays in this browser and is
-// sent only to api.anthropic.com. One call per Narrator turn, structured JSON output, cached system layers.
+// sent only to api.anthropic.com (or the Anthropic-format site the host typed). One call per Narrator turn, the turn
+// handed in through a tool, cached system layers. Other services: providers.ts.
 import Anthropic from '@anthropic-ai/sdk';
 import type { GameState, NarratorTurn } from '@engine';
 import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
-
-/** Wiki and recall lookups per Narrator turn before it must answer. */
-const MAX_LOOKUPS = 3;
+import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
 /** The most one Narrator turn may cost, all rounds of lookups included (spec: The Narrator's memory). */
 export const COST_CEILING_USD = 0.5;
 const TOKENS = (s: string) => Math.ceil(s.length / 3.5);
@@ -31,10 +30,21 @@ export interface NarratorResult { turn: NarratorTurn; usage: { input: number; ou
 export interface RewriteResult { text: string; refused: string; usage?: NarratorResult['usage'] }
 export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult>; rewrite?(g: GameState, text: string, ask: string): Promise<RewriteResult> }
 
-export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch, onLookup?: (keys: string[]) => void): NarratorProvider {
+/** An Anthropic client on the player's key. baseURL: a third-party site that speaks Anthropic's format (a Claude
+ * reseller); those often check x-api-key rather than the bearer token, so both are sent there. */
+function makeClient(apiKey: string, opts: { baseURL?: string; fetchImpl?: typeof fetch; maxRetries: number; timeout: number }) {
   // authToken: null so only the player's own key is ever sent, never a token from the environment.
-  const client = new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: 2, timeout: 180_000, ...(fetchImpl ? { fetch: fetchImpl } : {}) });
+  return new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: opts.maxRetries, timeout: opts.timeout,
+    ...(opts.baseURL ? { baseURL: opts.baseURL, defaultHeaders: { 'x-api-key': apiKey } } : {}), ...(opts.fetchImpl ? { fetch: opts.fetchImpl } : {}) });
+}
+
+export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch, onLookup?: (keys: string[]) => void, baseURL?: string): NarratorProvider {
+  const client = makeClient(apiKey, { baseURL, fetchImpl, maxRetries: 2, timeout: 180_000 });
+  // A reseller's model may not be one of ours: price it as Opus (the dearest common case) so the ceiling still holds.
   const price = MODELS.find((m) => m.id === model) || MODELS[0];
+  const who = baseURL ? 'The API site' : 'Anthropic';
+  // The spend meter shows dollars only at Anthropic's own prices; a reseller bills its own way (tokens still count).
+  const priced = !baseURL && MODELS.some((m) => m.id === model), bill = (usd: number) => (priced ? usd : 0);
   const prov: NarratorProvider & { turnRaw(g: GameState, dbg: any): Promise<NarratorResult> } = {
     async turn(g) {
       const t0 = Date.now(), dbg: { params?: any; messages?: any[]; res?: any; usage?: any } = {};
@@ -60,7 +70,8 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         tools: [WIKI_TOOL, RECALL_TOOL, submitTool(g)],
       };
       // Refusal fallback: on a policy decline the API re-runs the turn on a fallback model (Claude API skill default).
-      if (model !== 'claude-haiku-5-5') { params.betas = ['server-side-fallback-2026-07-01']; params.fallbacks = 'default'; }
+      // (Not through a third-party site: those rarely pass beta options on.)
+      if (model !== 'claude-haiku-5-5' && !baseURL) { params.betas = ['server-side-fallback-2026-07-01']; params.fallbacks = 'default'; }
       const messages: any[] = [{ role: 'user', content: turnPrompt(g) }];
       dbg.params = params; dbg.messages = messages;
       const spent = () => (sum.input * price.input + sum.cacheRead * price.cacheRead + sum.write5 * price.cacheWrite + sum.write1h * price.input * 2 + sum.output * price.output) / 1e6;
@@ -71,12 +82,14 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         try { return await client.beta.messages.create(params); } catch (e) {
           // If the API won't take the fallback option with this request, run the turn without it rather than stall.
           if (e instanceof Anthropic.BadRequestError && params.fallbacks) { delete params.fallbacks; delete params.betas; return call(); }
-          throw new Error(explain(e));
+          // A third-party site that doesn't know the effort setting: run without it.
+          if (e instanceof Anthropic.BadRequestError && baseURL && params.output_config && /output_config|effort/i.test((e as Error).message)) { delete params.output_config; return call(); }
+          throw new Error(explain(e, who));
         }
       };
       const sum = { input: 0, output: 0, cacheRead: 0, write5: 0, write1h: 0 };
       let res: any, turn: NarratorTurn | null = null, lookups = 0, nudged = false;
-      const usageNow = () => ({ input: sum.input + sum.write1h + sum.write5, output: sum.output, cacheRead: sum.cacheRead, costUsd: spent() });
+      const usageNow = () => ({ input: sum.input + sum.write1h + sum.write5, output: sum.output, cacheRead: sum.cacheRead, costUsd: bill(spent()) });
       try {
       while (!turn) {
         res = await call(); dbg.res = res;
@@ -113,45 +126,45 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         throw err;
       }
       const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.write1h + sum.write5, output = sum.output;
-      const costUsd = spent();
+      const costUsd = bill(spent());
       return { turn: turn!, usage: { input: input + cacheWrite, output, cacheRead, costUsd } };
     },
     // An edit the room voted for (spec: Rerolls and edits): the Narrator rewords its own line. Only the words: anything
     // that would change what happened (items, money, injuries, deaths, positions, events, outcomes) is refused.
     async rewrite(g, text, ask) {
-      const tool = { name: 'submit_rewrite', description: 'Hand in the reworded line, or refuse.', input_schema: { type: 'object', properties: { text: { type: 'string' }, refused: { type: 'string', description: 'Empty if you reworded it; otherwise why the request would change what happened' } }, required: ['text', 'refused'] } };
       const res: any = await client.messages.create({
-        model, max_tokens: 4000, output_config: { effort: 'low' }, tools: [tool],
-        system: [{ type: 'text', text: 'You are the Narrator of a tabletop RPG. The players voted to have one of your lines reworded. You may change wording, tone, emphasis, pacing, and descriptive detail that changes no outcome. You must NOT add, remove or change anything the game tracks or that happened: items, money, loot, injuries, deaths, HP, positions, who did what, results of rolls or fights, promises made, or new events. If the request asks for any of that (or for something absurd, out of character, or naming the players instead of their characters), refuse: return the original line unchanged and say why in refused. Keep the same length, give or take a third. Never name a real-world person, brand or work. Call submit_rewrite.' }],
-        messages: [{ role: 'user', content: 'THE LINE:\n' + text + '\n\nWHAT THE PLAYERS ASKED:\n' + (ask || 'Tell it better.') + '\n\nRECENT STORY FOR CONTEXT:\n' + g.story.entries.filter((e) => e.kind === 'narration' && !e.rerolled).slice(-4).map((e) => e.text).join('\n---\n') }],
-      } as any).catch((e: unknown) => { throw new Error(explain(e)); });
+        model, max_tokens: 4000, output_config: { effort: 'low' }, tools: [REWRITE_TOOL],
+        system: [{ type: 'text', text: REWRITE_SYSTEM }],
+        messages: [{ role: 'user', content: rewriteAsk(g, text, ask) }],
+      } as any).catch((e: unknown) => { throw new Error(explain(e, who)); });
       const use = res.content.find((b: any) => b.type === 'tool_use' && b.name === 'submit_rewrite')?.input || {};
       const u = res.usage || {}, input = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0), output = u.output_tokens || 0;
-      return { text: String(use.text || text), refused: String(use.refused || ''), usage: { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: (input * price.input + output * price.output) / 1e6 } };
+      return { text: String(use.text || text), refused: String(use.refused || ''), usage: { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: bill((input * price.input + output * price.output) / 1e6) } };
     },
   };
   return prov;
 }
 
 
-function explain(e: unknown): string {
-  if (e instanceof Anthropic.AuthenticationError) return 'Anthropic rejected the API key. Check it in the room settings.';
+function explain(e: unknown, who = 'Anthropic'): string {
+  if (e instanceof Anthropic.AuthenticationError) return who + ' rejected the API key. Check it in the room settings.';
   if (e instanceof Anthropic.PermissionDeniedError) return 'This API key can\'t use that model. Pick another model in the room settings.';
-  if (e instanceof Anthropic.NotFoundError) return 'That model isn\'t available to this key. Pick another model.';
-  if (e instanceof Anthropic.RateLimitError) return 'Rate limited by Anthropic. Wait a moment and retry.';
-  if (e instanceof Anthropic.BadRequestError) return 'Anthropic refused the request: ' + (e as Error).message;
-  if (e instanceof Anthropic.APIError) return 'Anthropic error ' + ((e as any).status ?? '') + ': ' + (e as Error).message;
-  return 'Couldn\'t reach Anthropic: ' + String((e as Error)?.message || e);
+  if (e instanceof Anthropic.NotFoundError) return 'That model isn\'t available to this key' + (who === 'Anthropic' ? '' : ', or the API address is wrong') + '. Pick another model.';
+  if (e instanceof Anthropic.RateLimitError) return 'Rate limited by ' + who + '. Wait a moment and retry.';
+  if (e instanceof Anthropic.BadRequestError) return who + ' refused the request: ' + (e as Error).message;
+  if (e instanceof Anthropic.APIError) return who + ' error ' + ((e as any).status ?? '') + ': ' + (e as Error).message;
+  return 'Couldn\'t reach ' + who + ': ' + String((e as Error)?.message || e) + (who === 'Anthropic' ? '' : '. Check the API address; the site may also block calls from web pages (CORS).');
 }
 
-/** "Polish with AI": rewrite a player's words as in-world prose with a small, fast model on the host's key. */
-export async function polish(apiKey: string, text: string, charName: string): Promise<string> {
-  const client = new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60_000 });
+/** "Polish with AI": rewrite a player's words as in-world prose with a small, fast model on the host's key.
+ * Through a third-party site, on the model the host picked (the site may not carry Haiku). */
+export async function polish(apiKey: string, text: string, charName: string, model = 'claude-haiku-5-5', baseURL?: string): Promise<string> {
+  const client = makeClient(apiKey, { baseURL, maxRetries: 1, timeout: 60_000 });
   const res: any = await client.messages.create({
-    model: 'claude-haiku-5-5', max_tokens: 2000, output_config: { effort: 'low' },
-    system: 'Rewrite a tabletop player\'s action as one to three vivid sentences of in-world prose about their character, third person, present tense. Keep every intention and every spoken line; add no new facts, outcomes or names. No real-world names. Reply with the prose only.',
-    messages: [{ role: 'user', content: 'Character: ' + (charName || 'the character') + '\nPlayer wrote: ' + text }],
-  } as any).catch((e: unknown) => { throw new Error(explain(e)); });
+    model, max_tokens: 2000, ...(baseURL ? {} : { output_config: { effort: 'low' } }),
+    system: POLISH_SYSTEM,
+    messages: [{ role: 'user', content: polishAsk(text, charName) }],
+  } as any).catch((e: unknown) => { throw new Error(explain(e, baseURL ? 'The API site' : 'Anthropic')); });
   const out = res.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('').trim();
   if (!out) throw new Error('Polish came back empty.');
   return out;

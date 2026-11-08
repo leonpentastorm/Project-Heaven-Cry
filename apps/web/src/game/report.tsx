@@ -7,6 +7,7 @@ import { recentLogs, recentExchanges, scrub } from './debug';
 import { voiceState, voicePrefs } from './voice';
 import { usePresence, presenceCls } from './presence';
 import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
+import { isPriced, providerInfo } from '../narrator/providers';
 
 // ---------- open from anywhere (the screens' buttons) ----------
 let which: 'report' | 'spend' | null = null;
@@ -27,7 +28,7 @@ export function buildReport(what: string, withSave: boolean) {
     format: 'phc-report', version: 1, at: new Date().toISOString(), what: what.trim(),
     build, url: location.origin + location.pathname, userAgent: navigator.userAgent, viewport: innerWidth + '×' + innerHeight,
     me: st.me, role: st.role, room: st.code, screen: st.screen, connection: st.conn, connNote: st.connNote,
-    narrator: { model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
+    narrator: { provider: st.narrator.provider, baseUrl: st.narrator.baseUrl, model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),
     game: withSave ? g : g && { code: g.code, v: g.v, phase: g.phase, players: g.players, scene: g.story?.scene, await: g.story?.await, work: g.story?.work, narrator: g.narrator, lastLines: g.story?.entries.slice(-12) },
     narratorCalls: recentExchanges(), log: recentLogs(),
@@ -86,15 +87,25 @@ function ReportDialog({ close }: { close: () => void }) {
 function SpendDialog({ close }: { close: () => void }) {
   const st = getState(), g = st.game, u = g?.narrator.usage, host = st.role === 'host';
   const model = MODELS.find((m) => m.id === st.narrator.model) || MODELS[0];
+  // Dollars only for Anthropic's own models; other services bill their own way, so the meter shows tokens (the host
+  // knows the service; a guest's copy of the settings is the default, so a guest sees whatever the host's turns cost).
+  const priced = !host || isPriced(st.narrator);
   const full = host ? reportState() : null;
-  let est: ReturnType<typeof callEstimate> | null = null; try { if (full && full.phase !== 'lobby') est = callEstimate(full, model.id); } catch { /* */ }
+  let est: ReturnType<typeof callEstimate> | null = null; try { if (priced && full && full.phase !== 'lobby') est = callEstimate(full, model.id); } catch { /* */ }
+  const tokens = (n: number) => (n >= 1e6 ? (n / 1e6).toFixed(2) + ' M' : n >= 1e3 ? Math.round(n / 1e3) + ' k' : String(n)) + ' tokens';
   const recent = u?.recent || [], peak = Math.max(COST_CEILING_USD, ...recent);
   const cacheShare = u && u.input + u.cacheRead > 0 ? Math.round((u.cacheRead / (u.input + u.cacheRead)) * 100) : 0;
   const row = (k: string, v: string, hint?: string) => <div style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}><span style={{ ...label, minWidth: 170 }}>{k}</span><span style={{ fontSize: 15, fontWeight: 700 }}>{v}</span>{hint && <span style={{ fontSize: 12, color: ink.muted }}>{hint}</span>}</div>;
   return (
     <Dialog title="NARRATOR SPEND" close={close}>
       <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>What this room's AI Narrator has cost on {host ? 'your' : 'the host\'s'} API key, from the provider's own token counts. Each turn is capped at {money(COST_CEILING_USD)}.</span>
-      {!u || !u.calls ? <span style={{ fontSize: 14 }}>No Narrator turns yet.</span> : <>
+      {!priced && <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>{providerInfo(st.narrator.provider).label} sets its own prices, so this meter counts tokens: check the bill on that service's site.</span>}
+      {!priced && !!u?.calls && <>
+        {row('INPUT', tokens(u.input), u.calls + ' call' + (u.calls === 1 ? '' : 's'))}
+        {row('OUTPUT', tokens(u.output))}
+        {!!u.cacheRead && row('READ FROM CACHE', tokens(u.cacheRead))}
+      </>}
+      {!priced ? (!u || !u.calls ? <span style={{ fontSize: 14 }}>No Narrator turns yet.</span> : null) : !u || !u.calls ? <span style={{ fontSize: 14 }}>No Narrator turns yet.</span> : <>
         {row('THIS ROOM', money(u.costUsd), u.calls + ' call' + (u.calls === 1 ? '' : 's'))}
         {row('AVERAGE CALL', money(u.costUsd / u.calls))}
         {row('LAST CALL', money(u.last))}

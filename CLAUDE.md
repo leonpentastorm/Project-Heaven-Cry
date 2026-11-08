@@ -89,7 +89,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 ## Product decisions so far
 
 - Web game; tactical grid combat; story mode with narrative stream.
-- AI Narrator: **bring your own key, any provider** (Anthropic, OpenAI, Google, OpenRouter, local OpenAI-compatible). Key stays in the browser and goes only to the provider.
+- AI Narrator: **bring your own key, any provider** (Anthropic, OpenAI, Google, OpenRouter, local OpenAI-compatible). Key stays in the browser and goes only to the provider. Built: `narrator/anthropic.ts` (Anthropic, and Anthropic-format sites by address) and `narrator/providers.ts` (the provider list, and one OpenAI-compatible adapter for OpenRouter, OpenAI, DeepSeek, Gemini, local and third-party sites); decision 104.
 - Human Narrator mode ("I'll narrate") with a private Narrator screen; the engine still handles dice, grid and numbers.
 - Co-op up to **4 players per room**; solo works too.
 - **Speaking order:** in story mode each player speaks once per round, then the Narrator answers everyone together. Players can request a turn; the host can skip an away player.
