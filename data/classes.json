@@ -1097,7 +1097,7 @@
               "name": "Storm Front",
               "ap_cost": 0,
               "uses": "per_turn",
-              "text": "Once per turn, for +10 MP at Begin: a Damage Bolt or Lance arcs on to up to 2 more enemies within 2 tiles of the first creature it reached, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
+              "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
               "effects": [
                 {
                   "op": "area_mult",

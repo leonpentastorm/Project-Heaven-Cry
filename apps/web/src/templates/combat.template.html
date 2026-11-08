@@ -175,13 +175,12 @@
 <div class="{{tp.innerCls}}" style="display: flex; flex-direction: column; gap: 6px">
 <span style="{{tp.nameStyle}}">{{tp.name}}</span>
 <sc-if value="{{tp.heart}}">
-<div aria-label="Your heart" class="phc-heart-panel" style="{{tp.hv.boxStyle}}">
-<div style="display: flex; gap: 8px; align-items: center"><img src="{{tp.hv.icon}}" alt="" style="width: 28px; height: 28px; flex: none"><div style="display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0"><span style="{{tp.hv.kickerStyle}}">{{tp.hv.kicker}}</span><span style="font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{tp.hv.name}}</span></div><div style="display: flex; flex-direction: column; align-items: flex-end"><span style="{{tp.hv.multStyle}}">{{tp.hv.multText}}</span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #C9D3E3">{{tp.hv.stageText}}</span></div></div>
+<div aria-label="Your heart" class="phc-heart-panel" title="{{tp.hv.swell}} {{tp.hv.rider}}" style="{{tp.hv.boxStyle}}">
+<div style="display: flex; gap: 8px; align-items: center"><img src="{{tp.hv.icon}}" alt="" style="width: 22px; height: 22px; flex: none"><div style="display: flex; align-items: baseline; gap: 8px; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap"><span style="font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis">{{tp.hv.name}}</span><span style="{{tp.hv.kickerStyle}}">{{tp.hv.kicker}}</span></div><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #C9D3E3; white-space: nowrap">{{tp.hv.stageText}}</span><span style="{{tp.hv.multStyle}}">{{tp.hv.multText}}</span></div>
 <div role="meter" aria-label="{{tp.hv.stageText}}" style="display: flex; gap: 3px"><sc-for list="{{tp.hv.stages}}" as="sg"><span title="{{sg.label}}" style="{{sg.style}}"><span style="font-size: 12px">{{sg.n}}</span><span>{{sg.mult}}</span></span></sc-for></div>
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; white-space: nowrap">{{tp.hv.strainText}}</span><span aria-hidden="true" style="{{tp.hv.strainTrack}}"><span style="{{tp.hv.strainFill}}"></span><span style="{{tp.hv.strainMark}}"></span></span><span style="font-size: 10px; color: #C9D3E3; white-space: nowrap" title="{{tp.hv.free}}">{{tp.hv.freeShort}}</span></div>
 <sc-if value="{{tp.hv.hasWarn}}"><span role="alert" style="{{tp.hv.warnStyle}}">⚠ {{tp.hv.warn}}</span></sc-if>
-<div role="group" aria-label="Heart actions" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px"><sc-for list="{{tp.hv.btns}}" as="hb"><button type="button" class="phc-cb-act" data-hact="{{hb.key}}" data-sfx="none" onClick="{{hb.pick}}" disabled="{{hb.off}}" aria-pressed="{{hb.pressed}}" title="{{hb.title}}" style="{{hb.style}}"><span style="font-size: 12px; font-weight: 700; white-space: nowrap">{{hb.label}}</span><span style="{{hb.costStyle}}">{{hb.cost}}</span><sc-if value="{{hb.hasWhy}}"><span style="max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: #A3AEC2">✕ {{hb.why}}</span></sc-if></button></sc-for></div>
-<span style="font-size: 10.5px; line-height: 1.35; color: #A3AEC2">{{tp.hv.swell}} {{tp.hv.rider}}</span>
+<div role="group" aria-label="Heart actions" style="{{tp.hv.gridStyle}}"><sc-for list="{{tp.hv.btns}}" as="hb"><button type="button" class="phc-cb-act" data-hact="{{hb.key}}" data-sfx="none" onClick="{{hb.pick}}" disabled="{{hb.off}}" aria-pressed="{{hb.pressed}}" title="{{hb.title}}" style="{{hb.style}}"><span style="flex: none; font-size: 12px; font-weight: 700; white-space: nowrap">{{hb.label}}</span><span style="{{hb.costStyle}}">{{hb.cost}}</span></button></sc-for></div>
 </div>
 </sc-if>
 <sc-for list="{{tp.items}}" as="a" hint-placeholder-count="4">
@@ -212,10 +211,6 @@
 <sc-if value="{{a.padD}}">
 <div aria-label="Your Outbursts" class="{{T.padDCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #120E1E; border: 1px solid #3A2E5C">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #AE9BFF">YOUR OUTBURSTS</span>
-<div role="group" aria-label="Begin or snap" style="display: flex; gap: 6px">
-<button type="button" class="phc-cb-act" data-sfx="none" onClick="{{T.padD.begin}}" disabled="{{T.padD.beginOff}}" title="{{T.padD.beginTitle}}" style="{{T.padD.beginStyle}}">♥ {{T.padD.beginLabel}}</button>
-<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{T.padD.snap}}" aria-pressed="{{T.padD.snapPressed}}" title="{{T.padD.snapTitle}}" style="{{T.padD.snapStyle}}">{{T.padD.snapLabel}}</button>
-</div>
 <sc-for list="{{T.padD.designList}}" as="d"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" title="{{d.title}}" style="{{d.style}}">
 <img src="{{d.icon}}" alt="" style="grid-row: span 3; width: 28px; height: 28px; align-self: center">
 <span style="display: flex; justify-content: space-between; gap: 8px; min-width: 0"><span style="font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span></span>
@@ -251,6 +246,10 @@
 </div>
 </div>
 </sc-for>
+<sc-if value="{{T.padDShow}}"><div role="group" aria-label="Begin or snap" class="phc-cb-begin" style="display: flex; gap: 6px">
+<button type="button" class="phc-cb-act" data-sfx="none" onClick="{{T.padD.begin}}" disabled="{{T.padD.beginOff}}" title="{{T.padD.beginTitle}}" style="{{T.padD.beginStyle}}">♥ {{T.padD.beginLabel}}</button>
+<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{T.padD.snap}}" aria-pressed="{{T.padD.snapPressed}}" title="{{T.padD.snapTitle}}" style="{{T.padD.snapStyle}}">{{T.padD.snapLabel}}</button>
+</div></sc-if>
 <div class="phc-cb-confirm" style="display: flex; gap: 10px">
 <button type="button" class="phc-cb-act" onClick="{{T.confirm}}" disabled="{{T.cantConfirm}}" data-sfx="{{T.confirmSfx}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{T.confirmText}}</button>
 <button type="button" class="phc-cb-act" onClick="{{T.endTurn}}" disabled="{{T.notMine}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>

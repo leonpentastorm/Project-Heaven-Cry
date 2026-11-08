@@ -66,7 +66,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(pad.designList.map((d: any) => d.key)).toEqual(['fb', 'sb']);
     expect(pad.designList[0].line).toMatch(/^BURST · radius 1 · reach \d+ · Fire · \d+ MP$/);
     expect(pad.designList[0].icon).toMatch(/^data:image\/svg\+xml/);
-    expect(pad.beginLabel).toBe('Begin · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP ×0.6');
+    expect(pad.beginLabel).toBe('Begin Heartfire · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP ×0.6');
     expect(pad.nowStyle).toBeUndefined(); // the 1.2 Hold / Release-now toggle is gone
     // Snap: hover a foe, the area is hatched and both foes carry their expected numbers.
     const foe = G.combat!.units.find((v) => v.side === 'foe')!;
@@ -112,7 +112,10 @@ describe('the Outbursts tab (rules 1.5)', () => {
     window.dispatchEvent(new CustomEvent('phc:combat-action', { detail: { action: 'outburst' } }));
     await React.act(async () => { snap = view(); listeners.forEach((f) => f()); });
     const pad = el.querySelector('[aria-label="Your Outbursts"]');
-    expect(pad).toBeTruthy(); expect(pad!.textContent).toMatch(/BURST · radius 1/); expect(pad!.textContent).toMatch(/Begin · 2 AP/);
+    expect(pad).toBeTruthy(); expect(pad!.textContent).toMatch(/BURST · radius 1/);
+    // Begin and Snap sit in the tab's footer, by Confirm, so a long list of designs can't scroll them away
+    const bs = el.querySelector('.phc-cb-foot [aria-label="Begin or snap"]'); expect(bs).toBeTruthy(); expect(bs!.textContent).toMatch(/Begin Heartfire · 2 AP/);
+    expect(pad!.querySelector('[aria-label="Begin or snap"]')).toBeNull();
     expect(el.querySelector('[role="tabpanel"] [data-act="syphon"], [role="tabpanel"] [data-act="outburst"]')).toBeTruthy();
     doAct({ type: 'combat/outburst', unitId: u.id, design: 'fb', hold: true });
     window.dispatchEvent(new CustomEvent('phc:combat-action', { detail: { action: 'pump' } }));

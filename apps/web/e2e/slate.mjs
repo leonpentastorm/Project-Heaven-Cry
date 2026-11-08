@@ -96,7 +96,7 @@ await dlg.locator('[data-slot="1"]').click();
 await dlg.locator('[data-cmd="reload"]').first().click();
 await p.waitForTimeout(150);
 const slot1 = (await dlg.locator('[data-slot="1"]').textContent()).replace(/\s+/g, ' ');
-ok('slot 1 now reads: ' + slot1, /Reload/i.test(slot1));
+ok('slot 1 now reads: ' + slot1, /Reload|Swap magazine/i.test(slot1));
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await p.waitForTimeout(300);
 ok('Save closes the dialog and stores the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), (await dlg.count()) === 0 && /reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();

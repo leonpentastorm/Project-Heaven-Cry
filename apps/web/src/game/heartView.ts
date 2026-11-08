@@ -235,9 +235,10 @@ export const overlayRingStyle = (o: HeartOverlay) => 'position: absolute; inset:
 
 // ---------- the panel's styles (shared by the combat tab and the area map) ----------
 export function heartStyles(p: HeartPanel) {
-  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; padding: 3px 0 2px; line-height: 1.2; border-radius: 4px; font-size: 10px; font-weight: 700; '
+  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: row; justify-content: center; align-items: baseline; gap: 4px; padding: 2px 0; line-height: 1.2; border-radius: 4px; font-size: 10px; font-weight: 700; '
     + (s.now ? 'background: ' + p.ink + '; color: #0A0D13; box-shadow: 0 0 12px ' + rgba(p.ink, 0.7) : s.on ? 'background: ' + rgba(p.ink, 0.35) + '; color: #E7EBF3' : s.next ? 'background: transparent; color: #E7EBF3; border: 1px dashed ' + p.ink : 'background: #1C2536; color: ' + MUTED);
-  const btn = (b: HeartBtn, primary?: boolean) => 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-width: 0; min-height: 38px; padding: 3px 7px; border-radius: 8px; font-family: inherit; text-align: left; cursor: ' + (b.ok ? 'pointer' : 'default') + '; '
+  // Compact: one line per button (the label left, its cost or its refusal right), so the panel's buttons sit in two rows.
+  const btn = (b: HeartBtn, primary?: boolean) => 'display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; min-height: 30px; padding: 2px 7px; border-radius: 8px; font-family: inherit; text-align: left; overflow: hidden; cursor: ' + (b.ok ? 'pointer' : 'default') + '; '
     + (primary ? 'border: 1px solid ' + p.ink + '; background: ' + rgba(p.ink, 0.18) + '; color: #E7EBF3' : 'border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3') + (b.ok ? '' : '; opacity: 0.5');
   const pct = Math.max(0, Math.min(100, p.strain / Math.max(1, p.limit + 3) * 100)), lim = p.limit / Math.max(1, p.limit + 3) * 100;
   return { seg, btn,
@@ -249,9 +250,13 @@ export function heartStyles(p: HeartPanel) {
 /** Template-ready rows for the HEART panel (both screens use this, so the two read alike). */
 export function heartVals(p: HeartPanel | null, run: (id: string) => void) {
   if (!p) return { show: false };
-  const S = heartStyles(p), b = (x: HeartBtn, primary?: boolean) => ({ key: x.id, label: x.label, cost: x.cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: !!x.why, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
-    costStyle: 'font-size: 11px; font-weight: 700; color: ' + (x.cost === 'FREE' || x.cost === 'ARMED' ? GREEN : '#C9D3E3') });
-  const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), { ...b(p.letgo), cost: 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '') }, ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn)];
+  // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
+  const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.label, cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
+    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
+  const S = heartStyles(p);
+  const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn)];
+  // Two rows: three across, four when Feed shows (seven buttons).
+  const cols = btns.length > 6 ? 4 : 3;
   return { show: true, name: p.name, icon: p.icon, kicker: 'HEART · ' + p.formName.toUpperCase() + ' · ' + p.toneName.toUpperCase(), shape: p.shape,
     stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult) + (p.resonance ? ' (Resonance +' + p.resonance + ')' : ''),
     stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), label: 'Stage ' + s.n + ' ×' + s.mult + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
@@ -259,9 +264,9 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void) {
     free: p.freePumps == null ? 'No free Pumps (Empathy 3 gives one a round)' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round',
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
-    btns, kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
-    boxStyle: 'display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
-    multStyle: 'font-size: 20px; line-height: 1; font-weight: 700; color: ' + p.ink };
+    btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
+    boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
+    multStyle: 'font-size: 17px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + p.ink };
 }
 
 // ---------- tones a character can choose (workshop, creation) ----------

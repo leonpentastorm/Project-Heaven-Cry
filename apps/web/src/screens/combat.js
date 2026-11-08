@@ -773,7 +773,7 @@ export class CombatLogic extends DCLogic {
           subStyle: 'font-size: 10px; font-weight: 700; color: ' + (wi.ok ? '#E7EBF3' : '#7F8BA1'), pick: () => this.setState({ word: wd }),
           style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 64px; padding: 6px 2px; border-radius: 8px; font-family: inherit; cursor: pointer; color: ' + (wi.ok ? '#E7EBF3' : '#7F8BA1') + '; '
             + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : 'border: 1px solid #1F4A55; background: #0D1119') + (wi.ok ? '' : '; opacity: 0.55') }; }) : [],
-      designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0,
+      designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0 && !mg?.held, // holding: the HEART panel runs it
       designList: S.action === 'outburst' && mg ? cards.map((d) => { const on = dsel && d.id === dsel.id;
         return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title,
           stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
@@ -781,7 +781,7 @@ export class CombatLogic extends DCLogic {
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
       begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
-      beginLabel: 'Begin · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
+      beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×0.6: hover to preview, click a tile to aim, then Confirm.',
       beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
