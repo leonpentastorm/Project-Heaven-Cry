@@ -454,6 +454,8 @@ export class MainLogic extends DCLogic {
           voteActs, hasVoteActs: voteActs.length > 0 };
       }
       if (e.kind === 'player') {
+        // Engine action lines start with the name the header already shows ("Recruit asks…"): don't say it twice.
+        if (e.head && typeof e.text === 'string' && e.text.startsWith(e.head + ' ')) base.text = e.text.slice(e.head.length + 1).replace(/^./, (c) => c.toUpperCase());
         const p = playerOf(e.who), first = Object.values(g.characters).find((x) => x.owner === e.who);
         return { ...base, isPlayer: true, roll: !!e.roll, img: first ? first.portrait : IMG['wick-welcome'], nameStyle: 'color: ' + p.color + '; font-weight: 600',
           imgStyle: 'width: 40px; height: 40px; object-fit: cover; border-radius: 50%; background: #000; flex: none; border: 2px solid ' + p.color };
