@@ -1,7 +1,7 @@
 // The Belief step in creation (rules 1.6): Faithful with a patron sworn, then Atheist; the sheet carries the belief.
 // Then the story's FAITH tab: the panel, the prayer buttons with AP, gate and odds, a target picker, the rites.
 // Then a fight: the vow prompt (Shield asks for the ally; skippable), the combat FAITH tab, a prayer aimed on the grid.
-// The reducer's rules are implementer 1's: until they land, praying and swearing return the engine's 'Not built yet'.
+// The rules are implementer 1's (packages/engine/src/faith.ts); this checks the screens send them and show what comes back.
 import { chromium, click, player, hostAs } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -55,8 +55,18 @@ let opened = false;
 for (let i = 0; i < 6 && !opened; i++) { await wBtns.nth(i).click(); opened = (await panel.locator('[role="group"][aria-label="Choose the target"]').count()) > 0; if (!opened) await p.waitForTimeout(150); }
 ok('a Whisper with a target opens the party chips', opened);
 if (opened) { const grp = panel.locator('[role="group"][aria-label="Choose the target"]'); await grp.getByRole('button').first().click();
-  ok('picking someone gives the verdict and Pray', /Pray/.test(await grp.textContent())); }
+  ok('picking someone gives the verdict and Pray', /Pray/.test(await grp.textContent()));
+  const n0 = await p.evaluate(() => window.__phc.getState().game.story.entries.length);
+  await grp.locator('[data-prayer-confirm]').click(); await p.waitForTimeout(600);
+  const said = await p.evaluate((n0) => window.__phc.getState().game.story.entries.slice(n0).map((e) => (e.head || '') + ' ' + e.text).join(' | '), n0);
+  ok('Pray: the story answers (' + said.slice(0, 90) + ')', /ANSWERED|SILENCE/.test(said));
+  ok('and the next Whisper waits: "One Whisper a round."', /One Whisper a round/.test(await panel.textContent())); }
 ok('rites: listed, with the engine ones as buttons', (await panel.locator('[data-rite]').count()) >= 1);
+const keep = panel.locator('[data-rite] button').first();
+if (await keep.count() && (await keep.getAttribute('aria-disabled')) !== 'true') {
+  await keep.click(); await p.waitForTimeout(500);
+  ok('keeping a rite: the story says so and the card reads KEPT', /RITE ·/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /KEPT THIS SESSION/.test(await panel.textContent()));
+} else console.log('note no engine rite could be kept now: ' + ((await panel.locator('[data-rite]').first().textContent()) || '').slice(0, 120));
 if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab.png' }); await panel.evaluate((el) => el.scrollIntoView({ block: 'start' })); await p.locator('[data-phc-cutin]').count() && await p.keyboard.press('Escape'); await p.waitForTimeout(600); await panel.screenshot({ path: SHOTS + '/faith-panel-top.png', clip: undefined }); }
 
 // ---------- a fight ----------
@@ -71,8 +81,10 @@ ok('round 1: the vow prompt, with the 6 vows', (await vow.count()) === 1 && (awa
 await vow.locator('[data-vow="shield"]').click();
 ok('Shield asks whom (no ally here: it says so)', /SHIELD WHOM/.test(await vow.textContent()) && /No ally in this fight/.test(await vow.textContent()));
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-vow.png' });
-await vow.locator('[data-vow-skip]').click();
-ok('Fight unsworn closes it', (await p.locator('[data-phc-vow-prompt]').count()) === 0);
+await vow.locator('[data-vow="stand"]').click(); await p.waitForTimeout(400);
+const sworn = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u.vow || null; });
+ok('swearing Stand: the vow is on the unit and the prompt closes (' + JSON.stringify(sworn) + ')', !!sworn && sworn.id === 'stand' && (await p.locator('[data-phc-vow-prompt]').count()) === 0);
+ok('the vow shows under the HP bar', /VOW/i.test(await p.locator('aside').first().textContent()) && /Stand|give ground/i.test(await p.locator('aside').first().textContent()));
 const ftab = p.locator('[role="tab"][data-tab="faith"]');
 ok('the FAITH tab is there', (await ftab.count()) === 1);
 await ftab.click();
@@ -90,7 +102,12 @@ ok('clicking yourself on the grid picks the target, and Confirm opens', /Target:
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-combat.png' });
 const before = await p.evaluate(() => window.__phc.getState().game.combat.log.length);
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(500);
-const after = await p.evaluate(() => window.__phc.getState().game.combat.log.length);
-console.log('note pray sent; log ' + before + ' -> ' + after + ' (the reducer answers once implementer 1 lands the rules)');
+const st = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.charId && x.side === 'pc'); return { n: cb.log.length, ap: u.ap, last: cb.log.slice(-2).join(' | ') }; });
+ok('Health is prayed: 1 AP spent and the log says so (' + st.last.slice(0, 80) + ')', st.n > before && st.ap === 5);
+await panelC.locator('[data-act="pr:whisper:luck"]').click(); await p.waitForTimeout(300);
+ok('a second Whisper this turn is refused, with the reason', /One Whisper a turn/.test(await selTxt()));
+const cards = await p.locator('[data-phc-patron-line]').count();
+console.log('note patron line cards in the log now: ' + cards);
+if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-combat-after.png' });
 console.log('errors', p.errors);
 await browser.close();

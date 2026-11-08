@@ -4,7 +4,7 @@
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON } from '@engine';
 import { prayAction, pickerFor, oddsText, FAITH_INK } from '../game/faithView';
 import { accentOf, patronMarkUri, vowIconUri } from '../game/faithArt';
-import { PATRON_LINES } from '../game/fx/faith';
+import { patronOfLog } from './faithTab';
 
 const NEED = { unit: 'Click who it goes to.', two: 'Click two on the grid.', tile: 'Click a tile.' };
 const SIDE = { ally: 'an ally', enemy: 'an enemy', any: 'anyone' };
@@ -68,10 +68,9 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   };
 }
 
-/** The patron lines heard since this fight began, as cards (newest first, at most 3). */
-export function patronLogCards(since) {
-  return PATRON_LINES.filter((l) => l.t >= since).slice(-3).reverse().map((l, i) => ({
-    key: l.t + ':' + i, mark: patronMarkUri(l.patron), text: l.text, head: ((FAITH_PATRON[l.patron]?.name || l.patron) + ' · ' + (l.event || 'answer').replace(/_/g, ' ')).toUpperCase(),
-    style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(l.patron),
-  }));
+/** A combat log line as a patron's card when it is one ('Mother Ember: "…"', faith.ts), else null. */
+export function patronLogCard(line) {
+  const x = patronOfLog(line); if (!x) return null;
+  return { isPatron: true, mark: patronMarkUri(x.patron), text: x.text, head: (FAITH_PATRON[x.patron]?.name || x.patron).toUpperCase(),
+    style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(x.patron) };
 }

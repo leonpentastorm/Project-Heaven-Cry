@@ -69,10 +69,21 @@ export function faithTabVals(sc, g, c) {
 }
 
 /** A patron's line as a card in the story stream or the combat log (an entry or a patron_line event that names a patron). */
+const BY_NAME = () => Object.fromEntries(Object.values(FAITH_PATRON).map((p) => [String(p.name).toUpperCase(), p.id]));
+/** Which patron a story entry is the voice of: its patron field, or a system line headed with the patron's name (faith.ts). */
+export function patronOfEntry(e) {
+  if (!e) return null; if (e.patron) return e.patron;
+  return e.kind === 'system' && e.head && /^".*"$/s.test(String(e.text || '').trim()) ? BY_NAME()[String(e.head).toUpperCase()] || null : null;
+}
+/** A combat log line in the patron's voice ('Mother Ember: "…"'), as {patron, text}, or null. */
+export function patronOfLog(line) {
+  const m = /^(.+?): "(.*)"$/s.exec(String(line || '')); if (!m) return null;
+  const id = BY_NAME()[m[1].toUpperCase()]; return id ? { patron: id, text: m[2] } : null;
+}
 export function patronLineCard(e) {
-  const pid = e && e.patron; if (!pid) return null;
+  const pid = patronOfEntry(e); if (!pid) return null;
   const name = (FAITH_PATRON[pid]?.name || pid).toUpperCase();
-  return { patronMark: patronMarkUri(pid), patronName: name + (e.head ? ' · ' + String(e.head).toUpperCase() : ''), patronText: e.text,
+  return { patronMark: patronMarkUri(pid), patronName: name + (e.head && String(e.head).toUpperCase() !== name ? ' · ' + String(e.head).toUpperCase() : ''), patronText: String(e.text || '').replace(/^"(.*)"$/s, '$1'),
     patronStyle: 'margin: 0; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: start; padding: 10px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(pid),
     patronHeadStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: ' + FAITH_INK,
     patronTextStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.5; color: #E7EBF3" };

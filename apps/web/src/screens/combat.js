@@ -27,8 +27,7 @@ import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
-import { prayerView, vowPromptVals, patronLogCards } from './faithCombat';
-import { EV_PATRON_LINE } from '../game/fx/faith';
+import { prayerView, vowPromptVals, patronLogCard } from './faithCombat';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
@@ -185,7 +184,6 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
   // The turn card's commands were customised (game/commandsDialog.tsx): the mini-bar's quick commands follow.
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
-  window.addEventListener(EV_PATRON_LINE, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
 }
 
@@ -965,8 +963,7 @@ export class CombatLogic extends DCLogic {
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
-      log: cb.log.slice(-6).map((text, i) => ({ key: cb.log.length - 6 + i, text })),
-      patronLines: patronLogCards(this.fightSince(cb)),
+      log: cb.log.slice(-6).map((text, i) => { const pl = patronLogCard(text); return { key: cb.log.length - 6 + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }),
       cantConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
       toStory: () => go('main'), report: openReport, over: !!cb.over, overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox ? '' : ' The Narrator picks up the story.'),
@@ -1020,9 +1017,6 @@ export class CombatLogic extends DCLogic {
     if (S.action === 'outburst') return this.setState({ aim: k, obMode: 'snap' }); // a tile click means a snap at it
     if (S.action === 'release') return this.setState({ aim: k });
   }
-
-  /** When this fight began on this device (the patron line cards show only this fight's). */
-  fightSince(cb) { const k = (cb.id || cb.name) + ':' + (cb.map && cb.map.name); if (this._fightK !== k) { this._fightK = k; this._fightT = Date.now() - 5000; } return this._fightT; }
 
   confirm(tgt, mode, stimTarget) {
     const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
