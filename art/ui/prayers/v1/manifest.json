@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "ink": "flat white #FFFFFF on transparency",
+  "source": "Image-generated atlas; cell crop, alpha cleanup and size exports",
+  "items": [
+    {
+      "id": "whisper-luck",
+      "path": "art/ui/prayers/v1/whisper-luck.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 1,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a",
+      "status": "review-candidate"
+    },
+    {
+      "id": "whisper-health",
+      "path": "art/ui/prayers/v1/whisper-health.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 2,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "49af8c2479582d312972a7bced0c7062ee4f3fa58dc811abac1f103c6a6186da",
+      "status": "review-candidate"
+    },
+    {
+      "id": "whisper-protection",
+      "path": "art/ui/prayers/v1/whisper-protection.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 3,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "bd00186ceb624e3a3b8a3f075b0b629de5cacbc00ca93d70618a57d9af29be71",
+      "status": "review-candidate"
+    },
+    {
+      "id": "whisper-courage",
+      "path": "art/ui/prayers/v1/whisper-courage.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 4,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "e71bd1d90faa4f2941b2f296096174303fac13414a8c45bb2d086d071c57557b",
+      "status": "review-candidate"
+    },
+    {
+      "id": "whisper-guidance",
+      "path": "art/ui/prayers/v1/whisper-guidance.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 5,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "4239b66a78c99f7a89b59ce50d6b3d800b1d92eee641e109189877a0a9b85931",
+      "status": "review-candidate"
+    },
+    {
+      "id": "whisper-safe-passage",
+      "path": "art/ui/prayers/v1/whisper-safe-passage.png",
+      "source_atlas": "exec-602d9fcd-b3f9-4d74-a0b5-e131f89be390.png",
+      "source_cell": 6,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "b658beca2579608a875b63c1f2f14fd211a74c79151fda1778b4103247bf377b",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-nerukhan-1",
+      "path": "art/ui/prayers/v1/hymn-nerukhan-1.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 1,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "28a7375f8d8da29f5316116b06b4b86022e896dfe327464c06775f70af2843a5",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-nerukhan-2",
+      "path": "art/ui/prayers/v1/hymn-nerukhan-2.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 2,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "d0096024affa8e59a3f22a5f6d1ce4f2c0cbd24d6d41c8b5fb9f29b7d559af6a",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-nerukhan-3",
+      "path": "art/ui/prayers/v1/hymn-nerukhan-3.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 3,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "d2febdae258345193538bf4f16a1e02c78b6cfd5a4d1777be3943beba50f7747",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-nerukhan",
+      "path": "art/ui/prayers/v1/miracle-nerukhan.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 4,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "ae6091eb15e97801a0c0861ce2d06c54c68983a2e5448b376f54f698b6c916cd",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_quartermaster-1",
+      "path": "art/ui/prayers/v1/hymn-the_quartermaster-1.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 5,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "7550392fd5ed0856e366dd1aead09eab64c9d3ee1be51f498cdc39dd129dacd9",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_quartermaster-2",
+      "path": "art/ui/prayers/v1/hymn-the_quartermaster-2.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 6,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "957499e9ddc5cd1da4ea1a2f42c45b69451dc42cf227b4611bfb194327f4d979",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_quartermaster-3",
+      "path": "art/ui/prayers/v1/hymn-the_quartermaster-3.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 7,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "e30454447eafeadb823af10009c01985d0298ad11127802f2b39bf0f84e21f69",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-the_quartermaster",
+      "path": "art/ui/prayers/v1/miracle-the_quartermaster.png",
+      "source_atlas": "exec-e55dc924-bf57-484a-9f41-cc01e4244ab5.png",
+      "source_cell": 8,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "a7886059c8d0bbb74f2bc730480e911f6df0f8f33125d761ca5d96132da060c1",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_laughing_mask-1",
+      "path": "art/ui/prayers/v1/hymn-the_laughing_mask-1.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 1,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "87000dceaf82f4841f2fe8aeb0cf764d39e60e3fd28de73472313a221bf38e14",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_laughing_mask-2",
+      "path": "art/ui/prayers/v1/hymn-the_laughing_mask-2.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 2,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "f0985d6e1a3f45885cd15e00d381635a3338c7156f9c0365eb33c78f825b6e16",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_laughing_mask-3",
+      "path": "art/ui/prayers/v1/hymn-the_laughing_mask-3.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 3,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "d8edf815f56775e0bcc85590abe4cf21d45a5e9a53d891b4471b9162da8771c8",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-the_laughing_mask",
+      "path": "art/ui/prayers/v1/miracle-the_laughing_mask.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 4,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "256318f884d2ba6444830092b7b2a6a9e957e915e6c0584fe6003c7087246b7b",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_toll_keeper-1",
+      "path": "art/ui/prayers/v1/hymn-the_toll_keeper-1.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 5,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "3cf3bc283395c27b6b080b9f4f465b1705bf41b604a39a79b5f5322ebf3f83b4",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_toll_keeper-2",
+      "path": "art/ui/prayers/v1/hymn-the_toll_keeper-2.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 6,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "a2162b67b672ef5a3f78481da061424f93f667e43cfba5ec005dc98f40f15418",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_toll_keeper-3",
+      "path": "art/ui/prayers/v1/hymn-the_toll_keeper-3.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 7,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "501dfd5e9e812b48978e202238f864c8e3154cf8106f4ea79944427affc34ed9",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-the_toll_keeper",
+      "path": "art/ui/prayers/v1/miracle-the_toll_keeper.png",
+      "source_atlas": "exec-9b9c9e38-155f-4d8c-9d32-037b39262966.png",
+      "source_cell": 8,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "a8d70e110ec36de148955d50289bed1428547f6607ec36d586ac47a43136bf20",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-mother_ember-1",
+      "path": "art/ui/prayers/v1/hymn-mother_ember-1.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 1,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-mother_ember-2",
+      "path": "art/ui/prayers/v1/hymn-mother_ember-2.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 2,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "eb8db11b402a64fb70ddf7f5f0eb770b63b6ad2703ab7640df3f70e0c4817e9c",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-mother_ember-3",
+      "path": "art/ui/prayers/v1/hymn-mother_ember-3.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 3,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "649b80c6b0199b4ec7c07c7aca8ad7f95d4ee27d07e6f7bd168ec1ae19c559ca",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-mother_ember",
+      "path": "art/ui/prayers/v1/miracle-mother_ember.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 4,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "41d2338aa7a432e26441fbb7a6dde61458eca871181da71f8fde0062c65719e6",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-old_overcast-1",
+      "path": "art/ui/prayers/v1/hymn-old_overcast-1.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 5,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "95072d4b58a05f3a0a7482f28789b3ef87e1d3427c1595e7c8b567aa70c6cb67",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-old_overcast-2",
+      "path": "art/ui/prayers/v1/hymn-old_overcast-2.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 6,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "7cd982ab9a5c685931e51e96f24480a67419dd286e29e661102e97368b326919",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-old_overcast-3",
+      "path": "art/ui/prayers/v1/hymn-old_overcast-3.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 7,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "35021ff781eafe5b17bc30d190f9e6c02cf36f7dcbe62f15b99e77f739dd3745",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-old_overcast",
+      "path": "art/ui/prayers/v1/miracle-old_overcast.png",
+      "source_atlas": "exec-6afcc097-46c0-4363-b84b-2d55f63773cc.png",
+      "source_cell": 8,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "d52519c3e5b904236ecac0626c0d89cf96b2b0303ba4928a4e7a0588dc01bb4e",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_matchmaker-1",
+      "path": "art/ui/prayers/v1/hymn-the_matchmaker-1.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 1,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "80feeb26ec28b9c3164f3d6e1334b588f63f8e22bfa7f3fffc22b54e7b25560e",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_matchmaker-2",
+      "path": "art/ui/prayers/v1/hymn-the_matchmaker-2.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 2,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "8ae5d66e0b9f3339419c34f4f31ae87624eaf71bcaeb92d5aa52736e393dd136",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_matchmaker-3",
+      "path": "art/ui/prayers/v1/hymn-the_matchmaker-3.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 3,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "8e4ca3364b2f199833c0a85ef215f6c473fd40070c7cb118022b00a696ddf69b",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-the_matchmaker",
+      "path": "art/ui/prayers/v1/miracle-the_matchmaker.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 4,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "cf7421e845a46f9b86130cbf39160844031367d1faaa38dccfa22bd76e5f03b0",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_counting_weaver-1",
+      "path": "art/ui/prayers/v1/hymn-the_counting_weaver-1.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 5,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "c9669d49c454cd8753a706edf7a2b4176f3eb7e528087351cd9dffe5db787c47",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_counting_weaver-2",
+      "path": "art/ui/prayers/v1/hymn-the_counting_weaver-2.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 6,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "020efe9bfc72c4bdf429fda16ec076a502105e964a601512b199786e1a981ec9",
+      "status": "review-candidate"
+    },
+    {
+      "id": "hymn-the_counting_weaver-3",
+      "path": "art/ui/prayers/v1/hymn-the_counting_weaver-3.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 7,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "8bd4f9ce5650d298e3deb3b1b410c992dc4777c70695a57e7fa7dbae73541cbd",
+      "status": "review-candidate"
+    },
+    {
+      "id": "miracle-the_counting_weaver",
+      "path": "art/ui/prayers/v1/miracle-the_counting_weaver.png",
+      "source_atlas": "exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png",
+      "source_cell": 8,
+      "width": 1024,
+      "height": 1024,
+      "sha256": "6e1f25c349e4814331ab954efe42087092eb0ef89d7659a7e2b3e498a9edd28b",
+      "status": "review-candidate"
+    }
+  ]
+}
