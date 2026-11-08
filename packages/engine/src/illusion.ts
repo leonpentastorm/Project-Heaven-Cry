@@ -1,4 +1,4 @@
-// Decoys on the grid (Class Roster Revision 3: the Trickster's False Image; spec section 14 item 559 on). An image is
+// Decoys on the grid (Class Roster Revision 3: the Trickster's False Image; spec section 14 items 573 and 575). An image is
 // not a unit: it stands on a tile (cb.images), has no HP and takes no turn. Each enemy it fooled (a failed Brain save
 // when it appeared) sees the image where its owner stands: the AI attacks and closes on the image instead of the real
 // one (combat.ts enemyTurn, enemyIntent; the Sigil and Soul planners leave a fooled enemy's real owner alone). An
@@ -9,22 +9,22 @@ import { emitFx, previewAttack, isMelee, refOf } from './combat';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
 
-export interface Image {
+export interface FalseImage {
   id: string; owner: string; pos: string; side: 'pc' | 'foe';
   /** The round it appeared (it fades at its owner's turn start in round + 2). */
   round: number;
   /** Enemy unit ids that failed their Brain save: they take the image for its owner. */
   fooled: string[];
 }
-export const imagesOf = (cb: Combat): Image[] => cb.images || [];
-export const imageOfOwner = (cb: Combat, ownerId: string): Image | null => imagesOf(cb).find((i) => i.owner === ownerId) || null;
+export const imagesOf = (cb: Combat): FalseImage[] => cb.images || [];
+export const imageOfOwner = (cb: Combat, ownerId: string): FalseImage | null => imagesOf(cb).find((i) => i.owner === ownerId) || null;
 /** The image an enemy takes for this unit, if it was fooled by one. */
-export function fooledBy(cb: Combat, enemy: Unit, t: Unit): Image | null {
+export function fooledBy(cb: Combat, enemy: Unit, t: Unit): FalseImage | null {
   const i = imageOfOwner(cb, t.id);
   return i && i.fooled.includes(enemy.id) && !t.dead ? i : null;
 }
 /** The stand-in an AI aims at: the owner's numbers on the image's tile (never added to cb.units). */
-export function ghostOf(img: Image, owner: Unit): Unit {
+export function ghostOf(img: FalseImage, owner: Unit): Unit {
   return { ...owner, id: img.id, pos: img.pos, hidden: false, downed: false, ghostOf: owner.id } as Unit;
 }
 export const isGhost = (t: Unit | null | undefined) => !!t && !!(t as any).ghostOf;
@@ -40,12 +40,12 @@ export function perceivedFoes(cb: Combat, u: Unit): Unit[] {
   return out;
 }
 /** Place an image (one per owner: a new one replaces the old). */
-export function addImage(cb: Combat, img: Image) {
+export function addImage(cb: Combat, img: FalseImage) {
   const old = imageOfOwner(cb, img.owner); if (old) dropImage(cb, old, 'replaced');
   (cb.images ||= []).push(img);
   emitFx(cb, 'image', { id: img.id, owner: img.owner, at: img.pos, side: img.side, fooled: [...img.fooled] });
 }
-export function dropImage(cb: Combat, img: Image, why: string) {
+export function dropImage(cb: Combat, img: FalseImage, why: string) {
   if (!imagesOf(cb).includes(img)) return;
   cb.images = imagesOf(cb).filter((x) => x !== img);
   emitFx(cb, 'image_gone', { id: img.id, owner: img.owner, at: img.pos, why });

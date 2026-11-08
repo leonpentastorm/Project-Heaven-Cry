@@ -263,6 +263,50 @@ creature of the right kind within 1 tile of the impact; without it only the firs
 `plans` (every missile's plan) beside `plan` (the first). Area-map ids for placed magic come from `g.story.glyphSeq`
 (monotonic; `magicIn` also counts the live glyphs, zones and RAISE walls), so they never repeat between actions.
 
+## Class Roster Revision 3, phase B (the 20 new moves)
+
+The handlers are in `packages/engine/src/classes/rev3.ts` (wired through `classes/index.ts`; `rev3-pending.ts` is
+gone); tests in `test/classes-rev3-moves.test.ts`. Readings: spec section 14 items 559–580. Core changes:
+
+| Hook / field | Where | Used by |
+| --- | --- | --- |
+| `vent` {u, flux, extra} (extra mutable: more Flux into the air with it) after the Flux is gone | magic.ts `vent` | Bleed the Flux |
+| `ventAp(u)` / `coreAp(u)`: Vent and core swap priced through `actionAp` (stats `ap_cost:vent`, `ap_cost:swap_core`); the enemy planners use them too | magic.ts | Bleed the Flux, Core Change (the web's buttons should read these, not `SPELL_AP`) |
+| stat `rider_stage` (asked with {cb, release: true}): stages a release's tone riders count above its own; `riderBonus(cb, u, off)` | magic.ts `releaseAtInner`, `planInner` | Eye of the Storm |
+| `ai_move_risk` {u, from, to, risk} (risk mutable), per candidate tile of an enemy's walk, only while someone listens | combat.ts `enemyCloseTile` | Anchor (+10 for walking out of its reach) |
+| `trap_sprung` carries `rng` | combat.ts `moveUnit` | Sabotage's rig (Pinned save) |
+| A trap object with `side` never springs on that side (its walks already avoid it: `trapKnown`) | combat.ts `moveUnit` | Sabotage's rig |
+| `o.sabotaged` (a round): the object stops blocking movement until then | objects.ts `blocksMove` | Sabotage (barricades) |
+| `opportunityStrike(cb, rng, h, t, from)`: an opportunity attack lands on the tile the mover leaves (the reach check used to run a step late: item 561) | combat.ts | every OA; Anchor's Disengage OA |
+| `enemyIntent(cb, u)` → {kind, text, targetId?, to?, image?}: the enemy's next-turn choice, pure (fresh AP, no die); `enemyTurn` shares its pieces (`enemyTargets`, `enemyCloseTile`) | combat.ts | Read (`Unit.readIntent` until its turn ends) |
+| `cb.images` (illusion.ts: `Image` {id, owner, pos, side, round, fooled[]}); `perceivedFoes`, `fooledBy`, `strikeImage`, `addImage`, `dropImage`, `imageTurnStart` | illusion.ts, combat.ts `enemyTurn`, ai-sigil.ts `players`, ai-soul.ts `foesOf` | False Image, Sleight |
+
+Action ids (combat/perk `actionId`): Shove `class_shove` (enemy, `choice` push|prone); Unstoppable `unstoppable`; Vanish
+`vanish`; Field Fix `field_fix` (ally, `choice` clear_jam|restore_durability|repair_machine); Sabotage `sabotage`
+(enemy machine), `sabotage_object` (tile), `rig` (none); False Image `false_image` (tile); Silver Tongue
+`silver_tongue` (enemy); Sleight `sleight` (ally) and `sleight_image` (none), one scene use between them; Rally `rally`;
+Eye of the Storm `eye_of_the_storm`; Command `command` (ally **and** `tile`: the web needs a tile field for it);
+Occult Library `occult_tone` (story, `choice` a tone); policies `shrug_on`/`shrug_off`, `duck_on`/`duck_off`.
+
+FX events the web can draw (besides the existing `shove`, `stance`, `reload`, `clear`, `repair`, `heal`, `core`,
+`vent`, `analyze`, `move`, `trap`, `release`, `shot`/`melee`):
+
+- `shrug` {unit, at, cond}: Shrug It Off ended a condition.
+- `anchor` {unit, at, what: 'prone'|'shoved'|<forced-move how>|'oa', target?}: Anchor held, or struck a Disengage.
+- `unstoppable` {unit, at, ignored[]}.
+- `duck` {unit, from, to, by, out, cover}: Duck and Roll's step (the `move` event comes with it).
+- `rig` {unit, at, id, only}: a rigged tile (for its side's eyes); it springs as a `trap` event.
+- `sabotage` {unit, target?, at, rounds, what: 'machine'|'barricade'|'turret'}; `sabotage_end` {at, what}.
+- `vent` {…, bleed: true}: Bleed the Flux's credited point going into the air.
+- `intent` {unit, target, at, kind, text, targetUnit?, to?, image?}: what Read showed.
+- `image` {id, owner, at, side, fooled[]}; `image_gone` {id, owner, at, why: 'struck'|'faded'|'replaced'|'owner down'};
+  an attack on an image is a `shot`/`melee` with `target` = the image id and `image: true`, `hit: false`.
+- `silver_tongue` {unit, target, from, to, ok, ap}.
+- `swap` {unit, target, from, to, image?}: Sleight.
+- `rally` {unit, at, radius, targets[]} (each target also gets a `heal`).
+- `eye_storm` {unit, at} when armed; `eye_storm_spent` {unit, at, riderStage} when the Release used it.
+- `command_move` {unit, target, from, to} (the walk is the target's `move`).
+
 ## Appendix: the lanes' notes
 
 Each lane's missing hooks, data deltas and UI notes as written. Most hooks and data deltas were applied in the hooks-gap pass above; what is still open is listed there.

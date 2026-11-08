@@ -210,7 +210,28 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 The 54 moves:
 
 - **28 old base moves and 6 old advanced moves**, each kept under its old key (`class:<origin>.<moveId>`), so the engine runs it unchanged. classes.json lists them as `{"ref": "<origin>.<moveId>"}`. For example, the Bard's Triage is `class:medic.triage`.
-- **20 new moves** (item 554). Their handlers are pending: until each lands, what the engine doesn't run goes to the Narrator with the move's text.
+- **20 new moves** (item 554). The engine runs all of them (`packages/engine/src/classes/rev3.ts`); every number is provisional, and the readings that fill gaps in the texts are items 559–580. All but Iron Heart and Occult Library are combat-only (classes.json `surface`).
+
+**What the new moves do in play.**
+
+- **Shrug It Off** (reaction, 1 Guard): Bleeding, Slowed, Weakened or Prone ends the moment you gain it (on or off for the fight).
+- **Anchor:** while Braced, nothing pushes, pulls, shoves or knocks you Prone. An enemy that started its turn next to you and leaves your reach draws your opportunity attack even when it Disengages.
+- **Shove** (1 AP): an adjacent enemy is pushed 1 tile or knocked Prone (your choice) on a failed Body save against 12 + your Body debuff strength. A blocked push is refused before anything is spent.
+- **Unstoppable** (1 AP, once a scene): until your next turn, Fear, Shaken, Slowed and Pinned are set aside and refused, no opportunity attack is taken against you, and you gain 2 Momentum.
+- **Speed Loader:** the turn's first reload costs 1 AP less (at least 1).
+- **Duck and Roll** (reaction): when a ranged weapon attack targets you, step 1 tile first: out of sight, the attack isn't taken; into cover, it is at −2 (instead of half cover's −5).
+- **Vanish** (1 AP, once a turn): Hidden if no enemy sees you.
+- **Field Fix** (2 AP): an adjacent squadmate's jam cleared, weapon durability restored, or a machine repaired for 20.
+- **Sabotage** (2 AP): an adjacent enemy machine, turret or drone disabled for 2 rounds, a barricade passable for 2 rounds, or your tile rigged (30 and Pinned on a failed Body save for the next enemy to step on it).
+- **Core Change:** a core swap costs 1 AP. **Bleed the Flux:** a Vent costs 0 AP, and your next glyph adds 1 Flux less.
+- **Read:** Analyze costs 1 AP and shows what the enemy means to do on its next turn.
+- **False Image** (2 AP, 1 charge): a decoy within 8 + your Sigil range bonus. Enemies who see it make a Brain save; those who fail attack and close on it instead of you. It scatters when attacked and fades after 2 rounds.
+- **Silver Tongue** (2 AP): an enemy within 6 makes a Brain save or loses 2 AP on its next turn (a Boss 1).
+- **Sleight** (1 AP, once a scene): swap places with your False Image or a squadmate within 6.
+- **Rally** (2 AP, once a scene): every squadmate within 4 heals 20 × your Healing given and loses Fear and Shaken.
+- **Iron Heart:** Strain limit +1. **Occult Library:** one more ready design, and one tone learned once, out of a fight.
+- **Eye of the Storm** (once a scene): your next Release this turn adds no Strain and its tone's riders count a stage higher.
+- **Command** (1 AP, once a turn; Authority 1): a squadmate within 6 walks up to 2 tiles now, for no AP.
 
 **Resources follow the moves.**
 
@@ -3871,7 +3892,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 551. **Class from the highest attribute.** Level 3 gives the class of the highest attribute. On a tie the player chooses among the tied, and with every attribute tied all nine are offered (Leon). Replaces the signature-total closest-class rule (two highest totals) and the 13 / 18 rank totals.
 552. **Ranks at the class's attribute 5 and 8.** Rank I on gaining the class. Rank reads the class's own attribute, not the highest one.
 553. **No class switching (Leon).** The level-3 class is fixed. A second pick is refused. Changing class is a separate system for later.
-554. **20 new moves, numbers provisional, handlers pending.**
+554. **20 new moves, numbers provisional.**
     - Defender: Shrug It Off, Anchor.
     - Fighter: Shove, Unstoppable.
     - Marksman: Speed Loader, Duck and Roll.
@@ -3881,9 +3902,34 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Bard: Rally.
     - Channeler: Iron Heart, Occult Library, Eye of the Storm.
     - Guardian: Command.
-    - Until each handler lands, its active part is a default action and the rest goes to the Narrator (`packages/engine/src/classes/rev3-pending.ts`).
+    - The engine runs every part of each (phase B, `packages/engine/src/classes/rev3.ts`); the readings the texts needed are items 559–580.
     - Two moves per rank doubles what a class gives at level 3 (flag 7): watch it in the balance pass.
 555. **The Guardian leans on a patron** (flag 4). Without one: Will Shield, Command and Sanctuary. Conscience has no class move; it stays the story's Karma skill (flag 5). Names are kept as drafted: Infiltrator, and Bard rather than "Medic" (flag 6).
 556. **Advanced classes are shelved, not grandfathered (Leon).** No learning; no tutors placed. A held advanced class stays in the save and gives nothing (moves, resources, effects) while shelved. The handlers and tests stay; tests turn them on with a test-only switch.
 557. **The advanced gate by attribute pair:** hybrid base 6 + partner 5, squared 9, both from level 7. Behind the shelving; turning a batch on is data only.
 558. **Save migration:** medic → bard, scribe → mage, warden → trickster, hexer → channeler, assassin → infiltrator, once (`classRev` 3). Moves the new class doesn't list stop working.
+
+**Class Roster Revision 3, phase B: the new moves' handlers (8 Nov 2026). Readings where a text was silent or open; the most conservative was taken each time. PROVISIONAL.**
+
+559. **Shrug It Off** triggers on a condition gained through the rules (any Bleeding, Slowed, Weakened or Prone that lands) and on a hit's own riders (a critical's Bleeding, a weapon's knockdown). Going prone by your own choice isn't "gaining" it. It spends your reaction and 1 Guard; a policy turns it off for the fight.
+560. **Anchor's opportunity attack** is the normal one made to catch a Disengage too: an enemy that started its turn next to you and leaves your reach is struck as it goes. The normal rule already strikes a plain walk away. Items that waive opportunity attacks (Unstoppable, Lunge) still waive it. The Anchor part reads "Braced" as the unit's Braced (the Defender's Brace or a weapon's); it also undoes a hit's knockdown. The enemy AI counts +10 against a tile that walks out of an Anchor's reach (`ai_move_risk`).
+561. **Opportunity attacks land on the tile the mover leaves** (engine fix found while building Anchor): the strike used to be checked a step too late, so a melee opportunity attack was always "out of reach". A blow that drops the mover leaves it there.
+562. **Shove (Fighter)**: push or Prone is the player's choice. A push needs a free tile straight behind the target (else it is refused before anything is spent: knock it Prone instead). A save, a shove or knockback immunity (Heavyworlder, a Braced Anchor) and it holds. The base Shove (2 AP, opposed roll) stays for everyone.
+563. **Unstoppable's "ignore"**: new Fear, Shaken, Slowed and Pinned are refused, and ones you carry are set aside and come back at your next turn start with the rounds they would have had (one tick less). "Until your next turn" ends at your next turn start. Momentum still empties after a turn with no attack.
+564. **Speed Loader** discounts the turn's first reload of the main hand (a Special Ammo load counts); the first reload spends it even when it was already 1 AP.
+565. **Duck and Roll**: only weapon attacks at range (spells aren't), the first shot of a volley; the step is a real 1-tile move for no AP (traps, opportunity attacks and Overwatch apply). Out of sight: the attack has no target, isn't taken, and the attacker keeps its AP. Into cover: −2 for this attack **in place of** half cover's −5 (the step was late), and only when you weren't in cover already. No step that helps: no reaction spent.
+566. **Vanish** is combat-only (the area map keeps its own stay-hidden rules) and refused while Marked.
+567. **Field Fix**: a squadmate next to you, not yourself (your own jam is Clear Jam). Restoring durability gives the base Field Repair's amount (10% of the maximum + 5% per Proficiency point over 3, at least 10%) with no spare parts. Repairing a robot, drone, turret or machine (a Factory Made squadmate too) is exactly 20, as a repair: no healing multipliers, not halved by Plug; a Downed one comes back up.
+568. **Sabotage targets**: units of kind machine, turret or drone, or named a drone or turret (robots are people, rules 1.3, and aren't sabotaged). Disabled = Stunned for 2 of its turns (no actions, no reactions). A barricade stops blocking the way (not sight or cover) for 2 rounds; an emplaced turret object is disabled for 2 rounds (the Narrator runs it; a note says so). Sigil turrets are spells, not machines.
+569. **Sabotage's rigged tile**: one at a time (a new one replaces the old); armour applies to the 30; the walk stops there; the Body save is against 12 + your Body debuff strength. Your side sees it and walks round it; the enemy AI doesn't know it is there.
+570. **Core Change** and **Bleed the Flux** price the Vent and the core swap through the items (`ap_cost:vent`, `ap_cost:swap_core`): a core swap 1 AP, a Vent 0 AP.
+571. **Bleed the Flux's "1 more Flux"**: a Vent already empties the Evoker, so the one more is the next point you take: the next glyph you draw adds 1 Flux less (TWICE 1), and that point goes into the air then (the meter +1). It doesn't stack and lasts the fight.
+572. **Read's intended action** is the enemy's own next-turn choice read by the engine without rolling or changing anything (`enemyIntent`): its conditions first, then a reload, the attack it would make (on whom), or where it would walk. A Sigil or Soul caster is named as weighing a spell, then its weapon choice. It is kept on the enemy until its turn ends. An enemy already analyzed can't be analyzed again, so it is read once a fight.
+573. **False Image's range** is 8 + your Sigil range bonus, sight needed (the Seal's reach, item 287). Only enemies that can see the tile save; it adds no Flux (it isn't a word). One image at a time. It scatters when attacked (the attack's AP, a round and Heat are spent; it passes through) and fades at the start of your turn two rounds on, or when you fall. A fooled enemy's spells leave you alone; its reactions (opportunity attacks, Overwatch) still see the real you.
+574. **Silver Tongue** can't be used on a machine, turret or drone (nothing to lie to). The AP comes off the target's next turn through the turn's AP (the floor of 2 holds). A second one before that turn doesn't add: the larger stands.
+575. **Sleight**: both the image and the squadmate must be within 6; a Downed squadmate can't. A swap is not a walk: no opportunity attacks, Overwatch or traps; both lose Braced.
+576. **Rally**: squadmates within 4, not you; Downed ones aren't rallied (they aren't standing); refused with nobody in reach. A cleanse with no healing still counts as tending others (rules 1.5).
+577. **Occult Library's tone**: once (per campaign), out of a fight, any element tone you don't know, as from a tutor; it is the scene's one new thing (the magic/learn rule).
+578. **Eye of the Storm** is armed for your turn (0 AP; the scene's use is spent when you arm it). The Strain waived is what the Release adds while it resolves (Heart Surge's doubling included); a snap cast's Begin Strain comes before the Release and stays. Riders count a stage higher up to 4 (a stage-0 release gets stage 1's rider). Not a Heart Overwatch or a wild release.
+579. **Command**: a squadmate (not you) within 6 (inside hearing), able to move; the walk is real (opportunity attacks, Overwatch, traps, Afraid apply) and banks nothing. Leadership Squad is read as Authority 1.
+580. **Combat-only moves** (classes.json `surface: "combat"`): all but Iron Heart and Occult Library (`surface: "always"`). None of the active ones has a story version: the Narrator rules such moments as usual.

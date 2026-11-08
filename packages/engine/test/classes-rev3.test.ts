@@ -6,11 +6,10 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import {
   CLASSES, CLASS, CLASS_MOVE_POOL, ADVANCED, classRank, eligibleClasses, classPickError, classResources, migrateCharacterClass,
-  advancedPairError, advancedClassError, advancedActive, _setAdvancedLive, heldOfChar, itemsOf, itemInfo, coverageOf, actionDefs, newCharacter, healingMult,
+  advancedPairError, advancedClassError, advancedActive, _setAdvancedLive, heldOfChar, itemsOf, itemInfo, coverageOf, actionDefs, newCharacter, healingMult, handlerOf,
   CLASS_REV, type Character,
 } from '../src';
 import { fightWith, storyWith, sheetOf, type CharSpec } from './helpers/perkfight';
-import { PENDING } from '../src/classes/rev3-pending';
 
 afterEach(() => _setAdvancedLive(null));
 const charOf = (attrs: Record<string, number> = {}, o: Partial<Character> = {}): Character => {
@@ -206,17 +205,19 @@ describe('Revision 2 saves migrate', () => {
   });
 });
 
-describe('the 20 new moves (handlers pending: they fall back to the Narrator)', () => {
-  it('each has its full data entry, and no effect is a coverage gap', () => {
-    expect(PENDING.length).toBe(20);
-    for (const k of PENDING) {
+describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
+  const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
+  it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
+    expect(NEW.length).toBe(20);
+    for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
       expect(coverageOf(info).filter((r) => r.owner === 'gap'), k).toEqual([]);
-      const [cl] = k.split('.'); expect(CLASS[cl].ranks.I.moves.concat(CLASS[cl].ranks.II.moves, CLASS[cl].ranks.III.moves).some((m: any) => m.key === 'class:' + k), k).toBe(true);
+      expect(coverageOf(info).filter((r) => r.owner === 'narrator'), k).toEqual([]); // the engine runs every part now
+      expect(handlerOf(info.key), k).toBeTruthy();
     }
   });
-  it('an active one is a usable action today (its default run: generic ops, the rest to the Narrator)', () => {
+  it('an active one is a lane action under the data\'s action id', () => {
     expect(actionDefs(itemInfo('class:bard.rally')!).map((d) => d.id)).toEqual(['rally']);
     expect(actionDefs(itemInfo('class:fighter.shove')!).map((d) => d.id)).toEqual(['class_shove']);
   });

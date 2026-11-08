@@ -14,3 +14,4 @@ export * from './effects';
 export * from './missions';
 export * from './ai-sigil';
 export * from './ai-soul';
+export * from './illusion';

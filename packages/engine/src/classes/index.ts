@@ -3,4 +3,4 @@
 import './i';
 import './j';
 import './k';
-import './rev3-pending';
+import './rev3';

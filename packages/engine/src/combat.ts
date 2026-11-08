@@ -9,7 +9,7 @@ import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
-import { type Image, perceivedFoes, isGhost, strikeImage } from './illusion';
+import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
@@ -177,7 +177,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
   fear?: boolean;
   /** Decoys on the grid (the Trickster's False Image, illusion.ts): not units; the enemies they fooled target them. */
-  images?: Image[];
+  images?: FalseImage[];
   /** The Narrator's word on whether the fight broke out of the talk just had (Talks Broke Down); absent: not said. */
   fromTalk?: boolean }
 
@@ -997,7 +997,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
         if (h.side === u.side || !alive(h) || dist(h.pos, was) > 1 || dist(h.pos, k) <= 1 || !canReact(cb, h)) continue;
         // 'reaction_window' {reactor, mover, kind, cancel}: an item may cancel a reaction (or take its own).
         const rw: any = emit(cb, 'reaction_window', { reactor: h, mover: u, kind: 'opportunity', cancel: false, at: k, cb, rng }); if (rw.cancel) continue;
-        flush(); useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); react(cb, rng!, h, u, 'melee');
+        flush(); useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
       }
       if (!mc.skipOW && !u.dead && !u.downed) { const before = cb.log.length; triggerOverwatch(cb, rng!, u, seg); if (cb.log.length !== before) seg = [u.pos]; }
       // Heart Overwatch (rules 1.5): a watching Soul mage releases at an enemy entering its design's reach.
@@ -1032,6 +1032,13 @@ export function sightCheck(cb: Combat) {
   }
 }
 
+/** An opportunity attack lands as the mover leaves reach: it is struck on the tile it is leaving (the melee reach
+ * check would otherwise see it a step away), then its walk goes on from where it got to, unless the blow drops it
+ * there. Exported for class moves that grant one (Anchor). */
+export function opportunityStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, from: string) {
+  const at = t.pos; t.pos = from;
+  try { react(cb, rng, h, t, 'melee'); } finally { if (!t.dead && !t.downed) t.pos = at; }
+}
 function react(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
   const pv = previewAttack(cb, h, t, mode, { free: true });
   if (!pv.ok) { cb.log.push('(' + h.name + ' can\'t: ' + pv.why + ')'); return; }

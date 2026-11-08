@@ -14,15 +14,16 @@ import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type 
 import { tendHook } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
 import {
-  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit, resolveAttack,
-  previewAttack, isMelee, checkOver, moveBlockers, moveBlock, sightCheck, enemyIntent,
+  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
+  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike,
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
-import { applyCond, endCond, condOn, unitSave, unitDebuff, shiftMana, type Fam } from '../magic';
+import { applyCond, endCond, condOn, unitSave, unitDebuff, shiftMana } from '../magic';
+type Fam = 'body' | 'brain' | 'heart';
 import { d20, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
-import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type Image } from '../illusion';
+import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
 
 // =================================================================================================== helpers
@@ -123,10 +124,10 @@ register({
       if (stateOf(h).adj?.[u.id] !== cb.round || dist(me.pos, ctx.from) > 1 || dist(me.pos, ctx.at) <= 1) return;
       if (!alive(me) || !canReact(cb, me) || immune({ u }, 'opportunity_attack')) return;
       const rw: any = emit(cb, 'reaction_window', { reactor: me, mover: u, kind: 'opportunity', cancel: false, at: ctx.at, cb, rng: ctx.rng }); if (rw.cancel) return;
-      if (!previewAttack(cb, me, u, 'melee', { free: true }).ok) return;
+      { const at = u.pos; u.pos = ctx.from; const ok = previewAttack(cb, me, u, 'melee', { free: true }).ok; u.pos = at; if (!ok) return; }
       useReaction(cb, me); say(cb, me.name + ' is Anchored: ' + u.name + ' can\'t slip away (opportunity attack).');
       emitFx(cb, 'anchor', { unit: me.id, at: me.pos, what: 'oa', target: u.id });
-      resolveAttack(cb, rngOf(h, ctx), me, u, 'melee', null, { noAp: true }); checkOver(cb);
+      opportunityStrike(cb, rngOf(h, ctx), me, u, ctx.from);
     },
     ai_move_risk: (ctx, h) => {
       const me = h.u!, cb = h.cb!, u: Unit = ctx.u; if (!inFight(h) || !alive(me) || u.side === me.side || !canReact(cb, me)) return;
@@ -299,8 +300,8 @@ register({
 // ---------- Field Fix (rank II, 2 AP) ----------
 // An adjacent squadmate (not you: your own jam is Clear Jam): clear their jammed weapon (the Heat goes too, as a clear),
 // restore their weapon's durability (the base Field Repair's amount, at least 10% of its maximum, with no spare parts),
-// or repair a robot, drone, turret or machine (a Factory Made squadmate too) for 20 (healing received applies; a Downed
-// one comes back up). The choice is yours; with none, the first that applies in that order. Combat only.
+// or repair a robot, drone, turret or machine (a Factory Made squadmate too) for exactly 20 (a repair, as Field Repair:
+// no healing multipliers, not halved by Plug; a Downed one comes back up). The choice is yours; with none, the first that applies in that order. Combat only.
 const FIX = ['clear_jam', 'restore_durability', 'repair_machine'] as const;
 function fixable(t: Unit): string[] {
   return FIX.filter((x) => (x === 'clear_jam' ? t.jammed : x === 'restore_durability' ? !!t.maxDur && (t.dur ?? t.maxDur) < t.maxDur : repairable(t) && (t.hp < t.maxHp || t.downed)));
@@ -325,9 +326,10 @@ register({
         t.dur = Math.min(t.maxDur!, (t.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 });
         say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
       }
-      const r = healUnit(cb, t, 20, u, 'repair');
-      emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored, ...(r.revived ? { revive: true } : {}) });
-      say(cb, u.name + ' repairs ' + t.name + ': +' + r.restored + ' HP' + (r.revived ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
+      // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
+      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + 20); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+      emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
+      say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
     },
   }],
   brief: () => null,
@@ -342,41 +344,50 @@ register({
 // (a new one replaces the old). Combat only.
 register({
   id: 'infiltrator.sabotage', claims: 'all',
-  actions: [{
-    id: 'sabotage', label: 'Sabotage', scope: ['combat'], target: 'none', ap: 2, pick: ['disable', 'rig'], pickLabel: 'Disable a machine next to you, or rig your tile',
-    text: 'Adjacent: disable an enemy machine, turret, drone or barricade for 2 rounds. Or rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save).',
-    preview: (h, args) => {
-      const cb = h.cb!, u = h.u!;
-      if (args.choice === 'rig') { if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved)) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + ': 30 and Pinned (Body save) for the next enemy to step on it.'] }; }
-      const t = unitById(cb, args.targetId);
-      if (t) { if (t.side === u.side) return { ok: false, why: 'Sabotage an enemy machine.' }; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; if (dist(u.pos, t.pos) > 1) return { ok: false, why: 'Get next to it first.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; }
-      const k = tileOf(cb, args.tile); if (!k) return { ok: false, why: 'Pick a machine next to you, a barricade or turret tile, or rig your tile.' };
-      const o = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret'); if (!o) return { ok: false, why: 'No barricade or turret there.' };
-      if (dist(u.pos, k) > 1) return { ok: false, why: 'Get next to it first.' };
-      return { tiles: [k], lines: ['Disable the ' + o.name.toLowerCase() + ' for 2 rounds.'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!;
-      if (args.choice === 'rig') {
-        cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
-        const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: 30, owner: u.id, side: u.side, rig: h.key, hidden: true } as any));
-        emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
-        say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).'); return;
-      }
-      const t = unitById(cb, args.targetId);
-      if (t) {
+  // Three actions, one for each way (each its own grid pick): a machine token, a barricade or turret tile, your tile.
+  actions: [
+    {
+      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 2, range: 1,
+      text: 'Adjacent: disable an enemy machine, turret or drone for 2 rounds (no turns, no reactions).',
+      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
+      run: (h, args, rng) => {
+        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
         const line = applyCond(cb, rng as Rng, u, t, 'stunned', 2, undefined, { skipSave: true });
         emitFx(cb, 'sabotage', { unit: u.id, target: t.id, at: t.pos, rounds: 2, what: 'machine' });
-        say(cb, u.name + ' sabotages ' + t.name + ': disabled for 2 rounds' + line + '.'); return;
-      }
-      const k = tileOf(cb, args.tile)!, o: any = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret')!;
-      if (o.kind === 'barricade') o.sabotaged = cb.round + 2; else { o.disabled = true; o.disabledUntil = cb.round + 2; note(h, 'The emplaced turret at ' + refOf(k) + ' is disabled until round ' + (cb.round + 2) + ': it takes no action.'); }
-      (stateOf(h).objs ||= []).push(o.id);
-      emitFx(cb, 'sabotage', { unit: u.id, at: k, rounds: 2, what: o.kind });
-      say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': ' + (o.kind === 'barricade' ? 'it no longer blocks the way' : 'disabled') + ' for 2 rounds.');
+        say(cb, u.name + ' sabotages ' + t.name + ': disabled for 2 rounds' + line + '.');
+      },
     },
-  }],
+    {
+      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 2,
+      text: 'Adjacent: a barricade stops blocking the way, or an emplaced turret is disabled, for 2 rounds.',
+      preview: (h, args) => {
+        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
+        const o = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret'); if (!o) return { ok: false, why: 'No barricade or turret there.' };
+        if (dist(u.pos, k) > 1) return { ok: false, why: 'Get next to it first.' };
+        return { tiles: [k], lines: ['Disable the ' + o.name.toLowerCase() + ' for 2 rounds.'] };
+      },
+      run: (h, args) => {
+        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, o: any = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret')!;
+        if (o.kind === 'barricade') o.sabotaged = cb.round + 2; else { o.disabled = true; o.disabledUntil = cb.round + 2; note(h, 'The emplaced turret at ' + refOf(k) + ' is disabled until round ' + (cb.round + 2) + ': it takes no action.'); }
+        (stateOf(h).objs ||= []).push(o.id);
+        emitFx(cb, 'sabotage', { unit: u.id, at: k, rounds: 2, what: o.kind });
+        say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': ' + (o.kind === 'barricade' ? 'it no longer blocks the way' : 'disabled') + ' for 2 rounds.');
+      },
+    },
+    {
+      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 2,
+      text: 'Rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save).',
+      preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + ': 30 and Pinned (Body save) for the next enemy to step on it.'] }; },
+      run: (h) => {
+        const cb = h.cb!, u = h.u!;
+        cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
+        const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
+        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: 30, owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
+        emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
+        say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).');
+      },
+    },
+  ],
   on: {
     trap_sprung: (ctx, h) => {
       const o: any = ctx.obj, cb = h.cb!; if (!o || o.rig !== h.key || o.owner !== h.u?.id || !inFight(h)) return;
@@ -472,7 +483,7 @@ register({
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
-      const img: Image = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: u.id, pos: k, side: u.side, round: cb.round, fooled: [] };
+      const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: u.id, pos: k, side: u.side, round: cb.round, fooled: [] };
       const lines: string[] = [];
       for (const e of cb.units) {
         if (e.side === u.side || !alive(e) || !unitSees(cb, e, k)) continue;
@@ -517,38 +528,43 @@ register({
 
 // ---------- Sleight (rank III, 1 AP, once a scene) ----------
 // Swap places with your False Image or a squadmate within 6 tiles who is standing (a Downed one isn't willing or able).
-// A swap is no walk: no opportunity attacks, no Overwatch, no traps; both lose Braced. Combat only.
+// A swap is no walk: no opportunity attacks, no Overwatch, no traps; both lose Braced. One use a scene between the two
+// actions (a squadmate, or the image). Combat only.
+const sleightLeft = (h: Holder): true | string => (uses(h).left('per_scene', 1, h.key) > 0 ? true : 'Used until the next scene.');
 register({
   id: 'trickster.sleight', claims: 'all',
-  actions: [{
-    id: 'sleight', label: 'Sleight', scope: ['combat'], target: 'none', ap: 1, range: 6, uses: { per: 'per_scene', n: 1 }, pickLabel: 'Your False Image or a squadmate',
-    text: 'Swap places with your False Image or a willing ally within 6 tiles.',
-    preview: (h, args) => {
-      const cb = h.cb!, u = h.u!, img = imagesOf(cb).find((i) => i.id === args.targetId && i.owner === u.id) || (args.choice === 'image' ? imageOfOwner(cb, u.id) : null);
-      if (img) { if (dist(u.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' }; return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; }
-      const t = unitById(cb, args.targetId); if (!t) return { ok: false, why: 'Pick your False Image or a squadmate.' };
-      if (t === u || t.side !== u.side) return { ok: false, why: 'Pick your False Image or a squadmate.' };
-      if (!alive(t)) return { ok: false, why: t.name + ' can\'t (Downed).' };
-      if (dist(u.pos, t.pos) > 6) return { ok: false, why: 'Out of range (6 tiles).' };
-      return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, from = u.pos, img = imagesOf(cb).find((i) => i.id === args.targetId && i.owner === u.id) || (args.choice === 'image' ? imageOfOwner(cb, u.id) : null);
-      if (img) {
-        const to = img.pos; u.pos = to; img.pos = from; u.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true });
-        say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').');
-        emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
-      } else {
-        const t = unitById(cb, args.targetId)!, to = t.pos; u.pos = to; t.pos = from; u.braced = false; t.braced = false;
+  // Two actions (a squadmate token, or your image: a button), one use a scene between them.
+  actions: [
+    {
+      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 1, range: 6,
+      text: 'Swap places with a willing ally within 6 tiles (once a scene, with the image swap).',
+      available: sleightLeft,
+      preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' can\'t (Downed).' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
+      run: (h, args, rng) => {
+        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
+        u.pos = to; t.pos = from; u.braced = false; t.braced = false;
         emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to });
         say(cb, u.name + ' and ' + t.name + ' swap places.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
-      }
-      sightCheck(cb);
+        sightCheck(cb);
+      },
     },
-  }],
+    {
+      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
+      text: 'Swap places with your False Image within 6 tiles (once a scene, with the squadmate swap).',
+      available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
+      preview: (h) => { const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' }; return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
+      run: (h, _args, rng) => {
+        const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
+        u.pos = to; img.pos = from; u.braced = false;
+        emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true });
+        say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').');
+        emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
+        sightCheck(cb);
+      },
+    },
+  ],
   brief: () => null,
 });
 
@@ -619,7 +635,7 @@ register({
   actions: [{
     id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
     text: 'Your next Release this turn adds no Strain, and its tone\'s rider counts one stage higher.',
-    available: (h) => { if (!h.u) return false; if (!h.u.mg || h.u.mg.evoker && !h.u.mg.emanator && !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'On your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
+    available: (h) => { if (!h.u) return false; if (!h.u.mg || !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'On your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; stateOf(h).armed = { round: cb.round }; emitFx(cb, 'eye_storm', { unit: u.id, at: u.pos }); say(cb, u.name + ' finds the eye of the storm: the next Release adds no Strain, its rider a stage higher.'); },
   }],
   stat: (h, stat) => (stat === 'rider_stage' && eyeArmed(h) ? 1 : 0),
