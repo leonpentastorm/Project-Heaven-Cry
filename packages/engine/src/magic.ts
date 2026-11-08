@@ -467,6 +467,8 @@ export const STRAIN_BURN: number = SR.strain?.burn_per_point ?? 8;
 export const SHORT_AT_OVER: number = SR.strain?.short_at_over ?? 3;
 export const AURA_TICK: number = SR.aura?.tick_damage ?? 5;
 export const RESONANCE_BONUS: number = SR.resonance?.bonus ?? 0.2;
+/** Resonance's ceiling per release (Leon 8 Nov 2026): +0.4 in total, however many allies released before you. */
+export const RESONANCE_MAX: number = SR.resonance?.max_bonus ?? 0.4;
 export const SECOND_SCHOOL = { fromWill: SR.second_school?.from_will_power ?? 5, strength: SR.second_school?.strength ?? 0.5, cost: SR.second_school?.cost ?? 10 };
 export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 20;
 export type OutburstForm = 'bolt' | 'wave' | 'burst' | 'aura' | 'lance';
@@ -632,7 +634,8 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
   return ' · MANA SHORT';
 }
 /** The end of a caster's turn (rules 1.5): each point over the limit burns 8 true (it Downs, never kills: a foe is
- * subdued); then a turn with no Begin, Pump or Feed calms 1 (stillness). fx 'burn' {unit, at, over, dmg}. */
+ * subdued); then a turn with no Begin, Pump or Feed calms 1 (stillness), but only with nothing held: holding is not
+ * stillness (Leon 8 Nov 2026), so an idle held turn nets 0 (+1 swell, −1 turn start). fx 'burn' {unit, at, over, dmg}. */
 export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
   const m = heart(u); if (!m || u.dead) return;
   const over = m.strain - m.strainLimit;
@@ -642,7 +645,7 @@ export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
     emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'strain', killed: false }); if (u.hp === 0) fxFell(cb, u);
     cb.log.push(u.name + "'s heart burns: " + r.dealt + ' damage (' + over + ' over the Strain limit)' + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
   }
-  if (!m.cast && m.strain > 0) calm(cb, u, 1, 'still');
+  if (!m.cast && !m.held && m.strain > 0) calm(cb, u, 1, 'still');
   void rng;
 }
 
@@ -891,12 +894,13 @@ export function applyToneRiders(cb: Combat, rng: Rng, by: Unit | null, t: Unit, 
   }
   return out;
 }
-/** Resonance (rules 1.5): this release's bonus on the stage multiplier, +0.2 for each other ally who released this round. */
+/** Resonance (rules 1.5): this release's bonus on the stage multiplier, +0.2 for each other ally who released this
+ * round, capped at +0.4 in total per release (Leon 8 Nov 2026). */
 export function resonanceFor(cb: Combat, u: Unit): { bonus: number; with: string[] } {
   const r = (cb as any).soulRel as { round: number; by: { id: string; side: string }[] } | undefined;
   if (!r || r.round !== cb.round) return { bonus: 0, with: [] };
   const w = [...new Set(r.by.filter((x) => x.side === u.side && x.id !== u.id).map((x) => x.id))];
-  return { bonus: RESONANCE_BONUS * w.length, with: w };
+  return { bonus: Math.min(RESONANCE_MAX, Math.round(RESONANCE_BONUS * w.length * 100) / 100), with: w };
 }
 function noteRelease(cb: Combat, u: Unit) {
   const c: any = cb; if (!c.soulRel || c.soulRel.round !== cb.round) c.soulRel = { round: cb.round, by: [] };

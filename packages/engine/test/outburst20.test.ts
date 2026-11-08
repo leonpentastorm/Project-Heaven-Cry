@@ -140,6 +140,16 @@ describe('calming the heart: the five ways, on top of the turn-start −1 (secti
     const g = rig(); const d = give(g.pc, {}); begin(g, d); me(g).mg!.strain = 3;
     A(g, { type: 'combat/end-turn' }); expect(fx(g.cb, 'calm').some((e) => e.way === 'still')).toBe(false); // Begun this turn: no stillness
   });
+  it('holding is not stillness (Leon 8 Nov 2026): an idle held turn nets 0 (+1 swell, −1 turn start); Steady nets −2 and no growth', () => {
+    const f = rig(['12,5']); const d = give(f.pc, {}); begin(f, d); me(f).mg!.strain = 3;
+    f.turn(f.pc); expect(me(f).mg!.held!.stage).toBe(1); expect(me(f).mg!.strain).toBe(3); // −1 turn start, +1 swell
+    A(f, { type: 'combat/end-turn' }); expect(fx(f.cb, 'calm').some((e) => e.way === 'still')).toBe(false); expect(me(f).mg!.strain).toBe(3);
+    const g = rig(['12,5']); const e = give(g.pc, {}); begin(g, e); me(g).mg!.strain = 3;
+    g.turn(g.pc); A(g, { type: 'combat/steady' }); expect(me(g).mg!.strain).toBe(2);
+    A(g, { type: 'combat/end-turn' }); expect(fx(g.cb, 'calm').some((x) => x.way === 'still')).toBe(false);
+    expect(g.cb.order[g.cb.turn]).toBe(g.pc.id); // the foe has gone; the next turn has begun
+    expect(me(g).mg!.strain).toBe(1); expect(me(g).mg!.held!.stage).toBe(1); // −2 over the turn, no swell
+  });
   it('fighting it out: the first weapon attack of the turn −1, once', () => {
     const f = rig(['4,5']); me(f).mg!.strain = 3; me(f).weapon = 'fists';
     A(f, { type: 'combat/attack', targetId: f.foe.id, mode: 'melee' }); expect(me(f).mg!.strain).toBe(2);
@@ -291,6 +301,17 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(a.id), d2, '6,7', { stage: 1 })); expect(plan.resonance).toBe(true); expect(plan.mult).toBeCloseTo(1.2);
     begin(f, d2, u2); pump(f, 1, u2); release(f, '6,7', u2); expect(lost(f.foes[1])).toBe(24);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: a.id, with: [f.pc.id] });
+  });
+  it('Resonance is capped at +0.4 in total per release (Leon 8 Nov 2026): the fourth releaser of a round gets +0.4, not +0.6', () => {
+    const f = rig(['6,5', '6,7', '6,9', '6,11'], ['3,7', '3,9', '3,11']);
+    const by = (i: number) => (i < 2 ? 'host' : 'p' + i); // the helper seats the third and fourth with other players
+    const B = (i: number, a: Record<string, any>) => f.act({ unitId: f.pcs[i].id, ...a } as any, by(i));
+    for (let i = 0; i < 3; i++) { const d = give(f.unit(f.pcs[i].id), {}); f.turn(f.pcs[i]).ap = 60; B(i, { type: 'combat/outburst', design: d }); B(i, { type: 'combat/release', aim: f.foes[i].pos }); }
+    const last = f.pcs[3], d4 = give(f.unit(last.id), {}); f.turn(last).ap = 60; f.g.rng.state = SEED;
+    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(last.id), d4, '6,11', { stage: 1 }));
+    expect(plan.resonanceBonus).toBeCloseTo(0.4); expect(plan.mult).toBeCloseTo(1.4);
+    B(3, { type: 'combat/outburst', design: d4 }); B(3, { type: 'combat/pump' }); B(3, { type: 'combat/release', aim: '6,11' }); expect(lost(f.foes[3])).toBe(28);
+    expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: last.id, bonus: 0.4 }); expect(fx(f.cb, 'resonance').at(-1).with.length).toBe(3);
   });
   it('Feeding (combat/feed, 1 AP): a glyph on your own tile goes into the held Outburst: +1 stage; the glyph is gone', () => {
     const f = rig(); const d = give(f.pc, {}); begin(f, d);
