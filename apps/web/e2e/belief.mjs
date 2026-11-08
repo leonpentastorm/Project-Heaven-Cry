@@ -1,0 +1,31 @@
+// The Belief step in creation (rules 1.6): Faithful with a patron sworn, then Atheist; the sheet carries the belief.
+import { chromium, click, player, hostAs } from './lib.mjs';
+const browser = await chromium.launch();
+const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
+const SHOTS = process.env.SHOTS;
+const p = await player(browser, 'A');
+await hostAs(p, 'Leon');
+await click(p, 'Create a character');
+await p.getByPlaceholder('What the squad calls you').fill('Vess');
+await p.locator('main button[aria-pressed]').first().click();
+await click(p, 'Next ›');
+await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+await click(p, 'Next ›');
+await click(p, 'Next ›'); // traits
+await p.locator('[data-belief]').first().waitFor();
+ok('the Belief step shows its two choices', (await p.locator('[data-belief]').count()) === 2);
+ok('not chosen yet: the chip says Atheist by default', /NOT CHOSEN/.test(await p.textContent('body')));
+await p.locator('[data-belief="faithful"]').click();
+ok('Faithful shows the 8 patrons', (await p.locator('[data-patron]').count()) === 8);
+await p.locator('[data-patron="mother_ember"] [data-swear]').click();
+ok('sworn to Mother Ember', /FAITHFUL · MOTHER EMBER/i.test(await p.textContent('body')));
+if (SHOTS) await p.screenshot({ path: SHOTS + '/belief-faithful.png' });
+await p.locator('[data-belief="atheist"]').click();
+ok('Atheist hides the patrons', (await p.locator('[data-patron]').count()) === 0);
+if (SHOTS) await p.screenshot({ path: SHOTS + '/belief-atheist.png' });
+await p.locator('[data-belief="faithful"]').click();
+await p.locator('[data-patron="mother_ember"] [data-swear]').click();
+await click(p, 'Next ›');
+await p.locator('button', { hasText: /Kit|kit/ }).first().waitFor({ timeout: 3000 }).catch(() => {});
+console.log('errors', p.errors);
+await browser.close();

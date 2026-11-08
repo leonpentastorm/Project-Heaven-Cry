@@ -46,6 +46,7 @@ export async function makeCharacter(page, name, archFamily, archName, kit) {
   if (archName) await page.locator('button', { hasText: archName }).first().click();
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); // traits
+  await click(page, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
   await click(page, 'Next ›'); // kit
   await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›'); // lock in
