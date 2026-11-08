@@ -166,7 +166,7 @@ register({
 // for each earlier ally releaser (at most +0.4). The perk widens its window so the two are different things: I: an
 // ally's release in the round before counts for your Resonance too (your heart keeps their beat a round longer). II:
 // and allies keep yours: your release counts for theirs in the next round as well. The rule's +0.2 a releaser and its
-// +0.4 ceiling stand; a wild release neither gives nor gets it. 1.2's MP discount (20% / 40%) is gone.
+// +0.4 ceiling stand; a wild release neither gives nor gets it, nor does an enemy. 1.2's MP discount (20% / 40%) is gone.
 // =====================================================================================================================
 interface RelMark { id: string; side: string; round: number }
 /** Releases seen this fight (every holder of the perk keeps the same list on its own state). */
@@ -179,7 +179,7 @@ register({
   id: 'resonance', claims: 'all', priority: 50,
   on: {
     outburst_release: (ctx, h) => {
-      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb)) return;
+      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || r.side !== 'pc') return; // the players' side only
       const list = relSeen(h);
       if (!ctx.wild) {
         // I: my release hears allies who released last round. II: an ally's release hears mine from last round.

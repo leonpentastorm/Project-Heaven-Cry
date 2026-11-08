@@ -12,7 +12,8 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
-import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
+import { glyphKeyNav } from '../game/glyphKeys';
+import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
@@ -278,6 +279,8 @@ export class CombatLogic extends DCLogic {
   /** The tab that holds an action (so picking it anywhere, even when it was already chosen, opens its tab). */
   tabFor(action) { const t = this._tabOf && this._tabOf[action]; return t ? { tab: t } : {}; }
 
+  /** Arrow keys on the glyph keyboard (game/glyphKeys.ts). */
+  wordKey(e) { glyphKeyNav(e); }
   /** Switch the action tab (a click, an arrow key or a number key); focus follows when the keyboard is in the tab bar. */
   setTab(id, focus) {
     if (!id || !(this._tabs || []).includes(id)) return;
@@ -768,12 +771,15 @@ export class CombatLogic extends DCLogic {
     const padBtn = (on, ink) => 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid ' + ink + '; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: #10151F; color: #A3AEC2');
     const pad = {
       words: isMagic && mineTurn && S.action === 'draw' && words.length > 0,
-      wordList: S.action === 'draw' ? words.map((wd) => { const wi = wordInfo[wd] || { ok: false, why: '', sub: '', title: wd }, on = wd === word, def = SIGIL[wd] || {};
+      wordList: S.action === 'draw' ? words.map((wd) => { const wi = wordInfo[wd] || { ok: false, why: '', sub: '', hint: '', title: wd }, on = wd === word, def = SIGIL[wd] || {};
+        const why = wi.ok ? '' : wi.why || (mineTurn ? 'Not now.' : 'Not your turn.'), hint = wi.ok ? '' : wi.hint || shortWhy(why);
         return { key: wd, word: wd.toUpperCase(), icon: glyphUri(wd, wi.ok ? SIGIL_INK : '#7F8BA1', { glow: on && wi.ok }), sub: wi.sub || (def.charge ?? '?') + ' charge', pressed: on ? 'true' : 'false',
-          title: wi.title,
-          subStyle: 'font-size: 10px; font-weight: 700; color: ' + (wi.ok ? '#E7EBF3' : '#7F8BA1'), pick: () => this.setState({ word: wd }),
-          style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 64px; padding: 6px 2px; border-radius: 8px; font-family: inherit; cursor: pointer; color: ' + (wi.ok ? '#E7EBF3' : '#7F8BA1') + '; '
-            + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : 'border: 1px solid #1F4A55; background: #0D1119') + (wi.ok ? '' : '; opacity: 0.55') }; }) : [],
+          title: wi.title, off: !wi.ok, disabled: wi.ok ? 'false' : 'true', hint, hasHint: !wi.ok, onKey: (e) => this.wordKey(e),
+          aria: (def.word || wd.toUpperCase()) + ', ' + (wordClassName(wd) || 'word') + ', ' + (wi.ok ? wi.sub : 'can\'t draw now: ' + why),
+          subStyle: 'font-size: 10px; font-weight: 700; color: ' + (wi.ok ? '#E7EBF3' : '#A3AEC2'), hintStyle: 'max-width: 100%; font-size: 9px; font-weight: 700; line-height: 1.15; text-align: center; color: #A3AEC2',
+          pick: () => this.setState({ word: wd }),
+          style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 64px; padding: 6px 2px; border-radius: 8px; font-family: inherit; cursor: pointer; color: ' + (wi.ok ? '#E7EBF3' : '#A3AEC2') + '; '
+            + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : wi.ok ? 'border: 1px solid #1F4A55; background: #0D1119' : 'border: 1px dashed #2A3A48; background: #0B0F16') + (wi.ok ? '' : '; opacity: 0.8') }; }) : [],
       designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0 && !mg?.held, // holding: the HEART panel runs it
       designList: S.action === 'outburst' && mg ? cards.map((d) => { const on = dsel && d.id === dsel.id;
         return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title,
@@ -788,6 +794,8 @@ export class CombatLogic extends DCLogic {
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
       ...sigilPad(evV, S, (x) => this.setState(x)),
     };
+    // The keyboard in Sigil 1.4 word groups (Elements … Filter), one labelled row each; empty groups are left out.
+    pad.wordRows = wordRows(pad.wordList, (w) => w.key).map((r) => ({ key: r.key, label: r.label.toUpperCase(), aria: r.label + ' words', words: r.items }));
     const hpB = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn } : {};
     const magicCant = !isMagic ? false : S.action === 'draw' ? true : S.action === 'evoke' ? !evV || !evV.ok : S.action === 'outburst' ? (obMode === 'snap' ? !hzPlan || !hzPlan.ok : !card || !card.canBegin) : S.action === 'release' ? !hzPlan || !hzPlan.ok : HEART_ACTS.includes(S.action) ? !hpB[S.action] || !hpB[S.action].ok : !simpleTry || !!simpleTry.err;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).

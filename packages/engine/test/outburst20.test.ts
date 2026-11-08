@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   d20, stageMult, outburstArea, previewOutburstPlan, migrateDesign, migrateHeld, freePumps, condOn, objectsOf, moveUnit, healUnit,
-  apply, STAGE_MULT, soulMult, type Combat, type Unit, type OutburstDesign,
+  apply, STAGE_MULT, soulMult, heartMagic, HEART_CASTERS, beginOutburst, pumpOutburst, releaseOutburst, type Combat, type Unit, type OutburstDesign,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -313,6 +313,28 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     expect(plan.resonanceBonus).toBeCloseTo(0.4); expect(plan.mult).toBeCloseTo(1.4);
     B(3, { type: 'combat/outburst', design: d4 }); B(3, { type: 'combat/pump' }); B(3, { type: 'combat/release', aim: '6,11' }); expect(lost(f.foes[3])).toBe(28);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: last.id, bonus: 0.4 }); expect(fx(f.cb, 'resonance').at(-1).with.length).toBe(3);
+  });
+  it('Resonance is the players\' side only: two foe Soul casters releasing in one round get no bonus; two PCs still get +0.2', () => {
+    const f = rig(['6,5', '6,7'], ['3,7']); const [e1, e2] = f.foes, a = f.pcs[1];
+    for (const e of [e1, e2]) { e.mg = heartMagic(e, HEART_CASTERS[0]); arm(e); }
+    const fd1 = give(e1, {}), fd2 = give(e2, {});
+    const foeCast = (e: Unit, d: string, aim: string) => withGame(f.g, () => {
+      const u = f.turn(e); u.ap = 60; f.g.rng.state = SEED;
+      expect(beginOutburst(f.cb, f.g.rng, u, d, undefined, true)).toBeNull(); expect(pumpOutburst(f.cb, f.g.rng, u)).toBeNull();
+      return u;
+    });
+    const u1 = foeCast(e1, fd1, '3,5'); const hp1 = f.unit(f.pc.id).hp; expect(withGame(f.g, () => releaseOutburst(f.cb, f.g.rng, f.unit(u1.id), '3,5'))).toBeNull();
+    const first = hp1 - f.unit(f.pc.id).hp; expect(first).toBeGreaterThan(0); expect(fx(f.cb, 'release').at(-1).mult).toBeCloseTo(1);
+    const u2 = foeCast(e2, fd2, '3,7');
+    const hp2 = f.unit(a.id).hp, plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(u2.id), 'held', '3,7'));
+    expect(plan.resonance).toBe(false); expect(plan.resonanceBonus).toBe(0); expect(plan.mult).toBeCloseTo(1); // the enemy AI's preview counts none
+    expect(withGame(f.g, () => releaseOutburst(f.cb, f.g.rng, f.unit(u2.id), '3,7'))).toBeNull();
+    expect(hp2 - f.unit(a.id).hp).toBe(first); expect(fx(f.cb, 'resonance').length).toBe(0); expect(fx(f.cb, 'release').at(-1)).toMatchObject({ resonance: 0, mult: 1 });
+    // The players, in the same round, still resonate with each other (the foes' releases don't count for them).
+    const d = give(f.unit(f.pc.id), {}), d2 = give(f.unit(a.id), {});
+    const p1 = f.turn(f.pc); p1.ap = 60; f.g.rng.state = SEED; begin(f, d, p1); pump(f, 1, p1); release(f, '6,5', p1); expect(lost(f.unit(e1.id))).toBe(20);
+    const p2 = f.turn(a); p2.ap = 60; f.g.rng.state = SEED; begin(f, d2, p2); pump(f, 1, p2); release(f, '6,7', p2); expect(lost(f.unit(e2.id))).toBe(24);
+    expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: a.id, with: [f.pc.id], bonus: 0.2 });
   });
   it('Feeding (combat/feed, 1 AP): a glyph on your own tile goes into the held Outburst: +1 stage; the glyph is gone', () => {
     const f = rig(); const d = give(f.pc, {}); begin(f, d);

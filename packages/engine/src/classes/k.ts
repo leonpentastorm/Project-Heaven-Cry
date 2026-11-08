@@ -1382,7 +1382,7 @@ register({
 // turn start and strains you 1 each (2 Flooded). "Pump a form" (1 AP, or one of Empathy's free Pumps) adds a stage to
 // one form. Iron armour +10, Surge melee and unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body
 // saves, Heartbeat heal 10 at turn start: each × its stage multiplier. Pain to Power: +1 AP next turn per 20 damage
-// taken, at most +2 (the stage doesn't raise it). Two forms (three from Will Power 5), each once. No slipping (rules
+// taken, at most +2 (the stage doesn't raise it). At most two forms at once (no third from Will Power 5), each once. No slipping (rules
 // 1.5: being hurt no longer loosens the heart). A Mana Short ends them all. Forms are kept on the character for the
 // scene (taken on the area map they carry into a fight). Silenced: no new form and no Pump.
 type Form = 'iron' | 'surge' | 'swift' | 'pain' | 'steady' | 'heartbeat';
@@ -1404,16 +1404,19 @@ function endForms(cb: Combat, u: Unit, why: string) {
   const h = holderOf({ u, cb }, 'vessel.inner_charge'); if (!h || !formsOf(h).length) return;
   setForms(h, []); vSync({ ...h, cb }); say(cb, u.name + '\'s body forms gutter out (' + why + ').');
 }
-const maxForms = (c: Character | null | undefined) => ((c?.skills?.will_power || 0) >= 5 ? 3 : 2);
+/** A Vessel holds at most two body forms at once, whatever its Will Power (rules 1.5 follow-up; the Will Power 5 third
+ * form is retired). */
+const MAX_FORMS = 2;
 register({
   id: 'vessel.inner_charge', claims: 'all',
   actions: [
     { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: () => SOUL_AP.begin,
       text: 'Take a body form (iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
-      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= maxForms(h.c) ? 'You hold ' + maxForms(h.c) + ' forms already.' : true),
+      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= MAX_FORMS ? 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '. Release them first.' : true),
       preview: (h, a) => {
         const f = a.choice as Form; if (!FORMS[f]) return { ok: false, why: 'Choose iron, surge, swift, pain, steady or heartbeat.' };
         if (formsOf(h).some((x) => x.form === f)) return { ok: false, why: FORMS[f] + ' is already held.' };
+        if (formsOf(h).length >= MAX_FORMS) return { ok: false, why: 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.' };
         const m = h.u!.mg!, cost = Math.round(20 * (manaBand(manaOf(h.cb!)).soul_cost_mult ?? 1)); if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP.' };
         return { lines: [FORMS[f] + ': ' + cost + ' MP, 1 Strain; grows each turn.'] };
       },
@@ -1444,7 +1447,7 @@ register({
       } },
     { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
       text: 'Take a body form before the trouble starts (20 MP): it lasts the scene and carries into a fight.',
-      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= maxForms(h.c) || formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: 'No room for that form.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
+      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.' } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
   ],
   on: {

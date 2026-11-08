@@ -93,7 +93,9 @@ blooming into the element's colour.
    tick (5 damage + the stage-1 rider). Holding next to enemies is a threat.
 2. **Heart Overwatch:** while holding, you may **release as a reaction** when an enemy enters your design's reach (uses
    your reaction, at the stage reached).
-3. **Resonance:** two allies who release in the same round give each other +0.2 on the stage multiplier.
+3. **Resonance:** two allies on the players' side who release in the same round give each other +0.2 on the stage
+   multiplier (player characters and the units fighting with them, such as companions and the Twinbound twin; you and
+   your own twin don't resonate). Enemies never resonate with each other and never get the bonus (spec item 549).
 4. **Feeding:** 1 AP to absorb a glyph on your own tile into your held Outburst: +1 stage, the glyph is gone (the one
    bridge between the two magics).
 

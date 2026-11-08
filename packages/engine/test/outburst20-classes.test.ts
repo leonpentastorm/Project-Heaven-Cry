@@ -144,6 +144,13 @@ describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
     for (let i = 0; i < 5; i++) withGame(f.g, () => applyDamage(f.cb, f.pc, 60, { by: f.foe, type: 'weapon', credit: 'all' }));
     expect((f.g.characters[f.pc.charId!] as any).state.vessel.forms.length).toBe(1);
   });
+  it('A Vessel holds at most 2 body forms, whatever its Will Power: at Will Power 9 a third form is refused, and says why', () => {
+    const f = fightWith([adv('vessel', { skills: { will_power: 9 } })], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 12;
+    expect(f.g.characters[f.pc.charId!].skills.will_power).toBe(9);
+    perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'steady' });
+    expect(() => perk(f, f.pc, 'vessel.inner_charge', { choice: 'swift' })).toThrow(/hold 2 forms already: a Vessel holds at most 2/);
+    expect((f.g.characters[f.pc.charId!] as any).state.vessel.forms.map((x: any) => x.form)).toEqual(['iron', 'steady']);
+  });
   it('Release sums 15 × each form\'s stage multiplier', () => {
     const f = fightWith([adv('vessel', { weapon: 'fists' })], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 12; place(f, u, '3,2'); place(f, f.foe, '4,2');
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'steady' });

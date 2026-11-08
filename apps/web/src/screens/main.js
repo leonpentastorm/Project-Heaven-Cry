@@ -21,7 +21,8 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
-import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
+import { glyphKeyNav } from '../game/glyphKeys';
+import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
@@ -568,7 +569,7 @@ export class MainLogic extends DCLogic {
     const mHi = { pattern: new Set(), aim: null, reach: new Set(), reachCol: '' };
     // Placed magic the party can see (fields tinted by element, your traps, spotted ones, turrets, RAISE walls, smoke, light).
     const placedW = ZON.length || (inFight && cb) ? (() => { try { const x = inFight ? cb : scb(); return x ? placedView(x, 'pc') : null; } catch { return null; } })() : null;
-    let mHint = '', mReady = false, mLabel = 'Confirm', drawInfo = null, evW = null, mHz = noOverlay(), wHp = null, wCards = [];
+    let mHint = '', mReady = false, mLabel = 'Confirm', drawInfo = null, drawAll = [], evW = null, mHz = noOverlay(), wHp = null, wCards = [];
     const knowsW = (w) => !!(c && (c.sigils || []).includes(w));
     const myAt = c ? pos[c.id] : null, mOpen = !!(S.area && mover && isMagicW && !inFight);
     const wordSel = S.wWord && myWords.includes(S.wWord) ? S.wWord : myWords[0] || null, designSel = myDesigns.find((d) => d.id === S.wDesign) || myDesigns[0] || null;
@@ -583,7 +584,7 @@ export class MainLogic extends DCLogic {
       else if (W === 'draw') {
         // Rules 1.4: on your own tile only; the engine says the cost and whether it starts, extends or breaks a Line.
         if (myAt) { mHi.reach.add(myAt); mHi.reachCol = SIG_CYAN; }
-        const dw = wordSel ? drawStrip(cbx, u).words.find((x) => x.id === wordSel) : null; drawInfo = dw;
+        drawAll = drawStrip(cbx, u).words; const dw = wordSel ? drawAll.find((x) => x.id === wordSel) : null; drawInfo = dw;
         mHint = !dw ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : !dw.ok ? 'Draw ' + dw.word + ': ' + dw.why
           : 'Click your own tile (' + refOf(myAt) + ') to draw ' + dw.word + ' (' + dw.cost.charge + ' charge, ' + dw.cost.ap + ' AP): it ' + dw.effectText + '.' + (dw.fades ? ' ' + dw.fades + ' fades (your cap).' : '')
             + ' The Evoker holds ' + MN.charge + ' charge. A spell is a straight Line of 2–4 glyphs: step to the next tile and draw again.' + (dw.overload ? ' WARNING: this glyph overloads your Evoker.' : '');
@@ -633,8 +634,11 @@ export class MainLogic extends DCLogic {
     }
     const wMagic = {
       showWords: !!(mOpen && W === 'draw' && myWords.length), showDesigns: !!(mOpen && W === 'outburst' && myDesigns.length),
-      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w]; return { key: w, img: glyphUri(w, SIGIL_INK, { glow: on }), word: def.word, charge: String(def.charge), title: on && drawInfo ? drawInfo.title : def.word + ' · ' + def.text, pressed: on ? 'true' : 'false',
-        pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px solid ' + (on ? SIG_CYAN : '#232D3F') + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') }; }),
+      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w], dw = drawAll.find((x) => x.id === w), off = !!(dw && !dw.ok);
+        return { key: w, img: glyphUri(w, off ? '#7F8BA1' : SIGIL_INK, { glow: on && !off }), word: def.word, charge: String(def.charge), sub: off ? def.charge + ' ch · ' + dw.hint : def.charge + ' charge',
+          title: dw ? dw.title : def.word + ' · ' + def.text, pressed: on ? 'true' : 'false', disabled: off ? 'true' : 'false', onKey: glyphKeyNav,
+          aria: def.word + ', ' + (wordClassName(w) || 'word') + ', ' + (off ? 'can\'t draw now: ' + dw.why : def.charge + ' charge'),
+          pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 58px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: 10px; font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
       modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×0.6)']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
@@ -642,6 +646,7 @@ export class MainLogic extends DCLogic {
       showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
       hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null }); act({ type: 'world/act', charId: c.id, act: id, ...(id === 'heartwatch' ? { on: !(MN.held && MN.held.watch) } : {}) }); if (id === 'letgo') this.setState({ wAct: 'outburst' }); }),
     };
+    wMagic.wordRows = wordRows(wMagic.words, (w) => w.key).map((r) => ({ key: r.key, label: r.label.toUpperCase(), aria: r.label + ' words', words: r.items }));
     const magicClick = (k) => {
       if (W === 'draw') { if (!wordSel) return toast('You know no words.'); act({ type: 'world/act', charId: mover.id, act: 'draw', word: wordSel, tile: k }); return; }
       if (W === 'evoke') {

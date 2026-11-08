@@ -3092,7 +3092,7 @@
           "name": "Inner Charge",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Begin's 2 AP, 20 MP, 1 Strain: hold a body form like an Outburst. It starts at stage 1 and reads the 1.5 stage table (x1, x1.4, x1.8, x2.2), swells a stage each turn (1 Strain each) and can be Pumped (1 AP, or an Empathy free Pump). Iron (armour +10), Surge (melee and unarmed damage +15), Swift (+2 Movement), Pain to Power (+1 AP next turn per 20 damage taken, up to +2), Steady (no Prone or push; +2 Body saves), Heartbeat (heal 10 at turn start). Up to 2 forms (3 from Will Power 5).",
+          "text": "Begin's 2 AP, 20 MP, 1 Strain: hold a body form like an Outburst. It starts at stage 1 and reads the 1.5 stage table (x1, x1.4, x1.8, x2.2), swells a stage each turn (1 Strain each) and can be Pumped (1 AP, or an Empathy free Pump). Iron (armour +10), Surge (melee and unarmed damage +15), Swift (+2 Movement), Pain to Power (+1 AP next turn per 20 damage taken, up to +2), Steady (no Prone or push; +2 Body saves), Heartbeat (heal 10 at turn start). At most 2 forms at once, whatever your Will Power.",
           "effects": [
             {
               "op": "body_form",

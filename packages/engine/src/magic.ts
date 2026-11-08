@@ -927,14 +927,17 @@ export function applyToneRiders(cb: Combat, rng: Rng, by: Unit | null, t: Unit, 
   return out;
 }
 /** Resonance (rules 1.5): this release's bonus on the stage multiplier, +0.2 for each other ally who released this
- * round, capped at +0.4 in total per release (Leon 8 Nov 2026). */
+ * round, capped at +0.4 in total per release (Leon 8 Nov 2026). The players' side only (rules 1.5 follow-up): player
+ * characters and their allies on the players' side (companions, the Twinbound twin) resonate; enemies (side 'foe')
+ * never give or get it, so the enemy AI's previews never count it either. */
 export function resonanceFor(cb: Combat, u: Unit): { bonus: number; with: string[] } {
   const r = (cb as any).soulRel as { round: number; by: { id: string; side: string }[] } | undefined;
-  if (!r || r.round !== cb.round) return { bonus: 0, with: [] };
+  if (u.side !== 'pc' || !r || r.round !== cb.round) return { bonus: 0, with: [] };
   const w = [...new Set(r.by.filter((x) => x.side === u.side && x.id !== u.id).map((x) => x.id))];
   return { bonus: Math.min(RESONANCE_MAX, Math.round(RESONANCE_BONUS * w.length * 100) / 100), with: w };
 }
 function noteRelease(cb: Combat, u: Unit) {
+  if (u.side !== 'pc') return; // enemies don't resonate (resonanceFor)
   const c: any = cb; if (!c.soulRel || c.soulRel.round !== cb.round) c.soulRel = { round: cb.round, by: [] };
   c.soulRel.by.push({ id: u.id, side: u.side });
 }

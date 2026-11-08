@@ -92,7 +92,7 @@
   "resonance": {
     "bonus": 0.2,
     "max_bonus": 0.4,
-    "text": "A release by an ally after another ally's release in the same round: +0.2 on the stage multiplier for each earlier ally releaser this round, at most +0.4 in total per release.",
+    "text": "A release by an ally after another ally's release in the same round: +0.2 on the stage multiplier for each earlier ally releaser this round, at most +0.4 in total per release. The players' side only: enemies never resonate.",
     "provisional": true
   },
   "heart_overwatch": {

@@ -187,11 +187,14 @@
 <div style="display: flex; flex-direction: column; gap: 6px">
 <button type="button" class="phc-cb-act" data-act="{{a.key}}" onClick="{{a.pick}}" disabled="{{a.locked}}" aria-pressed="{{a.pressed}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
 <sc-if value="{{a.padW}}">
-<div aria-label="Glyph keyboard" class="{{T.padWCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
+<div role="group" aria-label="Glyph keyboard" data-glyph-keyboard="1" class="{{T.padWCls}}" style="display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">GLYPH KEYBOARD · PICK A WORD, THEN CLICK YOUR OWN TILE</span>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<sc-for list="{{T.padW.wordList}}" as="w"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="width: 26px; height: 26px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em">{{w.word}}</span><span style="{{w.subStyle}}">{{w.sub}}</span></button></sc-for>
+<sc-for list="{{T.padW.wordRows}}" as="r"><div role="group" aria-label="{{r.aria}}" data-word-row="{{r.key}}" style="display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 6px; align-items: start; min-width: 0; padding-top: 6px; border-top: 1px solid #16323A">
+<span aria-hidden="true" style="padding-top: 4px; font-family: 'Chakra Petch', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #8BDEEE; overflow-wrap: anywhere">{{r.label}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; min-width: 0">
+<sc-for list="{{r.words}}" as="w"><button type="button" class="phc-cb-act" data-sfx="toggle" data-word="{{w.key}}" onClick="{{w.pick}}" onKeyDown="{{w.onKey}}" aria-pressed="{{w.pressed}}" aria-disabled="{{w.disabled}}" aria-label="{{w.aria}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="width: 26px; height: 26px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em">{{w.word}}</span><span style="{{w.subStyle}}">{{w.sub}}</span></button></sc-for>
 </div>
+</div></sc-for>
 </div>
 </sc-if>
 <sc-if value="{{a.padE}}"><sc-if value="{{T.pad.sgShow}}">
