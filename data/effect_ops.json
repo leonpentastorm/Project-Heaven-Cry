@@ -3663,6 +3663,26 @@
         "strain": 0,
         "rider_stage": 1
       }
+    },
+    {
+      "id": "chain_damage",
+      "tier": "bespoke",
+      "summary": "Old Overcast's Lightning Rod: after the hit, the damage jumps to more enemies within a range, at a multiplier.",
+      "count": 1,
+      "params": [
+        "jumps",
+        "range",
+        "mult"
+      ],
+      "used_by": [
+        "patrons:old_overcast.lightning_rod"
+      ],
+      "example": {
+        "op": "chain_damage",
+        "jumps": 1,
+        "range": 2,
+        "mult": 0.5
+      }
     }
   ]
 }

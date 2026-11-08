@@ -1,50 +1,300 @@
 {
-  "$schema_version": "1.0",
+  "$schema_version": "2.0",
   "kind": "patrons",
-  "source": "PHC Core Rules v1.0 + Narrator's World Bible + Class Roster Rev 2",
+  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) + Narrator's World Bible",
   "devotion": {
     "min": 0,
     "max": 10,
     "start": 3,
+    "gates": {
+      "whisper": 0,
+      "hymn_1": 3,
+      "hymn_2": 5,
+      "hymn_3": 7,
+      "miracle": 7
+    },
     "gain": {
-      "session_rites_kept": 1,
-      "convert_someone": 1
+      "liked_tag": 1,
+      "liked_tag_fight_cap": 2,
+      "vow_kept": 1,
+      "rite_kept": 1,
+      "convert_someone": 1,
+      "piece_on_conversion": 1
     },
     "loss": {
-      "broken_rite": 1,
+      "taboo_tag": 1,
+      "taboo_tag_witnessed": 2,
+      "vow_broken": 2,
+      "overreach_miss": 1,
       "break_character_seen": 2
-    }
+    },
+    "narrator_delta_max": 2,
+    "provisional": true
   },
-  "tiers": [
-    {
-      "id": "pray",
-      "faith_min": 3,
+  "prayer": {
+    "faith_min": 3,
+    "mana_delta": -5,
+    "whisper": {
+      "ap": 1,
+      "limit": "once per turn"
+    },
+    "hymn": {
       "ap": 3,
-      "roll": "d20 + mod(faith) + floor(devotion/2)",
-      "tn": "patron mood (default 12, narrator moves it)",
-      "success": "one blessing from patron list x blessing_power",
-      "nat1": "-1 devotion",
-      "meter_delta": -5,
-      "cooldown": "prayer_cooldown_turns"
+      "cooldown": "prayer_cooldown"
     },
-    {
-      "id": "witnessed",
-      "faith_min": 5,
-      "trigger": "after a successful prayer, until your next turn",
-      "on_theme_bonus": 2,
-      "off_theme_cost_devotion": 1,
-      "theme_judged_by": "narrator"
-    },
-    {
-      "id": "miracle",
+    "miracle": {
+      "ap": 3,
       "faith_min": 7,
-      "uses": "once per session",
-      "cost": "all devotion",
-      "devotion_min": 5,
-      "effect": "blessing at triple power, or a story-sized intervention the narrator designs"
+      "devotion_min": 7,
+      "limit": "once per session",
+      "spends": "all devotion"
+    },
+    "overreach": {
+      "tn_base": 12,
+      "tn_per_step": 2,
+      "miss_devotion": -1
+    },
+    "atheist_tn": {
+      "whisper": 12,
+      "hymn_1": 14,
+      "hymn_2": 16,
+      "hymn_3": 18
+    },
+    "witnessed": {
+      "faith_min": 5,
+      "like_bonus": 2,
+      "taboo_mult": 2
+    },
+    "provisional": true
+  },
+  "tags": [
+    {
+      "id": "protect",
+      "name": "Protect",
+      "text": "Shield an ally, Interpose, Brace, or take a hit for someone."
+    },
+    {
+      "id": "heal",
+      "name": "Heal",
+      "text": "Heal or stabilise someone else."
+    },
+    {
+      "id": "mercy",
+      "name": "Mercy",
+      "text": "Accept a surrender, or end a fight without killing a surrendered enemy."
+    },
+    {
+      "id": "judge",
+      "name": "Judge",
+      "text": "Kill or Down an enemy that harmed a surrendered or Downed creature this fight."
+    },
+    {
+      "id": "kill",
+      "name": "Kill",
+      "text": "Kill an enemy."
+    },
+    {
+      "id": "burn",
+      "name": "Burn",
+      "text": "Deal Fire damage or set Burning."
+    },
+    {
+      "id": "storm",
+      "name": "Storm",
+      "text": "Deal Storm damage (SHOCK, the Storm tone, lightning)."
+    },
+    {
+      "id": "trick",
+      "name": "Trick",
+      "text": "A Trickster move, hiding, a False Image, a feint or a swap."
+    },
+    {
+      "id": "supply",
+      "name": "Supply",
+      "text": "Reload an ally, throw a stim, hand over items, place cover."
+    },
+    {
+      "id": "hold",
+      "name": "Hold",
+      "text": "End a turn Braced, Anchored or in Overwatch."
+    },
+    {
+      "id": "flee",
+      "name": "Flee",
+      "text": "Retreat out of a fight, or Disengage away from enemies."
+    },
+    {
+      "id": "desecrate",
+      "name": "Desecrate",
+      "text": "Damage a shrine, a corpse or holy ground (map objects tagged holy)."
+    },
+    {
+      "id": "betray",
+      "name": "Betray",
+      "text": "Attack a creature on your own side."
+    },
+    {
+      "id": "cower",
+      "name": "Cower",
+      "text": "End a turn Hidden while an ally is Downed."
     }
   ],
-  "notes": "Blessing numbers are provisional examples (the spec defers them here). Patron mood TN defaults to 12.",
+  "whispers": [
+    {
+      "id": "luck",
+      "name": "Luck",
+      "text": "You or an ally in sight: +2 on the next roll.",
+      "target": "self_or_ally",
+      "effects": [
+        {
+          "op": "roll_bonus",
+          "value": 2,
+          "uses": 1
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "text": "You or an ally in sight heals 15 × Blessing power.",
+      "target": "self_or_ally",
+      "effects": [
+        {
+          "op": "heal",
+          "value": 15
+        }
+      ],
+      "scales_with": "blessing_power",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "protection",
+      "name": "Protection",
+      "text": "You or an ally in sight gains a 15 × Blessing power shield.",
+      "target": "self_or_ally",
+      "effects": [
+        {
+          "op": "shield",
+          "value": 15
+        }
+      ],
+      "scales_with": "blessing_power",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "courage",
+      "name": "Courage",
+      "text": "End Fear or Shaken on you or an ally in sight.",
+      "target": "self_or_ally",
+      "effects": [
+        {
+          "op": "cleanse",
+          "condition": [
+            "fear",
+            "shaken"
+          ]
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "guidance",
+      "name": "Guidance",
+      "text": "Reveal Hidden enemies and traps within 6, and +2 on your next notice roll.",
+      "target": "self",
+      "effects": [
+        {
+          "op": "reveal",
+          "radius": 6
+        },
+        {
+          "op": "roll_bonus",
+          "value": 2,
+          "roll": "notice",
+          "uses": 1
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "safe_passage",
+      "name": "Safe Passage",
+      "text": "Your next move this turn provokes no opportunity attacks.",
+      "target": "self",
+      "effects": [
+        {
+          "op": "ignore_opportunity_attacks",
+          "uses": 1,
+          "duration": "turn"
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    }
+  ],
+  "vows": [
+    {
+      "id": "shield",
+      "name": "Shield",
+      "words": "None of them falls.",
+      "needs_ally": true,
+      "broken_when": "the named ally is Downed",
+      "adjudication": "engine"
+    },
+    {
+      "id": "mercy",
+      "name": "Mercy",
+      "words": "I spare who yields.",
+      "broken_when": "you damage a surrendered or Downed enemy",
+      "adjudication": "engine"
+    },
+    {
+      "id": "stand",
+      "name": "Stand",
+      "words": "I don't give ground.",
+      "broken_when": "you end a turn farther from the nearest enemy than you started it",
+      "adjudication": "engine"
+    },
+    {
+      "id": "bare",
+      "name": "Bare Hands",
+      "words": "By my own hands.",
+      "broken_when": "you attack with a gun or a spell",
+      "adjudication": "engine"
+    },
+    {
+      "id": "unarmed_faith",
+      "name": "No Magic but Theirs",
+      "words": "No magic but theirs.",
+      "broken_when": "you draw, Evoke or Begin (Sigil or Outburst)",
+      "adjudication": "engine"
+    },
+    {
+      "id": "no_one_behind",
+      "name": "Nobody Left Behind",
+      "words": "Nobody left behind.",
+      "broken_when": "an ally is still Downed when the fight ends",
+      "adjudication": "engine"
+    }
+  ],
+  "line_banks": [
+    "answered",
+    "refused",
+    "taboo",
+    "vow_kept",
+    "vow_broken",
+    "witnessed",
+    "intervention",
+    "miracle",
+    "conversion"
+  ],
+  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator.",
   "items": [
     {
       "id": "nerukhan",
@@ -52,7 +302,19 @@
       "invented": false,
       "faction": "lumeri",
       "domain": "Judgement, sanctity, the Lumeri saints",
-      "costume": "a stern holy father who speaks for the saints; 'Only the saints may judge'",
+      "costume": "A stern holy father of the Lumeri saint-church who speaks for the saints; never breaks costume. 'Only the saints may judge.'",
+      "archetype": "the judge-saint",
+      "accent": "#F2D27A",
+      "likes": [
+        "judge",
+        "mercy",
+        "protect"
+      ],
+      "taboos": [
+        "betray",
+        "desecrate"
+      ],
+      "rule": "jealous",
       "accord_terms": [
         "Pacts first: answers only those sworn to the Lumeri faith",
         "Keep the costume: never speaks as anything but the Holy Father",
@@ -64,78 +326,170 @@
         "Shelter the faithful"
       ],
       "rites": [
-        "a confession spoken before each fight",
-        "tithe a share of loot to a Lumeri shrine each session"
+        {
+          "id": "confession",
+          "name": "Confession",
+          "engine": true,
+          "check": {
+            "kind": "story"
+          },
+          "text": "Confess before the saints, out of a fight (a story button). Once a session: +1 Devotion."
+        },
+        {
+          "id": "shrine_tithe",
+          "name": "Tithe at a Shrine",
+          "engine": false,
+          "text": "Leave a share of your loot at a Lumeri shrine (the Narrator marks it kept)."
+        }
       ],
-      "taboos": [
-        "passing final judgement on a person yourself (executing the surrendered)",
-        "desecrating a shrine"
-      ],
-      "faith_required": {
-        "pray": 3,
-        "witnessed": 5,
-        "miracle": 7
+      "intervention": {
+        "trigger": "enemy_harms_helpless",
+        "text": "An enemy damages a surrendered or Downed creature: that enemy takes 20 Soul.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "hp",
+            "value": -20,
+            "damage_type": "soul",
+            "target": "trigger_source"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
       },
-      "blessings": [
+      "hymns": [
         {
           "id": "saints_shield",
           "name": "Saint's Shield",
-          "text": "An ally in sight gains a shield of 40.",
+          "tier": 1,
+          "text": "An ally in sight gains a 40 shield.",
+          "target": "ally",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "shield",
+              "op": "shield",
               "value": 40
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "judgement",
           "name": "Judgement",
-          "text": "One enemy in sight takes 40 Soul damage; double against an enemy that harmed a surrendered or helpless foe this scene.",
+          "tier": 2,
+          "text": "An enemy in sight takes 40 Soul; ×2 if it harmed the helpless this fight.",
+          "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -40
+              "value": -40,
+              "damage_type": "soul"
             },
             {
-              "op": "narrator",
-              "note": "double if the target harmed the helpless this scene"
+              "op": "vs_status_damage",
+              "status": "harmed_helpless",
+              "mult": 2
             }
           ],
-          "adjudication": "hybrid",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "absolution",
           "name": "Absolution",
-          "text": "One ally is cleansed of every Heart and Brain condition and heals 30.",
+          "tier": 3,
+          "text": "An ally is cleansed of every condition and heals 30.",
+          "target": "ally",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "hp",
-              "value": 30
+              "op": "cleanse",
+              "scope": "all"
             },
             {
-              "op": "narrator",
-              "note": "clear heart/brain conditions"
+              "op": "heal",
+              "value": 30
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         }
       ],
-      "on_theme_examples": [
-        "defending the helpless",
-        "sparing the surrendered",
-        "confronting a heretic"
-      ],
+      "miracle": {
+        "id": "saints_verdict",
+        "name": "The Saints' Verdict",
+        "text": "Every enemy that harmed the helpless this fight takes 60 Soul and is Stunned 1 round.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "hp",
+            "value": -60,
+            "damage_type": "soul",
+            "target": "harmed_helpless"
+          },
+          {
+            "op": "condition",
+            "condition": "stunned",
+            "rounds": 1,
+            "save": "none",
+            "target": "harmed_helpless"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "The saints have heard you, child.",
+          "Kneel, then stand. You are answered.",
+          "Judgement is theirs. This much is yours."
+        ],
+        "refused": [
+          "You reach above your station, child.",
+          "The saints do not answer the presumptuous. Ask again, humbler.",
+          "No. Confess first; ask after."
+        ],
+        "taboo": [
+          "Who made you judge? Not I.",
+          "The saints saw that. So did I.",
+          "Desecration. I am writing this down."
+        ],
+        "vow_kept": [
+          "Your word held. The saints take note.",
+          "Kept, as it should be.",
+          "A vow honoured. Rare, these days."
+        ],
+        "vow_broken": [
+          "A broken vow is a broken pot, child.",
+          "You swore before the saints.",
+          "I heard the oath. I heard it break."
+        ],
+        "witnessed": [
+          "The saints are watching. Behave accordingly.",
+          "Every eye in the chapel is on you now.",
+          "Stand straight. You are seen."
+        ],
+        "intervention": [
+          "Only the saints may judge. They have.",
+          "Strike the fallen? Not in my sight.",
+          "Judgement, delivered on their behalf."
+        ],
+        "miracle": [
+          "THE SAINTS HAVE RENDERED THEIR VERDICT.",
+          "Let every cruel hand be counted.",
+          "Witness: judgement, in full."
+        ],
+        "conversion": [
+          "Welcome to the Lumeri faith. Confession is before every battle.",
+          "Another soul for the saints. Mind the candles.",
+          "Kneel. Rise faithful."
+        ]
+      },
       "source_note": "Named in the 2020 material; reading as a Celestial in a pact is from the World Bible. Tenets, rites and blessings are new."
     },
     {
@@ -144,7 +498,19 @@
       "invented": true,
       "faction": null,
       "domain": "Supply, soldiers, the long war",
-      "costume": "a gruff, bottomless logistics officer of a war that never ended; a Celestial who loves strategy games",
+      "costume": "The logistics god of a war that never ended: a clerk's visor, a requisition stamp worn on a chain, and a deep love of forms filed in triplicate.",
+      "archetype": "the quartermaster of a war god",
+      "accent": "#9DB36B",
+      "likes": [
+        "supply",
+        "hold",
+        "protect"
+      ],
+      "taboos": [
+        "flee",
+        "desecrate"
+      ],
+      "rule": "open",
       "accord_terms": [
         "Pacts first",
         "Keep the costume",
@@ -156,72 +522,178 @@
         "Leave no one on the field"
       ],
       "rites": [
-        "log every round spent and every comrade lost, read aloud after the fight"
+        {
+          "id": "inventory",
+          "name": "Inventory",
+          "engine": true,
+          "check": {
+            "kind": "after_rest"
+          },
+          "text": "Count and log every round you carry after a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+        },
+        {
+          "id": "requisition_form",
+          "name": "Requisition Form",
+          "engine": false,
+          "text": "File a proper request before taking anything from a depot or a fallen soldier (the Narrator marks it kept)."
+        }
       ],
-      "taboos": [
-        "abandoning a wounded ally",
-        "hoarding supplies from your own squad"
-      ],
-      "faith_required": {
-        "pray": 3,
-        "witnessed": 5,
-        "miracle": 7
+      "intervention": {
+        "trigger": "ammo_dry",
+        "text": "Your gun runs dry: it reloads, free.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "ammo",
+            "value": "reload_free",
+            "target": "self"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
       },
-      "blessings": [
+      "hymns": [
         {
           "id": "resupply",
           "name": "Resupply",
-          "text": "Every ally in sight refills one magazine, or regains 1 Supplies, or loads a fresh small core.",
+          "tier": 1,
+          "text": "An ally in sight reloads every weapon for free and regains 1 Supply.",
+          "target": "ally",
           "effects": [
             {
               "op": "resource",
               "resource": "ammo",
-              "value": "1 magazine",
-              "when": "on_blessing"
+              "value": "reload_all"
+            },
+            {
+              "op": "resource",
+              "resource": "supplies",
+              "value": 1
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "dig_in",
           "name": "Dig In",
-          "text": "You and allies within 2 tiles count as in half cover until your next turn.",
+          "tier": 2,
+          "text": "An ally gains half cover where they stand until they move, and is Braced.",
+          "target": "ally",
           "effects": [
             {
-              "op": "tn_mod",
-              "context": "defense_area_2",
-              "value": 2
+              "op": "state",
+              "state": "dug_in",
+              "until": "moved"
+            },
+            {
+              "op": "state",
+              "state": "braced"
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "covering_fire",
           "name": "Covering Fire",
-          "text": "An enemy in sight is Pinned (no save).",
+          "tier": 3,
+          "text": "A 3×3 area in sight: every enemy in it makes a Body save or is Pinned 1 round.",
+          "target": "tile",
           "effects": [
             {
               "op": "condition",
               "condition": "pinned",
-              "target": "target",
-              "when": "on_blessing"
+              "rounds": 1,
+              "save": "body",
+              "area": "3x3"
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         }
       ],
-      "on_theme_examples": [
-        "holding a position",
-        "carrying a wounded ally",
-        "sharing ammunition"
-      ],
-      "source_note": "Invented to give Body characters a patron."
+      "miracle": {
+        "id": "requisition_approved",
+        "name": "Requisition Approved",
+        "text": "The whole squad is restocked (ammo, Supplies, one standard core each) and gets +2 AP next turn.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "ammo",
+            "value": "restock"
+          },
+          {
+            "op": "resource",
+            "resource": "supplies",
+            "value": "restock"
+          },
+          {
+            "op": "start_item",
+            "item": "standard_core",
+            "qty": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "ap_next",
+            "value": 2
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "Approved. Sign here.",
+          "Request granted. Next!",
+          "Stamped, filed, delivered."
+        ],
+        "refused": [
+          "That form is above your clearance.",
+          "Denied. Insufficient paperwork.",
+          "Come back with a supervisor's signature."
+        ],
+        "taboo": [
+          "Retreat was not on the requisition.",
+          "You broke a crate of perfectly good salvage.",
+          "That will be deducted from your pay."
+        ],
+        "vow_kept": [
+          "Promise kept, logged in triplicate.",
+          "Good. That goes on your record.",
+          "Exemplary. I may frame this one."
+        ],
+        "vow_broken": [
+          "Your vow has been marked VOID.",
+          "Breach of contract. Noted.",
+          "I had such high hopes for that form."
+        ],
+        "witnessed": [
+          "Inspection under way. Look busy.",
+          "I'm watching the inventory, and you.",
+          "Audit in progress."
+        ],
+        "intervention": [
+          "Out of rounds? Not on my watch.",
+          "Emergency resupply authorised.",
+          "Here. Don't tell accounting."
+        ],
+        "miracle": [
+          "REQUISITION APPROVED. EVERYTHING. FOR EVERYONE.",
+          "The whole depot, delivered.",
+          "I have waited a thousand years to stamp this."
+        ],
+        "conversion": [
+          "Welcome to the supply corps. Here is your locker key.",
+          "Another name for the roster.",
+          "Sign here, here, and here."
+        ]
+      }
     },
     {
       "id": "the_laughing_mask",
@@ -229,7 +701,19 @@
       "invented": true,
       "faction": null,
       "domain": "Tricks, luck, stagecraft",
-      "costume": "a grinning masked trickster who demands a show; a Celestial who joined the Accords to troll properly",
+      "costume": "The trickster: a grinning mask that never comes off. Joined the Accords to troll them and demands a show.",
+      "archetype": "the trickster",
+      "accent": "#E85BB0",
+      "likes": [
+        "trick",
+        "burn",
+        "flee"
+      ],
+      "taboos": [
+        "cower",
+        "mercy"
+      ],
+      "rule": "open",
       "accord_terms": [
         "Pacts first",
         "Keep the costume: never removes the mask",
@@ -241,77 +725,1097 @@
         "Pay your debts in laughter"
       ],
       "rites": [
-        "a joke, prank or performance for the Mask each session"
+        {
+          "id": "open_act",
+          "name": "The Opening Act",
+          "engine": true,
+          "check": {
+            "kind": "story"
+          },
+          "text": "Tell a joke to the room, out of a fight (a story button). Once a session: +1 Devotion."
+        },
+        {
+          "id": "a_good_prank",
+          "name": "A Good Prank",
+          "engine": false,
+          "text": "Pull a prank someone important will remember (the Narrator marks it kept)."
+        }
       ],
-      "taboos": [
-        "breaking a promise you made in jest",
-        "refusing a dare from an ally"
-      ],
-      "faith_required": {
-        "pray": 3,
-        "witnessed": 5,
-        "miracle": 7
+      "intervention": {
+        "trigger": "enemy_nat1",
+        "text": "An enemy rolls a natural 1 against you: it falls Prone.",
+        "effects": [
+          {
+            "op": "condition",
+            "condition": "prone",
+            "save": "none",
+            "target": "trigger_source"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
       },
-      "blessings": [
+      "hymns": [
         {
           "id": "lucky_break",
           "name": "Lucky Break",
-          "text": "Gain 1 Echo (max 3 still applies).",
+          "tier": 1,
+          "text": "An ally's next failed roll is rerolled at +5.",
+          "target": "ally",
           "effects": [
             {
-              "op": "resource",
-              "resource": "echo",
-              "value": 1,
-              "when": "on_blessing"
+              "op": "reroll",
+              "on": "fail",
+              "bonus": 5,
+              "uses": 1
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "switcheroo",
           "name": "Switcheroo",
-          "text": "Swap places with any creature in sight.",
+          "tier": 2,
+          "text": "Swap two units in sight within 6 (an enemy gets a Brain save).",
+          "target": "two_units",
           "effects": [
             {
-              "op": "narrator",
-              "note": "engine swaps positions; narrator rules on impossible tiles"
+              "op": "swap_places",
+              "range": 6,
+              "save": "brain"
             }
           ],
-          "adjudication": "hybrid",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         },
         {
           "id": "pratfall",
           "name": "Pratfall",
-          "text": "One enemy in sight is Prone and Confused (Brain save for Confused only).",
+          "tier": 3,
+          "text": "An enemy in sight makes a Body save or falls Prone and drops its held weapon.",
+          "target": "enemy",
           "effects": [
             {
               "op": "condition",
               "condition": "prone",
-              "target": "target",
-              "when": "on_blessing"
+              "save": "body"
             },
             {
               "op": "condition",
-              "condition": "confused",
-              "target": "target",
-              "when": "on_blessing"
+              "condition": "disarmed",
+              "save": "with_prone"
             }
           ],
-          "adjudication": "engine",
           "scales_with": "blessing_power",
+          "adjudication": "engine",
           "provisional": true
         }
       ],
-      "on_theme_examples": [
-        "a daring bluff",
-        "a stunt for an audience",
-        "a gamble against long odds"
+      "miracle": {
+        "id": "encore",
+        "name": "Encore",
+        "text": "Every ally may repeat the last action they took this round, for free, now.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "free_action",
+            "action": "repeat_last",
+            "scope": "allies"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "Ha! Done.",
+          "Sure, why not.",
+          "Tah-dah!"
+        ],
+        "refused": [
+          "Ooh, so close. Not.",
+          "Above your pay grade, sweetheart.",
+          "The audience boos."
+        ],
+        "taboo": [
+          "Boring!",
+          "Hiding? While your friend bleeds? Boo.",
+          "Mercy? In MY show?"
+        ],
+        "vow_kept": [
+          "You kept it! I'm almost proud.",
+          "Promise kept. Encore!",
+          "Well played."
+        ],
+        "vow_broken": [
+          "Broke it! Classic.",
+          "I knew you would. Everyone knew.",
+          "The crowd loved that, mind you."
+        ],
+        "witnessed": [
+          "Spotlight's on you, darling.",
+          "Showtime. Don't bore me.",
+          "I'm watching. Make it funny."
+        ],
+        "intervention": [
+          "Whoops!",
+          "Slippery floor. Who put that there?",
+          "Banana peel. Classic."
+        ],
+        "miracle": [
+          "ENCORE! ENCORE!",
+          "Again, from the top!",
+          "One more time, with feeling!"
+        ],
+        "conversion": [
+          "Welcome to the troupe!",
+          "Another clown for the circus.",
+          "Smile. That's the only rule."
+        ]
+      }
+    },
+    {
+      "id": "toll_keeper",
+      "name": "The Toll-Keeper",
+      "invented": true,
+      "faction": null,
+      "domain": "The dead, the last crossing, passage paid",
+      "costume": "A quiet Celestial in a boatman's oilskin with a coin box at the hip, who answers at dusk; the guide of the dead at the last crossing.",
+      "archetype": "the ferryman of the dead",
+      "accent": "#6FC7B8",
+      "likes": [
+        "mercy",
+        "heal",
+        "hold"
       ],
-      "source_note": "Invented; the World Bible says some Celestials troll for fun."
+      "taboos": [
+        "kill",
+        "desecrate"
+      ],
+      "taboo_notes": {
+        "kill": "only the kill of a surrendered or Downed creature"
+      },
+      "rule": "jealous",
+      "accord_terms": [
+        "Answers at dusk, or when someone is dying",
+        "Never ferries the living",
+        "Keeps the coin box closed"
+      ],
+      "tenets": [
+        "Pay what you owe",
+        "The dying are not to be hurried",
+        "Nobody crosses twice"
+      ],
+      "rites": [
+        {
+          "id": "vigil",
+          "name": "Vigil",
+          "engine": true,
+          "check": {
+            "kind": "after_rest"
+          },
+          "text": "Keep a vigil for the dead at a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+        },
+        {
+          "id": "pay_the_toll",
+          "name": "Pay the Toll",
+          "engine": false,
+          "text": "Put a coin on the eyes of someone who died near you (the Narrator marks it kept)."
+        }
+      ],
+      "intervention": {
+        "trigger": "ally_would_die",
+        "text": "An ally would drop to 0 HP: they stay at 1 HP instead.",
+        "effects": [
+          {
+            "op": "roll_floor",
+            "stat": "hp",
+            "value": 1,
+            "target": "trigger_ally"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "hymns": [
+        {
+          "id": "coin_for_the_ferry",
+          "name": "Coin for the Ferry",
+          "tier": 1,
+          "text": "A Downed ally in sight is stabilised and stands at 10 HP.",
+          "target": "downed_ally",
+          "effects": [
+            {
+              "op": "heal",
+              "value": 10,
+              "revive": true
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "hold_the_gate",
+          "name": "Hold the Gate",
+          "tier": 2,
+          "text": "Until your next turn, allies in sight can't drop below 1 HP.",
+          "target": "none",
+          "effects": [
+            {
+              "op": "roll_floor",
+              "stat": "hp",
+              "value": 1,
+              "until": "your_next_turn",
+              "scope": "allies_in_sight"
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "last_crossing",
+          "name": "Last Crossing",
+          "tier": 3,
+          "text": "An enemy in sight at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul instead).",
+          "target": "enemy",
+          "effects": [
+            {
+              "op": "execute",
+              "hp_frac": 0.25,
+              "save": "heart",
+              "boss_damage": 40
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        }
+      ],
+      "miracle": {
+        "id": "turned_back",
+        "name": "Turned Back at the Shore",
+        "text": "An ally who died this fight returns at 1 HP.",
+        "target": "dead_ally",
+        "effects": [
+          {
+            "op": "heal",
+            "value": 1,
+            "revive_dead": true
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "The boat waits. Not for you. Not yet.",
+          "Paid.",
+          "Go on, then."
+        ],
+        "refused": [
+          "Your coin is too light.",
+          "Not tonight.",
+          "The water is too high for that."
+        ],
+        "taboo": [
+          "You sent one over who had already yielded.",
+          "That one was not yours to send.",
+          "Leave the dead their rest."
+        ],
+        "vow_kept": [
+          "Your word was good.",
+          "A debt settled.",
+          "Kept. I will remember."
+        ],
+        "vow_broken": [
+          "You promised the river.",
+          "The toll rises.",
+          "Broken. The water heard."
+        ],
+        "witnessed": [
+          "I am at the shore. I see you.",
+          "Dusk has come.",
+          "The lantern is lit."
+        ],
+        "intervention": [
+          "Not yet. Turn back.",
+          "The boat is full tonight.",
+          "Stay a while longer."
+        ],
+        "miracle": [
+          "THE SHORE GIVES BACK WHAT IT TOOK.",
+          "Turn around. Walk home.",
+          "Once. Only once."
+        ],
+        "conversion": [
+          "You have a seat on the boat now. Not today.",
+          "Welcome. Keep your coin.",
+          "The river knows your name now."
+        ]
+      }
+    },
+    {
+      "id": "mother_ember",
+      "name": "Mother Ember",
+      "invented": true,
+      "faction": null,
+      "domain": "The hearth, home, the ones who come back",
+      "costume": "The hearth-mother: a kettle always on, an apron, flour on the sleeves; calls everyone 'love'.",
+      "archetype": "the hearth-mother",
+      "accent": "#FF8A3D",
+      "likes": [
+        "heal",
+        "protect",
+        "supply"
+      ],
+      "taboos": [
+        "betray",
+        "cower"
+      ],
+      "rule": "open",
+      "accord_terms": [
+        "Answers anyone who is cold or hungry",
+        "Never refuses a guest",
+        "Keeps the fire lit"
+      ],
+      "tenets": [
+        "Nobody eats alone",
+        "Mind your own",
+        "Come home"
+      ],
+      "rites": [
+        {
+          "id": "share_a_meal",
+          "name": "Share a Meal",
+          "engine": true,
+          "check": {
+            "kind": "tithe_item",
+            "category": "food"
+          },
+          "text": "Give a ration to the squad's table (a story button: one food item from your pack). Once a session: +1 Devotion."
+        },
+        {
+          "id": "keep_the_fire",
+          "name": "Keep the Fire",
+          "engine": false,
+          "text": "Keep a fire lit through a cold night for others (the Narrator marks it kept)."
+        }
+      ],
+      "intervention": {
+        "trigger": "ally_below_quarter",
+        "text": "An ally drops below a quarter HP: they heal 15.",
+        "effects": [
+          {
+            "op": "heal",
+            "value": 15,
+            "target": "trigger_ally"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "hymns": [
+        {
+          "id": "warm_hands",
+          "name": "Warm Hands",
+          "tier": 1,
+          "text": "An ally in sight heals 40.",
+          "target": "ally",
+          "effects": [
+            {
+              "op": "heal",
+              "value": 40
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "hearthlight",
+          "name": "Hearthlight",
+          "tier": 2,
+          "text": "A 3×3 area in sight: allies starting a turn in it heal 10, for 3 rounds.",
+          "target": "tile",
+          "effects": [
+            {
+              "op": "aura",
+              "area": "3x3",
+              "rounds": 3,
+              "effects": [
+                {
+                  "op": "heal",
+                  "value": 10,
+                  "when": "turn_start",
+                  "scope": "allies"
+                }
+              ]
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "feed_the_fire",
+          "name": "Feed the Fire",
+          "tier": 3,
+          "text": "An ally gets +1 AP now (the ceiling applies) and loses Weakened and Slowed.",
+          "target": "ally",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap",
+              "value": 1
+            },
+            {
+              "op": "cleanse",
+              "condition": [
+                "weakened",
+                "slowed"
+              ]
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        }
+      ],
+      "miracle": {
+        "id": "everyone_home",
+        "name": "Everyone Home",
+        "text": "The whole squad heals to full, and Downed allies stand.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "heal",
+            "value": "full",
+            "revive": true,
+            "scope": "allies"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "There you are, love.",
+          "Hush now. Better?",
+          "Eat something after."
+        ],
+        "refused": [
+          "Not that, love. Not yet.",
+          "Ask me again when you've rested.",
+          "Oh, sweetheart. No."
+        ],
+        "taboo": [
+          "We don't turn on our own in this house.",
+          "Hiding while they need you? Come out.",
+          "I'm not angry. I'm disappointed."
+        ],
+        "vow_kept": [
+          "See? I knew you would.",
+          "That's my good one.",
+          "Kept your word. Have a biscuit."
+        ],
+        "vow_broken": [
+          "You broke your promise, love.",
+          "We'll talk about this at home.",
+          "Oh, love."
+        ],
+        "witnessed": [
+          "Mother's watching, love.",
+          "I can see you from the kitchen.",
+          "Mind your manners now."
+        ],
+        "intervention": [
+          "Up you get, love.",
+          "Not on my watch.",
+          "Here. Hold still."
+        ],
+        "miracle": [
+          "EVERYONE HOME. NOW.",
+          "Nobody's left out in the cold tonight.",
+          "Supper's ready. All of you."
+        ],
+        "conversion": [
+          "Welcome home, love.",
+          "Pull up a chair.",
+          "There's always room at the table."
+        ]
+      }
+    },
+    {
+      "id": "old_overcast",
+      "name": "Old Overcast",
+      "invented": true,
+      "faction": null,
+      "domain": "Thunder, the sky, a good loud entrance",
+      "costume": "The thunder sky-father, played big and theatrical: a beard of cloud, a lightning rod carried like a sceptre. Has a rival Thunder-Father (a future patron).",
+      "archetype": "the thunder sky-father",
+      "accent": "#9FB8FF",
+      "likes": [
+        "storm",
+        "kill",
+        "hold"
+      ],
+      "taboos": [
+        "flee",
+        "cower"
+      ],
+      "rule": "jealous",
+      "accord_terms": [
+        "Answers loudly or not at all",
+        "Never shares a storm",
+        "Keeps the rival out of his sky"
+      ],
+      "tenets": [
+        "Stand in the rain",
+        "Strike first",
+        "Never run from weather"
+      ],
+      "rites": [
+        {
+          "id": "stand_in_the_storm",
+          "name": "Stand in the Storm",
+          "engine": true,
+          "check": {
+            "kind": "story"
+          },
+          "text": "Bellow a challenge at the sky, out of a fight (a story button). Once a session: +1 Devotion."
+        },
+        {
+          "id": "best_the_rival",
+          "name": "Best the Rival",
+          "engine": false,
+          "text": "Outdo a worshipper of the rival Thunder-Father (the Narrator marks it kept)."
+        }
+      ],
+      "intervention": {
+        "trigger": "you_kill",
+        "text": "You kill an enemy: 20 Storm to the nearest other enemy.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "hp",
+            "value": -20,
+            "damage_type": "lightning",
+            "target": "nearest_other_enemy"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "hymns": [
+        {
+          "id": "thunderclap",
+          "name": "Thunderclap",
+          "tier": 1,
+          "text": "Every enemy within 2 of a tile in sight is pushed 1 and makes a Heart save or is Shaken.",
+          "target": "tile",
+          "effects": [
+            {
+              "op": "knockback",
+              "tiles": 1,
+              "radius": 2
+            },
+            {
+              "op": "condition",
+              "condition": "shaken",
+              "save": "heart",
+              "radius": 2
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "lightning_rod",
+          "name": "Lightning Rod",
+          "tier": 2,
+          "text": "50 Elemental (Storm) to an enemy in sight, chaining to 1 more within 2 at half.",
+          "target": "enemy",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "hp",
+              "value": -50,
+              "damage_type": "lightning"
+            },
+            {
+              "op": "chain_damage",
+              "jumps": 1,
+              "range": 2,
+              "mult": 0.5
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "gather_the_clouds",
+          "name": "Gather the Clouds",
+          "tier": 3,
+          "text": "Until your next turn, allies' Storm riders count one stage higher.",
+          "target": "none",
+          "effects": [
+            {
+              "op": "state",
+              "state": "clouds_gathered",
+              "until": "your_next_turn",
+              "scope": "allies"
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        }
+      ],
+      "miracle": {
+        "id": "the_sky_answers",
+        "name": "The Sky Answers",
+        "text": "A 3×3 area in sight takes 80 Elemental (Storm), and everyone in it is Shaken.",
+        "target": "tile",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "hp",
+            "value": -80,
+            "damage_type": "lightning",
+            "area": "3x3"
+          },
+          {
+            "op": "condition",
+            "condition": "shaken",
+            "save": "none",
+            "area": "3x3"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "BEHOLD!",
+          "THE SKY HEARS YOU!",
+          "Hah! Good."
+        ],
+        "refused": [
+          "Too small a voice for so large a sky!",
+          "NO! Shout louder next time.",
+          "The clouds decline."
+        ],
+        "taboo": [
+          "RUNNING? From a little weather?",
+          "Hiding is for drizzle.",
+          "I saw that. The whole sky saw that."
+        ],
+        "vow_kept": [
+          "A vow like thunder: kept!",
+          "You stood. I approve.",
+          "Hah! As promised."
+        ],
+        "vow_broken": [
+          "You broke it like cheap pottery!",
+          "Thunder never breaks its word. Only you.",
+          "Disgraceful. Even the rain is embarrassed."
+        ],
+        "witnessed": [
+          "ALL EYES ON YOU, SMALL ONE!",
+          "The sky is watching!",
+          "Now we have an audience!"
+        ],
+        "intervention": [
+          "ANOTHER!",
+          "The sky wants seconds!",
+          "Strike while it's lit!"
+        ],
+        "miracle": [
+          "THE SKY ANSWERS!",
+          "TREMBLE!",
+          "This is how it's done!"
+        ],
+        "conversion": [
+          "You are under my sky now.",
+          "Welcome. Speak up, always.",
+          "My rival will hate this. Excellent."
+        ]
+      }
+    },
+    {
+      "id": "the_matchmaker",
+      "name": "The Matchmaker",
+      "invented": true,
+      "faction": null,
+      "domain": "Love, bonds, the people you'd die for",
+      "costume": "The love goddess, played as a wedding planner: a clipboard, a seating chart, and spools of red thread.",
+      "archetype": "the love goddess",
+      "accent": "#E8485F",
+      "likes": [
+        "protect",
+        "mercy",
+        "heal"
+      ],
+      "taboos": [
+        "betray",
+        "kill"
+      ],
+      "taboo_notes": {
+        "kill": "only the kill of a surrendered or Downed creature"
+      },
+      "rule": "open",
+      "accord_terms": [
+        "Answers anyone in love, or anyone who should be",
+        "Never breaks a bond she tied",
+        "Plans everything"
+      ],
+      "tenets": [
+        "Hold on to each other",
+        "Forgive once",
+        "Show up"
+      ],
+      "rites": [
+        {
+          "id": "tie_a_thread",
+          "name": "Tie a Thread",
+          "engine": true,
+          "check": {
+            "kind": "story"
+          },
+          "text": "Tie a red thread on a friend's wrist, out of a fight (a story button). Once a session: +1 Devotion."
+        },
+        {
+          "id": "bring_two_together",
+          "name": "Bring Two Together",
+          "engine": false,
+          "text": "Reconcile two people at odds (the Narrator marks it kept)."
+        }
+      ],
+      "intervention": {
+        "trigger": "ally_hit_adjacent",
+        "text": "An ally is hit while next to you: half the damage moves to you.",
+        "effects": [
+          {
+            "op": "damage_share",
+            "share": 0.5,
+            "to": "self"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "hymns": [
+        {
+          "id": "red_thread",
+          "name": "Red Thread",
+          "tier": 1,
+          "text": "Link two allies in sight for 2 rounds; damage to either is split between them.",
+          "target": "two_allies",
+          "effects": [
+            {
+              "op": "damage_share",
+              "share": 0.5,
+              "rounds": 2
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "sweet_nothings",
+          "name": "Sweet Nothings",
+          "tier": 2,
+          "text": "An enemy in sight makes a Heart save or can't attack you or your linked allies next turn.",
+          "target": "enemy",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "smitten",
+              "save": "heart",
+              "rounds": 1
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "together",
+          "name": "Together",
+          "tier": 3,
+          "text": "Two adjacent allies each get +2 to hit and +2 Defense until your next turn.",
+          "target": "two_allies",
+          "effects": [
+            {
+              "op": "attack_mod",
+              "value": 2
+            },
+            {
+              "op": "defense_bonus",
+              "value": 2
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        }
+      ],
+      "miracle": {
+        "id": "love_conquers",
+        "name": "Love Conquers",
+        "text": "Every non-boss enemy in sight makes a Heart save or surrenders.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "state",
+            "state": "surrendered",
+            "save": "heart",
+            "scope": "enemies_in_sight",
+            "not": "boss"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "Perfect. Just perfect.",
+          "Done, darling. Next!",
+          "Oh, you two."
+        ],
+        "refused": [
+          "Not on the seating chart, sorry.",
+          "That is NOT in the plan.",
+          "Darling, no."
+        ],
+        "taboo": [
+          "You did NOT just hit your own date.",
+          "They had already said yes. To surrender.",
+          "I am crossing you off the guest list."
+        ],
+        "vow_kept": [
+          "Promises kept are my favourite kind.",
+          "Swoon.",
+          "You kept it. I'm going to cry."
+        ],
+        "vow_broken": [
+          "You broke a promise. In front of the guests?",
+          "Unforgivable. Well. Almost.",
+          "My thread, all tangled."
+        ],
+        "witnessed": [
+          "All eyes on the happy couple!",
+          "Smile, you're on my chart.",
+          "Best behaviour, darling."
+        ],
+        "intervention": [
+          "Oh no you don't.",
+          "Share the load, darling.",
+          "I'll take that, thank you."
+        ],
+        "miracle": [
+          "LOVE CONQUERS, DARLING!",
+          "Everyone, put down your weapons and hug.",
+          "Truly. Madly. Deeply."
+        ],
+        "conversion": [
+          "Welcome to the wedding party!",
+          "A new name on my guest list.",
+          "You'll never walk alone now."
+        ]
+      }
+    },
+    {
+      "id": "counting_weaver",
+      "name": "The Counting Weaver",
+      "invented": true,
+      "faction": null,
+      "domain": "Fate, the count, what is owed",
+      "costume": "The fate-spinner, played as an auditor: a loom of ledger tape and an abacus of beads that clicks while she listens.",
+      "archetype": "the fate-spinner",
+      "accent": "#C9B68A",
+      "likes": [
+        "hold",
+        "trick",
+        "judge"
+      ],
+      "taboos": [
+        "flee",
+        "betray"
+      ],
+      "rule": "open",
+      "accord_terms": [
+        "Answers anyone who keeps an honest count",
+        "Never alters a thread already woven",
+        "Bills in arrears"
+      ],
+      "tenets": [
+        "Everything is counted",
+        "Debts come due",
+        "Keep your place in the pattern"
+      ],
+      "rites": [
+        {
+          "id": "settle_accounts",
+          "name": "Settle Accounts",
+          "engine": true,
+          "check": {
+            "kind": "after_rest"
+          },
+          "text": "Read out every debt you owe after a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+        },
+        {
+          "id": "repay_a_debt",
+          "name": "Repay a Debt",
+          "engine": false,
+          "text": "Pay back what you owe someone, in full (the Narrator marks it kept)."
+        }
+      ],
+      "intervention": {
+        "trigger": "enemy_crits_you",
+        "text": "An enemy crits you: it becomes a normal hit.",
+        "effects": [
+          {
+            "op": "negate_failure",
+            "what": "crit_against_self"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "hymns": [
+        {
+          "id": "foreknowing",
+          "name": "Foreknowing",
+          "tier": 1,
+          "text": "The next attack against an ally in sight misses.",
+          "target": "ally",
+          "effects": [
+            {
+              "op": "state",
+              "state": "foreknown",
+              "uses": 1
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "unravel",
+          "name": "Unravel",
+          "tier": 2,
+          "text": "Every buff, shield and helpful state on an enemy in sight ends.",
+          "target": "enemy",
+          "effects": [
+            {
+              "op": "aura_break",
+              "scope": "buffs_and_shield"
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        },
+        {
+          "id": "cut_short",
+          "name": "Cut Short",
+          "tier": 3,
+          "text": "An enemy in sight makes a Heart save or loses its next turn (bosses lose 2 AP).",
+          "target": "enemy",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "stunned",
+              "save": "heart",
+              "rounds": 1,
+              "boss": {
+                "op": "ap_loss",
+                "value": 2
+              }
+            }
+          ],
+          "scales_with": "blessing_power",
+          "adjudication": "engine",
+          "provisional": true
+        }
+      ],
+      "miracle": {
+        "id": "rewoven",
+        "name": "Rewoven",
+        "text": "Your squad takes another turn, now, in initiative order.",
+        "target": "none",
+        "effects": [
+          {
+            "op": "free_action",
+            "action": "extra_turn",
+            "scope": "allies"
+          }
+        ],
+        "scales_with": "blessing_power",
+        "adjudication": "engine",
+        "provisional": true
+      },
+      "lines": {
+        "answered": [
+          "Counted.",
+          "The thread holds. Proceed.",
+          "Entered in the ledger."
+        ],
+        "refused": [
+          "That figure does not balance.",
+          "Insufficient credit.",
+          "The pattern refuses the stitch."
+        ],
+        "taboo": [
+          "Running is a debt, too.",
+          "Betrayal. Recorded. Permanently.",
+          "Your account is overdrawn."
+        ],
+        "vow_kept": [
+          "Promise kept. Balance restored.",
+          "A tidy entry.",
+          "Paid in full."
+        ],
+        "vow_broken": [
+          "Defaulted.",
+          "The thread snaps.",
+          "Interest will be charged."
+        ],
+        "witnessed": [
+          "I am counting every move now.",
+          "Audit in progress.",
+          "The abacus is listening."
+        ],
+        "intervention": [
+          "That entry is void.",
+          "Recounted. In your favour.",
+          "An error in the ledger, corrected."
+        ],
+        "miracle": [
+          "REWOVEN.",
+          "Once more from the last knot.",
+          "The pattern allows it. Once."
+        ],
+        "conversion": [
+          "Your thread is in my loom now.",
+          "Account opened.",
+          "Welcome to the ledger."
+        ]
+      }
     }
   ]
 }

@@ -223,7 +223,8 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
 }
 
 // ---------- prayer (spec: Patrons and prayer) ----------
-export const PATRONS: any[] = (patronsJ as any).items || [];
+// Rules 1.6 (faith.ts): a patron's Hymns are what the older code calls its Blessings (Blessed Shells, Stolen Fire).
+export const PATRONS: any[] = ((patronsJ as any).items || []).map((p: any) => ({ ...p, blessings: p.hymns || p.blessings || [] }));
 export const PATRON: Record<string, any> = Object.fromEntries(PATRONS.map((p) => [p.id, p]));
 /** Devotion (0-10, starts at 3 when the pact is made). */
 export const devotionOf = (c: Character) => Math.max(0, Math.min(10, c.devotion ?? 3));
@@ -266,6 +267,8 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
   let out = '', left = false;
   for (const e of bl.effects || []) {
     if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : harm(cb, rng, u, t, -e.value * power, 'soul');
+    else if (e.op === 'heal' && typeof e.value === 'number') out += heal(t, e.value * power, cb, u, 'blessing'); // rules 1.6 data
+    else if (e.op === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side });
     else if (e.op === 'cleanse') { const ids = Object.keys(t.conds || {}); for (const id of ids) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; if (ids.length) tendHook.f?.(cb, u, t); } // tending others (rules 1.5, 3.3)

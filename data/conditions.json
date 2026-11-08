@@ -532,22 +532,18 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your patron is watching: on-theme actions get +2, off-theme ones cost 1 Devotion each.",
+      "text": "Your patron is watching (rules 1.6): actions with a tag your patron likes get +2; taboo actions cost double Devotion.",
       "effects": [
         {
-          "op": "tn_mod",
-          "context": "on_theme_actions",
+          "op": "attack_mod",
+          "context": "liked_tag",
           "value": 2
         },
         {
           "op": "resource",
           "resource": "devotion",
-          "value": -1,
-          "when": "off_theme_action"
-        },
-        {
-          "op": "narrator",
-          "note": "judges on-theme vs off-theme"
+          "value": "taboo_x2",
+          "when": "taboo_tag"
         }
       ],
       "duration": {
@@ -557,7 +553,7 @@
         "your next turn"
       ],
       "stacks": false,
-      "adjudication": "hybrid"
+      "adjudication": "engine"
     },
     {
       "id": "downed",
@@ -975,6 +971,29 @@
       ],
       "stacks": false,
       "set_by": "sigils:sharpen",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "smitten",
+      "name": "Smitten",
+      "kind": "debuff",
+      "family": "heart",
+      "save": "heart",
+      "text": "You can't attack the one who smote you, or the allies linked to them (The Matchmaker's Sweet Nothings).",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "attack_source_or_linked"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
       "adjudication": "engine",
       "provisional": true
     }
