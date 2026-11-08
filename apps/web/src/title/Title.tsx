@@ -9,7 +9,8 @@ import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions
 import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';
 import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx';
-import { NARRATOR_VOICES, voicePrefs, setVoicePrefs, onVoice } from '../game/voice';
+import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
+import { VoiceSettings } from '../game/voiceSettings';
 import { resetTips } from '../game/tips';
 import { CREDITS } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
@@ -54,6 +55,8 @@ export function Title() {
   const st = React.useSyncExternalStore(subscribe, getState);
   const [, rerender] = React.useReducer((x: number) => x + 1, 0);
   React.useEffect(() => { const a = onUiPrefs(rerender), b = onVoice(rerender); return () => { a(); b(); }; }, []);
+  // The Narrator's voice: a player who opted in gets it downloading (or loading from the cache) here, before any game.
+  React.useEffect(() => { detectInstalled().then(() => { if (voicePrefs().install) loadVoice(); }); }, []);
   const roomParam = React.useMemo(() => (new URLSearchParams(location.search).get('room') || '').toUpperCase().slice(0, 6), []);
   const [pressed, setPressed] = React.useState(() => { try { return sessionStorage.getItem(PRESSED) === '1'; } catch { return false; } });
   // Coming back from the creation screen reopens Characters.
@@ -496,7 +499,7 @@ function SavedPanel() {
   </>;
 }
 function SettingsPanel() {
-  const p = uiPrefs(), v = voicePrefs();
+  const p = uiPrefs();
   const row: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', fontSize: 14 };
   return <>
     <h2 style={h2}>Settings</h2>
@@ -505,10 +508,8 @@ function SettingsPanel() {
     <label style={row}>Interface sounds <input type="range" min={0} max={100} value={p.sfx} onChange={(e) => setUiPrefs({ sfx: Number(e.target.value) })} aria-label="Interface sounds volume" /> <span style={{ color: ink.muted }}>{p.sfx}%</span></label>
     <label style={row}>Title music <input type="range" min={0} max={100} value={p.music} onChange={(e) => setUiPrefs({ music: Number(e.target.value) })} aria-label="Title music volume" /> <span style={{ color: ink.muted }}>{p.music}%</span></label>
     <label style={row}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute interface sounds and title music</label>
-    <span style={lab}>THE NARRATOR'S VOICE</span>
-    <label style={row}><input type="checkbox" checked={v.auto} onChange={(e) => setVoicePrefs({ auto: e.target.checked })} /> Read new lines aloud</label>
-    <label style={row}>Voice <select value={v.voice} onChange={(e) => setVoicePrefs({ voice: e.target.value })} style={{ ...field, minHeight: 36, fontSize: 14 }}>{NARRATOR_VOICES.map(([id, n]) => <option key={id} value={id}>{n}</option>)}</select></label>
-    <label style={row}>Voice volume <input type="range" min={0} max={100} value={v.volume} onChange={(e) => setVoicePrefs({ volume: Number(e.target.value) })} aria-label="Voice volume" /></label>
+    <span style={lab}>VOICE</span>
+    <VoiceSettings />
     <span style={lab}>COMFORT</span>
     <label style={row}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
     <div style={row}><button type="button" style={btn} onClick={() => { resetTips(); alert('Tips will show again.'); }}>Show tips again</button></div>

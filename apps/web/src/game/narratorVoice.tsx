@@ -9,7 +9,7 @@ export function NarratorVoice({ game }: { game: GameState | null }) {
   const entries = game?.story.entries || [];
   React.useEffect(() => {
     if (!game || game.phase === 'lobby') return;
-    if (voicePrefs().auto) loadVoice(); // start the one-time download early, before the first line
+    if (voicePrefs().install) loadVoice(); // installed (or opted in): load it from the cache before the first line
     if (!seen.current) { seen.current = new Set(entries.map((e) => e.id)); return; }
     const fresh = entries.filter((e) => !seen.current!.has(e.id));
     for (const e of fresh) seen.current.add(e.id);
