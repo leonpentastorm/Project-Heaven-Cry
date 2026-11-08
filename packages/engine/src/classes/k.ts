@@ -837,7 +837,7 @@ register({
 // back when the form runs out. Grand damage is flat (10 lava, 15 storm). Harmful forms hit everyone inside but you
 // (Earthed); the ones that say enemies or allies keep to them. The staff item doesn't exist yet (any Evoker plants).
 // The forms (sigils.json 'grand': the 23 that survive 1.2, RETURN's Sanctuary gone, and the 17 words new in 1.4) run on
-// the hooks below. The Grand form pass (decision log, spec items 551-555) gave each new word its own job, and SPREAD,
+// the hooks below. The Grand form pass (decision log, spec items 582-586) gave each new word its own job, and SPREAD,
 // TWICE, CONDENSE and PUSH forms the engine runs (no more Narrator rulings for Bloom and the Echo field).
 const grandZones = (cb: Combat, u?: Unit) => (cb.zones || []).filter((z) => (z.kind as string) === 'grand' && (!u || z.by === u.id));
 const inZ = (z: Zone, k: string) => z.tiles.includes(k);

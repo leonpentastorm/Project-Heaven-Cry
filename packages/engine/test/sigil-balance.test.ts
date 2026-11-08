@@ -1,4 +1,4 @@
-// The Sigil damage balance pass (docs/design/balance-targets.md; spec items 556-559): Elemental power on the Physical
+// The Sigil damage balance pass (docs/design/balance-targets.md; spec items 587-590): Elemental power on the Physical
 // slope, Sigil and Elemental bonuses added (not multiplied), one main element per spell, and the 350 / 500 ceilings.
 import { describe, expect, it } from 'vitest';
 import { elementalMult, sigilMult, SIGIL, type Character } from '../src';
