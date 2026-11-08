@@ -17,6 +17,7 @@ export async function player(browser, name) {
 /** Host a room from the title screen: NEW GAME, then your name, then Open a room. */
 export async function hostAs(page, name) {
   await page.goto(BASE);
+  await page.getByRole('button', { name: 'NEW GAME', exact: true }).first().waitFor({ timeout: 90000 });
   await click(page, 'NEW GAME', { exact: true });
   await page.getByPlaceholder('Leon').fill(name);
   await click(page, 'Open a room ›');

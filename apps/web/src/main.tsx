@@ -59,6 +59,8 @@ const motion = document.createElement('style'); motion.id = 'phc-global-motion';
 // Every image the game uses: thumbnails first, then the large (zoom) sizes. Failed loads count as done.
 const all = Object.entries(ASSETS as Record<string, string>);
 const URLS = [...all.filter(([k]) => !k.endsWith('-lg')), ...all.filter(([k]) => k.endsWith('-lg'))].map(([, u]) => u);
+/** The title opens once the small sizes are in; the large (zoom) sizes keep loading in the background. */
+const SMALL = all.filter(([k]) => !k.endsWith('-lg')).length;
 const MARK = (ASSETS as Record<string, string>)['wick-welcome'];
 
 function preload(onTick: (n: number) => void): Promise<void> {
@@ -70,14 +72,14 @@ function preload(onTick: (n: number) => void): Promise<void> {
     return (img.decode ? img.decode() : new Promise<void>((ok, bad) => { img.onload = () => ok(); img.onerror = bad; }))
       .catch(() => {}).then(() => { onTick(++done); return one(); });
   };
-  return Promise.all(Array.from({ length: 8 }, one)).then(() => {});
+  return Promise.all(Array.from({ length: 16 }, one)).then(() => {});
 }
 
 function Loader() {
   const [n, setN] = useState(0), [ready, setReady] = useState(false);
-  useEffect(() => { preload(setN).then(() => setTimeout(() => setReady(true), 250)); }, []);
+  useEffect(() => { let open = false; const go = () => { if (!open) { open = true; setTimeout(() => setReady(true), 250); } }; preload((k) => { setN(k); if (k >= SMALL) go(); }).then(go); }, []);
   if (ready) return <App />;
-  const pct = URLS.length ? Math.round((n / URLS.length) * 100) : 100;
+  const total = SMALL || URLS.length, pct = total ? Math.min(100, Math.round((n / total) * 100)) : 100;
   return (
     <div role="progressbar" aria-label="Loading the game's art" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}
       style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24 }}>
@@ -88,7 +90,7 @@ function Loader() {
           <div style={{ width: pct + '%', height: '100%', background: '#FFFFFF', transition: 'width 120ms linear' }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#A3AEC2' }}>
-          <span>LOADING ART · {n} / {URLS.length}</span><span>{pct}%</span>
+          <span>LOADING ART · {Math.min(n, total)} / {total}</span><span>{pct}%</span>
         </div>
         <button onClick={() => setReady(true)} style={{ minHeight: 42, padding: '0 16px', borderRadius: 10, border: '1px solid #232D3F', background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontWeight: 600, cursor: 'pointer' }}>
           Skip, load as I go
