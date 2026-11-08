@@ -3,7 +3,7 @@
 // tools, gear up between waves, cast a Sigil, lose on purpose and Retry, then leave back to the room (not the title),
 // and never call a Narrator (no provider host is contacted, the Narrator is never busy).
 // Screenshots land in e2e/shots/sandbox-*.png.
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, pickAction, BASE, OUT } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -141,6 +141,21 @@ ok('Start the fight brings wave 2: ' + g.combat.units.filter((u) => u.side === '
 await p.waitForTimeout(2600); await dismissCut();
 for (let i = 0; i < 12; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur?.charId === me.id) break; if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await p.waitForTimeout(200); }
 g = await G();
+// A focus counts only in a hand (spec: Hands 2, items 630 and 633): stow the Evoker (the tools), and the Sigil buttons
+// grey with the reason; the Utility tab's Hold the Evoker takes it back into the off hand for 1 AP.
+await act({ type: 'sandbox/unequip', charId: me.id, slot: 'off' });
+await p.waitForTimeout(300); await dismissCut();
+if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {}); await p.waitForTimeout(200); }
+await pickAction(p, /^Draw a glyph/).catch(() => {});
+const drawTxt = ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().getAttribute('title').catch(() => '')) || '') + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
+ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an Evoker in hand\./.test(drawTxt));
+const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
+await pickAction(p, /^Hold the Evoker/);
+await p.getByRole('button', { name: /^Confirm/ }).first().click(); await p.waitForTimeout(400);
+g = await G();
+const u0 = g.combat.units.find((u) => u.charId === me.id);
+ok('Hold the Evoker (Utility, 1 AP): back in the off hand (' + g.characters[me.id].offHand?.id + ', AP ' + ap0 + ' → ' + u0.ap + ', ' + g.combat.log.at(-1) + ')', g.characters[me.id].offHand?.id === 'evoker' && u0.mg?.evoker && u0.ap === ap0 - 1);
+await snap('05b-hold-evoker');
 const u1 = g.combat.units.find((u) => u.charId === me.id);
 const drew = await act({ type: 'combat/draw', unitId: u1.id, word: 'fire', tile: ref(u1.pos) });
 await p.waitForTimeout(300);
