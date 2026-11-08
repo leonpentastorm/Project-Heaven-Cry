@@ -770,7 +770,7 @@ register({
         // Rules 1.6: a stolen Hymn is prayed by dice, as an Atheist prays a learned one (d20 + Will Power vs 14/16/18).
         const key = pick.p.id + '.' + pick.bl.id, was = { faith: c.skills.faith, patron: c.patron, devotion: c.devotion, belief: c.belief, hymns: c.hymns };
         c.skills.faith = c.skills.will_power || 0; c.belief = { kind: 'atheist' }; c.patron = null; c.hymns = [...(c.hymns || []), key];
-        try { return combatPray(cb, rng, u, { kind: 'hymn', id: key, targetId: args.targetId, targetId2: (args as any).targetId2, tile: args.tile }, gameOf(h)!); }
+        try { return combatPray(cb, rng, u, { kind: 'hymn', id: key, targetId: args.targetId }, gameOf(h)!); }
         finally { if (was.faith == null) delete (c.skills as any).faith; else c.skills.faith = was.faith; c.patron = was.patron; c.devotion = was.devotion; c.belief = was.belief; c.hymns = was.hymns; if (was.belief === undefined) delete c.belief; if (was.hymns === undefined) delete c.hymns; }
       },
     },
