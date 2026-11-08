@@ -104,6 +104,17 @@ describe('the grid preview', () => {
     // Out of reach: the engine's reason on the chip.
     expect(aimOverlay(cb, u, 'sb', '15,5').chip).toMatch(/OUT OF REACH/);
   });
+  it('everyone affected past the area (section 7): a held Storm bolt at stage 2 marks its chain target CHAIN with its number', () => {
+    const { cb, u } = fight();
+    u.mg.designs.push({ id: 'st', name: 'Storm Bolt', school: 'damage', modules: [], tone: 'storm' }); u.ap = 9;
+    expect(beginOutburst(cb, rng, u, 'st', undefined, true)).toBeNull(); pumpOutburst(cb, rng, u); pumpOutburst(cb, rng, u);
+    const foe = cb.units.find((x: any) => x.name === 'Raider'), keel = cb.units.find((x: any) => x.name === 'Keel');
+    const o = aimOverlay(cb, u, 'held', foe.pos);
+    expect(o.marks.get(foe.id)!.text).toMatch(/^−\d+ · \d+%$/);
+    expect(o.marks.get(keel.id)).toMatchObject({ tag: 'ENEMY' }); expect(o.marks.get(keel.id)!.text).toMatch(/^CHAIN −\d+$/);
+    expect(o.marks.get(keel.id)!.title).toMatch(/chain\): .*Storm chains from Raider at half/);
+    expect(o.chip).toMatch(/2 ENEMIES/);
+  });
   it('holding (not aiming): the reach ring faint and, for an elemental tone, the aura\'s adjacent tiles', () => {
     const { cb, u } = fight();
     beginOutburst(cb, rng, u, 'fb', undefined, true);

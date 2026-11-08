@@ -174,6 +174,7 @@ export interface HeartOverlay {
 const EMPTY: HeartOverlay = { on: false, mode: 'idle', form: 'bolt', isArea: false, ink: SOUL_INK, reach: new Set(), area: new Set(), aim: null, aura: new Set(), marks: new Map(), ok: false, why: '', chip: '', summary: [], plan: null };
 export const noOverlay = (): HeartOverlay => ({ ...EMPTY, reach: new Set(), area: new Set(), aura: new Set(), marks: new Map(), summary: [] });
 const FAM_WORD: Record<string, string> = { body: 'Body', brain: 'Brain', heart: 'Heart' };
+const VIA_WORD: Record<string, string> = { chain: 'CHAIN', spread: 'SPREAD', push: 'PUSHED', arc: 'ARC' };
 /** One affected creature's line: "−42 (48 − armour) · 65% to hit · Body save TN 14 · Burning 2 rounds." */
 export function affectedMark(a: OutburstAffected): UnitMark {
   const bits: string[] = [];
@@ -185,10 +186,12 @@ export function affectedMark(a: OutburstAffected): UnitMark {
   if (a.second) bits.push(a.second);
   if (a.rider && !/^No rider/.test(a.rider)) bits.push(a.rider.replace(/\.$/, ''));
   const harm = a.dmg > 0 || a.saves.length > 0;
-  const tag = a.self ? 'YOU' : a.enemy ? 'ENEMY' : harm ? 'ALLY!' : 'ALLY';
-  const ink = a.self ? WHITE : a.enemy ? RED : harm ? RED : GREEN;
-  const short = a.dmg ? '−' + a.dmgAfterArmour + (a.roll ? ' · ' + a.roll.pct + '%' : '') : a.heal ? '+' + a.heal : a.shield ? '+' + a.shield + ' SH' : a.saves.length ? 'SAVE ' + a.saves[0].tn : '';
-  return { tag, text: short, ink, harm, title: a.name + ' (' + tag.toLowerCase().replace('!', ', friendly fire') + '): ' + (bits.join(' · ') || 'touched') + '.' };
+  // Past the area (rules 1.5 section 7: everyone affected): how it reaches them, in words on the chip.
+  const via = a.via && a.via !== 'area' ? VIA_WORD[a.via] || '' : '', harm2 = harm || a.via === 'push' || a.via === 'spread';
+  const num = a.dmg ? '−' + a.dmgAfterArmour + (a.roll ? ' · ' + a.roll.pct + '%' : '') : a.heal ? '+' + a.heal : a.shield ? '+' + a.shield + ' SH' : a.saves.length ? 'SAVE ' + a.saves[0].tn : '';
+  const short = [via, num].filter(Boolean).join(' ');
+  const tag = a.self ? 'YOU' : a.enemy ? 'ENEMY' : harm2 ? 'ALLY!' : 'ALLY', ink = a.self ? WHITE : a.enemy ? RED : harm2 ? RED : GREEN;
+  return { tag, text: short, ink, harm: harm2, title: a.name + ' (' + tag.toLowerCase().replace('!', ', friendly fire') + (via ? ', ' + via.toLowerCase() : '') + '): ' + (bits.join(' · ') || 'touched') + '.' };
 }
 /** The overlay for an aimed release (a snap cast of a design, or the held one) at `aim` (aura: no aim). */
 export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string | null, mods?: string[]): HeartOverlay {

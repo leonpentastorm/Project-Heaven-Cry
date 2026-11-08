@@ -129,6 +129,7 @@ MAP OBJECTS AND POINTS OF INTEREST
 LOOT
 - Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a body searched, a locker opened, a reward). Relic and celestial are rare events.
 - Item ids: ${Object.keys(ITEM).join(', ')}.
+- Plates teach magic: a sigil_plate has one Sigil word id in note (fire); a heart_plate has one Outburst lesson in note: a tone (fire, storm, frost, stone, gale, acid), a school or a module id. The player studies it for a scene to learn it. note is "" for anything else.
 - Anything else (a key, a letter, a keepsake) is a plot item: give it with item "" and its name and text (one line); it holds no stats. When the story uses one up, send it back with its [plot:id] and a negative qty. text is "" for real items.
 
 INJURIES
@@ -347,7 +348,7 @@ export function turnSchema(g: GameState) {
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
-    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' }, text: { type: 'string' } }) },
+    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' }, text: { type: 'string' }, note: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });

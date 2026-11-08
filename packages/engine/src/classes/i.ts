@@ -22,7 +22,7 @@ import { WEAPON, SIGIL, SCHOOL, SOUL_REV } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
   grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
-  formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP,
+  formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
 import { soulStrike, designRolls } from './soul';
@@ -1218,6 +1218,19 @@ register({
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'storm') && stormable(ctx.design)) ctx.mp += 10; },
     outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'storm') && stormable(ctx.design) && uses(h).take('per_turn', 1, h.key + '#storm')) stateOf(h).storm = ctx.design.id; },
+    // The preview (rules 1.5 section 7: everyone affected): the arcs it would take, from the first creature in the area
+    // (the one it would hit first), with their expected numbers and rolls. A snap cast reads the toggle; a held release
+    // the Storm Front paid at Begin.
+    outburst_plan: (ctx, h) => {
+      const u = h.u!, cb = h.cb!; if (ctx.u !== u || !stormable(ctx.design)) return;
+      const held = u.mg?.held?.design === ctx.design.id && stateOf(h).storm === ctx.design.id;
+      if (!held && !(modOn(h, 'storm') && uses(h).left('per_turn', 1, h.key + '#storm') > 0)) return;
+      const d = migrateDesign(ctx.design), inArea = new Set<string>(ctx.area || []);
+      const first: Unit | null = (ctx.targets || []).find((v: Unit) => v !== u) || null, from = first ? first.pos : ctx.aim;
+      if (!from) return;
+      const more = cb.units.filter((v) => v !== first && v !== u && !v.dead && !v.surrendered && v.side !== u.side && !inArea.has(v.pos) && dist(v.pos, from) <= 2).sort((a, b) => dist(a.pos, from) - dist(b.pos, from) || a.id.localeCompare(b.id)).slice(0, 2);
+      for (const t of more) ctx.add(planStrike(cb, u, d, t, ctx.mult, ctx.riderStage, { roll: designRolls(d), bonus: true, via: 'arc', note: 'Storm Front arcs' + (first ? ' from ' + first.name : '') }));
+    },
     // After the primary hit (the 'outburst_after' hook): from the first creature the release hit (else the first in
     // its area, else the aim), so the arcs land once the bolt has.
     outburst_after: (ctx, h) => {

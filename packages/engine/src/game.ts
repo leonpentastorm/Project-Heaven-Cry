@@ -211,7 +211,7 @@ export type NarratorTurn = {
   travel?: string;
   /** Things found or given: a weapon or item id, how many, and for weapons a rarity and an optional name. */
   /** An unknown or empty item id gives a plot item (name, and text as its one-line description); a negative qty takes a plot item back. */
-  loot?: { charId: string; item: string; qty: number; rarity?: Rarity; name?: string; text?: string }[];
+  loot?: { charId: string; item: string; qty: number; rarity?: Rarity; name?: string; text?: string; /** A plate's lesson (a Sigil word; a tone, school or module for a Heart plate). */ note?: string }[];
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: { label: string; skills: string[]; tn: number; stakes: string; success: Approach['success'] }[] }[];
@@ -625,12 +625,17 @@ function reduce(g: GameState, a: Action, by: string) {
         const ok = Object.values(g.characters).some((x) => x.id !== c!.id && !x.dead && (a.word ? (x.sigils || []).includes(a.word) : a.module ? (x.soulKnown?.modules || []).includes(a.module) : a.tone ? (x.soulKnown?.tones || []).includes(a.tone) : (x.soulKnown?.schools || []).includes(a.school || '')));
         if (!ok) fail('Nobody in the squad knows that to teach it.');
       } else {
-        if (!a.word) fail('A Sigil plate teaches a word.');
-        const pack = packOf(c!), i = pack.findIndex((x) => (x.item || x.id) === 'sigil_plate' && (x.note || '').toLowerCase() === a.word);
-        if (i < 0) fail('You carry no plate with that word.');
+        // A Sigil plate teaches a word; a Heart plate a tone, a school or a module (rules 1.5 section 5, spec 4.4 item 546).
+        const lesson = a.word || a.tone || a.school || a.module;
+        if (!lesson) fail('A plate teaches a Sigil word (a Sigil plate) or a tone, school or module (a Heart plate).');
+        const kind = a.word ? 'sigil_plate' : 'heart_plate', pack = packOf(c!), i = pack.findIndex((x) => (x.item || x.id) === kind && plateLesson(x.note) === String(lesson).toLowerCase());
+        if (i < 0) fail(a.word ? 'You carry no plate with that word.' : 'You carry no Heart plate with that lesson.');
+        // The lesson must be new, or the plate isn't used up.
+        { const k = c!.soulKnown; if (!a.word && ((a.tone && (k?.tones || []).includes(a.tone)) || (a.school && (k?.schools || []).includes(a.school)) || (a.module && (k?.modules || []).includes(a.module)))) fail(c!.name + ' knows that already.'); }
+        { const why = teachCheck(c!, a); if (why) fail(why); }
         pack[i] = { ...pack[i], qty: pack[i].qty - 1 }; c!.pack = pack.filter((x) => x.qty > 0 || x.mags);
       }
-      const e = teach(g, c!, a, a.from === 'ally' ? 'taught by the squad' : 'from a Sigil plate'); if (e) fail(e);
+      const e = teach(g, c!, a, a.from === 'ally' ? 'taught by the squad' : a.word ? 'from a Sigil plate' : 'from a Heart plate'); if (e) fail(e);
       c!.learnedScene = g.story.scene.n; return;
     }
     case 'magic/design': {
@@ -755,7 +760,7 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
-  else if (ITEM[id]) { given = (label || ITEM[id].name).slice(0, 60); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool' }); }
+  else if (ITEM[id]) { const note = String(l.note || '').trim().slice(0, 40); given = (label || ITEM[id].name).slice(0, 60) + (note ? ' (' + note.toUpperCase() + ')' : ''); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given && (x.note || '') === note); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool', ...(note ? { note } : {}) }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
     const it = plotItem(name, l.text || '', n), ex = pack.find((x) => x.kind === 'plot' && x.id === it.id);
@@ -1646,6 +1651,16 @@ function storyFx(g: GameState, cb: Combat) {
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
 }
 /** Learn a word, a school, a module or a tone (spec: The Magic panel). */
+/** A plate's pack note as its lesson id: "FIRE", "tone:fire" or "Fire tone" all read "fire". */
+export function plateLesson(note?: string): string { return String(note || '').toLowerCase().replace(/^(word|tone|school|module)\s*:\s*/, '').replace(/\s+(tone|school|module)$/, '').trim().replace(/\s+/g, '_'); }
+/** Whether a lesson names something real (so a plate is not used up on nothing). */
+function teachCheck(c: Character, m: { word?: string; school?: string; module?: string; tone?: string }): string {
+  if (m.word) { const w = m.word.trim().toLowerCase(); if (!SIGIL[w]) return 'No such word.'; if ((c.sigils || []).includes(w)) return c.name + ' already knows ' + SIGIL[w].word + '.'; if ((c.sigils || []).length >= wordsKnownCap(c)) return c.name + ' knows ' + (c.sigils || []).length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').'; return ''; }
+  if (m.school) return SCHOOL[m.school] ? '' : 'No such school.';
+  if (m.module) return MODULE[m.module] ? '' : 'No such module.';
+  if (m.tone) return TONE[m.tone] && m.tone !== 'raw' ? '' : 'No such tone.';
+  return 'Nothing to learn.';
+}
 function teach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string; tone?: string }, why: string): string {
   if (m.word) {
     const word = m.word.trim().toLowerCase(); // the Narrator may write the word as it is drawn (FIRE)

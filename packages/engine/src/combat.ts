@@ -1327,7 +1327,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
   if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
-  else { const r = healUnit(cb, t, 30 * healingMult(who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); }
+  else { const r = healUnit(cb, t, 30 * healingMult(who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
   emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: t.hp - (wasDown ? 0 : hpWas), revive: wasDown });
   return null;
 }

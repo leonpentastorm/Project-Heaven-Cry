@@ -1032,8 +1032,10 @@ register({
     preview: (h) => '+10 ' + String(infusionOf(h)).toUpperCase() + ' for 5 MP.' }],
   on: {
     on_hit: (ctx, h) => {
-      const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || ctx.tgt.dead || !modOn(h, 'infusion')) return;
+      const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || !modOn(h, 'infusion')) return;
       if (!u.mg?.emanator || (u.mg.mp || 0) < 5) return;
+      // A hit that killed on its own: only Spark still has work (its +1 AP on a kill, 5 MP: PROVISIONAL).
+      if (ctx.tgt.dead) { if (el === 'spark' && u.ap < 9) { u.mg.mp -= 5; u.ap = Math.min(9, u.ap + 1); emitFx(h.cb!, 'infusion', { unit: u.id, target: ctx.tgt.id, at: ctx.tgt.pos, element: el }); say(h.cb, 'Infusion: SPARK (5 MP) · +1 AP (Spark).'); } return; }
       u.mg.mp -= 5;
       // Rules 1.5: the element's stage-1 rider rides the hit (PROVISIONAL): Fire Burning 1 round on a critical, else +5;
       // Shock chains to one enemy next to the target for half; Freeze Slowed (Body save); Spark +1 AP on a kill.

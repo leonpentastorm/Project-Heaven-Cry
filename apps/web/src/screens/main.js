@@ -12,7 +12,7 @@ import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, 
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice } from '../game/commands';
-import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, OPT_LABEL, optValue } from '../game/actionPickers';
+import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
 import { previewPerkAction, bindGame } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, signatureOf, classLabel } from '../game/classView';
@@ -168,8 +168,19 @@ function magicVals(self, g, c) {
     go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
     style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
   const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate').map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
-    return { key: 'p' + i + w, label: 'Read the plate: ' + (def ? def.word : (x.note || 'an unknown word')), sub: '×' + x.qty + (def && words.includes(w) ? ' · known already' : ''), img: def ? glyphUri(w, SIGIL_INK) : scratchUri(), locked: learnLocked || !def,
+    return { key: 'p' + i + w, title: def ? def.text || '' : 'The word is too worn to read.', label: 'Read the plate: ' + (def ? def.word : (x.note || 'an unknown word')), sub: '×' + x.qty + (def && words.includes(w) ? ' · known already' : ''), img: def ? glyphUri(w, SIGIL_INK) : scratchUri(), locked: learnLocked || !def,
       go: () => act({ type: 'magic/learn', charId: c.id, word: w, from: 'plate' }), style: chipStyle(SIG_CYAN, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked || !def ? '; opacity: 0.5; cursor: default' : '') }; });
+  // Heart plates (rules 1.5 section 5): one Outburst lesson each, a tone, a school or a module (the pack note).
+  const heartPlates = packOf(c).filter((x) => (x.item || x.id) === 'heart_plate').map((x, i) => {
+    const id = String(x.note || '').toLowerCase().replace(/^(tone|school|module)\s*:\s*/, '').replace(/\s+(tone|school|module)$/, '').trim().replace(/\s+/g, '_');
+    const kind = TONE[id] && id !== 'raw' ? 'tone' : SCHOOL[id] ? 'school' : MODULE[id] ? 'module' : '';
+    const def = kind === 'tone' ? TONE[id] : kind === 'school' ? SCHOOL[id] : kind === 'module' ? MODULE[id] : null;
+    const have = kind === 'tone' ? (known.tones || []).includes(id) : kind === 'school' ? known.schools.includes(id) : kind === 'module' ? known.modules.includes(id) : false;
+    const off = learnLocked || !def || have;
+    return { key: 'h' + i + id, label: 'Read the Heart plate: ' + (def ? def.name + ' ' + kind : (x.note || 'an unreadable lesson')), sub: '×' + x.qty + (have ? ' · known already' : ''), isWord: false, img: heartUri(1), locked: off,
+      title: def ? def.text || '' : 'The lesson is too worn to read.',
+      go: () => { if (!off) act({ type: 'magic/learn', charId: c.id, [kind]: id, from: 'plate' }); }, style: chipStyle(SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (off ? '; opacity: 0.5; cursor: default' : '') }; });
+  plates.push(...heartPlates);
   const anyMagic = showSigil || showSoul;
   return {
     has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
@@ -946,18 +957,23 @@ export class MainLogic extends DCLogic {
           return { key: f.key, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.', isProse: false, isDesigns: false, slots: [] };
         }
         if (f.kind === 'prose') return { key: f.key, head: f.head, isChips: false, opts: [], isEmpty: false, isProse: true, isDesigns: false, slots: [], text: V[f.key] || '', holder: f.holder, max: f.max || 240, onText: (ev) => setV({ [f.key]: ev.target.value }) };
-        // A Soul design builder (the MAGIC tab's workshop rules: a school, its option, a second school at Will Power 5, modules up to the slots).
+        // A Soul design builder (the MAGIC tab's workshop rules, 1.5: a school and its option, a second school on the same
+        // side with its own option at Will Power 5, a tone, one shape, modules up to the slots; the verdict with both effects).
         const ds = draftsOf(V[f.key], f.n), mana = g.story.mana ?? MANA_START;
         const upd = (i, what, id) => { const cur = draftsOf(formV()[f.key], f.n).map((d) => ({ ...d, modules: [...d.modules] })); cur[i] = pickInDraft(c, cur[i], what, id, f.extra); setV({ [f.key]: cur }); };
-        const slots = ds.map((d, i) => { const sv = designSlotView(c, d, f.extra), full = d.modules.length >= sv.slots;
+        const slots = ds.map((d, i) => { const sv = designSlotView(c, d, f.extra), dd = d.school ? { id: 'draft', ...cleanDesign(d) } : null, vd = dd ? designVerdict(soulM(c), dd, mana) : null;
           return { key: 's' + i, head: (f.n > 1 ? f.head + ' ' + (i + 1) : f.head).toUpperCase(),
             schools: sv.schools.map((o) => ({ key: o.id, label: o.label, title: o.title, pressed: d.school === o.id ? 'true' : 'false', locked: false, style: soulChip(d.school === o.id), pick: () => upd(i, 'school', o.id) })),
-            noSchools: !sv.schools.length, hasSchools2: sv.schools2.length > 0, schools2: sv.schools2.map((o) => ({ key: o.id, label: '+ ' + o.label, title: 'A second school (Will Power 5)', pressed: d.school2 === o.id ? 'true' : 'false', locked: false, style: soulChip(d.school2 === o.id), pick: () => upd(i, 'school2', o.id) })),
+            noSchools: !sv.schools.length, hasSchools2: sv.schools2.length > 0, schools2: sv.schools2.map((o) => ({ key: o.id, label: '+ ' + o.label, title: 'A second school (Will Power 5): a rider at half, on the same side as the first', pressed: d.school2 === o.id ? 'true' : 'false', locked: false, style: soulChip(d.school2 === o.id), pick: () => upd(i, 'school2', o.id) })),
             hasOptions: sv.options.length > 0, options: sv.options.map((o) => ({ key: o.id, label: o.label, title: '', pressed: d.option === o.id ? 'true' : 'false', locked: false, style: soulChip(d.option === o.id), pick: () => upd(i, 'option', o.id) })),
-            modsHead: 'MODULES · ' + d.modules.length + ' / ' + sv.slots, hasModules: sv.modules.length > 0,
-            modules: sv.modules.map((o) => { const on = d.modules.includes(o.id), off = !on && full; return { key: o.id, label: o.label + ' ' + signed(o.cost), title: o.title, pressed: on ? 'true' : 'false', locked: off, style: soulChip(on, off), pick: () => upd(i, 'module', o.id) }; }),
+            hasOptions2: sv.options2.length > 0, options2: sv.options2.map((o) => ({ key: o.id, label: o.label, title: 'The second school\'s option (half strength)', pressed: d.option2 === o.id ? 'true' : 'false', locked: false, style: soulChip(d.option2 === o.id), pick: () => upd(i, 'option2', o.id) })),
+            hasTones: sv.tones.length > 1, tones: sv.tones.map((t) => { const on = (d.tone || 'raw') === t.id; return { key: t.id, label: t.label, title: t.title, pressed: on ? 'true' : 'false', locked: !t.can, style: soulChip(on, !t.can), pick: () => (t.can ? upd(i, 'tone', t.id) : toast('Learn the ' + t.label + ' tone first (a teacher or a plate).')) }; }),
+            hasShapes: sv.shapes.length > 1, shapes: sv.shapes.map((o) => { const on = sv.shape === o.id; return { key: o.id || 'bolt', label: o.label + (o.id ? ' ' + signed(o.cost) : ''), title: o.title, pressed: on ? 'true' : 'false', locked: o.off, style: soulChip(on, o.off), pick: () => upd(i, 'shape', o.id) }; }),
+            modsHead: 'MODULES · ' + d.modules.length + ' / ' + sv.slots + (sv.shape ? ' (the shape takes one)' : ''), hasModules: sv.modules.length > 0,
+            modules: sv.modules.map((o) => { const on = d.modules.includes(o.id); return { key: o.id, label: o.label + ' ' + signed(o.cost), title: o.title, pressed: on ? 'true' : 'false', locked: o.off, style: soulChip(on, o.off), pick: () => (o.off && /Size needs/.test(o.title) ? toast('Size needs a shape.') : upd(i, 'module', o.id)) }; }),
             name: d.name || '', onName: (ev) => upd(i, 'name', ev.target.value), nameHolder: 'Name (optional)',
-            cost: d.school ? designCost(soulM(c), { id: 'draft', ...d }, mana) + ' MP · ' + designAp(soulM(c), { id: 'draft', ...d }) + ' AP · ' + reachWords(soulM(c), { id: 'draft', ...d }) : 'Pick a school.' }; });
+            cost: dd ? designCost(soulM(c), dd, mana) + ' MP · ' + designAp(soulM(c), dd) + ' AP · ' + reachWords(soulM(c), dd) : 'Pick a school.',
+            hasVerdict: !!vd, effects: vd ? vd.effects : '', rider: vd ? vd.rider : '' }; });
         return { key: f.key, head: '', isChips: false, opts: [], isEmpty: false, isProse: false, isDesigns: true, slots };
       }) : [];
       const built = open && P ? buildArgs(P, V, px) : null, pv = built && typeof built !== 'string' && !why ? pvOf(e, how, built) : null;

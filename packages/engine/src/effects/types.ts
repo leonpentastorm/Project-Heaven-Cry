@@ -53,7 +53,7 @@ export type HookName =
   | 'heal_given' | 'heal_in' | 'shield_grant'
   | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
-  | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after'
+  | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
   | 'analyze' | 'action_cost' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed

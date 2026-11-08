@@ -34,7 +34,7 @@ import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
-import { resourcesOf, urgentRows, resRowView, type ResRow } from './resources';
+import { resourcesOf, resRowView, type ResRow } from './resources';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -79,7 +79,7 @@ export function cue(name: Cue) {
 // ---------- what a banner and a cut-in show ----------
 interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number }
 interface Cut { id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
-  hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): the most urgent four, in their order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
+  hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
 const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
 const unitImg = (u: any) => (u?.img && (ART(u.img) || u.img)) || '';
@@ -116,8 +116,9 @@ function cutFor(g: GameState, cb: any, unitId: string): Cut | null {
   const img = ART_BIG(portrait) || ART(portrait) || portrait || IMG['wick-welcome'];
   // The four commands: the player's own picks for this character (game/commandsDialog.tsx), else the smart default.
   const cmds: Command[] = resolveCommands(cb, u, ch, readPrefs(g, u.charId), { noNarrator: !!g.sandbox, g });
-  // The resources block (the same rows as the combat You card): the four that matter most, kept in their own order.
-  const all = resourcesOf(u, ch, g), top = new Set(urgentRows(all, 4).map((r) => r.key)), res = all.filter((r) => top.has(r.key));
+  // The resources block: every row the combat You card shows, in its order (rules 1.5 section 10: every class resource
+  // below HP in the cut-in too). Past four rows they sit in two columns, so the card stays on screen.
+  const res = resourcesOf(u, ch, g);
   return {
     id: 'c' + unitId + ':' + cb.round + ':' + Date.now(), unitId, charId: u.charId, at: u.pos, name: ch.name || u.name, img, color: owner?.color || '#FFFFFF', kicker: 'YOUR TURN · ROUND ' + cb.round,
     line: 'Level ' + ch.level + ' · ' + (classOf(ch)?.name || (ch.classId && CLASS[ch.classId] ? CLASS[ch.classId].name : 'Classless')), clsIcon: classOf(ch)?.icon || '',
@@ -385,8 +386,9 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
   const R = !!c.right, sfx2 = R ? 'R' : '';
   const anim = out ? (rm ? 'phcFadeOut .15s ease-in both' : 'phcCutOut' + sfx2 + ' .3s cubic-bezier(.5,0,.75,0) both') : rm ? 'phcFadeIn .15s ease-out both' : 'phcCutIn' + sfx2 + ' .42s cubic-bezier(.2,.8,.2,1) both';
   const slab = R ? 'polygon(0 0, 100% 0, 100% 100%, 22% 100%)' : 'polygon(0 0, 100% 0, 78% 100%, 0 100%)';
-  // The card grows with its resource rows (about 38 px each past the second), and stays centred.
-  const H = 420 + 38 * Math.max(0, c.res.length - 2);
+  // The card grows with its resource rows (about 38 px a line past the second; two to a line past four rows), and stays centred.
+  const two = c.res.length > 4, lines = two ? Math.ceil(c.res.length / 2) : c.res.length;
+  const H = 420 + 38 * Math.max(0, lines - 2);
   return (
     <>
       {/* A dark veil on the left so the card reads over the grid; never clickable. */}
@@ -404,7 +406,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 600, lineHeight: 1.05, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
           <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
-          {c.res.length > 0 && <div role="list" aria-label="Your resources" style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
+          {c.res.length > 0 && <div role="list" aria-label="Your resources" data-cols={two ? 2 : 1} style={two ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '5px 12px' } : { display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 34, fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
             <span aria-label={c.ap + ' AP'} style={{ display: 'flex', gap: 4 }}>{Array.from({ length: Math.max(0, Math.min(9, Math.round(c.ap))) }, (_, i) => <span key={i} style={{ width: 14, height: 14, transform: 'rotate(45deg)', background: '#FFFFFF' }} />)}</span>

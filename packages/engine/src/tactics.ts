@@ -11,7 +11,7 @@ import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, u
 import { type Rng, d20 } from './rng';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitDebuff } from './magic';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
-import { grantShield } from './effects/damage';
+import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
 import { note } from './effects/narrator';
 import { sessionN } from './effects/uses';
@@ -268,7 +268,7 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
     if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : harm(cb, rng, u, t, -e.value * power, 'soul');
     else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side });
-    else if (e.op === 'cleanse') { for (const id of Object.keys(t.conds || {})) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; }
+    else if (e.op === 'cleanse') { const ids = Object.keys(t.conds || {}); for (const id of ids) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; if (ids.length) tendHook.f?.(cb, u, t); } // tending others (rules 1.5, 3.3)
     else left = true;
   }
   if (left || bl.adjudication !== 'engine') (cb.notes ||= []).push('BLESSING ' + bl.name + ' (' + u.name + ' → ' + t.name + ', r' + cb.round + ', ×' + Math.round(power * 100) / 100 + '): ' + bl.text + ' — yours to rule');

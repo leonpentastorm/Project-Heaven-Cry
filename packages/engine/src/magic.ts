@@ -1027,6 +1027,10 @@ export interface OutburstAffected {
   saves: { cond: string; fam: Fam; tn: number }[];
   /** The tone's rider on this creature at this stage, in words ('' when none), and the second school's rider. */
   rider: string; second: string;
+  /** How the release reaches it (rules 1.5 section 7: everyone affected): 'area' (in the tinted area), 'chain'
+   * (Storm's chain), 'spread' (Fire's stage-4 spread), 'push' (Gale's stage-4 push of everyone within 1), 'arc' (an
+   * item's arc: Storm Front). Those past the area take effect only if the primary lands. */
+  via: 'area' | 'chain' | 'spread' | 'push' | 'arc';
 }
 export interface OutburstPlan {
   ok: boolean; why?: string;
@@ -1086,7 +1090,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
   if (!at) return no(why || 'Pick a target tile.', base);
   const area = outburstArea(cb, u, d, at), targets = affectedBy(cb, u, d, area);
   const affected: OutburstAffected[] = targets.map((t) => {
-    const a: OutburstAffected = { unit: t.id, name: t.name, at: t.pos, ally: t.side === u.side && t !== u, enemy: t.side !== u.side, self: t === u, dmg: 0, dmgAfterArmour: 0, heal: 0, shield: 0, roll: null, saves: [], rider: '', second: '' };
+    const a: OutburstAffected = { unit: t.id, name: t.name, at: t.pos, ally: t.side === u.side && t !== u, enemy: t.side !== u.side, self: t === u, dmg: 0, dmgAfterArmour: 0, heal: 0, shield: 0, roll: null, saves: [], rider: '', second: '', via: 'area' };
     const one = (school: string, option: string | undefined, f: number, primary: boolean) => {
       if (school === 'damage') {
         const raw = outburstDamage(m, d, sm) * f;
@@ -1104,7 +1108,44 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     if (tone !== 'raw' && t.side !== u.side) { a.rider = toneRiders(tone, rs).text; for (const r of toneRiders(tone, rs).riders) if (r.rider === 'cond' && r.save && r.condition) { const fam = condFamily(r.condition) || 'body'; a.saves.push({ cond: r.condition, fam, tn: 12 + m.debuff[fam] }); } }
     return a;
   });
+  // Everyone else the release would reach past its area (section 7): Storm's chains, Fire's stage-4 spread, Gale's
+  // stage-4 push of everyone within 1, then items' own reach ('outburst_plan' {u, design, stage, mult, riderStage, aim,
+  // area, targets, affected, cb}: Storm Front pushes its arcs).
+  const listed = new Set(affected.map((a) => a.unit)), add = (a: OutburstAffected) => { if (listed.has(a.unit)) return; listed.add(a.unit); affected.push(a); };
+  const riders = toneRiders(tone, rs).riders, foesHit = targets.filter((t) => t.side !== u.side), ch = riders.find((r) => r.rider === 'chain');
+  if (ch && foesHit.length && d.school === 'damage') {
+    let from = foesHit[0]; const done = new Set(targets.map((t) => t.id)); done.add(u.id);
+    for (let i = 0; i < (ch.n || 1); i++) {
+      const next = cb.units.filter((v) => !v.dead && !done.has(v.id) && v.side !== u.side && dist(v.pos, from.pos) <= (ch.range || 2)).sort((x, y) => dist(x.pos, from.pos) - dist(y.pos, from.pos))[0];
+      if (!next) break; done.add(next.id);
+      add(planStrike(cb, u, d, next, sm, rs, { f: ch.mult ?? 0.5, roll: false, bonus: false, riders: riders.filter((r) => r.rider === 'cond'), via: 'chain', note: 'Storm chains from ' + from.name + ' at half' }));
+      from = next;
+    }
+  }
+  const spread = riders.find((r) => r.rider === 'spread'), pushAll = riders.find((r) => r.rider === 'push_around');
+  if (tone !== 'raw') for (const t of foesHit) {
+    if (spread?.condition) for (const v of cb.units) if (v !== t && !v.dead && v.side !== u.side && dist(v.pos, t.pos) <= (spread.radius || 1))
+      add({ ...blankAffected(u, v, 'spread'), rider: condName(spread.condition) + (spread.rounds ? ' ' + spread.rounds + ' rounds' : '') + ' (spreads from ' + t.name + ')', saves: spread.save ? [{ cond: spread.condition, fam: (condFamily(spread.condition) || 'body') as Fam, tn: 12 + m.debuff[(condFamily(spread.condition) || 'body') as Fam] }] : [] });
+    if (pushAll) for (const v of cb.units) if (v !== t && v !== u && !v.dead && dist(v.pos, t.pos) <= (pushAll.radius || 1))
+      add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + pushAll.tiles + ' tiles away from ' + t.name + ' (' + TONE[tone].name + ')' });
+  }
+  emit(cb, 'outburst_plan', { u, design: d, stage, mult: sm, riderStage: rs, aim: at, area, targets, affected, add, preview: true, cb });
   return { ...(base as OutburstPlan), ok: !why, ...(why ? { why } : {}), area, affected };
+}
+function blankAffected(u: Unit, t: Unit, via: OutburstAffected['via']): OutburstAffected {
+  return { unit: t.id, name: t.name, at: t.pos, ally: t.side === u.side && t !== u, enemy: t.side !== u.side, self: t === u, dmg: 0, dmgAfterArmour: 0, heal: 0, shield: 0, roll: null, saves: [], rider: '', second: '', via };
+}
+/** One creature a release strikes past its area, as the preview shows it (a chain, an item's arc): the design's damage
+ * at the multiplier × f (+ the tone's bonus damage when bonus), its roll when roll, and the given riders' saves. */
+export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: number, rs: number, o: { f?: number; roll?: boolean; bonus?: boolean; riders?: ToneRider[]; via?: OutburstAffected['via']; note?: string } = {}): OutburstAffected {
+  const m = u.mg!, tone = toneOf(d), a = blankAffected(u, t, o.via || 'arc');
+  const n = Math.floor(outburstDamage(m, d, sm) * (o.f ?? 1) + (o.bonus ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
+  a.dmg = n; a.dmgAfterArmour = Math.max(1, n - arm);
+  if (o.roll) a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover'));
+  const rr = o.riders ?? (tone !== 'raw' ? toneRiders(tone, rs).riders : []);
+  for (const r of rr) if (r.rider === 'cond' && r.save && r.condition) { const fam = (condFamily(r.condition) || 'body') as Fam; a.saves.push({ cond: r.condition, fam, tn: 12 + m.debuff[fam] }); }
+  a.rider = [o.note, tone !== 'raw' && rr.length ? (o.riders ? rr.map((r) => r.condition ? condName(r.condition) : '').filter(Boolean).join(', ') : toneRiders(tone, rs).text) : ''].filter(Boolean).join(' · ');
+  return a;
 }
 /** Syphon (1 AP): MP from the air by the band, × the Syphon bonus; the meter drops 2. */
 export function syphon(cb: Combat, u: Unit): string | null {

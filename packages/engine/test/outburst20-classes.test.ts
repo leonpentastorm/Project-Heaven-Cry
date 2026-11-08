@@ -227,6 +227,40 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'freeze', charges: 2, shake: true });
     expect(z.f.unit(z.u.id).res!.charges).toBe(0);
   });
+  it('Fire on a critical: Burning 1 round and no +5 (the plain +10 only)', () => {
+    const fi = sh('fire'); seed(fi.f, 20); A(fi.f, fi.u, { type: 'combat/attack', targetId: fi.a.id, mode: 'melee' });
+    expect(logHas(fi.f.cb, /Infusion: FIRE \(5 MP\) · 10 damage/)).toBe(true);
+    expect(condOn(fi.f.unit(fi.a.id), 'burning')).toBe(true); expect(fi.f.unit(fi.a.id).conds!.burning).toBe(1);
+    const no = sh('fire'); seed(no.f, 10); A(no.f, no.u, { type: 'combat/attack', targetId: no.a.id, mode: 'melee' });
+    expect(condOn(no.f.unit(no.a.id), 'burning')).toBe(false);
+  });
+  it('Spark: +1 AP on a kill (the weapon\'s or the spark\'s), 5 MP; no AP on a hit that doesn\'t kill; never past 9', () => {
+    const run = (hp: number, ap = 6) => {
+      const z = sh('spark'); z.f.unit(z.u.id).ap = ap; z.f.unit(z.a.id).hp = hp; seed(z.f, 10);
+      const before = z.f.unit(z.u.id).ap, mp = z.f.unit(z.u.id).mg!.mp;
+      A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee' });
+      return { z, spent: before - z.f.unit(z.u.id).ap, mp: mp - z.f.unit(z.u.id).mg!.mp, dead: !!z.f.unit(z.a.id).dead };
+    };
+    const live = run(999), kill = run(1);
+    expect(live.dead).toBe(false); expect(kill.dead).toBe(true);
+    expect(kill.spent).toBe(live.spent - 1); expect(kill.mp).toBe(5); expect(logHas(kill.z.f.cb, /\+1 AP \(Spark\)/)).toBe(true);
+    expect(logHas(live.z.f.cb, /\+1 AP \(Spark\)/)).toBe(false); expect(live.mp).toBe(5);
+    const capped = run(1, 9); expect(capped.z.f.unit(capped.z.u.id).ap).toBeLessThanOrEqual(9);
+  });
+  it('Discharge with Spark: 20 per Charge to each enemy beside the target, no rider', () => {
+    const z = sh('spark'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
+    seed(z.f, 10, 20, 20);
+    A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
+    expect(lost(z.f.unit(z.b.id))).toBe(40); expect(Object.keys(z.f.unit(z.b.id).conds || {}).length).toBe(0);
+    expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'spark', charges: 2, shake: true }); expect(z.f.unit(z.u.id).res!.charges).toBe(0);
+  });
+  it('Discharge with Fire at 2 Charges: 40 and Fire\'s stage-2 rider (Burning 2 rounds) on each enemy beside the target', () => {
+    const z = sh('fire'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
+    seed(z.f, 10, 20, 20);
+    A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
+    expect(lost(z.f.unit(z.b.id))).toBe(40); expect(condOn(z.f.unit(z.b.id), 'burning')).toBe(true); expect(z.f.unit(z.b.id).conds!.burning).toBe(2);
+    expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'fire', charges: 2 });
+  });
 });
 
 // =================================================================================================== Will Power unlocks
