@@ -1,5 +1,16 @@
 # The Grand Sigilist: draft for Leon (8 Nov 2026)
 
+> **Status: built** on `feature/grand-sigilist` (decision 100, spec items 551–560). Leon's friend asked for it to be implemented and balanced by judgement, without waiting for answers. What was built differs from this draft in these places:
+> - **COMMAND** halts with Pinned for the turn (the engine's existing condition).
+> - **STEP:** any move that starts and stays inside costs 1 AP at most, instead of a separate blink action, because allies don't hold the Sigilist's moves.
+> - **RELAY:** +1 to hit for each other ally inside with a line, +3 at most, instead of attacking from an ally's tile, which needed deep changes to sight and range.
+> - **ARC** auto-picks the tile that catches the most enemies.
+> - **SPREAD** deals a flat 10 to enemies the spell missed.
+> - **TWICE** echoes at half its damage per target.
+> - **The two-glyph hook** went to nobody, the recommendation in point 27.
+>
+> The damage balance (items 556–559) is new beyond this draft. Leon can still answer any point; each is provisional.
+
 Answers the hand-off `docs/design/handoffs/grand-sigilist.md`. **Nothing here is built.** It is the numbered draft the hand-off asks for before building. Please answer by number: *yes*, *no*, or *change it to …*. Once you've answered, the work goes spec, then data, then `classes/k.ts`, then effects, then tests, on `feature/grand-sigilist`.
 
 ## A. Pushback first

@@ -218,7 +218,7 @@ export interface Affected {
   roll: { bonus: number; need: number; pct: number; cover: boolean } | null; saves: { cond: string; fam: Fam; tn: number }[];
 }
 const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart' };
-// ---------- the Sigil damage balance pass (docs/design/balance-targets.md; spec items 577-580, provisional) ----------
+// ---------- the Sigil damage balance pass (docs/design/balance-targets.md; spec items 556-559, provisional) ----------
 /** The most direct damage one spell does to one creature, before armour: 350, or 500 on a critical (the game's ceilings). */
 export const SIGIL_CAP = 350, SIGIL_CAP_CRIT = 500;
 /** A caster's power for a damage type: Sigil damage takes the Sigil multiplier; Elemental damage takes the Sigil and
