@@ -100,7 +100,14 @@ No engine or data change.
 
 ## e2e results
 
-RESULTS_PLACEHOLDER
+All against the local dev server after `npm run build`:
+
+| Suite | Result |
+|---|---|
+| world-play | exit 0 |
+| two-players, missions, sandbox, playscreen, classes | exit 0 |
+| faith | exit 0 when run alone. The full sweep timed out waiting for the title's NEW GAME button at start-up, before any World Play screen. |
+| magic, tabs, perks, combat-fixes, slate, resources, heart, sigil14, classes-moves | exit 0 |
 
 ## Known gaps
 
