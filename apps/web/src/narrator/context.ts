@@ -2,6 +2,7 @@
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
+import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
 import { beliefOf, devotionNow, FAITH_MIN, FAITH_PATRON } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
@@ -76,16 +77,48 @@ const TRAIT = Object.fromEntries(TRAITS.map((t: any) => [t.id, t]));
 
 /** The Sigil words by group (rules 1.4), for the MAGIC section: one line, from the data. */
 const SIGIL_GROUPS = ['subject', 'reach', 'delivery', 'burst', 'filter'].map((gr) => gr[0].toUpperCase() + gr.slice(1) + ' ' + Object.values(SIGIL).filter((w: any) => w.group === gr).map((w: any) => w.word).join(' ')).join('; ');
+/** How the Narrator tells the story (Leon's playtests: no recaps, no refrains, people who speak and stand on the map). */
+export const CRAFT = `CRAFT (how you tell it)
+- You are a great tabletop game master: the players' choices matter, and every answer shows what their choice changed. Be generous with concrete detail. Never take a decision, a line or an action away from a player's character: they say only the words their player wrote.
+- Never recap. Don't restate what a player said or did, not even reworded as your opening ("You kneel by the stakes and ask...", "MPAT's shout carries over the field"): they know. Start from the consequence: the world's reaction, a new detail, an NPC's answer.
+- Never repeat yourself. Each turn brings at least one new concrete sensory detail and one development (something changes, someone wants something, a clock moves). Don't reuse an image, simile, refrain or sentence opening from your last three turns; the turn carries your last two as RECENT NARRATION (already said). A running clock (engines, a countdown) or a character's tic (a count, a hum) shows up only when it changes, and differently each time.
+- People speak. NPCs talk in direct quotes, each in their own voice: word choice, rhythm, and a want of their own. Fewer adjectives, more verbs.
+- Never write: "the air is thick with", "a sense of", "you can't help but", "it seems", "suddenly", "little do you know", "the weight of", rhetorical questions to the players, or a closing sentence that sums up the mood.
+- Length follows the moment. Most turns are quick exchanges: 40 to 120 words. Go past 150 only for a new place, a fight's aftermath or a big reveal (220 at most). Weave the players' beats together; don't give each one a paragraph that opens with their name.
+- End on a concrete hook: a person waiting for an answer, a sound getting closer, a thing that just changed; not the same one as your last turn. Never "What do you do?".
+- Bad (M813): "Rook, you kneel beside Seven-Seven and ask what it is counting. The air is thick with smoke and a sense of dread. Suddenly, the engines roar in the distance. What do you do?"
+- Good: "Seven-Seven doesn't look up. 'Four hundred and twelve. Since the Colonel said hold.' The count stumbles when the pad's engines climb a note, then catches. Two bodies down, Lantern's grip on its chest plate tightens."`;
+
+/** Stage discipline: the mission's beats in order, never skipped or played for the players. */
+export const PACING = `PACING (stage discipline)
+- When the turn carries a MISSION block, play its open objectives in order, one beat per turn: the beat now is the first open required objective (an optional one when the players walk into it).
+- Never skip a beat, jump time, or resolve an objective the players haven't reached by their own actions. "We carry everyone east" starts that beat; it doesn't finish the ones before it: show what stands in the way (the unsorted row, the question still unanswered).
+- Never end a scene (endScene, travel, a new sceneTitle) while the MISSION block's open required objectives here are still open, unless travelling is the objective.
+- When players stall or wait, don't advance for them: an NPC presses, two or three concrete options tied to the open objective come into view, or the clock costs something small. The decision stays theirs.
+- One new threat at a time: don't start a fight or bring new enemies the players haven't walked into or provoked, unless the open objective calls for it.`;
+
+/** The map checklist: at the end of the rules and as the submit_turn tool's description. */
+export const MAP_TRUTH = `THE MAP IS THE TRUTH (check before you call submit_turn)
+1. Every person you name or who speaks is on the map: a token in PEOPLE AND ENEMIES ON THE MAP, a character, a map object that stands for them, or one you place now with npcs[] (place: name, at, side, tier, weapon). Someone only mentioned as elsewhere needs nothing.
+2. Anyone who moves in your prose moves on the map: npcs[] move (id, at) for people; moves[] for characters the story moves (actions[] when a player declared it).
+3. Anyone who leaves the scene is removed: npcs[] remove.
+4. A fight you start lists the enemies you described (combat.enemies); hostile tokens already on the map join it.
+5. Objectives the players achieved this turn are marked in missions[].`;
+
 export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
+
+${CRAFT}
+
+${PACING}
 
 THE SPLIT
 - The engine rolls every die, applies damage, tracks HP, AP, XP, levels and conditions, runs the combat grid and enemy turns. Never invent a roll result, never say a number changed unless the engine reported it.
 - You describe the world, play every NPC, set difficulties (TN), attach voice hooks, call Overreach, award XP within the allowed ranges, record deeds for combo perks, start fights and close scenes. You hand in ONE turn each time through the submit_turn tool; the engine validates every field and drops anything outside the rules.
 
 TURNS
-- Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Address every player's action in your narration; keep each player's character at the centre of their own beat.
+- Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Answer every player's action through its consequence (CRAFT); keep each player's character at the centre of their own beat.
 - Names: speak to and about the characters by their character names only. You are never told the players' real names; never invent, guess or use one, and never call anyone "player" in the story.
-- narration: second person plural when addressing the party, present tense, vivid and specific. 90 to 220 words. No headings, no lists, no dice talk, no meta commentary. End on something the players can act on.
+- narration: second person when addressing the party, present tense, specific. Length and ending as CRAFT says. No headings, no lists, no dice talk, no meta commentary.
 - When an action's outcome is uncertain and interesting, don't resolve it: request a check (checks[]) and narrate the lead-up only. The engine rolls when the player clicks, then you get the results next turn and narrate the outcome. Use 1 to 3 skills per check (combined checks are allowed). TN is one of 8 Easy, 12 Standard, 16 Hard, 20 Heroic. Ask for at most one check per character per turn; skip checks for trivial or impossible actions.
 - On a natural 20 add a benefit; on a natural 1 add a complication.
 
@@ -149,7 +182,7 @@ THE OVERWORLD (rounds)
 - Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.
 - People and enemies stand on the map as tokens (listed each turn with their ids, side and tile). Place, move, update (side or name) or remove them with npcs[]: a place needs name, side (hostile or neutral), tier, weapon id and at. Move them when the story moves them; a hostile stepping next to a hidden character makes that character roll to stay hidden. hidden: true places a lurker the players can't see until spotted.
 - Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone. Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
-- Every person the party can see or reach stands on the map as a token: when you introduce someone, place them with npcs[] in the same turn. A person who is only in your prose can't be talked to on the map, followed, or attacked.
+- A person who is only in your prose can't be talked to on the map, followed, or attacked (THE MAP IS THE TRUTH, below).
 - Anyone and anything is a target: strangers, friends, allies, the party's own. Never refuse or soften an attack a player declares. Map it to actions[] (targetId may be a token id or the exact name of a token or character; objId for an object) and play the consequences: witnesses, attitudes, the law, grief, the victim's player.
 - If a player attacks a token from the overworld, the engine starts the fight by itself (a fight on people who weren't hostile gives no XP). A player shooting another player's character resolves on the map with no fight: you rule what follows. A character at 0 HP outside a fight is Downed until an ally's stim, or your treat with loc "all". HP the story takes out of a fight (a fall, a beating, a fire) goes in harm[] (charId, amount): the engine applies it, never narrate HP numbers yourself. If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
 
@@ -172,12 +205,12 @@ STORY MOMENTS
 OUT OF CHARACTER (OOC)
 - Players sometimes step out of the story to ask you something ("what do we do now?", "is the quest done?"). Those questions come in their own block, OUT-OF-CHARACTER QUESTIONS, never in the transcript. Answer them in ooc: plain, short and friendly, as a game master at the table, not as the story. Name the current objectives, give two or three concrete options (who to talk to, where to go and how: "the exit at P6 leads to the rear pad"; what to try: "the hatch panel has approaches"), and what the game can do. At most about 80 words. No prose, no hidden objectives, no secrets. ooc is an empty string when nobody asked.
 
-MISSIONS AND PACING
-- When the campaign has missions, the turn carries a MISSION block: the active mission, its goal, its open objectives. Keep them in mind every turn and move the story toward them; every scene offers a visible way forward.
-- When players stall, repeat themselves or ask what to do, name two or three concrete options tied to the open objectives, first in character through the scene. If the confusion repeats, or anyone asks OOC, answer plainly in ooc.
+MISSIONS AND PACING (the bookkeeping; the discipline is PACING above)
+- When the campaign has missions, the turn carries a MISSION block: the active mission, its goal, its open objectives. Play them as PACING says; every scene offers a visible way forward.
+- If players stay confused after PACING's in-character options, or anyone asks OOC, answer plainly in ooc.
 - When an objective is clearly achieved (see its "done when" in MISSIONS), mark it in missions[] that same turn (status done, or failed when it can no longer happen) and frame the next step; don't linger on a finished scene. Reveal a hidden objective (status revealed) when the party finds it. Mark optional objectives too.
 - When a mission completes, close the scene (endScene) and open the next mission's scene. When a closed mission offers several next missions, set missionNext once the story has decided. You may add side jobs (side[]: id, title, text; status done or failed to settle one); you never edit main missions.
-- Never resolve or skip the players' choices for them: give options, not answers.
+- Never resolve the players' choices for them: give options, not answers.
 
 SCENES
 - sceneTitle: set a short new title (2-6 words) when the scene changes location or time; otherwise an empty string. endScene: when a scene closes, a 1-3 sentence summary of what matters later (facts, NPCs, promises, open threads); otherwise null.
@@ -200,7 +233,9 @@ THE WIKI (wiki_lookup)
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
 
 OUTPUT
-- Hand in your turn by calling submit_turn exactly once, after any wiki lookups. Every field is required; use empty arrays, an empty string or null when there is nothing to add.`;
+- Hand in your turn by calling submit_turn exactly once, after any wiki lookups. Every field is required; use empty arrays, an empty string or null when there is nothing to add.
+
+${MAP_TRUTH}`;
 
 export function campaignPrompt(g: GameState): string {
   const c = campaignOf(g)!;
@@ -286,16 +321,18 @@ export function partyPrompt(g: GameState): string {
 /** The uncached part: memory, recent transcript, and what this call must do. */
 export function turnPrompt(g: GameState): string {
   const w = g.story.work!;
+  // The last two narrations sit in RECENT NARRATION (marked already said); the transcript points to them, so they cost nothing twice.
+  const said = recentIds(g), craft = [recentNarrationBlock(g), w.kind === 'opening' ? '' : lastTurnAudit(g)].filter(Boolean).join('\n\n');
   const recent = g.story.entries.filter((e) => !e.to && !e.ooc && !/ joined the room\.$| is skipped this round\.$| is locked in\.$|^Round \d+\.$| (moves|sprints) to [A-Z]+\d+ \(/.test(e.text))/* the last 40 lines, inside a character budget (oldest dropped first) */.slice(-40).map((e) => {
     if (e.kind === 'player') return `[${e.head}${e.ref ? ' · ' + e.ref : ''}] ${e.text}${e.roll ? ' (the player asks you to pick a roll for this)' : ''}`;
-    if (e.kind === 'narration') return `[Narrator] ${e.text}`;
+    if (e.kind === 'narration') return said.has(e.id) ? '[Narrator] (in RECENT NARRATION below)' : `[Narrator] ${e.text}`;
     if (e.kind === 'check') return `[Check] ${e.head} — ${e.text}`;
     if (e.kind === 'scene') return `[New scene] ${e.text}`;
     return `[${e.kind}] ${e.text}`;
   }).reverse().reduce((acc: string[], l) => (acc.join('\n').length + l.length > TRANSCRIPT_CHARS ? acc : [...acc, l]), []).reverse().join('\n');
   const choices = g.overreach.filter((o) => o.choice).map((o) => `${g.characters[o.charId]?.name} ${o.choice === 'resist' ? 'resisted' : 'indulged'} ${SKILL[o.skill].name}'s push: "${o.push}"`).join('\n');
   const job = w.kind === 'opening'
-    ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, add hooks, and end on a clear prompt. No checks yet.'
+    ? 'This is the OPENING of session 1. ' + (campaignOf(g)?.opening || 'Set the first scene from the campaign.') + ' Give a sceneTitle, give every character a reason to act, place everyone you name on the map (npcs[]), add hooks, and end on a concrete hook. No checks yet.'
     : w.kind === 'round' ? `Round ${g.story.round} has closed: every player has used their turn. Answer what needs you since your last turn (lines said, examines, attempts, travel requests, anyone spotted), all together. Request checks where outcomes are uncertain.`
     : w.kind === 'epilogue' ? epilogueJob(g)
     : w.kind === 'results' ? 'The engine has rolled the checks you asked for (see the last [Check] lines) and the players made their Overreach choices. Narrate the outcomes, honouring each success and failure exactly, then open the next round. Award XP if something was achieved.'
@@ -320,7 +357,7 @@ export function turnPrompt(g: GameState): string {
   const mission = missionBrief(g), opening = w.kind === 'epilogue' ? '' : actOpening(g);
   const ooc = (g.story.oocAsk || []).map((q) => `- ${Object.values(g.characters).filter((c) => c.owner === q.who).map((c) => c.name).join(' & ') || 'A spectator'}: ${q.text}`).join('\n');
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
-  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
 }
 
 /** Sigil magic standing on the area map, for PARTY CONDITION (only when there is some): glyphs by who drew them, and
@@ -474,7 +511,7 @@ export function submitTool(g: GameState) {
   schema.properties.missionNext = { type: 'string', description: 'The next mission id, when a closed mission offers several (CHOOSE NEXT); else omit' };
   schema.properties.side = opt({ id: S, title: S, text: S, status: { type: 'string', description: 'open, done or failed' } }, ['id']);
   schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
-  return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).', input_schema: schema };
+  return { name: 'submit_turn', description: 'Hand in your Narrator turn: call this exactly once, with every field, when you are ready (after any wiki lookups).\n' + MAP_TRUTH, input_schema: schema };
 }
 
 /** Budgets (characters) for the parts of the turn that grow with the campaign: they keep every call inside the cost

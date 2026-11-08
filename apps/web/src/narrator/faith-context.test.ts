@@ -34,8 +34,9 @@ describe('the Narrator and faith', () => {
     const w = wikiAnswer(['patron:mother_ember']);
     expect(w).toMatch(/Likes:/); expect(w).toMatch(/Rites/); expect(w).toMatch(/a player button|yours: faith rite_kept/);
   });
-  it('the cost stays put (stable about 21.3k tokens for this party)', () => {
+  // +1.2k cached tokens for CRAFT, PACING and THE MAP IS THE TRUTH (narrator-craft, Nov 2026): about $0.0002 a warm turn.
+  it('the cost stays put (stable about 22.5k tokens for this party)', () => {
     const e = callEstimate(party(), 'claude-sonnet-5-5');
-    expect(e.stable).toBeLessThan(21600);
+    expect(e.stable).toBeLessThan(22800);
   });
 });

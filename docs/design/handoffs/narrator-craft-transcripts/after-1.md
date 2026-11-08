@@ -1,0 +1,275 @@
+# Narrator craft playtest: After, first pass (CRAFT, PACING, map checklist, craft checks)
+
+Model claude-opus-5-5, effort medium. M813, seed "narrator-craft", room LIVE13, two scripted players (MPAT and Rook), the same player script in every run (apps/web/src/narrator/live-playtest.test.ts). Total cost $1.03. Machine-readable: after-1.json.
+
+## Turn 1 (opening) · $0.317
+
+**Since the last narration:**
+
+- [system] Session 1 begins.
+- [system] ▶ Mission: The Shield Line · Get the wounded line to the rear pad before the last ship leaves.
+
+**Narration:**
+
+> The last shell lands somewhere past the craters and nothing answers it. Ten seconds. Twenty. The stakes tick as they cool. Over the stake line the black hole B813 rises like a drain in the sky, pulling the smoke into a slow, tilted spiral, and its light turns every scorched plate on the field the colour of old brass.
+>
+> Behind you on the triage ground, twenty-three infantry robots lie in a row where you dragged them. Seven-Seven is counting: "Nine hundred and four. Nine hundred and five." Hum is humming something with no words, four notes up, three down. Lantern holds both hands flat over its chest plate, as if something inside might blow away. At the far end of the row Soft-Hands and Penny kneel over the worst of them. They're out of stims and sorting by touch.
+>
+> The squad channel clicks open, all crackle.
+>
+> "Two-five-eight. Nine-Nine, stake line, about one and a half of me." A dry burst that might be a laugh. "The line held. Colonel's compliments, I assume, since he isn't here to give them. The humans are loading the last ship on the rear pad. Hear that?"
+>
+> You do: far to the east, a low engine note climbing.
+>
+> "Come to me. H5. You'll know me, I'm the one sticking out of the fence. Before anyone does anything clever, I need one number." The crackle steadies. "How many of us can you carry?"
+
+**Turn fields:**
+
+- sceneTitle: `"The Guns Stop"`
+- npcs: `[{"action": "place", "name": "Seven-Seven", "at": "J6", "side": "neutral", "tier": "minion", "weapon": "fists", "kind": "robot"}, {"action": "place", "name": "Hum", "at": "J8", "side": "neutral", "tier": "minion", "weapon": "fists", "kind": "robot"}, {"action": "place", "name": "Lantern", "at": "K7", "side": "neutral", "tier": "minion", "weapon": "fists", "kind": "robot"}, {"action": "place", "name": "Soft-Hands", "at": "L8", "side": "neutral", "tier": "minion", "weapon": "service_pistol", "kind": "robot"}, {"action": "place", "name": "Penny", "at": "L9", "side": "neutral", "tier": "minion", "weapon": "service_pistol", "kind": "robot"}]`
+- hooks: 6
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands L8 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=open, tend_the_line=open, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 2 (round) · $0.068
+
+**Since the last narration:**
+
+- [art] "How many of us can you carry?"
+- [system] Seven-Seven at J6.
+- [system] Hum at J8.
+- [system] Lantern at K7.
+- [system] Soft-Hands at L8.
+- [system] Penny at L9.
+- [MPAT] I head for the stake line. "Sergeant. Medics of the 258th, reporting. What do you need?"
+- [Rook] I go to the row of broken infantry behind the stakes and listen to who is still making noise.
+
+**Narration:**
+
+> Nine-Nine's head turns in the stakes with a grind of stripped gears. Up close he is less than one and a half: torso, the right shoulder, a cable bundle where the rest used to be. His optic finds MPAT's badge.
+>
+> "Reporting. Good. Orders, one at a time, the way they taught me. One: that row behind you. Sort it. Who walks, who gets carried, who…" The voice box drops out for a beat. "We'll get to who. Two: radio at the last post, M8. Keep the pad hearing us, or they'll forget we exist. Three: nobody goes west of my stakes. They seeded that ground on the way out."
+>
+> Rook, the row is louder than it looked. Seven-Seven's count, Hum's four-up-three-down, a servo clicking open and shut somewhere in the middle like a jaw. Then, under all of it and from the wrong direction, north, from the shell crater: metal on loose dirt, and a voice that isn't on the squad channel. "Hello? Is the line still there?"
+>
+> Lantern turns its head toward the crater too, both hands still pressed over its chest.
+
+**Turn fields:**
+
+- missions: `[{"mission": "the_shield_line", "objective": "reach_nine_nine", "status": "done", "note": "MPAT reported; Nine-Nine gave orders."}]`
+- hooks: 7
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands L8 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=open, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 3 (round) · $0.070
+
+**Since the last narration:**
+
+- [xp] MPAT +50 XP (quest: Reported to Sergeant Nine-Nine and took his orders)
+- [xp] Rook +50 XP (quest: Reported to Sergeant Nine-Nine and took his orders)
+- [system] ✓ Objective: Report to Sergeant Nine-Nine in the stake line · MPAT reported; Nine-Nine gave orders.
+- [MPAT] MPAT examines the sergeant nine-nine at H5 [m12].
+- [MPAT] "Before we talk numbers, Sergeant, let me look at you." I check his leaks.
+- [Rook] I kneel by the one that is counting out loud. "Hey. What are you counting?"
+
+**Narration:**
+
+> Nine-Nine's leaks are easy to find: they find you. Coolant beads along the cable bundle where his hips used to be, blue and cold enough to fog on MPAT's fingers, and a hydraulic line under the shoulder plate spits a thin black thread every time he talks.
+>
+> "Don't fuss the coolant. That's been going since noon. The black one, though." He tips his optic down at it. "That one I'd pinch myself, if I had something to pinch with."
+>
+> Seven-Seven doesn't stop counting when Rook kneels; it just says the answer between numbers. "Nine-thirty-one. Seconds. Nine-thirty-two. Sergeant said hold till relief. Nine-thirty-three. Relief's late." Below its waist there's nothing but a scorched coupling. "Somebody has to know how late. Nine-thirty-four. For the report."
+>
+> Down the row, Hum's song skips a note. From the crater, the voice again, weaker: "Line? Anybody?"
+
+**Turn fields:**
+
+- checks: `[{"charId": "c2", "skills": ["proficiency", "camaraderie"], "tn": 8, "stakes": "Clamp the black line and Nine-Nine keeps his voice and his wits for the hours ahead; fumble it and he loses pressure, and some of his words, before you're done."}]`
+- objects: `[{"action": "update", "id": "m12"}]`
+- hooks: 6
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands L8 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=open, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 4 (results) · $0.063
+
+**Since the last narration:**
+
+- [check] PROFICIENCY + CAMARADERIE · d20 9 +3 = 12 vs 8 · ✓ SUCCESS — MPAT: Clamp the black line and Nine-Nine keeps his voice and his wits for the hours ahead; fumble it and he loses pressure, and some of his words, before you're done.
+
+**Narration:**
+
+> The clamp bites. The black thread stops mid-spit and Nine-Nine's voice comes back a half-step clearer, as if someone wiped the speaker grille.
+>
+> "Better. Huh. I'd forgotten what I sound like without the gargle." His optic tracks MPAT's hands as they come away oily. "Good work, medic. If I had an arm, I'd fix myself and you could go. Since I don't…" A grind as he tilts toward the row. "My number. I still need it."
+>
+> At the far end of the line Soft-Hands sits back on its heels and lifts a hand that's shaking at the wrist joint. "Two-five-eight! We've sorted six by touch and I've lost count of which six. Somebody with working ears, please." Penny doesn't look up; she has her palm flat on a chest plate, waiting for something under it to move.
+>
+> Seven-Seven reaches nine-fifty and, for the first time, hesitates before nine-fifty-one. From the crater, dirt slides. The voice down there has stopped calling.
+
+**Turn fields:**
+
+- objects: `[{"action": "update", "id": "m12"}]`
+- hooks: 5
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands L8 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=open, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 5 (round) · $0.086
+
+**Since the last narration:**
+
+- [xp] MPAT +25 XP (discovery: Clamped Nine-Nine's hydraulic line)
+- [MPAT] MPAT tries: Clamp the hydraulic line (Sergeant Nine-Nine, H5).
+- [check] PROFICIENCY + CAMARADERIE · d20 3 +3 = 6 vs 8 · ✕ FAILURE — MPAT: He keeps his voice and his wits for the hours ahead.
+- [Rook] I sort them: who can walk, who has to be carried.
+
+**Narration:**
+
+> On the second pass the clamp jumps under MPAT's thumb. The jaw had seated, but the extra turn walks its teeth half a notch along the line, and a black bead swells at the edge. Nine-Nine's next word comes out in two pieces. "Leave... leave it. Holding." It is, barely. The bead sits there, fat and trembling, and doesn't fall. "Medic. Don't polish the brass while the barracks burns."
+>
+> Soft-Hands scrambles up beside Rook with a strip of red tape torn off a cable spool. "Red for carry, nothing for walk. If it stands, it walks. If it doesn't..." It leaves the end of the sentence on the ground. The first robot under Rook's hands weighs as much as a blast door. One leg is whole, the other stops at the knee, and its fingers clamp onto Rook's shoulder plate hard enough to dimple it.
+>
+> Seven-Seven watches from two places down. "Nine-seventy. Don't bother lifting me. I can count from here."
+>
+> The crater is still quiet. Soft-Hands holds the tape out, waiting to hear which it is.
+
+**Turn fields:**
+
+- npcs: `[{"action": "move", "id": "n27", "at": "I6"}]`
+- checks: `[{"charId": "c4", "skills": ["raw_power", "pain_threshold"], "tn": 12, "stakes": "Haul each of the broken up onto whatever legs they have and the row sorts itself: walkers, carried, and the ones that can't be moved. If you fail, the sorting still gets done, but slowly and roughly, and something that was holding together in one of them comes loose."}]`
+- objects: `[{"action": "update", "id": "m12"}]`
+- hooks: 6
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=open, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 6 (results) · $0.081
+
+**Since the last narration:**
+
+- [check] RAW POWER + PAIN THRESHOLD · d20 4 +3 = 7 vs 12 · ✕ FAILURE — Rook: Haul each of the broken up onto whatever legs they have and the row sorts itself: walkers, carried, and the ones that can't be moved. If you fail, the sorting still gets done, but slowly and roughly, and something that was holding together in one of them comes loose.
+
+**Narration:**
+
+> The robot on Rook's shoulder gets halfway up before its good leg's knee actuator gives with a sound like a snapped bolt, and the lower half folds sideways into the dirt. It doesn't cry out. It just looks at the leg, then at Soft-Hands. "Red," it says. "I know. Red."
+>
+> After that the sort goes slow and ugly, one dead weight at a time, Soft-Hands tearing tape with its teeth. By the time the light has gone from brass to rust, the row has its answer. Seven stand on whatever they have left. Twelve wear red, Seven-Seven among them, still counting under its breath: "Ten-forty. Ten-forty-one." Hum gets red too, and keeps humming while Soft-Hands tapes its wrist. Lantern stands, wobbling, and won't take its hands off its chest to help anyone else up.
+>
+> Four don't get tape at all. Penny sits back from the last of them and says, very quietly, "These ones come apart if you lift them. I tried."
+>
+> Nine-Nine's optic has followed all of it. "Seven walking. Twelve carried. Four that won't travel." The voice box clicks. "Medics. Now give me the number."
+>
+> Over the fallen squad, past the stakes, the circling drones drop a turn lower.
+
+**Turn fields:**
+
+- missions: `[{"mission": "the_shield_line", "objective": "tend_the_line", "status": "done", "note": "The row is sorted: 7 walk, 12 carried, 4 won't travel."}]`
+- objects: `[{"action": "update", "id": "m13"}]`
+- hooks: 6
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=done, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 7 (round) · $0.092
+
+**Since the last narration:**
+
+- [xp] MPAT +50 XP (quest: Sorted the triage line: seven walk, twelve carried, four that won't travel)
+- [system] MPAT reaches level 2.
+- [xp] Rook +50 XP (quest: Sorted the triage line: seven walk, twelve carried, four that won't travel)
+- [system] Rook reaches level 2.
+- [system] ✓ Objective: Tend the wounded on the triage line · The row is sorted: 7 walk, 12 carried, 4 won't travel.
+- [MPAT] "How many of us can we carry? Depends on how many of them can still walk, Sergeant."
+- [Rook] I ask the one humming what the song is.
+
+**Narration:**
+
+> Nine-Nine's optic clicks through its focus rings, counting with you. "Walkers. Right. Seven of them, and not one with two good arms. Pair them up under a stake for a pole and maybe three loads come out of seven. You four medics, one each. Your big one there," a tilt toward Rook, "two, if his back's as dumb as it looks. Eight. Nine with luck."
+>
+> His speaker hisses. "Twelve in red. Four that come apart. And me." The bead on his clamp shivers. "That's seventeen, medic. Run it twice and the ship's gone. So the number I want isn't how many you can carry. It's which."
+>
+> Two places down the row, Hum stops humming to answer Rook, and the silence where the song was is louder than it was. "Don't know what it is. It was there the first morning they switched me on, before the drills." Its taped wrist taps the tune against the dirt: four up, three down. "I thought the factory put it in. The others say no. You know it? I'd like the words. Before."
+>
+> Seven-Seven, quietly: "Ten-ninety."
+>
+> Past the stakes, over the fallen squad, a drone drops low and something metal comes away in its claws.
+
+**Turn fields:**
+
+- hooks: 8
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=done, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 8 (round) · $0.094
+
+**Since the last narration:**
+
+- [xp] Rook +25 XP (dialogue: Asked Hum about its song)
+- [MPAT] We wait for Nine-Nine to decide.
+- [Rook] I wait too.
+
+**Narration:**
+
+> The voice box hisses, then clears.
+>
+> "No. I've made every call on this line since noon. Hold here. Hold there. Hold till relief." The servo in his neck grinds as he looks down the row. "That's how we got this row. This call is yours, medic. I'm one of the seventeen, and the seventeen don't get a vote."
+>
+> Then, lower: "But I'll tell you what a sergeant would say, so you've got something to argue with. The four that come apart stay. I stay. Leave me in the fence by the radio and I'll talk the next ship in, whenever it comes. That's twelve red for nine loads. Three more to pick." A dry click. "Or you change the arithmetic. Past my stakes, that squad is lying on eleven sets of legs it won't need again. Shoulder struts make good poles. The drones have worked that out already."
+>
+> Far off at M8, the squad radio spits a human voice through the engine noise: "…pad to line, ramp seals at last light, repeat, last light…" The rust on the plates is going brown.
+>
+> Seven-Seven has stopped at eleven-oh-two. It's looking at Penny's four.
+
+**Turn fields:**
+
+- hooks: 5
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral); party MPAT I4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=done, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 9 (round) · $0.090
+
+**Since the last narration:**
+
+- [system] MPAT moves to H4 (1 tile, 1 AP).
+- [MPAT] I look out at the fallen squad past the stakes. Is anything still moving out there?
+- [Rook] "Lantern, is it? What are you holding shut?"
+
+**Narration:**
+
+> Out past the stakes, three things are moving. The drones: two of them, riding the dusk in tight loops above the far post, one with a shoulder strut hanging from its claws. On the fallen squad, two chest lights blink, slow and out of step with each other. And nearer, at E7, alone in the cratered ground, a single infantry robot lies on its back and jerks, one heel scraping a furrow. Its voice box loops on the wind: "Four-one-one, present. Four-one-one, present."
+>
+> Lantern presses its hands down harder when Rook asks. The chest plate under its fingers is dented, and a white corner of paper sticks out of the seam. "Mine to carry," it says. "Not yours." Then, as if it owes Rook something for asking: "There's a sun on it. Yellow. Four people holding hands. The little one has no face yet. Somebody didn't finish." It turns its head east, toward the engine note. "Whoever it was meant for is on that ship. Or isn't."
+>
+> Soft-Hands is staring at E7. "Four-one-one was the Sergeant's third squad. If it's still saying its number, there's someone in there."
+>
+> The drone carrying the strut peels off from the loop and drops toward the twitching robot.
+
+**Turn fields:**
+
+- npcs: `[{"action": "place", "name": "Scavenger drone", "at": "A4", "side": "hostile", "tier": "minion", "weapon": "service_pistol", "kind": "machine"}, {"action": "place", "name": "Scavenger drone (carrying a strut)", "at": "D6", "side": "hostile", "tier": "minion", "weapon": "service_pistol", "kind": "machine"}]`
+- hooks: 6
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral), Scavenger drone A4 (hostile), Scavenger drone (carrying a strut) D6 (hostile); party MPAT H4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=done, first_fight=open, who_stays=open, carry_east=open.
+
+## Turn 10 (round) · $0.073
+
+**Since the last narration:**
+
+- [xp] Rook +25 XP (dialogue: Got Lantern to speak of the drawing)
+- [system] Scavenger drone at A4.
+- [system] Scavenger drone (carrying a strut) at D6.
+- [MPAT] I stand up on the stakes and shout at the drones to get off our people.
+- [Rook] I back MPAT up, banging two plates together.
+
+**Narration:**
+
+> MPAT's boots find the top of a stake, and the shout carries flat and hard over the cratered ground. Behind it, Rook's two plates come together like a dropped hatch, again, again, the clang rolling out past the fallen squad and coming back off the drop pod's hull.
+>
+> Both drones stop their loops. The one at the far post hangs still, rotor wash lifting grit off a dead robot's face. The one with the strut turns in the air to look straight at the stakes, its lens irising wide, then narrow. It doesn't drop its prize. It drifts a metre closer, testing whether the noise has teeth behind it.
+>
+> Behind you, Seven-Seven has started counting again, faster. Nine-Nine says, low: "Don't blink first, two-five-eight."
+
+**Turn fields:**
+
+- npcs: `[{"action": "move", "id": "n150", "at": "E6"}]`
+- checks: `[{"charId": "c4", "skills": ["intimidation", "guts"], "tn": 12, "stakes": "Make enough noise and menace that the drones decide the fallen squad isn't worth it and flee, maybe dropping the strut; fail, and they decide you're scrap worth picking too, and dive."}]`
+- hooks: 5
+
+Map after: Seven-Seven J6 (neutral), Hum J8 (neutral), Lantern K7 (neutral), Soft-Hands I6 (neutral), Penny L9 (neutral), Scavenger drone A4 (hostile), Scavenger drone (carrying a strut) E6 (hostile); party MPAT H4, Rook I5. Mission: the_shield_line: reach_nine_nine=done, tend_the_line=done, first_fight=open, who_stays=open, carry_east=open.

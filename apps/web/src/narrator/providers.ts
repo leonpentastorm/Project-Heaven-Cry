@@ -7,6 +7,7 @@ import type { GameState, NarratorTurn } from '@engine';
 import { noteExchange } from '../game/debug';
 import { anthropicProvider, polish as anthropicPolish, MODELS, type NarratorProvider, type NarratorResult, type RewriteResult } from './anthropic';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
+import { rememberTurn } from './craft';
 import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
 
 export type ProviderId = 'anthropic' | 'openai' | 'openrouter' | 'deepseek' | 'google' | 'ollama' | 'custom' | 'custom-anthropic';
@@ -251,6 +252,7 @@ export function openaiProvider(o: OpenAIOptions): NarratorProvider {
           if (lookups > MAX_LOOKUPS + 1) throw new Error('The Narrator kept looking things up without answering. Retry.');
         }
         note();
+        rememberTurn(g, turn!); // the next turn's LAST TURN check (craft.ts)
         return { turn: turn!, usage: usage() } satisfies NarratorResult;
       } catch (e: any) {
         note(e?.message || String(e));

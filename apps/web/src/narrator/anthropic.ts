@@ -6,6 +6,7 @@ import type { GameState, NarratorTurn } from '@engine';
 import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
+import { rememberTurn } from './craft';
 import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
 /** The most one Narrator turn may cost, all rounds of lookups included (spec: The Narrator's memory). */
 export const COST_CEILING_USD = 0.5;
@@ -125,6 +126,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         if (sum.input || sum.output || sum.cacheRead || sum.write1h || sum.write5) (err as any).usage = usageNow();
         throw err;
       }
+      rememberTurn(g, turn!); // the next turn's LAST TURN check (craft.ts)
       const input = sum.input, cacheRead = sum.cacheRead, cacheWrite = sum.write1h + sum.write5, output = sum.output;
       const costUsd = bill(spent());
       return { turn: turn!, usage: { input: input + cacheWrite, output, cacheRead, costUsd } };
