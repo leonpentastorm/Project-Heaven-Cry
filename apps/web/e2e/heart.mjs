@@ -272,6 +272,9 @@ ok('the workshop verdict: a Wave reads "cone 3 from you" (no separate reach) and
 await ws.screenshot({ path: OUT + 'heart-14-workshop.png' });
 
 // =============================================================== Part A2: a Storm Hand's Discharge
+// Advanced classes are shelved (Class Roster Rev 3); Part A2 comes back when the Storm Hand does.
+const ADVANCED_LIVE = false;
+if (ADVANCED_LIVE) {
 me = await build([{ type: 'sandbox/unequip', slot: 'main' }, { type: 'sandbox/class', classId: 'storm_hand' }, { type: 'sandbox/kit', kind: 'soul' }]);
 // The infusion is chosen out of combat (once per rest): stop, infuse with SHOCK on the area map, fight again.
 await must({ type: 'sandbox/stop' }); await p.waitForTimeout(800);
@@ -309,6 +312,7 @@ if (free1) {
   ok('Discharge with the SHOCK element (fx ' + JSON.stringify(dfx) + '; layer ' + JSON.stringify(layer) + '; ' + ((await st()).cb.log.find((l) => /discharges/.test(l)) || '').slice(0, 90) + ')', !!dfx && dfx.element === 'shock' && (await fxCount()) > 0);
   await p.waitForTimeout(1200);
 }
+} else console.log('  skipped: Part A2, the Storm Hand (advanced classes shelved, Rev 3)');
 console.log(p.errors.length ? 'errors (A):\n  ' + p.errors.join('\n  ') : 'no page errors (A)');
 if (p.errors.length) process.exitCode = 1;
 
