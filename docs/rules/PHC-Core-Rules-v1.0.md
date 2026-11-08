@@ -1411,17 +1411,122 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 
 **The old classes under the new Sigil rules (rules 1.4; full list and engine notes in `docs/design/sigil-1.4-impact.md`).** Every glyph is drawn on its caster's own tile, one to a tile, and spells are Lines. Blade Scribe's Sword Form and the Evoker blade's Edge Word draw their glyph on your own tile as part of the strike. Siege Engineer's barricade becomes full cover with a STAY glyph on a tile next to it. Warden's cover rune is still a lone STAY glyph Evoked on its own (the class's exception to the Line), from a tile next to it. Spellslinger's and the Scribe's stored spells hold words, not shapes: a stored spell goes off at the shot's target (Spellslinger) or from the object's tile with its own Reach, all around (Scribe). Stroke Gambler's half-glyphs fall on your own tile and complete as a Line of half-glyphs, or as a Stack of two on one tile (the two-glyph hook's first holder, item 464). Glyph Mason's Keystone is cut on your own tile and counts as a glyph of the Line it sits in. Mage's Barrage still cuts element words' charge; Overcharge lets one spell hold a word beyond your Max Sigil words, never beyond 4 glyphs. Circuit Mage's Fusion joins the non-Subject words (Reach, Delivery, Burst, Filter) to a Soul school (item 466). The Grand Sigilist's Enlarge reaches all 40 words (item 468).
 
-### Patrons and prayer
+### Patrons and prayer (rules 1.6, Blessing 2.0)
 
-A **patron** is a Celestial in a pact with you, played by the Narrator. They have a theme, a costume they keep, rites they expect, and a list of Blessings (examples in patrons.json). **Devotion** runs 0–10 and starts at 3 when the pact is made: +1 for each session you keep the rites, +1 for bringing someone into the faith, −1 for a broken rite, −2 for breaking character where your patron can see.
+> **Rules revision 1.6 (8 Nov 2026; design `docs/design/blessing-2.0-spec.md`, decision 102).** Faith is a relationship:
+> someone is watching. Sigils own space, Outbursts own time and the body, Blessings own a relationship and are paid for
+> with obedience (vows, rites, taboos). Every number here is PROVISIONAL (section 14, items 592–629). The patron's mood
+> (the old prayer TN) is retired. The data is `patrons.json` (version 2); the engine is `faith.ts`.
 
-| Faith | You can |
+**Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
+below for the Earth Sector; Devotion starts at 3) or an **Atheist** (no patron, no Devotion; prays by dice: the pilgrim).
+Belief is chosen at Faith 0; **praying at all needs Faith 3**. Old saves: a character with a pact becomes Faithful to that
+patron with their current Devotion; one without becomes an Atheist.
+
+**Devotion** (Faithful only) runs 0–10: your **standing**. You don't spend it to ask; asking is limited by cooldowns.
+
+| Rises | | Falls | |
+|---|---|---|---|
+| An action in a fight carries a tag your patron likes | +1, at most +2 a fight | An action carries a taboo tag | −1, −2 while Witnessed |
+| A vow kept | +1 | A vow broken | −2 |
+| A rite kept (once per rite per session) | +1 | A failed overreach | −1 |
+| Bringing someone into the faith (Narrator) | +1 | Breaking character where your patron can see (Narrator) | −2 |
+| Each knowledge piece of a new patron, on conversion | +1 | A Miracle | all of it |
+
+**What standing allows:** a Whisper at any Devotion; Hymn I at 3, II at 5, III at 7; a Miracle at Faith 7 and Devotion 7,
+once a session, spending all Devotion. **Overreach:** a Faithful may ask for their own patron's Hymn above their Devotion:
+d20 + Faith modifier against 12 + 2 × (the gate − your Devotion). A miss: nothing happens, the AP is spent, Devotion −1.
+Within your standing a Hymn needs no roll. There is no overreach for a Miracle.
+
+**The three sizes of prayer.** Every prayer drops the mana meter by 5. Silenced characters can't pray. Any prayer works in a
+fight or in the story: out of a fight the engine applies what still has numbers there (heals, conditions on the squad) and
+the Narrator narrates the rest.
+
+| Size | AP | Limit | Who |
+|---|---|---|---|
+| **Whisper** | 1 | once a turn (once a round in the story) | anyone with Faith 3 |
+| **Hymn** | 3 | the prayer cooldown (Derived stats; rounds) | the Faithful: their patron's Hymns; an Atheist: the Hymns they learned |
+| **Miracle** | 3 | once a session | the Faithful at Faith 7 (Atheists never) |
+
+**Whispers**, the same six for every patron (the patron changes the look, the sound and the line): **Luck** (you or an ally
+in sight: +2 on the next roll), **Health** (heals 15 × Blessing power), **Protection** (a 15 × Blessing power shield),
+**Courage** (ends Fear or Shaken), **Guidance** (reveals Hidden enemies and traps within 6; +2 on your next notice roll),
+**Safe Passage** (your next move this turn draws no opportunity attacks). **Hymns and Miracles** belong to each patron
+(the table below). Effects are × Blessing power.
+
+**Witnessed** (Faith 5, the Faithful only): after a successful Hymn or Miracle, until your next turn, your attack rolls
+that would carry a tag your patron likes get +2, and taboo actions cost double Devotion.
+
+**Atheists and pilgrims.** An Atheist prays by dice: a Whisper is d20 + Faith modifier against 12; a learned Hymn I, II or
+III against 14, 16 or 18. A miss: nothing happens and the AP is spent. **Knowledge pieces:** an NPC with Faith above 5 can
+teach you about their patron; each lesson is one piece (the Narrator grants it), and each piece unlocks that patron's next
+Hymn in order (I, then II, then III). Pieces from several patrons give a mixed kit. Atheists never get a Miracle and are
+never Witnessed.
+
+**Vows.** At the start of a fight, before you first act, any Faithful character may swear one vow (free). The engine
+tracks it: broken, −2 Devotion at once; kept to the end of the fight, +1. The patron speaks a line either way.
+
+| Vow | Broken when |
 |---|---|
-| 3 | **Pray** (3 AP): d20 + Faith modifier + half your Devotion, against your patron's mood (TN 12 by default; the Narrator moves it with events). Success: one Blessing from the patron's list, × Blessing power. Natural 1: −1 Devotion. Every prayer drops the meter by 5. Cooldown: see Derived stats. |
-| 5 | **Witnessed:** after a successful prayer, until your next turn, on-theme actions get +2 and off-theme ones cost 1 Devotion each. |
-| 7 | **Miracle:** once per session, spend all your Devotion (at least 5) for a Blessing at triple power, or a story-sized intervention the Narrator designs. |
+| **Shield** "None of them falls." (name an ally) | that ally is Downed |
+| **Mercy** "I spare who yields." | you damage a surrendered or Downed enemy |
+| **Stand** "I don't give ground." | you end a turn farther from the nearest enemy than you started it |
+| **Bare Hands** "By my own hands." | you attack with a gun or a spell |
+| **No Magic but Theirs** "No magic but theirs." | you draw, Evoke or Begin (Sigil or Outburst) |
+| **Nobody Left Behind** "Nobody left behind." | an ally is still Downed when the fight ends |
 
-The Narrator makes a pact (the patron's id; Devotion starts at 3), moves Devotion, and sets a patron's mood (the prayer's TN). Out of a fight a prayer is rolled the same way and the Narrator answers it. In a fight the engine runs the Blessing's numbers (rules 1.3).
+**Tags: what your patron sees.** The engine tags actions in a fight; a tag counts once per action. Each patron likes 3 tags
+and holds 2 as taboo.
+
+| Tag | When you… | Tag | When you… |
+|---|---|---|---|
+| protect | shield, Interpose, Brace, take a hit for someone | supply | reload an ally, give a stim or an item, place cover |
+| heal | heal or stabilise someone else | hold | end a turn Braced, Anchored or in Overwatch |
+| mercy | accept a surrender, or end a fight without killing a surrendered enemy | flee | leave a fight, or Disengage away from enemies |
+| judge | kill or Down an enemy that harmed a surrendered or Downed creature this fight | desecrate | damage a shrine or holy ground (objects tagged holy) |
+| kill | kill an enemy | betray | attack a creature on your own side |
+| burn | deal Fire damage or set Burning | cower | end a turn Hidden while an ally is Downed |
+| storm | deal Storm (lightning) damage | trick | hide, a Trickster move, a False Image, a feint or a swap |
+
+**Conversion and the patron's rule about other gods.** The Narrator makes a pact (an Atheist converts): the new patron's
+knowledge pieces turn into Devotion, +1 each on top of the starting 3 (at most 10), and those Hymns are prayed by
+standing. Every patron is **Open** (you keep Hymns learned from other patrons and pray them by dice; you may keep learning)
+or **Jealous** (on the pact every other patron's Hymn and piece is gone, and you can't learn from other patrons).
+**Apostasy** (leaving a pact; a Narrator event): Devotion 0, you become an Atheist, and the old patron's Hymns stay as
+pieces, as many as the Hymn gates your Devotion had reached (at least 1). PROVISIONAL (item 606).
+
+**Interventions.** Once a fight, while you are Witnessed, your patron acts unasked when its trigger happens.
+
+**Rites.** Each patron has two: an **engine rite** (a story button: a confession or a challenge at any time out of a
+fight, a vigil or a count after a rest, a ration given up) and a **Narrator rite** (marked kept by the Narrator). Each is
+kept once a session for +1 Devotion.
+
+**Voice lines.** Each patron has 3 lines for each event (answered, refused, taboo, vow kept, vow broken, Witnessed,
+intervention, Miracle, conversion), in its costume's voice. The engine picks one with the game's dice; the Narrator never
+writes them.
+
+**The eight launch patrons.** Each is a Celestial LARPing a god archetype; no real god is named, and none is a central
+figure of a living religion.
+
+| Patron | Likes | Taboos | Rule | Hymn I (Devotion 3) | Hymn II (5) | Hymn III (7) | Miracle | Intervention |
+|---|---|---|---|---|---|---|---|---|
+| **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 40 shield | Judgement: an enemy takes 40 Soul; ×2 if it harmed the helpless | Absolution: an ally is cleansed of every condition and heals 30 | The Saints' Verdict: every enemy that harmed the helpless takes 60 Soul and is Stunned 1 round | an enemy damages a surrendered or Downed creature: it takes 20 Soul |
+| **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the squad is restocked (ammo, Supplies, a standard core each) and gets +2 AP next turn | your gun runs dry: it reloads, free |
+| **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next failed attack roll is rerolled at +5 | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally gets back the AP of the last action they took this round | an enemy rolls a natural 1 against you: it falls Prone |
+| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: an ally who died this fight returns at 1 HP | an ally would drop to 0 HP: they stay at 1 HP |
+| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 40 | Hearthlight: a 3×3 area; allies starting a turn in it heal 10, for 3 rounds | Feed the Fire: an ally gets +1 AP now (ceiling applies) and loses Weakened and Slowed | Everyone Home: the squad heals to full and the Downed stand | an ally drops below a quarter HP: they heal 15 |
+| **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 50 lightning to an enemy, then 25 to one more within 2 | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 3×3 area takes 80 lightning and is Shaken | you kill an enemy: 20 lightning to the nearest other enemy |
+| **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every enemy in sight that can surrender makes a Heart save or surrenders | an ally next to you is hit: half the damage moves to you |
+| **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next attack against an ally misses | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP) | Rewoven: every ally acts once more, right after this turn, in initiative order | an enemy crits you: it becomes a normal hit |
+
+**What the Narrator owns:** pacts and conversions, knowledge pieces, Narrator rites kept, Devotion moves of at most ±2 a
+call with a reason (breaking character, bringing in a believer), holy ground (objects tagged holy), and what a prayer means
+in the story. **The engine owns** every number, the tags, vows, Witnessed, interventions and the dice.
+
+**Still working as before:** the Guardian's Blessed Shells (they seal a Hymn), Under the Eye, and Judgement (which spends 1
+Devotion: the only spend besides a Miracle; item 619); Blessing power and the Faith perks; Rite in the Field (it cuts a
+Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blood hooks on a Blessing landing
+(`blessing_in`).
 
 ## Skills, traits and perks in play
 
@@ -1477,7 +1582,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Companions.** A drone or a beast fights beside its owner: it acts right after the owner in the order, on the owner's player's orders (move, attack, Overwatch, reload, end its turn), with its own numbers (enemies.json `companions`). The drone (30 HP) only moves and shoots: a plain shot with its service pistol, which never runs dry, never needs reloading and never jams; it has no aimed shot, burst, Overwatch or other weapon action. The beast has 60 HP. At 0 HP it is destroyed, not Downed; its HP carries between fights, and a destroyed one is out until the story repairs or heals it.
 
-**Prayer** (see Patrons and prayer): 3 AP; not while Silenced; the roll is d20 + Faith modifier + half your Devotion against the patron's mood. A Blessing's numbers × Blessing power; what the engine can't run of a Blessing goes to the Narrator with its text. The cooldown counts rounds.
+**Prayer** (rules 1.6; see Patrons and prayer): a Whisper 1 AP, a Hymn or a Miracle 3 AP; not while Silenced. A Faithful character's own Hymns need no roll within their Devotion; an overreach, an Atheist's prayer and a kept Hymn roll d20 + Faith modifier (rules 1.6). Effects × Blessing power; what the engine can't run goes to the Narrator with its text. The Hymn cooldown counts rounds.
 
 **Class resources.** Momentum (Fighter, max 5): +1 for each melee hit; it drops to 0 when you end a turn without attacking. Guard (Defender, max 5), Marks (Assassin, max 3) and Charges (Storm Hand, max 3) start each fight at 0 and are spent by the class's moves. Supplies (Medic, 3 + floor(Proficiency ÷ 2)) and toxins (Assassin, 2 + floor(Ingenuity ÷ 3)) carry over between fights and are restocked at a long rest. Heat, Flux and Strain are shared rules every gun, Evoker or Emanator user already has. An advanced class that leans on a parent's resource carries it (Adamantile Knight: Guard; Shade: Marks).
 
@@ -3957,3 +4062,43 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 634. **The Grand staff** (mana arms, 2H, 24 physical, reach 1, 2.5 kg, 2,400 credits, Brain Power 3, counts as an Evoker; item 353's data delta). PROVISIONAL: every number; the Grand Sigilist (shelved) doesn't need it to plant its Grand form yet.
 635. **The Proving Ground's magic kits** put the Evoker in the off hand when it is free and the main hand is 1H (the Sigil kit; also the both kit), the Emanator there for the Soul kit; anything that doesn't fit (a 2H weapon, a full off hand, the second focus of the both kit) goes to the pack, and the tool's line says where each one went.
 
+**Rules revision 1.6: Blessing 2.0 (8 Nov 2026; decision 102; `docs/design/blessing-2.0-spec.md`). Readings where the design was silent or open. PROVISIONAL.**
+
+592. **Blessing 2.0 numbers.** Every Hymn, Miracle, Whisper and intervention number (patrons.json v2, from the design spec) still needs a pass against `docs/design/balance-targets.md` (design open item 4).
+593. **The liked-tag cap:** +2 Devotion a fight from liked tags; vows, rites and the Narrator's moves don't count toward it, and taboo losses have no cap (design open item 2).
+594. **No roll within standing.** A Faithful character's Whisper, and a Hymn of their own patron at or under their Devotion, need no roll; only an overreach, an Atheist's prayer and a kept Hymn of another patron roll.
+595. **Witnessed's +2** goes on attack rolls that would carry a tag the patron likes: an attack on an enemy when the patron likes kill (or judge, when that enemy harmed the helpless), fire damage when it likes burn, lightning when it likes storm. Other rolls get nothing; the tag is judged before the roll.
+596. **A tag counts once per action** (one reducer action; what happens during an enemy's turn because of you, such as an Interpose, is its own action). Liked and taboo tags of one action all count.
+597. **Kill as a taboo** (the Toll-Keeper, the Matchmaker) means killing or Downing a surrendered or Downed creature, not any kill (`taboo_notes` in the data).
+598. **Betray** is any attack, Sigil or Soul hit on a creature of your own side that takes HP (friendly fire included); a heal or a shield never is.
+599. **Mercy** fires when an enemy surrenders to you (Parley or a non-lethal blow), and at the end of a fight for each surrendered enemy still alive that you never damaged after it yielded.
+600. **Protect** fires on a shield you give an ally, an Interpose, a Brace, or a hit you take in an ally's place (the Matchmaker's share, Red Thread); **heal** on a heal or stabilise given to someone else; **supply** on a stim given, an item handed over, an ally's reload, or cover placed.
+601. **Hold** is checked at the end of your turn (Braced, Anchored, or holding Overwatch); **cower** at the end of your turn (Hidden while an ally is Downed); **flee** on a Disengage that ends farther from the nearest enemy, or leaving the fight (Extraction).
+602. **Vows** are sworn in round 1 before the character first acts, one per fight. Bare Hands breaks on an attack with a gun or a thrown weapon, or any Sigil or Soul strike; Stand compares the distance to the nearest living enemy at the start and the end of each of your turns; Nobody Left Behind is checked at the fight's end (an ally still Downed breaks it then, −2).
+603. **Interventions** are once a fight per Faithful fighter, while that fighter is Witnessed; two Witnessed Faithful each get their patron's.
+604. **Prayers in the story** cost AP from the overworld round when rounds are running; the Hymn cooldown counts story rounds; a Whisper is once a story round. They go at the squad (characters); what they would do to anyone else goes to the Narrator. Story prayers don't make you Witnessed.
+605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1.
+606. **Apostasy** (design open item 1): Devotion 0, Atheist; the old patron's Hymns stay as pieces, one for each Hymn gate the Devotion had reached (3, 5, 7), at least 1, and never fewer than the pieces already held.
+607. **Changing patrons** (a pact while Faithful) is apostasy from the old patron, then the pact; the new patron's Jealous rule applies to everything kept.
+608. **The Miracle** takes no roll and doesn't wait on the Hymn cooldown; it makes you Witnessed (Faith 5) like a Hymn. Whispers never make you Witnessed.
+609. **Luck and Lucky Break** act on attack rolls in a fight and on checks in the story. Luck: +2 on the next one. Lucky Break: in a fight the next failed attack roll is rerolled at +5; in the story it is +5 on the next check (a story check has no reroll step the engine can hook). Saves aren't touched.
+610. **Guidance** reveals Hidden enemies within 6 tiles and hidden traps there; the +2 goes on the character's next spotting roll in the fight, or next notice check in the story.
+611. **Safe Passage** makes your next move this turn draw no opportunity attacks (Overwatch still fires).
+612. **Dig In** gives the half-cover penalty (−5 to shots at the ally) and Braced until the ally moves (the engine has no cover on a unit's own tile; this reads it as a state).
+613. **Switcheroo** swaps two units in your sight, each within 6 tiles of you; an enemy among them makes a Brain save and the swap fails if it saves.
+614. **Encore** banks for every ally's next turn the AP of the last action they took this round (the AP ceiling applies when it arrives). **Rewoven** puts every living ally into the order right after the current turn, once each, in initiative order, this round only.
+615. **Hearthlight, Hold the Gate, Gather the Clouds and Together** last until the caster's next turn, except Hearthlight (3 rounds). **Red Thread** lasts 2 rounds: half of each hit on one of the pair moves to the other.
+616. **Foreknowing** lasts until the ally is next attacked or the fight ends. **Unravel** ends every boon condition, the shield, Braced, Overwatch and Hidden. **Cut Short** is Stunned 1 round (Heart save); a boss instead loses 2 AP on its next turn.
+617. **Last Crossing** kills outright on a failed save (no Downed state); **Turned Back at the Shore** brings an ally who died this fight back standing at 1 HP. **Love Conquers** uses the surrender rules: bosses, machines and the no_surrender never yield.
+618. **Enemy faithful:** one enemy type that prays (a Whisper and a Hymn) is deferred; enemies don't pray yet.
+619. **Judgement (Guardian)** still spends 1 Devotion, the only spend besides a Miracle (design open item 3); Blessed Shells' story prayer now uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood.
+620. **Interventions scale with Blessing power** like Hymns: Nerukhan's 20 Soul, Mother Ember's 15 heal and Old Overcast's 20 lightning are × the praying character's Blessing power.
+621. **The Miracle spends Devotion after its effect:** tags its own effect carries (a heal for Mother Ember) give nothing back; Devotion is 0 when it ends.
+622. **Harming the helpless** (judge, the Mercy vow, Nerukhan's intervention) counts any hostile hit on a Downed creature, even though a Downed creature takes the hit as a failed death save rather than HP, and any HP damage to a surrendered one. Killing a Downed creature (its third failed save) or a surrendered one is the "kill of the helpless" taboo.
+623. **Mercy at the fight's end** is one tag per fighter (not one per spared enemy), given when a surrendered enemy is alive and that fighter never harmed the helpless this fight. **Flee** on Extraction is one tag per fighter still standing.
+624. **Story prayers that need a tile or an enemy** (Thunderclap, Covering Fire, Judgement, Love Conquers…) and Whispers with no story meaning (Protection, Safe Passage) are paid and rolled as usual; what they do goes to the Narrator as a pending ruling. A story Hymn or Miracle also fires the items' `story_blessing` hook (Upper-Touched's d6). The old `story/pray` is a Hymn I of your patron through `faith/pray` (it now costs 3 AP while rounds run).
+625. **Knowledge pieces of your own patron** are refused (standing is what counts); a Faithful of a Jealous patron is refused pieces of other patrons; a fourth piece of a patron is refused.
+626. **Rites:** an engine rite is kept only from its button (the Narrator can't mark it), a Narrator rite only by the Narrator; a tithe takes one matching item (an item whose kind or id is the category, such as food).
+627. **The Narrator's Devotion move** is refused above ±2 and without a reason when the host sends `faith/devotion`; in the Narrator's turn (`patrons`, `faith`) it is clamped to ±2 instead. The turn's `patronMood` is no longer applied.
+628. **Heretic's Stolen Fire** prays a stolen Hymn as an Atheist prays a learned one (d20 + Will Power against 14, 16 or 18; no Witnessed), with the Hymn's own target, second unit or tile. In the story it is d20 + Will Power against the same TN, and the Narrator rules the answer.
+629. **Old-shape patrons** (a patron added at run time with `blessings` and no `hymns`) still work: their Blessings are Hymns (tier 1 unless given), aimed at you or an ally, and run their data effects.

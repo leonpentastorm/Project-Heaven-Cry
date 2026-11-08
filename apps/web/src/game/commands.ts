@@ -7,6 +7,8 @@
 import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
+import { faithView, beliefOf, FAITH_MIN } from '@engine';
+import { prayerButtons, FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
 
@@ -16,7 +18,23 @@ export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal
 export type ActionItem = [string, string, string, string, (string | null)?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
-export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts' };
+export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith' };
+
+// ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
+/** A prayer's id in the action list: "pr:<kind>:<id>" (a Hymn's id is its "<patron>.<hymn>" key). */
+export const PR = 'pr:';
+export const prayId = (kind: string, id: string) => PR + kind + ':' + id;
+export const parsePray = (a: string): { kind: 'whisper' | 'hymn' | 'miracle'; id: string } | null => {
+  if (!a || !a.startsWith(PR)) return null; const i = a.indexOf(':', PR.length); return { kind: a.slice(PR.length, i) as any, id: a.slice(i + 1) }; };
+/** The FAITH tab's items: every prayer this unit could make, with AP, the gate or the dice, the odds, and the reason when not. */
+export function prayerItems(g: any, cur: any): ActionItem[] {
+  if (!g || !cur || cur.side !== 'pc' || !cur.charId || cur.companion) return [];
+  const c = g.characters?.[cur.charId]; if (!c) return [];
+  if (beliefOf(c).kind !== 'faithful' && (c.skills?.faith || 0) < FAITH_MIN) return []; // no faith to speak of: no tab
+  const B = prayerButtons(faithView(g, c.id));
+  return [...B.whispers, ...B.hymns, ...(B.miracle ? [B.miracle] : [])].map((b) => [prayId(b.kind, b.id), (b.kind === 'miracle' ? '✦ ' : '') + b.name + (b.kind === 'whisper' ? '' : ' · ' + (b.kind === 'miracle' ? 'MIRACLE' : b.gate.replace(/ · DEVOTION \d+$/, ''))), b.ap + ' · ' + b.odds,
+    b.gate + ' · ' + b.odds + '. ' + b.text + (b.warn ? ' ' + b.warn + '.' : ''), b.ok ? null : b.why || 'Not now.'] as ActionItem);
+}
 
 // ---------- perk, trait and class-move actions (engine effects/actions.ts) ----------
 /** A perk action's id in the action list: "pk:<item key>#<action id>". */
@@ -144,6 +162,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
         ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.'] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
   }
+  // Faith (rules 1.6): Whispers, Hymns and the Miracle, in Virtue ink.
+  const pray = prayerItems(opts.g, cur);
+  if (pray.length) ITEMS.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
   // A unit with a fixed action list (the drone: move and a plain shot; spec 14 item 370) shows only those.
   const allowed: string[] | undefined = cur && cur.allowedActions;
   const LIST = allowed ? ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => allowed.includes(it[0])), ink, tab] as ActionGroup).filter((gr) => gr[1].length) : ITEMS;
@@ -169,7 +190,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
   if (action === 'sprint' && u.noSprint) return 'Can\'t sprint in this load.';
   if (action === 'reload') { if (!gun) return 'Nothing to reload.'; if ((u.ammo ?? 0) >= w.magazine) return 'Already full.'; if (u.jammed) return 'Jammed: clear it first.'; if (w.reload === 'loose' ? !(u.loose > 0) : Array.isArray(u.mags) && !u.mags.length) return 'Nothing left to load.'; }
   if (action === 'clear' && !u.jammed) return 'Not jammed.';
-  if (action.startsWith(PK)) return null; // perk actions carry the engine's own reason (catalogue)
+  if (action.startsWith(PK) || action.startsWith(PR)) return null; // perk actions and prayers carry the engine's own reason (catalogue)
   if (action === 'skill') {
     if (!['multi_shot', 'sweep'].includes(skFx.op)) return skFx.op === 'narrator' || !skFx.op ? 'The Narrator rules it: use Say.' : 'Always on.';
     if (u.jammed && skFx.op === 'multi_shot') return 'Jammed: clear it first.';

@@ -21,7 +21,8 @@ import {
   RESONANCE_BONUS, resonates, type Affected,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
-import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
+import { blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
+import { combatPray, ATHEIST_TN } from '../faith';
 import { type Character, mod, prayerCooldown, maxSigilWords, migrateDesign } from '../character';
 import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
@@ -766,20 +767,21 @@ register({
       run: (h, args, rng) => {
         const c = charOf(h), u = h.u!, cb = h.cb!; if (!c) return 'Only a character can pray.';
         const pick = stolenPick(args.choice); if (!pick) return 'Name a Blessing to steal.';
-        const was = { faith: c.skills.faith, patron: c.patron, devotion: c.devotion };
-        c.skills.faith = c.skills.will_power || 0; c.patron = pick.p.id;
-        try { return pray(cb, rng, u, { choice: pick.bl.id, targetId: args.targetId }); }
-        finally { if (was.faith == null) delete (c.skills as any).faith; else c.skills.faith = was.faith; c.patron = was.patron; c.devotion = was.devotion; }
+        // Rules 1.6: a stolen Hymn is prayed by dice, as an Atheist prays a learned one (d20 + Will Power vs 14/16/18).
+        const key = pick.p.id + '.' + pick.bl.id, was = { faith: c.skills.faith, patron: c.patron, devotion: c.devotion, belief: c.belief, hymns: c.hymns };
+        c.skills.faith = c.skills.will_power || 0; c.belief = { kind: 'atheist' }; c.patron = null; c.hymns = [...(c.hymns || []), key];
+        try { return combatPray(cb, rng, u, { kind: 'hymn', id: key, targetId: args.targetId, targetId2: (args as any).targetId2, tile: args.tile }, gameOf(h)!); }
+        finally { if (was.faith == null) delete (c.skills as any).faith; else c.skills.faith = was.faith; c.patron = was.patron; c.devotion = was.devotion; c.belief = was.belief; c.hymns = was.hymns; if (was.belief === undefined) delete c.belief; if (was.hymns === undefined) delete c.hymns; }
       },
     },
     {
       id: 'stolen_fire_story', label: 'Stolen Fire', scope: ['story', 'world'], ap: 0, target: 'none',
-      text: 'Pray without kneeling, in the story: d20 + Will Power against the patron\'s mood.',
+      text: 'Pray without kneeling, in the story: d20 + Will Power against the Hymn\'s dice TN (14, 16 or 18).',
       run: (h, args, rng) => {
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Pray in the story.';
         const pick = stolenPick(args.choice); if (!pick) return 'Name a Blessing to steal.';
         if ((c.skills.will_power || 0) < 3) return 'Stolen Fire needs Will Power 3.';
-        const r = d20(rng), m = mod(c.skills.will_power || 0), tn = g.story?.patronMood?.[pick.p.id] ?? 12, ok = r === 20 || (r !== 1 && r + m >= tn);
+        const r = d20(rng), m = mod(c.skills.will_power || 0), tn = ATHEIST_TN[pick.bl.tier || 1] ?? 14, ok = r === 20 || (r !== 1 && r + m >= tn); // rules 1.6: by dice
         const eid = postStory(h, 'steals a prayer to ' + pick.p.name + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + (ok ? ' · heard' : ' · silence') + (args.text ? ' ("' + String(args.text).slice(0, 160) + '")' : ''));
         if (ok) pendRuling(g, c, h.key, c.name + ' stole a prayer and was heard: ' + pick.p.name + ' answers with ' + pick.bl.name + ' × ' + (1 + 0.1 * (c.skills.will_power || 0)).toFixed(1) + ' (Heretic: the patron may resent it).', eid || undefined);
         return null;

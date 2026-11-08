@@ -22,6 +22,8 @@ import {
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
+import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE } from '@engine';
+import { patronMarkUri, vowIconUri, FAITH_INK } from './faithArt';
 import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
@@ -88,7 +90,7 @@ html.phc-sandbox div[role="dialog"][aria-label="The fight is over"]{display:none
 `;
 function useCss() { React.useEffect(() => { if (document.getElementById('phc-sandbox-css')) return; const s = document.createElement('style'); s.id = 'phc-sandbox-css'; s.textContent = CSS; document.head.appendChild(s); }, []); }
 
-type Tab = 'gear' | 'squad' | 'magic' | 'field';
+type Tab = 'gear' | 'squad' | 'magic' | 'faith' | 'field';
 /** The drill unit on a tile of the area map, while gearing up. */
 const foeAt = (game: GameState, ref: string) => (game.story.npcs || []).find((n) => n.side === 'hostile' && refOf(n.pos) === ref) || null;
 
@@ -219,7 +221,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
   const c = game.characters[cid] && chars.some((x) => x.id === cid) ? game.characters[cid] : chars[0];
   React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role="dialog"][aria-modal="true"]')) close(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
   const field = isHost || !!sb.spawnAll;
-  const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ...(field ? [['field', 'Field'] as [Tab, string]] : [])];
+  const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(field ? [['field', 'Field'] as [Tab, string]] : [])];
   const status = gearing ? (sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared · gearing up' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave + ' · gearing up' : 'gearing up') : 'fighting';
   return <aside aria-label="Proving Ground tools" className={presenceCls('phc-a-right', closing) + ' phc-sb-drawer' + (screen === 'main' ? ' phc-sb-onmain' : '')}
     style={{ position: 'fixed', top: 0, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, borderRight: screen === 'main' ? '1px solid ' + C.line : 0, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
@@ -245,6 +247,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
       {tab === 'gear' && c && <GearTab c={c} />}
       {tab === 'squad' && c && <SquadTab game={game} c={c} isHost={isHost} />}
       {tab === 'magic' && c && <MagicTab c={c} />}
+      {tab === 'faith' && c && <FaithTab game={game} c={c} />}
       {tab === 'field' && field && <FieldTab game={game} isHost={isHost} />}
     </div>
   </aside>;
@@ -455,6 +458,51 @@ function GivePicker({ c }: { c: Character }) {
     </div>
     <span style={{ fontSize: 12, color: C.muted }}>Weapons come with three magazines and loose rounds.</span>
   </Section>;
+}
+
+/** The Proving Ground's faith tools (rules 1.6; the engine's sandbox/faith): belief and patron, Faith, Devotion, an
+ *  Atheist's pieces, the vow (in a fight), and a reset of the once-a-session limits (Miracle, rites, cooldowns). */
+function FaithTab({ game, c }: { game: GameState; c: Character }) {
+  const b = beliefOf(c), own = b.kind === 'faithful' ? b.patron : null, dv = devotionNow(c), faith = c.skills.faith || 0;
+  const F = (x: any) => act({ type: 'sandbox/faith', charId: c.id, ...x });
+  const pieces: Record<string, number> = { ...((c as any).faithPieces || {}) };
+  const cb: any = game.combat && !game.combat.over ? game.combat : null, u = cb?.units.find((x: any) => x.charId === c.id);
+  const allies = u ? cb.units.filter((x: any) => x.side === u.side && x !== u && !x.dead) : [];
+  const vow: any = (u && u.vow) || (c as any).vow || null;
+  const [shield, setShield] = React.useState(false);
+  const on = (yes: boolean, ink = C.text): React.CSSProperties => ({ ...small, border: '1px solid ' + (yes ? ink : C.line), background: yes ? C.raised : 'transparent', color: yes ? C.text : C.muted });
+  return <>
+    <Section title={'BELIEF · ' + (own ? 'FAITHFUL · ' + (FAITH_PATRON[own]?.name || own).toUpperCase() : 'ATHEIST · PILGRIM')} aria="Belief">
+      <div style={row} role="radiogroup" aria-label="Belief">
+        <button type="button" role="radio" aria-checked={b.kind === 'faithful'} data-sb-belief="faithful" style={on(b.kind === 'faithful', FAITH_INK)} onClick={() => F({ belief: 'faithful' })}>Faithful</button>
+        <button type="button" role="radio" aria-checked={b.kind === 'atheist'} data-sb-belief="atheist" style={on(b.kind === 'atheist', FAITH_INK)} onClick={() => F({ belief: 'atheist' })}>Atheist</button>
+      </div>
+      <div style={row} role="radiogroup" aria-label="Patron">{FAITH_PATRONS.map((p: any) => <button key={p.id} type="button" role="radio" aria-checked={own === p.id} data-sb-patron={p.id} title={p.archetype || p.name}
+        style={{ ...on(own === p.id, FAITH_INK), display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => F({ patron: p.id })}><img src={patronMarkUri(p.id)} alt="" style={{ width: 16, height: 16 }} />{p.name}</button>)}</div>
+    </Section>
+    <Section title="FAITH (THE SKILL)" aria="Faith skill">
+      <div style={row}><Stepper name="Faith" value={faith} min={0} max={10} set={(n) => F({ faith: n })} /><span style={{ fontSize: 12, color: C.muted }}>Prayer at 3 · Witnessed at 5 · Miracle at 7.</span></div>
+    </Section>
+    {own && <Section title={'DEVOTION · ' + dv + ' / 10'} aria="Devotion">
+      <div style={row}><Stepper name="Devotion" value={dv} min={0} max={10} set={(n) => F({ devotion: n })} />
+        {[GATE[1], GATE[2], GATE[3]].map((n, i) => <button key={n} type="button" style={on(dv === n, FAITH_INK)} onClick={() => F({ devotion: n })}>{'Hymn ' + ['I', 'II', 'III'][i] + ' · ' + n}</button>)}
+        <button type="button" style={on(dv === 10, FAITH_INK)} onClick={() => F({ devotion: 10 })}>10</button></div>
+    </Section>}
+    {!own && <Section title="KNOWLEDGE PIECES (AN ATHEIST'S HYMNS, BY DICE)" aria="Pieces">
+      {FAITH_PATRONS.map((p: any) => <div key={p.id} style={{ ...row, justifyContent: 'space-between' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }}><img src={patronMarkUri(p.id)} alt="" style={{ width: 16, height: 16 }} />{p.name}</span>
+        <Stepper name={p.name + ' pieces'} value={pieces[p.id] || 0} min={0} max={3} set={(n) => F({ pieces: { ...pieces, [p.id]: n } })} /></div>)}
+    </Section>}
+    <Section title={'VOW · ' + (vow ? vow.id.replace(/_/g, ' ').toUpperCase() + ' · ' + String(vow.state).toUpperCase() : 'NONE')} aria="Vow">
+      {!u && <span style={{ fontSize: 12, color: C.muted }}>Vows are sworn in a fight: start one to set it here.</span>}
+      {u && <div style={row}>{VOWS.map((v: any) => <button key={v.id} type="button" data-sb-vow={v.id} title={v.words + ' Broken when: ' + v.broken_when} style={{ ...on(!!vow && vow.id === v.id, FAITH_INK), display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        onClick={() => (v.needs_ally ? setShield(!shield) : F({ vow: v.id }))}><img src={vowIconUri(v.id)} alt="" style={{ width: 16, height: 16 }} />{v.name}</button>)}
+        <button type="button" style={small} onClick={() => F({ vow: null })}>No vow</button></div>}
+      {u && shield && <div style={row}><span style={{ fontSize: 12, color: C.text }}>Shield whom?</span>{allies.length ? allies.map((a: any) => <button key={a.id} type="button" style={small} onClick={() => { F({ vow: 'shield', allyId: a.id }); setShield(false); }}>{a.name}</button>) : <span style={{ fontSize: 12, color: C.muted }}>✕ No ally in this fight.</span>}</div>}
+    </Section>
+    <Section title="RESET" aria="Faith reset">
+      <div style={row}><button type="button" data-sb-faith-reset style={btn} onClick={() => F({ reset: true })}>Reset the limits</button><span style={{ fontSize: 12, color: C.muted }}>The Miracle, the rites and the prayer cooldowns, as at a new session.</span></div>
+    </Section>
+  </>;
 }
 
 function MagicTab({ c }: { c: Character }) {

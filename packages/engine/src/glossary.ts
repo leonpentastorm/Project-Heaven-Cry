@@ -36,7 +36,10 @@ function build(): WikiEntry[] {
   const seen = new Set<string>();
   for (const c of CLASSES as any[]) for (const r of ['I', 'II', 'III']) for (const m of c.ranks?.[r]?.moves || []) { seen.add(m.key); add(m.key, m.name, line(m.name + ' (' + c.name + ' rank ' + r + ').', who(m.key), m.text)); }
   for (const c of (classesJ as any).advanced || []) for (const m of c.moves || []) if (!seen.has('class:' + c.id + '.' + m.id)) add('class:' + c.id + '.' + m.id, m.name, line(m.name + ' (' + c.name + ', advanced; shelved).', who('class:' + c.id + '.' + m.id), m.text));
-  for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Tenets: ' + (p.tenets || []).join('; ') + '.', 'Taboos: ' + (p.taboos || []).join('; ') + '.', 'Blessings: ' + (p.blessings || []).map((b: any) => b.name).join(', ') + '.'));
+  { // Patrons (rules 1.6): likes and taboos are tag ids; Hymns tier I-III, a Miracle, the Open or Jealous rule.
+    const tagName = (t: string) => ((patronsJ as any).tags || []).find((x: any) => x.id === t)?.name || t;
+    for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Likes: ' + (p.likes || []).map(tagName).join(', ') + '. Taboos: ' + (p.taboos || []).map(tagName).join(', ') + '.', (p.rule === 'jealous' ? 'Jealous: no Hymns of other patrons.' : 'Open: Hymns of other patrons are kept, prayed by dice.'), 'Hymns: ' + (p.hymns || p.blessings || []).map((b: any) => b.name).join(', ') + (p.miracle ? '. Miracle: ' + p.miracle.name : '') + '.'));
+  }
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));
   // Magic (spec: Magic; Sigils rules 1.4, Soul rules 1.5): Sigil words by group, the grammar, Soul schools, modules, tones,

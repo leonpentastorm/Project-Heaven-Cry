@@ -10,6 +10,8 @@ import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/gly
 import { spellSummary } from '../game/sigilView';
 import { sfx, reducedMotion } from '../game/sfx';
 import { emblemOf } from '../game/classView';
+import { patronCards, BELIEF_TEXT, FAITH_INK } from '../game/faithView';
+import { patronPortrait } from '../game/faithArt';
 
 // ---------- the lock-in stamp ----------
 // Pressing Lock in slams a big red AHOC seal onto the personnel record where the white one sits, with APPROVED across it,
@@ -60,7 +62,7 @@ function shakePage() {
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
-const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['kit', 'Kit'], ['lockin', 'Lock in']];
+const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['belief', 'Belief'], ['kit', 'Kit'], ['lockin', 'Lock in']];
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const CORES = ['body', 'mind', 'soul'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -167,7 +169,7 @@ export class CreateLogic extends DCLogic {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
-        sigils: _draftSigils(d.sigils),
+        sigils: _draftSigils(d.sigils), belief: d.belief && (d.belief.kind === 'atheist' || d.belief.patron) ? { ...d.belief } : null,
         ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '', tone: d.outburst.tone || 'raw' } : { ...DEFAULT_OB } });
     }
   }
@@ -410,7 +412,8 @@ export class CreateLogic extends DCLogic {
 
     return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
-      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin',
+      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
+      ...this.beliefVals(),
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
@@ -446,10 +449,35 @@ export class CreateLogic extends DCLogic {
     };
   }
 
+  /** The Belief step (Blessing 2.0, rules 1.6): Faithful or Atheist as two big cards; the Faithful pick one of the eight
+   *  patrons (game/faithView.ts patronCards). Buttons only; the choice goes on the sheet. */
+  beliefVals() {
+    const S = this.state, b = S.belief, faithful = b && b.kind === 'faithful', faith = (S.skills || {}).faith || 0;
+    const card = (on) => 'display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 14px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: pointer; flex: 1 1 320px; '
+      + (on ? 'border: 2px solid #FFFFFF; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F');
+    const pick = (x) => () => this.setState({ belief: x });
+    const cards = patronCards().map((p) => {
+      const on = faithful && b.patron === p.id;
+      return { key: p.id, name: p.name, archetype: p.archetype, costume: p.costume, mark: p.mark, portrait: patronPortrait(p.id) || p.mark, hasPortrait: !!patronPortrait(p.id),
+        likes: p.likes.map((t) => ({ key: t, text: t })), taboos: p.taboos.map((t) => ({ key: t, text: t })), rule: p.ruleText, hymns: p.hymns.map((h, i) => ({ key: h, text: ['I', 'II', 'III'][i] + ' · ' + h })), miracle: p.miracle,
+        pressed: on ? 'true' : 'false', pick: pick({ kind: 'faithful', patron: p.id }), btn: on ? '✓ Sworn to ' + p.name : 'Swear to ' + p.name,
+        style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: ' + (on ? '2px solid #FFFFFF' : '1px solid #232D3F'),
+        btnStyle: 'min-height: 40px; border-radius: 10px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: #E7EBF3') };
+    });
+    return {
+      beliefFaithful: { pick: pick(faithful ? b : { kind: 'faithful', patron: (patronCards()[0] || {}).id }), pressed: faithful ? 'true' : 'false', style: card(faithful), text: BELIEF_TEXT.faithful },
+      beliefAtheist: { pick: pick({ kind: 'atheist' }), pressed: b && b.kind === 'atheist' ? 'true' : 'false', style: card(b && b.kind === 'atheist'), text: BELIEF_TEXT.atheist },
+      beliefNote: BELIEF_TEXT.faith3 + (faith < 3 ? ' You have Faith ' + faith + ' now: you can choose your belief, and pray once Faith reaches 3.' : ' You have Faith ' + faith + '.'),
+      beliefChip: !b ? 'NOT CHOSEN · YOU START AS AN ATHEIST' : b.kind === 'atheist' ? 'ATHEIST · PILGRIM' : 'FAITHFUL · ' + ((patronCards().find((p) => p.id === b.patron) || {}).name || b.patron).toUpperCase(),
+      showPatrons: !!faithful, patronCards: cards, faithInk: FAITH_INK,
+    };
+  }
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
     return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null,
+      // Blessing 2.0: Faithful (to a patron) or Atheist; not chosen reads as Atheist (the engine's rule for old saves).
+      ...(S.belief ? { belief: { ...S.belief } } : {}),
       // Starting magic goes on the sheet only for a build that can cast; the engine fills in the defaults otherwise.
       ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
       ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}), ...(ob.tone && ob.tone !== 'raw' ? { tone: ob.tone } : {}) }; })() } : {}) };

@@ -18,9 +18,10 @@ import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isT
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
 import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
-import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
+import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
+import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -190,7 +191,9 @@ export type NarratorTurn = {
   /** A tutor met (spec: Classes, advanced classes): the advanced class id it can teach. */
   tutors?: { charId: string; classId: string }[];
   /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or change Devotion by delta. */
-  patrons?: { charId: string; patron?: string; devotion?: number }[];
+  patrons?: { charId: string; patron?: string; devotion?: number; reason?: string }[];
+  /** Rules 1.6: the Narrator's faith events (faith.ts): a pact, a knowledge piece, Devotion ±2 with a reason, a Narrator rite kept, apostasy. */
+  faith?: { charId: string; op: 'pact' | 'piece' | 'devotion' | 'rite_kept' | 'apostasy'; patron?: string; from?: string; delta?: number; reason?: string; rite?: string }[];
   /** The patron's mood: the TN of prayers to it (12 by default). */
   patronMood?: { patron: string; tn: number }[];
   overreach?: { charId: string; skill: string; push: string }[];
@@ -260,10 +263,11 @@ export type Action =
   | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both' } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
   | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number; to?: 'main' | 'off' }
-  | { type: 'combat/pray'; unitId: string; choice?: string; targetId?: string; miracle?: boolean }
+  // Rules 1.6: kind and id name a Whisper, a Hymn or the Miracle (faith/pray in a fight comes here); choice/miracle is the old shape.
+  | { type: 'combat/pray'; unitId: string; kind?: 'whisper' | 'hymn' | 'miracle'; id?: string; choice?: string; targetId?: string; targetId2?: string; tile?: string; miracle?: boolean; mods?: string[] }
   | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
   | { type: 'combat/hide'; unitId: string } | { type: 'combat/extinguish'; unitId: string; targetId?: string } | { type: 'combat/escape'; unitId: string } | { type: 'combat/recover'; unitId: string }
-  | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string }
+  | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string; choice?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
   | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
@@ -290,7 +294,9 @@ export type Action =
   // Perks, traits and class moves (effects/actions.ts): id is the item key ("perk:earthbreaker") or a bare id.
   | ({ type: 'combat/perk'; unitId: string; id: string; actionId?: string } & ActionArgs) | { type: 'combat/decline'; unitId: string }
   | ({ type: 'story/perk'; charId: string; id: string; actionId?: string } & ActionArgs)
-  | SandboxAction;
+  | SandboxAction
+  // Blessing 2.0 (rules 1.6): prayers, vows, rites, and the Narrator's pacts, pieces, Devotion and apostasy (faith.ts).
+  | FaithAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
@@ -321,6 +327,9 @@ const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id
 setStoryPoster((g: GameState, e: any) => { push(g, e); return g.story.entries.at(-1)!.id; });
 const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filter((c) => c.owner === pid && !c.dead);
 const isHost = (g: GameState, by: string) => by === g.hostId;
+// The faith rules (faith.ts) take these from here rather than importing game.ts (rules 1.6).
+bindFaith({ push: (g, e) => push(g, e), rollMod: (g, c, skill, roll) => sideRollMod(g, c, skill, roll), isHost, apLeft: (g, c) => apLeft(g, c), spendAp: (g, c, n) => spendAp(g, c, n), afterStory: (g) => closeRoundIfDone(g) });
+bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos));
 /** Players taking part in the round: everyone with a living character. */
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
@@ -372,8 +381,20 @@ function refreshClassUnits(g: GameState, c: Character) {
   }
 }
 
+/** The faith actions (rules 1.6, faith.ts). A prayer in a fight is a combat action (the turn, AP, the windows, the
+ * enemies' turns after): it goes through combat/pray. In the Proving Ground the story stays open (no Narrator). */
+function faithAction(g: GameState, a: FaithAction, by: string) {
+  if (a.type === 'faith/pray' && g.phase === 'combat' && g.combat && !g.combat.over) {
+    const u = g.combat.units.find((x) => (a.unitId && x.id === a.unitId) || (!!a.charId && x.charId === a.charId)); if (!u) fail('Pray on your turn.');
+    combatAction(g, { ...a, type: 'combat/pray', unitId: u!.id } as Action, by); return;
+  }
+  const err = faithReduce(g, a, by); if (err) fail(err);
+  if (g.sandbox && g.phase === 'story') { g.story.ap = {}; g.story.ended = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
+}
+
 function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
+  if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
@@ -573,19 +594,13 @@ function reduce(g: GameState, a: Action, by: string) {
       return;
     }
     case 'story/pray': {
-      // A prayer in the story (spec: Patrons and prayer): the patron is the Narrator's to play, so it is a ruling.
+      // Rules 1.6: the old story prayer is a Hymn of your patron (Hymn I unless a choice names one), as faith/pray.
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase !== 'story') fail('In a fight, pray on your turn (3 AP).');
-      if (!c!.patron || !PATRON[c!.patron]) fail('You have no patron.'); if ((c!.skills.faith || 0) < 3) fail('Prayer needs Faith 3.');
-      const p = PATRON[c!.patron!], text = String(a.text || '').trim().slice(0, 300);
-      // Items' Faith mods and the song reach it, as in a fight (True Believer's missed rites, the music traits: hooks gap D11).
-      const die = d20(g.rng), m = sideRollMod(g, c!, 'faith', 'prayer') + Math.floor(devotionOf(c!) / 2), tn = g.story.patronMood?.[p.id] ?? 12, ok = die === 20 || (die !== 1 && die + m >= tn);
-      if (die === 1) changeDevotion(c!, -1);
-      push(g, { kind: 'check', charId: c!.id, ok, head: 'FAITH · PRAYER TO ' + p.name.toUpperCase() + ' · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ HEARD' : '✕ SILENCE'), text: c!.name + ' prays' + (text ? ': "' + text + '"' : '.') });
-      // 'story_blessing' {g, c, lines}: items roll what a story Blessing on the character does besides (Upper-Touched's d6).
-      const sb: any = ok ? emitStory(g, 'story_blessing', { g, c, lines: [] as string[] }, [c!]) : { lines: [] };
-      if (ok) pendRuling(g, c!, 'patron:' + p.id, c!.name + ' prayed and was heard: ' + p.name + ' answers with a Blessing (' + (p.blessings || []).map((b: any) => b.name).join(', ') + ') × ' + (1 + 0.1 * (c!.skills.faith || 0)).toFixed(1) + (text ? '. They asked: "' + text + '"' : '') + (sb.lines.length ? '. ' + sb.lines.join(' ') : ''));
-      g.story.needs = true; closeRoundIfDone(g); return;
+      const p = patronOf(c!); if (!p) fail('You have no patron.');
+      const h = (p.hymns || []).find((x: any) => x.id === a.choice) || (p.hymns || [])[0]; if (!h) fail('Your patron has no Hymns.');
+      const err = faithReduce(g, { type: 'faith/pray', charId: c!.id, kind: 'hymn', id: p.id + '.' + h.id, text: a.text }, by); if (err) fail(err);
+      return;
     }
     case 'gear/ammo': {
       // Load special rounds (rules 1.3): fill the loaded magazine with carried rounds of that type (out of combat, free).
@@ -930,12 +945,18 @@ function storyFields(g: GameState, t: NarratorTurn) {
   for (const x of (t.identify || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && x.what) { const st = (c.state ||= {}), l: string[] = (st.identified ||= []); if (!l.includes(x.what)) l.push(String(x.what).slice(0, 60)); } }
   // Tutors (rules 1.3) only for advanced classes that are active again (Class Roster Revision 3 shelves them all).
   for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv || !advancedActive(adv.id)) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
+  // Rules 1.6: a pact (conversion), Devotion moves of at most ±2 with a reason; the patron's mood (a TN) is retired.
   for (const x of (t.patrons || []).slice(0, 4)) {
     const c = g.characters[x.charId]; if (!c) continue;
-    if (x.patron && PATRON[x.patron] && c.patron !== x.patron) { c.patron = x.patron; c.devotion = 3; push(g, { kind: 'system', text: c.name + ' makes a pact with ' + PATRON[x.patron].name + ' (Devotion 3).' }); }
-    if (Number.isFinite(x.devotion) && x.devotion && c.patron) { changeDevotion(c, Math.max(-3, Math.min(3, Math.round(x.devotion!)))); push(g, { kind: 'system', text: c.name + '\'s Devotion is ' + devotionOf(c) + '.', ooc: true }); }
+    if (x.patron && FAITH_PATRON[x.patron] && patronOf(c)?.id !== x.patron) makePact(g, c, x.patron);
+    if (Number.isFinite(x.devotion) && x.devotion && beliefOf(c).kind === 'faithful') narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(x.devotion!))), x.reason || 'the Narrator');
   }
-  for (const x of (t.patronMood || []).slice(0, 4)) if (PATRON[x.patron] && TN_LADDER.includes(x.tn)) (g.story.patronMood ||= {})[x.patron] = x.tn;
+  for (const x of (t.faith || []).slice(0, 8)) {
+    const c = g.characters[x.charId]; if (!c) continue;
+    const err = x.op === 'pact' ? makePact(g, c, x.patron || '') : x.op === 'piece' ? grantPiece(g, c, x.patron || '', x.from) : x.op === 'devotion' ? narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(Number(x.delta) || 0))), x.reason || 'the Narrator')
+      : x.op === 'rite_kept' ? narratorRite(g, c, x.rite || '', x.patron) : x.op === 'apostasy' ? apostasy(g, c) : 'Unknown faith op.';
+    if (err) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + err, ooc: true });
+  }
   if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
 }
 
@@ -1156,7 +1177,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand) : reload(cb!, u); break;
     case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;
     case 'combat/swap': err = swapWeapon(g, cb!, u, c!, a); break;
-    case 'combat/pray': err = pray(cb!, g.rng, u, { choice: a.choice, targetId: a.targetId, miracle: a.miracle }); break;
+    case 'combat/pray': err = combatPray(cb!, g.rng, u, { kind: a.kind, id: a.id, choice: a.choice, targetId: a.targetId, targetId2: a.targetId2, tile: a.tile ? tileKey(g, a.tile) : undefined, miracle: a.miracle }, g); break;
     case 'combat/parley': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = parley(cb!, g.rng, u, t!, a.kind, a.text || ''); break; }
     case 'combat/hide': err = hideAction(cb!, u); break;
     case 'combat/extinguish': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) : u; if (!t) fail('Pick someone burning.'); err = extinguish(cb!, u, t!); break; }
@@ -1295,6 +1316,7 @@ function runEnemies(g: GameState) {
 
 function finishCombat(g: GameState) {
   const cb = g.combat!;
+  faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
@@ -2219,7 +2241,9 @@ export type SandboxAction =
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
   | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
-  | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number };
+  | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number }
+  // Rules 1.6: set a character's belief, patron, Devotion, Faith, knowledge pieces and vow; reset clears the Miracle and the prayer cooldowns.
+  | { type: 'sandbox/faith'; charId: string; belief?: 'faithful' | 'atheist'; patron?: string; devotion?: number; faith?: number; pieces?: Record<string, number>; vow?: string | null; allyId?: string; reset?: boolean };
 
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
 const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
@@ -2286,7 +2310,7 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes'] as const;
+  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
@@ -2508,6 +2532,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
 /** A fight ends: cleared or the squad fell. The Proving Ground is gearing up again (the wave card offers the next fight). */
 function sandboxOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won = cb.over === 'win';
+  faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   if (sb.mode === 'teams') { sbTeamsOver(g); return; }
   if (won) sbNoteBest(g, sb.wave);
   if (won) { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); cb.log.push('WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
@@ -2651,6 +2676,34 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     }
     case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
     case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
+    case 'sandbox/faith': {
+      const c = mine(a.charId), lines: string[] = [];
+      if (a.patron && !FAITH_PATRON[a.patron]) fail('No such patron.');
+      if (a.vow && !VOW[a.vow]) fail('No such vow.');
+      sbChange(g, c, () => {
+        if (a.faith != null) sbSetSkill(c, 'faith', a.faith);
+        if (a.belief === 'atheist') { c.belief = { kind: 'atheist' }; c.patron = null; c.devotion = 0; }
+        else if (a.belief === 'faithful' || a.patron) { const pid = a.patron || patronOf(c)?.id || Object.keys(FAITH_PATRON)[0]; if (patronOf(c)?.id !== pid) c.devotion = 3; c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; }
+        if (a.devotion != null && beliefOf(c).kind === 'faithful') c.devotion = Math.max(0, Math.min(10, Math.round(a.devotion)));
+        if (a.pieces) {
+          const own = patronOf(c)?.id, pc: Record<string, number> = {};
+          for (const [pid, n] of Object.entries(a.pieces)) if (FAITH_PATRON[pid] && pid !== own && n > 0) pc[pid] = Math.min(3, Math.round(n));
+          c.faithPieces = pc; c.hymns = Object.entries(pc).flatMap(([pid, n]) => (FAITH_PATRON[pid].hymns || []).slice(0, n).map((h: any) => pid + '.' + h.id));
+        }
+        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; const st: any = c.state; if (st?.faith) st.faith = {}; }
+      });
+      const u = cb?.units.find((x) => x.charId === c.id);
+      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; u.faith.liked = 0; } }
+      if (a.vow !== undefined) {
+        const v = a.vow ? VOW[a.vow] : null, al = v?.needs_ally ? cb?.units.find((x) => (x.id === a.allyId || x.charId === a.allyId) && x.side === u?.side && x !== u) : null;
+        if (v?.needs_ally && u && !al) fail('Name the ally to shield.');
+        c.vow = v ? { id: v.id, ...(al ? { allyId: al.id } : {}), state: 'sworn' } : null; if (u) u.vow = c.vow ? { ...c.vow } : null;
+        if (v) lines.push('vow "' + v.words + '"');
+      }
+      const b = beliefOf(c);
+      sbLog(g, c.name + ': ' + (b.kind === 'faithful' ? 'Faithful to ' + FAITH_PATRON[b.patron].name + ', Devotion ' + devotionNow(c) : 'an Atheist') + ', Faith ' + (c.skills.faith || 0) + (Object.keys(c.faithPieces || {}).length ? ', pieces ' + Object.entries(c.faithPieces!).map(([k, n]) => FAITH_PATRON[k].name + ' ' + n).join(', ') : '') + (lines.length ? ', ' + lines.join(', ') : '') + (a.reset ? ' (Miracle and cooldowns reset)' : '') + '.');
+      return;
+    }
     case 'sandbox/mana': {
       fieldOnly(); const v = Math.max(0, Math.min(40, Math.round(Number(a.value) || 0)));
       g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }

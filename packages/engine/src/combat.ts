@@ -140,6 +140,9 @@ export interface Unit {
   res?: Record<string, number>; resMax?: Record<string, number>;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
+  /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
+   * liked-tag gain so far, the Whisper's turn, the intervention used, Lucky Break and the like). */
+  vow?: import('./character').Vow | null; faith?: Record<string, any>;
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
   readIntent?: Intent & { by: string; round: number };
 }

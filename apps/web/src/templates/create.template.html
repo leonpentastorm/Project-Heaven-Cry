@@ -243,6 +243,33 @@
 </section>
 </sc-if>
 
+<sc-if value="{{isBelief}}" hint-placeholder-val="{{false}}">
+<section aria-label="Belief" style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Belief</h1>
+<span style="padding: 4px 10px; border-radius: 999px; border: 1px solid #D36A90; color: #D36A90; font-size: 12px; font-weight: 700; letter-spacing: 0.12em">{{beliefChip}}</span>
+<span style="font-size: 13px; color: #A3AEC2">{{beliefNote}}</span>
+</div>
+<div role="radiogroup" aria-label="Faithful or Atheist" style="display: flex; gap: 12px; flex-wrap: wrap">
+<button type="button" role="radio" data-belief="faithful" aria-checked="{{beliefFaithful.pressed}}" onClick="{{beliefFaithful.pick}}" style="{{beliefFaithful.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">FAITHFUL</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Sworn to a patron</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefFaithful.text}}</span></button>
+<button type="button" role="radio" data-belief="atheist" aria-checked="{{beliefAtheist.pressed}}" onClick="{{beliefAtheist.pick}}" style="{{beliefAtheist.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">ATHEIST · PILGRIM</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Belong to no god</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefAtheist.text}}</span></button>
+</div>
+<sc-if value="{{showPatrons}}" hint-placeholder-val="{{false}}"><div role="radiogroup" aria-label="Patrons" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px">
+<sc-for list="{{patronCards}}" as="p" hint-placeholder-count="8"><article data-patron="{{p.key}}" style="{{p.style}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<img src="{{p.portrait}}" alt="" style="width: 64px; height: 80px; object-fit: cover; flex: none; border-radius: 8px; background: #05070B; padding: 6px; box-sizing: border-box">
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="display: flex; gap: 6px; align-items: center"><img src="{{p.mark}}" alt="" style="width: 22px; height: 22px"><span style="font-family: 'Spectral', serif; font-size: 19px; font-weight: 600">{{p.name}}</span></span><span style="font-size: 12px; color: #A3AEC2">{{p.archetype}}</span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #D36A90">{{p.rule}}</span></div>
+</div>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{p.costume}}</span>
+<div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">LIKES</span><sc-for list="{{p.likes}}" as="t"><span style="padding: 1px 7px; border-radius: 999px; border: 1px solid #6FEA77; font-size: 11px; font-weight: 700"><span style="color: #6FEA77">✓ </span>{{t.text}}</span></sc-for></div>
+<div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">TABOOS</span><sc-for list="{{p.taboos}}" as="t"><span style="padding: 1px 7px; border-radius: 999px; border: 1px solid #F65157; font-size: 11px; font-weight: 700"><span style="color: #F65157">✕ </span>{{t.text}}</span></sc-for></div>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">HYMNS</span><sc-for list="{{p.hymns}}" as="h"><span>{{h.text}}</span></sc-for><span style="color: #C9D3E3">MIRACLE · {{p.miracle}}</span></div>
+<button type="button" role="radio" data-swear="{{p.key}}" aria-checked="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.btnStyle}}">{{p.btn}}</button>
+</article></sc-for>
+</div></sc-if>
+</section>
+</sc-if>
+
 <sc-if value="{{isKit}}" hint-placeholder-val="{{false}}">
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>

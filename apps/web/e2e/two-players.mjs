@@ -9,7 +9,7 @@ async function create(page, name, family, kit) {
   await click(page, 'Next ›');
   if (family) await page.getByRole('tab', { name: family, exact: true }).click();
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-  await click(page, 'Next ›'); await click(page, 'Next ›');
+  await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›');
   await click(page, 'Lock in and bring to the room');

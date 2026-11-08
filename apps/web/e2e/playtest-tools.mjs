@@ -30,7 +30,7 @@ await host.locator('main button[aria-pressed]').first().click().catch(() => {});
 await host.locator('button:has-text("Thousand-Planet")').first().click().catch(() => {});
 await click(host, 'Next ›');
 await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(host, 'Next ›'); await click(host, 'Next ›');
+await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›');
 await host.locator('button', { hasText: 'Field medic' }).first().click();
 await click(host, 'Next ›'); await click(host, 'Lock in', { exact: true });
 await host.waitForSelector('text=Upload Test', { timeout: 8000 });
@@ -64,7 +64,7 @@ await click(guest, 'Create a character');
 await guest.getByPlaceholder('What the squad calls you').fill('Ninety-Two');
 await guest.locator('main button[aria-pressed]').first().click();
 await click(guest, 'Next ›'); await guest.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(guest, 'Next ›'); await click(guest, 'Next ›'); await guest.locator('button', { hasText: 'Line soldier' }).first().click();
+await click(guest, 'Next ›'); await click(guest, 'Next ›'); await click(guest, 'Next ›'); await guest.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(guest, 'Next ›'); await click(guest, 'Lock in and bring to the room');
 await guest.waitForSelector('text=✓ LOCKED IN', { timeout: 8000 }); // the Approved stamp files the record ~0.9 s after the press
 

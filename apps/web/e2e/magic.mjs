@@ -23,6 +23,7 @@ await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await host.getByRole('button', { name: 'Lower Vigilant', exact: true }).first().click();
 await host.getByRole('button', { name: 'Raise Will Power', exact: true }).first().click();
 await click(host, 'Next ›'); // traits
+await click(host, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
 await click(host, 'Next ›'); // kit
 await host.locator('button', { hasText: 'Sigil student' }).first().click();
 await host.waitForSelector('text=SIGIL WORDS · MIND · PICK 2');

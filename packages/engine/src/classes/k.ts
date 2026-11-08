@@ -28,6 +28,7 @@ import {
 import { castAt, compileSpell, evokeMarks } from '../sigil';
 import { d20, die } from '../rng';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
+import { GATE, OVERREACH, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 
@@ -199,13 +200,15 @@ register({
   toggles: [{ id: 'load', label: 'Load the Blessing into your weapon (Blessed Shells)', on: ['combat/pray'], available: (h) => !!h.c?.patron }],
   actions: [{
     id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Pray over a shell (d20 + Faith + half Devotion vs your patron\'s mood): on a success it carries the Blessing into this scene\'s fight.',
+    text: 'Pray over a shell (by standing; above it, an overreach): on a success it carries the Hymn into this scene\'s fight.',
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
-      const tn = h.g?.story?.patronMood?.[p.id] ?? 12, m = mod(c.skills.faith || 0) + Math.floor(devotionOf(c) / 2), r = d20(rng as any), ok = r === 20 || (r !== 1 && r + m >= tn);
-      if (r === 1) changeDevotion(c, -1);
-      const line = c.name + ' prays over a shell to ' + p.name + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + (ok ? ' · ' + bl.name + ' is sealed in it.' : r === 1 ? ' · a natural 1: −1 Devotion.' : ' · no answer.');
+      // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −1).
+      const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
+      const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), r = tn ? d20(rng as any) : 0, ok = !tn || r === 20 || (r !== 1 && r + m >= tn);
+      if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
+      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −1 Devotion.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;

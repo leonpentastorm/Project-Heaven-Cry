@@ -137,8 +137,22 @@ export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): a
     const c = charOfUnit(u);
     for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
   }
+  const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
+// ---------- engine systems that aren't items (rules 1.6: faith.ts) ----------
+// Faith isn't something a character holds, so it can't sit in the items' index: these listeners run on every fight's
+// hooks after the items, and add to stat and check queries. Registered once at load; deterministic like the items.
+type GlobalHook = (ctx: any, cb: Combat) => void;
+const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
+const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
+const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
+export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); }
+export function onStat(stat: string, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
+export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
+/** A story hook for an engine system (no item): runs after the characters' items, with the game. */
+const GLOBAL_STORY: Partial<Record<HookName, ((ctx: any, g: any) => void)[]>> = {};
+export function onStoryHook(name: HookName, fn: (ctx: any, g: any) => void) { (GLOBAL_STORY[name] ||= []).push(fn); }
 /** Fire a story hook for characters (all of them in g.characters order, or the ones given). */
 export function emitStory(g: any, name: HookName, ctx: any, only?: Character[]): any {
   const chars: Character[] = only || Object.values(g?.characters || {});
@@ -148,6 +162,7 @@ export function emitStory(g: any, name: HookName, ctx: any, only?: Character[]):
       const list = buildIndex(heldOfChar(c))[name]; if (!list) continue;
       for (const s of list) { s.fn(ctx, holder(s.info, c, null, null)); if (ctx && ctx.stop) return ctx; }
     }
+    for (const f of GLOBAL_STORY[name] || []) { f(ctx, g); if (ctx && ctx.stop) return ctx; } // engine systems (faith.ts)
   } finally { G = was; }
   return ctx;
 }
@@ -160,6 +175,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 /** Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. */
 export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
+  for (const f of GLOBAL_STATS[stat] || []) add += f(x, ctx) || 0; // engine systems (faith.ts)
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
   if (!heldAny(held)) return { add, mult };
   for (const info of itemsOf(held)) {
@@ -174,6 +190,7 @@ export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Comba
 /** Modifiers to one d20 check from every item (handler checkMod, then generic skill and roll mods). */
 export function checkQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any = {}): CheckMod[] {
   const out: CheckMod[] = [], c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
+  for (const f of GLOBAL_CHECKS) out.push(...(f(x, ck, ctx) || [])); // engine systems (faith.ts)
   for (const info of itemsOf(held)) {
     const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
     if (h?.checkMod) out.push(...(h.checkMod(hh, ck, ctx) || []));
