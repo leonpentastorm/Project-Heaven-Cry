@@ -836,9 +836,9 @@ register({
 // While the staff stands you can't draw or Evoke; pulling it out (1 AP, next to it) ends the form, and the staff comes
 // back when the form runs out. Grand damage is flat (10 lava, 15 storm). Harmful forms hit everyone inside but you
 // (Earthed); the ones that say enemies or allies keep to them. The staff item doesn't exist yet (any Evoker plants).
-// The forms (sigils.json 'grand': the 23 that survive 1.2, RETURN's Sanctuary gone, and the 17 words new in 1.4, item
-// 468) run on the hooks below; SPREAD (Bloom) and TWICE (Echo field) have no hook into a spell's landing tile or a repeat
-// yet: the Narrator rules them (a fight note when the form goes up).
+// The forms (sigils.json 'grand': the 23 that survive 1.2, RETURN's Sanctuary gone, and the 17 words new in 1.4) run on
+// the hooks below. The Grand form pass (decision log, spec items 569-576) gave each new word its own job, and SPREAD,
+// TWICE, CONDENSE and PUSH forms the engine runs (no more Narrator rulings for Bloom and the Echo field).
 const grandZones = (cb: Combat, u?: Unit) => (cb.zones || []).filter((z) => (z.kind as string) === 'grand' && (!u || z.by === u.id));
 const inZ = (z: Zone, k: string) => z.tiles.includes(k);
 const zWord = (z: Zone) => z.words[0];
@@ -853,6 +853,7 @@ function staffOf(h: Holder) { const st = stateOf(h); if (st.staff && h.cb && !gr
 function clearGrand(h: Holder) {
   const st = stateOf(h), cb = h.cb!; if (!st.staff) return;
   const ids = new Set([st.staff.zone, ...(st.staff.extra || [])]); cb.zones = (cb.zones || []).filter((z) => !ids.has(z.id));
+  cb.objects = objectsOf(cb).filter((x) => !((x as any).grandWall && (x as any).by === h.u!.id));
   for (const u of cb.units) restoreFog(u);
   delete st.staff;
 }
@@ -877,19 +878,20 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, 15, 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
     case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, 20, o) + ')' : '';
     case 'mend': return ally ? heal(t, 10 * (o.mg?.healMult || 1), cb, o) : '';
-    case 'condense': return me ? '' : nudge(cb, t, zCentre(z), 1);
+    // CONDENSE (Crush): enemies inside pressed against another creature take 10.
+    case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
+    // PUSH (Gust): enemies starting a turn inside are blown 1 tile outward.
+    case 'push': { if (ally || t.pos === zCentre(z)) return ''; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx + (x - cx) * 9, cy + (y - cy) * 9), 1).replace('is pulled', 'is blown') || ''; }
     case 'muddle': { if (me || bodySave(rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
     case 'dread': return !ally ? applyCond(cb, rng, o, t, 'shaken', undefined, 'heart') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
     // The 1.4 words (item 468).
-    case 'acid': return me ? '' : ' · the mire corrodes ' + t.name + harm(cb, rng, o, t, 5, 'elemental', 'acid') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'corroded', undefined, undefined, { skipSave: true }));
-    case 'command': return ally || t.prone || bodySave(rng, o, t, 'brain') ? '' : ' · the Court bends ' + t.name + ' to its knees' + applyCond(cb, rng, o, t, 'prone', undefined, undefined, { skipSave: true });
+    // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
+    case 'command': return ally || condOn(t, 'pinned') || bodySave(rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
     case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; t.ap = Math.min(9, t.ap + 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
     case 'cleanse': { if (!ally) return ''; const id = newestCondition(t); if (!id) return ''; endCond(t, id, cb); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); return ' · clear water washes ' + id + ' off ' + t.name; }
-    case 'mask': if (ally && !t.hidden && !condOn(t, 'marked')) { t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; return ' · the Shroud hides ' + t.name; } return '';
-    case 'leech': { if (ally || me) return ''; const hp0 = t.hp + (t.shield || 0), l = harm(cb, rng, o, t, 5, 'sigil'), lost = Math.max(0, hp0 - (t.hp + (t.shield || 0))); const hr = lost && !o.dead ? healUnit(cb, o, lost, o, 'leech') : null; return ' · the Bloodwell drinks from ' + t.name + l + (hr?.restored ? ' (' + o.name + ' heals ' + hr.restored + ')' : ''); }
   }
   return '';
 }
@@ -904,7 +906,6 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
-    case 'acid': return ' · the mire corrodes ' + t.name + harm(cb, rng, o, t, 5, 'elemental', 'acid') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'corroded', undefined, undefined, { skipSave: true }));
     case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
   }
   return '';
@@ -922,6 +923,35 @@ function cleanGround(cb: Combat, z: Zone): string {
   emitFx(cb, 'null_wave', { at: zCentre(z), tiles: z.tiles, n: gl.length + zs.length + walls.length });
   return ' · the clean ground wipes ' + (gl.length + zs.length + walls.length) + ' piece' + (gl.length + zs.length + walls.length === 1 ? '' : 's') + ' of Sigil magic';
 }
+/** Grand ACID (Etching ground): cover inside loses 15 HP each round and crumbles at 0. */
+const ETCH = 15, ETCHABLE = /crate|low_wall|pillar|barricade|sigil_wall|container|barrel/;
+function etch(cb: Combat, o: Unit, z: Zone): string {
+  const hit = objectsOf(cb).filter((x) => inZ(z, x.pos) && ETCHABLE.test(x.kind) && x.hp != null && x.hp > 0); if (!hit.length) return '';
+  let gone = 0;
+  for (const x of hit) {
+    x.hp = Math.max(0, x.hp! - ETCH); emitFx(cb, 'object', { at: x.pos, what: x.kind, dmg: ETCH, broken: x.hp <= 0, hp: x.hp, element: 'acid' });
+    if (x.hp <= 0) { gone++; cb.objects = objectsOf(cb).filter((y) => y !== x); emit(cb, 'object_destroyed', { obj: x, by: o, cb }); }
+  }
+  return ' · the acid eats ' + hit.length + ' piece' + (hit.length === 1 ? '' : 's') + ' of cover' + (gone ? ' (' + gone + ' crumbled)' : '');
+}
+/** Grand ARC (Mortar pit): the tile within 6 of the staff whose shell would hit the most enemies (the centre counts 3). */
+function mortarTile(cb: Combat, o: Unit, z: Zone): string | null {
+  const foes = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && !x.hidden);
+  let best: string | null = null, score = 0;
+  for (const f of foes) for (const k of around(f.pos, 1)) {
+    if (dist(k, zCentre(z)) > 6) continue;
+    const sc = foes.reduce((n, x) => n + (x.pos === k ? 3 : dist(x.pos, k) === 1 ? 1 : 0), 0);
+    if (sc > score || (sc === score && best && k < best)) { best = k; score = sc; }
+  }
+  return score >= 3 ? best : null;
+}
+function mortar(cb: Combat, rng: Rng, o: Unit, z: Zone): string {
+  const k = mortarTile(cb, o, z); if (!k) return '';
+  emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: null, at: k, side: o.side, grand: true, lob: true });
+  let line = ' · the Mortar pit shells ' + refOf(k);
+  for (const v of cb.units.filter((x) => !x.dead && x.side !== o.side && (x.pos === k || dist(x.pos, k) === 1))) line += harm(cb, rng, o, v, v.pos === k ? 15 : 5, 'sigil');
+  return line;
+}
 let ARCING = false;
 /** Tiles a straight shot crosses (for GALE's -5). */
 function segTiles(a: string, b: string): string[] {
@@ -929,7 +959,7 @@ function segTiles(a: string, b: string): string[] {
   for (let i = 1; i < n; i++) out.push(key(Math.round(x0 + ((x1 - x0) * i) / n), Math.round(y0 + ((y1 - y0) * i) / n)));
   return out;
 }
-const GRAND_STONE = 4;
+const GRAND_STONE = 4, GRAND_WALLS = 8;
 register({
   id: 'grand_sigilist.enlarge', claims: 'all',
   actions: [
@@ -964,10 +994,16 @@ register({
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
         if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && !condOn(x, 'marked')) { x.hidden = true; line += ' · ' + x.name + ' vanishes in the smoke'; }
         if (w === 'null') line += cleanGround(cb, z);
+        // RAISE (Ramparts): up to 8 wall segments on the edge ring, every other tile, never on anyone; they fall with the form.
+        if (w === 'raise') {
+          const ring = tiles.filter((k) => dist(k, t) === 2).sort((a, b) => Math.atan2(xy(a)[1] - xy(t)[1], xy(a)[0] - xy(t)[0]) - Math.atan2(xy(b)[1] - xy(t)[1], xy(b)[0] - xy(t)[0]));
+          const walls: string[] = [];
+          ring.forEach((k, i) => { if (i % 2 || walls.length >= GRAND_WALLS || !free(cb, k)) return; cb.objects = [...objectsOf(cb), makeObject('gw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: 30, max: 30, by: u.id, side: u.side, left, who: u.name, sigilWall: true, grandWall: true } as any)]; walls.push(k); });
+          line += walls.length ? ' · ramparts rise at ' + walls.map(refOf).join(', ') : ' · no room for ramparts';
+        }
         if (w === 'sense') for (const x of cb.units) if (x.hidden && !x.dead && x.side !== u.side && dist(x.pos, t) <= 4) line += reveal(cb, x, 'Second sight');
         fogSync(cb);
         say(cb, u.name + ' plants the staff at ' + refOf(t) + ' and ' + SIGIL[w].word + ' swells into its Grand form for ' + left + ' rounds: ' + SIGIL[w].grand + line);
-        if (w === 'spread' || w === 'twice') note(h, 'GRAND ' + SIGIL[w].word + ' (' + u.name + ', centre ' + refOf(t) + ', ' + left + ' rounds): ' + SIGIL[w].grand + ' The engine has no hook for it: rule each spell inside.');
         return null;
       } },
     { id: 'pull_staff', label: 'Pull out the staff', scope: ['combat', 'world'], target: 'none', ap: 1,
@@ -985,18 +1021,14 @@ register({
       if (grandZones(cb, o).some((z) => zWord(z) === 'null' && inZ(z, ctx.tile || ctx.u.pos))) ctx.fail ||= 'Clean ground (Grand NULL): no glyph can be drawn here.';
     },
     evoke_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).staff) ctx.fail ||= 'Your staff is planted: pull it out first.'; },
-    // RELAY (Switchboard): an ally inside may Evoke a pattern lying inside from anywhere inside.
-    evoke_reach: (ctx, h) => {
-      const o = h.u, cb = h.cb; if (!o || !cb || !stateOf(h).staff || ctx.u === o || ctx.u.side !== o.side) return;
-      if (grandZones(cb, o).some((z) => zWord(z) === 'relay' && inZ(z, ctx.u.pos) && ctx.pattern?.tiles?.some((k: string) => inZ(z, k)))) ctx.reach = Math.max(ctx.reach, 4);
-    },
     turn_start: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || t.dead) return; if (!staffOf(h)) return;
       let line = '';
       for (const z of grandZones(cb, o)) {
         if (zWord(z) === 'pull') { if (t.side !== o.side && dist(t.pos, zCentre(z)) <= 4) line += nudge(cb, t, zCentre(z), 1); continue; }
         if (zWord(z) === 'sense') { for (const x of cb.units) if (x.hidden && !x.dead && x.side !== o.side && dist(x.pos, zCentre(z)) <= 4) line += reveal(cb, x, 'Second sight'); continue; }
-        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 10, 'sigil'); } } continue; }
+        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 15, 'sigil'); } } continue; }
+        if (zWord(z) === 'arc') { if (t === o) line += mortar(cb, rngOf(h, ctx), o, z); continue; }
         if (inZ(z, t.pos)) line += grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g);
       }
       if (line) say(cb, SIGIL[zWord(grandZones(cb, o)[0])]?.word + ' (Grand)' + line + '.');
@@ -1006,6 +1038,12 @@ register({
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
       let line = '';
       for (const z of grandZones(cb, o)) if (inZ(z, ctx.at) && !inZ(z, ctx.from)) line += grandEnter(cb, rngOf(h, ctx), o, z, t, ctx);
+      // WATCH (Sentinel): an enemy leaving the zone takes a 10 strike from the staff, once a round each.
+      for (const z of grandZones(cb, o)) if (zWord(z) === 'watch' && t.side !== o.side && inZ(z, ctx.from) && !inZ(z, ctx.at)) {
+        const left = ((z as any).left_hit ||= {}); if (left[t.id] === cb.round) continue; left[t.id] = cb.round;
+        emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: t.id, at: ctx.at, side: o.side, grand: true });
+        line += ' · the Sentinel strikes ' + t.name + ' as it leaves' + harm(cb, rngOf(h, ctx), o, t, 10, 'sigil');
+      }
       if (line) say(cb, t.name + ' enters the Grand form' + line + '.');
     },
     moved: (ctx, h) => {
@@ -1020,11 +1058,8 @@ register({
       // FREEZE (difficult ground) and SLOW (Movement halved): each tile inside costs double (not for the Earthed owner).
       const n = earthed(o, t) ? 0 : (ctx.route || []).filter((k: string) => grandZones(cb, o).some((z) => (zWord(z) === 'freeze' || zWord(z) === 'slow') && inZ(z, k))).length;
       if (n) ctx.ap += Math.ceil(n / Math.max(0.5, t.movement));
-      // STEP (Fold): for allies, each tile of the move inside costs half (rounded down in the mover's favour).
-      if (t.side === o.side && ctx.how === 'move') {
-        const f = (ctx.route || []).filter((k: string) => grandZones(cb, o).some((z) => zWord(z) === 'step' && inZ(z, k))).length;
-        if (f) { const mv = Math.max(0.5, t.movement), ap = (n: number) => Math.ceil(Math.max(0, n - (t.bank || 0)) / mv - 1e-9); ctx.ap = Math.max(0, ctx.ap - Math.max(0, ap(ctx.tiles) - ap(ctx.tiles - f / 2))); }
-      }
+      // STEP (Fold): for your side, a move that starts and stays inside costs 1 AP at most, however far (the ground folds).
+      if (t.side === o.side && ctx.how === 'move' && (ctx.route || []).length && grandZones(cb, o).some((z) => zWord(z) === 'step' && inZ(z, t.pos) && (ctx.route as string[]).every((k) => inZ(z, k)))) ctx.ap = Math.min(ctx.ap, 1);
     },
     attack_preview: (ctx, h) => {
       const o = h.u, cb = h.cb!; if (!o || !onGrid(h) || !stateOf(h).staff) return; const att: Unit = ctx.att, tgt: Unit = ctx.tgt;
@@ -1032,12 +1067,21 @@ register({
         const w = zWord(z), aIn = inZ(z, att.pos), tIn = inZ(z, tgt.pos);
         if (w === 'light' && aIn && att.side !== o.side) ctx.terms.push({ v: -2, label: 'Noon (Grand LIGHT)' });
         if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || segTiles(att.pos, tgt.pos).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
-        if (w === 'push' && !ctx.melee && !aIn && tIn) ctx.terms.push({ v: -3, label: 'Rampart wind (Grand PUSH)' });
         if (w === 'seek' && tIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
-        if (w === 'sharpen' && aIn && att.side === o.side) ctx.terms.push({ v: 2, label: 'Whetstone (Grand SHARPEN)' });
-        if (w === 'raise' && !ctx.melee && !aIn && tIn && tgt.side === o.side && att.side !== o.side) ctx.terms.push({ v: -5, label: 'Bastion (Grand RAISE)' });
-        if (w === 'arc' && !ctx.melee && aIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
+        // ACID (Etching ground): enemies inside have -2 Defense (your side hits them more easily).
+        if (w === 'acid' && tIn && tgt.side !== o.side && att.side === o.side) ctx.terms.push({ v: 2, label: 'Etched (Grand ACID)' });
+        // MASK (Hall of masks): your side inside can't be picked out from beyond 3 tiles outside it.
+        if (w === 'mask' && tIn && !aIn && tgt.side === o.side && att.side !== o.side && dist(att.pos, tgt.pos) > 3) ctx.fail ||= 'Hall of masks: ' + tgt.name + ' is lost among the masks from out here (Grand MASK; come within 3 tiles).';
+        // RELAY (Relay net): +1 to hit for each other ally inside who has a line to the target (+3 at most).
+        if (w === 'relay' && aIn && att.side === o.side && tgt.side !== o.side) { const n = Math.min(3, cb.units.filter((x) => x !== att && !x.dead && !x.downed && x.side === o.side && inZ(z, x.pos) && lineOfSight(cb, x.pos, tgt.pos)).length); if (n) ctx.terms.push({ v: n, label: 'Relay net (Grand RELAY)' }); }
       }
+    },
+    // SHARPEN (Whetstone): attacks your side makes from inside deal +5, or +10 with melee and unarmed strikes.
+    damage_out: (ctx, h) => {
+      const o = h.u, cb = h.cb!; if (!o || !onGrid(h) || !stateOf(h).staff) return; const att: Unit = ctx.att; if (!att || att.side !== o.side || ctx.mode === 'spell') return;
+      if (!grandZones(cb, o).some((z) => zWord(z) === 'sharpen' && inZ(z, att.pos))) return;
+      const close = ctx.melee || ctx.mode === 'melee' || unarmed(att, ctx.mode);
+      ctx.add += close ? 10 : 5; if (ctx.mults && !ctx.preview) { /* flat bonus: no multiplier */ }
     },
     attack_roll: (ctx, h) => {
       const o = h.u, cb = h.cb!; if (!o || !onGrid(h) || !stateOf(h).staff) return; const att: Unit = ctx.att;
@@ -1055,15 +1099,23 @@ register({
     // CHAIN (Conductor): when your side hurts an enemy inside, 5 lightning arcs to the nearest other enemy inside within
     // 3 tiles (once a round for each enemy it reaches; an arc doesn't arc again).
     on_damaged: (ctx, h) => {
-      const o = h.u, cb = h.cb, t: Unit = ctx.t; if (!o || !cb || ARCING || !onGrid(h) || !stateOf(h).staff || t.side === o.side) return;
+      const o = h.u, cb = h.cb, t: Unit = ctx.t; if (!o || !cb || !onGrid(h) || !stateOf(h).staff || t.side === o.side) return;
       const by: Unit | null | undefined = ctx.src?.by; if (!by || by.side !== o.side) return;
+      // LEECH (Bloodwell): a hit your side lands on an enemy inside heals the one who landed it 5 (once a round for each
+      // attacker and enemy).
+      for (const z of grandZones(cb, o)) {
+        if (zWord(z) !== 'leech' || !inZ(z, t.pos) || by.dead || by.downed) continue;
+        const fed = ((z as any).fed ||= {}), k = by.id + '>' + t.id; if (fed[k] === cb.round) continue; fed[k] = cb.round;
+        const r = healUnit(cb, by, 5, o, 'leech'); if (r.restored) { emitFx(cb, 'leech', { unit: by.id, to: by.pos, from: [t.pos], amount: r.restored, element: null }); say(cb, 'Bloodwell (Grand LEECH): ' + by.name + ' drinks ' + r.restored + ' HP from ' + t.name + '.'); }
+      }
+      if (ARCING) return;
       for (const z of grandZones(cb, o)) {
         if (zWord(z) !== 'chain' || !inZ(z, t.pos)) continue;
         const arced = ((z as any).arced ||= {});
         const v = cb.units.filter((x) => x !== t && !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos) && dist(x.pos, t.pos) <= 3 && arced[x.id] !== cb.round).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
         if (!v) continue; arced[v.id] = cb.round;
         emitFx(cb, 'chain', { from: t.pos, to: v.pos, target: v.id, jump: 1, mult: 1, element: 'shock', grand: true });
-        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, 5, 'elemental', 'lightning'); } finally { ARCING = false; }
+        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, 10, 'elemental', 'lightning'); } finally { ARCING = false; }
         say(cb, 'Conductor (Grand CHAIN): the hit on ' + t.name + ' arcs to ' + v.name + l + '.');
       }
     },
@@ -1076,12 +1128,29 @@ register({
     },
     round_start: (ctx, h) => {
       if (!h.u || !onGrid(h) || !staffOf(h)) return;
-      let line = ''; for (const z of grandZones(h.cb!, h.u)) if (zWord(z) === 'null') line += cleanGround(h.cb!, z);
+      let line = '', acid = ''; for (const z of grandZones(h.cb!, h.u)) { if (zWord(z) === 'null') line += cleanGround(h.cb!, z); if (zWord(z) === 'acid') acid += etch(h.cb!, h.u, z); }
       if (line) say(h.cb, 'NULL (Grand)' + line + '.');
+      if (acid) say(h.cb, 'ACID (Grand Etching ground)' + acid + '.');
+    },
+    // SPREAD (Bloom) and TWICE (Echo field): spells your side lands inside.
+    evoked: (ctx, h) => {
+      const o = h.u, cb: Combat = h.cb || ctx.cb; if (!o || !cb || ctx.fizzle || !ctx.u || ctx.u.side !== o.side || !stateOf(h).staff || !ctx.impact) return;
+      const rng = rngOf(h, ctx), hitIds = new Set((ctx.targets || []).map((x: Unit) => x.id));
+      for (const z of grandZones(cb, o)) {
+        if (!inZ(z, ctx.impact)) continue;
+        // Bloom: every enemy inside the spell missed takes 10.
+        if (zWord(z) === 'spread') { let l = ''; for (const v of cb.units.filter((x) => !x.dead && !x.downed && x.side !== o.side && inZ(z, x.pos) && !hitIds.has(x.id))) l += harm(cb, rng, o, v, 10, 'sigil'); if (l) say(cb, 'Bloom (Grand SPREAD): the spell blooms through the form' + l + '.'); }
+        // Echo field: the first spell each round echoes on the enemies it hit, at half its damage per target (5 at least).
+        if (zWord(z) === 'twice' && (z as any).echoed !== cb.round && ctx.dealt > 0) {
+          const foes = (ctx.targets || []).filter((x: Unit) => !x.dead && x.side !== o.side); if (!foes.length) continue;
+          (z as any).echoed = cb.round; const each = Math.max(5, Math.floor(ctx.dealt / Math.max(1, (ctx.targets || []).length) / 2));
+          let l = ''; for (const v of foes) l += harm(cb, rng, o, v, each, 'sigil'); say(cb, 'Echo field (Grand TWICE): the spell rings again' + l + '.');
+        }
+      }
     },
     combat_end: (ctx, h) => { if (h.u && stateOf(h).staff) clearGrand({ ...h, cb: ctx.cb }); },
   },
-  brief: () => 'Enlarge: rule Grand forms the engine doesn\'t run (Bloom, Echo field) and story uses.',
+  brief: () => 'Enlarge: story uses of a Grand form are yours to rule.',
 });
 function sparkJam(ctx: any, h: Holder) {
   const st = stateOf(h), list: string[] = st.sparkJam || []; const i = list.indexOf(ctx.att.id); if (i < 0) return; list.splice(i, 1);

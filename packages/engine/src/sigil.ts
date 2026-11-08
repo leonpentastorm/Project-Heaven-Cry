@@ -218,14 +218,37 @@ export interface Affected {
   roll: { bonus: number; need: number; pct: number; cover: boolean } | null; saves: { cond: string; fam: Fam; tn: number }[];
 }
 const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart' };
+// ---------- the Sigil damage balance pass (docs/design/balance-targets.md; spec items 577-580, provisional) ----------
+/** The most direct damage one spell does to one creature, before armour: 350, or 500 on a critical (the game's ceilings). */
+export const SIGIL_CAP = 350, SIGIL_CAP_CRIT = 500;
+/** A caster's power for a damage type: Sigil damage takes the Sigil multiplier; Elemental damage takes the Sigil and
+ * Elemental bonuses added together (1 + (Sigil − 1) + (Elemental − 1)), never their product. */
+export function sigilPower(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil'): number {
+  const sm = mg?.sigilMult || 1, em = mg?.elemMult || 1;
+  return type === 'elemental' ? 1 + (sm - 1) + (em - 1) : sm;
+}
+/** A spell's damaging Subjects, by damage type: the strongest glyph counts in full, every other damaging glyph (another
+ * Element or a repeat) adds half. One spell, one main element. */
+export function sigilParts(subjects: string[]): { w: string; type: 'elemental' | 'sigil'; n: number }[] {
+  const glyphs = subjects.map((w) => ({ w, d: W(w) as any })).filter((x) => x.d?.damage).sort((a, b) => b.d.damage - a.d.damage);
+  const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
+  glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = i === 0 ? x.d.damage : x.d.damage / 2, p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
+  return parts;
+}
+/** Scale the parts down together so their total stays under the ceiling. */
+export function capParts(raws: number[], crit: boolean): number[] {
+  const cap = crit ? SIGIL_CAP_CRIT : SIGIL_CAP, tot = raws.reduce((a, b) => a + b, 0);
+  return tot <= cap ? raws : raws.map((r) => Math.floor((r * cap) / tot));
+}
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {
-  const mg = caster?.mg, sm = mg?.sigilMult || 1, em = mg?.elemMult || 1, hm = mg?.healMult || 1;
+  const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
   let el = 0, sg = 0, hl = 0, sh = 0;
-  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.damage) { if (d.damage_type === 'elemental') el += d.damage; else sg += d.damage; } if (d.heal) hl += d.heal; if (d.shield) sh += d.shield; }
+  for (const p of sigilParts(sp.subjects)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
+  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.heal) hl += d.heal; if (d.shield) sh += d.shield; }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
-  const E = Math.round(hook('damage', el * m * sm * em * sharp)), S = Math.round(hook('damage', sg * m * sm * sharp));
+  const [E, S] = capParts([Math.round(hook('damage', el * m * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * sigilPower(mg, 'sigil') * sharp))], false);
   const arm = (S ? Math.max(1, S - t.armour) : 0) + (E ? Math.max(1, E - Math.floor(t.armour / 2)) : 0);
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) : 0;
@@ -657,13 +680,14 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
       crit = r === 20;
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
-    const hp0 = t.hp + (t.shield || 0), sm = by?.mg?.sigilMult || 1, em = by?.mg?.elemMult || 1, sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
-    const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
-    for (const w of sp.subjects) { const d: any = W(w); if (!d?.damage) continue; const type = d.damage_type === 'elemental' ? 'elemental' : 'sigil', p = parts.find((x) => x.type === type); if (p) p.n += d.damage; else parts.push({ w, type, n: d.damage }); }
+    const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
+    const parts = sigilParts(sp.subjects);
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
-    for (const p of parts) {
-      const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
-      const raw = Math.round(p.n * a.mult * sm * (p.type === 'elemental' ? em : 1) * sharp * hk * (crit ? 2 : 1));
+    const raws = capParts(parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
+      return Math.round(p.n * a.mult * sigilPower(by?.mg, p.type) * sharp * hk * (crit ? 2 : 1)); }), crit);
+    if (raws.reduce((x, y) => x + y, 0) >= (crit ? SIGIL_CAP_CRIT : SIGIL_CAP)) line += ' (at the ceiling)';
+    for (const [pi, p] of parts.entries()) {
+      const raw = raws[pi];
       // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
       const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
       line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));

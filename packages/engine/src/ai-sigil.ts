@@ -24,7 +24,7 @@ import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
   planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady, freeTile, dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
-  enemyMagic, W, isElement, isAffliction, isBoonWord, around, MAX_GLYPHS, SIGIL_REV,
+  enemyMagic, W, isElement, isAffliction, isBoonWord, around, MAX_GLYPHS, SIGIL_REV, sigilPower,
 } from './sigil';
 import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn } from './magic';
 
@@ -50,7 +50,7 @@ const unitOf = (cb: Combat, id: string) => cb.units.find((x) => x.id === id)!;
  * field, ×1 for a trap), an affliction counted as 6. An estimate: the engine's numbers decide. */
 function biteOf(cb: Combat, z: { words: string[]; by: string }, mult: number): number {
   const o = cb.units.find((x) => x.id === z.by), m = o?.mg; let d = 0;
-  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * (m?.sigilMult || 1) * (x.damage_type === 'elemental' ? m?.elemMult || 1 : 1); if (isAffliction(w)) d += 6; }
+  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * sigilPower(m, x.damage_type === 'elemental' ? 'elemental' : 'sigil'); if (isAffliction(w)) d += 6; }
   return Math.round(d * mult);
 }
 /** How bad it is for u to step on tile k (an expected-damage scale; the move score adds it): a field of the other side

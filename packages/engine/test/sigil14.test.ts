@@ -71,8 +71,9 @@ describe('grammar (spec: Grammar and cost)', () => {
     expect(compileSpell(['mend', 'arc']).reachMult).toBe(0.8);
     expect(compileSpell(['mend', 'sense']).reachMult).toBe(0.6);
   });
-  it('the spec\'s numbers: FIRE · CONDENSE ×3 61, FIRE · FIRE · CONDENSE 81, FIRE ×3 · CONDENSE 109', () => {
-    for (const [words, want] of [[['fire', 'condense', 'condense', 'condense'], 61], [['fire', 'fire', 'condense'], 81], [['fire', 'fire', 'fire', 'condense'], 109]] as const) {
+  // Balance pass (item 578): the strongest damaging glyph counts in full, every other one adds half.
+  it('the spec\'s numbers: FIRE · CONDENSE ×3 61, FIRE · FIRE · CONDENSE 61, FIRE ×3 · CONDENSE 73', () => {
+    for (const [words, want] of [[['fire', 'condense', 'condense', 'condense'], 61], [['fire', 'fire', 'condense'], 61], [['fire', 'fire', 'fire', 'condense'], 73]] as const) {
       const { cb, u, e, rng } = setup([...new Set(words)], [{ at: '6,5' }]);
       draw(cb, rng, u, [...words], row(5, 5, words.length, -1));
       // The caster stands on the last glyph, at the Line's west end, so it fires east past the first: Touch reaches 6,5.
