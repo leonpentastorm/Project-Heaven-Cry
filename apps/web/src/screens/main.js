@@ -73,7 +73,7 @@ function magicNow(g, c) {
   const mana = inFight ? g.combat.mana ?? MANA_START : g.story.mana ?? MANA_START;
   return { inFight, cu, mana, band: manaBand(mana), flux: cu?.mg ? cu.mg.flux : SM.flux || 0, strain: cu?.mg ? cu.mg.strain : SM.strain || 0, held: (cu?.mg ? cu.mg.held : SM.held) || null,
     conds: (cu ? cu.conds : SM.conds) || {}, shield: (cu ? cu.shield : SM.shield) || 0,
-    charge: cu?.mg ? cu.mg.charge : c ? evoChargeNow(c) : 0, cores: cu?.mg ? cu.mg.cores + (cu.mg.coresMade || 0) : c ? coresCarried(c) : 0, mp: cu?.mg ? Math.round(cu.mg.mp) : c ? mpNow(c) : 0 };
+    charge: cu?.mg ? cu.mg.charge : c ? evoChargeNow(c) : 0, cores: cu?.mg ? cu.mg.cores || 0 : c ? coresCarried(c) : 0, /* Swap core loads only mg.cores; crystallised ones join after the fight */ mp: cu?.mg ? Math.round(cu.mg.mp) : c ? mpNow(c) : 0 };
 }
 /** Try an engine magic action on a throwaway copy of the story map's fight: the engine's refusal (or null) and the
  *  unit afterwards. The UI learns reasons and costs from the engine without computing a rule itself. */
@@ -1026,18 +1026,17 @@ export class MainLogic extends DCLogic {
         ...placedLegend((placedW && placedW.kinds) || new Set(), false).map((l) => ({ key: l.key, img: l.img || '', swatch: l.box || '', text: l.name })),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
       wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
-      wHead: c ? c.name.toUpperCase() + ' · AP ' + apNow + ' / ' + ROUND_AP : '', wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
+      wHead: c ? c.name.toUpperCase() : '', /* AP shows once: the AP bar in the status box */ wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
-      wPips: Array.from({ length: ROUND_AP }, (_, i) => ({ key: i, style: 'flex: 1; height: 8px; border-radius: 3px; background: ' + (i < apNow ? '#FFFFFF' : '#232D3F') })),
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
         const cell = areaCells.find((c) => c.key === k); return (plan.info && plan.hv === k ? plan.info + ' · ' : '') + cell.label; })(),
       areaHint: mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + (SB ? 'PROVING GROUND' : st0.short.toUpperCase() + ' · ' + map.name.toUpperCase()), inFight,
       hud: (() => { if (!c) return { has: false, bars: [], res: resView([]), magic: [] };
-        const ap = inFight ? 0 : apLeft(g, c);
+        const ap = apNow;
         // HP and AP as bars; everything you spend below them (game/resources.ts: the same block as the combat You card).
-        const hb = bars.filter((b) => b.label !== 'XP' && b.label !== 'MP').map((b) => ({ ...b, labelStyle: b.labelStyle.replace('font-size: 11px', 'font-size: 13px') })).concat(inFight ? [] : [{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
+        const hb = bars.filter((b) => b.label !== 'XP' && b.label !== 'MP').map((b) => ({ ...b, labelStyle: b.labelStyle.replace('font-size: 11px', 'font-size: 13px') })).concat([{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
         const ml = [{ key: 'mana', text: 'MANA ' + MN.mana + ' · ' + bandName(MN.band), style: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
         return { has: true, bars: hb, res: resView(resourcesOf(MN.cu || null, c, g)), magic: ml }; })(),
       ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;

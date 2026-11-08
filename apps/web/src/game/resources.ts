@@ -11,7 +11,7 @@
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator,
-  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, devotionOf, PATRON, COMPANION_KINDS, MODULE } from '@engine';
+  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, devotionOf, PATRON, COMPANION_KINDS, MODULE, isMelee, canJam } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
 export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY';
@@ -19,6 +19,7 @@ export interface ResRow {
   key: string; label: string; value: string; now?: number; max?: number; kind: ResKind; colour: string;
   warn?: ResWarn; /** alert: act now (red chip); caution: soon (white chip); ready: something good to spend (green). */ level?: 'alert' | 'caution' | 'ready';
   hint: string; /** A short second line (the ammo type, the source move, the held design's tone). */ sub?: string;
+  /** The value in the compact rows (the mini-bar, the urgent rows), when 'now / max' alone would lose its meaning. */ short?: string;
 }
 
 // ---------- colours (CLAUDE.md; docs/design/colour-system.md) ----------
@@ -28,6 +29,12 @@ export const RES_INK = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF', mp: 
 export interface HeldHeart {
   /** Strain now and its limit (Mana Short at 3 over, Outburst 2.0). */ strain: number; limit: number;
   held: null | { designId: string; name: string; stage: number; maxStage: number; tone: string; toneName: string; form: string; freePumps: number | null; /** Steadied: no swell at the next turn start. */ steady: boolean };
+  /** What the next steps do to Strain, as the engine prices them (so the warnings never assume +1):
+   *  beginStrain: the Strain one Begin adds now (+1, +2 Flooded, +2 more from the air without an Emanator, plus any
+   *  Strain owed); turnCalm: the −1 every turn start, always; swell: what a held Outburst adds at the turn start after
+   *  that −1 (0 when steadied); holdNet: the net of one idle held turn (turn start −1, then the swell); onTurn: it is
+   *  this caster's turn now (the next turn start's −1 has not come yet when false); flooded; emanator. */
+  beginStrain: number; turnCalm: number; swell: number; holdNet: number; onTurn: boolean; flooded: boolean; emanator: boolean;
 }
 const SOUL: any = () => (E as any).SOUL_RULES || {};
 const toneName = (id: string) => (E as any).TONE?.[id]?.name || (id ? id[0].toUpperCase() + id.slice(1) : 'Raw');
@@ -36,19 +43,40 @@ function formOf(d: any): string {
   const m = (d?.modules || []).find((x: string) => (MODULE as any)[x]?.form);
   return m ? ((MODULE as any)[m]?.name || m) : SOUL().default_form?.name || 'Bolt';
 }
+/** Where the heart is: the fight (its mana band, whose turn) and the unit, when there is one. */
+export interface HeartCtx { cb?: any; u?: any; mana?: number }
 /** Read a held Outburst and Strain from whatever carries them: a combat unit's magic (u.mg), or the story's magic for a
  *  character (g.story.magic[charId]) with its designs and limit from the character. Both the rules-1.2 shape
- *  ({design, stage, cost}) and the Outburst 2.0 heart (design, stage 0–4, tone, form, free pumps left) are read. */
-export function heldOutburstOf(m: any, designs?: any[], limit?: number): HeldHeart {
+ *  ({design, stage, cost}) and the Outburst 2.0 heart (design, stage 0–4, tone, form, free pumps left) are read.
+ *  With ctx (the fight and the unit) the Begin's Strain comes from the engine's own preview. */
+export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: HeartCtx = {}): HeldHeart {
   const strain = Math.max(0, Number(m?.strain ?? m?.heart?.strain ?? 0) || 0);
   const lim = Number(m?.strainLimit ?? m?.heart?.limit ?? limit ?? 3) || 3;
+  const cyc = SOUL().cycle || {}, cb = ctx.cb || null, u = ctx.u || null;
+  const mana = cb ? cb.mana ?? (E as any).MANA_START : ctx.mana;
+  let flooded = false; try { flooded = mana != null && (E as any).manaBand?.(mana)?.id === 'flooded'; } catch { /* no band */ }
+  const emanator = m?.emanator ?? m?.heart?.emanator ?? true;
+  const debt = Number(m?.debt ?? m?.heart?.debt ?? 0) || 0;
+  let begin = (flooded ? cyc.flooded_strain ?? 2 : cyc.begin_strain ?? 1) + (emanator ? 0 : cyc.no_emanator_strain ?? 2);
+  // The engine's own price for a Begin (items can change it): only when nothing is held, and only when the preview got
+  // as far as pricing (its AP is set past the 'outburst_cost' hook).
+  const ds0 = designs || m?.designs || [];
+  if (cb && u && u.mg && !(m?.held || m?.heart?.held) && ds0.length && typeof (E as any).previewOutburst === 'function') {
+    try { let best = -1; for (const d of ds0) { const pv = (E as any).previewOutburst(cb, u, d.id, undefined, false); if (pv && pv.ap > 0) best = Math.max(best, Number(pv.strain) || 0); } if (best >= 0) begin = best; } catch { /* fall back to the data */ }
+  }
+  begin += debt;
+  const onTurn = !cb || !u ? true : !!cb.overworld || cb.order?.[cb.turn] === u.id || cb.window?.queue?.[0]?.unitId === u.id;
+  const turnCalm = 1;
   const h = m?.held || m?.heart?.held || null;
-  if (!h) return { strain, limit: lim, held: null };
-  const id = h.design ?? h.designId ?? '', ds = designs || m?.designs || [];
+  const swellBase = flooded ? cyc.flooded_strain ?? 2 : cyc.swell_strain ?? 1;
+  const swell = h?.steady ? 0 : swellBase;
+  const base = { strain, limit: lim, beginStrain: begin, turnCalm, swell, holdNet: (strain > 0 ? -turnCalm : 0) + swell, onTurn, flooded, emanator: !!emanator };
+  if (!h) return { ...base, swell: swellBase, holdNet: (strain > 0 ? -turnCalm : 0) + swellBase, held: null };
+  const id = h.design ?? h.designId ?? '', ds = ds0;
   const d = ds.find((x: any) => x.id === id) || h.designDef || null;
   const tone = h.tone || d?.tone || 'raw';
   const free = m?.freePumpsMax === 0 ? null : h.freePumps ?? m?.freePumps ?? null;
-  return { strain, limit: lim, held: { designId: id, name: h.name || d?.name || 'an Outburst', stage: Number(h.stage) || 0, maxStage: Number(SOUL().cycle?.max_stage) || 4,
+  return { ...base, held: { designId: id, name: h.name || d?.name || 'an Outburst', stage: Number(h.stage) || 0, maxStage: Number(cyc.max_stage) || 4,
     tone, toneName: toneName(tone), form: h.form ? String(h.form)[0].toUpperCase() + String(h.form).slice(1) : formOf(d), freePumps: free == null ? null : Number(free), steady: !!h.steady } };
 }
 
@@ -88,6 +116,53 @@ const ammoName = (t?: string | null) => { const id = ammoId(t || null); return !
 /** What a spare is called, short: mag (magazine), drum, cell… */
 const magWord = (w: any) => String(w.reload_unit || 'mag').replace(/^magazine$/, 'mag');
 const plural = (n: number, one: string, many = one + 's') => n + ' ' + (n === 1 ? one : many);
+/** Reload AP as the engine charges it: reloadAp(u) (1 with a quick-release magazine, then items); out of a fight the
+ *  character's weapon and mods stand in for the unit. */
+function reloadApOf(u: any, c: any, w: any): number {
+  try { if (u) return E.reloadAp(u); if (c) return E.reloadAp({ weapon: w.id, mods: c.weaponState?.mods || [], charId: c.id } as any); } catch { /* the weapon's own number */ }
+  return w.reload_ap ?? 2;
+}
+
+/** Strain and the held Outburst, from the adapter only. The warnings use the engine's real prices: a Begin adds
+ *  hh.beginStrain (1, 2 Flooded, +2 without an Emanator); every turn start eases hh.turnCalm (1) before a held
+ *  Outburst's swell; every calming way eases more on top of that −1. Over the limit each point burns 8 at the turn's
+ *  end; shortAt over is an instant Mana Short. */
+export function strainRows(hh: HeldHeart): ResRow[] {
+  const out: ResRow[] = [];
+  const s = hh.strain, L = hh.limit, shortAt = Number(SOUL().strain?.short_at_over) || 3, burn = Number(SOUL().strain?.burn_per_point) || 8;
+  const held = !!hh.held, steady = !!hh.held?.steady, b = hh.beginStrain;
+  const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart on top of that −1: a still turn with nothing held, your first weapon attack of the turn, tending an ally, letting go (by its stage) or Steady (1 AP).';
+  const sgn = (n: number) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '±0');
+  const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + (Number(SOUL().cycle?.no_emanator_strain) || 2) + ' from the air: no Emanator)');
+  // Where Strain stands when your next turn starts (its −1 first; then a held Outburst swells), and the next step:
+  // holding → that turn start; not holding → your next Begin.
+  const atTurn = hh.onTurn ? s : Math.max(0, s - hh.turnCalm);
+  const peak = held ? (hh.onTurn ? s + hh.holdNet : Math.max(0, s - hh.turnCalm) + hh.swell) : atTurn + b;
+  const burnOver = held ? (hh.onTurn ? s : Math.max(0, s - hh.turnCalm) + hh.swell) - L : atTurn - L;
+  const holdTxt = steady ? 'Steadied: your next turn start only eases 1 (no swell)' : 'Holding into your next turn: its start eases 1, then the swell adds ' + hh.swell + ' (net ' + sgn(hh.swell - (s > 0 ? 1 : 0)) + ')';
+  const nextTxt = held ? holdTxt : 'Your next Begin adds ' + b + ' Strain' + why;
+  const peakTxt = ' → ' + peak + ' / ' + L + (peak > L ? ', ' + (peak - L) + ' over' : '');
+  const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul,
+    hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short. ' + calm };
+  if (peak - L >= shortAt) Object.assign(row, { warn: 'MANA SHORT NEXT', level: 'alert', hint: nextTxt + peakTxt + ': your heart shorts out (Stunned; a held Outburst goes off wild). ' + (held ? 'Release it, Steady (1 AP) or let it go this turn.' : 'Don\'t Begin until the heart calms.') + ' ' + calm });
+  else if (s > L) {
+    const dmg = burn * Math.max(0, burnOver);
+    Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (dmg > 0 ? dmg + ' damage to you at your ' + (hh.onTurn ? '' : 'next ') + 'turn end' + (!hh.onTurn && burnOver < s - L ? ' (after the turn start\'s −1)' : '') : 'your turn start\'s −1 brings it back to the limit, so no burn unless you add more') + '. ' + nextTxt + peakTxt + '. ' + calm });
+  } else if (peak > L) Object.assign(row, { warn: s === L ? 'AT THE LIMIT' : 'NEAR THE LIMIT', level: 'caution', hint: (s === L ? 'At your limit. ' : 'Close to your limit. ') + nextTxt + peakTxt + ' (' + burn + ' damage a point at your turn end). ' + calm });
+  else if (s === L && s > 0) Object.assign(row, { warn: 'AT THE LIMIT', level: 'caution', hint: 'At your limit. ' + nextTxt + peakTxt + ': no burn. ' + calm });
+  else if (s === L - 1 && s > 0) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + nextTxt + peakTxt + '. ' + calm });
+  out.push(row);
+  if (hh.held) {
+    const h = hh.held, mult = (SOUL().cycle?.stage_mult || [])[h.stage];
+    // The form only when the design's name doesn't already say it ('Soul Bolt' is a Bolt).
+    const form = h.form && !h.name.toLowerCase().includes(h.form.toLowerCase()) ? ' · ' + h.form : '';
+    out.push({ key: 'held', label: 'Holding', value: h.name + ' · stage ' + h.stage + ' / ' + h.maxStage, short: h.name + ' · ' + h.stage + ' / ' + h.maxStage, now: h.stage, max: h.maxStage, kind: 'pips', colour: RES_INK.soul,
+      sub: h.toneName + form + (mult ? ' · ×' + mult : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
+      ...(h.stage >= h.maxStage ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
+      hint: 'A held Outburst: Pump (1 AP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage at your turn start (+' + hh.swell + ' Strain after that turn start\'s −1); Steady (1 AP) stops the swell.' });
+  }
+  return out;
+}
 
 /** The rows for a character, from its fight unit when it has one (combat, or the area map during a fight), else from
  *  the character and the story's magic. Only rows that apply: a gunner sees ammo and Heat, a Sigil caster charge,
@@ -111,8 +186,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     } else if (c) {
       if (loose) { spare = packOf(c).filter((x: any) => x.calibre && x.calibre === w.ammo).reduce((t: number, x: any) => t + x.qty, 0); spareTxt = plural(spare, 'loose round'); } else { spare = spareMags(c).filter((n: number) => n > 0).length; spareTxt = plural(spare, 'spare ' + magWord(w)); }
     }
-    const rAp = w.reload_ap ?? 2, type = ammoName(u ? u.ammoType : c?.loadedType);
-    const low = now > 0 && now <= Math.max(1, Math.ceil(cap * 0.25));
+    const rAp = reloadApOf(u, c, w), type = ammoName(u ? u.ammoType : c?.loadedType);
+    const low = now > 0 && now < cap && now <= Math.max(1, Math.ceil(cap * 0.25));
     const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),
       hint: 'Rounds in the ' + (w.name || 'gun').toLowerCase() + '. ' + (spare > 0 ? 'Reload: ' + rAp + ' AP' + (loose ? ' (round by round from loose rounds).' : ' (a fresh ' + (w.reload_unit || 'magazine') + ').') : 'No spares left: pick some up, or switch weapons.') };
@@ -137,9 +212,13 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     else rows.push({ ...row, value: '0 / ' + lim + ' · cool' });
   }
   if (u?.maxDur) {
-    const d = u.dur ?? u.maxDur;
-    if (d <= 0) rows.push({ key: 'dur', label: 'Weapon condition', value: 'BROKEN', now: 0, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'BROKEN', level: 'alert', hint: 'Broken: it won\'t work until repaired (Field Repair, or a workshop).' });
-    else if (d <= u.maxDur * 0.25) rows.push({ key: 'dur', label: 'Weapon condition', value: d + ' / ' + u.maxDur, now: d, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'WORN', level: 'caution', hint: 'Worn: low condition makes jams likelier. Field Repair (2 AP) with spare parts.' });
+    // Condition: a broken gun won't fire, but a broken melee weapon still swings (×0.5 damage; worn ×0.9). Only guns
+    // that can jam jam more when worn (combat.ts: attack, canJam).
+    const d = u.dur ?? u.maxDur, melee = !!w && isMelee(w), jams = !!w && canJam(w);
+    if (d <= 0) rows.push({ key: 'dur', label: 'Weapon condition', value: 'BROKEN', now: 0, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'BROKEN', level: 'alert',
+      hint: melee ? 'Broken: it still swings, but for half damage until repaired (Field Repair, or a workshop).' : 'Broken: it won\'t fire until repaired (Field Repair, or a workshop).' });
+    else if (d <= u.maxDur * 0.25) rows.push({ key: 'dur', label: 'Weapon condition', value: d + ' / ' + u.maxDur, now: d, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'WORN', level: 'caution',
+      hint: (melee ? 'Worn: it hits for 90% damage.' : jams ? 'Worn: low condition makes jams likelier.' : 'Worn: at 0 it breaks and won\'t fire.') + ' Field Repair (2 AP) with spare parts.' });
   }
   // ---- throwables carried ----
   if (u?.throwables && Object.keys(u.throwables).length) {
@@ -150,12 +229,14 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   const mg = u?.mg, sm = c ? (g?.story?.magic || {})[c.id] || {} : {};
   const evoker = mg ? !!mg.evoker : !!c && hasEvoker(c);
   if (evoker) {
-    const charge = mg ? mg.charge : evoChargeNow(c), cores = mg ? mg.cores + (mg.coresMade || 0) : coresCarried(c);
+    // Spare cores are the ones Swap core can load (mg.cores); cores crystallised this fight (coresMade) join them only after it.
+    const charge = mg ? mg.charge : evoChargeNow(c), cores = mg ? mg.cores || 0 : coresCarried(c), made = mg ? mg.coresMade || 0 : 0;
     const locked = !!(mg && cb && mg.lockRound === cb.round);
-    const row: ResRow = { key: 'charge', label: 'Evoker charge', value: charge + ' / ' + CORE_CHARGE + ' · ' + plural(cores, 'spare core'), now: charge, max: CORE_CHARGE, kind: 'bar', colour: RES_INK.mind,
-      hint: 'The core in your Evoker: each glyph spends its charge. ' + (cores > 0 ? 'Swap core (2 AP) loads a fresh one (' + CORE_CHARGE + ').' : 'No spare cores: crystallise one, or find some.') };
+    const madeTxt = made ? ' ' + plural(made, 'core') + ' crystallised this fight ' + (made === 1 ? 'joins' : 'join') + ' your spares after it, not before.' : '';
+    const row: ResRow = { key: 'charge', label: 'Evoker charge', value: charge + ' / ' + CORE_CHARGE + ' · ' + plural(cores, 'spare core') + (made ? ' · ' + made + ' crystallised' : ''), now: charge, max: CORE_CHARGE, kind: 'bar', colour: RES_INK.mind,
+      hint: 'The core in your Evoker: each glyph spends its charge. ' + (cores > 0 ? 'Swap core (2 AP) loads a fresh one (' + CORE_CHARGE + ').' : 'No spare cores: crystallise one, or find some.') + madeTxt };
     if (locked) Object.assign(row, { warn: 'LOCKED', level: 'alert', hint: 'Overloaded: the Evoker is locked until next round.' });
-    else if (charge <= 0) Object.assign(row, cores > 0 ? { warn: 'RELOAD CORE', level: 'alert', hint: 'The core is spent: Swap core (2 AP) before you draw again.' } : { warn: 'EMPTY', level: 'alert', hint: 'The core is spent and you have no spares: crystallise one, or fight another way.' });
+    else if (charge <= 0) Object.assign(row, cores > 0 ? { warn: 'RELOAD CORE', level: 'alert', hint: 'The core is spent: Swap core (2 AP) before you draw again.' } : { warn: 'EMPTY', level: 'alert', hint: 'The core is spent and you have no spares to swap in: fight another way.' + madeTxt });
     else if (charge <= 3) Object.assign(row, cores > 0 ? { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left: swap core (2 AP) when it runs out (most words cost 1–3).' } : { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left and no spare cores.' });
     rows.push(row);
     const flux = mg ? mg.flux : sm.flux || 0;
@@ -176,23 +257,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   }
   const soul = mg ? mg.emanator || (mg.designs || []).length > 0 : !!c && (hasEmanator(c) || (c.outbursts || []).length > 0);
   if (soul) {
-    const hh = mg ? heldOutburstOf(mg) : heldOutburstOf(sm, c?.outbursts || [], strainLimit(c));
-    const s = hh.strain, L = hh.limit, shortAt = Number(SOUL().strain?.short_at_over) || 3;
-    const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart (a still turn, your first attack, tending an ally, Steady).';
-    const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul,
-      hint: 'Each Begin and each held turn adds Strain. Over ' + L + ', every point burns 8 at your turn end; ' + shortAt + ' over is a Mana Short. ' + calm };
-    if (s >= L + shortAt - 1 && s > L) Object.assign(row, { warn: 'MANA SHORT NEXT', level: 'alert', hint: 'One more and your heart shorts out (Stunned; a held Outburst goes off wild). ' + calm });
-    else if (s > L) Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (8 * (s - L)) + ' damage to you at your turn end. ' + calm });
-    else if (s === L && s > 0) Object.assign(row, { warn: 'AT THE LIMIT', level: 'caution', hint: 'At your limit: one more Begin or held turn goes over (8 damage a point). ' + calm });
-    else if (s === L - 1 && s > 0) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + calm });
-    rows.push(row);
-    if (hh.held) {
-      const h = hh.held, mult = (SOUL().cycle?.stage_mult || [])[h.stage];
-      rows.push({ key: 'held', label: 'Holding', value: h.name + ' · stage ' + h.stage + ' / ' + h.maxStage, now: h.stage, max: h.maxStage, kind: 'pips', colour: RES_INK.soul,
-        sub: h.toneName + ' · ' + h.form + (mult ? ' · ×' + mult : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
-        ...(h.stage >= h.maxStage ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
-        hint: 'A held Outburst: Pump (1 AP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage (and +1 Strain).' });
-    }
+    const hh = mg ? heldOutburstOf(mg, undefined, undefined, { cb, u }) : heldOutburstOf({ ...sm, emanator: !!c && hasEmanator(c) }, c?.outbursts || [], strainLimit(c), { mana: g?.story?.mana });
+    rows.push(...strainRows(hh));
   }
   // ---- class resources the runtime tracks (Momentum, Guard, Marks, Charges, Supplies…) ----
   const resMax: Record<string, number> = u?.resMax || (c ? Object.fromEntries(classResources(c).filter((r: any) => r.persist).map((r: any) => [r.id, r.max])) : {});
@@ -242,7 +308,11 @@ export const RES_CSS = [
   '@keyframes phcResPulse{0%,100%{box-shadow:0 0 0 0 rgba(246,81,87,.0)}50%{box-shadow:0 0 0 4px rgba(246,81,87,.35)}}',
   '.phc-rm .phc-res-row .phc-res-chip{animation:none!important}',
   '@media (prefers-reduced-motion: reduce){.phc-res-row .phc-res-chip{animation:none!important}}',
-  '.phc-res-urgent{display:flex;flex-direction:column;gap:5px}.phc-res-mini{min-width:0}',
+  // The compact rows (the mini-bar's urgent rows): one grid for all of them, so every label, bar, value and chip
+  // lines up (a fixed label column like the HP row's, the bar, the value, the chip).
+  '.phc-res-urgent{display:grid;grid-template-columns:minmax(64px,max-content) minmax(40px,1fr) max-content max-content;gap:5px 8px;align-items:center}',
+  '.phc-res-urgent>.phc-res-row.phc-res-mini{display:grid;grid-template-columns:subgrid;grid-column:1/-1;min-width:0;margin:0;padding:2px 0}',
+  '.phc-res-mini>.phc-res-line{display:grid;grid-template-columns:subgrid;grid-column:1/-1;align-items:center;min-width:0}',
 ].join('\n');
 
 export function chipStyle(level?: string): string {
@@ -255,24 +325,40 @@ function fillInk(r: ResRow): string {
   if (r.level === 'alert' && ['heat', 'flux', 'strain'].includes(r.key)) return RES_INK.alert;
   return r.colour;
 }
+/** The pips of a row: filled, empty, and past the max (Strain over its limit) a white divider at the limit, then
+ *  hatched red pips outlined in red, so 'at the limit' and '1 over' never look the same. */
+export function pipsOf(r: ResRow, compact = false): { key: number; style: string; over: boolean; divider: boolean }[] {
+  if (r.kind !== 'pips') return [];
+  const ink = fillInk(r), n = Math.max(0, Math.round(r.max || 0)), on = Math.max(0, Math.round(r.now ?? 0));
+  const pipsN = Math.min(n, 12), over = r.max && (r.now ?? 0) > r.max ? Math.min(6, on - n) : 0, hgt = compact ? 8 : 10;
+  const pip = (i: number) => ({ key: i, over: false, divider: false,
+    style: 'flex: 1 1 0; min-width: 6px; height: ' + hgt + 'px; border-radius: 2px; ' + (i < on ? 'background: ' + ink : 'background: #1C2536; box-shadow: inset 0 0 0 1px #2E3A50') });
+  const out = Array.from({ length: pipsN }, (_, i) => pip(i));
+  if (over > 0) {
+    out.push({ key: 1000, over: false, divider: true, style: 'flex: none; width: 2px; height: ' + (hgt + 6) + 'px; margin: -3px 2px; border-radius: 1px; background: #FFFFFF' });
+    for (let i = 0; i < over; i++) out.push({ key: pipsN + i, over: true, divider: false,
+      style: 'flex: 1 1 0; min-width: 6px; height: ' + hgt + 'px; border-radius: 2px; box-sizing: border-box; border: 1px solid #F65157; background: repeating-linear-gradient(135deg, #F65157 0 2px, #0A0D13 2px 4px)' });
+  }
+  return out;
+}
 /** One row as the templates draw it. */
 export function resRowView(r: ResRow, compact = false) {
-  const ink = fillInk(r), n = Math.max(0, Math.round(r.max || 0)), on = Math.max(0, Math.round(r.now ?? 0));
-  const pipsN = r.kind === 'pips' ? Math.min(n, 12) : 0, over = r.kind === 'pips' && r.max && (r.now ?? 0) > r.max ? on - n : 0;
+  const ink = fillInk(r);
+  const value = compact && r.short ? r.short : compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value;
   return {
-    key: r.key, wide: ['ammo', 'held', 'thr', 'off'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value: compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
-    aria: r.label + ': ' + r.value + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
+    key: r.key, wide: ['ammo', 'held', 'thr', 'off', 'charge'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
+    aria: r.label + ': ' + r.value + (r.sub ? ' (' + r.sub + ')' : '') + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
     isBar: r.kind === 'bar', isPips: r.kind === 'pips', isText: r.kind === 'text',
-    labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour,
-    valueStyle: 'flex: 1 1 auto; min-width: 0; font-size: ' + (compact ? 14 : 15) + 'px; font-weight: 700; color: #E7EBF3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums',
-    miniValueStyle: 'flex: none; font-size: 15px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums',
+    labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),
+    // The full block wraps (the narrow area-map HUD must still show the spares); only the compact rows cut with an ellipsis.
+    valueStyle: 'flex: 1 1 auto; min-width: 0; font-size: ' + (compact ? 14 : 15) + 'px; font-weight: 700; color: #E7EBF3; font-variant-numeric: tabular-nums; ' + (compact ? 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis' : 'white-space: normal; overflow-wrap: anywhere; line-height: 1.25'),
+    miniValueStyle: 'flex: none; font-size: 15px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right',
     warnStyle: chipStyle(r.level),
-    subStyle: 'font-size: 12px; font-weight: 500; color: #A3AEC2',
+    subStyle: 'display: block; font-size: 12px; font-weight: 500; line-height: 1.3; color: #A3AEC2; overflow-wrap: anywhere',
     trackStyle: 'position: relative; display: block; height: ' + (compact ? 8 : 10) + 'px; border-radius: 3px; background: #1C2536; overflow: hidden',
     fillStyle: 'display: block; height: 100%; width: ' + pct(r) + '%; background: ' + ink,
-    pips: Array.from({ length: pipsN + Math.max(0, Math.min(6, over)) }, (_, i) => ({ key: i,
-      style: 'flex: 1 1 0; min-width: 6px; height: ' + (compact ? 8 : 10) + 'px; border-radius: 2px; ' + (i >= pipsN ? 'background: #F65157' : i < on ? 'background: ' + ink : 'background: #1C2536; box-shadow: inset 0 0 0 1px #2E3A50') })),
-    pipsStyle: 'display: flex; gap: 3px',
+    pips: pipsOf(r, compact),
+    pipsStyle: 'display: flex; align-items: center; gap: 3px',
   };
 }
 /** The block's values for a template: every row, and the 2–3 most urgent for the narrow bars. */

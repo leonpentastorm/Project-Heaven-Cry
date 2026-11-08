@@ -71,9 +71,10 @@
 <div class="phc-cb-bar" style="flex: none; display: flex; align-items: center; gap: 8px; min-height: 28px">
 <sc-if value="{{hasMe}}"><div class="phc-me-mini" aria-label="You: {{me.name}}, HP {{me.hp}}, {{me.miniLine}}" style="flex: 0 1 auto; min-width: 0; display: none; align-items: center; gap: 7px">
 <button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #000; display: block"></button>
-<span style="flex: none; max-width: 96px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.name}}</span>
+<span style="flex: 0 1 auto; min-width: 24px; max-width: 96px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.name}}</span>
 <span aria-hidden="true" style="position: relative; display: block; flex: 0 1 56px; min-width: 24px; height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{me.hpChip}}"></span><span class="phc-hp-fill" style="{{me.hpFill}}"></span></span>
-<span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; color: #F65157">HP</span> {{me.hp}} · {{me.miniLine}}</span>
+<span aria-hidden="true" class="phc-me-mini-hp" style="flex: none; font-size: 13px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums"><span style="letter-spacing: 0.1em; color: #F65157">HP</span> {{me.hp}}</span>
+<span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 12px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.miniLine}}</span>
 </div></sc-if>
 <span style="flex: none; margin-left: auto; display: flex; gap: 6px">
 <sc-if value="{{lay.custom}}"><button type="button" class="phc-cb-link phc-cb-layout-reset" onClick="{{lay.reset}}" title="Put the map, legend, log and action menu back where they started" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">↺ Layout</button></sc-if>
@@ -84,7 +85,7 @@
 </div>
 <sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-me-urgent phc-res-urgent" style="flex: none; display: none">
 <sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
-<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+<span class="phc-res-line" style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
 </div></sc-for>
 </div></sc-if>
 <div class="phc-cb-top phc-col-scroll" style="flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px">
@@ -101,7 +102,8 @@
 </div>
 <sc-if value="{{me.res.has}}"><div role="list" aria-label="Your resources" class="phc-res">
 <sc-for list="{{me.res.rows}}" as="r"><div role="listitem" class="phc-res-row" data-res="{{r.key}}" data-level="{{r.level}}" data-wide="{{r.wide}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
-<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}"> · {{r.sub}}</span></sc-if></span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}">{{r.sub}}</span></sc-if>
 <sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
 <sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
 <span class="phc-res-hint">{{r.hint}}</span>
@@ -259,7 +261,7 @@
 <div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for></div>
 <sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-res-urgent" style="flex: none">
 <sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
-<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+<span class="phc-res-line" style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
 </div></sc-for>
 </div></sc-if>
 <div role="group" aria-label="Quick commands (keys 1–4)" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">

@@ -34,7 +34,7 @@ import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
-import { resourcesOf, urgentRows, chipStyle, type ResRow } from './resources';
+import { resourcesOf, urgentRows, resRowView, type ResRow } from './resources';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -352,31 +352,29 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
 function Bar({ label, v, max, color }: { label: string; v: number; max: number; color: string }) {
   const pct = Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100));
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 76px', gap: 8, alignItems: 'center' }}>
-      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color }}>{label}</span>
+    <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 84px', gap: 8, alignItems: 'center' }}>
+      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color }}>{label}</span>
       <span style={{ height: 10, background: '#1C2536', transform: 'skewX(-20deg)', overflow: 'hidden' }}><span style={{ display: 'block', width: pct + '%', height: '100%', background: color }} /></span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: '#E7EBF3', textAlign: 'right' }}>{v} / {max}</span>
+      <span style={{ fontSize: 15, fontWeight: 700, color: '#E7EBF3', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v} / {max}</span>
     </div>
   );
 }
 
-/** One resource row on the cut-in: label, value, warning chip, and its bar or pips (hover for the hint). */
+/** CSS text (the templates' style strings) as a React style object. */
+const css = (st: string) => Object.fromEntries(st.split(';').map((x) => x.trim()).filter(Boolean).map((x) => { const i = x.indexOf(':'); return [x.slice(0, i).trim().replace(/-([a-z])/g, (_, ch) => ch.toUpperCase()), x.slice(i + 1).trim()]; }));
+/** One resource row on the cut-in, drawn from resRowView (the combat card's own row): label, value, warning chip, then
+ *  its bar or pips (over-limit pips past a divider), the same sizes; hover for the hint. Labels start under HP and AP. */
 function ResLine({ r }: { r: ResRow }) {
-  const max = Math.max(0, r.max || 0), now = Math.max(0, r.now ?? 0), pct = max ? Math.max(0, Math.min(100, (now / max) * 100)) : 0;
-  const ink = r.level === 'alert' && ['heat', 'flux', 'strain'].includes(r.key) ? '#F65157' : r.colour;
-  const css = (st: string) => Object.fromEntries(st.split(';').map((x) => x.trim()).filter(Boolean).map((x) => { const i = x.indexOf(':'); return [x.slice(0, i).trim().replace(/-([a-z])/g, (_, ch) => ch.toUpperCase()), x.slice(i + 1).trim()]; }));
+  const v = resRowView(r);
   return (
-    <div role="listitem" data-res={r.key} title={r.hint} aria-label={r.label + ': ' + r.value + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint} style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr)', columnGap: 8, rowGap: 3, alignItems: 'center' }}>
-      <span aria-hidden="true" />
+    <div role="listitem" data-res={r.key} title={r.hint} aria-label={v.aria} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-        <span style={{ flex: 'none', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: r.colour, textTransform: 'uppercase' }}>{r.label}</span>
-        <span style={{ flex: '1 1 auto', minWidth: 0, fontSize: 15, fontWeight: 700, color: '#E7EBF3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value}</span>
-        {r.warn && <span role="status" style={css(chipStyle(r.level))}>{r.warn}</span>}
+        <span style={css(v.labelStyle)}>{v.label}</span>
+        <span style={{ ...css(v.valueStyle), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v.value}</span>
+        {v.hasWarn && <span role="status" style={css(v.warnStyle)}>{v.warn}</span>}
       </span>
-      {r.kind !== 'text' && max > 0 && <><span aria-hidden="true" /><span aria-hidden="true" style={{ display: 'flex', gap: 3, height: 8 }}>
-        {r.kind === 'pips' && max <= 12 ? Array.from({ length: max }, (_, i) => <span key={i} style={{ flex: 1, background: i < now ? ink : '#1C2536', boxShadow: i < now ? undefined : 'inset 0 0 0 1px #2E3A50' }} />)
-          : <span style={{ flex: 1, background: '#1C2536', overflow: 'hidden' }}><span style={{ display: 'block', width: pct + '%', height: '100%', background: ink }} /></span>}
-      </span></>}
+      {v.isBar && <span aria-hidden="true" style={css(v.trackStyle)}><span style={css(v.fillStyle)} /></span>}
+      {v.isPips && <span aria-hidden="true" style={css(v.pipsStyle)}>{v.pips.map((p) => <span key={p.key} data-over={p.over || undefined} style={css(p.style)} />)}</span>}
     </div>
   );
 }
@@ -408,7 +406,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
           {c.res.length > 0 && <div role="list" aria-label="Your resources" style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 34, fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#FFFFFF' }}>AP</span>
+            <span style={{ width: 34, fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
             <span aria-label={c.ap + ' AP'} style={{ display: 'flex', gap: 4 }}>{Array.from({ length: Math.max(0, Math.min(9, Math.round(c.ap))) }, (_, i) => <span key={i} style={{ width: 14, height: 14, transform: 'rotate(45deg)', background: '#FFFFFF' }} />)}</span>
           </div>
           <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}</span>
