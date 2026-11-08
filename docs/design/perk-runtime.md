@@ -307,6 +307,15 @@ FX events the web can draw (besides the existing `shove`, `stance`, `reload`, `c
 - `eye_storm` {unit, at} when armed; `eye_storm_spent` {unit, at, riderStage} when the Release used it.
 - `command_move` {unit, target, from, to} (the walk is the target's `move`).
 
+The web side (apps/web): pickers in `game/actionPickers.ts` (Command's tile, Shove's push or Prone chips, Field Fix's
+job, the Occult Library's tone; every other new move is its grid target or a plain button); a chip the engine would
+refuse with that choice is greyed with its reason (combat.js previews each one). `game/commands.ts` prices Vent and
+Swap core with `ventAp`/`coreAp`, names the policy in force (✓) and Eye of the Storm ARMED. `game/classMarks.ts`
+draws what stands on the grid: a False Image as its owner's translucent Sigil-cyan copy (another side's only where
+seen), Read's intent (an arrow and word on the enemy, a ring on its target, until its turn ends), the rigged tile (its
+own side only; `viewFor` drops another side's) and a sabotaged barricade or turret. `game/fx/classes.ts` plays every
+event above (a shot or blow at an image reads DECOY). Tests: `game/classMoves.test.ts`, `e2e/classes-moves.mjs`.
+
 ## Appendix: the lanes' notes
 
 Each lane's missing hooks, data deltas and UI notes as written. Most hooks and data deltas were applied in the hooks-gap pass above; what is still open is listed there.

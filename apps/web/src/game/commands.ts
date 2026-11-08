@@ -4,7 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
+import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -37,7 +37,18 @@ export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
   try { return perkActionsFor({ c: ch, g }, 'story'); } catch { return []; } finally { bindGame(was); }
 }
 /** "2 AP · 1/combat" */
+/** Vent and core swap as the engine prices them (magic.ts ventAp / coreAp: Bleed the Flux, Core Change). */
+export const magicAp = (u: any, a: 'vent' | 'core'): number => { try { return u ? (a === 'vent' ? ventAp(u) : coreAp(u)) : SPELL_AP[a]; } catch { return SPELL_AP[a]; } };
+const apNote = (u: any, a: 'vent' | 'core') => { const n = magicAp(u, a), base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux: ' : 'Core Change: ') + base + ' → ' + n + ' AP. ' : ''; };
 export const pkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
+/** A move's standing state for its button (Class Roster Revision 3): an on/off policy pair names the one in force
+ *  (its twin is greyed "on now"), Eye of the Storm reads ARMED once armed, a spent once-a-scene move "used". */
+export function pkState(e: PerkActionEntry): { tag: string; why: string | null } {
+  const pol = /^(.*)_(on|off)$/.exec(e.actionId);
+  if (pol && e.why === 'Already set.') return { tag: ' ✓', why: 'In force now (' + (pol[2] === 'on' ? 'on: the default' : 'off for this fight') + ').' };
+  if (e.why === 'Already armed.') return { tag: ' · ARMED', why: 'Armed: your next Release this turn uses it.' };
+  return { tag: '', why: e.why };
+}
 export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator rules what the engine doesn\'t.');
 /** The class a character holds, for the Class tab's name and emblem: an active advanced class, else the base class (a
  *  shelved advanced class shows nothing). With no character, a move's origin (an action entry's cls, e.g. medic for
@@ -104,7 +115,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   ];
   // Perks and traits, then class moves: each item's actions as the engine lists them (hidden when they don't apply).
   const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
-  const pkItem = (e: PerkActionEntry): ActionItem => [pkId(e), e.label, pkCost(e), pkText(e), e.why];
+  const pkItem = (e: PerkActionEntry): ActionItem => { const st = pkState(e); return [pkId(e), e.label + st.tag, pkCost(e), pkText(e), st.why]; };
   const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
   if (perks.length) ITEMS.push(['PERKS & TRAITS', perks.map(pkItem), null, 'perks']);
   if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), moves[0].cls); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
@@ -116,8 +127,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile: one glyph a tile. Step and draw again to walk a Line (2 to 4 in a straight row). It costs the word\'s charge from your Evoker and adds its Flux.'],
       ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs (a Subject and another word). Where you stand sets the way it opens: behind an end, it fires along the Line; beside it, across. Charge ' + mg.charge + '/' + CORE_CHARGE + '.'],
       ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
-      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, SPELL_AP.vent + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.'],
-      ['core', 'Swap core', SPELL_AP.core + ' AP', 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);
+      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.' + apNote(cur, 'vent')],
+      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);
     if (soul) MG.push(['MAGIC · OUTBURSTS', [
       // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
       // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
@@ -171,7 +182,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
   if (action === 'repair' && !(u.parts > 0)) return 'No spare parts.';
   const n = /^(\d+(?:\.\d+)?)\s*(?:–\d+\s*)?AP/.exec(cost || '');
   if (n && ap < Number(n[1])) return 'Needs ' + n[1] + ' AP.';
-  if (ap <= 0) return 'No AP left.';
+  if (ap <= 0 && !(n && Number(n[1]) === 0)) return 'No AP left.';
   return null;
 }
 

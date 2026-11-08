@@ -6,6 +6,7 @@ import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
+import { classHandlers, classBeat } from './classes';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -235,7 +236,7 @@ const H: Record<string, Handler> = {
       else {
         if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }
         else if (!g.blast) play(g.look === 'arrow' ? 'hit_wood' : g.look === 'lob' || g.look === 'rocket' ? 'hit_heavy' : 'whiz', toP, { rate: g.look === 'lob' ? 0.7 : jitter(0.15), delay: 0 });
-        dust(end, toP.s); floatText(e.fumble ? 'FUMBLE' : 'MISS', toP, MUTED);
+        dust(end, toP.s); floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
       }
       if (e.jam || (e.fumble && !/melee|unarmed/.test(e.cat || ''))) { const fp = from || toP; floatText('JAMMED', fp, HP, { small: true, delay: 120 }); play('dry_click', fp, { delay: 160 }); }
     }, ft);
@@ -257,7 +258,7 @@ const H: Record<string, Handler> = {
     after(() => {
       if (e.object) { dust(toP, toP.s); play('chop', toP); return; }
       if (e.hit) impact(e, toP, e.target, { crit: e.crit, dmg: e.dmg, melee: true, sound: cat === 'heavy_melee' ? 'chop' : cat === 'light_melee' ? 'slice' : 'hit_heavy' });
-      else { floatText(e.fumble ? 'FUMBLE' : 'MISS', toP, MUTED); play('whiz', toP, { rate: 0.7 }); }
+      else { floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); play('whiz', toP, { rate: 0.7 }); }
     }, 120);
   },
   volley(e) {
@@ -540,7 +541,7 @@ const H: Record<string, Handler> = {
   },
   cond(e) { const p = at(e.at); if (!p) return; floatText(e.resisted ? 'RESISTED' : condWord(e.id), p, e.resisted ? MUTED : condBoon(e.id) ? OK : WHITE, { small: true, delay: 200 }); if (e.id === 'corroded' && !e.resisted) bubbles(p, ELEMENTS.acid, 'sigil', 4, 900, 200); },
   overload(e) { const p = at(e.at); play('sigil_overload', p || centre(e.at)); screenTint('red', 420); if (p) { glitch(p, 420); squares(p, HP, 14, 1.2, 500); shake(tokOf(e.unit, e.at), 1.2); } },
-  vent(e) { const p = at(e.at); play('vent', p); if (p) for (let i = 0; i < 10; i++) squaresTo(p, { x: p.x + (Math.random() - 0.5) * p.s, y: p.y - p.s * (1.5 + Math.random()) }, SIGIL_INK, 1, 600, i * 40); },
+  vent(e) { const p = at(e.at); play('vent', p, e.bleed ? { rate: 1.4, gain: 0.5 } : {}); if (p && e.bleed) floatText('BLED +1', p, SIGIL_INK, { small: true }); if (p) for (let i = 0; i < (e.bleed ? 3 : 10); i++) squaresTo(p, { x: p.x + (Math.random() - 0.5) * p.s, y: p.y - p.s * (1.5 + Math.random()) }, SIGIL_INK, 1, 600, i * 40); },
   // ---------- Outbursts (1.2 events in old logs; the 1.5 heart is in soul.ts) ----------
   grow(e) {
     const p = at(e.at), st = e.stage || 2, col = mix(SOUL_INK, SOUL_WARM, (st - 1) / 3);
@@ -733,11 +734,15 @@ function chipShatter(p: Pt, word: string) {
   after(() => { shards(q, { ...ELEMENTS.freeze, ink: MUTED, core: WHITE }, 'sigil', 10, 0.8, 520); floatText('CLEANSED', p, OK, { small: true }); }, 300);
 }
 
+// Class Roster Revision 3's moves (fx/classes.ts): the same kit as the Soul handlers, plus a few particles from here.
+Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
+
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms). */
 function beatOf(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
+  const kb = classBeat(e); if (kb !== undefined) return kb;
   if (e.k === 'explode' && e.what === 'discharge') return 520;
   switch (e.k) {
     case 'turn': return 140;

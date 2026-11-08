@@ -14,8 +14,9 @@ import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 import { glyphKeyNav } from '../game/glyphKeys';
+import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
-import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf } from '../game/commands';
+import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
@@ -96,6 +97,9 @@ const COMBAT_CSS = [
   '@keyframes phcCurRing{0%{transform:scale(1);opacity:.95}100%{transform:scale(1.32);opacity:0}}.phc-cur-ring{animation:phcCurRing 1.3s ease-out infinite}',
   '@keyframes phcTgtRing{0%,100%{opacity:.45}50%{opacity:1}}.phc-tgt-ring{animation:phcTgtRing 1.6s ease-in-out infinite}',
   '@keyframes phcPlanIn{from{opacity:0}to{opacity:1}}.phc-plan{animation:phcPlanIn .22s ease-out both}',
+  // A False Image's shimmer (game/classMarks.ts sets it inline on the decoy; still under reduced motion).
+  '@keyframes phcDecoy{0%,100%{opacity:.42;filter:saturate(.4) brightness(1.05) drop-shadow(0 0 3px rgba(79,200,223,.6))}50%{opacity:.66;filter:saturate(.5) brightness(1.25) drop-shadow(0 0 7px rgba(79,200,223,.9))}}',
+  '.phc-reduce .phc-plan{animation:none!important}@media (prefers-reduced-motion: reduce){.phc-plan{animation:none!important}}',
   '.phc-hp-fill{transition:width .16s ease-out}.phc-hp-chip{transition:width .55s cubic-bezier(.4,0,.2,1) .4s}',
   '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
@@ -200,7 +204,7 @@ const MINI_H = 196;
 const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
 /** The chosen perk or class move's picker in the combat footer (game/actionPickers.ts): option chips, a second pick on
  *  the grid (shown as chips you can clear), and a prose box only where the move needs words. Never a typed detail. */
-function pickerVals(self, cb, P, V) {
+function pickerVals(self, cb, P, V, whyOpt) {
   if (!P) return { hasPick: false, pickFields: [] };
   const key = self.state.action, form = () => (self.state.pkForm && self.state.pkForm.key === key ? self.state.pkForm.v : {});
   const setV = (patch) => self.setState({ pkForm: { key, v: { ...form(), ...patch } } });
@@ -209,8 +213,11 @@ function pickerVals(self, cb, P, V) {
     const base = { key: f.key, head: f.head, isChips: false, opts: [], isEmpty: false, emptyText: '', isProse: false, text: '', holder: '', onText: undefined, isGrid: false, picked: [], hasPicked: false, gridHint: '' };
     if (f.kind === 'chips') {
       const on = ids(f.key), multi = f.multi || 1;
-      const opts = f.options.map((o) => ({ key: o.id, label: o.label, title: o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', style: CHIP(on.includes(o.id)),
-        pick: () => { const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }));
+      // A chip the engine would refuse right now (its own data, or the move's preview with that choice) is greyed, its
+      // reason on it: Field Fix's "isn't jammed", Shove's "nothing behind them".
+      const opts = f.options.map((o) => { const why = on.includes(o.id) ? '' : o.off || (whyOpt && f.key === 'choice' && (f.multi || 1) === 1 ? whyOpt(o.id) : '') || '';
+        return { key: o.id, label: o.label + (why ? ' · ' + chipWhy(why) : ''), title: why || o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', off: !!why, style: CHIP(on.includes(o.id)) + (why ? '; opacity: 0.5; cursor: default' : ''),
+        pick: () => { if (why) return; const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }; });
       return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.' };
     }
     if (f.kind === 'prose') return { ...base, isProse: true, text: V[f.key] || '', holder: f.holder, onText: (ev) => setV({ [f.key]: ev.target.value }) };
@@ -224,6 +231,8 @@ function pickerVals(self, cb, P, V) {
   });
   return { hasPick: true, pickHead: P.head, pickFields, pickWarn: P.warn || '', hasPickWarn: !!P.warn };
 }
+/** A refusal cut to its first clause, for a chip's label (the whole reason is its title). */
+const chipWhy = (t) => { const s = String(t || '').split(/[:.]/)[0].trim(); return s.length > 34 ? s.slice(0, 32) + '…' : s; };
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
 const condChips = (u) => [...Object.entries(u.conds || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + n + (n === 1 ? ' round' : ' rounds') + ' left.',
@@ -463,7 +472,7 @@ export class CombatLogic extends DCLogic {
     const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? previewAttack(cb, cur, tgtUnit, attackMode) : null;
     const allies = cb.units.filter((u) => u.side === 'pc' && !u.dead && cur && u.id !== cur.id);
     const stimTarget = cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead);
-    const covers = coverOf(cb), allObjs = objectsOf(cb), shootable = (k) => allObjs.some((o) => o.pos === k && o.hp != null && o.hp > 0), doorAt = (k) => allObjs.find((o) => o.pos === k && kindOf(o).door);
+    const covers = coverOf(cb), allObjs = objectsOf(cb).filter((o) => !(o.rig && o.side && o.side !== 'pc')), shootable = (k) => allObjs.some((o) => o.pos === k && o.hp != null && o.hp > 0), doorAt = (k) => allObjs.find((o) => o.pos === k && kindOf(o).door);
     const coverSel = S.action === 'cover' && shootable(S.tile) ? S.tile : null, doorSel = S.action === 'door' && doorAt(S.tile) ? S.tile : null, pickSel = S.action === 'pickup' && (cb.floor || []).some((f) => f.pos === S.tile && f.weapon) ? S.tile : null;
     const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n) => n < cap).sort((a, b) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
     const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op), skWhy = !skRuns || !cur ? null : cur.jammed && skFx.op === 'multi_shot' ? 'Weapon jammed: clear it (2 AP).' : skFx.op === 'multi_shot' && w.magazine != null && cur.ammo <= 0 ? 'Empty: reload (2 AP).' : cur.ap < (skFx.ap || 0) ? 'Needs ' + skFx.ap + ' AP.' : null, skPassive = sk && !skRuns && skFx.op !== 'narrator';
@@ -549,7 +558,7 @@ export class CombatLogic extends DCLogic {
     const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
     const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })()) : null;
     this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
-    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : SPELL_AP[S.action] || 0;
+    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0;
     const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap : undefined; // the weapon's own AP
     const cost = pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' || S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
@@ -598,7 +607,8 @@ export class CombatLogic extends DCLogic {
     const glyphName = (gl) => glyphMark(gl, 'pc', knows).title;
     // Placed magic (spec 9.9: fields tinted by element, your traps, spotted enemy traps, turrets, RAISE walls, smoke,
     // light) under the Evoke plan's overlay; outside the area is dimmed while aiming (spec 9.4).
-    const placed = placedView(pcb, 'pc'), evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
+    // Class Roster Revision 3's standing marks (game/classMarks.ts): False Images, Read's intents, rigged and sabotaged tiles.
+    const placed0 = placedView(pcb, 'pc'), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
     const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
@@ -686,11 +696,12 @@ export class CombatLogic extends DCLogic {
     const mv = cur ? cur.movement : 1;
     // The one action list (game/commands.ts): the tabs show it, the turn card's commands and their customise dialog pick from it.
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g }); // the Proving Ground has no Narrator to rule on anything
-    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text]) => ({
-      name: label, cost: costText, text, locked: !mineTurn, key: id, pressed: S.action === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '' }); },
+    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text, why]) => ({
+      // A move that can't be used now still opens (its footer says why); its reason is on the button too.
+      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: S.action === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '' }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
-        (S.action === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
+        (why && S.action !== id ? 'opacity: 0.62; ' : '') + (S.action === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
     const actName = { skill: sk ? sk.name : 'Weapon skill', paired: 'Both hands', repair: 'Field Repair', song: 'Play my song', sprint: 'Sprint', disengage: 'Disengage', prone: cur && cur.prone ? 'Stand up' : 'Drop prone', burst: 'Burst', auto: 'Full auto', shove: 'Shove', overwatch: 'Overwatch', brace: 'Brace', move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Melee', reload: 'Reload', clear: 'Clear a jam', stim: 'Stim an ally', analyze: 'Analyze', cover: 'Shoot an object', door: 'Open or close a door', pickup: 'Pick up', load: 'Load a magazine',
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
       pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action];
@@ -732,7 +743,7 @@ export class CombatLogic extends DCLogic {
         sel.text = !hp ? 'You hold no Outburst: Begin one first.' : B.ok ? B.title + ' Confirm (or use the HEART panel).' : B.why;
         sel.extra = hp ? 'Stage ' + hp.stage + ' ×' + hp.mult + ' · Strain ' + hp.strain + '/' + hp.limit + (hp.warn ? ' · ' + hp.warn : '') : heart;
       } else {
-        sel.name = actName + ' · ' + (SPELL_AP[S.action] || 0) + ' AP';
+        sel.name = actName + ' · ' + (S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0) + ' AP';
         sel.text = simpleWhy ? simpleWhy : 'Confirm to ' + VERB[S.action] + '.';
         sel.extra = S.action === 'syphon' || S.action === 'crystallise' ? 'Mana ' + mana + ' (' + BAND_NAME[band.id] + ') · ' + heart : S.action === 'scuff' ? ((glyphAt[cur.pos] || []).length ? 'Under you: ' + glyphAt[cur.pos].map(glyphName).join(', ') + '.' : 'No glyphs under you.') : meter;
       }
@@ -740,9 +751,12 @@ export class CombatLogic extends DCLogic {
     if (pkE && mineTurn) {
       sel.name = pkE.label + ' · ' + (pkPv ? pkPv.ap : pkE.ap) + ' AP' + (pkE.uses.label ? ' · ' + pkE.uses.label : '') + (pkE.tab === 'class' ? ' · class move' : '');
       const need = pkE.target === 'ally' ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click an ally. ') : ['unit', 'enemy'].includes(pkE.target) ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click a target. ') : pkE.target === 'tile' ? (S.tile ? 'Tile ' + refOf(S.tile) + '. ' : 'Click a tile. ') : '';
-      sel.text = need + (pkPv && !pkPv.ok ? pkPv.why : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
-      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkE.why ? ' ' + pkE.why : '');
-      Object.assign(sel, pickerVals(this, cb, pkP, pkV));
+      const stWhy = pkState(pkE).why; // an on/off pair or Eye of the Storm read as their state ("in force now", "armed")
+      sel.text = need + (pkPv && !pkPv.ok ? (pkE.why && pkPv.why === pkE.why ? stWhy : pkPv.why) : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
+      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (stWhy ? ' ' + stWhy : '');
+      // Each single choice previewed as the engine would take it (once the move's own target is picked).
+      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { const was = bindGame(g); try { const r = previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat'); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } finally { bindGame(was); } } : null;
+      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
     sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: (t.preview || t.label) + (t.why ? ' · ' + t.why : ''), off: !!t.why,
       pick: () => { const m = new Set(this.state.mods || []); if (t.on) { m.delete(t.id); if (t.defaultOn) m.add('!' + t.id); } else { m.add(t.id); m.delete('!' + t.id); } this.setState({ mods: [...m] }); },

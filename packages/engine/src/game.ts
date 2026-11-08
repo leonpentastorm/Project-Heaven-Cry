@@ -1423,7 +1423,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
-  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden) };
+  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !((o as any).rig && (o as any).side && (o as any).side !== 'pc')) }; // another side's rigged tile (Sabotage) too
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
   if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, 'pc')), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === 'pc') };
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, 'pc'));

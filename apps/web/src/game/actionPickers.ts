@@ -188,6 +188,9 @@ const SPECIAL: Record<string, Maker> = {
   'trait:holo_drama_addict#drama': (e) => ({ head: 'The holo-drama scene', hint: e.text, fields: [prose('Your action, as a holo-drama scene', 'Cue the music…')] }),
   'trait:rogue_element#spanner': (e) => ({ head: 'Spanner in the Works', hint: e.text.replace(/\s*Say what you wrecked\./, ''), fields: [prose('What you wrecked', 'Their plan, their property')] }),
   'perk:lab_coat#neutralise_agent': (e, x) => ({ head: 'Which agent', hint: e.text + ' Pick one, or none for every agent you identified.', fields: [chipsF('choice', 'The agent', CHEM_OPTS, 1, true)] }),
+  // Occult Library (Channeler rank II): the tone to learn, each with its rider; tones you know are greyed with their reason.
+  'class:channeler.occult_library#occult_tone': (e, x) => { const kt: string[] = x.c?.soulKnown?.tones || [];
+    return { head: 'Learn a tone', hint: e.text, fields: [chipsF('choice', 'The tone', (e.options || []).map((o) => ({ id: o.id, label: (TONE as any)[o.id]?.name || o.label, title: (TONE as any)[o.id]?.text || '', ...(kt.includes(o.id) ? { off: 'You know that tone.' } : {}) })), 1, false, 'You know every tone.')] }; },
 };
 
 // ---------- combat: what a fight action asks for beyond its grid target ----------
@@ -260,7 +263,20 @@ const COMBAT: Record<string, Maker> = {
   'perk:their_own_idea#suggest': (e) => ({ head: 'Their Own Idea', hint: 'Click the listener; hide the suggestion inside a sentence.', fields: [prose('The suggestion', 'Hidden inside a sentence')] }),
   'trait:occultist#weakness': (e) => ({ head: 'Look it up', hint: 'Click the creature on the grid, or name it.', oneOf: ['targetId', 'text'], fields: [unitF('targetId', 'The creature here', 'any', true), prose('Or name the creature', 'What it is', true)] }),
   'perk:lab_coat#neutralise_agent': (e) => ({ head: 'Neutralise agent', hint: e.text + ' Pick one, or none for the first identified here.', fields: [chipsF('choice', 'The agent', [...CHEM_OPTS, { id: 'toxic', label: 'Toxic hazard' }], 1, true)] }),
+  // ---- Class Roster Revision 3 (engine classes/rev3.ts) ----
+  // Command: the squadmate is the grid target (a click on their token); the walk's end is a second click (up to 2 tiles).
+  'class:guardian.command#command': (e) => ({ head: 'Command', hint: 'Click the squadmate, then the tile they move to (up to 2 tiles, free).', fields: [tileF('tile', 'Where they move')] }),
+  // Shove: the enemy is the grid target; push or knock down is a chip (the engine refuses a push into a wall: its reason shows on the chip).
+  'class:fighter.shove#class_shove': (e) => ({ head: 'Shove', hint: 'Click the enemy next to you, then push it back or knock it down.',
+    fields: [chipsF('choice', 'Push it back, or knock it down', [{ id: 'push', label: 'Push 1 tile', title: 'Straight away from you (a Body save holds it).' }, { id: 'prone', label: 'Knock Prone', title: 'Down on the floor (a Body save holds it).' }])] }),
+  // Field Fix: the squadmate is the grid target; what to fix is a chip (none: the first that applies).
+  'class:infiltrator.field_fix#field_fix': (e) => ({ head: 'Field Fix', hint: 'Click the squadmate next to you, then what to fix (none: the first that applies).',
+    fields: [chipsF('choice', 'What to fix', FIX_OPTS, 1, true)] }),
 };
+/** Field Fix's three jobs (engine rev3.ts FIX). */
+const FIX_OPTS: Opt[] = [{ id: 'clear_jam', label: 'Clear the jam', title: 'Their jammed weapon fires again (the Heat goes too).' },
+  { id: 'restore_durability', label: 'Restore durability', title: 'Their weapon\'s durability back, as a Field Repair (no spare parts).' },
+  { id: 'repair_machine', label: 'Repair the machine', title: 'A robot, drone or turret (a Factory Made squadmate too) repaired for 20.' }];
 
 /** The key a picker is filed under: "itemKey#actionId", else the bare action id (shared ones like extra_mod). */
 const keyOf = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => e.id + '#' + e.actionId;
