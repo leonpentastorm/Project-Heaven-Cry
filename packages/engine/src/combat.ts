@@ -487,6 +487,9 @@ export function paths(cb: Combat, from: string, self: string) {
   // A tile someone you pass through stands on is a way through, never a place to stop.
   for (const u of cb.units) if (u.id !== self && !u.dead && opt.pass.has(u.id)) delete d[u.pos];
   for (const k of opt.noStop || []) if (k !== from) delete d[k];
+  // A sabotaged barricade (the Infiltrator's Sabotage) is a way through for 2 rounds, never a place to stop: it blocks
+  // again when the sabotage ends, and nobody may then be standing inside it (spec item 568).
+  for (const o of objectsOf(cb)) if ((o as any).sabotaged && kindOf(o).blocks_move && o.pos !== from) delete d[o.pos];
   return { dist: d, prev };
 }
 /** Moving N tiles costs N ÷ Movement AP, rounded up, after tiles already paid for this turn. */

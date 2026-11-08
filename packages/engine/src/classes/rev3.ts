@@ -556,7 +556,10 @@ register({
       id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
       text: 'Swap places with your False Image within 6 tiles (once a scene, with the squadmate swap).',
       available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
-      preview: (h) => { const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' }; return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
+      preview: (h) => {
+        const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' };
+        if (h.cb!.units.some((x) => x !== h.u && !x.dead && x.pos === img.pos)) return { ok: false, why: 'Someone stands on your image.' };
+        return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
       run: (h, _args, rng) => {
         const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
         u.pos = to; img.pos = from; u.braced = false;

@@ -79,6 +79,14 @@ const knownWords = (c: any): string[] => [...new Set([...(c?.sigils || []), ...(
 const wordOpts = (c: any, grandOnly = false): Opt[] => knownWords(c).filter((w) => !grandOnly || (SIGIL as any)[w].grand).map((w) => ({ id: w, label: (SIGIL as any)[w].word, title: grandOnly ? (SIGIL as any)[w].grand : (SIGIL as any)[w].text }));
 const blessingOpts = (p: any): Opt[] => (p?.blessings || []).map((b: any) => ({ id: b.id, label: b.name, title: b.text || '' }));
 const GAUGE_OPTS: Opt[] = ['rage', 'grief', 'fear', 'devotion'].map((x) => ({ id: x, label: human(x) }));
+/** Rewrite in the story (Trickster): the kinds of advantage someone can rely on, as buttons. */
+const REWRITE_OPTS: Opt[] = [
+  ['blessing', 'A blessing', 'A patron\'s favour or a prayer answered'], ['ward', 'A ward', 'A charm, a seal, a protective spell'],
+  ['shield', 'A shield or armour', 'What stands between them and harm'], ['position', 'Their position', 'Cover, high ground, a locked door'],
+  ['weapon', 'Their weapon', 'The gun or blade they count on'], ['backup', 'Their backup', 'Guards, allies, the people behind them'],
+  ['authority', 'Their authority', 'Rank, a badge, the law on their side'], ['nerve', 'Their nerve', 'Courage, calm, certainty'],
+  ['luck', 'Their luck', 'A streak, a sure thing'],
+].map(([id, label, title]) => ({ id, label, title }));
 const CHEM_OPTS: Opt[] = ['nausea', 'poisoned', 'drugged', 'toxin'].map((x) => ({ id: x, label: human(x) }));
 /** The Narrator's last turns you can go back to (Foreseen), newest first. */
 const turnOpts = (g: any): Opt[] => { const ids: string[] = g?.votes?.turns || [], E: any[] = g?.story?.entries || [];
@@ -168,8 +176,9 @@ const SPECIAL: Record<string, Maker> = {
   'trait:symbol_of_order#invoke_law': (e, x) => ({ head: 'Invoke the law', hint: e.text.replace(/\s*Type the question\./, ''), fields: [npcF(x, 'The official (optional)', true), prose('Your question', 'One question they must answer')] }),
   'trait:trench_poet#verse_story': (e, x) => ({ head: 'Verse', hint: e.text.replace(/\s*\(type it\)/, ''), fields: [npcF(x, 'Who hears it (optional)', true), prose('Your metaphor', 'Answer in metaphor')] }),
   'perk:bone_talk#bone_talk_story': (e, x) => ({ head: 'Bone Talk', hint: e.text.replace(/\s*\(type it\)/, ''), fields: [npcF(x, 'Who you threaten'), prose('The physical detail', 'One specific detail')] }),
-  'class:trickster.rewrite#rewrite_story': (e, x) => ({ head: 'Rewrite', hint: e.text.replace(/\s*\(say who and what\)/, ''), fields: [npcF(x, 'Whose'), prose('What they rely on', 'The blessing, ward or advantage')],
-    build: (v, xx) => ({ text: npcArgs(v, xx).npc + ': ' + txt(v) }) }),
+  // Buttons only (Leon): whose, then which kind of advantage from a fixed list; the Narrator rules the flip itself.
+  'class:trickster.rewrite#rewrite_story': (e, x) => ({ head: 'Rewrite', hint: e.text.replace(/\s*\((say|pick) who and what\)/, ''), fields: [npcF(x, 'Whose'), chipsF('what', 'What they rely on', REWRITE_OPTS)],
+    build: (v, xx) => { const n = npcArgs(v, xx).npc, w = REWRITE_OPTS.find((o) => o.id === one(v, 'what')); if (!n || !w) return 'Pick whose and what they rely on.'; return { text: n + ': ' + w.label.toLowerCase(), npc: n }; } }),
   'class:hexer.puppet#puppet_story': (e, x) => ({ head: 'Puppet', hint: e.text.replace(/:\s*say who and what they do/, ':'), fields: [npcF(x, 'Whose strings'), prose('What they do', 'The one thing they do')],
     build: (v, xx) => ({ text: npcArgs(v, xx).npc + ': ' + txt(v) }) }),
   'class:rtc_contractor.strike_call#strike_call_story': (e, x) => ({ head: 'Strike Call', hint: e.text, oneOf: ['npc', 'text'], fields: [npcF(x, 'The target on the map', true), prose(...PROSE.strike_call_story, true)],

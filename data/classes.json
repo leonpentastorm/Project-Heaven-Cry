@@ -4491,13 +4491,13 @@
           "id": "judgement",
           "name": "Judgement",
           "ap_cost": 4,
-          "uses": "per_scene",
-          "text": "Spend 3 Devotion: a melee or scattergun attack dealing damage x (1 + your Blessing power).",
+          "uses": "per_combat",
+          "text": "Once per fight, spend 1 Devotion: a melee or scattergun attack dealing damage x (1 + your Blessing power).",
           "effects": [
             {
               "op": "resource",
               "resource": "devotion",
-              "value": -3,
+              "value": -1,
               "when": "on_use"
             },
             {
