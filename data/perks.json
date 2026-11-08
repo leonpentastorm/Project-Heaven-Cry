@@ -3573,7 +3573,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: pay for an Outburst with HP instead of mana, at 2 HP per point of mana. II: 1 HP per point.",
+      "text": "I: pay for an Outburst's Begin with HP instead of mana, at 2 HP per point of mana; it can be held and Pumped, but blood can't heal or shield. II: 1 HP per point.",
       "effects": [
         {
           "op": "alt_cost",
@@ -3591,7 +3591,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "pay for an Outburst with HP instead of mana, at 2 HP per point of mana.",
+          "text": "pay for an Outburst's Begin with HP instead of mana, at 2 HP per point of mana; it can be held and Pumped, but blood can't heal or shield.",
           "effects": [
             {
               "op": "alt_cost",
@@ -3648,15 +3648,13 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: when an ally casts an Outburst within 3 tiles of you, your next Outburst costs 20% less mana. II: 40% less.",
+      "text": "I: an ally's release in the round before also counts toward your Resonance (+0.2 each, the rule's +0.4 ceiling stands). II: and your releases count toward allies' Resonance in the next round too.",
       "effects": [
         {
-          "op": "cost_mod",
-          "action": "soul_cast",
-          "resource": "mp",
-          "value": -0.2,
-          "when": "an ally casts a Soul spell within 3 tiles",
-          "limit": "next_cast"
+          "op": "stat_mod",
+          "stat": "resonance_window_rounds",
+          "value": 1,
+          "context": "your releases"
         }
       ],
       "tiers": {
@@ -3668,15 +3666,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "when an ally casts an Outburst within 3 tiles of you, your next Outburst costs 20% less mana.",
+          "text": "an ally's release in the round before also counts toward your Resonance (+0.2 each, the rule's +0.4 ceiling stands).",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "soul_cast",
-              "resource": "mp",
-              "value": -0.2,
-              "when": "an ally casts a Soul spell within 3 tiles",
-              "limit": "next_cast"
+              "op": "stat_mod",
+              "stat": "resonance_window_rounds",
+              "value": 1,
+              "context": "your releases"
             }
           ]
         },
@@ -3688,15 +3684,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "40% less.",
+          "text": "and your releases count toward allies' Resonance in the next round too.",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "soul_cast",
-              "resource": "mp",
-              "value": -0.4,
-              "when": "an ally casts a Soul spell within 3 tiles",
-              "limit": "next_cast"
+              "op": "stat_mod",
+              "stat": "resonance_window_rounds",
+              "value": 1,
+              "context": "your releases and allies'"
             }
           ],
           "replaces_tier_I": true,
@@ -3708,7 +3702,8 @@
       "tags": [
         "soul_magic",
         "synergy"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "old_tongue",
@@ -5443,7 +5438,7 @@
       "ap_cost": null,
       "uses": "per_combat",
       "flavour": "Up there, someone with your face flinches. Down here, the spell lands.",
-      "text": "Once per combat, cast a Soul spell with no mana and no Strain: your twin in the upper realm pays for it.",
+      "text": "Once per combat, Begin an Outburst with no mana and no Strain, and hold it with no Strain: your twin in the upper realm pays for it.",
       "effects": [
         {
           "op": "cost_mod",
@@ -6162,7 +6157,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "deed": "cast an Outburst that ends a fight, and say something worth remembering while you do it.",
-      "text": "Outbursts cast while you speak in verse get +1 tile of range and +10% damage.",
+      "text": "Outbursts begun or released while you speak in verse get +1 tile of range and +10% damage.",
       "effects": [
         {
           "op": "stat_mod",
@@ -6356,7 +6351,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "deed": "survive a Mana Short.",
-      "text": "Once per session, ask your twin soul in the upper realm one question. Your mid-level Outbursts can draw on a third school.",
+      "text": "Once per session, ask your twin soul in the upper realm one question. Your Outbursts can carry a third school, at half strength as a rider (+20 MP).",
       "effects": [
         {
           "op": "narrator",
@@ -6728,7 +6723,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "The Science Team says it can't be done. The Institute says it shouldn't be. You do it anyway.",
-      "text": "Fuse a Sigil and an Outburst into one cast: the Sigil's words set where it reaches and what it covers, the Outburst sets the school. Pay both costs.",
+      "text": "Fuse a Sigil and a held Outburst into one cast: the Sigil's words set where it reaches and what it covers, the Outburst sets the school and the stage (each creature takes it as a Bolt). Pay both costs.",
       "effects": [
         {
           "op": "fused_cast",

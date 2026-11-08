@@ -1014,7 +1014,7 @@ register({
 // ---------- Gauntlet Infusion ----------
 // Choose an element at each rest (FIRE, FREEZE, SHOCK or SPARK: PROVISIONAL audit 1; the action, once per rest, out of
 // combat). Each melee hit (weapon or unarmed) then adds +10 Elemental of it × your Elemental multiplier (half armour,
-// Pain Threshold reduces it), paying 5 MP from the Emanator (no Strain, no meter: audit 6). No riders (audit 2). Optional
+// Pain Threshold reduces it), paying 5 MP from the Emanator (no Strain, no meter: audit 6). Rules 1.5: the element's stage-1 rider rides each hit (below). Optional
 // per hit: the toggle "Infusion" on Attack (on by default, audit 5). No Emanator or under 5 MP: nothing.
 const INFUSE = ['fire', 'freeze', 'shock', 'spark'];
 const DMG_T: Record<string, string> = { fire: 'fire', freeze: 'frost', shock: 'lightning', spark: 'lightning' };

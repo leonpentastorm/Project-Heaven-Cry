@@ -3252,13 +3252,13 @@
           "name": "Overdraw",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Cast a Soul spell at +50% damage, then make a Mana Short check.",
+          "text": "Overdraw: once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it (rules 1.5).",
           "effects": [
             {
               "op": "grant_action",
               "action": "overdraw",
               "ap": 0,
-              "uses": "at_will"
+              "uses": "per_combat"
             },
             {
               "op": "perk_choice",
@@ -3266,13 +3266,14 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
           "name": "Pure Heart",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "Ignore your first failed Mana Short check in each combat.",
+          "text": "Pure Heart: once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release (rules 1.5).",
           "effects": [
             {
               "op": "grant_action",
@@ -3281,7 +3282,8 @@
               "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",

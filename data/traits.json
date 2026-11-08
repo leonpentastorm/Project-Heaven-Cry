@@ -2290,18 +2290,19 @@
       "cost": null,
       "flavour": "A Mana Short left a hole in your chest. The fear went out through it.",
       "upsides": [
-        "Hollow: your own heart can't kill you (the Strain burn, a Mana Short); you fall unconscious instead. +10% Outburst Damage."
+        "Hollow: when your own heart Downs you (the Strain burn), you fall unconscious and stable instead of dying, and a Mana Short doesn't Stun you. +10% Outburst Damage."
       ],
       "downsides": [
         "Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast."
       ],
       "notes": [],
       "narrator_hook": "the stealth mission where you'll want to cast anyway.",
-      "text": "A Mana Short left a hole in your chest. The fear went out through it.\n+ Hollow: your own heart can't kill you (the Strain burn, a Mana Short); you fall unconscious instead. +10% Outburst Damage.\n− Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast.",
+      "text": "A Mana Short left a hole in your chest. The fear went out through it.\n+ Hollow: when your own heart Downs you (the Strain burn), you fall unconscious and stable instead of dying, and a Mana Short doesn't Stun you. +10% Outburst Damage.\n− Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast.",
       "effects": [
         {
           "op": "mana_short_outcome",
-          "value": "unconscious"
+          "value": "unconscious_stable",
+          "short_stun": false
         },
         {
           "op": "damage_mod",

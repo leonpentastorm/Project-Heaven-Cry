@@ -1074,13 +1074,14 @@
               "name": "Shape",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "The first Damage-school spell you cast each turn adds no Strain.",
+              "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (rules 1.5; Empathy's free Pumps go first).",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "strain",
+                  "op": "stat_mod",
+                  "stat": "pump_ap",
                   "value": -1,
-                  "when": "first_damage_cast_each_turn"
+                  "when": "first_pump_each_turn",
+                  "context": "damage design"
                 }
               ],
               "adjudication": "engine",
@@ -1096,7 +1097,7 @@
               "name": "Storm Front",
               "ap_cost": 0,
               "uses": "per_turn",
-              "text": "Once per turn, a Damage spell hits up to 3 targets within 2 tiles of the first (one roll each), for +10 MP.",
+              "text": "Once per turn, for +10 MP at Begin: a Damage Bolt or Lance arcs on to up to 2 more enemies within 2 tiles of the first creature it reached, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
               "effects": [
                 {
                   "op": "area_mult",
@@ -1122,18 +1123,20 @@
               "id": "heart_surge",
               "name": "Heart Surge",
               "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Cast a spell at double effect, for double Strain.",
+              "uses": "per_turn",
+              "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands (rules 1.5).",
               "effects": [
                 {
-                  "op": "damage_mult",
-                  "value": 1.0
+                  "op": "stat_mod",
+                  "stat": "release_stage",
+                  "value": 1,
+                  "uses": "per_turn"
                 },
                 {
                   "op": "resource",
                   "resource": "strain",
-                  "value": "x2",
-                  "when": "on_cast"
+                  "value": "begin_strain",
+                  "when": "after_release"
                 }
               ],
               "adjudication": "engine",
@@ -1225,7 +1228,7 @@
               "name": "Sanctuary",
               "ap_cost": 0,
               "uses": "per_scene",
-              "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn.",
+              "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn (your own heart's burn isn't halved).",
               "effects": [
                 {
                   "op": "state",
@@ -1334,12 +1337,12 @@
               "name": "Gift",
               "ap_cost": 0,
               "uses": "per_rest",
-              "text": "Out of combat, hand an ally one of your ready designs. They cast it once, with their own AP, on your MP and your Strain.",
+              "text": "Out of combat, hand an ally one of your ready designs. They cast it once for 3 AP (Begin and Release), on your MP and your Strain; it goes off at stage 1 (rules 1.5).",
               "effects": [
                 {
                   "op": "grant_action",
                   "action": "cast_gifted_design",
-                  "ap": "soul_cast_ap",
+                  "ap": 3,
                   "uses": "per_rest"
                 }
               ],
@@ -2610,7 +2613,7 @@
           "name": "Heart's Own",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Strain from Beloved spells triggers a Mana Short only past your Strain limit + 2.",
+          "text": "While you Begin or hold a Beloved spell, your Strain limit is 2 higher: the burn and the Mana Short count from it (rules 1.5).",
           "effects": [
             {
               "op": "stat_mod",
@@ -2626,11 +2629,14 @@
           "name": "Love Made Manifest",
           "ap_cost": 0,
           "uses": "per_scene",
-          "text": "Once per combat, a Beloved spell's effect triples.",
+          "text": "Once per combat, a Beloved Outburst Begins at stage 4: the heart full at once (rules 1.5).",
           "effects": [
             {
-              "op": "damage_mult",
-              "value": 2.0
+              "op": "stat_mod",
+              "stat": "begin_stage",
+              "value": 4,
+              "uses": "per_combat",
+              "context": "beloved"
             }
           ],
           "adjudication": "engine",
@@ -2710,7 +2716,7 @@
           "name": "Fusion",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Cast a spell that joins Sigil words that aren't Subjects (Reach, Delivery, Burst, Filter) to a Soul school. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
+          "text": "Cast a spell that joins Sigil words that aren't Subjects (Reach, Delivery, Burst, Filter) to a Soul school: each creature the Sigil reaches takes the Outburst as a Bolt, at stage 0 (x0.6) or at the stage you held it to. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
           "effects": [
             {
               "op": "grant_action",
@@ -2943,11 +2949,13 @@
           "name": "Fed",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Your Outbursts cost 10% less MP and hit 10% harder per point in their key gauge. Releasing spends that gauge.",
+          "text": "Your Outbursts cost 10% less MP per point in their key gauge. While you hold one, spend 1 point of its gauge for a Pump that costs no AP (2 a turn). Releasing it empties that gauge (rules 1.5).",
           "effects": [
             {
               "op": "emotion_fuel",
-              "per_point": 0.1
+              "per_point": 0.1,
+              "pump_per_point": 1,
+              "per_turn": 2
             }
           ],
           "adjudication": "engine",
@@ -2958,7 +2966,7 @@
           "name": "Overflow",
           "ap_cost": 0,
           "uses": "per_scene",
-          "text": "Once per scene, when a gauge reaches 5, your next Outburst keyed to it Begins at stage 2 with no Strain.",
+          "text": "Once per scene, when a gauge reaches 5, your next Outburst keyed to it Begins at stage 2 (the held stage itself) with no Strain.",
           "effects": [
             {
               "op": "emotion_overflow"
@@ -2969,7 +2977,7 @@
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.5"
     },
     {
       "id": "heartbinder",
@@ -3018,7 +3026,7 @@
           "name": "Through",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Your Outbursts can Begin or Release from a linked ally's position; buffs you receive reach them at half.",
+          "text": "Snap-cast (Begin and Release, x0.6) or Release your held Outburst from a linked ally's position: range, sight and the shape run from their tile. Buffs you receive reach them at half.",
           "effects": [
             {
               "op": "cast_from_link"
@@ -3032,11 +3040,17 @@
           "name": "Share",
           "ap_cost": 0,
           "uses": "reaction",
-          "text": "When a linked ally takes damage, take up to half of it yourself. Heals you send through a link are x1.25. If a linked ally is Downed, you take 2 Strain.",
+          "text": "When a linked ally takes damage, take up to half of it yourself. Strain that would take a linked ally over their limit comes to you instead (as far as your limit allows); Take their Strain (1 AP, once a turn) moves up to 2. Heals you send through a link are x1.25. If a linked ally is Downed, you take 2 Strain (rules 1.5).",
           "effects": [
             {
               "op": "share_damage",
               "value": 0.5
+            },
+            {
+              "op": "resource",
+              "resource": "strain",
+              "value": "linked_ally_over_limit",
+              "when": "a linked ally's Strain would pass their limit; action take_strain moves 2"
             }
           ],
           "adjudication": "engine",
@@ -3044,7 +3058,7 @@
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.5"
     },
     {
       "id": "vessel",
@@ -3078,11 +3092,13 @@
           "name": "Inner Charge",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Soul cast AP, 20 MP, 1 Strain: hold a body form like an Outburst, growing by stage. Iron (armour +10), Surge (melee and unarmed damage +15), Swift (+2 Movement), Pain to Power (+1 AP next turn per 20 damage taken, up to +2), Steady (no Prone or push; +2 Body saves), Heartbeat (heal 10 at turn start). Up to 2 forms (3 from Will Power 5).",
+          "text": "Begin's 2 AP, 20 MP, 1 Strain: hold a body form like an Outburst. It starts at stage 1 and reads the 1.5 stage table (x1, x1.4, x1.8, x2.2), swells a stage each turn (1 Strain each) and can be Pumped (1 AP, or an Empathy free Pump). Iron (armour +10), Surge (melee and unarmed damage +15), Swift (+2 Movement), Pain to Power (+1 AP next turn per 20 damage taken, up to +2), Steady (no Prone or push; +2 Body saves), Heartbeat (heal 10 at turn start). Up to 2 forms (3 from Will Power 5).",
           "effects": [
             {
               "op": "body_form",
-              "mp": 20
+              "mp": 20,
+              "stage_mult": "cycle.stage_mult",
+              "pump_ap": 1
             }
           ],
           "adjudication": "engine",
@@ -3093,11 +3109,12 @@
           "name": "Release",
           "ap_cost": 1,
           "uses": "at_will",
-          "text": "End every form at once in one strike (free with a melee hit): +15 Soul damage per stage held.",
+          "text": "End every form at once in one strike (free with a melee hit): +15 Soul damage x each form's stage multiplier, summed.",
           "effects": [
             {
               "op": "body_release",
-              "per_stage": 15
+              "per_stage": 15,
+              "by": "stage_mult"
             }
           ],
           "adjudication": "engine",
@@ -3127,7 +3144,7 @@
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.5"
     },
     {
       "id": "twinbound",
@@ -3176,7 +3193,7 @@
           "name": "Call",
           "ap_cost": 2,
           "uses": "at_will",
-          "text": "The Twin appears within 3 tiles and takes its own turn after yours with 4 AP: move, cast its built-in Outbursts (your MP, your Strain) or Guard you. HP 50% of yours, your Defense, Movement 1.5, your Will Power; at most 6 tiles from you. On the area map the twin is a token with its own 4 AP a round (moves only) and joins a fight opened there as the called twin.",
+          "text": "The Twin appears within 3 tiles and takes its own turn after yours with 4 AP: move, work its built-in Outbursts with its own heart (Begin, Pump, hold and Release at its own stage; your MP, your Strain; you and it don't resonate with each other) or Guard you. HP 50% of yours, your Defense, Movement 1.5, your Will Power; at most 6 tiles from you. On the area map the twin is a token with its own 4 AP a round (moves only) and joins a fight opened there as the called twin.",
           "effects": [
             {
               "op": "summon_twin",
@@ -3205,7 +3222,7 @@
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.5"
     }
   ]
 }

@@ -1258,6 +1258,38 @@ A 1.2 held Outburst keeps its stage (stage *n* under 1.2 was × (1 + 0.5 × (*n*
 
 Every class resource shows **below the HP bar** in the combat You card, the area-map HUD and the turn cut-in, large and labelled: ammo (loaded / spare, the ammo type), Evoker charge and spare cores, Flux, MP, **Strain (with its limit)**, **the held Outburst (design, stage, tone)**, Momentum, Charges, Devotion, Guard, Heat, and any other class or perk resource the runtime tracks. Each is a bar or pips with its name in words and a colour per the colour system, and a clear warning state (EMPTY, RELOAD, OVERLOAD SOON, OVER THE LIMIT). (Leon: testers asked "where does it say I need to reload my Sigil core? Oh, it's that 10 px line.")
 
+#### 11. The Soul classes, perks and unlocks under 1.5
+
+Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 522–540, all PROVISIONAL). Engine: `classes/i.ts`, `classes/j.ts`, `classes/k.ts`, `classes/soul.ts`, `perks/d.ts`, `perks/skills.ts`.
+
+| Move | Rules 1.5 |
+|---|---|
+| **Shape** (Channeler I) | Your first Pump each turn that would cost AP is free, on a Damage design. Empathy's free Pumps go first. |
+| **Storm Front** (Channeler II) | +10 MP at Begin, once a turn: a Damage **Bolt or Lance** arcs on to up to 2 more enemies within 2 tiles of the first creature it reached (outside its area), at the stage multiplier, one roll each (At Once: none, half), with the tone's rider. Wave, Burst and Aura can't take it. |
+| **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1). Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
+| **Sanctuary** (Guardian III) | Halves all damage to allies inside but your own heart's burn. |
+| **Drink It In** (Guardian II) | An elemental Outburst feeds its MP price like a Raw one (it is told from a Sigil by the MP it carries). |
+| **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). |
+| **Fed** (Heartfed) | −10% MP a point of the key gauge at Begin. **Feed a feeling** (0 AP, 2 a turn): spend 1 point for a Pump that costs no AP. Release empties the gauge. No damage bonus. |
+| **Overflow** (Heartfed) | The keyed Begin is held at stage 2 at once (no Strain on it). |
+| **Through** (Heartbinder) | Snap-cast or Release from a linked ally's tile: range, sight and the shape (cone, line, aura) run from there. |
+| **Share** (Heartbinder) | Also: Strain that would take a linked ally over their limit comes to you (as far as your own limit allows); **Take their Strain** (1 AP, once a turn) moves up to 2. |
+| **Inner Charge** (Vessel) | 2 AP, 20 MP, 1 Strain. Forms start at stage 1 and read the 1.5 table (×1 / ×1.4 / ×1.8 / ×2.2), swell each turn (1 Strain each) and can be **Pumped** (1 AP or an Empathy free Pump). No slipping. |
+| **Release** (Vessel) | 15 Soul × each form's stage multiplier, summed, × the Soul multiplier (no 8-stage cap). |
+| **Call** (Twinbound) | The twin has **its own heart**: it Begins, Pumps, holds (swelling on its own turn) and Releases its three designs with the engine's Soul actions, at its own stage. Your MP, your Strain (a Short of yours darkens its held one). You may each hold one. You and the twin don't resonate with each other. |
+| **Heart's Own** (Devoted) | The +2 limit lasts while a Beloved spell is begun or held; the plain limit is back at your turn's end once it is gone. |
+| **Love Made Manifest** (Devoted) | Once a fight, a Beloved Outburst **Begins at stage 4**. (1.2's ×3 would reach ×6.6.) |
+| **Fusion** (Circuit Mage) | Each creature the Sigil reaches takes the Outburst as a Bolt, at stage 0 or its held stage. |
+| **Heart Overload** (perk) | The Begin's MP in HP; the Outburst can now be held and Pumped. Blood can't heal or shield. (A Pump paid in HP was refused: HP into stage 4 every turn.) |
+| **Resonance** (perk) | Widens the rule's window, not its bonus: I: an ally's release in the round before counts for you; II: yours counts for allies in the next round. The +0.4 ceiling stands. The MP discount is gone. |
+| **Twin Souls** (perk) | The third school is a half-strength rider with its own option and no roll, on the release's area by its own reach rule. |
+| **Twin Discipline** (perk) | Each creature the Sigil covers takes the held Outburst as a Bolt. |
+| **Verse of War** (perk) | "In verse" rides a Release too (+1 reach, ×1.1). Its ×1.1 reaches elemental Outbursts. |
+| **The Twin Pays** (perk) | Unchanged: no MP, no Begin Strain, no swell Strain. A free heart swelled to stage 4 once a fight. |
+| **Hollow Heart** (trait) | When your own heart's burn Downs you, you are stable; **a Mana Short doesn't Stun you**. +10% reaches elemental Outbursts. |
+| **Overdraw** (Will Power 3) | Once a fight, a toggle on a Pump: +2 stages (from stage 2 or lower), then +1 Strain. |
+| **Pure Heart** (Will Power 5) | Once a fight, the first Strain that would short you is refused: Strain falls to your limit, no Stun, no wild release. |
+
 ### Magic advanced classes (draft)
 
 Six new advanced classes join the 15 (21 in all). The rules for learning one don't change: 15 in one parent's signature skills, 9 in the other's, and a tutor.
@@ -3181,15 +3213,15 @@ The data pack handles each of these provisionally, as noted, so the engine can b
       - **Inspired:** −2 to hit for the rounds left.
       - **Hidden:** revealed and Marked.
     - Anything else: the Narrator.
-294. *(I30)* **Shape.**
+294. *(I30)* **Shape.** *(Superseded by rules 1.5: item 522.)*
     - It removes the base cast Strain (1, 2 in Flooded air).
     - The +2 for having no Emanator and the Strain of holding stay.
     - Either school being Damage counts.
-295. *(I31)* **Storm Front.**
+295. *(I31)* **Storm Front.** *(Superseded by rules 1.5: item 523.)*
     - +10 MP, flat, after the multipliers, paid at Begin.
     - Single-target Damage designs only (no Rain, Size, At Once, Inverse).
     - It hits 2 more enemies within 2 tiles of the aim tile, nearest first, one roll each. Once a turn.
-296. *(I32)* **Heart Surge (GAMEBREAKING with Shape and at will).**
+296. *(I32)* **Heart Surge (GAMEBREAKING with Shape and at will).** *(Superseded by rules 1.5: item 524.)*
     - Once a turn.
     - It adds the base Strain on top. With Shape the net is the base, not 0.
     - ×2 at release.
@@ -3203,7 +3235,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - It uses the reaction and needs at least 1 point absorbed.
     - MP gained: the spell's real price, carried on its damage: an Outburst's MP cost, 10 per word of a Sigil spell
       (item 402). The old stand-ins (25, 2 words) apply only to a source that carries neither.
-299. *(I35)* **Sanctuary.**
+299. *(I35)* **Sanctuary.** *(Superseded by rules 1.5: item 525.)*
     - Released at once.
     - Allies (you included) take half of all damage, except your own Mana Short.
     - It lasts until your next turn starts.
@@ -3213,7 +3245,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - It refreshes and never stacks. Not on yourself.
     - Without an Emanator it costs +2 Strain in a fight.
 301. *(I37)* **Mend.** Every Buff heal the Bard makes heals 40 (not 30). The data's `ap_cost: 0` should read `soul_cast_ap`.
-302. *(I38)* **Gift.**
+302. *(I38)* **Gift.** *(Superseded by rules 1.5: item 526.)*
     - The ally casts with their own Soul cast AP and the Bard's design and numbers, on the Bard's MP and Strain.
     - It releases at once.
     - It fails if the Bard is down.
@@ -3751,9 +3783,29 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 515. **No slipping:** 1.2's Will Power check when hurt while holding is gone (not named in the proposal; Will Power "no longer rolls you out of trouble").
 516. **Raw on a Short's backlash:** no rider. A wild release from a Short picks among every creature within the design's reach (at least 1 tile).
 517. **Storm Hand:** Infusion's riders as section 8 (Fire +5 when not a critical; Shock's arc 5 × Elemental multiplier; Spark +1 AP within the ceiling of 9); Discharge's rider at stage N = Charges (max 3, so a Discharge never reaches a stage-4 rider); the discharging hit gains no Charge.
-518. **Hollow Heart** under 1.5: the burn ('strain' damage) is what Downs you; the trait's stability now hears it as well as a Short. To be re-derived with the Soul classes.
-519. **Vessel's body forms** keep the 1.2 stage table (×1 / ×1.5 / ×2 / ×2.5) until the class is re-derived.
-520. **Will Power's Overdraw (3) and Pure Heart (5)** name a Mana Short check, which no longer exists: to be re-derived (perks lane).
+518. ~~**Hollow Heart** under 1.5: to be re-derived.~~ *Done: item 538.*
+519. ~~**Vessel's body forms** keep the 1.2 stage table.~~ *Done: item 531.*
+520. ~~**Will Power's Overdraw (3) and Pure Heart (5)** name a Mana Short check.~~ *Done: items 539, 540.*
 521. **Old saves:** a 1.2 held Outburst keeps its stage number; designs and learned modules convert once (`c.soulRev = 15`).
 
+**Rules 1.5: the Soul classes, perks and unlocks re-derived (Outburst 2.0 lanes; section "Soul magic", 11). All PROVISIONAL.**
 
+522. **Shape:** the first Pump a turn that would cost AP is free (Damage designs, either school). Empathy's free Pumps are spent first. Flag: with Empathy 7, a Begin reaches stage 3 for 2 AP (Begin + 2 free + Shape).
+523. **Storm Front:** Bolt and Lance only; 2 arcs within 2 tiles of the first creature reached, outside the release's area, at the release's stage multiplier and rider stage, one roll each; +10 MP flat.
+524. **Heart Surge:** +1 stage at release (held: the stage itself; past 4: ×2.6; a snap: ×1), once a turn; +1 Strain (2 Flooded) after the release. Replaces 1.2's ×2 and doubled durations and pushes (items 296, 401). Flag: much weaker than 1.2's ×2; Leon to confirm.
+525. **Sanctuary:** your own burn ('strain' damage) isn't halved (was "your own Mana Short", item 299).
+526. **Gift:** the ally's 3 AP, stage 1, the Bard's full design price and a Begin's Strain (item 302).
+527. **Love Made Manifest:** Begins at stage 4 once a fight (item 346's ×3 retired).
+528. **Fusion:** a fresh Outburst fuses at stage 0 (was 1, item 349); each target takes it as a Bolt.
+529. **Fed:** 1 gauge point = a free Pump, at most 2 a turn; release empties the gauge; no damage bonus (item 357). **Overflow** sets the held stage to 2 at the Begin (item 358).
+530. **Heartbinder Share:** over-limit Strain of a linked ally moves to you within your own limit; Take their Strain (1 AP, once a turn, up to 2). **Through** runs the shape from the ally's tile (items 360, 361).
+531. **Inner Charge:** forms on the 1.5 table from stage 1; Pump a form (1 AP or a free Pump); no slipping (items 362, 519). Flag: Iron at stage 4 is +22 armour, Swift +4.4 Movement.
+532. **Vessel Release:** 15 × each form's stage multiplier, summed, × Soul multiplier (no cap; item 363). Flag: three stage-4 forms are 99 × 2.45 = 242 on one melee hit; two are 162. Strong for a Defender hybrid: watch it.
+533. **The twin's heart:** its own held Outburst and stage, the caller's numbers and MP, all its Strain to the caller, no free Pumps of its own, no Resonance with its caller (item 366's "one heart, no Begin while the other holds" retired). Flag: the twin is 4 more Soul AP a round; with its swell both hearts strain you.
+534. **Heart Overload:** the Begin's MP in HP, holdable; Pumps stay AP (item 164).
+535. **Resonance (perk):** the window widens by a round (I: hear allies; II: allies hear you); the MP discount retired (item 165).
+536. **The Twin Pays:** unchanged, flagged: a free heart can swell to stage 4 for AP alone, once a fight.
+537. **Twin Souls:** the third school at half, no roll, its own reach rule, the 1.5 stage table (item 169).
+538. **Hollow Heart:** stable when the burn Downs you; a Mana Short doesn't Stun you; +10% on elemental Outbursts too (items 176, 518). Flag: no Stun is a real buff; Leon to confirm.
+539. **Overdraw (Will Power 3):** once a fight, a Pump +2 stages from stage 2 or lower, +1 Strain after (item 520).
+540. **Pure Heart (Will Power 5):** once a fight, the first shorting Strain is refused and Strain falls to the limit (item 520).
