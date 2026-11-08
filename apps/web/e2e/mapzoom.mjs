@@ -16,7 +16,7 @@ await p.goto(BASE);
 await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
-if (await nm.count()) { await nm.fill('Leon'); await click(p, /^(Solo|To the Proving Ground) ›/); }
+if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
 await act(p, { type: 'sandbox/ai', on: false });
 await act(p, { type: 'sandbox/fight' });
