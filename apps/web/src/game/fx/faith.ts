@@ -17,6 +17,17 @@ import { reducedMotion, type Sfx } from '../sfx';
 import { type Pt, anim, after, burst, floatText, put, ring } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
 
+/** The patron lines heard on this device, newest last (the combat log draws them as cards; game.ts keeps the log as text). */
+export interface PatronLine { patron: string; event: string; text: string; char?: string; t: number }
+export const PATRON_LINES: PatronLine[] = [];
+export const EV_PATRON_LINE = 'phc:patron-line';
+export function notePatronLine(e: any) {
+  if (!e || !e.patron || !e.text) return;
+  PATRON_LINES.push({ patron: e.patron, event: e.event || '', text: e.text, char: e.char, t: Date.now() });
+  if (PATRON_LINES.length > 20) PATRON_LINES.splice(0, PATRON_LINES.length - 20);
+  try { window.dispatchEvent(new CustomEvent(EV_PATRON_LINE)); } catch { /* no window in tests */ }
+}
+
 export interface FaithKit {
   at: (k: string | null | undefined) => Pt | null;
   posOf: (unitId: string | null | undefined) => string | undefined;
@@ -111,7 +122,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       floatText(e.state === 'kept' ? 'VOW KEPT' : 'VOW SWORN', p, FAITH_INK, { small: true, delay: 150 });
     },
     // The patron speaks: the screens draw the line as a card in the log; on the map, only a glint over the one it is for.
-    patron_line(e: any) { const p = at(e.at || posOf(e.unit)); if (p && !reducedMotion()) burst('glow', { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 500, { color: accentOf(e.patron, e.accent), blend: 'screen' }); },
+    patron_line(e: any) { notePatronLine(e); const p = at(e.at || posOf(e.unit)); if (p && !reducedMotion()) burst('glow', { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 500, { color: accentOf(e.patron, e.accent), blend: 'screen' }); },
     // A Miracle: the full-screen answer (everyone sees it), then the effect over its area where the viewer can see.
     miracle(e: any) {
       play('soul_choir' as Sfx, null, { rate: 0.85, gain: 0.9 });

@@ -1,5 +1,7 @@
 // The Belief step in creation (rules 1.6): Faithful with a patron sworn, then Atheist; the sheet carries the belief.
 // Then the story's FAITH tab: the panel, the prayer buttons with AP, gate and odds, a target picker, the rites.
+// Then a fight: the vow prompt (Shield asks for the ally; skippable), the combat FAITH tab, a prayer aimed on the grid.
+// The reducer's rules are implementer 1's: until they land, praying and swearing return the engine's 'Not built yet'.
 import { chromium, click, player, hostAs } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -56,5 +58,39 @@ if (opened) { const grp = panel.locator('[role="group"][aria-label="Choose the t
   ok('picking someone gives the verdict and Pray', /Pray/.test(await grp.textContent())); }
 ok('rites: listed, with the engine ones as buttons', (await panel.locator('[data-rite]').count()) >= 1);
 if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab.png' }); await panel.evaluate((el) => el.scrollIntoView({ block: 'start' })); await p.locator('[data-phc-cutin]').count() && await p.keyboard.press('Escape'); await p.waitForTimeout(600); await panel.screenshot({ path: SHOTS + '/faith-panel-top.png', clip: undefined }); }
+
+// ---------- a fight ----------
+const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+await p.setViewportSize({ width: 1600, height: 1000 });
+await act({ type: 'narrator/turn', turn: { narration: 'Two raiders come over the crates.', combat: { name: 'Crates', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists' }, { name: 'Raider Two', tier: 'minion', weapon: 'fists' }] } } });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
+await p.waitForTimeout(1500); if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await p.waitForTimeout(500); }
+const vow = p.locator('[data-phc-vow-prompt]');
+ok('round 1: the vow prompt, with the 6 vows', (await vow.count()) === 1 && (await vow.locator('[data-vow]').count()) === 6);
+await vow.locator('[data-vow="shield"]').click();
+ok('Shield asks whom (no ally here: it says so)', /SHIELD WHOM/.test(await vow.textContent()) && /No ally in this fight/.test(await vow.textContent()));
+if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-vow.png' });
+await vow.locator('[data-vow-skip]').click();
+ok('Fight unsworn closes it', (await p.locator('[data-phc-vow-prompt]').count()) === 0);
+const ftab = p.locator('[role="tab"][data-tab="faith"]');
+ok('the FAITH tab is there', (await ftab.count()) === 1);
+await ftab.click();
+const panelC = p.locator('[role="tabpanel"]');
+ok('it lists the Whispers, the Hymns and the Miracle', (await panelC.locator('[data-act^="pr:whisper:"]').count()) === 6 && (await panelC.locator('[data-act^="pr:hymn:"]').count()) === 3 && (await panelC.locator('[data-act^="pr:miracle:"]').count()) === 1);
+await panelC.locator('[data-act="pr:whisper:health"]').click(); await p.waitForTimeout(300);
+const selTxt = async () => (await p.locator('aside').first().textContent()) || '';
+ok('choosing Health asks for the target', /WHISPER · Health · 1 AP · SURE/.test(await selTxt()) && /Click yourself or an ally/.test(await selTxt()));
+const me = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.find((x) => x.id === cb.order[cb.turn]).pos; });
+const mapW = await p.evaluate(() => window.__phc.getState().game.combat.map.w);
+const [mx, my] = me.split(',').map(Number);
+await p.locator('.phc-grid button.phc-tok').nth(my * mapW + mx).click();
+await p.waitForTimeout(300);
+ok('clicking yourself on the grid picks the target, and Confirm opens', /Target: Vess/.test(await selTxt()));
+if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-combat.png' });
+const before = await p.evaluate(() => window.__phc.getState().game.combat.log.length);
+await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(500);
+const after = await p.evaluate(() => window.__phc.getState().game.combat.log.length);
+console.log('note pray sent; log ' + before + ' -> ' + after + ' (the reducer answers once implementer 1 lands the rules)');
 console.log('errors', p.errors);
 await browser.close();
