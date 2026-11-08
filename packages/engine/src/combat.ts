@@ -3,9 +3,10 @@ import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data'
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
-import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths } from './magic';
+import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
+import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
 import { skillItemsOf } from './effects/collect';
@@ -693,6 +694,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
   const attAt = att.pos, tgtAt = tgt.pos;
   att.ap -= pv.ap;
+  if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
   // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?} (die may be rerolled,
@@ -815,6 +817,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng);
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
+    armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     units.push(u);
   });
@@ -894,6 +897,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
 /** What happens as a unit's turn ends (rules 1.3): its timed conditions tick, it looks for Hidden enemies, and a Fighter
  * who didn't attack this turn loses its Momentum. */
 export function closeTurn(cb: Combat, rng: Rng | null, u: Unit) {
+  if (u.mg) magicTurnEnd(cb, rng, u); // rules 1.5: the Strain burn, then stillness
   condTurnEnd(cb, u, rng);
   if (rng && !u.skipTurn) spotHidden(cb, rng, u);
   if ((cb.zones || []).length) sigilSpot(cb, u); // hidden Sigil traps and turrets nearby (rules 1.4)
@@ -991,6 +995,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
         flush(); useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); react(cb, rng!, h, u, 'melee');
       }
       if (!mc.skipOW && !u.dead && !u.downed) { const before = cb.log.length; triggerOverwatch(cb, rng!, u, seg); if (cb.log.length !== before) seg = [u.pos]; }
+      // Heart Overwatch (rules 1.5): a watching Soul mage releases at an enemy entering its design's reach.
+      if (!mc.skipOW && !u.dead && !u.downed && cb.units.some((h) => h.mg?.held?.watch && h.side !== u.side)) { const before = cb.log.length; flush(); heartOverwatch(cb, rng!, u, was); if (cb.log.length !== before) seg = [u.pos]; }
     }
     if (u.dead || u.downed) { stopped ||= 'down'; }
     else if (condOn(u, 'pinned') || condOn(u, 'grappled')) stopped ||= 'pinned';
@@ -1320,8 +1326,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   u.ap -= cost; who.stims--;
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
-  if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); }
-  else { const r = healUnit(cb, t, 30 * healingMult(who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); }
+  if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
+  else { const r = healUnit(cb, t, 30 * healingMult(who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
   emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: t.hp - (wasDown ? 0 : hpWas), revive: wasDown });
   return null;
 }
@@ -1352,6 +1358,8 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     // Sigil magic (rules 1.4, ai-sigil.ts): any enemy steps out of a field of yours and scuffs a turret underfoot; a caster
     // then weighs a spell against its weapon.
     if (!order && aiSigilStep(cb, rng, u)) { checkOver(cb); continue; }
+    // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
+    if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
     if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2 && !condOn(u, 'disarmed')) { reload(cb, u); continue; }

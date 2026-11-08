@@ -13,7 +13,7 @@ import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
 import { applyCond, endCond, isCondition, condFamily } from '../magic';
 import { moveBlockers, key, xy, dist } from '../combat';
-import { grantShield, healUnit } from './damage';
+import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
 
 // ---------- the scope vocabulary ----------
@@ -199,6 +199,7 @@ registerGeneric({
     const t = targetUnit(h, e, args); if (!t || !t.conds) return null;
     const ids = Object.keys(t.conds).filter((id) => (e.condition ? id === e.condition : e.family ? condFamily(id) === e.family && !['guarded', 'inspired'].includes(id) : true));
     const gone = ids.slice(0, e.count || 1); for (const id of gone) endCond(t, id);
+    if (gone.length && h.cb && h.u) tendHook.f?.(h.cb, h.u, t); // tending others (rules 1.5, section 3.3)
     return gone.length ? ' · ' + t.name + ' shakes off ' + gone.join(', ') : ' · nothing to shake off';
   },
 });

@@ -9,11 +9,12 @@
 // In a fight (ctx.how 'combat') the action's own target is still a click on the grid (a token or a tile); a second
 // pick on the grid (where a run ends, where a thrown crate lands, the enemy an ally attacks) is a 'unit' or 'tile'
 // field the next grid click fills (combat.js).
-import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, WEAPON, packOf, moduleSlots, maxSigilWords, itemWords, debuffsOf, condName, isMelee, type PerkActionEntry } from '@engine';
+import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, WEAPON, TONE, TONES, packOf, moduleSlots, maxSigilWords, itemWords, debuffsOf, condName, isMelee, schoolSide, type PerkActionEntry } from '@engine';
 
 export interface Opt { id: string; label: string; title?: string; off?: string }
-/** A design being built in the picker (as the MAGIC tab's Outburst workshop holds it). */
-export interface DesignDraft { school: string; school2?: string; option?: string; modules: string[]; name?: string }
+/** A design being built in the picker (as the MAGIC tab's Outburst workshop holds it): rules 1.5, a school and its
+ * option, a second school with its own option (a rider at half), a tone, one shape, modules, a name. */
+export interface DesignDraft { school: string; school2?: string; option?: string; option2?: string; tone?: string; modules: string[]; name?: string }
 export type Field =
   | { key: string; kind: 'chips'; head: string; options: Opt[]; multi?: number; optional?: boolean; empty?: string }
   | { key: string; kind: 'prose'; head: string; holder: string; optional?: boolean; max?: number }
@@ -44,7 +45,20 @@ export const designSlots = (c: any, extra = 0) => moduleSlots(c) + extra;
 export const twoSchools = (c: any) => (c?.skills?.will_power || 0) >= 5 && (c?.soulKnown?.schools || []).length > 1;
 const newDraft = (): DesignDraft => ({ school: '', modules: [] });
 export const draftsOf = (v: any, n: number): DesignDraft[] => Array.from({ length: n }, (_, i) => (Array.isArray(v) && v[i]) || newDraft());
-const cleanDesign = (d: DesignDraft) => ({ school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), ...(d.option ? { option: d.option } : {}), modules: [...d.modules], ...(d.name && d.name.trim() ? { name: d.name.trim().slice(0, 40) } : {}) });
+export const cleanDesign = (d: DesignDraft) => ({ school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), ...(d.option ? { option: d.option } : {}), ...(d.school2 && d.option2 ? { option2: d.option2 } : {}),
+  ...(d.tone && d.tone !== 'raw' ? { tone: d.tone } : {}), modules: [...d.modules], ...(d.name && d.name.trim() ? { name: d.name.trim().slice(0, 40) } : {}) });
+/** A shape module (Wave, Burst, Aura, Lance): one a design at most; Size needs one. */
+export const isShapeMod = (id: string) => !!(MODULE as any)[id]?.form;
+/** The second schools a draft can take: known, not its first, on the same side (rules 1.5, 4.2: spec item 542). */
+const sameSide = (d: DesignDraft, s2: string) => s2 !== d.school && schoolSide(s2, d.modules) === schoolSide(d.school, d.modules);
+/** A draft with what no longer fits dropped: a second school on the other side (Inverse toggled), Size without a shape. */
+const tidy = (d: DesignDraft): DesignDraft => {
+  let x = { ...d, modules: [...d.modules] };
+  if (!x.modules.some(isShapeMod)) x.modules = x.modules.filter((m) => m !== 'size');
+  if (x.school2 && !sameSide(x, x.school2)) x = { ...x, school2: '', option2: '' };
+  return x;
+};
+const firstOpt = (school: string) => { const o = ((SCHOOL as any)[school]?.options || []) as string[]; return o.length ? optValue(o[0]) : ''; };
 
 // ---------- option sources ----------
 const human = (s: string) => s.replace(/_/g, ' ').replace(/^./, (x) => x.toUpperCase());
@@ -300,26 +314,48 @@ export function buildArgs(p: Picker, v: Values, x: PickCtx): Args | string {
 }
 const lower = (s: string) => s.replace(/\s*\(optional\)/, '').replace(/^./, (y) => y.toLowerCase());
 
-/** The chips a design slot offers, from the engine's data (the Outburst workshop's rules). */
+/** The chips a design slot offers, from the engine's data (the MAGIC tab workshop's rules, rules 1.5): schools, the
+ * option, a second school on the same side with its own option, the tones you know (the first free at Visualization 1),
+ * one shape (Bolt by default), the other modules (Size locked until a shape is on), up to the slots. */
 export function designSlotView(c: any, d: DesignDraft, extra: number) {
-  const known = c?.soulKnown || { schools: [], modules: [] }, slots = designSlots(c, extra);
+  const known = c?.soulKnown || { schools: [], modules: [] }, slots = designSlots(c, extra), kTones: string[] = known.tones || [];
+  const vis = c?.skills?.visualization || 0, firstFree = vis >= 1 && !kTones.length, shape = d.modules.find(isShapeMod) || '';
+  const mods = (known.modules as string[]).filter((m) => (MODULE as any)[m]);
+  const opt = (school: string) => (((SCHOOL as any)[school]?.options || []) as string[]).map((o) => ({ id: optValue(o), label: OPT_LABEL[o] || o }));
+  const full = d.modules.length >= slots;
   return {
     schools: (known.schools as string[]).filter((s) => (SCHOOL as any)[s]).map((s) => ({ id: s, label: (SCHOOL as any)[s].name, title: (SCHOOL as any)[s].text || '' })),
-    schools2: twoSchools(c) && d.school ? (known.schools as string[]).filter((s) => s !== d.school && (SCHOOL as any)[s]).map((s) => ({ id: s, label: (SCHOOL as any)[s].name })) : [],
-    options: d.school ? (((SCHOOL as any)[d.school]?.options || []) as string[]).map((o) => ({ id: optValue(o), label: OPT_LABEL[o] || o })) : [],
-    modules: (known.modules as string[]).filter((m) => (MODULE as any)[m]).map((m) => ({ id: m, label: (MODULE as any)[m].name, title: (MODULE as any)[m].text || '', cost: (MODULE as any)[m].cost || 0 })),
-    slots,
+    schools2: twoSchools(c) && d.school ? (known.schools as string[]).filter((s) => (SCHOOL as any)[s] && sameSide(d, s)).map((s) => ({ id: s, label: (SCHOOL as any)[s].name })) : [],
+    options: d.school ? opt(d.school) : [],
+    options2: d.school2 ? opt(d.school2) : [],
+    tones: [{ id: 'raw', label: 'Raw', title: (TONE as any).raw?.text || 'Soul damage, armour ignored, no rider.', can: true, free: false },
+      ...(TONES as any[]).filter((t) => t.id !== 'raw').map((t) => { const k = kTones.includes(t.id), free = firstFree && !k; return { id: t.id, label: t.name + (free ? ' · free' : ''), title: (t.text || '') + (k || free ? '' : ' Not learned yet (a teacher or a plate).') + (free ? ' Your first tone is free at Visualization 1.' : ''), can: k || free, free }; })],
+    shapes: [{ id: '', label: 'Bolt', title: 'One target (the default; no module).', cost: 0, off: false },
+      ...mods.filter(isShapeMod).map((m) => ({ id: m, label: (MODULE as any)[m].name, title: (MODULE as any)[m].text || '', cost: (MODULE as any)[m].cost || 0, off: shape !== m && !shape && full }))],
+    modules: mods.filter((m) => !isShapeMod(m)).map((m) => { const on = d.modules.includes(m), noShape = m === 'size' && !shape && !on;
+      return { id: m, label: (MODULE as any)[m].name, title: ((MODULE as any)[m].text || '') + (noShape ? ' Size needs a shape.' : ''), cost: (MODULE as any)[m].cost || 0, off: !on && (full || noShape) }; }),
+    shape, slots,
   };
 }
-/** A draft after a pick in its slot (a school resets the option to the school's first, as the workshop does). */
-export function pickInDraft(c: any, d: DesignDraft, what: 'school' | 'school2' | 'option' | 'module' | 'name', id: string, extra: number): DesignDraft {
-  if (what === 'school') { const o = ((SCHOOL as any)[id]?.options || []) as string[]; return { ...d, school: id, option: o.length ? optValue(o[0]) : '', school2: d.school2 === id ? '' : d.school2 }; }
-  if (what === 'school2') return { ...d, school2: d.school2 === id ? '' : id };
+/** A draft after a pick in its slot (a school resets the option to the school's first, as the workshop does; a second
+ * school takes its own first option; one shape at a time, Size only with one; a tone only once it can be used). */
+export function pickInDraft(c: any, d: DesignDraft, what: 'school' | 'school2' | 'option' | 'option2' | 'tone' | 'shape' | 'module' | 'name', id: string, extra: number): DesignDraft {
+  if (what === 'school') return tidy({ ...d, school: id, option: firstOpt(id), ...(d.school2 === id ? { school2: '', option2: '' } : {}) });
+  if (what === 'school2') return d.school2 === id || !id ? { ...d, school2: '', option2: '' } : sameSide(d, id) ? { ...d, school2: id, option2: firstOpt(id) } : d;
   if (what === 'option') return { ...d, option: id };
+  if (what === 'option2') return d.school2 ? { ...d, option2: id } : d;
   if (what === 'name') return { ...d, name: id.slice(0, 40) };
-  const on = d.modules.includes(id);
-  if (!on && d.modules.length >= designSlots(c, extra)) return d;
-  return { ...d, modules: on ? d.modules.filter((m) => m !== id) : [...d.modules, id] };
+  const sv = designSlotView(c, d, extra);
+  if (what === 'tone') { const t = sv.tones.find((x) => x.id === id); return t && t.can ? { ...d, tone: id } : d; }
+  if (what === 'shape') {
+    const rest = d.modules.filter((m) => !isShapeMod(m)); if (!id) return tidy({ ...d, modules: rest });
+    const sh = sv.shapes.find((x) => x.id === id); if (!sh || sh.off) return d;
+    return tidy({ ...d, modules: [...rest, id] });
+  }
+  if (isShapeMod(id)) return pickInDraft(c, d, 'shape', d.modules.includes(id) ? '' : id, extra);
+  const on = d.modules.includes(id), m = sv.modules.find((x) => x.id === id);
+  if (!on && (!m || m.off)) return d;
+  return tidy({ ...d, modules: on ? d.modules.filter((x) => x !== id) : [...d.modules, id] });
 }
 
 /** A click on the combat grid for a picker's 'unit' or 'tile' field: the values with it added to the first field that

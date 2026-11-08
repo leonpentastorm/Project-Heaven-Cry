@@ -91,7 +91,7 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
 describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-485)', () => {
   it('skill unlocks become items once the points reach them, and are in the coverage report', () => {
     const keys = allItems().filter((i) => i.kind === 'skill').map((i) => i.key);
-    expect(keys).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:visualization.5']);
+    expect(keys).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:visualization.5', 'skill:will_power.3', 'skill:will_power.5']); // rules 1.5: Will Power's two (items 539, 540)
     const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3, rumination: 4, visualization: 0 } });
     const held = itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).filter((i) => i.kind === 'skill').map((i) => i.key);
     expect(held).toEqual(['skill:brain_power.3']);

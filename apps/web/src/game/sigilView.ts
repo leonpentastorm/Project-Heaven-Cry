@@ -23,6 +23,29 @@ const up = (w: string) => (SIGIL[w]?.word || String(w || '').toUpperCase());
 const GROUP_NAME: Record<string, string> = { subject: 'Subject', reach: 'Reach', delivery: 'Delivery', burst: 'Burst', filter: 'Filter' };
 const CLASS_NAME: Record<string, string> = { subject_element: 'Element', subject_affliction: 'Affliction', subject_boon: 'Boon', subject_working: 'Working', reach: 'Reach', delivery: 'Delivery', burst: 'Burst', filter: 'Filter' };
 export const wordClassName = (w: string) => CLASS_NAME[SIGIL[w]?.class || ''] || GROUP_NAME[SIGIL[w]?.group || ''] || '';
+/** The glyph keyboard's rows (Sigil 1.4 word groups, in this order): the four Subject kinds, then Reach, Delivery,
+ * Burst and Filter. Every keyboard of words (combat Draw, the area map, the Proving Ground) groups by these. */
+export const WORD_ROWS: { cls: string; label: string }[] = [
+  { cls: 'subject_element', label: 'Elements' }, { cls: 'subject_affliction', label: 'Afflictions' }, { cls: 'subject_boon', label: 'Boons' },
+  { cls: 'subject_working', label: 'Workings' }, { cls: 'reach', label: 'Reach' }, { cls: 'delivery', label: 'Delivery' }, { cls: 'burst', label: 'Burst' }, { cls: 'filter', label: 'Filter' }];
+/** Words (or anything with a word id) split into WORD_ROWS, order kept inside a row; rows with no words are left out.
+ * A word of no known class goes to a last "Other" row, so nothing is ever dropped. */
+export function wordRows<T>(items: T[], idOf: (t: T) => string): { key: string; label: string; items: T[] }[] {
+  const rows = WORD_ROWS.map((r) => ({ key: r.cls, label: r.label, items: items.filter((t) => SIGIL[idOf(t)]?.class === r.cls) }));
+  const other = items.filter((t) => !WORD_ROWS.some((r) => r.cls === SIGIL[idOf(t)]?.class));
+  return [...rows, { key: 'other', label: 'Other', items: other }].filter((r) => r.items.length > 0);
+}
+/** A refusal from previewDraw cut to a few words for under a disabled key ("tile taken", "needs 2 AP"). The full
+ * reason stays in the tooltip and the aria label. */
+export function shortWhy(why: string | null | undefined): string {
+  const w = String(why || '');
+  const ap = /Needs ([\d.]+) AP/.exec(w); if (ap) return 'needs ' + ap[1] + ' AP';
+  const rules: [RegExp, string][] = [[/one glyph per tile|holds \d+ glyphs at most/i, 'tile taken'], [/past your cap/i, 'over your cap'], [/past the cap/i, 'over 4 glyphs'],
+    [/second reach/i, 'one Reach only'], [/KIN takes one/i, 'one KIN only'], [/WATCH and STAY/i, 'no WATCH + STAY'], [/locked after an overload/i, 'Evoker locked'],
+    [/need an Evoker/i, 'no Evoker'], [/silenced/i, 'silenced'], [/downed/i, 'downed'], [/not your turn/i, 'not your turn'], [/own tile/i, 'step on it'], [/charge/i, 'not enough charge'], [/don't know/i, 'unknown word']];
+  for (const [re, t] of rules) if (re.test(w)) return t;
+  return 'can\'t now';
+}
 /** A shallow copy of the fight, so a preview's housekeeping (the 1.4 migration stamp) never touches the live state. */
 const view = (cb: any) => ({ ...cb, glyphs: [...(cb.glyphs || [])], zones: [...(cb.zones || [])] });
 
@@ -30,7 +53,8 @@ const view = (cb: any) => ({ ...cb, glyphs: [...(cb.glyphs || [])], zones: [...(
 export interface DrawWord {
   id: string; word: string; cls: string; ok: boolean; why: string | null; cost: { ap: number; charge: number; flux: number };
   effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; effectText: string; after: string[]; fades: string | null; overload: boolean; capLeft: number;
-  /** One short line under the word: "2 ch · 1 AP · extends". */ sub: string; title: string; img: string;
+  /** One short line under the word: "2 ch · 1 AP · extends", or "2 ch · tile taken" when refused. */ sub: string;
+  /** Refused: the reason in a few words (shortWhy); '' when the word can be drawn. */ hint: string; title: string; img: string;
 }
 const EFFECT_TEXT = { starts: 'starts a new Line', extends: 'extends the Line', breaks: 'breaks the shape (a bend or a cluster)', stacks: 'stacks on this tile' };
 /** Each word you know, as the engine would draw it on your own tile now (spec 9.1). */
@@ -41,9 +65,10 @@ export function drawStrip(cb: any, u: any): { tile: string; words: DrawWord[] } 
     const effectText = pv.effect ? EFFECT_TEXT[pv.effect as keyof typeof EFFECT_TEXT] + (pv.effect === 'extends' || pv.effect === 'breaks' ? ': ' + pv.words.map(up).join(' · ') : '') : '';
     const cost = pv.cost || { ap: 0, charge: SIGIL[w].charge, flux: SIGIL[w].flux ?? 1 };
     const fades = pv.fades ? up(pv.fades.word) + ' at ' + refOf(pv.fades.pos) : null;
-    const sub = (ok ? cost.charge : SIGIL[w].charge) + ' ch · ' + (ok ? cost.ap + ' AP' : 'can\'t') + (ok && pv.effect ? ' · ' + pv.effect : '');
+    const hint = ok ? '' : shortWhy(pv.why);
+    const sub = ok ? cost.charge + ' ch · ' + cost.ap + ' AP' + (pv.effect ? ' · ' + pv.effect : '') : SIGIL[w].charge + ' ch · ' + hint;
     const title = up(w) + ' · ' + wordClassName(w) + ' · charge ' + SIGIL[w].charge + (ok ? ', ' + cost.ap + ' AP, +' + cost.flux + ' Flux: ' + effectText + (fades ? '; ' + fades + ' fades (your cap)' : '') + (pv.overload ? '; WARNING: this overloads your Evoker' : '') : '. CAN\'T NOW: ' + pv.why) + '. ' + (SIGIL[w].text || '');
-    return { id: w, word: up(w), cls: wordClassName(w), ok, why: ok ? null : pv.why || 'Not now.', cost, effect: pv.effect || null, effectText, after: pv.words || [], fades, overload: !!pv.overload, capLeft: pv.capLeft ?? 0, sub, title, img: glyphUri(w, ok ? SIGIL_INK : '#7F8BA1') };
+    return { id: w, word: up(w), cls: wordClassName(w), ok, why: ok ? null : pv.why || 'Not now.', cost, effect: pv.effect || null, effectText, after: pv.words || [], fades, overload: !!pv.overload, capLeft: pv.capLeft ?? 0, sub, hint, title, img: glyphUri(w, ok ? SIGIL_INK : '#7F8BA1') };
   }) };
 }
 

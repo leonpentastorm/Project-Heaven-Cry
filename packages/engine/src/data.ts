@@ -58,12 +58,21 @@ export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || [
 // ---------- magic (spec: Mana, rules 1.2) ----------
 export interface SigilDef { id: string; word: string; class: 'subject_element' | 'subject_effect' | 'form' | 'motion' | 'modifier'; charge: number; text: string; damage?: number; damage_type?: string; grand?: string; [k: string]: any }
 export interface SchoolDef { id: string; name: string; base_cost: number; text: string; damage?: number; options?: string[]; save?: string }
-export interface ModuleDef { id: string; name: string; family?: string; cost: number; text: string; range_tiles?: number }
+export interface ModuleDef { id: string; name: string; family?: string; cost: number; text: string; range_tiles?: number; form?: boolean; area?: { shape: 'cone' | 'radius' | 'line' | 'single'; length?: number; radius?: number; at?: string; from?: string }; damage_mult?: number }
+/** A tone rider (soul_modules.json tones[].stages[n].riders): what an element does to a creature it hits, by stage. */
+export interface ToneRider { rider: 'cond' | 'spread' | 'ground' | 'ground_around' | 'ignore_cover' | 'chain' | 'armour_full' | 'bonus_damage' | 'push' | 'push_around'; condition?: string; rounds?: number; save?: boolean; deep?: boolean; radius?: number; object?: string; n?: number; range?: number; mult?: number; value?: number; tiles?: number }
+export interface ToneDef { id: string; name: string; element: string | null; cost: number; damage_type: string; armour: 'none' | 'half'; text: string; stages: Record<string, { text: string; riders: ToneRider[] }>; aura_look?: string }
 export const SIGILS: SigilDef[] = (sigilsJ as any).items;
 export const SIGIL: Record<string, SigilDef> = Object.fromEntries(SIGILS.map((w) => [w.id, w]));
 export const SCHOOLS: SchoolDef[] = (soulJ as any).schools;
 export const SCHOOL: Record<string, SchoolDef> = Object.fromEntries(SCHOOLS.map((x) => [x.id, x]));
 export const MODULES: ModuleDef[] = (soulJ as any).items;
 export const MODULE: Record<string, ModuleDef> = Object.fromEntries(MODULES.map((x) => [x.id, x]));
+/** Rules 1.5 (Outburst 2.0): tones (raw + six elements), the retired 1.2 modules and what they became, the cycle's numbers. */
+export const TONES: ToneDef[] = (soulJ as any).tones || [];
+export const TONE: Record<string, ToneDef> = Object.fromEntries(TONES.map((x) => [x.id, x]));
+export const RETIRED_MODULE: Record<string, { id: string; becomes: string | null; why: string }> = Object.fromEntries(((soulJ as any).retired || []).map((x: any) => [x.id, x]));
+export const SOUL_RULES: any = soulJ;
+export const SOUL_REV = 15;
 export const MANA_BANDS: { id: string; min: number; max: number; soul_cost_mult: number; syphon_mp: number; healing_given_mult: number; strain_per_cast_extra: number }[] = RULES.mana.meter.bands;
 

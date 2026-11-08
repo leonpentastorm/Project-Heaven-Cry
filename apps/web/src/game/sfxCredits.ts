@@ -1,4 +1,4 @@
-// Credits for the sounds in SFX_FILES (game/sfx.ts): the interface, and combat and spells (public/sfx/cb). All CC0; credit is optional and given anyway.
+// Credits for the sounds in SFX_FILES (game/sfx.ts): the interface, and combat and spells (public/sfx/cb). All CC0 (credit optional and given anyway) except Wisdom Magic, CC-BY 3.0 (credit required).
 import type { Credit } from './credits';
 export const SFX_CREDITS: Credit[] = [
   { what: 'Interface Sounds (select, click, confirmation, back, maximize, minimize, error, toggle, pluck)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
@@ -36,5 +36,12 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'RPG Sound Pack: sword unsheathe (SHARPEN)', who: 'artisticdude', licence: 'CC0', url: 'https://opengameart.org/content/rpg-sound-pack' },
   { what: 'Spell sounds: healing (MEND)', who: 'haeldb', licence: 'CC0', url: 'https://opengameart.org/content/spell-sounds' },
   { what: 'Magic Spell SFX (WARD, COMMAND, a trap set and sprung, LIGHT, CLEANSE)', who: 'jaggedstone', licence: 'CC0', url: 'https://opengameart.org/content/magic-spell-sfx' },
+  // Outburst 2.0 (rules 1.5): the heart (public/sfx/cb/soul_*.ogg; trimmed, mono, levelled). The aura beds reuse the field loops above, slowed and filtered.
+  { what: 'Heartbeat single sound (the Pump\'s thump)', who: 'Independent.nu (submitted by qubodup)', licence: 'CC0', url: 'https://opengameart.org/content/heartbeat-single-sound' },
+  { what: 'Sound Effects Pack: breath-male and gasp1 (Begin\'s breath in, the long breath out of a calming heart, Heart Overwatch\'s gasp), earthquake (the stone aura\'s rumble)', who: 'OwlishMedia', licence: 'CC0', url: 'https://opengameart.org/content/sound-effects-pack' },
+  { what: 'Ghost Breath (Let go\'s violet sigh)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/ghost-breath' },
+  // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
+  { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
+  { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

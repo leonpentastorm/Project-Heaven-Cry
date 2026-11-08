@@ -16,7 +16,7 @@ import {
 } from './combat';
 import { type Rng, d20 } from './rng';
 import { emit } from './effects/hooks';
-import { healUnit, grantShield } from './effects/damage';
+import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
@@ -703,7 +703,7 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
         if (t.quickRound === cb.round) { line += ' · ' + t.name + ' was already Quickened this round'; continue; }
         t.quickRound = cb.round; const q = applyCond(cb, rng, by, t, 'quickened', undefined, undefined, { skipSave: true }); line += q + (condOn(t, 'quickened') && /Quickened$/.test(q) ? ' (+' + (d.ap ?? 2) + ' AP on their next turn)' : ''); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'quicken', amount: d.ap ?? 2 });
       } else if (w === 'sharpen') { line += applyCond(cb, rng, by, t, 'sharpened', 1, undefined, { skipSave: true }); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'sharpen' }); }
-      else if (w === 'cleanse') { for (let i = 0; i < (sp.counts.cleanse || 1); i++) { const id = newestCondition(t); if (!id) { if (!i) line += ' · ' + t.name + ' has nothing to cleanse'; break; } endCond(t, id, cb); line += ' · ' + t.name + ' is cleansed of ' + condName(id); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); } }
+      else if (w === 'cleanse') { for (let i = 0; i < (sp.counts.cleanse || 1); i++) { const id = newestCondition(t); if (!id) { if (!i) line += ' · ' + t.name + ' has nothing to cleanse'; break; } endCond(t, id, cb); line += ' · ' + t.name + ' is cleansed of ' + condName(id); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); tendHook.f?.(cb, by, t); } }
       continue;
     }
     if (w === 'mask') {

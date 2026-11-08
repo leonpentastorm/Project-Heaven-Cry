@@ -102,6 +102,16 @@
       "price": 400
     },
     {
+      "id": "heart_plate",
+      "name": "Heart plate",
+      "category": "consumable",
+      "weight_kg": 0.3,
+      "text": "A violet-veined slate that holds one Outburst lesson: a tone (fire, storm, frost, stone, gale, acid), a school or a module. Study it for a scene to learn it (the plate crumbles). What it teaches is written on it (the pack note).",
+      "adjudication": "engine",
+      "provisional": true,
+      "price": 400
+    },
+    {
       "id": "chalk_and_wax",
       "name": "Chalk and wax",
       "category": "tool",

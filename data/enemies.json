@@ -202,5 +202,129 @@
       "provisional": true
     }
   ],
-  "casters_note": "Enemy Sigil casters (rules 1.4, spec 14 items 469 and 491): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Evoker with these words (Max Sigil words by tier, sigils.json enemy_ai.max_words). spell_bias multiplies the value the AI puts on a spell when it weighs it against its weapon. Provisional."
+  "casters_note": "Enemy Sigil casters (rules 1.4, spec 14 items 469 and 491): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Evoker with these words (Max Sigil words by tier, sigils.json enemy_ai.max_words). spell_bias multiplies the value the AI puts on a spell when it weighs it against its weapon. Provisional.",
+  "soul_casters": [
+    {
+      "id": "heart_adept",
+      "name": "Heart adept",
+      "tier": "soldier",
+      "weapon": "service_pistol",
+      "soul_mult": 1.2,
+      "mp": 80,
+      "strain_limit": 4,
+      "free_pumps": 0,
+      "reach_bonus": 0,
+      "designs": [
+        {
+          "id": "heart_bolt",
+          "name": "Heart bolt",
+          "school": "damage",
+          "modules": []
+        },
+        {
+          "id": "mending_pulse",
+          "name": "Mending pulse",
+          "school": "buff",
+          "option": "heal",
+          "modules": []
+        }
+      ],
+      "text": "A soldier who fights from the chest: Begins a Raw Heart bolt when it has the AP, Pumps with what it doesn't spend shooting, and lets it go at whoever walks into 4 tiles (Heart Overwatch). A Mending pulse for a hurt squadmate. It steadies or lets go before its heart burns (Strain limit 4).",
+      "provisional": true
+    },
+    {
+      "id": "heartfire_elite",
+      "name": "Heartfire elite",
+      "tier": "elite",
+      "weapon": "sabre",
+      "soul_mult": 1.4,
+      "mp": 140,
+      "strain_limit": 5,
+      "free_pumps": 1,
+      "reach_bonus": 0,
+      "designs": [
+        {
+          "id": "heartfire_burst",
+          "name": "Heartfire burst",
+          "school": "damage",
+          "tone": "fire",
+          "modules": [
+            "burst"
+          ]
+        },
+        {
+          "id": "cinder_wave",
+          "name": "Cinder wave",
+          "school": "damage",
+          "tone": "fire",
+          "modules": [
+            "wave"
+          ]
+        },
+        {
+          "id": "ember_mend",
+          "name": "Ember mend",
+          "school": "buff",
+          "option": "heal",
+          "modules": [
+            "aura"
+          ]
+        }
+      ],
+      "text": "An elite with a sabre and a burning heart: it holds a Fire Outburst and walks into you, so its aura scorches whoever stands next to it; it drops a Heartfire burst on a cluster (Burning from stage 2; at stage 4 the fire spreads and the ground burns) or a Cinder wave into a line at close range, and an Ember mend on its own around it. One free Pump a round (as Empathy 3); Strain limit 5.",
+      "provisional": true
+    },
+    {
+      "id": "heart_sovereign",
+      "name": "Heart sovereign",
+      "tier": "boss",
+      "weapon": "magistrate_pistol",
+      "soul_mult": 1.6,
+      "mp": 220,
+      "strain_limit": 6,
+      "free_pumps": 2,
+      "reach_bonus": 1,
+      "designs": [
+        {
+          "id": "sovereign_lance",
+          "name": "Sovereign lance",
+          "school": "damage",
+          "tone": "storm",
+          "modules": [
+            "lance"
+          ]
+        },
+        {
+          "id": "rime_bolt",
+          "name": "Rime bolt",
+          "school": "damage",
+          "tone": "frost",
+          "modules": [
+            "homing"
+          ]
+        },
+        {
+          "id": "gale_heart",
+          "name": "Gale heart",
+          "school": "damage",
+          "tone": "gale",
+          "modules": [
+            "aura"
+          ]
+        },
+        {
+          "id": "sovereign_grace",
+          "name": "Sovereign's grace",
+          "school": "buff",
+          "option": "heal",
+          "modules": [
+            "burst"
+          ]
+        }
+      ],
+      "text": "The fight's centre, a heart you can see filling: a Storm Sovereign lance through a line of you (chains at stage 2, two chains and Shaken at 4), a homing Rime bolt that Slows and at stage 4 Pins, a Gale heart that throws everyone next to it away, and Sovereign's grace on its hurt guards. Two free Pumps a round (as Empathy 7), reach +1, Strain limit 6: it holds for the big release when you bunch up, and watches with the heart when you close in.",
+      "provisional": true
+    }
+  ],
+  "soul_casters_note": "Enemy Soul casters (rules 1.5, Outburst 2.0; ai-soul.ts): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Emanator with these ready designs (school, modules, tone, as a player's), this Soul multiplier, MP, Strain limit and free Pumps a round (as Empathy; Will Power for its rolls is its tier's attack bonus). The AI Begins, Pumps, holds for a big release, watches with the heart, Steadies or lets go before the burn, and heals with Buff designs, through the engine's own previewOutburstPlan. Provisional (the damage balance pass)."
 }

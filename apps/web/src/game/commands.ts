@@ -6,6 +6,7 @@
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
+import { heartPanel } from './heartView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 
 const HOSTILE_INK = '#F65157';
@@ -115,8 +116,16 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, SPELL_AP.vent + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.'],
       ['core', 'Swap core', SPELL_AP.core + ' AP', 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);
     if (soul) MG.push(['MAGIC · OUTBURSTS', [
-      ...(designs.length ? [['outburst', 'Outburst', designs.length === 1 ? designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: pick a design, then let it go at once or hold it. Held, it grows a stage each turn and strains you.'] as ActionItem] : []),
-      ...(held ? [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held ' + (heldD ? heldD.name : 'Outburst') + ' go at stage ' + held.stage + ' (×' + stageMult(held.stage) + ').'] as ActionItem] : []),
+      // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
+      // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
+      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: Begin a design (2 AP, Swift 1) and hold it at stage 0, then Pump it up (1 AP a stage, to stage 4) and Release it (1 AP). Or Snap it: Begin and Release at once, 3 AP at ×0.6.'] as ActionItem] : []),
+      ...(held ? (() => { const hp = cb ? heartPanel(cb, cur) : null; if (!hp) return [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held Outburst go.'] as ActionItem];
+        return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'A heartbeat: +1 stage (stage multipliers ×' + stageMult(0) + ' to ×' + stageMult(4) + '). Free while the round\'s Empathy Pumps last.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
+          ['release', 'Release · stage ' + hp.stage + ' ×' + hp.mult, hp.release.cost, 'Fire ' + hp.name + ' at the stage reached (' + hp.shape + ').', hp.release.ok ? null : hp.release.why] as ActionItem,
+          ['steady', 'Steady the heart', hp.steadyBtn.cost, hp.steadyBtn.title, hp.steadyBtn.ok ? null : hp.steadyBtn.why] as ActionItem,
+          ['letgo', 'Let it go' + (hp.letgo.strainOff ? ' · −' + hp.letgo.strainOff + ' Strain' : ''), 'free', hp.letgo.title, hp.letgo.ok ? null : hp.letgo.why] as ActionItem,
+          ...(hp.feedShow ? [['feed', 'Feed the glyph', hp.feed.cost, hp.feed.title, hp.feed.ok ? null : hp.feed.why] as ActionItem] : []),
+          ['heartwatch', hp.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free', hp.watchBtn.title, hp.watchBtn.ok ? null : hp.watchBtn.why] as ActionItem]; })() : []),
       ...(mg.emanator ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air (' + band.syphon_mp + ' in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus). The meter drops.'] as ActionItem,
         ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.'] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
@@ -152,7 +161,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
     if (u.jammed && skFx.op === 'multi_shot') return 'Jammed: clear it first.';
     if (skFx.op === 'multi_shot' && gun && (u.ammo ?? 0) <= 0) return 'Empty: reload.';
   }
-  if (action === 'release' && !(mg && mg.held)) return 'Nothing held.';
+  if (['release', 'pump', 'steady', 'letgo', 'feed', 'heartwatch'].includes(action) && !(mg && mg.held)) return 'Nothing held.';
   if (action === 'outburst' && mg && mg.held) return 'Already holding one.';
   if (action === 'vent' && mg && !(mg.flux > 0)) return 'No Flux to vent.';
   if (action === 'core' && mg && !(mg.cores > 0)) return 'No spare cores.';
@@ -174,6 +183,17 @@ export function smartCommands(u: any): Command[] {
   const w: any = (WEAPON as any)[u.weapon], melee = w ? isMelee(w) : true, mg = u.mg;
   const sk: any = w && w.grants, skFx: any = sk?.effect || {};
   const cmds: Command[] = [];
+  // Holding an Outburst (rules 1.5): the heart's two moves come first, Pump and Release; then Move and the weapon.
+  if (mg?.held) {
+    const st = mg.held.stage ?? 0, full = st >= 4, free = (mg.freePumps || 0) > 0;
+    cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : '1 AP'), key: '1', off: full || (!free && (u.ap ?? 0) < 1) });
+    cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · 1 AP', key: '2', off: (u.ap ?? 0) < 1 });
+    cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
+    if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
+    else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
+    if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
+    return cmds;
+  }
   if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
   else if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
   else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });

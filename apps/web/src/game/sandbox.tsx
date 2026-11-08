@@ -12,8 +12,13 @@
 //    class and rank, skills, perks, traits, armour, refill), Magic (words, schools, modules, designs), Field (host: spawn enemies on a
 //    clicked tile, clear them, enemy AI, endless waves, place or fight any wave, the mana meter, leave).
 import React from 'react';
+import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
+import { OPT_LABEL, optValue } from './actionPickers';
+import { wordRows } from './sigilView';
+import { glyphUri, SIGIL_INK } from './glyphs';
+import { glyphKeyNav } from './glyphKeys';
 import {
-  type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
+  magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
@@ -428,9 +433,16 @@ function GivePicker({ c }: { c: Character }) {
 }
 
 function MagicTab({ c }: { c: Character }) {
-  const known = c.sigils || [], k = c.soulKnown || { schools: [], modules: [] };
+  const known = c.sigils || [], k: any = c.soulKnown || { schools: [], modules: [] };
   const [school, setSchool] = React.useState(SCHOOLS[0]?.id || ''), [mods, setMods] = React.useState<string[]>([]), [name, setName] = React.useState('');
+  // Rules 1.5: a tone, a shape (one form module), a second school with its own option (a rider at half).
+  const [tone, setTone] = React.useState('raw'), [shape, setShape] = React.useState(''), [school2, setSchool2] = React.useState(''), [opt, setOpt] = React.useState(''), [opt2, setOpt2] = React.useState('');
   const give = (item: string) => act({ type: 'sandbox/give', charId: c.id, item });
+  const optsOf = (sc: string) => ((SCHOOL as any)[sc]?.options || []) as string[];
+  const chip = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 26, fontSize: 11, padding: '0 6px', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
+  const others = MODULES.filter((m) => !isShape(m.id));
+  const draft: any = { id: '', name: name || (SCHOOL as any)[school]?.name + ' Outburst', school, modules: [...(shape ? [shape] : []), ...mods.filter((x) => x !== 'size' || shape)], ...(opt ? { option: opt } : {}), ...(school2 && school2 !== school ? { school2, ...(opt2 ? { option2: opt2 } : {}) } : {}), ...(tone !== 'raw' ? { tone } : {}) };
+  const v = (() => { try { return designVerdict(magicOf(c) || null, draft); } catch { return null; } })();
   return <>
     <Section title="FOCI">
       <div style={row}>
@@ -441,33 +453,57 @@ function MagicTab({ c }: { c: Character }) {
       </div>
     </Section>
     <Section title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {SIGILS.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" title={w.text} aria-pressed={on}
-          style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
-          onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}>{w.word}</button>; })}
+      {/* One labelled row per Sigil 1.4 word group (Elements … Filter), the same rows as the combat glyph keyboard. */}
+      <div role="group" aria-label="Sigil words" data-glyph-keyboard="1" style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+        {wordRows(SIGILS, (w) => w.id).map((r) => <div key={r.key} role="group" aria-label={r.label + ' words'} data-word-row={r.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+          <span aria-hidden="true" style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: '#8BDEEE' }}>{r.label.toUpperCase()}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
+            {r.items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
+              style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
+              onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
+          </div>
+        </div>)}
       </div>
     </Section>
-    <Section title="OUTBURST SCHOOLS AND MODULES">
+    <Section title="OUTBURST SCHOOLS, TONES AND MODULES">
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
         {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.schools.includes(s.id) ? C.soul : C.line), color: k.schools.includes(s.id) ? C.soul : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {MODULES.map((m) => <button key={m.id} type="button" title={m.text} disabled={k.modules.includes(m.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.modules.includes(m.id) ? C.soul : C.line), color: k.modules.includes(m.id) ? C.soul : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}>{m.name}</button>)}
+        {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (t.known ? t.ink : C.line), color: t.known ? t.ink : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name} tone</button>)}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        {MODULES.map((m) => <button key={m.id} type="button" title={m.text} disabled={k.modules.includes(m.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.modules.includes(m.id) ? C.soul : C.line), color: k.modules.includes(m.id) ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}>{isShape(m.id) && <img src={formIconUri(m.id)} alt="" width={14} height={14} />}{m.name}</button>)}
       </div>
     </Section>
     <Section title={'DESIGNS (' + (c.outbursts || []).length + ')'}>
-      {(c.outbursts || []).map((d) => <div key={d.id} style={{ ...row, fontSize: 13 }}><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: C.muted }}>{SCHOOL[d.school]?.name}{d.modules.length ? ' · ' + d.modules.map((m) => MODULE[m]?.name || m).join(', ') : ''}</span></span>
-        <button type="button" style={{ ...btn, minHeight: 28, color: C.muted }} aria-label={'Forget ' + d.name} onClick={() => act({ type: 'sandbox/forget', charId: c.id, designId: d.id })}>✕</button></div>)}
+      {(c.outbursts || []).map((d) => { const i = designInfo(magicOf(c) || null, d); return <div key={d.id} style={{ ...row, fontSize: 13 }}><img src={i.icon} alt="" width={20} height={20} /><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: i.ink }}>{i.line}</span> <span style={{ color: C.muted }}>{i.schools}</span></span>
+        <button type="button" style={{ ...btn, minHeight: 28, color: C.muted }} aria-label={'Forget ' + d.name} onClick={() => act({ type: 'sandbox/forget', charId: c.id, designId: d.id })}>✕</button></div>; })}
       <div style={row}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" aria-label="Design name" style={{ ...field, flex: 1 }} />
-        <select value={school} onChange={(e) => setSchool(e.target.value)} aria-label="School" style={field}>{SCHOOLS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+        <select value={school} onChange={(e) => { setSchool(e.target.value); setOpt(''); }} aria-label="School" style={field}>{SCHOOLS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+      </div>
+      {optsOf(school).length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Option">{optsOf(school).map((o) => { const val = optValue(o); return <button key={o} type="button" aria-pressed={opt === val} style={chip(opt === val)} onClick={() => setOpt(val)}>{OPT_LABEL[o] || o}</button>; })}</div>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Second school">
+        <span style={{ fontSize: 11, color: C.muted, alignSelf: 'center' }}>SECOND SCHOOL</span>
+        {[{ id: '', name: 'None' }, ...SCHOOLS.filter((s) => s.id !== school)].map((s) => <button key={s.id || 'none'} type="button" aria-pressed={school2 === s.id} style={chip(school2 === s.id)} onClick={() => { setSchool2(s.id); setOpt2(''); }}>{s.name}</button>)}
+      </div>
+      {school2 && optsOf(school2).length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Second option">{optsOf(school2).map((o) => { const val = optValue(o); return <button key={o} type="button" aria-pressed={opt2 === val} style={chip(opt2 === val)} onClick={() => setOpt2(val)}>{OPT_LABEL[o] || o}</button>; })}</div>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Tone">
+        <span style={{ fontSize: 11, color: C.muted, alignSelf: 'center' }}>TONE</span>
+        {toneChips(k.tones || []).map((t) => <button key={t.id} type="button" aria-pressed={tone === t.id} style={chip(tone === t.id, t.ink)} onClick={() => setTone(t.id)}>{t.name}</button>)}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Shape">
+        <span style={{ fontSize: 11, color: C.muted, alignSelf: 'center' }}>SHAPE</span>
+        {['', ...SHAPE_MODULES].map((f) => <button key={f || 'bolt'} type="button" aria-pressed={shape === f} style={chip(shape === f)} onClick={() => setShape(f)}><img src={formIconUri(f || 'bolt', toneInk(tone))} alt="" width={14} height={14} />{f ? (MODULE as any)[f]?.name : 'Bolt'}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {MODULES.map((m) => { const on = mods.includes(m.id); return <button key={m.id} type="button" aria-pressed={on} style={{ ...btn, minHeight: 26, fontSize: 11, padding: '0 6px', border: '1px solid ' + (on ? C.soul : C.line), color: on ? C.soul : C.muted }}
-          onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-4))}>{m.name}</button>; })}
+        {others.map((m) => { const on = mods.includes(m.id), lock = m.id === 'size' && !shape; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} title={lock ? 'Size needs a shape.' : m.text} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
+          onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-3))}>{m.name}</button>; })}
       </div>
-      <button type="button" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => { act({ type: 'sandbox/design', charId: c.id, design: { id: '', name: name || SCHOOL[school]?.name + ' Outburst', school, modules: mods } }); setName(''); setMods([]); }}>Add design</button>
-      <span style={{ fontSize: 12, color: C.muted }}>The school and modules are learned with the design. Up to 4 modules, 8 designs.</span>
+      {v && <div style={{ fontSize: 12, lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}
+      <button type="button" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => { act({ type: 'sandbox/design', charId: c.id, design: draft }); setName(''); setMods([]); }}>Add design</button>
+      <span style={{ fontSize: 12, color: C.muted }}>The school, tone and modules are learned with the design. One shape, up to 4 modules, 8 designs.</span>
     </Section>
   </>;
 }

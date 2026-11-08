@@ -1,42 +1,177 @@
 {
-  "$schema_version": "1.0",
+  "$schema_version": "2.0",
   "kind": "soul_modules",
-  "source": "PHC Core Rules v1.0 (schools) + Recovered Design Notes (module names)",
+  "revision": 15,
+  "source": "PHC Core Rules v1.0, rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
+  "cycle": {
+    "begin_ap": 2,
+    "swift_begin_ap": 1,
+    "pump_ap": 1,
+    "release_ap": 1,
+    "steady_ap": 1,
+    "feed_ap": 1,
+    "max_stage": 4,
+    "stage_mult": [
+      0.6,
+      1,
+      1.4,
+      1.8,
+      2.2
+    ],
+    "begin_strain": 1,
+    "swell_strain": 1,
+    "flooded_strain": 2,
+    "no_emanator_strain": 2,
+    "free_pumps": [
+      {
+        "empathy": 3,
+        "pumps": 1
+      },
+      {
+        "empathy": 7,
+        "pumps": 2
+      }
+    ],
+    "provisional": true,
+    "text": "Begin (2 AP, Swift 1) opens a ready design at stage 0 (+1 Strain). Pump (1 AP) +1 stage, to 4. Release (1 AP) fires it. Held past your turn: +1 stage free at your next turn start (the swell), +1 Strain (+2 Flooded). Empathy 3: 1 free Pump a round; Empathy 7: 2."
+  },
+  "strain": {
+    "limit": "3 + floor(will_power/2)",
+    "decay_per_turn": 1,
+    "burn_per_point": 8,
+    "short_at_over": 3,
+    "short_stun_rounds": 1,
+    "after_short": "limit",
+    "provisional": true,
+    "calming": [
+      {
+        "id": "turn",
+        "strain": -1,
+        "text": "Every turn start: −1 Strain, always (before the swell)."
+      },
+      {
+        "id": "still",
+        "strain": -1,
+        "text": "A turn of stillness: end a turn in which you didn't Begin, Pump or Feed: −1 more."
+      },
+      {
+        "id": "fight",
+        "strain": -1,
+        "text": "Fighting it out: your first weapon attack each turn (melee or shot): −1."
+      },
+      {
+        "id": "tend",
+        "strain": -1,
+        "text": "Tending others: your first heal, stim, shield or cleanse given to an ally each turn: −1."
+      },
+      {
+        "id": "letgo",
+        "strain": "-stage",
+        "text": "Let it go (free, on your turn): drop the held Outburst; Strain falls by its stage, at most the Strain its swells cost (item 541); the meter +1."
+      },
+      {
+        "id": "steady",
+        "strain": -1,
+        "ap": 1,
+        "text": "Steady the heart (1 AP, only while holding): −1 Strain, and the held Outburst doesn't swell at your next turn start."
+      }
+    ]
+  },
+  "damage": {
+    "base": 20,
+    "soul_mult": "1 + 0.05*(determination-1) + 0.1*will_power",
+    "provisional": true
+  },
+  "aura": {
+    "tick_damage": 5,
+    "radius": 1,
+    "rider_stage": 1,
+    "text": "Holding an elemental Outburst: enemies adjacent to you at the start of your turn take 5 Elemental and the tone's stage-1 rider.",
+    "provisional": true
+  },
+  "resonance": {
+    "bonus": 0.2,
+    "max_bonus": 0.4,
+    "text": "A release by an ally after another ally's release in the same round: +0.2 on the stage multiplier for each earlier ally releaser this round, at most +0.4 in total per release. The players' side only: enemies never resonate.",
+    "provisional": true
+  },
+  "heart_overwatch": {
+    "text": "While holding (and watching), release as your reaction when an enemy enters your design's reach.",
+    "provisional": true
+  },
+  "feed": {
+    "ap": 1,
+    "stage": 1,
+    "text": "Absorb a glyph on your own tile into your held Outburst: +1 stage; the glyph is gone.",
+    "provisional": true
+  },
+  "second_school": {
+    "from_will_power": 5,
+    "strength": 0.5,
+    "cost": 10,
+    "text": "A second school with its own option, at half strength, after the first.",
+    "provisional": true
+  },
+  "default_form": {
+    "id": "bolt",
+    "name": "Bolt",
+    "area": {
+      "shape": "single"
+    },
+    "damage_mult": 1,
+    "text": "One target at the aim, within reach (4 tiles + the Soul range bonus); rolls Will Power against Defense."
+  },
+  "stage_shift": {
+    "flooded": 1,
+    "thin": -1,
+    "text": "Element riders count one stage higher in Flooded air, one lower in Thin air (0 to 4)."
+  },
+  "cost_rules": "(school base + modules + 10 for a second school + the tone's cost) × the band's Soul cost × (1 − 5% × (Insight − 1)), minimum 5; +20% under a Right Brain Debuff. Paid at Begin.",
+  "limits": {
+    "module_slots": "1 + floor(will_power/3)",
+    "forms_per_design": 1,
+    "two_schools_from_will_power": 5,
+    "ready_designs": "2 + floor(empathy/2)",
+    "tones": "one at Visualization 1; more from tutors or plates"
+  },
+  "notes": "Every number from rules 1.5 is provisional until the damage balance pass. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
   "schools": [
     {
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "25 Soul damage.",
+      "text": "20 damage × the Soul multiplier × the stage multiplier (Raw: Soul damage, armour ignored; an element: Elemental, armour half). Bolt and Lance roll Will Power against Defense; the areas don't roll.",
+      "damage": 20,
+      "hit": "will_power_vs_defense",
+      "options": [],
       "effects": [
         {
           "op": "narrator",
-          "note": "engine: 25 soul damage x soul multiplier, will_power vs defense"
+          "note": "engine: magic.ts Outburst 2.0"
         }
       ],
-      "damage": 25,
-      "hit": "will_power_vs_defense",
-      "provisional": false
+      "provisional": true
     },
     {
       "id": "buff",
       "name": "Buff",
       "base_cost": 20,
-      "text": "One ally: +2 to hit, or +2 Defense, or heal 30 x Healing multiplier; 2 rounds.",
+      "text": "Allies: heal 30 × Healing multiplier × the stage multiplier, or Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds.",
       "options": [
         "to_hit_2",
         "defense_2",
         "heal_30"
       ],
       "duration_rounds": 2,
+      "heal": 30,
       "hit": "auto",
-      "provisional": false
+      "provisional": true
     },
     {
       "id": "control",
       "name": "Control",
       "base_cost": 25,
-      "text": "Push or pull 3 tiles, or Pinned, or Slowed (Body save).",
+      "text": "Push or pull 3 tiles, or Pinned, or Slowed, 2 rounds (Body save).",
       "options": [
         "push_3",
         "pull_3",
@@ -44,13 +179,15 @@
         "slowed"
       ],
       "save": "body",
-      "provisional": false
+      "duration_rounds": 2,
+      "push_tiles": 3,
+      "provisional": true
     },
     {
       "id": "status",
       "name": "Status",
       "base_cost": 20,
-      "text": "Fear, Shaken, Confused, or a Left or Right Brain Debuff (Heart or Brain save).",
+      "text": "Fear, Shaken, Confused, or a Left or Right Brain Debuff, 2 rounds (Heart or Brain save).",
       "options": [
         "fear",
         "shaken",
@@ -59,16 +196,448 @@
         "right_brain_debuff"
       ],
       "save": "heart_or_brain_by_condition",
-      "provisional": false
+      "duration_rounds": 2,
+      "provisional": true
     }
   ],
-  "cost_rules": "(school base + modules + 20 if second school) x band multiplier x (1 - 5% x (insight-1))",
-  "limits": {
-    "module_slots": "1 + floor(will_power/3)",
-    "two_schools_from_will_power": 5,
-    "ready_designs": "2 + floor(empathy/2)"
-  },
-  "notes": "School numbers are from the spec. All module costs and effects are new and provisional; the 2020 notes named the modules with no costs.",
+  "tones": [
+    {
+      "id": "raw",
+      "name": "Raw",
+      "element": null,
+      "cost": 0,
+      "damage_type": "soul",
+      "armour": "none",
+      "text": "Soul damage: ignores armour. No rider.",
+      "stages": {},
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "element": "fire",
+      "cost": 5,
+      "damage_type": "fire",
+      "armour": "half",
+      "text": "Elemental (fire): armour counts half.",
+      "stages": {
+        "1": {
+          "text": "No rider.",
+          "riders": []
+        },
+        "2": {
+          "text": "Burning 2 rounds.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "burning",
+              "rounds": 2,
+              "save": false
+            }
+          ]
+        },
+        "3": {
+          "text": "Burning 2 rounds.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "burning",
+              "rounds": 2,
+              "save": false
+            }
+          ]
+        },
+        "4": {
+          "text": "Burning 2 rounds; it spreads to foes next to each target; the ground under the target burns.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "burning",
+              "rounds": 2,
+              "save": false
+            },
+            {
+              "rider": "spread",
+              "condition": "burning",
+              "rounds": 2,
+              "radius": 1
+            },
+            {
+              "rider": "ground",
+              "object": "fire"
+            }
+          ]
+        }
+      },
+      "aura_look": "embers",
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "storm",
+      "name": "Storm",
+      "element": "shock",
+      "cost": 5,
+      "damage_type": "lightning",
+      "armour": "half",
+      "text": "Elemental (lightning): armour counts half.",
+      "stages": {
+        "1": {
+          "text": "Ignores half cover.",
+          "riders": [
+            {
+              "rider": "ignore_cover"
+            }
+          ]
+        },
+        "2": {
+          "text": "Ignores half cover; chains to 1 more enemy within 2 tiles at half.",
+          "riders": [
+            {
+              "rider": "ignore_cover"
+            },
+            {
+              "rider": "chain",
+              "n": 1,
+              "range": 2,
+              "mult": 0.5
+            }
+          ]
+        },
+        "3": {
+          "text": "Ignores half cover; chains to 1 more enemy within 2 tiles at half.",
+          "riders": [
+            {
+              "rider": "ignore_cover"
+            },
+            {
+              "rider": "chain",
+              "n": 1,
+              "range": 2,
+              "mult": 0.5
+            }
+          ]
+        },
+        "4": {
+          "text": "Ignores half cover; chains to 2 more within 2 tiles at half; Shaken (Heart save).",
+          "riders": [
+            {
+              "rider": "ignore_cover"
+            },
+            {
+              "rider": "chain",
+              "n": 2,
+              "range": 2,
+              "mult": 0.5
+            },
+            {
+              "rider": "cond",
+              "condition": "shaken",
+              "save": true
+            }
+          ]
+        }
+      },
+      "aura_look": "static",
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "frost",
+      "name": "Frost",
+      "element": "freeze",
+      "cost": 5,
+      "damage_type": "frost",
+      "armour": "half",
+      "text": "Elemental (frost): armour counts half.",
+      "stages": {
+        "1": {
+          "text": "Slowed (Body save).",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "slowed",
+              "save": true
+            }
+          ]
+        },
+        "2": {
+          "text": "Slowed, no save.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "slowed",
+              "save": false
+            }
+          ]
+        },
+        "3": {
+          "text": "Slowed, no save.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "slowed",
+              "save": false
+            }
+          ]
+        },
+        "4": {
+          "text": "Slowed and Pinned 1 round, no save.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "slowed",
+              "save": false
+            },
+            {
+              "rider": "cond",
+              "condition": "pinned",
+              "rounds": 1,
+              "save": false
+            }
+          ]
+        }
+      },
+      "aura_look": "frost mist",
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "stone",
+      "name": "Stone",
+      "element": "stone",
+      "cost": 5,
+      "damage_type": "stone",
+      "armour": "half",
+      "text": "Elemental (stone): armour counts half at stage 0; from stage 1 it counts in full and the hit deals +10.",
+      "stages": {
+        "1": {
+          "text": "Armour counts in full; +10 damage.",
+          "riders": [
+            {
+              "rider": "armour_full"
+            },
+            {
+              "rider": "bonus_damage",
+              "value": 10
+            }
+          ]
+        },
+        "2": {
+          "text": "Armour in full, +10; Prone (Body save).",
+          "riders": [
+            {
+              "rider": "armour_full"
+            },
+            {
+              "rider": "bonus_damage",
+              "value": 10
+            },
+            {
+              "rider": "cond",
+              "condition": "prone",
+              "save": true
+            }
+          ]
+        },
+        "3": {
+          "text": "Armour in full, +10; Prone (Body save).",
+          "riders": [
+            {
+              "rider": "armour_full"
+            },
+            {
+              "rider": "bonus_damage",
+              "value": 10
+            },
+            {
+              "rider": "cond",
+              "condition": "prone",
+              "save": true
+            }
+          ]
+        },
+        "4": {
+          "text": "Armour in full, +10; Prone (Body save); rubble rises on the empty tiles around the target.",
+          "riders": [
+            {
+              "rider": "armour_full"
+            },
+            {
+              "rider": "bonus_damage",
+              "value": 10
+            },
+            {
+              "rider": "cond",
+              "condition": "prone",
+              "save": true
+            },
+            {
+              "rider": "ground_around",
+              "object": "rubble",
+              "radius": 1
+            }
+          ]
+        }
+      },
+      "aura_look": "dust",
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "gale",
+      "name": "Gale",
+      "element": "gale",
+      "cost": 5,
+      "damage_type": "elemental",
+      "armour": "half",
+      "text": "Elemental (wind): armour counts half.",
+      "stages": {
+        "1": {
+          "text": "Pushes the target 2 tiles.",
+          "riders": [
+            {
+              "rider": "push",
+              "tiles": 2
+            }
+          ]
+        },
+        "2": {
+          "text": "Pushes the target 3 tiles.",
+          "riders": [
+            {
+              "rider": "push",
+              "tiles": 3
+            }
+          ]
+        },
+        "3": {
+          "text": "Pushes the target 3 tiles.",
+          "riders": [
+            {
+              "rider": "push",
+              "tiles": 3
+            }
+          ]
+        },
+        "4": {
+          "text": "Pushes the target 3 tiles and everyone else within 1 of it 2 tiles.",
+          "riders": [
+            {
+              "rider": "push",
+              "tiles": 3
+            },
+            {
+              "rider": "push_around",
+              "radius": 1,
+              "tiles": 2
+            }
+          ]
+        }
+      },
+      "aura_look": "wind",
+      "provisional": true,
+      "adjudication": "engine"
+    },
+    {
+      "id": "acid",
+      "name": "Acid",
+      "element": "acid",
+      "cost": 5,
+      "damage_type": "acid",
+      "armour": "half",
+      "text": "Elemental (acid): armour counts half.",
+      "stages": {
+        "1": {
+          "text": "Corroded (Body save).",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "corroded",
+              "save": true
+            }
+          ]
+        },
+        "2": {
+          "text": "Corroded, no save.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "corroded",
+              "save": false
+            }
+          ]
+        },
+        "3": {
+          "text": "Corroded, no save.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "corroded",
+              "save": false
+            }
+          ]
+        },
+        "4": {
+          "text": "Corroded, no save, and Defense −2 more while it lasts.",
+          "riders": [
+            {
+              "rider": "cond",
+              "condition": "corroded",
+              "save": false,
+              "deep": true
+            }
+          ]
+        }
+      },
+      "aura_look": "acid drip",
+      "provisional": true,
+      "adjudication": "engine"
+    }
+  ],
+  "retired": [
+    {
+      "id": "rain",
+      "becomes": "burst",
+      "why": "Replaced by the Burst shape (radius 1; Rain + Size becomes Burst + Size)."
+    },
+    {
+      "id": "teleport",
+      "becomes": "ether",
+      "why": "Its sight-free half became Ether; moving an ally is the Narrator's (no engine effect)."
+    },
+    {
+      "id": "duplicate",
+      "becomes": null,
+      "why": "Retired: the shapes (Burst, Wave, Lance) and Storm's chains cover more than one target."
+    },
+    {
+      "id": "bounce",
+      "becomes": null,
+      "why": "Retired: the Storm tone chains."
+    },
+    {
+      "id": "periodic",
+      "becomes": null,
+      "why": "Retired: Fire's Burning, Acid's Corroded and the held aura carry damage over time."
+    },
+    {
+      "id": "proximity",
+      "becomes": null,
+      "why": "Retired: Heart Overwatch does it (release as a reaction when an enemy enters reach)."
+    },
+    {
+      "id": "expire",
+      "becomes": null,
+      "why": "Retired: holding is the delayed blast now."
+    },
+    {
+      "id": "mastery",
+      "becomes": null,
+      "why": "Retired: the engine never counted casts; stages do the growing."
+    }
+  ],
   "items": [
     {
       "id": "move",
@@ -76,31 +645,10 @@
       "family": "behaviour",
       "cost": 5,
       "strain_extra": 0,
-      "text": "The spell travels: range 8 tiles (base reach is 4 tiles + Soul range bonus).",
+      "text": "Far: reach 8 tiles instead of 4 (+ the Soul range bonus). Bolt and Burst only matter; a Wave, Lance or Aura keeps its own length.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "range_tiles": 8
-    },
-    {
-      "id": "duplicate",
-      "name": "Duplicate",
-      "family": "behaviour",
-      "cost": 20,
-      "strain_extra": 1,
-      "text": "A second copy hits a second target within 3 tiles of the first.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "extra_targets": 1
-    },
-    {
-      "id": "bounce",
-      "name": "Bounce",
-      "family": "behaviour",
-      "cost": 15,
-      "strain_extra": 0,
-      "text": "After hitting, jumps once to another target within 3 tiles at half effect.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
     {
       "id": "homing",
@@ -108,7 +656,7 @@
       "family": "behaviour",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Ignores half cover and gets +2 to hit.",
+      "text": "+2 to the release roll and ignores half cover (Bolt and Lance roll; the areas don't).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
@@ -118,43 +666,9 @@
       "family": "behaviour",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Cast AP −1 (minimum 1; AP ceiling still applies).",
+      "text": "Begin costs 1 AP instead of 2 (rules 1.5).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
-    },
-    {
-      "id": "rain",
-      "name": "Rain",
-      "family": "behaviour",
-      "cost": 25,
-      "strain_extra": 1,
-      "text": "Hits every tile in radius 2; damage x0.6.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "area": "radius_2",
-      "damage_mult": 0.6
-    },
-    {
-      "id": "teleport",
-      "name": "Teleport",
-      "family": "behaviour",
-      "cost": 30,
-      "strain_extra": 1,
-      "text": "The spell appears anywhere you can see, no line of sight needed past the first tile, or moves the target (ally) up to 4 tiles.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
-    },
-    {
-      "id": "mastery",
-      "name": "Mastery",
-      "family": "behaviour",
-      "cost": 15,
-      "strain_extra": 0,
-      "text": "Effect x1.25 for a design you have cast at least 10 times (the engine counts casts).",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "effect_mult": 1.25,
-      "requires_casts": 10
     },
     {
       "id": "ether",
@@ -162,7 +676,7 @@
       "family": "behaviour",
       "cost": 20,
       "strain_extra": 0,
-      "text": "The spell passes through walls and solid cover.",
+      "text": "The release needs no line of sight and passes walls and cover (old Teleport designs become Ether).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
@@ -172,7 +686,7 @@
       "family": "augment",
       "cost": 5,
       "strain_extra": 0,
-      "text": "Shapes the spell for the heart: Status spells use the Heart save.",
+      "text": "Status options use the Heart save.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
@@ -182,7 +696,7 @@
       "family": "augment",
       "cost": 5,
       "strain_extra": 0,
-      "text": "Shapes the spell for the brain: Status spells use the Brain save.",
+      "text": "Status options use the Brain save.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
@@ -192,7 +706,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Duration +2 rounds; damage spells deal half again next turn.",
+      "text": "Conditions the Outburst gives (its school's option, the second school's rider) last 2 rounds longer. Element riders keep their own durations.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "extra_rounds": 2
@@ -203,7 +717,7 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips the effect: damage becomes a shield of the same size on an ally; a debuff becomes its opposite (narrator rules the opposite).",
+      "text": "Flips the effect: damage becomes a shield of the same size on an ally (enemies in the area are skipped); the Narrator rules a flipped debuff.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid"
@@ -214,7 +728,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Area +1 radius, or a single-target spell becomes radius 1.",
+      "text": "A shape grows by one: Wave cone 4, Burst radius 2, Aura radius 2, Lance 6 tiles. Needs a shape (a Bolt can't take it).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "area_plus": 1
@@ -225,7 +739,7 @@
       "family": "augment",
       "cost": -10,
       "strain_extra": 0,
-      "text": "Cost −10, but the engine rolls the target among all creatures within range.",
+      "text": "Cost −10, but the engine picks the aim among every creature within reach (a Bolt or Burst lands on one of them; a Wave or Lance faces one).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "random_target": true
@@ -236,7 +750,7 @@
       "family": "trigger",
       "cost": 0,
       "strain_extra": 0,
-      "text": "Default: the effect happens when the spell lands.",
+      "text": "Default: the effect happens when the Outburst lands. No change (kept so old designs stay readable).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
     },
@@ -246,44 +760,83 @@
       "family": "trigger",
       "cost": 10,
       "strain_extra": 0,
-      "text": "The effect lands on cast with no attack roll; damage spells deal half.",
+      "text": "A Bolt or Lance lands with no roll, at half damage (area shapes never roll).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "no_roll": true,
       "damage_mult": 0.5
     },
     {
-      "id": "expire",
-      "name": "Expire",
-      "family": "trigger",
-      "cost": 5,
-      "strain_extra": 0,
-      "text": "The effect lands when the spell's duration runs out (a delayed blast).",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
-    },
-    {
-      "id": "periodic",
-      "name": "Periodic",
-      "family": "trigger",
+      "id": "wave",
+      "name": "Wave",
+      "family": "form",
+      "form": true,
       "cost": 15,
       "strain_extra": 0,
-      "text": "The effect repeats at the start of each of the target's turns for 2 rounds, at half strength.",
+      "area": {
+        "shape": "cone",
+        "length": 3,
+        "from": "caster"
+      },
+      "damage_mult": 0.7,
+      "text": "Shape: a 3-tile cone from you toward the aim (Size: 4). Everyone in it, no roll; damage ×0.7.",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "repeats_rounds": 2,
-      "strength_mult": 0.5
+      "look": "a violet crescent rolling off your chest",
+      "adjudication": "engine"
     },
     {
-      "id": "proximity",
-      "name": "Proximity",
-      "family": "trigger",
-      "cost": 10,
+      "id": "burst",
+      "name": "Burst",
+      "family": "form",
+      "form": true,
+      "cost": 20,
       "strain_extra": 0,
-      "text": "Placed on a tile; fires on the first enemy to enter within 1 tile, up to 3 rounds.",
+      "area": {
+        "shape": "radius",
+        "radius": 1,
+        "at": "aim"
+      },
+      "damage_mult": 0.7,
+      "text": "Shape: radius 1 around the aimed tile (Size: radius 2). Everyone in it, no roll; damage ×0.7. Old Rain designs become Burst.",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "lasts_rounds": 3
+      "look": "a heart-shaped bloom opening at the aim",
+      "adjudication": "engine"
+    },
+    {
+      "id": "aura",
+      "name": "Aura",
+      "family": "form",
+      "form": true,
+      "cost": 15,
+      "strain_extra": 0,
+      "area": {
+        "shape": "radius",
+        "radius": 1,
+        "at": "caster"
+      },
+      "damage_mult": 0.6,
+      "text": "Shape: radius 1 around you, all at once (Size: radius 2); no aim. You are spared unless it's a Buff. Damage ×0.6.",
+      "provisional": true,
+      "look": "a ring of violet heat breaking off you",
+      "adjudication": "engine"
+    },
+    {
+      "id": "lance",
+      "name": "Lance",
+      "family": "form",
+      "form": true,
+      "cost": 15,
+      "strain_extra": 0,
+      "area": {
+        "shape": "line",
+        "length": 4,
+        "from": "caster"
+      },
+      "damage_mult": 0.8,
+      "text": "Shape: a straight 4-tile line from you toward the aim (8 directions), piercing everyone on it (Size: 6); walls stop it. Each target rolls; damage ×0.8.",
+      "provisional": true,
+      "look": "a narrow violet spear of light",
+      "adjudication": "engine"
     }
   ]
 }

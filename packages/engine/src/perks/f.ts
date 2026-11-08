@@ -13,6 +13,7 @@ import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitDebuff } from '../magic';
 import { d20 } from '../rng';
+import { tendHook } from '../effects/damage';
 import { WEAPON } from '../data';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
@@ -430,7 +431,7 @@ register({
       const cb = h.cb!, u = h.u!, list = agentsHere(h), agent = a.choice && list.includes(a.choice) ? a.choice : list[0];
       if (!agent) return 'No identified agent here.';
       const allies = cb.units.filter((v) => v.side === u.side && !v.dead && dist(v.pos, u.pos) <= 2);
-      for (const v of allies) { if (agent === 'toxic') (v.hazardImmune ||= []).includes('toxic') || v.hazardImmune!.push('toxic'); else endCond(v, agent, cb); }
+      for (const v of allies) { if (agent === 'toxic') (v.hazardImmune ||= []).includes('toxic') || v.hazardImmune!.push('toxic'); else { const had = condOn(v, agent); endCond(v, agent, cb); if (had) tendHook.f?.(cb, u, v); } } // a cleanse given: tending others (rules 1.5, 3.3)
       ((stateOf(h).neutral ||= []) as any[]).push({ agent, ids: allies.map((v) => v.id) });
       say(cb, u.name + ' neutralises ' + agent + ' (Lab Coat) for ' + allies.map((v) => v.name).join(', ') + '.');
     },

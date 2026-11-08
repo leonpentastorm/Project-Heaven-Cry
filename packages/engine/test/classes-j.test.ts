@@ -399,11 +399,11 @@ describe('Storm Hand', () => {
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: f.foe.id, mode: 'melee' } as any);
     expect(logHas(f.cb, /Infusion: SHOCK \(5 MP\) · 10 damage/)).toBe(true); expect(f.pc.mg!.mp).toBe(15);
   });
-  it('Charged by Death: a kill gives 1 Charge (max 3)', () => {
+  it('Charged by Battle (rules 1.5): each melee hit gives 1 Charge (max 3), not a kill', () => {
     const f = fightWith([cls('storm_hand', { weapon: 'sabre' })], [{ at: 'O10' }, { at: 'O2' }]);
-    const pc = f.turn(at(f.pc, '2,5')); const foe = at(f.foes[0], '3,5'); foe.hp = 1; foe.def = 0; foe.armour = 0; seed(f, 10);
-    f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'melee' } as any);
-    expect(f.pc.res!.charges).toBe(1);
+    const pc = f.turn(at(f.pc, '2,5')); const foe = tough(at(f.foes[0], '3,5')); seed(f, 10);
+    for (let i = 0; i < 4; i++) { f.unit(pc.id).ap = 9; f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'melee' } as any); }
+    expect(f.pc.res!.charges).toBe(3);
   });
   it('Discharge: on a melee hit, spend every Charge: 20 per Charge to each enemy next to the target', () => {
     const f = fightWith([cls('storm_hand', { weapon: 'sabre' })], [{ at: 'O10' }, { at: 'O2' }]);

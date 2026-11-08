@@ -423,6 +423,45 @@ for o in items("objects"):
     if "electronic" in o and not isinstance(o["electronic"], bool):
         errors.append(f"objects:{o.get('id')}: electronic must be true or false")
 
+# Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
+soul = data.get("soul_modules", {})
+if soul:
+    mod_ids = ids_of(items("soul_modules"))
+    el_ids = set((data.get("sigils", {}).get("elements") or {}).keys())
+    cond_ids = known["condition"]
+    RIDERS = {"cond", "spread", "ground", "ground_around", "ignore_cover", "chain", "armour_full", "bonus_damage", "push", "push_around"}
+    obj_ids = ids_of(items("objects"))
+    sm = (soul.get("cycle") or {}).get("stage_mult")
+    if not (isinstance(sm, list) and len(sm) == 5 and all(isinstance(x, (int, float)) for x in sm)):
+        errors.append("soul_modules: cycle.stage_mult must list 5 numbers (stages 0-4)")
+    tones = soul.get("tones") or []
+    if "raw" not in {t.get("id") for t in tones}:
+        errors.append("soul_modules: tones must include raw")
+    for t in tones:
+        tid = t.get("id")
+        if t.get("element") is not None and t["element"] not in el_ids:
+            errors.append(f"soul_modules: tone {tid} element '{t['element']}' is not in sigils.json elements")
+        if t.get("element"):
+            for st in ("1", "2", "3", "4"):
+                if st not in (t.get("stages") or {}):
+                    errors.append(f"soul_modules: tone {tid} has no stage {st}")
+        for st, v in (t.get("stages") or {}).items():
+            for r in v.get("riders", []):
+                if r.get("rider") not in RIDERS:
+                    errors.append(f"soul_modules: tone {tid} stage {st}: unknown rider '{r.get('rider')}'")
+                if r.get("condition") and cond_ids and r["condition"] not in cond_ids:
+                    errors.append(f"soul_modules: tone {tid} stage {st}: unknown condition '{r['condition']}'")
+                if r.get("object") and r["object"] not in obj_ids:
+                    errors.append(f"soul_modules: tone {tid} stage {st}: unknown object '{r['object']}'")
+    for m in items("soul_modules"):
+        if m.get("form") and not (m.get("area") or {}).get("shape") in ("cone", "radius", "line"):
+            errors.append(f"soul_modules: form {m.get('id')} needs area.shape cone, radius or line")
+    for r in soul.get("retired") or []:
+        if r.get("id") in mod_ids:
+            errors.append(f"soul_modules: retired module {r['id']} is still in items")
+        if r.get("becomes") and r["becomes"] not in mod_ids:
+            errors.append(f"soul_modules: retired {r.get('id')} becomes unknown module {r['becomes']}")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

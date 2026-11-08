@@ -5,10 +5,14 @@
 //   Brain Power · Twin Draw (M2, 5 points)      item 483
 //   Rumination · Proven Formula (M2, 5 points)  item 484
 //   Visualization · Paint the Field (M2, 5)     item 450, 485
+// and the two Soul ones (rules 1.5):
+//   Will Power · Overdraw (M1, 3 points)        item 539
+//   Will Power · Pure Heart (M2, 5 points)      item 540
 // Every number here is PROVISIONAL (spec section 14).
-import { register, stateOf, type Holder, type ActionDef } from '../effects';
-import { type Combat, type Unit, dist } from '../combat';
-import { compileSpell, MAX_GLYPHS, type Spell } from '../magic';
+import { register, stateOf, uses, modOn, emit, boundGame, type Holder, type ActionDef } from '../effects';
+import { type Combat, type Unit, dist, emitFx } from '../combat';
+import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, type Spell } from '../magic';
+import type { Rng } from '../rng';
 
 const say = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
 const mine = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
@@ -128,6 +132,51 @@ register({
       const out: any = compileSpell([...sp.words, w]); out.repeats = sp.repeats; out.repMult = sp.repMult; out.painted = w; ctx.spell = out;
     },
     evoked: (ctx, h) => { if (mine(h, ctx.u) && (ctx.spell as any)?.painted) say(h.cb, '(Paint the Field: a free ' + W((ctx.spell as any).painted) + '.)'); },
+  },
+  brief: () => null,
+});
+
+// ---------- Will Power · Overdraw (Mastery 1; rules 1.5, item 539) ----------
+// 1.2's "a Soul spell at +50% damage, then a Mana Short check" named a roll 1.5 removed. Re-derived: once a fight, a
+// toggle on a Pump ("Overdraw"): that Pump adds 2 stages, not 1 (to stage 4 at most, so it needs stage 2 or lower),
+// for its own AP, and the heart pays: +1 Strain once the Pump is done (it can burn and short like any Strain).
+register({
+  id: 'skill:will_power.3', kind: 'skill', claims: 'all',
+  toggles: [{ id: 'overdraw', label: 'Overdraw (+2 stages, +1 Strain, once a fight)', on: ['combat/pump'],
+    available: (h) => { const m = h.u?.mg; if (!m?.held) return false; if (m.held.stage > MAX_STAGE - 2) return 'Stage ' + (MAX_STAGE - 2) + ' or lower.'; return uses(h).left('per_combat', 1) > 0 ? true : 'Once a fight.'; },
+    preview: () => 'This Pump adds 2 stages; +1 Strain after it.' }],
+  on: {
+    outburst_pump: (ctx, h) => {
+      const m = h.u?.mg; if (!mine(h, ctx.u) || ctx.preview || !m?.held || !modOn(h, 'overdraw') || m.held.stage > MAX_STAGE - 1) return;
+      if (!uses(h).take('per_combat', 1)) return;
+      m.held.stage = Math.min(MAX_STAGE, m.held.stage + 1); stateOf(h).owed = 1;
+      emitFx(h.cb!, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: m.held.stage, mult: stageMult(m.held.stage), free: true, max: m.held.stage >= MAX_STAGE, tone: m.held.tone || 'raw', overdraw: true });
+      say(h.cb, h.u!.name + ' overdraws the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');
+    },
+    action_done: (ctx, h) => {
+      const st = stateOf(h), u = h.u; if (!mine(h, ctx.u) || !u || !st.owed || !h.cb) return; const n = st.owed; st.owed = 0;
+      say(h.cb, 'Overdraw: the heart pays (+' + n + ' Strain)' + addStrain(h.cb, (ctx.rng || boundGame()?.rng || { state: 1 }) as Rng, u, n, 'Overdraw') + '.');
+    },
+  },
+  brief: () => null,
+});
+
+// ---------- Will Power · Pure Heart (Mastery 2; rules 1.5, item 540) ----------
+// 1.2's "ignore your first failed Mana Short check in each combat" re-derived for a Short that has no roll: once a
+// fight, the first Strain that would short you (3 over your limit) is refused instead: your Strain falls to your limit,
+// with no Stun, no wild release and no backlash. Automatic.
+register({
+  id: 'skill:will_power.5', kind: 'skill', claims: 'all', priority: 950,
+  on: {
+    strain: (ctx, h) => {
+      const m = h.u?.mg; if (!mine(h, ctx.u) || !m || ctx.n <= 0 || !h.cb) return;
+      const limit = ctx.limit ?? m.strainLimit; if (m.strain + ctx.n - limit < SHORT_AT_OVER || uses(h).left('per_combat', 1) <= 0) return;
+      uses(h).take('per_combat', 1); ctx.n = 0;
+      const was = m.strain; m.strain = Math.min(m.strain, limit);
+      if (was !== m.strain) emit(h.cb, 'strain_change', { u: h.u, from: was, to: m.strain, why: 'pure_heart', limit, cb: h.cb });
+      emitFx(h.cb, 'calm', { unit: h.u!.id, at: h.u!.pos, way: 'pure_heart', by: was - m.strain, strain: m.strain });
+      say(h.cb, h.u!.name + '\'s heart holds pure: no Mana Short (Pure Heart); Strain ' + m.strain + '/' + limit + '.');
+    },
   },
   brief: () => null,
 });

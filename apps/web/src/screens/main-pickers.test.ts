@@ -50,7 +50,7 @@ describe('the Perks strip opens an action\'s own panel', () => {
     const { c, L } = story();
     const ch = G.characters[c.id] as any;
     ch.classId = 'medic'; ch.advancedClass = 'twinbound'; ch.skills.will_power = 3;
-    ch.soulKnown = { schools: ['damage', 'buff', 'control'], modules: ['homing', 'rain', 'swift'] };
+    ch.soulKnown = { schools: ['damage', 'buff', 'control'], modules: ['homing', 'burst', 'swift'] };
     const sp = () => L.renderVals().storyPerks.find((p: any) => /Manifest the twin/.test(p.label));
     expect(sp()).toBeTruthy(); sp().pick(); await tick();
     let P = L.renderVals().stripPick;
@@ -58,12 +58,14 @@ describe('the Perks strip opens an action\'s own panel', () => {
     let slots = P.fields[0].slots; expect(slots).toHaveLength(3);
     expect(slots[0].schools.map((o: any) => o.label)).toEqual(['Damage', 'Buff', 'Control']);
     expect(P.cantConfirm).toBe(true); expect(P.verdict).toMatch(/Pick a school for Outburst 1/);
-    // Slot 1: Damage + Homing + Rain (2 slots at Will Power 3: a third is locked).
+    // Slot 1: Damage + Homing + Burst (2 slots at Will Power 3: a third is locked).
     slots[0].schools[0].pick(); await tick();
     L.renderVals().stripPick.fields[0].slots[0].modules.find((m: any) => /Homing/.test(m.label)).pick(); await tick();
-    L.renderVals().stripPick.fields[0].slots[0].modules.find((m: any) => /Rain/.test(m.label)).pick(); await tick();
+    expect(L.renderVals().stripPick.fields[0].slots[0].modules.some((m: any) => /Burst/.test(m.label))).toBe(false); // a shape, not a module
+    L.renderVals().stripPick.fields[0].slots[0].shapes.find((m: any) => /Burst/.test(m.label)).pick(); await tick();
     slots = L.renderVals().stripPick.fields[0].slots;
-    expect(slots[0].modsHead).toBe('MODULES · 2 / 2'); expect(slots[0].modules.find((m: any) => /Swift/.test(m.label)).locked).toBe(true);
+    expect(slots[0].modsHead).toBe('MODULES · 2 / 2 (the shape takes one)'); expect(slots[0].modules.find((m: any) => /Swift/.test(m.label)).locked).toBe(true);
+    expect(slots[0].effects).toMatch(/^At stage 1: \d+ damage/);
     // Slot 2: Buff, its option (the school's first is preset; pick +2 Defense); slot 3: Control.
     slots[1].schools[1].pick(); await tick();
     slots = L.renderVals().stripPick.fields[0].slots; expect(slots[1].options.map((o: any) => o.label)).toEqual(['+2 to hit', '+2 Defense', 'Heal 30']);
@@ -73,11 +75,43 @@ describe('the Perks strip opens an action\'s own panel', () => {
     expect(P.cantConfirm).toBe(false); expect(P.verdict).toMatch(/^The twin: /);
     P.confirm(); await tick();
     const tw = (G.characters[c.id] as any).state.twin;
-    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'rain'], ''], ['buff', [], 'defense'], ['control', [], 'push']]);
+    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'burst'], ''], ['buff', [], 'defense'], ['control', [], 'push']]);
     expect(G.story.entries.some((e: any) => /twin leans through for the first time/.test(e.text))).toBe(true);
     expect(sp().off).toBe(true);
   });
 
+  it('the Beloved design (rules 1.5): a tone row, the second school on the same side with its own option, one shape, Size locked until a shape, both effects with numbers', async () => {
+    const { c, L } = story();
+    const ch = G.characters[c.id] as any;
+    ch.advancedClass = 'devoted'; ch.level = 5; ch.skills.will_power = 6; ch.skills.empathy = 8; ch.skills.visualization = 1; ch.outbursts = [];
+    ch.soulKnown = { schools: ['damage', 'buff', 'control'], modules: ['wave', 'lance', 'size', 'inverse'], tones: ['frost'] };
+    const sp = () => L.renderVals().storyPerks.find((p: any) => /Design a Beloved/.test(p.label));
+    expect(sp()).toBeTruthy(); sp().pick(); await tick();
+    const slot = () => L.renderVals().stripPick.fields[0].slots[0];
+    slot().schools.find((o: any) => o.label === 'Damage').pick(); await tick();
+    // Same side: Damage pairs with Control (both on foes), not Buff.
+    expect(slot().schools2.map((o: any) => o.label)).toEqual(['+ Control']);
+    slot().schools2[0].pick(); await tick();
+    expect(slot().hasOptions2).toBe(true); expect(slot().options2.map((o: any) => o.label)).toEqual(['Push 3 tiles', 'Pull 3 tiles', 'Pinned', 'Slowed']);
+    slot().options2.find((o: any) => o.label === 'Pull 3 tiles').pick(); await tick();
+    // Tones: Raw, the known Frost; the others locked (Frost is known, so no free first tone).
+    expect(slot().tones.find((t: any) => t.key === 'frost').locked).toBe(false); expect(slot().tones.find((t: any) => t.key === 'fire').locked).toBe(true);
+    slot().tones.find((t: any) => t.key === 'frost').pick(); await tick();
+    // Size needs a shape; shapes are one at a time.
+    expect(slot().modules.find((m: any) => m.key === 'size').locked).toBe(true);
+    slot().shapes.find((o: any) => o.key === 'wave').pick(); await tick();
+    expect(slot().modules.find((m: any) => m.key === 'size').locked).toBe(false);
+    slot().shapes.find((o: any) => o.key === 'lance').pick(); await tick();
+    expect(slot().shapes.filter((o: any) => o.pressed === 'true').map((o: any) => o.key)).toEqual(['lance']);
+    slot().modules.find((m: any) => m.key === 'size').pick(); await tick();
+    expect(slot().effects).toMatch(/At stage 1: \d+ damage .*; then Pull 3 tiles \(half\)/); expect(slot().rider).toMatch(/^Frost/);
+    // Inverse turns the first school to the ally side: the hostile second school drops.
+    slot().modules.find((m: any) => m.key === 'inverse').pick(); await tick();
+    expect(slot().schools2.map((o: any) => o.label)).toEqual(['+ Buff']); expect(slot().hasOptions2).toBe(false);
+    slot().modules.find((m: any) => m.key === 'inverse').pick(); await tick(); slot().schools2[0].pick(); await tick();
+    const P = L.renderVals().stripPick; expect(P.cantConfirm).toBe(false); P.confirm(); await tick();
+    expect((G.characters[c.id] as any).outbursts.at(-1)).toMatchObject({ school: 'damage', school2: 'control', option2: 'push', tone: 'frost', modules: ['lance', 'size'] });
+  });
   it('Key a design to a gauge: design chips and gauge chips, sent as "designId:gauge"', async () => {
     const { c, L } = story();
     const ch = G.characters[c.id] as any;

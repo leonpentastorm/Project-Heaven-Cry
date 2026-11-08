@@ -15,7 +15,7 @@ import {
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { mod, healingMult, magazineSize } from '../character';
-import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE } from '../magic';
+import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
 import { d20, die } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
@@ -1014,7 +1014,7 @@ register({
 // ---------- Gauntlet Infusion ----------
 // Choose an element at each rest (FIRE, FREEZE, SHOCK or SPARK: PROVISIONAL audit 1; the action, once per rest, out of
 // combat). Each melee hit (weapon or unarmed) then adds +10 Elemental of it × your Elemental multiplier (half armour,
-// Pain Threshold reduces it), paying 5 MP from the Emanator (no Strain, no meter: audit 6). No riders (audit 2). Optional
+// Pain Threshold reduces it), paying 5 MP from the Emanator (no Strain, no meter: audit 6). Rules 1.5: the element's stage-1 rider rides each hit (below). Optional
 // per hit: the toggle "Infusion" on Attack (on by default, audit 5). No Emanator or under 5 MP: nothing.
 const INFUSE = ['fire', 'freeze', 'shock', 'spark'];
 const DMG_T: Record<string, string> = { fire: 'fire', freeze: 'frost', shock: 'lightning', spark: 'lightning' };
@@ -1032,22 +1032,34 @@ register({
     preview: (h) => '+10 ' + String(infusionOf(h)).toUpperCase() + ' for 5 MP.' }],
   on: {
     on_hit: (ctx, h) => {
-      const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || ctx.tgt.dead || !modOn(h, 'infusion')) return;
+      const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || !modOn(h, 'infusion')) return;
       if (!u.mg?.emanator || (u.mg.mp || 0) < 5) return;
+      // A hit that killed on its own: only Spark still has work (its +1 AP on a kill, 5 MP: PROVISIONAL).
+      if (ctx.tgt.dead) { if (el === 'spark' && u.ap < 9) { u.mg.mp -= 5; u.ap = Math.min(9, u.ap + 1); emitFx(h.cb!, 'infusion', { unit: u.id, target: ctx.tgt.id, at: ctx.tgt.pos, element: el }); say(h.cb, 'Infusion: SPARK (5 MP) · +1 AP (Spark).'); } return; }
       u.mg.mp -= 5;
-      say(h.cb, 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + harm(h.cb!, rngOf(h, ctx) as any, u, ctx.tgt, 10 * (u.mg.elemMult || 1), 'elemental', DMG_T[el]) + '.');
+      // Rules 1.5: the element's stage-1 rider rides the hit (PROVISIONAL): Fire Burning 1 round on a critical, else +5;
+      // Shock chains to one enemy next to the target for half; Freeze Slowed (Body save); Spark +1 AP on a kill.
+      const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? 5 : 0;
+      let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (10 + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
+      emitFx(cb, 'infusion', { unit: u.id, target: t.id, at: t.pos, element: el });
+      if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true }));
+      if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined));
+      if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, 5 * (u.mg!.elemMult || 1), 'elemental', DMG_T[el])); } }
+      if (el === 'spark' && (t.dead || ctx.killed) && u.ap < 9) { u.ap = Math.min(9, u.ap + 1); line += ' · +1 AP (Spark)'; }
+      say(cb, line + '.');
     },
   },
   brief: () => 'the infused element\'s story uses (a SHOCK fist on a lock) are yours to rule',
 });
 
-// ---------- Charged by Death ----------
-// Each kill credited to you (any weapon or magic; a bleed or burn you opened counts) gives 1 Charge, at most 3, gone
-// after the fight. One pool with the Emanator gauntlet's own charges (the 'charges' resource).
+// ---------- Charged by Battle (rules 1.5; Leon: "need to be ATTACK") ----------
+// Each melee hit you land gives 1 Charge, at most 3, gone after the fight. One pool with the Emanator gauntlet's own
+// charges (the 'charges' resource). A hit that Discharges spends first, then charges (priority below Discharge's).
 register({
-  id: 'storm_hand.charged_by_death', claims: 'all',
+  id: 'storm_hand.charged_by_battle', claims: 'all',
+  priority: -10,
   on: {
-    on_kill: (ctx, h) => { const u = h.u; if (ctx.by !== u || !u || ctx.victim.side === u.side) return; if (resGain(u, 'charges', 1)) say(h.cb, u.name + ' drinks the death: Charge ' + resOf(u, 'charges') + '/3.'); },
+    on_hit: (ctx, h) => { const u = h.u; if (ctx.att !== u || !u || !(ctx.melee || isMelee(W(u))) || ctx.tgt.side === u.side) return; if (resGain(u, 'charges', 1)) { say(h.cb, u.name + "'s gauntlet hums: Charge " + resOf(u, 'charges') + '/3.'); emitFx(h.cb!, 'charge', { unit: u.id, at: u.pos, charges: resOf(u, 'charges') }); } },
   },
   brief: () => null,
 });
@@ -1065,10 +1077,15 @@ register({
     attack_roll: (ctx, h) => { const u = h.u; if (ctx.att === u && u && (ctx.mode === 'melee' || isMelee(W(u))) && modOn(h, 'discharge')) stateOf(h).dn = resOf(u, 'charges'); },
     on_hit: (ctx, h) => {
       const u = h.u, st = u ? stateOf(h) : null; if (ctx.att !== u || !u || !st?.dn) return;
-      const n = st.dn; st.dn = 0; u.res!.charges = Math.max(0, resOf(u, 'charges') - n);
+      const n = st.dn; st.dn = 0; u.res!.charges = 0; // spends them all (the hit's own Charge too: Charged by Battle runs first)
       const cb = h.cb!, rng = rngOf(h, ctx), at = ctx.tgt.pos; let line = u.name + ' discharges ' + n + ' Charge';
-      emitFx(cb, 'explode', { at, radius: 1, what: 'discharge' });
-      for (const v of [...cb.units]) if (v !== ctx.tgt && v !== u && v.side !== u.side && alive(v) && adj(v.pos, at)) line += harm(cb, rng as any, u, v, 20 * n * (u.mg?.elemMult || 1), 'elemental', 'lightning');
+      // Rules 1.5: the infused element's stage-N rider (N = Charges) rides it, from the Outburst tone table; screen shake.
+      const el = infusionOf(h), tone = ({ fire: 'fire', shock: 'storm', freeze: 'frost' } as Record<string, string>)[el || ''] || 'raw';
+      emitFx(cb, 'explode', { at, radius: 1, what: 'discharge', element: el || null, charges: n, shake: true });
+      for (const v of [...cb.units]) if (v !== ctx.tgt && v !== u && v.side !== u.side && alive(v) && adj(v.pos, at)) {
+        line += withElement(el || null, () => harm(cb, rng as any, u, v, 20 * n * (u.mg?.elemMult || 1), 'elemental', DMG_T[el || 'shock'] || 'lightning'));
+        if (tone !== 'raw' && !v.dead) line += withElement(el || null, () => applyToneRiders(cb, rng as any, u, v, tone, Math.min(4, n), at, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']));
+      }
       say(cb, line + '.');
     },
     on_miss: (ctx, h) => { if (ctx.att === h.u && h.u) stateOf(h).dn = 0; },

@@ -16,14 +16,16 @@ import {
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, debuffStrength,
-  classResources,
+  classResources, migrateDesign,
 } from '../character';
-import { WEAPON, SIGIL, SCHOOL } from '../data';
+import { WEAPON, SIGIL, SCHOOL, SOUL_REV } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
+import { soulStrike, designRolls } from './soul';
 import { d20, die, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal } from '../tactics';
 import { itemWords, wordCostMods } from '../effects/core';
@@ -114,21 +116,11 @@ function soulPay(h: Holder, rng: Rng, p: { mp: number; strain: number }): string
   shiftMana(cb, -Math.ceil(p.mp / 10));
   return strainUp(cb, rng, u, p.strain);
 }
+// Rules 1.5: the engine's addStrain (the 'strain' hook, the automatic Mana Short at 3 over, no roll).
 function strainUp(cb: Combat, rng: Rng, u: Unit, n: number): string {
   const m = u.mg; if (!m || n <= 0) return '';
-  const sc: any = emit(cb, 'strain', { u, n, why: 'class cast', limit: m.strainLimit, cb }); n = Math.max(0, sc.n); if (!n) return ''; // the engine's Strain hook (hooks gap I8)
-  m.strain += n; if (m.strain <= (sc.limit ?? m.strainLimit)) return ' · Strain ' + m.strain + '/' + m.strainLimit;
-  const over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
-  emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
-  if (r === 1) { applyDamage(cb, u, u.hp, { type: 'short', shield: false, credit: 'none' }); if (u.hp === 0) fxFell(cb, u); m.held = null; return ' · MANA SHORT: the heart bursts (d20 1 vs ' + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed'); }
-  if (r !== 20 && tot < tn) {
-    const d = applyDamage(cb, u, 15 * m.strain, { type: 'short', shield: true, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
-    let out = ' · MANA SHORT (d20 ' + r + ' → ' + tot + ' vs ' + tn + '): ' + d.amount + ' damage, Stunned';
-    if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true });
-    if (m.held) { m.held = null; out += ', the held Outburst bursts into the air'; }
-    return out;
-  }
-  return ' · ' + u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')';
+  const out = addStrain(cb, rng, u, n, 'class cast');
+  return out || ' · Strain ' + m.strain + '/' + m.strainLimit;
 }
 const soulAim = (h: Holder, tile: string, range: number): string | null => {
   const u = h.u!, cb = h.cb!;
@@ -1192,67 +1184,102 @@ function markRelease(h: Holder, ctx: any, what: 'surge' | 'status' | 'mend') {
   rel[what] = true; void ctx;
 }
 
-// ---------- Shape (rank I, passive) ----------
-// The first Damage-school Outburst you Begin each turn adds no cast Strain: the base 1 (2 in Flooded air) comes off,
-// never the +2 for casting without an Emanator, and never the Strain of holding (PROVISIONAL). A design counts when
-// either school is Damage.
+// ---------- Shape (rank I, passive; rules 1.5) ----------
+// Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (either school).
+// Empathy's free Pumps go first; Shape takes the first Pump that still costs AP (item 522, PROVISIONAL). It runs last
+// among the Pump's price changes, so a Pump something else already made free doesn't spend it.
 register({
-  id: 'channeler.shape', claims: 'all',
+  id: 'channeler.shape', claims: 'all', priority: 900,
   on: {
-    outburst_cost: (ctx, h) => { if (ctx.u !== h.u || ctx.classMove || !isDamageDesign(ctx.design) || !h.cb) return; if (uses(h).left('per_turn', 1, h.key + '#shape') <= 0) return; ctx.strain = Math.max(0, ctx.strain - baseStrain(h.cb)); },
-    outburst_begin: (ctx, h) => { if (ctx.u === h.u && isDamageDesign(ctx.design) && uses(h).take('per_turn', 1, h.key + '#shape')) say(h.cb, 'Shape: the first Damage cast this turn adds no Strain.'); },
-  },
-  brief: () => null,
-});
-
-// ---------- Storm Front (rank II, once a turn; a toggle on Begin) ----------
-// +10 MP (flat, after the air and your saving, PROVISIONAL), paid at Begin: when the Damage Outburst releases it also
-// hits up to 2 more enemies within 2 tiles of the first target's tile (nearest first; one roll each). Single-target
-// designs only: not with Rain, Size or At Once (PROVISIONAL). Enemies only.
-const stormable = (d: any) => isDamageDesign(d) && !(d.modules || []).some((m: string) => ['rain', 'size', 'at_once'].includes(m));
-register({
-  id: 'channeler.storm_front', claims: 'all',
-  toggles: [{ id: 'storm', label: 'Storm Front (+10 MP, 2 more targets)', on: ['combat/outburst'],
-    available: (h) => (uses(h).left('per_turn', 1, h.key + '#storm') > 0 ? true : 'Once a turn.'),
-    preview: () => 'Up to 2 more enemies within 2 tiles of the first, one roll each.' }],
-  priority: 120,
-  on: {
-    outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'storm') && stormable(ctx.design)) ctx.mp += 10; },
-    outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'storm') && stormable(ctx.design) && uses(h).take('per_turn', 1, h.key + '#storm')) stateOf(h).storm = ctx.design.id; },
-    outburst_release: (ctx, h) => {
-      const st = stateOf(h), u = h.u!, cb = h.cb!; if (ctx.u !== u || st.storm !== ctx.design.id) return; st.storm = null;
-      const m = u.mg!, first = cb.units.find((v) => !v.dead && v.pos === ctx.aim), from = ctx.aim;
-      const more = cb.units.filter((v) => v !== first && v !== u && !v.dead && !v.surrendered && v.side !== u.side && dist(v.pos, from) <= 2).sort((a, b) => dist(a.pos, from) - dist(b.pos, from) || a.id.localeCompare(b.id)).slice(0, 2);
-      if (!more.length) { say(cb, 'Storm Front: nobody else within 2 tiles.'); return; }
-      const sm = stageMult(ctx.stage) * (ctx.mult || 1), rng = rngOf(h, ctx), lines: string[] = [];
-      for (const t of more) {
-        const r = d20(rng), cover = coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + condHit(u, t, cb) - cover;
-        if (r === 1 || (r !== 20 && tot < t.def)) { lines.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); continue; }
-        lines.push('hits ' + t.name + ' (d20 ' + r + (r === 20 ? ', CRITICAL' : '') + ')' + harm(cb, rng, u, t, (SCHOOL.damage?.damage || 25) * m.soulMult * sm * (r === 20 ? 2 : 1), 'soul'));
-      }
-      cb.log.push('Storm Front arcs on: ' + lines.join(' · ') + '.');
-      if (rel && rel.cb === cb && rel.u === u) rel.at = cb.log.length;
+    outburst_pump: (ctx, h) => {
+      if (ctx.u !== h.u || !isDamageDesign(ctx.design) || !h.cb) return; const st = stateOf(h);
+      if (ctx.preview) { st.shape = ctx.ap > 0 && uses(h).left('per_turn', 1, h.key + '#shape') > 0; if (st.shape) ctx.ap = 0; return; }
+      if (st.shape && ctx.ap === 0 && uses(h).take('per_turn', 1, h.key + '#shape')) say(h.cb, 'Shape: the first Pump this turn costs no AP.');
+      st.shape = false;
     },
   },
   brief: () => null,
 });
 
-// ---------- Heart Surge (rank III; a toggle on Begin; once a turn, GAMEBREAKING at will, PROVISIONAL) ----------
-// Double effect (damage, healing and shields ×2 at release; conditions last twice as long), for double the cast
-// Strain: +1 base (2 in Flooded air) on top, after Shape takes its base off (so with Shape the net is the base, not 0:
-// the GAMEBREAKING combo, PROVISIONAL). The MP isn't doubled; holding Strain isn't doubled. Push and pull distances
-// are doubled too (forced_move's tiles, read back by magicShove).
+// ---------- Storm Front (rank II, once a turn; a toggle on Begin; rules 1.5) ----------
+// +10 MP (flat, after the air and your saving), paid at Begin: when the Damage Outburst releases as a Bolt or a Lance,
+// once it has landed ('outburst_after'), the storm arcs on to up to 2 more enemies within 2 tiles of the first creature
+// it hit (else the first in its area, else the aim),
+// nearest first, outside the release's own area: each takes the design's Damage at the release's stage multiplier, one
+// roll each where the design rolls (At Once: no roll, half), with its tone's rider at the release's rider stage. The
+// area shapes (Wave, Burst, Aura) already reach a crowd: they can't take it (item 523, PROVISIONAL). Enemies only.
+const stormable = (d: any) => isDamageDesign(d) && ['bolt', 'lance'].includes(formOf(migrateDesign(d)));
+register({
+  id: 'channeler.storm_front', claims: 'all',
+  toggles: [{ id: 'storm', label: 'Storm Front (+10 MP, arcs to 2 more)', on: ['combat/outburst'],
+    available: (h) => (uses(h).left('per_turn', 1, h.key + '#storm') > 0 ? true : 'Once a turn.'),
+    preview: () => 'A Bolt or Lance arcs on to up to 2 more enemies within 2 tiles of the first, one roll each, at the stage reached.' }],
+  priority: 120,
+  on: {
+    outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'storm') && stormable(ctx.design)) ctx.mp += 10; },
+    outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'storm') && stormable(ctx.design) && uses(h).take('per_turn', 1, h.key + '#storm')) stateOf(h).storm = ctx.design.id; },
+    // The preview (rules 1.5 section 7: everyone affected): the arcs it would take, from the first creature in the area
+    // (the one it would hit first), with their expected numbers and rolls. A snap cast reads the toggle; a held release
+    // the Storm Front paid at Begin.
+    outburst_plan: (ctx, h) => {
+      const u = h.u!, cb = h.cb!; if (ctx.u !== u || !stormable(ctx.design)) return;
+      const held = u.mg?.held?.design === ctx.design.id && stateOf(h).storm === ctx.design.id;
+      if (!held && !(modOn(h, 'storm') && uses(h).left('per_turn', 1, h.key + '#storm') > 0)) return;
+      const d = migrateDesign(ctx.design), inArea = new Set<string>(ctx.area || []);
+      const first: Unit | null = (ctx.targets || []).find((v: Unit) => v !== u) || null, from = first ? first.pos : ctx.aim;
+      if (!from) return;
+      const more = cb.units.filter((v) => v !== first && v !== u && !v.dead && !v.surrendered && v.side !== u.side && !inArea.has(v.pos) && dist(v.pos, from) <= 2).sort((a, b) => dist(a.pos, from) - dist(b.pos, from) || a.id.localeCompare(b.id)).slice(0, 2);
+      for (const t of more) ctx.add(planStrike(cb, u, d, t, ctx.mult, ctx.riderStage, { roll: designRolls(d), bonus: true, via: 'arc', note: 'Storm Front arcs' + (first ? ' from ' + first.name : '') }));
+    },
+    // After the primary hit (the 'outburst_after' hook): from the first creature the release hit (else the first in
+    // its area, else the aim), so the arcs land once the bolt has.
+    outburst_after: (ctx, h) => {
+      const st = stateOf(h), u = h.u!, cb = h.cb!; if (ctx.u !== u || st.storm !== ctx.design.id) return; st.storm = null;
+      const d = migrateDesign(ctx.design), inArea = new Set<string>(ctx.area || []);
+      const first: Unit | null = (ctx.hits || [])[0] || (ctx.targets || []).find((v: Unit) => v !== u) || null, from = first ? first.pos : ctx.aim;
+      const more = cb.units.filter((v) => v !== first && v !== u && !v.dead && !v.surrendered && v.side !== u.side && !inArea.has(v.pos) && dist(v.pos, from) <= 2).sort((a, b) => dist(a.pos, from) - dist(b.pos, from) || a.id.localeCompare(b.id)).slice(0, 2);
+      if (!more.length) { say(cb, 'Storm Front: nobody else within 2 tiles.'); return; }
+      const sm = ctx.mult ?? stageMult(ctx.stage), rs = ctx.riderStage ?? riderStage(cb, ctx.stage), rng = rngOf(h, ctx), lines: string[] = [];
+      for (const t of more) { emitFx(cb, 'chain', { unit: u.id, from, to: t.pos, target: t.id, element: toneElement(toneOf(d)), storm: true }); lines.push(soulStrike(cb, rng, u, d, t, sm, rs, designRolls(d))); }
+      cb.log.push('Storm Front arcs on: ' + lines.join(' · ') + '.');
+    },
+  },
+  brief: () => null,
+});
+
+// ---------- Heart Surge (rank III; a toggle on Release or a snap cast; once a turn; rules 1.5) ----------
+// The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too); past stage 4, and on a
+// snap cast, the multiplier reads one step higher (stage 4: ×2.6, the table's 0.4 step continued; a snap: ×1, stage 1).
+// For double the Strain: the Begin's Strain again (1, 2 in Flooded air), added once the release has landed (it can burn
+// and short like any Strain). Item 524, PROVISIONAL (1.2's ×2 for +1 Strain is gone: 1.5 already pays for holding).
+const SURGE_PAST = 2.6;
 register({
   id: 'channeler.heart_surge', claims: 'all',
-  toggles: [{ id: 'surge', label: 'Heart Surge (double effect, double Strain)', on: ['combat/outburst'],
-    available: (h) => (uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Once a turn.'), preview: (h) => (h.cb ? '+' + baseStrain(h.cb) + ' Strain; ×2 at release.' : null) }],
+  toggles: [{ id: 'surge', label: 'Heart Surge (+1 stage at release, double Strain)', on: ['combat/release', 'combat/outburst'],
+    available: (h) => (uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Once a turn.'), preview: (h) => (h.cb ? '+1 stage at release (past 4: ×' + SURGE_PAST + '); +' + baseStrain(h.cb) + ' Strain after it lands.' : null) }],
   priority: 60,
   on: {
-    outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'surge') && h.cb) ctx.strain += baseStrain(h.cb); },
-    outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'surge') && uses(h).take('per_turn', 1, h.key + '#surge')) { stateOf(h).surge = ctx.design.id; say(h.cb, h.u!.name + '\'s heart surges.'); } },
-    outburst_release: (ctx, h) => { const st = stateOf(h); if (ctx.u !== h.u || st.surge !== ctx.design.id) return; st.surge = null; ctx.mult = (ctx.mult || 1) * 2; markRelease(h, ctx, 'surge'); },
-    cond_apply: (ctx, h) => { if (ctx.by === h.u && releasing(h, 'surge')) ctx.rounds = (ctx.rounds || 1) * 2; },
-    forced_move: (ctx, h) => { if (ctx.by === h.u && ctx.how === 'magic' && releasing(h, 'surge') && !ctx.cancel) ctx.tiles = ctx.tiles * 2; },
+    // A held release: the stage itself rises (the release_cost of the real release, not a preview).
+    // The preview (rules 1.5: the same standard as Sigil's) shows the surged stage: ctx.surge true below stage 4, past
+    // it the multiplier; nothing is spent.
+    outburst_cost: (ctx, h) => { if (ctx.u === h.u && ctx.preview && ctx.release && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) ctx.relMult = (ctx.relMult || 1) * stageMult(1) / stageMult(0); },
+    release_cost: (ctx, h) => {
+      const m0 = h.u?.mg; if (ctx.u === h.u && ctx.preview && m0?.held && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) { ctx.surge = m0.held.stage < MAX_STAGE ? true : SURGE_PAST; return; }
+      const m = h.u?.mg; if (ctx.u !== h.u || ctx.preview || !m?.held || !modOn(h, 'surge') || !uses(h).take('per_turn', 1, h.key + '#surge')) return;
+      const st = stateOf(h); if (m.held.stage < MAX_STAGE) { m.held.stage++; st.surge = 'stage'; } else st.surge = 'past';
+      say(h.cb, h.u!.name + '\'s heart surges' + (st.surge === 'stage' ? ': stage ' + m.held.stage + '.' : ' past the full heart.'));
+    },
+    outburst_begin: (ctx, h) => { if (ctx.u === h.u && !ctx.hold && modOn(h, 'surge') && uses(h).take('per_turn', 1, h.key + '#surge')) { stateOf(h).surge = 'snap'; say(h.cb, h.u!.name + '\'s heart surges.'); } },
+    outburst_release: (ctx, h) => {
+      const st = stateOf(h); if (ctx.u !== h.u || !st.surge || ctx.wild || ctx.reaction) return;
+      if (st.surge === 'snap') ctx.mult = (ctx.mult || 1) * stageMult(Math.min(MAX_STAGE, ctx.stage + 1)) / stageMult(ctx.stage);
+      else if (st.surge === 'past') ctx.mult = (ctx.mult || 1) * SURGE_PAST / stageMult(MAX_STAGE);
+      st.surge = null; st.owed = (st.owed || 0) + baseStrain(h.cb!); markRelease(h, ctx, 'surge');
+    },
+    action_done: (ctx, h) => {
+      const st = stateOf(h), u = h.u; if (ctx.u !== u || !u || !st.owed || !h.cb) return; const n = st.owed; st.owed = 0; st.surge = null;
+      if (!u.dead) say(h.cb, 'Heart Surge: the heart pays for it (+' + n + ' Strain)' + strainUp(h.cb, rngOf(h, ctx), u, n) + '.');
+    },
   },
   brief: () => null,
 });
@@ -1297,7 +1324,8 @@ register({
       useReaction(cb, me);
       // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
       // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
-      const gain = src.type === 'soul' ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
+      // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
+      const gain = src.type === 'soul' || src.spellMp != null ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
       emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg.mp - was });
       say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg.mp - was) + ' MP (' + me.mg.mp + '/' + me.mg.mpMax + ').');
     },
@@ -1308,7 +1336,7 @@ register({
 // ---------- Sanctuary (rank III, once a scene) ----------
 // Soul cast AP, 60 MP, 1 extra Strain: a 3×3 zone centred on a tile in Soul reach you can see. Allies inside (you too)
 // take half damage until the start of your next turn; it releases at once and can't be held (PROVISIONAL). All damage
-// but your own Mana Short (PROVISIONAL). Out of combat it is the Narrator's (a safe room against a collapse).
+// but your own heart's burn (rules 1.5; PROVISIONAL). Out of combat it is the Narrator's (a safe room against a collapse).
 register({
   id: 'guardian.sanctuary', claims: 'all',
   actions: [
@@ -1335,7 +1363,8 @@ register({
   on: {
     damage_in: (ctx, h) => {
       const z: any = (h.cb?.zones || []).find((x: any) => x.id === stateOf(h).zone); if (!z || ctx.phase !== 'reduce') return;
-      const t: Unit = ctx.t; if (t.side !== z.side || !z.tiles.includes(t.pos) || (ctx.src?.type === 'short' && t === h.u)) return;
+      // Rules 1.5: your own heart's harm (the burn, src.type 'strain'; an old save's Short) isn't halved (item 525).
+      const t: Unit = ctx.t; if (t.side !== z.side || !z.tiles.includes(t.pos) || ((ctx.src?.type === 'short' || ctx.src?.type === 'strain') && t === h.u)) return;
       ctx.dmg = Math.ceil(ctx.dmg * 0.5);
     },
     turn_start: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (!st.zone || !h.cb) return; h.cb.zones = (h.cb.zones || []).filter((x) => x.id !== st.zone); st.zone = null; say(h.cb, h.u!.name + '\'s Sanctuary fades.'); },
@@ -1395,6 +1424,7 @@ register({
 // Your Buff-school heals heal 40 (not 30) × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
 // Normal ×1, Rich and Flooded ×1.25; heal() applies the air): an upgrade of every Bard Buff heal, not a separate design
 // (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
+const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;
 const isHealDesign = (d: any) => !!d && (d.school === 'buff' || d.school2 === 'buff') && (!d.option || d.option === 'heal');
 register({
   id: 'bard.mend', claims: 'all',
@@ -1407,21 +1437,25 @@ register({
 
 // ---------- Gift (rank III, once a rest) ----------
 // Out of combat, hand an ally one of your ready designs (say the ally and the design; else your first design). They
-// cast it once with their own AP (their Soul cast AP), on your MP and your Strain, from where they stand, with your
-// numbers; it releases at once (PROVISIONAL). A Gift fails if you are Downed, dead or not in the fight. Hybrid: the
+// cast it once with their own AP (rules 1.5: a snap's 3, Begin and Release), on your MP (the design's full price) and
+// your Strain (a Begin's), from where they stand, with your numbers; it releases at once at stage 1 (PROVISIONAL). A Gift fails if you are Downed, dead or not in the fight. Hybrid: the
 // Narrator rules a Gift cast in the story. In a fight the ally casts it with combat/gift {unitId, aim} (runGift).
 export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId: string, aim: string): string | null {
   const m = bard.mg; if (!m || bard.dead || bard.downed) return 'The Gift fails: its giver is down.';
-  const d = m.designs.find((x) => x.id === designId); if (!d) return 'That design is gone.';
-  const ap = Math.max(1, ally.mg?.soulAp ?? 3); if (ally.ap < ap) return 'Needs ' + ap + ' AP.';
-  if (dist(ally.pos, aim) > SOUL_REACH + (m.soulRange || 0)) return 'Out of reach.'; if (aim !== ally.pos && !lineOfSight(cb, ally.pos, aim)) return 'No line of sight.';
-  const cost = Math.max(5, Math.round((SCHOOL[d.school]?.base_cost || 20) * manaBand(manaOf(cb)).soul_cost_mult * (1 - (m.costSave || 0)))); if (m.emanator && m.mp < cost) return 'The giver has too little MP.';
-  ally.ap -= ap; if (m.emanator) m.mp -= cost;
-  // Cast from the ally's tile with the Bard's numbers: swap positions for the release, then back.
+  const d0 = m.designs.find((x) => x.id === designId); if (!d0) return 'That design is gone.';
+  const d = migrateDesign(d0), ap = GIFT_AP; if (ally.ap < ap) return 'Needs ' + ap + ' AP.';
+  if (formOf(d) !== 'aura' && formOf(d) !== 'wave' && formOf(d) !== 'lance') {
+    if (dist(ally.pos, aim) > (d.modules.includes('move') ? 8 : SOUL_REACH) + (m.soulRange || 0)) return 'Out of reach.';
+    if (aim !== ally.pos && !d.modules.includes('ether') && !lineOfSight(cb, ally.pos, aim)) return 'No line of sight.';
+  } else if (formOf(d) !== 'aura' && aim === ally.pos) return 'Pick a direction (a tile away from them).';
+  const cost = designCost(m, d, manaOf(cb)); if (m.emanator && m.mp < cost) return 'The giver has too little MP.';
+  ally.ap -= ap; if (m.emanator) m.mp -= cost; shiftMana(cb, -Math.ceil(cost / 10));
+  // Cast from the ally's tile with the Bard's numbers: swap positions for the release, then back. Rules 1.5: the Gift
+  // goes off at stage 1 (×1), not a snap's stage 0: the Bard filled it before handing it over (item 526, PROVISIONAL).
   const was = bard.pos; bard.pos = ally.pos;
   const held = m.held, apWas = bard.ap;
-  try { m.held = { design: d.id, stage: 1, cost }; bard.ap = Math.max(bard.ap, SPELL_AP.release); releaseOutburst(cb, rng, bard, aim); } finally { bard.pos = was; bard.ap = apWas; m.held = held; }
-  cb.log.push(ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb)));
+  try { m.held = { design: d.id, stage: GIFT_STAGE, cost, tone: toneOf(d), form: formOf(d), turns: 0, v: SOUL_REV }; bard.ap = Math.max(bard.ap, SPELL_AP.release); releaseOutburst(cb, rng, bard, formOf(d) === 'aura' ? ally.pos : aim); } finally { bard.pos = was; bard.ap = apWas; m.held = held; }
+  cb.log.push(ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb) + (m.emanator ? 0 : 2)));
   return null;
 }
 /** The ally's cast of a Gift in a fight (combat/gift {unitId, aim}): the Bard in this fight whose Gift (this rest) the

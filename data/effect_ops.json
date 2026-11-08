@@ -214,7 +214,7 @@
       ],
       "used_by": [
         "classes:brace",
-        "classes:charged_by_death",
+        "classes:charged_by_battle",
         "classes:closed_loop",
         "classes:draw_fire",
         "classes:dread",

@@ -16,18 +16,20 @@ import {
   dist, alive, refOf, keyOf as refKey, xy, key, standable, lineOfSight, resolveAttack, previewAttack, isMelee, emitFx, fxFell,
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
 } from '../combat';
-import { WEAPON, SIGIL, SCHOOL, MODULE } from '../data';
-import { mod, moduleSlots, packOf, maxHp } from '../character';
+import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
+import { mod, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
-  evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, manaBand, manaOf,
+  evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
+  pumpOutburst, formOf, MAX_STAGE, SOUL_AP,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
 import { castAt, compileSpell, evokeMarks } from '../sigil';
 import { d20, die } from '../rng';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
 import { makeObject } from '../objects';
+import { asBolt, resonanceWithout } from './soul';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
@@ -78,44 +80,13 @@ const sigilBlock = (cb: Combat, u: Unit): string | null => {
   if (u.downed || u.dead) return 'Downed.'; if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
   return null;
 };
-/** Strain (the engine's addStrain and Mana Short, magic.ts; MISSING EXPORT: addStrain): over the limit, d20 + Will Power
- * vs 10 + 2 × the excess; a natural 1 Downs you; a failure hurts 15 × Strain and Stuns, and anything held goes wild.
- * A Vessel's body forms all end on a failed short (K23). */
+/** Strain through the engine's addStrain (rules 1.5: the Mana Short is automatic at 3 over the limit, no roll). A
+ * Vessel's body forms all end on a Short (K23). */
 export function strainUp(cb: Combat, rng: Rng, u: Unit, n: number, why: string): string {
   const m = u.mg; if (!m || n <= 0) return '';
-  // The engine's 'strain' hook {u, n, why, limit} hears this Strain too (Heart's Own, The Twin Pays: hooks gap K1/K6).
-  const sc: any = emit(cb, 'strain', { u, n, why, limit: m.strainLimit, cb }); n = Math.max(0, sc.n); if (!n) return '';
-  m.strain += n;
-  if (m.strain <= (sc.limit ?? m.strainLimit)) return '';
-  const over = m.strain - m.strainLimit, r = d20(rng), tn = 10 + 2 * over, tot = r + m.will;
-  emitFx(cb, 'short', { unit: u.id, at: u.pos, burst: r === 1, held: r !== 20 && (r === 1 || tot < tn) });
-  if (r === 1) {
-    applyDamage(cb, u, u.hp, { type: 'short', shield: false, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
-    say(cb, 'MANA SHORT (' + why + '): ' + u.name + "'s heart bursts (d20 1 vs " + tn + '): ' + (u.side === 'foe' ? 'dead' : 'Downed') + '.');
-    m.held = null; endForms(cb, u, 'the heart burst'); return ' · MANA SHORT';
-  }
-  if (r !== 20 && tot < tn) {
-    say(cb, 'MANA SHORT (' + why + '): ' + u.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ')' + harm(cb, rng, null, u, 15 * m.strain, 'true') + ', Stunned.');
-    if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true });
-    if (m.held && !u.dead && !u.downed) wild(cb, rng, u);
-    endForms(cb, u, 'the Mana Short');
-    return ' · MANA SHORT';
-  }
-  say(cb, u.name + ' holds the Strain together (d20 ' + r + ' → ' + tot + ' vs ' + tn + ').');
-  return '';
-}
-function wild(cb: Combat, rng: Rng, u: Unit) {
-  const m = u.mg!, d = m.designs.find((x) => x.id === m.held?.design); if (!d) { m.held = null; return; }
-  const near = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= designRange(m, d));
-  if (!near.length) { say(cb, u.name + "'s Outburst bursts into the air."); m.held = null; return; }
-  const t = near[die(rng, near.length) - 1]; say(cb, u.name + "'s Outburst releases wild at " + t.name + '.');
-  const e = reach(u, d, () => freeAp(u, () => releaseOutburst(cb, rng, u, t.pos))); if (e) m.held = null;
-}
-/** Run an Outburst call with range and sight checked by the caller (a link's or the twin's place, a Fusion's pattern):
- * the design is lent the Ether module (no sight check) and the caster 99 reach for the call only. */
-function reach<T>(u: Unit, d: OutburstDesign, f: () => T): T {
-  const m = u.mg!, had = d.modules.includes('ether'); if (!had) d.modules.push('ether'); m.soulRange += 99;
-  try { return f(); } finally { m.soulRange -= 99; if (!had) d.modules.splice(d.modules.indexOf('ether'), 1); }
+  const out = addStrain(cb, rng, u, n, why); // rules 1.5: the automatic Mana Short at 3 over the limit, no roll
+  if (out) endForms(cb, u, 'the Mana Short');
+  return out;
 }
 /** Range and sight for an Outburst aimed from a tile (a link's or the twin's). */
 function aimFrom(cb: Combat, u: Unit, d: OutburstDesign, from: string, aim: string | null): string | null {
@@ -497,16 +468,14 @@ function parseDesign(text: string | undefined): Partial<OutburstDesign> | null {
   try { const j = JSON.parse(s); if (j && typeof j === 'object') return j; } catch { /* plain text */ }
   const [school, rest] = s.split(/[:;]/); return { school: (school || '').trim().toLowerCase(), modules: (rest || '').split(/[,\s]+/).map((x) => x.trim().toLowerCase()).filter(Boolean) };
 }
-/** The magic/design checks (game.ts) with a slot allowance: schools and modules known, module slots + extra, a second
- * school only at Will Power 5. Returns the clean design or an error. */
+/** The magic/design checks (rules 1.5, character.ts checkOutburstDesign) with a slot allowance: schools and modules
+ * known, module slots + extra, a second school at Will Power 5 on the same side, one shape (Size needs one), a known
+ * tone (the first free at Visualization 1), options checked; tone and option2 kept. Returns the clean design or an error. */
 function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: number, id: string): OutburstDesign | string {
-  if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: rain, homing".';
-  const k = c.soulKnown || { schools: [], modules: [] };
-  if (!k.schools.includes(d.school)) return 'You haven\'t learned the ' + SCHOOL[d.school].name + ' school.';
-  if (d.school2) { if ((c.skills.will_power || 0) < 5) return 'Two schools need Will Power 5.'; if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) return 'Pick a second school you know.'; }
-  const mods = [...new Set(d.modules || [])]; if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
-  const slots = baseSlots(c) + extra; if (mods.length > slots) return 'At most ' + slots + ' module' + (slots === 1 ? '' : 's') + '.';
-  return { id, name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(d.option ? { option: d.option } : {}) };
+  if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: burst, homing".';
+  const r = checkOutburstDesign(c, d, baseSlots(c) + extra, id); if (typeof r === 'string') return r;
+  if (r.learnTone) { const k = (c.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(r.learnTone); }
+  return r.design;
 }
 // Beloved Spells (K10, PROVISIONAL, audit 1-3): out of a fight (the area map or the story), mark up to 3 ready designs
 // Beloved, or make a new Beloved design with one module slot more than your Module slots. A Beloved design costs 30% less
@@ -546,35 +515,42 @@ register({
   on: { outburst_cost: (ctx, h) => { if (ctx.u !== h.u || !beloved(h.c, ctx.design?.id)) return; if (ctx.mp > 0) ctx.mp = Math.max(5, ctx.mp * 0.7); } },
   brief: () => null,
 });
-// Heart's Own (K11, PROVISIONAL, audit 1-3): while you Begin or hold a Beloved spell, your Strain limit is 2 higher
-// (one Strain pool: a later ordinary cast shorts against the plain limit). The Mana Short's excess counts from the raised
-// limit. MISSING HOOK: a 'strain' hook with the design; the limit is raised on the unit's magic while it applies.
+// Heart's Own (K11, PROVISIONAL, audit 1-3; rules 1.5): while you Begin or hold a Beloved spell, your Strain limit is 2
+// higher: the burn (8 a point over) and the automatic Mana Short (3 over) both count from the raised limit (one Strain
+// pool: once the Beloved spell is released or let go, the plain limit is back, checked at your turn's end). MISSING
+// HOOK: a 'strain' hook with the design; the limit is raised on the unit's magic while it applies.
 function heartsOwn(u: Unit, on: boolean) { const m: any = u.mg; if (!m) return; const want = on ? 2 : 0, had = m.hoDelta || 0; if (want !== had) { m.strainLimit += want - had; m.hoDelta = want; } }
+const holdsBeloved = (h: Holder) => !!h.u?.mg?.held && beloved(h.c, h.u.mg.held.design);
 register({
   id: 'devoted.hearts_own', claims: 'all',
   on: {
     outburst_begin: (ctx, h) => { if (ctx.u === h.u) heartsOwn(h.u!, beloved(h.c, ctx.design?.id)); },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && h.u!.mg) heartsOwn(h.u!, !!h.u!.mg.held && beloved(h.c, h.u!.mg.held.design)); },
+    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && h.u!.mg) heartsOwn(h.u!, holdsBeloved(h)); },
+    // Released or let go: the plain limit again before the turn's burn (turn_end runs before it).
+    turn_end: (ctx, h) => { if (ctx.u === h.u && h.u!.mg) heartsOwn(h.u!, holdsBeloved(h)); },
   },
   brief: () => null,
 });
-// Love Made Manifest (K12, PROVISIONAL, audit 1-4): once per fight, a toggle on Begin or Release: a Beloved Outburst's
-// effect triples (damage, heal and shield through the stage multiplier; its conditions last ×3 rounds; a push isn't
-// lengthened). Declared on release, spent even on a miss. GAMEBREAKING fix: it doesn't stack with Heart Surge or any
-// other effect multiplier: the higher one stands (×3 against Surge's ×2).
+// Love Made Manifest (K12, PROVISIONAL, audit 1-4; rules 1.5): once per fight, a toggle on Begin: a Beloved Outburst
+// Begins at stage 4, the heart full at once (×2.2 and the tone's stage-4 rider; a snap cast releases at stage 4). Its
+// Begin Strain is paid as usual. 1.2's ×3 is gone: on 1.5's stage table it would reach ×6.6 (item 527).
 register({
   id: 'devoted.love_made_manifest', claims: 'all', priority: 200,
-  toggles: [{ id: 'manifest', label: 'Love Made Manifest (×3, once a fight)', on: ['combat/outburst', 'combat/release'],
-    available: (h) => (uses(h).left('per_combat', 1) <= 0 ? 'Used this fight.' : true) }],
+  toggles: [{ id: 'manifest', label: 'Love Made Manifest (Begins at stage 4, once a fight)', on: ['combat/outburst'],
+    available: (h) => (uses(h).left('per_combat', 1) <= 0 ? 'Used this fight.' : true), preview: () => 'A Beloved Outburst Begins at stage 4.' }],
   on: {
-    outburst_release: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.wild || !beloved(h.c, ctx.design?.id) || !modOn(h, 'manifest')) return;
+    outburst_begin: (ctx, h) => {
+      if (ctx.u !== h.u || !beloved(h.c, ctx.design?.id) || !modOn(h, 'manifest')) return;
       if (!uses(h).take('per_combat', 1)) return;
-      ctx.mult = ctx.mult > 1 ? Math.max(ctx.mult, 3) : ctx.mult * 3; stateOf(h).manifest = h.cb?.round ?? 0;
-      say(ctx.cb, 'Love made manifest: ' + ctx.design.name + ' pours out at ×3.');
+      stateOf(h).manifest = ctx.design.id;
     },
-    // While the manifest release resolves (this action), the conditions it puts on last ×3 rounds.
-    cond_apply: (ctx, h) => { if (ctx.by !== h.u || !modOn(h, 'manifest') || stateOf(h).manifest !== (h.cb?.round ?? 0)) return; ctx.rounds = (ctx.rounds || 1) * 3; },
+    // The held Outburst exists by the Begin's Strain (magic.ts beginOutburst): fill it there, before a snap releases.
+    strain: (ctx, h) => {
+      const st = stateOf(h), m = h.u?.mg; if (ctx.u !== h.u || ctx.why !== 'begin' || !st.manifest || !m?.held || m.held.design !== st.manifest) return;
+      st.manifest = null; m.held.stage = MAX_STAGE;
+      emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: MAX_STAGE, mult: stageMult(MAX_STAGE), free: true, max: true, tone: m.held.tone || 'raw', manifest: true });
+      say(ctx.cb, 'Love made manifest: the heart is full at once (stage ' + MAX_STAGE + ').');
+    },
   },
   brief: () => null,
 });
@@ -639,7 +615,8 @@ register({
 // stand and the facing rule set the area, the Reach word where you may aim (and its ×0.8 / ×0.6), the Burst what it
 // covers (and its multipliers), TWICE more missiles, CHAIN its jumps, KIN who is spared, PULL drags each one it reached
 // toward you afterwards, LEECH heals you from the Outburst's damage. STAY, WAIT and WATCH are refused: no standing
-// Outbursts. Every creature the plan affects takes the Outburst's school at stage 1 (or its held stage), at the plan's
+// Outbursts. Every creature the plan affects takes the Outburst's school as a Bolt (its own shape is the Sigil's now)
+// at stage 0 (rules 1.5: a snap, ×0.6; or its held stage: Begin and Pump first, then fuse it), at the plan's
 // multiplier for that creature. You pay everything a normal pattern costs (the draws, then the Evoke's AP and charge)
 // plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Every Fusion is a fight note for the
 // Narrator (a Knowing risk).
@@ -687,10 +664,11 @@ register({
       emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
         src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
         missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
-      let stage = m.held?.stage || 1, cost = m.held?.cost || 0;
+      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.6); a held one at the stage it reached (item 528).
+      let stage = m.held?.stage ?? 0, cost = m.held?.cost || 0;
       if (!r.held) {
         const e = freeAp(u, () => beginOutburst(cb, rng, u, r.d.id, undefined, true)); if (e) return e;
-        stage = m.held?.stage || 1; cost = m.held?.cost || 0;
+        stage = m.held?.stage ?? 0; cost = m.held?.cost || 0;
       }
       say(cb, u.name + ' fuses ' + r.d.name + ' into ' + name + ' (' + (r.p.shape === 'stack' ? 'a Stack' : 'a Line of ' + r.p.tiles.length + ', ' + (pl.facing?.mode || '')) + ', ' + r.charge + ' charge).' + fluxUp(cb, rng, u, 2));
       strainUp(cb, rng, u, 1, 'Fusion');
@@ -702,10 +680,12 @@ register({
       for (const x of live) {
         const t = unitById(cb, x.unit); if (!t || t.dead || done.has(t.id + ':' + x.missile + ':' + (x.jump || 0))) continue; done.add(t.id + ':' + x.missile + ':' + (x.jump || 0));
         if (x.via === 'chain') emitFx(cb, 'chain', { from: pl.missiles[x.missile]?.chain[(x.jump || 1) - 1]?.from, to: t.pos, target: t.id, jump: x.jump, mult: x.mult, element: null });
-        m.held = { design: r.d.id, stage, cost };
+        m.held = { design: r.d.id, stage, cost, v: SOUL_REV };
         const hp0 = t.hp + (t.shield || 0);
         FUSION = { u: u.id, mult: x.mult };
-        try { reach(u, r.d, () => freeAp(u, () => releaseOutburst(cb, rng, u, t.pos))); } finally { FUSION = null; }
+        // The Sigil decides who is reached: each one takes the Outburst as a Bolt (its own shape would add its area again).
+        const dd = m.designs.find((y) => y.id === r.d.id) || r.d;
+        try { asBolt(u, dd, () => freeAp(u, () => releaseOutburst(cb, rng, u, t.pos))); } finally { FUSION = null; }
         if (t.side !== u.side) dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
       }
       m.held = null;
@@ -1215,22 +1195,48 @@ register({
   },
   brief: (h) => { const g = h.c ? (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed : null) : null; return 'Four Hearts' + (g ? ' (R' + g.rage + ' G' + g.grief + ' F' + g.fear + ' D' + g.devotion + ')' : '') + ': add gauge points for story moments (traitState heartfed_add {rage|grief|fear|devotion: n}).'; },
 });
-// Fed (K23 part, PROVISIONAL, audit 1-3): an Outburst keyed to a gauge costs 10% less MP per point (5 MP at least; the
-// gauge at Begin) and hits 10% harder per point (damage, heal and shield; the gauge at Release, which empties it, a wild
-// release too). Control and Status schools get no power bonus.
+// Fed (K23 part, PROVISIONAL, audit 1-3; rules 1.5: the gauges are the heart's fuel, item 529): an Outburst keyed to a
+// gauge costs 10% less MP per point at Begin (5 MP at least). While you hold it, "Feed a feeling" (0 AP) spends 1 point
+// of its gauge for a Pump that costs no AP (it is a Pump: the heartbeat, Shape and Overdraw see it), at most 2 a turn.
+// Releasing it empties that gauge (a wild release too): what you didn't burn is lost. 1.2's +10% a point at release is
+// gone (the stages are the power now).
+const FEEL_PER_TURN = 2;
+let FEEDING: string | null = null;
+const heldKey = (h: Holder): Gauge | null => { const hd = h.u?.mg?.held; return hd ? keyOfDesign(h.c, hd.design) : null; };
 register({
-  id: 'heartfed.fed', claims: 'all',
+  id: 'heartfed.fed', claims: 'all', priority: 20,
+  actions: [{
+    id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 0,
+    text: 'Spend 1 point of the held Outburst\'s gauge for a Pump that costs no AP (2 a turn).',
+    available: (h) => {
+      const m = h.u?.mg; if (!m?.held) return 'Hold a keyed Outburst first.'; const k = heldKey(h); if (!k) return 'The held Outburst isn\'t keyed to a gauge.';
+      if ((gauges(h)[k] || 0) < 1) return 'Your ' + k + ' is empty.'; if (uses(h).left('per_turn', FEEL_PER_TURN, h.key + '#feel') <= 0) return 'Twice a turn.';
+      return true;
+    },
+    preview: (h) => { const k = heldKey(h)!, m = h.u!.mg!; return { lines: [k[0].toUpperCase() + k.slice(1) + ' ' + gauges(h)[k] + ' → ' + (gauges(h)[k] - 1) + ': stage ' + m.held!.stage + ' → ' + Math.min(MAX_STAGE, m.held!.stage + 1) + ' (×' + stageMult(Math.min(MAX_STAGE, m.held!.stage + 1)) + ').'] }; },
+    run: (h, _a, rng) => {
+      const k = heldKey(h)!, g = gauges(h), u = h.u!, cb = h.cb!;
+      FEEDING = u.id; let e: string | null; try { e = pumpOutburst(cb, rng, u); } finally { FEEDING = null; }
+      if (e) return e;
+      uses(h).take('per_turn', FEEL_PER_TURN, h.key + '#feel'); g[k] = Math.max(0, (g[k] || 0) - 1);
+      say(cb, 'Fed: ' + k + ' feeds the heart (' + k[0].toUpperCase() + k.slice(1) + ' ' + g[k] + ').');
+      return null;
+    },
+  }],
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const n = (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed[k] : 0) || 0; if (n && ctx.mp > 0) ctx.mp = Math.max(5, ctx.mp * (1 - 0.1 * n)); },
+    // A fed Pump: no AP, and not one of Empathy's free Pumps either.
+    outburst_pump: (ctx, h) => { if (ctx.u === h.u && FEEDING === h.u!.id) { ctx.ap = 0; ctx.free = false; } },
     outburst_release: (ctx, h) => {
       if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const g = gauges(h), n = g[k] || 0; if (!n) return;
-      ctx.mult *= 1 + 0.1 * n; g[k] = 0; say(ctx.cb, 'Fed: ' + k + ' ' + n + ' pours into ' + ctx.design.name + ' (×' + (1 + 0.1 * n).toFixed(1) + '), and empties.');
+      g[k] = 0; say(ctx.cb, 'Fed: ' + ctx.design.name + ' takes the rest of the ' + k + ' with it (' + n + ' lost).');
     },
   },
   brief: () => null,
 });
-// Overflow (K24, PROVISIONAL, audit 1-3): once per scene, when a gauge reaches 5, your next Outburst keyed to it Begins
-// at stage 2 and its Begin takes no Strain (the air's +2 without an Emanator too); holding it still strains later turns.
+// Overflow (K24, PROVISIONAL, audit 1-3; rules 1.5): once per scene, when a gauge reaches 5, your next Outburst keyed to
+// it Begins at stage 2 (the held stage itself: its tone's rider and the swell go on from there) and its Begin takes no
+// Strain (the air's +2 without an Emanator too); holding it still strains later turns.
 register({
   id: 'heartfed.overflow', claims: 'all',
   on: {
@@ -1239,8 +1245,12 @@ register({
       if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id), g = gauges(h); if (!k || g.overflow !== k) return;
       g.overflow = null; g.ovScene = sceneOf(h); stateOf(h).ov = ctx.design.id; say(ctx.cb, 'Overflow: ' + ctx.design.name + ' Begins at stage 2.');
     },
-    turn_start_pre: (ctx, h) => { const u = h.u, st = stateOf(h); if (ctx.u !== u || !st.ov) return; const hd = u!.mg?.held; if (hd && hd.design === st.ov && hd.stage < 2) hd.stage = 2; delete st.ov; },
-    outburst_release: (ctx, h) => { const st = stateOf(h); if (ctx.u !== h.u || st.ov !== ctx.design?.id) return; delete st.ov; if (ctx.stage < 2) ctx.mult *= stageMult(2) / stageMult(ctx.stage); },
+    // The held Outburst exists by the Begin's Strain (magic.ts beginOutburst): set its stage there, before a snap releases.
+    strain: (ctx, h) => {
+      const st = stateOf(h), m = h.u?.mg; if (ctx.u !== h.u || ctx.why !== 'begin' || !st.ov || !m?.held || m.held.design !== st.ov) return;
+      delete st.ov; if (m.held.stage < 2) m.held.stage = 2;
+      emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: m.held.stage, mult: stageMult(m.held.stage), free: true, max: false, tone: m.held.tone || 'raw', overflow: true });
+    },
   },
   brief: () => null,
 });
@@ -1275,36 +1285,41 @@ register({
   on: { on_downed: (ctx, h) => { if (ctx.victim !== h.u || !h.c) return; if (links(h).length) { delete charState(h.c).links; say(ctx.cb, h.u!.name + '\'s links snap as they fall.'); } } },
   brief: () => 'Link: in a story scene, rule whether the ally is close enough to bind.',
 });
-let MIRROR = false;
-// Through (K26, PROVISIONAL, audit 1-3): your Outbursts can Begin or Release from a linked ally's place (range and sight
-// from them; the Class tab actions), and heals, shields and the Guarded or Inspired boons you receive (whatever their
-// source) reach every linked ally at half (a boon for half its rounds, at least 1).
+let MIRROR = false, SHARING = false;
+// Through (K26, PROVISIONAL, audit 1-3; rules 1.5): your Outbursts can go off from a linked ally's place: "Cast through
+// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.6) and "Release through a link" lets your held Outburst
+// go at the stage it reached (1 AP). Range, sight and the shape (a Wave's cone, a Lance's line, an Aura around them)
+// all run from the ally's tile, as if you stood there; the ally is never in its own Aura. Heals, shields and the
+// Guarded or Inspired boons you receive (whatever their source) reach every linked ally at half (a boon for half its
+// rounds, at least 1).
 function linkFrom(h: Holder, a: ActionArgs): Unit | string {
   const ls = linkedUnits(h); if (!ls.length) return 'Link to an ally first.';
   const pick = a.targetIds?.[0] ? ls.find((x) => x.id === a.targetIds![0]) : ls[0]; return pick || 'That ally isn\'t linked.';
 }
+/** Run f with the caster standing on the ally's tile (range, sight and the shape from there), then back. */
+function fromLink<T>(u: Unit, f0: Unit, f: () => T): T { const was = u.pos; u.pos = f0.pos; try { return f(); } finally { u.pos = was; } }
 register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
     { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Begin and release an Outburst from a linked ally\'s place.',
+      text: 'Snap-cast an Outburst (Begin and Release at once, ×0.6) from a linked ally\'s place.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
         const d = u.mg!.designs.find((x) => x.id === a.choice); if (!d) return { ok: false, why: 'Pick a design (choice).' };
-        const aim = aimOf(cb, a, 'tile'), e = aimFrom(cb, u, d, f.pos, aim); if (e) return { ok: false, why: e };
-        const pv = previewOutburst(cb, u, d.id, undefined, false); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP.'] } : { ok: false, why: pv.why };
+        const aim = aimOf(cb, a, 'tile'); if (!aim) return { ok: false, why: 'Pick a target tile.' };
+        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×0.6.'] } : { ok: false, why: pv.why };
       },
-      run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = reach(u, d, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
+      run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = fromLink(u, f, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
     { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Release your held Outburst from a linked ally\'s place.',
+      text: 'Release your held Outburst from a linked ally\'s place, at the stage it reached.',
       available: (h) => (!h.u?.mg?.held ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
         const d = u.mg!.designs.find((x) => x.id === u.mg!.held!.design); if (!d) return { ok: false, why: 'Nothing held.' };
-        const e = aimFrom(cb, u, d, f.pos, aimOf(cb, a, 'tile')); return e ? { ok: false, why: e } : { lines: ['From ' + f.name + ': 1 AP.'] };
+        const aim = aimOf(cb, a, 'tile'), e = fromLink(u, f, () => aimFrom(cb, u, d, f.pos, aim)); return e && formOf(d) !== 'aura' && formOf(d) !== 'wave' && formOf(d) !== 'lance' ? { ok: false, why: e } : { lines: ['From ' + f.name + ': 1 AP, stage ' + u.mg!.held!.stage + ' (×' + stageMult(u.mg!.held!.stage) + ').'] };
       },
-      run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === u.mg!.held!.design)!; say(cb, u.name + ' releases through ' + f.name + '.'); const e = reach(u, d, () => releaseOutburst(cb, rng, u, aimOf(cb, a, 'tile')!)); if (!e) checkOver(cb); return e; } },
+      run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit; say(cb, u.name + ' releases through ' + f.name + '.'); const e = fromLink(u, f, () => releaseOutburst(cb, rng, u, aimOf(cb, a, 'tile') || f.pos)); if (!e) checkOver(cb); return e; } },
   ],
   on: {
     heal_given: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + heal(x, Math.floor(ctx.n / 2), ctx.cb, h.u!) + '.'); } finally { MIRROR = false; } },
@@ -1319,13 +1334,12 @@ register({
 // Share (K27, PROVISIONAL, audit 1-4): your reaction (one a round, shared with Overwatch and the rest): when a linked
 // ally takes damage (after its armour and shield), you take half of it (rounded down) yourself, straight through the heart
 // (no armour or shield of yours). The engine has no off-turn prompt, so a setting decides: always (default) or never.
-// Heals you give a linked ally are ×1.25. A linked ally Downed: you take 2 Strain (it can short).
+// Heals you give a linked ally are ×1.25. A linked ally Downed: you take 2 Strain (it can short). Rules 1.5, the links
+// share the heart's load too (item 530): Strain that would take a linked ally over their Strain limit comes to you
+// instead, as far as your own limit allows (you never go over your limit for them); "Take their Strain" (1 AP, once a
+// turn) moves up to 2 of a linked ally's Strain to you, as far as your limit allows.
 register({
   id: 'heartbinder.share', claims: 'all',
-  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
-    text: 'Choose whether you take half of a linked ally\'s wounds automatically: always or never.',
-    preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
-    run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } }],
   on: {
     damage_in: (ctx, h) => {
       const u = h.u, t: Unit = ctx.t; if (!u || !onGrid(h) || ctx.phase !== 'shield' || ctx.src?.shared || !alive(u) || !isLinked(h, t) || cs(h.c).shareMode === 'never') return;
@@ -1336,24 +1350,58 @@ register({
     },
     heal_in: (ctx, h) => { if (ctx.by !== h.u || !onGrid(h) || !isLinked(h, ctx.t)) return; ctx.n *= 1.25; },
     on_downed: (ctx, h) => { const u = h.u, v: Unit = ctx.victim; if (!u || !onGrid(h) || !isLinked(h, v) || !alive(u)) return; say(ctx.cb, u.name + ' feels ' + v.name + ' fall through the link (+2 Strain)' + strainUp(ctx.cb, rngOf(h), u, 2, 'a linked ally fell') + '.'); },
+    // The links carry Strain: what would take a linked ally over their limit is yours, as far as your own limit allows.
+    strain: (ctx, h) => {
+      const u = h.u, t: Unit = ctx.u, m = u?.mg, tm = t?.mg; if (!u || !m || !tm || SHARING || !onGrid(h) || !alive(u) || !isLinked(h, t) || cs(h.c).shareMode === 'never' || ctx.n <= 0) return;
+      const over = tm.strain + ctx.n - (ctx.limit ?? tm.strainLimit), room = Math.max(0, m.strainLimit - m.strain), n = Math.min(over, room, ctx.n); if (n <= 0) return;
+      ctx.n -= n; SHARING = true; try { say(ctx.cb, u.name + ' takes ' + n + ' of ' + t.name + '\'s Strain through the link (Share)' + strainUp(ctx.cb, rngOf(h, ctx), u, n, 'shared through a link') + '.'); } finally { SHARING = false; }
+    },
   },
+  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
+    text: 'Choose whether you take half of a linked ally\'s wounds, and the Strain that would take them over their limit, automatically: always or never.',
+    preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
+    run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
+  { id: 'take_strain', label: 'Take their Strain', scope: ['combat'], target: 'ally', ap: 1, uses: { per: 'per_turn', n: 1 },
+    text: 'Move up to 2 of a linked ally\'s Strain to yourself (as far as your Strain limit allows).',
+    available: (h) => (!h.u?.mg ? false : !linkedUnits(h).some((x) => (x.mg?.strain || 0) > 0) ? 'No linked ally carries Strain.' : true),
+    preview: (h, a) => { const t = unitById(h.cb!, a.targetId), m = h.u!.mg!; if (!t || !isLinked(h, t) || !t.mg) return { ok: false, why: 'Pick a linked ally.' }; const n = Math.min(2, t.mg.strain, Math.max(0, m.strainLimit - m.strain)); return n > 0 ? { lines: [t.name + ' Strain −' + n + '; yours +' + n + ' (' + (m.strain + n) + '/' + m.strainLimit + ').'] } : { ok: false, why: 'No room under your limit.' }; },
+    run: (h, a, rng) => {
+      const u = h.u!, m = u.mg!, cb = h.cb!, t = unitById(cb, a.targetId)!, tm = t.mg!, n = Math.min(2, tm.strain, Math.max(0, m.strainLimit - m.strain)); if (n <= 0) return 'No room under your limit.';
+      tm.strain -= n; emit(cb, 'strain_change', { u: t, from: tm.strain + n, to: tm.strain, why: 'shared', limit: tm.strainLimit, cb });
+      emitFx(cb, 'calm', { unit: t.id, at: t.pos, way: 'shared', by: n, strain: tm.strain });
+      SHARING = true; try { say(cb, u.name + ' takes ' + n + ' Strain from ' + t.name + ' through the link' + strainUp(cb, rng, u, n, 'shared through a link') + '.'); } finally { SHARING = false; }
+      return null;
+    } }],
   brief: () => 'Share: in a story, a linked ally\'s wound may be split with the Heartbinder.',
 });
 
 // =============================================================================================== VESSEL
-// Inner Charge (K28, PROVISIONAL, audit 1-6): Soul cast AP, 20 MP (× the air's cost band; from the air without an
-// Emanator, +2 Strain), 1 Strain (2 in Flooded air): take a body form and hold it like an Outburst. Each held form grows
-// a stage at your turn start (×1, ×1.5, ×2, ×2.5) and strains you 1 each (2 Flooded). Iron armour +10, Surge melee and
-// unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body saves, Heartbeat heal 10 at turn start: each
-// × its stage. Pain to Power: +1 AP next turn per 20 damage taken, at most +2 (the stage doesn't raise it). Two forms
-// (three from Will Power 5), each once. Damage can slip a form (d20 + Will Power vs 10 + damage/10; a failure ends the
-// newest). A failed Mana Short ends them all. Forms are kept on the character for the scene (taken on the area map they
-// carry into a fight). Silenced: no new form.
+// Inner Charge (K28, PROVISIONAL, audit 1-6; rules 1.5, item 531): Begin's 2 AP, 20 MP (× the air's cost band; from the
+// air without an Emanator, +2 Strain), 1 Strain (2 in Flooded air): take a body form and hold it like an Outburst. A
+// form starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2 at stage 4); it swells a stage at your
+// turn start and strains you 1 each (2 Flooded). "Pump a form" (1 AP, or one of Empathy's free Pumps) adds a stage to
+// one form. Iron armour +10, Surge melee and unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body
+// saves, Heartbeat heal 10 at turn start: each × its stage multiplier. Pain to Power: +1 AP next turn per 20 damage
+// taken, at most +2 (the stage doesn't raise it). At most two forms at once (no third from Will Power 5), each once. No slipping (rules
+// 1.5: being hurt no longer loosens the heart). A Mana Short ends them all. Forms are kept on the character for the
+// scene (taken on the area map they carry into a fight). Silenced: no new form and no Pump.
 type Form = 'iron' | 'surge' | 'swift' | 'pain' | 'steady' | 'heartbeat';
 const FORMS: Record<Form, string> = { iron: 'Iron', surge: 'Surge', swift: 'Swift', pain: 'Pain to Power', steady: 'Steady', heartbeat: 'Heartbeat' };
-function formsOf(h: { c?: Character | null; g?: any }): { form: Form; stage: number }[] { const st = cs(h.c).vessel; return st && st.scene === sceneOf(h) ? st.forms : []; }
+/** A Vessel holds at most two body forms at once, whatever its Will Power (rules 1.5 follow-up, item 550; the Will Power 5
+ * third form is retired). */
+const MAX_FORMS = 2;
+const TOO_MANY = 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.';
+/** The forms held this scene. A save from before item 550 can hold three: the extra ones (the latest taken) are dropped
+ * on the next read, so the retired third form can't swell or add to a Release. */
+function formsOf(h: { c?: Character | null; g?: any }): { form: Form; stage: number }[] {
+  const st = cs(h.c).vessel; if (!st || st.scene !== sceneOf(h)) return [];
+  if (st.forms.length > MAX_FORMS && h.c) st.forms = st.forms.slice(0, MAX_FORMS);
+  return st.forms;
+}
 function setForms(h: { c?: Character | null; g?: any }, forms: { form: Form; stage: number }[]) { charState(h.c).vessel = { scene: sceneOf(h), forms }; }
-const fm = (h: Holder, f: Form) => { const x = formsOf(h).find((y) => y.form === f); return x ? stageMult(x.stage) : 0; };
+/** A form's multiplier: the 1.5 stage table (magic.ts STAGE_MULT). A form is never below stage 1. */
+const vesselMult = (stage: number) => stageMult(Math.max(1, stage));
+const fm = (h: Holder, f: Form) => { const x = formsOf(h).find((y) => y.form === f); return x ? vesselMult(x.stage) : 0; };
 /** Apply the forms' standing numbers to the unit (armour, Movement), idempotently. */
 function vSync(h: Holder) {
   const u: any = h.u; if (!u) return; const d = u.vsl || { armour: 0, move: 0 };
@@ -1366,16 +1414,16 @@ function endForms(cb: Combat, u: Unit, why: string) {
   const h = holderOf({ u, cb }, 'vessel.inner_charge'); if (!h || !formsOf(h).length) return;
   setForms(h, []); vSync({ ...h, cb }); say(cb, u.name + '\'s body forms gutter out (' + why + ').');
 }
-const maxForms = (c: Character | null | undefined) => ((c?.skills?.will_power || 0) >= 5 ? 3 : 2);
 register({
   id: 'vessel.inner_charge', claims: 'all',
   actions: [
-    { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: (h) => Math.max(1, h.u?.mg?.soulAp ?? 2),
+    { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: () => SOUL_AP.begin,
       text: 'Take a body form (iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
-      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= maxForms(h.c) ? 'You hold ' + maxForms(h.c) + ' forms already.' : true),
+      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= MAX_FORMS ? TOO_MANY : true),
       preview: (h, a) => {
         const f = a.choice as Form; if (!FORMS[f]) return { ok: false, why: 'Choose iron, surge, swift, pain, steady or heartbeat.' };
         if (formsOf(h).some((x) => x.form === f)) return { ok: false, why: FORMS[f] + ' is already held.' };
+        if (formsOf(h).length >= MAX_FORMS) return { ok: false, why: TOO_MANY };
         const m = h.u!.mg!, cost = Math.round(20 * (manaBand(manaOf(h.cb!)).soul_cost_mult ?? 1)); if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP.' };
         return { lines: [FORMS[f] + ': ' + cost + ' MP, 1 Strain; grows each turn.'] };
       },
@@ -1387,9 +1435,26 @@ register({
         say(cb, u.name + ' draws the heart into the body: ' + FORMS[f] + ' (' + cost + ' MP' + (m.emanator ? '' : ' from the air') + ').' + strainUp(cb, rng, u, (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), 'Inner Charge'));
         return null;
       } },
+    { id: 'pump_form', label: 'Pump a form', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none',
+      ap: (h) => ((h.u?.mg?.freePumps || 0) > 0 ? 0 : SOUL_AP.pump),
+      text: 'Pump one held body form: +1 stage (to 4). 1 AP, or one of Empathy\'s free Pumps.',
+      available: (h) => (!h.u?.mg ? false : !formsOf(h).length ? 'Hold a body form first.' : condOn(h.u, 'silenced') ? 'Silenced.' : true),
+      preview: (h, a) => {
+        const x = formsOf(h).find((y) => y.form === a.choice); if (!x) return { ok: false, why: 'Pick a form you hold.' };
+        if (x.stage >= MAX_STAGE) return { ok: false, why: FORMS[x.form] + ' is full (stage ' + MAX_STAGE + ').' };
+        return { lines: [FORMS[x.form] + ': stage ' + x.stage + ' → ' + (x.stage + 1) + ' (×' + vesselMult(x.stage + 1) + ')' + ((h.u!.mg!.freePumps || 0) > 0 ? ', a free Pump' : '') + '.'] };
+      },
+      run: (h, a) => {
+        const u = h.u!, cb = h.cb!, m = u.mg!, fs = formsOf(h).map((y) => ({ ...y })), x = fs.find((y) => y.form === a.choice)!;
+        const free = (m.freePumps || 0) > 0; if (free) m.freePumps = (m.freePumps || 0) - 1; m.cast = true;
+        x.stage = Math.min(MAX_STAGE, x.stage + 1); setForms(h, fs); vSync(h);
+        emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: x.stage, mult: vesselMult(x.stage), free, max: x.stage >= MAX_STAGE, tone: 'raw', form: x.form });
+        say(cb, u.name + ' pumps the heart into ' + FORMS[x.form] + ': stage ' + x.stage + ' (×' + vesselMult(x.stage) + ')' + (free ? ', a free Pump (Empathy)' : '') + '.');
+        return null;
+      } },
     { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
       text: 'Take a body form before the trouble starts (20 MP): it lasts the scene and carries into a fight.',
-      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= maxForms(h.c) || formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: 'No room for that form.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
+      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: TOO_MANY } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
   ],
   on: {
@@ -1400,18 +1465,14 @@ register({
     },
     turn_start: (ctx, h) => {
       const u = h.u!, cb = h.cb!; if (ctx.u !== u || !onGrid(h) || u.downed) return; const fs = formsOf(h); if (!fs.length) return;
-      const grown = fs.map((x) => ({ ...x, stage: Math.min(4, x.stage + 1) })); setForms(h, grown); vSync(h);
+      const grown = fs.map((x) => ({ ...x, stage: Math.min(MAX_STAGE, x.stage + 1) })); setForms(h, grown); vSync(h);
+      emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: Math.max(...grown.map((x) => x.stage)), mult: vesselMult(Math.max(...grown.map((x) => x.stage))), tone: 'raw', forms: grown.map((x) => x.form) });
       const hb = fm(h, 'heartbeat'); let line = u.name + '\'s forms grow (' + grown.map((x) => FORMS[x.form] + ' ' + x.stage).join(', ') + ')';
       if (hb) line += heal(u, 10 * hb * (u.mg?.healMult || 1), cb, u);
       say(cb, line + '.' + strainUp(cb, rngOf(h, ctx), u, grown.length * (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1), 'holding body forms'));
     },
-    on_damaged: (ctx, h) => {
-      const u = h.u!, cb = h.cb!; if (ctx.t !== u || !onGrid(h)) return; const st = stateOf(h); st.pain = (st.pain || 0) + ctx.dmg;
-      const fs = formsOf(h); if (!fs.length || u.dead || u.downed || ctx.src?.type === 'short') return;
-      const r = d20(rngOf(h)), tn = 10 + Math.floor(ctx.dmg / 10), tot = r + (u.mg?.will || 0);
-      if (r === 20 || (r !== 1 && tot >= tn)) return;
-      const lost = fs[fs.length - 1]; setForms(h, fs.slice(0, -1)); vSync(h); say(cb, u.name + ' loses hold of ' + FORMS[lost.form] + ' (d20 ' + r + ' → ' + tot + ' vs ' + tn + ').');
-    },
+    // Pain to Power counts what you take. Rules 1.5: no slipping (a hit no longer loosens a form).
+    on_damaged: (ctx, h) => { if (ctx.t !== h.u || !onGrid(h)) return; const st = stateOf(h); st.pain = (st.pain || 0) + ctx.dmg; },
     damage_out: (ctx, h) => { if (ctx.att !== h.u || !ctx.melee) return; const s = fm(h, 'surge'); if (s) ctx.add += 15 * s; },
     forced_move: (ctx, h) => { if (ctx.u !== h.u || !fm(h, 'steady')) return; ctx.cancel = true; say(ctx.cb, h.u!.name + ' stands Steady: not moved.'); },
     cond_apply: (ctx, h) => {
@@ -1423,24 +1484,26 @@ register({
   },
   brief: (h) => { const fs = formsOf(h); return fs.length ? 'Body forms held: ' + fs.map((x) => FORMS[x.form] + ' ' + x.stage).join(', ') + '; rule them in story beats.' : null; },
 });
-// Release (K29, PROVISIONAL, audit 1-4): 1 AP (a melee attack roll with your fists or melee weapon), or free with a
-// melee hit (a toggle on the attack): every form ends in one strike, +15 Soul damage per stage held, summed over the forms
-// (at most 8 stages: the cap is provisional) × your Soul multiplier, armour ignored. The forms end on a miss too.
-const RELEASE_CAP = 8;
+// Release (K29, PROVISIONAL, audit 1-4; rules 1.5, item 532): 1 AP (a melee attack roll with your fists or melee
+// weapon), or free with a melee hit (a toggle on the attack): every form ends in one strike. Each form adds 15 Soul
+// damage × its stage multiplier (stage 1 ×1 … stage 4 ×2.2), summed, × your Soul multiplier, armour ignored (1.2's
+// +15 a stage capped at 8 stages is gone: two stage-4 forms are 66 before the multiplier). The forms end on a miss too.
+const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + 15 * vesselMult(x.stage), 0);
 function releaseRider(h: Holder, t: Unit, rng: Rng): string {
   const u = h.u!, cb = h.cb!, fs = formsOf(h); if (!fs.length) return '';
-  const stages = Math.min(RELEASE_CAP, fs.reduce((s, x) => s + x.stage, 0)); setForms(h, []); vSync(h);
+  const sum = releaseSum(h), n = fs.length; setForms(h, []); vSync(h);
+  emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t.pos, school: 'damage', form: 'bolt', tone: 'raw', element: null, stage: Math.max(...fs.map((x) => x.stage)), body: true, targets: [t.id], area: [t.pos] });
   if (t.dead) return ' · the forms release into nothing';
-  return ' · RELEASE (' + stages + ' stages)' + harm(cb, rng, u, t, 15 * stages * (u.mg?.soulMult || 1), 'soul');
+  return ' · RELEASE (' + n + ' form' + (n === 1 ? '' : 's') + ', ' + Math.round(sum) + ')' + harm(cb, rng, u, t, sum * (u.mg?.soulMult || 1), 'soul');
 }
 register({
   id: 'vessel.release_strike', claims: 'all',
-  toggles: [{ id: 'release', label: 'Release every form on a hit (+15 Soul a stage)', on: ['combat/attack'], available: (h) => (formsOf(h).length ? true : false) }],
+  toggles: [{ id: 'release', label: 'Release every form on a hit (+15 Soul × each stage)', on: ['combat/attack'], available: (h) => (formsOf(h).length ? true : false) }],
   actions: [{
     id: 'release_strike', label: 'Release', scope: ['combat', 'world'], target: 'enemy', ap: 1,
-    text: 'End every body form in one strike: a melee attack, +15 Soul damage per stage held.',
+    text: 'End every body form in one strike: a melee attack, +15 Soul damage × each form\'s stage multiplier.',
     available: (h) => (!formsOf(h).length ? 'Hold a body form first.' : true),
-    preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; const pv = previewAttack(h.cb!, h.u!, t, 'melee', { free: true }); return pv.ok ? { lines: [pv.pct + '% to hit; +' + 15 * Math.min(RELEASE_CAP, formsOf(h).reduce((s, x) => s + x.stage, 0)) + ' Soul on a hit.'] } : { ok: false, why: pv.why }; },
+    preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; const pv = previewAttack(h.cb!, h.u!, t, 'melee', { free: true }); return pv.ok ? { lines: [pv.pct + '% to hit; +' + Math.round(releaseSum(h) * (h.u!.mg?.soulMult || 1)) + ' Soul on a hit.'] } : { ok: false, why: pv.why }; },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!; stateOf(h).releasing = true;
       let res; try { res = resolveAttack(cb, rng, u, t, 'melee', null, { free: true }); } finally { stateOf(h).releasing = false; }
@@ -1463,7 +1526,7 @@ register({
   id: 'vessel.vessel_hands', claims: 'all',
   on: {
     damage_out: (ctx, h) => { if (ctx.att !== h.u || !unarmed(h.u!, ctx.mode)) return; const w = WEAPON[ctx.src?.weapon]; if (w?.category !== 'unarmed') return; if (ctx.base + ctx.add < 20) ctx.add += 20 - (ctx.base + ctx.add); },
-    outburst_cost: (ctx, h) => { if (ctx.u === h.u && !TWIN_CAST) ctx.fail ||= 'A Vessel casts no Outbursts: the charge lives in the body.'; },
+    outburst_cost: (ctx, h) => { if (ctx.u === h.u) ctx.fail ||= 'A Vessel casts no Outbursts: the charge lives in the body.'; },
   },
   brief: () => null,
 });
@@ -1474,7 +1537,17 @@ register({
 // count against your ready designs, and they're fixed forever (no re-manifest, even after it falls). In game text it is
 // only ever "the twin" and never speaks of where it comes from.
 const TWIN_NAME = 'the twin';
-let TWIN_CAST = false;
+/** The twin's own heart (rules 1.5, item 533): a copy of its caller's Soul numbers (Soul multiplier, Will Power, reach,
+ * saving…) holding the twin's three designs, with nothing held, no free Pumps (the twin has no Empathy of its own) and
+ * no Strain of its own: everything it would take goes to its caller (the 'strain' hook below), and its MP is its
+ * caller's (synced at each Begin). So the twin Begins, Pumps, holds (it swells on its own turn) and Releases with the
+ * engine's own Soul actions (combat/outburst, combat/pump, combat/release… with its unit id), at its own stage. */
+function twinMagic(o: Unit, designs: OutburstDesign[]): MagicUnit | undefined {
+  const m = o.mg; if (!m) return undefined;
+  const c: MagicUnit = JSON.parse(JSON.stringify(m));
+  return Object.assign(c, { words: [], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker: false, charge: 0, cores: 0, coresMade: 0, flux: 0,
+    held: null, strain: 0, cast: false, freePumps: 0, freePumpsMax: 0, debt: 0, calmFight: false, calmTend: false });
+}
 const twinOf = (cb: Combat, owner: Unit) => cb.units.find((x) => (x as any).twinOf === owner.id && !x.dead) || null;
 const twinOwner = (cb: Combat, t: Unit) => unitById(cb, (t as any).twinOf);
 register({
@@ -1504,9 +1577,9 @@ function twinDesigns(c: Character, text: string | undefined): { portrait: string
   for (let i = 0; i < 3; i++) { const d = checkDesign(c, raw[i], 0, 'tw' + (i + 1)); if (typeof d === 'string') return 'Outburst ' + (i + 1) + ': ' + d; out.push({ ...d, name: String(raw[i].name || 'The twin\'s ' + SCHOOL[d.school].name).slice(0, 40) }); }
   return { portrait, designs: out };
 }
-// Call (K32, PROVISIONAL, audit 1-6): 2 AP: the twin appears on a free tile within 3 and takes its own turn right after
-// yours with 4 AP: move (Movement 1.5), cast its three Outbursts (your MP and Strain; one heart, so neither of you can
-// Begin while the other holds), or Guard you (1 AP: it takes the next attack aimed at you while within 1 tile, until your
+// Call (K32, PROVISIONAL, audit 1-6; rules 1.5): 2 AP: the twin appears on a free tile within 3 and takes its own turn
+// right after yours with 4 AP: move (Movement 1.5), work its three Outbursts with its own heart (Begin, Pump, hold,
+// Release at its own stage; your MP and your Strain; it and you may each hold one), or Guard you (1 AP: it takes the next attack aimed at you while within 1 tile, until your
 // next turn). HP half your maximum, your Defense, your Will Power for its rolls. It can't go more than 6 tiles from you
 // (if you move away it follows to the nearest free tile within 6). It can be healed and shielded; it is never Downed.
 // When you're Downed it fades (no Strain). Kills it makes count as its own (no XP for the twin). Call is barred while
@@ -1526,7 +1599,7 @@ register({
         const x: any = unitFromEnemy(id, TWIN_NAME, 'minion', 'fists', t, rng as any);
         Object.assign(x, { side: u.side, tier: undefined, hp: Math.floor(0.5 * u.maxHp), maxHp: Math.floor(0.5 * u.maxHp), def: u.def, armour: 0, attack: u.mg?.will ?? 0, movement: 1.5,
           init: u.init - 0.4, agility: 1, ctrl: c.id, kind: 'human', tags: ['twin'], short: 'TW', img: tw.portrait || u.img, twinOf: u.id, held: JSON.parse(JSON.stringify(twinHeld)), ap: 0 });
-        x.mags = undefined; cb.units.push(x);
+        x.mags = undefined; x.mg = twinMagic(u, tw.designs || []); cb.units.push(x);
         const at = cb.order.indexOf(u.id); cb.order.splice(at + 1, 0, id); if (at + 1 <= cb.turn) cb.turn++;
         emitFx(cb, 'turn', { unit: id, side: u.side, at: t, summon: true });
         say(cb, u.name + ' calls, and ' + TWIN_NAME + ' leans through at ' + refOf(t) + ' (' + x.hp + ' HP).');
@@ -1555,16 +1628,16 @@ register({
         const line = TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' fades back from beside ' + c.name + '.'; if (h.cb) say(h.cb, line); else postStory(h, line);
         return null;
       } },
-    { id: 'twin_cast', label: 'The twin casts', scope: ['combat'], target: 'tile', ap: (h, a) => { const o = h.cb && h.u ? twinOwner(h.cb, h.u) : null; const d = twinDesign(h, a); return o?.mg && d ? designAp(o.mg, d) : 2; },
-      text: 'Cast one of the twin\'s three Outbursts from where it stands (your MP, your Strain).',
-      available: (h) => (!h.u || !isTwin(h.u) ? false : !twinOwner(h.cb!, h.u)?.mg ? 'Your heart has no magic to lend.' : true),
+    { id: 'twin_cast', label: 'The twin casts', scope: ['combat'], target: 'tile', ap: (h, a) => { const d = twinDesign(h, a), m = h.u?.mg; return m && d ? designAp(m, d) + (a.tile ? 1 : 0) : 2; },
+      text: 'One of the twin\'s three Outbursts from where it stands (your MP, your Strain): with a target, a snap cast (Begin and Release, ×0.6); without, the twin Begins and holds it (then Pump and Release with the twin).',
+      available: (h) => (!h.u || !isTwin(h.u) ? false : !h.u.mg || !twinOwner(h.cb!, h.u)?.mg ? 'Your heart has no magic to lend.' : h.u.mg.held ? 'The twin is holding one: Pump or Release it.' : true),
       preview: (h, a) => {
-        const o = twinOwner(h.cb!, h.u!)!, d = twinDesign(h, a); if (!d) return { ok: false, why: 'Pick one of the twin\'s Outbursts (choice: tw1, tw2 or tw3).' };
-        if (o.mg!.held) return { ok: false, why: 'One heart: release what you hold first.' };
-        const e = aimFrom(h.cb!, o, d, h.u!.pos, aimOf(h.cb!, a, 'tile')); if (e) return { ok: false, why: e };
-        return twinCast(h, d, null, true);
+        const d = twinDesign(h, a); if (!d) return { ok: false, why: 'Pick one of the twin\'s Outbursts (choice: tw1, tw2 or tw3).' };
+        const tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined;
+        const pv = freeAp(tw, () => previewOutburst(h.cb!, tw, d.id, aim, !!aim)); return pv.ok ? { lines: [d.name + ': ' + pv.cost + ' MP from ' + (twinOwner(h.cb!, tw)?.name || 'you') + ', +' + pv.strain + ' Strain to them' + (aim ? ', ×0.6 now.' : ', held at stage 0.')] } : { ok: false, why: pv.why };
       },
-      run: (h, a, rng) => { const d = twinDesign(h, a)!; const r = twinCast(h, d, rng, false, aimOf(h.cb!, a, 'tile')!); return r.ok === false ? r.why || 'Can\'t.' : null; } },
+      run: (h, a, rng) => { const d = twinDesign(h, a)!, tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + (aim ? ' casts ' : ' begins ') + d.name + ' from ' + refOf(tw.pos) + '.');
+        const e = freeAp(tw, () => beginOutburst(h.cb!, rng, tw, d.id, aim, !aim)); if (!e) checkOver(h.cb!); return e; } },
     { id: 'twin_guard', label: 'Guard', scope: ['combat'], target: 'none', ap: 1,
       text: 'The twin takes the next attack aimed at you while it stands within 1 tile.',
       available: (h) => (!h.u || !isTwin(h.u) ? false : true),
@@ -1576,13 +1649,29 @@ register({
     combat_start: (ctx, h) => {
       const u = h.u, c = h.c, cb = h.cb; if (!u || !c || !cb || isTwin(u)) return;
       const tw: any = cb.units.find((x) => x.companion === 'twin' && x.ctrl === c.id); if (!tw) return;
-      delete tw.companion; Object.assign(tw, { id: 'tw-' + u.id, twinOf: u.id, movement: 1.5, agility: 1, held: JSON.parse(JSON.stringify(twinHeld)), name: TWIN_NAME, tags: ['twin'] });
+      delete tw.companion; Object.assign(tw, { id: 'tw-' + u.id, twinOf: u.id, movement: 1.5, agility: 1, held: JSON.parse(JSON.stringify(twinHeld)), name: TWIN_NAME, tags: ['twin'], mg: twinMagic(u, cs(c).twin?.designs || []) });
       c.companions = (c.companions || []).filter((k) => k.kind !== 'twin'); if (h.g?.story?.positions) delete h.g.story.positions['cp-' + c.id + '-twin'];
       const old = 'cp-' + c.id + '-twin', o: string[] = (ctx.order as string[]).filter((x) => x !== old), i = o.indexOf(u.id); o.splice(i + 1, 0, tw.id);
       ctx.order = o; cb.order = cb.order.map((x) => (x === old ? tw.id : x));
       say(cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' stands beside ' + u.name + ' (' + tw.hp + ' HP).');
     },
     turn_start_pre: (ctx, h) => { if (!h.u || isTwin(h.u) || !h.cb) return; const tw = twinOf(h.cb, h.u); if (ctx.u === tw) ctx.penalties.push({ n: 2, why: 'the twin acts with 4 AP' }); if (ctx.u === h.u && tw) delete (tw as any).guarding; },
+    // One heart, two hands (rules 1.5): the twin's Begin pays from your MP; its Strain is yours.
+    outburst_cost: (ctx, h) => { const o = h.u, tw = ctx.u; if (!o || isTwin(o) || !h.cb || tw !== twinOf(h.cb, o) || !tw.mg || !o.mg) return; tw.mg.mp = o.mg.mp; tw.mg.emanator = o.mg.emanator; },
+    outburst_begin: (ctx, h) => { const o = h.u, tw = ctx.u; if (!o || isTwin(o) || !h.cb || tw !== twinOf(h.cb, o) || !tw.mg || !o.mg) return; if (o.mg.emanator) o.mg.mp = Math.max(0, tw.mg.mp); },
+    strain: (ctx, h) => {
+      const o = h.u, tw = ctx.u, cb = ctx.cb; if (!o || isTwin(o) || !cb || tw !== twinOf(cb, o) || !o.mg || ctx.n <= 0) return;
+      const n = ctx.n; ctx.n = 0;
+      const out = strainUp(cb, rngOf(h, ctx), o, n, 'the twin');
+      say(cb, o.name + ' feels the twin\'s pull: +' + n + ' Strain (' + o.mg.strain + '/' + o.mg.strainLimit + ')' + out + '.');
+      if (out && tw.mg?.held) { tw.mg.held = null; say(cb, 'The twin\'s heart goes dark with yours: its held Outburst is gone.'); }
+    },
+    // You and the twin are one heart: your releases don't resonate with each other's (other allies' still do).
+    outburst_release: (ctx, h) => {
+      const o = h.u, cb = ctx.cb; if (!o || isTwin(o) || !cb || ctx.wild) return; const tw = twinOf(cb, o); if (!tw) return;
+      if (ctx.u === tw) ctx.mult = (ctx.mult || 1) * resonanceWithout(cb, tw, o.id, ctx.stage);
+      else if (ctx.u === o) ctx.mult = (ctx.mult || 1) * resonanceWithout(cb, o, tw.id, ctx.stage);
+    },
     attack_target: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.tgt !== u || !h.cb) return; const tw: any = twinOf(h.cb, u); if (!tw || !tw.guarding || dist(tw.pos, u.pos) > 1 || ctx.att === tw) return;
       tw.guarding = false; ctx.tgt = tw; say(ctx.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' steps in front of ' + u.name + '.');
@@ -1604,20 +1693,7 @@ register({
   brief: () => null,
 });
 function twinDesign(h: Holder, a: ActionArgs): OutburstDesign | null {
-  const o = h.cb && h.u ? twinOwner(h.cb, h.u) : null; const c = o?.charId ? h.g?.characters?.[o.charId] : h.c; const tw = cs(c).twin;
-  return (tw?.designs || []).find((d: OutburstDesign) => d.id === a.choice) || null;
-}
-/** The twin casts: the owner's heart pays (MP, Strain); the twin's AP was paid by the action. */
-function twinCast(h: Holder, d: OutburstDesign, rng: Rng | null, preview: boolean, aim?: string): { ok?: boolean; why?: string; lines?: string[] } {
-  const cb = h.cb!, o = twinOwner(cb, h.u!)!, m = o.mg!, copy: OutburstDesign = { ...d, modules: [...d.modules], id: 'twin:' + d.id };
-  m.designs.push(copy); TWIN_CAST = true;
-  try {
-    if (preview) { const pv = freeAp(o, () => previewOutburst(cb, o, copy.id, undefined, false)); return pv.ok ? { lines: [copy.name + ': ' + pv.cost + ' MP from ' + o.name + ', +' + pv.strain + ' Strain to them.'] } : { ok: false, why: pv.why }; }
-    say(cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' casts ' + d.name + ' from ' + refOf(h.u!.pos) + '.');
-    const e = reach(o, copy, () => freeAp(o, () => beginOutburst(cb, rng!, o, copy.id, aim!, false)));
-    if (e) return { ok: false, why: e };
-    checkOver(cb); return { ok: true };
-  } finally { TWIN_CAST = false; m.designs = m.designs.filter((x) => x.id !== copy.id); if (m.held?.design === copy.id) m.held = null; }
+  return (h.u?.mg?.designs || []).find((d) => d.id === a.choice) || null;
 }
 function vanish(cb: Combat, tw: Unit) {
   tw.dead = true; tw.downed = false; tw.hp = 0; (cb.deadSeen ||= []).includes(tw.id) || cb.deadSeen!.push(tw.id); // a twin's loss isn't a death: no bots

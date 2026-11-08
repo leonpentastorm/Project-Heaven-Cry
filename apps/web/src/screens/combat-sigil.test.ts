@@ -91,4 +91,28 @@ describe('combat screen: Sigils (rules 1.4)', () => {
     expect(tileOf(v, '4,5').label).toMatch(/FIRE · STAY field \(yours\)/);
     expect(v.magicLegend.some((x: any) => /Field/.test(x.name))).toBe(true);
   });
+  it('Draw: the keyboard is split into labelled rows by word group, in order; empty groups are left out; refused keys say why', () => {
+    // known out of order on purpose: the rows put them back in the Sigil 1.4 order
+    fight(['kin', 'push', 'seek', 'stay', 'mend', 'fire', 'bind', 'veil', 'freeze']);
+    const l = screen({ action: 'draw', tab: 'sigils', word: 'fire' });
+    let v = l.renderVals();
+    const rows = v.pad.wordRows;
+    expect(rows.map((r: any) => r.label)).toEqual(['ELEMENTS', 'AFFLICTIONS', 'BOONS', 'WORKINGS', 'REACH', 'DELIVERY', 'BURST', 'FILTER']);
+    expect(rows[0].words.map((w: any) => w.key)).toEqual(['fire', 'freeze']);
+    expect(rows.map((r: any) => r.words.length).reduce((a: number, b: number) => a + b, 0)).toBe(9); // every word once
+    expect(rows[4]).toMatchObject({ key: 'reach', aria: 'Reach words' });
+    // a keyboard with only an Element and a Reach word shows two rows
+    fight(['fire', 'seek']); v = screen({ action: 'draw', tab: 'sigils', word: 'fire' }).renderVals();
+    expect(v.pad.wordRows.map((r: any) => r.label)).toEqual(['ELEMENTS', 'REACH']);
+    // a glyph on your own tile: every key is refused, and each says so in its tooltip, its aria label and a short hint
+    fight(['fire', 'seek']); (G.combat as any).glyphs = [{ id: 'gx', word: 'fire', pos: '2,5', by: pc().id, side: 'pc', left: 3, who: 'Ilse', v: 4 }]; snap = view();
+    v = screen({ action: 'draw', tab: 'sigils', word: 'seek' }).renderVals();
+    const seek = v.pad.wordList.find((w: any) => w.key === 'seek');
+    expect(seek.disabled).toBe('true'); expect(seek.sub).toBe('2 ch · tile taken');
+    expect(seek.title).toMatch(/CAN'T NOW: One glyph per tile/); expect(seek.aria).toMatch(/^SEEK, Reach, can't draw now: One glyph per tile/);
+    // not enough AP: the hint names the AP needed
+    fight(['fire']); pc().ap = 0; snap = view();
+    v = screen({ action: 'draw', tab: 'sigils', word: 'fire' }).renderVals();
+    expect(v.pad.wordList[0].sub).toBe('2 ch · needs 1 AP'); expect(v.pad.wordList[0].disabled).toBe('true');
+  });
 });

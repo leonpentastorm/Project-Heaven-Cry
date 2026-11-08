@@ -41,6 +41,7 @@
 <sc-if value="{{t.hasFloor}}"><span aria-hidden="true" style="position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 700; color: #A3AEC2">{{t.floor}}</span></sc-if>
 <sc-if value="{{t.hasTok}}"><!--TOKPOP:t.t--></sc-if>
 <sc-if value="{{t.hasGlyphs}}"><span aria-hidden="true" style="position: absolute; left: 1px; top: 1px; z-index: 3; display: flex; gap: 1px; pointer-events: none"><sc-for list="{{t.glyphs}}" as="gl"><img src="{{gl.src}}" alt="" title="{{gl.title}}" style="{{gl.style}}"></sc-for></span></sc-if>
+<sc-if value="{{t.hasHz}}"><span class="phc-plan" title="{{t.hzTitle}}" style="{{t.hzStyle}}">{{t.hzText}}</span></sc-if>
 <sc-if value="{{t.hasHeart}}"><img src="{{t.heart}}" alt="" title="{{t.heartTitle}}" style="position: absolute; right: 0; top: 0; z-index: 4; width: 18px; height: 18px; pointer-events: none; filter: drop-shadow(0 0 4px rgba(174, 155, 255, 0.9))"></sc-if>
 <sc-if value="{{t.hasCost}}" hint-placeholder-val="{{false}}"><span class="phc-m-tip" style="{{t.costStyle}}">{{t.cost}}</span></sc-if>
 </button></sc-if>
@@ -71,9 +72,10 @@
 <div class="phc-cb-bar" style="flex: none; display: flex; align-items: center; gap: 8px; min-height: 28px">
 <sc-if value="{{hasMe}}"><div class="phc-me-mini" aria-label="You: {{me.name}}, HP {{me.hp}}, {{me.miniLine}}" style="flex: 0 1 auto; min-width: 0; display: none; align-items: center; gap: 7px">
 <button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #000; display: block"></button>
-<span style="flex: none; max-width: 96px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.name}}</span>
+<span style="flex: 0 1 auto; min-width: 24px; max-width: 96px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.name}}</span>
 <span aria-hidden="true" style="position: relative; display: block; flex: 0 1 56px; min-width: 24px; height: 6px; border-radius: 99px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{me.hpChip}}"></span><span class="phc-hp-fill" style="{{me.hpFill}}"></span></span>
-<span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 11px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; color: #F65157">HP</span> {{me.hp}} · {{me.miniLine}}</span>
+<span aria-hidden="true" class="phc-me-mini-hp" style="flex: none; font-size: 13px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums"><span style="letter-spacing: 0.1em; color: #F65157">HP</span> {{me.hp}}</span>
+<span aria-hidden="true" title="HP {{me.hp}} · {{me.miniLine}}" style="min-width: 0; font-size: 12px; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{me.miniLine}}</span>
 </div></sc-if>
 <span style="flex: none; margin-left: auto; display: flex; gap: 6px">
 <sc-if value="{{lay.custom}}"><button type="button" class="phc-cb-link phc-cb-layout-reset" onClick="{{lay.reset}}" title="Put the map, legend, log and action menu back where they started" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">↺ Layout</button></sc-if>
@@ -82,6 +84,11 @@
 <button type="button" class="phc-cb-hide" onClick="{{togglePanel}}" aria-controls="phc-cb-aside" aria-expanded="true" aria-keyshortcuts="H" title="Hide the panel: the map takes the full width (key H)" style="min-height: 28px; padding: 0 9px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer">Hide panel ⟩</button>
 </span>
 </div>
+<sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-me-urgent phc-res-urgent" style="flex: none; display: none">
+<sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
+<span class="phc-res-line" style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+</div></sc-for>
+</div></sc-if>
 <div class="phc-cb-top phc-col-scroll" style="flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px">
 <sc-if value="{{hasMe}}">
 <div aria-label="You" class="phc-me-full" style="flex: none; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
@@ -89,22 +96,20 @@
 <button type="button" onClick="{{me.zoom}}" aria-label="Enlarge {{me.name}}" style="{{zoomBtn}}"><img src="{{me.img}}" alt="" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #000"></button>
 <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px">
 <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">YOU · {{me.name}}<sc-if value="{{me.hasCls}}"><span class="phc-me-class" style="display: inline-flex; gap: 4px; align-items: center"><img class="phc-class-emblem" src="{{me.clsIcon}}" alt="" style="width: 16px; height: 16px"><span style="{{me.clsStyle}}">{{me.clsName}}</span></span></sc-if></span>
-<span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #F65157">HP</span><span style="position: relative; display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{me.hpChip}}"></span><span class="phc-hp-fill" style="{{me.hpFill}}"></span></span><span style="text-align: right">{{me.hp}}</span></span>
-<span style="display: grid; grid-template-columns: 26px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #5C9EFF">MP</span><span style="display: block; height: 7px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="{{me.mpFill}}"></span></span><span style="text-align: right">{{me.mp}}</span></span>
-<span style="font-size: 11px; color: #A3AEC2">{{me.line}}</span>
-<sc-if value="{{me.hasMagic}}">
-<div aria-label="Your magic" style="display: flex; flex-direction: column; gap: 5px; margin-top: 2px; padding-top: 6px; border-top: 1px solid #232D3F">
-<sc-if value="{{me.hasEvoker}}">
-<span title="{{me.fluxTitle}}" style="display: grid; grid-template-columns: 34px minmax(0, 1fr) 70px; gap: 6px; align-items: center; font-size: 11px"><span style="font-weight: 700; color: #8BDEEE">FLUX</span><span style="display: block; height: 7px; border-radius: 2px; background: #1C2536; overflow: hidden"><span style="{{me.fluxFill}}"></span></span><span style="{{me.fluxStyle}}">{{me.flux}}</span></span>
-<span style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #8BDEEE"><img src="{{me.chargeIcon}}" alt="" style="width: 14px; height: 14px">{{me.charge}}</span>
-</sc-if>
-<sc-if value="{{me.hasHeart}}"><span style="{{me.strainStyle}}"><img src="{{me.strainIcon}}" alt="" style="width: 14px; height: 14px">{{me.strain}}</span></sc-if>
-<sc-if value="{{me.hasHeld}}"><span role="status" style="{{me.heldStyle}}"><img src="{{me.heldIcon}}" alt="" style="width: 18px; height: 18px">{{me.held}}</span></sc-if>
-</div>
-</sc-if>
+<span style="display: grid; grid-template-columns: 30px minmax(0, 1fr) 84px; gap: 8px; align-items: center"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">HP</span><span style="position: relative; display: block; height: 10px; border-radius: 3px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{me.hpChip}}"></span><span class="phc-hp-fill" style="{{me.hpFill}}"></span></span><span style="text-align: right; font-size: 15px; font-weight: 700">{{me.hp}}</span></span>
+<span style="font-size: 12px; color: #A3AEC2">{{me.line}}</span>
 </div>
 <svg viewBox="-4 -4 128 248" width="40" height="78" role="img" aria-label="Your injuries" style="flex: none"><sc-for list="{{me.fig.parts}}" as="p"><path d="{{p.d}}" fill="{{p.fill}}" stroke="{{p.stroke}}" stroke-width="{{p.sw}}" stroke-linejoin="round"></path></sc-for></svg>
 </div>
+<sc-if value="{{me.res.has}}"><div role="list" aria-label="Your resources" class="phc-res">
+<sc-for list="{{me.res.rows}}" as="r"><div role="listitem" class="phc-res-row" data-res="{{r.key}}" data-level="{{r.level}}" data-wide="{{r.wide}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}">{{r.sub}}</span></sc-if>
+<sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
+<sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
+<span class="phc-res-hint">{{r.hint}}</span>
+</div></sc-for>
+</div></sc-if>
 <sc-if value="{{me.noFx}}"><span style="font-size: 11px; color: #A3AEC2">No status effects.</span></sc-if>
 <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{me.fx}}" as="f"><span title="{{f.t}}" style="{{f.style}}">{{f.k}}</span></sc-for></div>
 </div>
@@ -169,15 +174,27 @@
 <div role="tabpanel" id="phc-tabpanel" aria-labelledby="{{tp.tab}}" tabindex="0" class="{{tp.cls}}" style="position: relative; flex: 1 1 auto; min-height: 56px; overflow-y: auto; overflow-x: hidden; padding: 2px 4px 2px 0; outline: none">
 <div class="{{tp.innerCls}}" style="display: flex; flex-direction: column; gap: 6px">
 <span style="{{tp.nameStyle}}">{{tp.name}}</span>
+<sc-if value="{{tp.heart}}">
+<div aria-label="Your heart" class="phc-heart-panel" title="{{tp.hv.swell}} {{tp.hv.rider}}" style="{{tp.hv.boxStyle}}">
+<div style="display: flex; gap: 8px; align-items: center"><img src="{{tp.hv.icon}}" alt="" style="width: 22px; height: 22px; flex: none"><div style="display: flex; align-items: baseline; gap: 8px; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap"><span style="font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis">{{tp.hv.name}}</span><span style="{{tp.hv.kickerStyle}}">{{tp.hv.kicker}}</span></div><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #C9D3E3; white-space: nowrap">{{tp.hv.stageText}}</span><span style="{{tp.hv.multStyle}}">{{tp.hv.multText}}</span></div>
+<div role="meter" aria-label="{{tp.hv.stageText}}" style="display: flex; gap: 3px"><sc-for list="{{tp.hv.stages}}" as="sg"><span title="{{sg.label}}" style="{{sg.style}}"><span style="font-size: 12px">{{sg.n}}</span><span>{{sg.mult}}</span></span></sc-for></div>
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; white-space: nowrap">{{tp.hv.strainText}}</span><span aria-hidden="true" style="{{tp.hv.strainTrack}}"><span style="{{tp.hv.strainFill}}"></span><span style="{{tp.hv.strainMark}}"></span></span><span style="font-size: 10px; color: #C9D3E3; white-space: nowrap" title="{{tp.hv.free}}">{{tp.hv.freeShort}}</span></div>
+<sc-if value="{{tp.hv.hasWarn}}"><span role="alert" style="{{tp.hv.warnStyle}}">⚠ {{tp.hv.warn}}</span></sc-if>
+<div role="group" aria-label="Heart actions" style="{{tp.hv.gridStyle}}"><sc-for list="{{tp.hv.btns}}" as="hb"><button type="button" class="phc-cb-act" data-hact="{{hb.key}}" data-sfx="none" onClick="{{hb.pick}}" disabled="{{hb.off}}" aria-pressed="{{hb.pressed}}" title="{{hb.title}}" style="{{hb.style}}"><span style="flex: none; font-size: 12px; font-weight: 700; white-space: nowrap">{{hb.label}}</span><span style="{{hb.costStyle}}">{{hb.cost}}</span></button></sc-for></div>
+</div>
+</sc-if>
 <sc-for list="{{tp.items}}" as="a" hint-placeholder-count="4">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <button type="button" class="phc-cb-act" data-act="{{a.key}}" onClick="{{a.pick}}" disabled="{{a.locked}}" aria-pressed="{{a.pressed}}" title="{{a.text}}" style="{{a.style}}"><span style="font-weight: 600">{{a.name}}</span><span style="{{a.costStyle}}">{{a.cost}}</span></button>
 <sc-if value="{{a.padW}}">
-<div aria-label="Glyph keyboard" class="{{T.padWCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
+<div role="group" aria-label="Glyph keyboard" data-glyph-keyboard="1" class="{{T.padWCls}}" style="display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 10px; border-radius: 12px; background: #0B1519; border: 1px solid #1F4A55">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">GLYPH KEYBOARD · PICK A WORD, THEN CLICK YOUR OWN TILE</span>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<sc-for list="{{T.padW.wordList}}" as="w"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="width: 26px; height: 26px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em">{{w.word}}</span><span style="{{w.subStyle}}">{{w.sub}}</span></button></sc-for>
+<sc-for list="{{T.padW.wordRows}}" as="r"><div role="group" aria-label="{{r.aria}}" data-word-row="{{r.key}}" style="display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-top: 5px; border-top: 1px solid #16323A">
+<span aria-hidden="true" style="font-family: 'Chakra Petch', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; line-height: 1.2; color: #8BDEEE">{{r.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; min-width: 0">
+<sc-for list="{{r.words}}" as="w"><button type="button" class="phc-cb-act" data-sfx="toggle" data-word="{{w.key}}" onClick="{{w.pick}}" onKeyDown="{{w.onKey}}" aria-pressed="{{w.pressed}}" aria-disabled="{{w.disabled}}" aria-label="{{w.aria}}" title="{{w.title}}" style="{{w.style}}"><img src="{{w.icon}}" alt="" style="grid-row: span 3; width: 22px; height: 22px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; line-height: 1.2">{{w.word}}</span><span style="{{w.subStyle}}">{{w.subA}}</span><span style="{{w.subStyle}}">{{w.subB}}</span></button></sc-for>
 </div>
+</div></sc-for>
 </div>
 </sc-if>
 <sc-if value="{{a.padE}}"><sc-if value="{{T.pad.sgShow}}">
@@ -197,17 +214,14 @@
 <sc-if value="{{a.padD}}">
 <div aria-label="Your Outbursts" class="{{T.padDCls}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #120E1E; border: 1px solid #3A2E5C">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #AE9BFF">YOUR OUTBURSTS</span>
-<sc-for list="{{T.padD.designList}}" as="d"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" style="{{d.style}}">
-<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 700">{{d.name}}</span><span style="font-size: 12px; font-weight: 700; color: #5C9EFF">{{d.mp}}</span></span>
-<span style="font-size: 11px; color: #C9D3E3">{{d.school}}</span>
-<span style="font-size: 11px; color: #A3AEC2">{{d.modules}}</span>
-<span style="font-size: 11px; font-weight: 700; color: #E7EBF3">{{d.stats}}</span>
-<sc-if value="{{d.hasWhy}}"><span style="font-size: 11px; color: #A3AEC2">✕ {{d.why}}</span></sc-if>
+<sc-for list="{{T.padD.designList}}" as="d"><button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" title="{{d.title}}" style="{{d.style}}">
+<img src="{{d.icon}}" alt="" style="grid-row: span 3; width: 28px; height: 28px; align-self: center">
+<span style="display: flex; justify-content: space-between; gap: 8px; min-width: 0"><span style="font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span></span>
+<span style="{{d.lineStyle}}">{{d.line}}</span>
+<span style="font-size: 11px; color: #C9D3E3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" title="{{d.school}} · {{d.stats}}">{{d.school}} · <b style="color: #E7EBF3">{{d.stats}}</b></span>
+<sc-if value="{{d.hasWhy}}"><span style="grid-column: 2; font-size: 11px; color: #A3AEC2">✕ {{d.why}}</span></sc-if>
 </button></sc-for>
-<div role="group" aria-label="Release now or hold" style="display: flex; gap: 6px">
-<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{T.padD.now}}" aria-pressed="{{T.padD.nowPressed}}" title="Let it go at once: pick a target tile." style="{{T.padD.nowStyle}}">Release now</button>
-<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{T.padD.hold}}" aria-pressed="{{T.padD.holdPressed}}" title="Hold it in your heart: it grows each turn, and so does the Strain." style="{{T.padD.holdStyle}}">♥ Hold</button>
-</div>
+
 </div>
 </sc-if>
 </div>
@@ -235,6 +249,10 @@
 </div>
 </div>
 </sc-for>
+<sc-if value="{{T.padDShow}}"><div role="group" aria-label="Begin or snap" class="phc-cb-begin" style="display: flex; gap: 6px">
+<button type="button" class="phc-cb-act" data-sfx="none" onClick="{{T.padD.begin}}" disabled="{{T.padD.beginOff}}" title="{{T.padD.beginTitle}}" style="{{T.padD.beginStyle}}">♥ {{T.padD.beginLabel}}</button>
+<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{T.padD.snap}}" aria-pressed="{{T.padD.snapPressed}}" title="{{T.padD.snapTitle}}" style="{{T.padD.snapStyle}}">{{T.padD.snapLabel}}</button>
+</div></sc-if>
 <div class="phc-cb-confirm" style="display: flex; gap: 10px">
 <button type="button" class="phc-cb-act" onClick="{{T.confirm}}" disabled="{{T.cantConfirm}}" data-sfx="{{T.confirmSfx}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{T.confirmText}}</button>
 <button type="button" class="phc-cb-act" onClick="{{T.endTurn}}" disabled="{{T.notMine}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
@@ -255,6 +273,11 @@
 <div role="region" aria-label="Your turn (panel hidden)" class="phc-cb-mini" style="{{mini.style}}">
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 13px; font-weight: 700; font-style: italic; letter-spacing: 0.16em; color: #FFFFFF">YOUR TURN</span><span style="margin-left: auto; font-size: 11px; font-weight: 700; color: #E7EBF3">{{apText}}</span><button type="button" class="phc-cb-show" onClick="{{togglePanel}}" aria-label="Show the turn panel" title="Show the panel (key H)" style="min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer">⟨ Panel</button></div>
 <div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for></div>
+<sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-res-urgent" style="flex: none">
+<sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
+<span class="phc-res-line" style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
+</div></sc-for>
+</div></sc-if>
 <div role="group" aria-label="Quick commands (keys 1–4)" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
 <sc-for list="{{mini.cmds}}" as="c"><button type="button" class="phc-cb-act" data-act="{{c.action}}" onClick="{{c.pick}}" disabled="{{c.off}}" aria-pressed="{{c.pressed}}" aria-keyshortcuts="{{c.key}}" title="{{c.title}}" style="{{c.style}}"><span aria-hidden="true" style="font-size: 9px; font-weight: 700; color: #A3AEC2">{{c.key}}</span><span style="max-width: 100%; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.label}}</span></button></sc-for>
 </div>

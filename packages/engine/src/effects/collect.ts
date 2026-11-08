@@ -78,7 +78,7 @@ export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':'
 export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[] }
 /** Skill Mastery unlocks the runtime runs as items (perk-runtime H4): key "skill:<skillId>.<points>". The rest of the
  * skills' unlocks are perk steps (perk_choice) or the Narrator's (their text reaches it through the skill's card). */
-export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'visualization.5'];
+export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'visualization.5', 'will_power.3', 'will_power.5'];
 /** The skill items a character's points reach. */
 export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
   SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });

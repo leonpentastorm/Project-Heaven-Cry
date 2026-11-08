@@ -10,6 +10,7 @@ const view = () => ({ game: viewFor(G, 'host'), me: { id: 'host', name: 'Leon' }
 const doAct = (a: any, by = 'host') => { G = apply(G, a, by); };
 vi.mock('../game/store', () => ({ getState: () => view(), act: (a: any) => doAct(a), go: () => {}, toast: () => {}, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {} }));
 const { MainLogic } = await import('./main.js');
+const { glyphKeyNav } = await import('../game/glyphKeys');
 const sheetFrom = (archId: string, name: string): Sheet => { const a = ARCHETYPES.find((x) => x.id === archId)!;
   return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any; };
 
@@ -44,5 +45,27 @@ describe('area map: Sigils (rules 1.4)', () => {
     L.setState({ tab: 'magic' }); r = L.renderVals();
     expect(r.mg.sig.words.map((w: any) => [w.word, w.cls])).toEqual([['FIRE', 'SUBJECT · ELEMENT'], ['SEEK', 'REACH']]);
     expect(r.mg.sig.stats[0].k).toMatch(/^Max Sigil words/);
+  });
+  it('the area map\'s draw pad: labelled rows by word group, and a refused key says why in a few words', () => {
+    G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'seed-sigil-rows');
+    doAct({ type: 'char/add', sheet: sheetFrom('sigilist', 'Ilse') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    doAct({ type: 'narrator/turn', turn: { narration: 'The yard.', sceneTitle: 'Yard' } });
+    const c = Object.values(G.characters)[0];
+    (G.characters[c.id] as any).sigils = ['seek', 'spread', 'fire', 'mend'];
+    const L: any = new MainLogic({});
+    L.setState({ area: true, wAct: 'draw', wWord: 'fire' });
+    let r = L.renderVals();
+    expect(r.wMagic.showWords).toBe(true);
+    expect(r.wMagic.wordRows.map((x: any) => [x.label, x.words.map((w: any) => w.key)])).toEqual([['ELEMENTS', ['fire']], ['BOONS', ['mend']], ['REACH', ['seek']], ['BURST', ['spread']]]);
+    expect(r.wMagic.wordRows.map((x: any) => x.aria)).toEqual(['Elements words', 'Boons words', 'Reach words', 'Burst words']);
+    const fire = r.wMagic.words.find((w: any) => w.key === 'fire');
+    expect(fire).toMatchObject({ disabled: 'false', hint: '', pressed: 'true', sub: '2 charge' }); expect(fire.onKey).toBe(glyphKeyNav);
+    expect(fire.aria).toMatch(/^FIRE, Element, 2 charge$/);
+    r.areaCells.find((x: any) => x.key === positionsOf(G)[c.id]).click(); // FIRE on your own tile: every key is now refused
+    L.setState({ wWord: 'seek' }); r = L.renderVals();
+    for (const w of r.wMagic.words) {
+      expect(w).toMatchObject({ disabled: 'true', hint: 'tile taken' }); expect(w.sub).toMatch(/^\d+ ch$/);
+      expect(w.aria).toMatch(/can't draw now: One glyph per tile/); expect(w.title).toMatch(/CAN'T NOW: One glyph per tile/); if (w.key !== 'seek') expect(w.style).toMatch(/dashed/); // the selected key keeps its solid cyan edge
+    }
   });
 });

@@ -98,9 +98,28 @@ const lane = await host.evaluate(([x0, y0]) => { const g = window.__phc.getState
     if (x0 - 2 * dx >= 0 && y0 - 2 * dy >= 0 && x0 + 4 * dx >= 0 && y0 + 4 * dy >= 0 && x0 + 4 * dx < 16 && y0 + 4 * dy < 11 && !occ.has(back) && !occ.has(back2) && !occ.has(aim)) return { back, back2, aim }; } return null; }, [x0, y0]);
 ok('room on the map for a Line: ' + (lane && [lane.back, lane.back2].map(ref).join(', ') + ', aim ' + ref(lane.aim)), !!lane);
 await dlg.getByRole('button', { name: /Draw a glyph/ }).click();
+// The area map's draw pad: labelled rows by word group, nothing past the pad's edge.
+const wpad = dlg.locator('div[aria-label="Words you know"]');
+const padInfo = async () => wpad.evaluate((p) => { const r = p.getBoundingClientRect();
+  return { rows: [...p.querySelectorAll('[data-word-row]')].map((x) => x.getAttribute('aria-label')),
+    keys: [...p.querySelectorAll('button[data-word]')].map((b) => { const q = b.getBoundingClientRect(), why = b.querySelector('[data-why]');
+      return { w: b.getAttribute('data-word'), dis: b.getAttribute('aria-disabled'), aria: b.getAttribute('aria-label'), why: why ? why.textContent : '', whyLines: why ? Math.round(why.getBoundingClientRect().height / 10.35) : 0, out: q.left < r.left - 0.5 || q.right > r.right + 0.5 }; }) }; });
+let pi = await padInfo();
+console.log('  area pad rows:', pi.rows.join(' | '));
+ok('area-map pad: rows in group order (' + pi.rows.join(', ') + ')', pi.rows.length > 1 && pi.rows.indexOf('Elements words') === 0 && pi.rows.indexOf('Reach words') > 0 && pi.rows.indexOf('Burst words') > pi.rows.indexOf('Reach words'));
+ok('area-map pad: FIRE in Elements, ARC in Reach, SPREAD in Burst', await wpad.evaluate((p) => ['Elements words:fire', 'Reach words:arc', 'Burst words:spread'].every((x) => { const [row, w] = x.split(':'); return !!p.querySelector('[data-word-row][aria-label="' + row + '"] button[data-word="' + w + '"]'); })));
+ok('area-map pad: no key past the pad\'s edge', pi.keys.length > 0 && pi.keys.every((k) => !k.out));
+await wpad.screenshot({ path: OUT + 'magic-03c-area-pad.png' });
 await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'FIRE' }).click();
 await tile(at).click();
 await host.waitForTimeout(300);
+// FIRE is on our tile now: every key is refused, says why in a few words on one line, and stays focusable.
+await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
+pi = await padInfo();
+ok('area-map pad: every key refused with "tile taken" (' + pi.keys.map((k) => k.w + ':' + k.why).join(', ') + ')', pi.keys.length > 0 && pi.keys.every((k) => k.dis === 'true' && k.why === 'tile taken' && /can't draw now: One glyph per tile/.test(k.aria)));
+ok('area-map pad: the short reason fits on one line (' + pi.keys.map((k) => k.whyLines).join(',') + ')', pi.keys.every((k) => k.whyLines === 1));
+ok('area-map pad: refused keys still fit the pad', pi.keys.every((k) => !k.out));
+await wpad.screenshot({ path: OUT + 'magic-03d-area-pad-refused.png' });
 await act({ type: 'world/act', charId: me, act: 'move', to: lane.back });
 await host.waitForTimeout(300);
 await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
@@ -161,8 +180,8 @@ await dlg.locator('div[aria-label="Your Outburst designs"]').waitFor();
 await tile(raider.pos).click(); await host.waitForTimeout(250);
 const obHint = await hint();
 ok('the hint warns that this starts a fight', /starts a fight/.test(obHint));
-const letGo = dlg.getByRole('button', { name: /^Let it go ·/ }).first();
-ok('Confirm reads "Let it go · AP"', await letGo.count() > 0);
+const letGo = dlg.getByRole('button', { name: /^Snap ·/ }).first(); // rules 1.5: a click on a tile is a snap cast at it
+ok('Confirm reads "Snap · AP"', await letGo.count() > 0);
 await snap('06b-area-outburst-aim');
 await letGo.click();
 await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 10000 });
@@ -246,12 +265,11 @@ if (u.ap < 3 && !cb.over) {
 }
 await pickAction(host, /^Outburst/);
 await host.waitForSelector('div[aria-label="Your Outbursts"]');
-await host.locator('div[aria-label="Release now or hold"] button', { hasText: 'Hold' }).click();
-await host.waitForTimeout(200);
 await snap('11-combat-outburst-hold');
-const conf3 = host.getByRole('button', { name: /^Confirm/ }).first();
-console.log('  confirm:', await conf3.textContent(), 'enabled', await conf3.isEnabled(), 'AP', u.ap);
-if (await conf3.isEnabled()) await conf3.click();
+// Rules 1.5: Begin from the design pad (hold at stage 0); the HEART panel takes over.
+const begin3 = host.locator('div[aria-label="Begin or snap"] button', { hasText: 'Begin' });
+console.log('  begin enabled', await begin3.isEnabled(), 'AP', u.ap);
+if (await begin3.isEnabled()) await begin3.click();
 await host.waitForTimeout(500);
 ({ cb, u } = await CB());
 ok('the Outburst is held: ' + JSON.stringify(u.mg?.held), !!u.mg?.held);
@@ -265,7 +283,7 @@ if (back !== 'mine') console.log('  state:', await host.evaluate(() => { const c
 ({ cb, u } = await CB());
 console.log('  held now', JSON.stringify(u.mg?.held), 'strain', u.mg?.strain, 'AP', u.ap);
 await host.evaluate(() => scrollTo(0, 0)); await snap('13-combat-held-next-turn');
-const relOk = await pickAction(host, /^Release ·/, { timeout: 4000 }).then(() => true, () => false);
+const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 4000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 4000 }).then(() => true, () => false));
 ok('Release appears while holding', relOk);
 if (relOk) {
   await host.waitForTimeout(200);

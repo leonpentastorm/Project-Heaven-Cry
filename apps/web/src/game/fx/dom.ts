@@ -172,6 +172,16 @@ export function screenTint(kind: 'grey' | 'red' | 'white', ms = 500) {
   anim(d, [{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
   setTimeout(() => d.remove(), ms + 60);
 }
+/** The screen's edge throbs in a colour (a heart at stage 4, Strain over the limit): an inset glow that beats twice.
+ *  Under reduced motion it shows once, without the beat. */
+export function edgePulse(color: string, ms = 800, strength = 1) {
+  if (!layer) return;
+  const d = document.createElement('div'), px = Math.round(60 + 50 * strength);
+  d.style.cssText = 'position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 ' + px + 'px ' + Math.round(px * 0.3) + 'px ' + color;
+  layer.appendChild(d);
+  anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 0.6, offset: 0.3 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 0.9, offset: 0.12 }, { opacity: 0.25, offset: 0.3 }, { opacity: 0.75, offset: 0.45 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
+  setTimeout(() => d.remove(), ms + 60);
+}
 /** A move: a copy of the token walks the path while the real one (already at the end) is hidden. */
 export function walk(path: string[], destTokenKey: string, msPerTile: number): number {
   const pts = path.map((k) => centre(k)).filter(Boolean) as Pt[];

@@ -2,7 +2,7 @@
 // Narrator can look up by key ("weapon:service_pistol", "condition:bleeding") when a moment needs it, instead of
 // carrying all of it in every prompt. Entries describe what a thing is and does in words; the engine still owns
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
-import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, SIGILS, SCHOOLS, MODULES } from './data';
+import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
 import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
@@ -37,7 +37,8 @@ function build(): WikiEntry[] {
   for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Tenets: ' + (p.tenets || []).join('; ') + '.', 'Taboos: ' + (p.taboos || []).join('; ') + '.', 'Blessings: ' + (p.blessings || []).map((b: any) => b.name).join(', ') + '.'));
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));
-  // Magic (spec: Magic; Sigils rules 1.4, Soul rules 1.2): Sigil words by group, the grammar, Soul schools and modules.
+  // Magic (spec: Magic; Sigils rules 1.4, Soul rules 1.5): Sigil words by group, the grammar, Soul schools, modules, tones,
+  // shapes and the heart cycle.
   const sg: any = (sigilsJ as any).grammar || {}, els: any = (sigilsJ as any).elements || {};
   for (const w of SIGILS as any[]) {
     const kind = w.group === 'subject' ? 'Subject, ' + String(w.class).replace('subject_', '') : String(w.group), el = w.element ? els[w.element] : null;
@@ -59,8 +60,23 @@ function build(): WikiEntry[] {
   if (casters.length) add('enemy:casters', 'Enemy Sigil casters', line('Enemy Sigil casters (rules 1.4): a foe of the same tier may name one by caster; it fights with an Evoker and these words.',
     casters.map((c) => c.name + ' (' + c.tier + '): ' + (c.sigils || []).map((w: string) => String(w).toUpperCase()).join(', ') + '.').join(' '),
     'COMMAND from an enemy fits its target: it walks a player out of its guards\' reach (up to 3 tiles, never into harm), halts one charging in, makes a shooter drop its weapon, else makes it kneel.'));
+  // Enemy Soul casters (enemies.json soul_casters; rules 1.5, ai-soul.ts): also named by `caster`.
+  const hearts = ((enemiesJ as any).soul_casters || []) as any[];
+  if (hearts.length) add('enemy:soul_casters', 'Enemy Soul casters', line('Enemy Soul casters (rules 1.5): a foe of the same tier may name one by caster; it fights with an Emanator and these ready designs, its heart glowing as it fills.',
+    hearts.map((c) => c.name + ' (' + c.tier + '): ' + (c.designs || []).map((d: any) => d.name + ' (' + [d.tone && d.tone !== 'raw' ? d.tone : 'raw', d.school, ...(d.modules || [])].join(' ') + ')').join(', ') + '. ' + (c.text || '')).join(' ')));
   for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
   for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
+  // Soul 1.5 (Outburst 2.0): the heart cycle in one entry (soul:heart), each tone (tone:<id>) and each shape (form:<id>).
+  const sr: any = SOUL_RULES || {}, cyc = sr.cycle || {}, mult = (cyc.stage_mult || []).map((x: number, i: number) => i + ' ×' + x).join(', ');
+  add('soul:heart', 'The heart (Outbursts)', line('How an Outburst is cast (Soul magic, rules 1.5).',
+    'Begin (' + (cyc.begin_ap ?? 2) + ' AP; Swift ' + (cyc.swift_begin_ap ?? 1) + '): open a ready design, pay its MP, +1 Strain; it is held at stage 0 and the heart glows where everyone can see it. Pump (' + (cyc.pump_ap ?? 1) + ' AP): +1 stage, up to ' + (cyc.max_stage ?? 4) + '. Release (' + (cyc.release_ap ?? 1) + ' AP): it fires at the stage reached (' + mult + '). Begin and Release at once is a snap cast; a full turn reaches stage 3.',
+    'Held past the turn it swells: +1 stage free at the next turn start and +1 Strain (+2 in Flooded air). Empathy 3 gives a free Pump a round, Empathy 7 two. While holding, the caster can move, shoot, Syphon, Steady or Feed (absorb a glyph on its tile: +1 stage), and watch with the heart (Heart Overwatch: the first enemy into reach draws the release, as a reaction). An elemental heart leaks onto adjacent enemies each turn (5 and the tone\'s stage-1 rider). Allies releasing after each other in a round resonate (+0.2 a stage multiplier each, at most +0.4).',
+    'Strain: limit 3 + half Will Power. Each point over burns the caster for ' + (sr.strain?.burn_per_point ?? 8) + ' at the end of its turn (it Downs, never kills); ' + (sr.strain?.short_at_over ?? 3) + ' over is a Mana Short, no roll: Stunned, and a held Outburst goes off wild with its element\'s backlash on the caster. No vent: Strain falls 1 every turn start and by calming the heart: a still turn holding nothing, the first weapon attack of a turn, the first heal, stim, shield or cleanse on an ally, Let it go (free: drop the held one, Strain falls by its stage, at most what its swells cost) and Steady the heart (1 AP while holding: −1, and no swell next turn).',
+    'Damage: 20 × the Soul multiplier × the stage × the shape. Raw Outbursts are Soul damage and ignore armour; a tone is Elemental (armour counts half) with a rider that grows with the stage. A Bolt and a Lance roll Will Power against Defense; a Wave, Burst and Aura hit everyone in the area (friendly fire, Buff only on allies). A second school (Will Power 5, on the same side as the first) rides at half strength where the first took effect. Describe the heart: violet heat, a heartbeat rising with every Pump, blooming into the tone\'s colour on release; a Short is the heartbeat stopping, then a crack. Never decide a number: the engine reports them. Tones: tone:<id>; shapes: form:<id>.'));
+  for (const t of (TONES as any[])) add('tone:' + t.id, t.name, line(t.name + ' (Outburst tone' + (t.element ? ', the Sigil ' + t.element + ' element in the Soul style; +' + t.cost + ' MP' : '') + ').', t.text,
+    Object.entries(t.stages || {}).map(([k, v]: [string, any]) => 'Stage ' + k + ': ' + v.text).join(' '), t.aura_look ? 'Held, it leaks as ' + t.aura_look + ' around the caster.' : ''));
+  add('form:bolt', 'Bolt', line('Bolt (Outburst shape, the default): one target at the aim, 4 tiles (Far: 8) + the Soul range bonus, in sight; rolls Will Power against Defense; damage ×1.'));
+  for (const m of (MODULES as any[]).filter((x) => x.form)) add('form:' + m.id, m.name, line(m.name + ' (Outburst shape; a module, +' + m.cost + ' MP).', m.text));
   return out;
 }
 let cache: WikiEntry[] | null = null;
@@ -72,6 +88,6 @@ export function wikiLookup(key: string): WikiEntry | null {
 /** The wiki's index: the kinds and how to name an entry (the long id lists live in the entries, not the prompt). */
 export function wikiKinds(): Record<string, string[]> {
   const kinds: Record<string, string[]> = {};
-  for (const e of wikiEntries()) if (!(e.key.startsWith('class:') && e.key.includes('.')) && e.key !== 'sigil:grammar') (kinds[e.key.split(':')[0]] ||= []).push(e.key.split(':')[1]);
+  for (const e of wikiEntries()) if (!(e.key.startsWith('class:') && e.key.includes('.')) && e.key !== 'sigil:grammar' && e.key !== 'soul:heart') (kinds[e.key.split(':')[0]] ||= []).push(e.key.split(':')[1]);
   return kinds;
 }

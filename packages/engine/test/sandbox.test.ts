@@ -271,10 +271,13 @@ describe('the tools', () => {
     const r = pc(g); expect(r.hp).toBe(r.maxHp); expect(r.ap).toBe(6); expect(r.ammo).toBe(WEAPON[r.weapon].magazine); expect(r.jammed).toBe(false);
     expect(r.mg!.mp).toBe(r.mg!.mpMax); expect(r.mg!.charge).toBe(10); expect(r.mg!.cores).toBeGreaterThanOrEqual(4);
     g = apply(g, { type: 'sandbox/learn', charId: c.id, word: 'fire' }, HOST);
-    g = apply(g, { type: 'sandbox/learn', charId: c.id, school: 'buff', module: 'bounce' }, HOST);
+    g = apply(g, { type: 'sandbox/learn', charId: c.id, school: 'buff', module: 'aura' }, HOST);
     expect(charOf(g).sigils).toContain('fire'); expect(pc(g).mg!.words).toContain('fire');
     expect(charOf(g).soulKnown!.schools).toContain('buff');
-    g = apply(g, { type: 'sandbox/design', charId: c.id, design: { id: '', name: 'Mend', school: 'buff', modules: ['bounce'] } }, HOST);
+    // the MAGIC tab's own learn action maps through to the Proving Ground's, tone included
+    g = apply(g, { type: 'magic/learn', charId: c.id, tone: 'fire', from: 'plate' } as any, HOST);
+    expect(charOf(g).soulKnown!.tones).toContain('fire');
+    g = apply(g, { type: 'sandbox/design', charId: c.id, design: { id: '', name: 'Mend', school: 'buff', modules: ['aura'] } }, HOST);
     expect(pc(g).mg!.designs.some((d) => d.name === 'Mend')).toBe(true);
     expect(refused(g, { type: 'sandbox/learn', charId: c.id, word: 'not_a_word' })).toMatch(/word/);
   });

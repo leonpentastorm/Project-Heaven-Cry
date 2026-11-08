@@ -3,7 +3,7 @@
 // number comes from the engine's preview; these tests check the screen says it.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, SIGIL, type Sheet, type Combat, type Unit, type MapDef } from '@engine';
-import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, spellSummary, arrowOf, actionPreviewTiles } from './sigilView';
+import { drawStrip, wordRows, shortWhy, WORD_ROWS, patternPanel, evokeView, evokeClick, placedView, placedLegend, spellSummary, arrowOf, actionPreviewTiles } from './sigilView';
 import { GLYPH_PATHS, glyphSvg } from './glyphs';
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
@@ -258,5 +258,22 @@ describe('class moves that cast paint the grid (item 489 c)', () => {
     expect(t['8,5'].marks.find((m) => m.key === 'pkwho')!.text).toBe('ENEMY'); expect(t['2,5'].marks.find((m) => m.key === 'pkwho')!.text).toBe('ALLY');
     expect(actionPreviewTiles(cb, { tiles: ['8,5'] })['8,5'].layer).not.toMatch(/79, 200, 223/); // not Sigil: neutral
     expect(actionPreviewTiles(cb, null)).toEqual({});
+  });
+  it('the glyph keyboard\'s rows: the four Subject kinds, then Reach, Delivery, Burst, Filter; every word in exactly one row', () => {
+    expect(WORD_ROWS.map((r) => r.label)).toEqual(['Elements', 'Afflictions', 'Boons', 'Workings', 'Reach', 'Delivery', 'Burst', 'Filter']);
+    const all = Object.keys(SIGIL), rows = wordRows(all, (w) => w);
+    expect(rows.map((r) => r.key)).toEqual(WORD_ROWS.map((r) => r.cls)); // all 40 words: no "Other" row
+    expect(rows.flatMap((r) => r.items).sort()).toEqual([...all].sort());
+    expect(wordRows(['seek', 'fire', 'nonsense'], (w) => w).map((r) => [r.label, r.items])).toEqual([['Elements', ['fire']], ['Reach', ['seek']], ['Other', ['nonsense']]]);
+    expect(wordRows([], (w: string) => w)).toEqual([]);
+  });
+  it('a refused key\'s short hint', () => {
+    expect(shortWhy('One glyph per tile: this tile already holds FIRE.')).toBe('tile taken');
+    expect(shortWhy('Needs 1.8 AP.')).toBe('needs 1.8 AP');
+    expect(shortWhy('Past your cap: 3 glyphs, and your Max Sigil words is 2.')).toBe('over your cap');
+    expect(shortWhy('A second Reach word is refused: one Reach word per spell (SEEK, ARC).')).toBe('one Reach only');
+    expect(shortWhy('Silenced: no magic this round.')).toBe('silenced');
+    expect(shortWhy('Not your turn.')).toBe('not your turn');
+    expect(shortWhy('Something new.')).toBe('can\'t now');
   });
 });
