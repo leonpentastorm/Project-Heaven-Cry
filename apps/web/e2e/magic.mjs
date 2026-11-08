@@ -191,7 +191,8 @@ const opener = await host.evaluate(() => window.__phc.getState().game.combat.log
 console.log('  combat opens:', opener);
 // wait for our turn
 const myTurn = () => host.evaluate((id) => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over) return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId === id ? 'mine' : 'other'; }, me);
-const waitMine = async () => { for (let i = 0; i < 100 && (await myTurn()) === 'other'; i++) await host.waitForTimeout(150); return myTurn(); };
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
+const waitMine = async () => { for (let i = 0; i < 100 && (await myTurn()) === 'other'; i++) await host.waitForTimeout(150); await idleOn(host); return myTurn(); };
 ok('our turn comes up', (await waitMine()) === 'mine');
 const CB = () => host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.charId === id); return { cb, u }; }, me);
 let { cb, u } = await CB();

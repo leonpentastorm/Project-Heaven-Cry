@@ -26,12 +26,13 @@ const fxSince = async (n) => (await st()).cb.fx.filter((e) => e.n > n);
 const fxSeq = async () => (await st()).cb.fxSeq || 0;
 const must = async (a, what) => { const e = await act(a); if (e) console.log('  ' + (what || a.type) + ': ' + e); return e; };
 /** Enemy AI off: ending the turn hands it straight back with full AP (and runs the round: fields, traps, turrets). */
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
 async function newRound() {
-  await dismissCut();
+  await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
   await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 15000 });
-  await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut();
+  await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
 const moveTo = async (k) => { const s = await st(); if (s.u.pos === k) return null; await ensureAp(2); return must({ type: 'combat/move', unitId: s.u.id, to: k }, 'move to ' + ref(k)); };

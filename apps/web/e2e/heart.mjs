@@ -33,12 +33,13 @@ const seq = async () => (await st()).cb.fxSeq || 0;
 const fxSince = async (n) => (await st()).cb.fx.filter((e) => e.n > n);
 const kinds = (list) => list.map((e) => e.k);
 const ourTurn = () => p.evaluate(() => { const s = window.__phc.getState(), cb = s.game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.side === 'pc'; });
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
 async function newRound() {
-  await dismissCut();
+  await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
   await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && (u.ap >= 5 || u.conds?.stunned > 0); }, r0, { timeout: 25000 });
-  await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut();
+  await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
 const tab = async (name, pg = p) => { await pg.locator('[role="tablist"][aria-label="Actions"] [role="tab"]', { hasText: name }).first().click(); await pg.waitForTimeout(250); };

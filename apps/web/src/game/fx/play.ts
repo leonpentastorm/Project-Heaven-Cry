@@ -792,6 +792,8 @@ export const TURNS_HOLD_MAX = 8000;
 /** Until when (performance.now() clock) other units' turns are still being shown: the engine runs the enemies' turns at
  *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then. */
 export const turnsBusyUntil = () => Math.min(turnsUntil, performance.now() + TURNS_HOLD_MAX);
+// For the e2e suites (they wait for the other turns to finish playing before they act, as a player must).
+if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 /** When the queued effects will have played (performance.now() clock): a turn banner can wait for the enemies' moves. */
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). */
