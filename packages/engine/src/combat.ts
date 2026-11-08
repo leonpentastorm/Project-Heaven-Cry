@@ -6,6 +6,7 @@ import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
+import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
 import { skillItemsOf } from './effects/collect';
@@ -816,6 +817,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng);
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
+    armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     units.push(u);
   });
@@ -1356,6 +1358,8 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     // Sigil magic (rules 1.4, ai-sigil.ts): any enemy steps out of a field of yours and scuffs a turret underfoot; a caster
     // then weighs a spell against its weapon.
     if (!order && aiSigilStep(cb, rng, u)) { checkOver(cb); continue; }
+    // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
+    if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
     if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2 && !condOn(u, 'disarmed')) { reload(cb, u); continue; }

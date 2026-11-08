@@ -108,10 +108,11 @@ MAGIC (the engine runs every number)
 - Sigil magic (Mind; needs an Evoker and mana cores). Words (id = the word in lower case): ${SIGIL_GROUPS}.
 - A spell is a Line of 2 to 4 glyphs: a Subject and another word, at most one Reach word (none = Touch, 1 tile). The caster draws one glyph on their own tile, steps, draws again; Evoke fires the Line from where they stand: from an end it fires along, from beside it across. It hits friends unless KIN is in it. Anyone may scuff a glyph, enemies too. Firing builds Flux; vent clears it (raising the mana meter). Details: sigil:grammar and each word's entry.
 - Describe Sigils as cyan, square, snapping strokes, each element as its entry says; describe fields, traps and turrets as the engine reports them. Never decide a hit, a number or who a spell touched.
-- Soul magic (Soul; needs an Emanator and MP): an Outburst is a ready design (school + modules); begin it now or hold it (it grows each turn, Strain rises), then release. Too much Strain is a Mana Short. A heart burst Downs, never kills. Syphon draws ambient mana into MP; crystallise turns 10 mana into a core.
-- Players' spell words map to actions[]: draw (word, on their own tile), evoke (tile: a glyph of the Line, aim; aims for TWICE, dest for STEP, order and orderTo for COMMAND), scuff, vent, core, outburst (design id, aim, hold), release (aim), syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
+- Soul magic (Soul; an Emanator and MP; rules 1.5): an Outburst is a ready design (school, modules, a tone: raw, fire, storm, frost, stone, gale or acid). Begin holds it at stage 0, pump adds a stage (to 4), release fires it; held past a turn it swells a stage. The heart glows as it fills: violet heat, a rising heartbeat, blooming into the tone's colour. Details: soul:heart, tone:<id>, form:<id>.
+- Strain rises with each Begin and held turn; over the limit the heart burns (it Downs, never kills); 3 over is a Mana Short (Stunned, the held one goes off wild). No vent: it falls each turn and by calming the heart (a still turn, fighting, tending an ally, letgo, steady). Syphon draws mana into MP; crystallise turns 10 mana into a core.
+- Players' spell words map to actions[]: draw (word, on their own tile), evoke (tile: a glyph of the Line, aim; aims for TWICE, dest for STEP, order and orderTo for COMMAND), scuff, vent, core, outburst (design id, aim, hold), pump, release (aim), letgo, steady, feed, heartwatch, syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
 - The mana meter (0 to 40; thin, normal, rich, flooded) is in PARTY CONDITION. Deaths, venting and Grand forms raise it; Soul casting, syphon and crystallise lower it. Set mana only when the story changes the place itself (a ley spring, a dead zone); null otherwise. Flooded places strain Soul casters; thin places starve them.
-- Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school or module id, and a reason. Rare: a word is a reward, at most one per character per scene.
+- Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school, module or tone id, and a reason. Rare: a word is a reward, at most one per character per scene.
 
 THE MAP (grid references)
 - Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. Each turn gives you the current map, what is where, and where everyone stands.
@@ -210,7 +211,7 @@ export function campaignPrompt(g: GameState): string {
 
 /** A caster's magic, for the party block (static between level-ups; the live meters are in PARTY CONDITION). */
 function magicBrief(c: Character): string {
-  const words = (c.sigils || []).map((w) => SIGIL[w]?.word || w), designs = (c.outbursts || []).map((d) => `${d.id} ${d.name} (${[d.school, d.school2].filter(Boolean).join('+')}${d.modules.length ? ': ' + d.modules.join(', ') : ''})`);
+  const words = (c.sigils || []).map((w) => SIGIL[w]?.word || w), designs = (c.outbursts || []).map((d) => `${d.id} ${d.name} (${[d.school, d.school2].filter(Boolean).join('+')}${d.modules.length ? ': ' + d.modules.join(', ') : ''}${d.tone && d.tone !== 'raw' ? ', ' + d.tone : ''})`);
   if (!words.length && !designs.length) return '';
   return `\n  Magic: ${words.length ? 'Sigil words ' + words.join(', ') + (hasEvoker(c) ? '' : ' (no Evoker carried)') : 'no Sigil words'}; ${designs.length ? 'Outburst designs ' + designs.join('; ') + (hasEmanator(c) ? '' : ' (no Emanator carried)') : 'no Outbursts'}.`;
 }
@@ -392,7 +393,7 @@ export function submitTool(g: GameState) {
     hidden: { type: 'boolean', description: 'Lurking: unseen by the players until spotted (place, update)' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {
-    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'] },
+    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'pump', 'release', 'letgo', 'steady', 'feed', 'heartwatch', 'syphon', 'crystallise'] },
     to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id or exact name, or a charId or character name' },
     mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'An object id: a door for door; anything to attack' },
     word: { type: 'string', description: 'A Sigil word id, for draw (on the caster\'s own tile)' }, tile: { type: 'string', description: 'A grid reference: for evoke, a glyph of the Line' },
@@ -400,8 +401,8 @@ export function submitTool(g: GameState) {
     order: { type: 'string', enum: ['halt', 'kneel', 'drop', 'move'], description: 'evoke COMMAND' }, orderTo: { type: 'string', description: 'COMMAND move: the tile' },
     aim: { type: 'string', description: 'A grid reference or token id, for evoke, outburst and release' }, design: { type: 'string', description: 'An Outburst design id, for outburst' }, hold: { type: 'boolean', description: 'outburst: hold it to grow' },
   }, required: ['charId', 'act'] } };
-  schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school or module each', items: { type: 'object', properties: {
-    charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, reason: { type: 'string' },
+  schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school, module or tone each', items: { type: 'object', properties: {
+    charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, tone: { type: 'string' }, reason: { type: 'string' },
   }, required: ['charId', 'reason'] } };
   schema.properties.mana = { anyOf: [{ type: 'null' }, { type: 'integer' }], description: 'Set the place\'s mana meter (0 to 40) only when the story changes the place itself; null otherwise' };
   schema.properties.memory = { type: 'array', description: 'Memory upkeep: people, threads, facts, factions, pins (empty when nothing changes)', items: { type: 'object', properties: {

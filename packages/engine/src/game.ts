@@ -25,6 +25,7 @@ import './perks';
 import './classes';
 import { runGift } from './classes/i';
 import { CASTER, armFoe } from './ai-sigil';
+import { HEART_CASTER, armHeart } from './ai-soul';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -219,7 +220,7 @@ export type NarratorTurn = {
   memory?: MemOp[];
   /** Magic the story teaches (spec: The Magic panel): a tutor's Sigil word, or an Outburst school or module learned
    * from a moment that shook the character. */
-  magic?: { charId: string; word?: string; school?: string; module?: string; reason?: string }[];
+  magic?: { charId: string; word?: string; school?: string; module?: string; tone?: string; reason?: string }[];
   /** The air here, set by the place (spec: the meter): 0-40, e.g. a chapel Flooded at 32, a vacuum lab Thin at 4. */
   mana?: number | null;
   /** When asked: the oldest scenes rolled into a chapter, and the saga (the story so far) rewritten. */
@@ -1067,7 +1068,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   if (t.combat && t.combat.enemies?.length) {
     const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
     const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-    let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
+    let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
     // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
     if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
       const used = new Set<number>();
@@ -2226,6 +2227,13 @@ function sandboxCasters(n: number, wave: { name: string; tier: string; weapon: s
   if (n >= 3 && n % 2 === 1) swap('soldier', 'sigil_adept');
   if (n >= 6 && n % 2 === 0) swap('elite', 'sigil_warden');
   if (n >= 10 && n % 5 === 0) swap('boss', 'sigil_magister');
+  // Soul casters (rules 1.5, ai-soul.ts; provisional): from wave 4, on even waves, the first sparring trooper is a Heart
+  // adept; from wave 7, on odd waves that aren't champion waves, the first range warden is a Heartfire elite; from wave 5, on every champion wave,
+  // the first Proving champion the Sigil magister didn't take is a Heart sovereign. enemies.json soul_casters.
+  const heart = (tier: string, id: string) => { const f = wave.find((x) => x.tier === tier && !x.caster), c = HEART_CASTER[id]; if (!f || !c || c.tier !== tier) return; f.caster = id; f.weapon = c.weapon; f.name = c.name + ' ' + (wave.filter((x) => x.caster === id).length); };
+  if (n >= 4 && n % 2 === 0) heart('soldier', 'heart_adept');
+  if (n >= 7 && n % 2 === 1 && n % 5 !== 0) heart('elite', 'heartfire_elite');
+  if (n >= 5 && n % 5 === 0) heart('boss', 'heart_sovereign');
   return wave;
 }
 /** The wave the next fight is: the one after a cleared wave, else the current one (a fallen wave is fought again). */
@@ -2610,7 +2618,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       if (sb.mode === 'teams') fail('Team fight: no drill units (switch the mode to Co-op waves).');
       if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
       // A Sigil caster (enemies.json casters; rules 1.4) of the same tier: it fights with an Evoker and its words.
-      const caster = a.caster ? CASTER[a.caster] : undefined;
+      const caster: { id: string; name: string; tier: string; weapon: string } | undefined = a.caster ? CASTER[a.caster] || HEART_CASTER[a.caster] : undefined;
       if (a.caster && !caster) fail('No such caster.');
       if (caster && caster.tier !== a.tier) fail(caster.name + ' is a ' + caster.tier + '.');
       const weapon = a.weapon || (caster ? caster.weapon : '');
@@ -2622,7 +2630,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (!standable(map, k) || Object.values(positionsOf(g)).includes(k) || npcsOf(g).some((n) => n.pos === k) || storyObjects(g).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
         const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (npcsOf(g).filter((n) => n.tier === a.tier).length + 1);
         npcsOf(g).push({ id: 'foe-s' + (++sb.spawned), name: nm, side: 'hostile', tier: a.tier, weapon, pos: k, portrait: portraitFor(g, nm) || undefined, facing: facingToward(k, partyCentre(g)), ...(caster ? { caster: caster.id } : {}) });
-        sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? ', Sigils' : '') + ') stands at ' + refOf(k) + '.');
+        sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') stands at ' + refOf(k) + '.');
         return;
       }
       if (!cb) fail('No fight is on.');
@@ -2630,10 +2638,10 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       if (!standable(cb!.map, k) || cb!.units.some((u) => u.pos === k && !u.dead) || objectsOf(cb!).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
       const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (cb!.units.filter((u) => u.tier === a.tier).length + 1);
       const u = unitFromEnemy('foe-s' + (++sb.spawned), nm, a.tier, weapon, k, g.rng); u.npcId = u.id;
-      if (caster) armFoe(u, { caster: caster.id });
+      if (caster) { armFoe(u, { caster: caster.id }); armHeart(u, { caster: caster.id }); }
       const p = portraitFor(g, nm); if (p) u.img = p;
       cb!.units.push(u); cb!.order.push(u.id);
-      sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? ', Sigils' : '') + ') enters at ' + refOf(k) + '.');
+      sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') enters at ' + refOf(k) + '.');
       return;
     }
     case 'sandbox/clear': {
