@@ -2089,7 +2089,7 @@ It's an RPG: players can attack anyone and anything. The game never refuses an a
 
 ## World Play (rules revision 1.7)
 
-> **Rules revision 1.7: World Play (accepted direction, Leon, 8 Nov 2026; decision 105; design `docs/design/world-play-spec.md`).** The principle: **anything the story says is there is on the map, and the engine owns what it does.** The Narrator places things and writes their choices; the engine runs the rolls, the costs and the effects, and typing can't skip a check. Every number below is provisional (items 636–668). Data: `data/world_play.json` (kinds, weights, avatar pools, the hurt table, hazards), the `cache` kind in `data/objects.json`.
+> **Rules revision 1.7: World Play (accepted direction, Leon, 8 Nov 2026; decision 105; design `docs/design/world-play-spec.md`).** The principle: **anything the story says is there is on the map, and the engine owns what it does.** The Narrator places things and writes their choices; the engine runs the rolls, the costs and the effects, and typing can't skip a check. Every number below is provisional (items 636–670). Data: `data/world_play.json` (kinds, weights, avatar pools, the hurt table, hazards), the `cache` kind in `data/objects.json`.
 
 **People on the map have a face.** Every token has a **kind** (human, robot, drone, crawler, beast, machine; default human) and an **avatar** (an art id). The Narrator may name the avatar; otherwise the engine picks one: the campaign's portrait for that name, else the kind's pool (world-character portraits for humans and crawlers, the drone art for drones and machines, the infantry-robot art for robots; beasts have none yet and show their kind badge). The web draws every token with its avatar and a kind badge.
 
@@ -4148,3 +4148,41 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 627. **The Narrator's Devotion move** is refused above ±2 and without a reason when the host sends `faith/devotion`; in the Narrator's turn (`patrons`, `faith`) it is clamped to ±2 instead. The turn's `patronMood` is no longer applied.
 628. **Heretic's Stolen Fire** prays a stolen Hymn as an Atheist prays a learned one (d20 + Will Power against 14, 16 or 18; no Witnessed), with the Hymn's own target, second unit or tile. In the story it is d20 + Will Power against the same TN, and the Narrator rules the answer.
 629. **Old-shape patrons** (a patron added at run time with `blessings` and no `hymns`) still work: their Blessings are Hymns (tier 1 unless given), aimed at you or an ally, and run their data effects.
+
+**Rules revision 1.7: World Play (8 Nov 2026; decision 105; `docs/design/world-play-spec.md`). Numbers and readings where the design was silent. PROVISIONAL.**
+
+636. **Carry weights by kind:** robot 40 kg, drone 15, human 70, crawler 70, beast 80, machine 40; any other kind 70 (`data/world_play.json`).
+637. **Carry and Put down** are area-map actions, 1 AP each. Carry takes an adjacent token that is seen and is not hostile, or is a prisoner, or is at 0 HP (that is the reading of "willing, Downed, a robot or a drone": a hostile robot is still fighting you). Put down goes onto an adjacent free tile; with no tile named, the nearest free one.
+638. **Overweight while carrying** uses the existing rules unchanged (−1 Movement per started 5 kg over, no Sprint), so a 70 kg body takes most characters to the 0.5 Movement floor. A playtest question: the rules may want a carry-specific penalty instead.
+639. **In a fight** carried creatures come along and can't be put down until it ends. A carrier who is Downed (or killed) drops them on the nearest free tiles; in a fight they lie there (`combat.dropped`) and are tokens again when it ends; out of a fight they are tokens at once.
+640. **The Narrator's carry and drop** cost no AP and need no adjacency; a drop on a taken tile goes to the nearest free one.
+641. **Caches:** Search is 1 AP, adjacent, in a fight too (`combat/search`). Players see how many entries a cache holds, never what, until it is searched; a locked or jammed cache refuses Search. At most 12 entries.
+642. **Each character tries each approach once** (spec section 4), replacing the old once per scene.
+643. **Reveal** shows the object and every hidden token, object and hazard within 3 tiles of it. **Open** on a cache leaves it to be searched; remove and disarm settle the object.
+644. **Disarm** on an object also removes any hazard covering its tile.
+645. **Alarm** reveals every hidden hostile in the zone, and every unaware one loses unaware (they are alerted); the Narrator is called and may start the fight.
+646. **A failed approach's condition:** the ones a story carries (Bleeding, Shaken, Weakened, Fear, Nausea, Injured, the brain debuffs) last the scene as story conditions; the others (Slowed, Burning, Stunned…) go on the area map for their normal rounds, with no save.
+647. **Jam** locks the object for the rest of the scene and removes that approach for everyone, for good.
+648. **Lose** takes one of `failItem` (an item id, its name, or a plot item's name); nothing if the actor carries none.
+649. **Approaches on people:** success ally, inform, advance, reveal (within 3 tiles) or remove (they leave); failure hostile, hurt, alarm, condition, lose. Open, disarm and loot do nothing on a person.
+650. **Hazard TNs** are 12 light, 16 heavy, for both their approaches and their saves. Armour applies to minefields and collapses, not to fire or radiation; a hit always does at least 1.
+651. **Hazard details:** a minefield, a collapse and a gas that Stuns stop the walk on that tile; fire, radiation and a gas that only Shakes don't. Radiation counts the tiles each creature enters in that hazard; Weakened lands from the third and on every tile after.
+652. **The engine's approaches:** Find a safe path rolls the better of **Vigilant and Sensory** (the spec's "Perception or Vigilant": Perception is an attribute, so its skill for spotting and the senses' skill), Disarm the better of Proficiency and Ingenuity. 2 AP, within 1 tile of the hazard.
+653. **A safe path** is a lane: the hazard's tiles on the shortest walk from the actor to the hazard's farthest tile. It holds for the squad only (side pc); a second success adds another lane.
+654. **A failed disarm** gives the actor one tile of the hazard (no mine is spent, radiation doesn't count it).
+655. **Hidden hazards:** minefields, radiation and gas can be hidden; fire and collapses can't. Passive Vigilant (10 + modifier) against the hazard's TN within 2 tiles, at the end of a move; stepping in reveals it; its approaches open once it is seen.
+656. **Hazard limits:** 64 tiles each, 12 a zone; solid tiles are left out.
+657. **Enemies** set hazards off and don't path around them (yet). Tokens on the area map are not hurt by hazards, and the Narrator moving a token through one fires nothing (the Narrator's call). Gear that is `hazard_immune` protects (fire; toxic covers gas and radiation).
+658. **Triggers** are area-map only. Enter fires on a party member's walk (their own moves, typed moves, the Narrator's moves); examine on an examine, a search or an attempt on that object; objective when it is done, checked after every action. Spawn places at most 6; a fight whose people couldn't be placed does nothing; reveal with no ids shows what is hidden within 1 tile of its tiles; at most 16 unfired a zone; its text is shown to everyone when it fires.
+659. **The Narrator's moves** (`moves[]`) walk the path for free (no AP), firing hazards, traps and triggers on the way. With no path the move is a cutscene jump, refused (with a note) when the straight line crosses a live hazard tile.
+660. **Talk** needs the person seen and within 3 tiles. Each ask is 1 AP and is refused (at no cost) when they have no want or nothing to tell. Wants and hints stay out of players' views until asked or told; once told, the whole party knows. Talk checks carry the dialogue tag.
+661. **Ally:** a hostile person becomes neutral, a neutral one an ally (shown as ally). Allies don't fight beside the party yet.
+662. **Markers:** each open objective's `where` references in this zone, and the hints people gave (their optional `knows.at`, else the objective's references). Never on a hidden token, object or hazard.
+663. **The HERE card** counts an objective as here when its `where` names this zone, a reference resolves here, or something here moves it forward (an advance approach, a person who knows it). At most 3; with none here, the first open required objective, and its zone.
+664. **Where** holds a zone and up to 8 references, set by `missions[]` with or without a status. A campaign may write `where` on an objective (in the cached campaign block); the Narrator's own appear in the per-turn MISSION block.
+665. **A typed attempt's index** counts from 1, as the Narrator's list numbers approaches; the web's `idx` counts from 0.
+666. **Default avatars:** the campaign's portrait for the name first; else the kind's pool, picked by a hash of the token's id and name (the same on every screen): world-character portraits for humans and crawlers, the M813 infantry robots for robots, the scavenger drone for drones and machines, none for beasts (their kind badge shows). A Narrator avatar must be a pool member or a campaign portrait.
+667. **Lurkers start a story fight Hidden:** a hidden hostile token joining a fight the Narrator or a trigger starts starts it Hidden (as an attack from the area map already did).
+668. **The Proving Ground:** attempts and asks roll at once (no Narrator, AP always full); the tools place things only while gearing up; their objectives live in a "Drill" mission.
+669. **What the engine tells the Narrator:** up to 20 events (triggers fired, hazards hit, approaches tried with their effects, carrying, searches, talk, alarms) since its last turn, consumed by that turn; hazards hit in a fight are reported after it.
+670. **The Narrator's tool** stays the same all session: the new fields are optional, with fixed vocabularies only.
