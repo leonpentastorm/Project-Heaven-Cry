@@ -24,8 +24,9 @@ export function faithTabVals(sc, g, c) {
   const pray = (b, args) => { act(prayAction({ charId: c.id }, b, args)); sc.setState({ faOpen: null, faPick: null }); };
   const view = (b) => {
     const why = !story ? (g.phase === 'combat' ? 'In a fight, pray from the FAITH actions on your turn.' : 'Pray once the session is under way.') : !b.ok ? b.why : '';
-    const pk = pickerFor(b.target), open = !why && S.faOpen === b.key, needs = pk.kind !== 'none';
-    const tileWhy = pk.kind === 'tile' ? 'A prayer at a place is aimed on the grid, in a fight.' : '';
+    // A place or an enemy in the story is the Narrator's to rule (engine item 624): sent as it is, no pick.
+    const pk = pickerFor(b.target), narr = pk.kind === 'tile' || b.target === 'enemy', open = !why && S.faOpen === b.key, needs = pk.kind !== 'none' && !narr;
+    const tileWhy = '';
     let opts = [], verdict = '', ready = false, args = {};
     if (open) {
       const pv0 = previewPrayer(g, c.id, b.kind, b.id), ids = pv0.targets || [], two = pk.kind === 'two';
@@ -40,7 +41,7 @@ export function faithTabVals(sc, g, c) {
       const pv = missing ? null : previewPrayer(g, c.id, b.kind, b.id, args);
       ready = !!pv && pv.ok; verdict = missing || (pv.ok ? (pv.effectText || 'Ready.') : pv.why || 'Not now.');
     }
-    return { key: b.key, icon: b.icon, name: b.name, text: b.text, meta: b.ap + ' · ' + b.gate + ' · ' + b.odds, warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
+    return { key: b.key, icon: b.icon, name: b.name, text: b.text + (narr && story ? ' In the story, the Narrator rules where it lands.' : ''), meta: b.ap + ' · ' + b.gate + ' · ' + b.odds, warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
       off: !!why, pressed: open ? 'true' : 'false', style: btnStyle(open, !!why, FAITH_INK),
       aria: b.name + ' (' + b.kind + ')' + (why ? ': ' + why : needs ? ': choose, then confirm' : ''),
       click: () => { if (why) return toast(why); if (!needs) return pray(b, {}); sc.setState({ faOpen: open ? null : b.key, faPick: null }); },
