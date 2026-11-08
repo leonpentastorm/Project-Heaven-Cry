@@ -24,7 +24,8 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 await p.waitForTimeout(2200);
 for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await p.waitForTimeout(450); }
 
-const box = (sel) => p.evaluate((sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 }; }, sel);
+const box = async (sel) => { if (/phc-grip/.test(sel)) await p.locator(sel).first().scrollIntoViewIfNeeded().catch(() => {}); return box0(sel); };
+const box0 = (sel) => p.evaluate((sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 }; }, sel);
 const zoneOf = (id) => p.evaluate((id) => { const e = [...document.querySelectorAll('[data-phc-panel="' + id + '"]')].find((x) => x.offsetParent !== null); const z = e && (id === 'actions' ? e : e.closest('[data-phc-zone]')); return z ? z.dataset.phcZone : null; }, id);
 const drag = async (from, to, steps = 12) => { await p.mouse.move(from.x, from.y); await p.mouse.down(); await p.mouse.move(to.x, to.y, { steps }); await p.waitForTimeout(80); await p.mouse.up(); await p.waitForTimeout(500); };
 const gripOf = (id) => id === 'actions' ? '.phc-cb-bar .phc-grip' : '[data-phc-panel="' + id + '"] > .phc-grip';
@@ -51,8 +52,12 @@ let g = await box(gripOf('log')), a = await box('.phc-cb-aside');
 await drag({ x: g.cx, y: g.cy }, { x: a.cx, y: a.y + a.h - 20 });
 ok('the combat log moves into the action zone', (await zoneOf('log')) === 'sideZone');
 if (SHOTS) await p.screenshot({ path: SHOTS + '/layout-log-right.png' });
-g = await box(gripOf('legend')); const m = await box('[data-phc-panel="map"]');
-await drag({ x: g.cx, y: g.cy }, { x: m.cx, y: m.y + 10 });
+// The legend sits below a tall map: hold it at the zone's top edge until the zone scrolls up, then drop above the map.
+g = await box(gripOf('legend')); const zt = await box0('.phc-cb-left');
+await p.mouse.move(g.cx, g.cy); await p.mouse.down(); await p.mouse.move(zt.cx, zt.y + 8, { steps: 10 }); await p.waitForTimeout(1200);
+const m = await box0('[data-phc-panel="map"]');
+ok('holding a panel at the zone\'s top edge scrolls the zone (the map\'s top is back in view)', m.y >= zt.y - 2);
+await p.mouse.move(m.cx, m.y + 10, { steps: 4 }); await p.waitForTimeout(80); await p.mouse.up(); await p.waitForTimeout(500);
 const order = await p.evaluate(() => [...document.querySelectorAll('.phc-cb-left > [data-phc-panel]')].map((e) => ({ id: e.dataset.phcPanel, top: e.getBoundingClientRect().top })).sort((x, y) => x.top - y.top).map((x) => x.id));
 ok('the legend moves above the map: ' + order.join(', '), order[0] === 'legend' && order[1] === 'map');
 

@@ -90,6 +90,19 @@ export function startPanelDrag(e: PointerEvent, panel: PanelId, layout: CombatLa
   const src = document.querySelector('[data-phc-panel="' + panel + '"]') as HTMLElement | null;
   src?.classList.add('phc-drag-src');
   let target: { zone: ZoneId; index: number } | null = null;
+  // Edge auto-scroll: held near the top or bottom of a scrolling zone, the zone scrolls (a tall map pushes the other
+  // panels out of view), and the drop target follows.
+  let px = e.clientX, py = e.clientY, raf = 0;
+  const edge = () => {
+    raf = 0;
+    const z = zones().find((el) => { const r = el.getBoundingClientRect(); return px >= r.left && px <= r.right; });
+    if (z && z.scrollHeight > z.clientHeight) {
+      const r = z.getBoundingClientRect(), band = 48;
+      const dy = py < r.top + band ? -Math.ceil((r.top + band - py) / 4) : py > r.bottom - band ? Math.ceil((py - (r.bottom - band)) / 4) : 0;
+      if (dy) { const before = z.scrollTop; z.scrollTop += dy; if (z.scrollTop !== before) move(px, py); }
+    }
+    raf = requestAnimationFrame(edge);
+  };
   const zones = () => [...document.querySelectorAll('[data-phc-zone]')] as HTMLElement[];
   const move = (x: number, y: number) => {
     ghost.style.left = x + 14 + 'px'; ghost.style.top = y + 10 + 'px';
@@ -111,16 +124,18 @@ export function startPanelDrag(e: PointerEvent, panel: PanelId, layout: CombatLa
     else { ghost.textContent = '⠿ ' + PANEL_NAME[panel]; Object.assign(line.style, { display: 'block', left: zr.left + 8 + 'px', width: Math.max(40, zr.width - 16) + 'px', top: y0 + 'px' }); }
   };
   const end = (drop: boolean) => {
+    if (raf) cancelAnimationFrame(raf);
     removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp); removeEventListener('pointercancel', onCancel); removeEventListener('keydown', onKey, true);
     ghost.remove(); line.remove(); src?.classList.remove('phc-drag-src');
     document.documentElement.classList.remove('phc-dragging'); zones().forEach((z) => z.classList.remove('phc-drop-on'));
     if (drop && target) onDrop(movePanel(layout, panel, target.zone, target.index));
   };
-  const onMove = (ev: PointerEvent) => move(ev.clientX, ev.clientY);
+  const onMove = (ev: PointerEvent) => { px = ev.clientX; py = ev.clientY; move(px, py); };
   const onUp = () => end(true), onCancel = () => end(false);
   const onKey = (ev: KeyboardEvent) => { if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); end(false); } };
   addEventListener('pointermove', onMove); addEventListener('pointerup', onUp); addEventListener('pointercancel', onCancel); addEventListener('keydown', onKey, true);
   move(e.clientX, e.clientY);
+  raf = requestAnimationFrame(edge);
 }
 /** Keyboard on a grip: arrow up and down move the panel within its zone; left and right move it to the zone on that
  * side (the map and the action menu swap the sides). */
@@ -166,7 +181,7 @@ export const LAYOUT_CSS = [
   '.phc-cb-split>span{width:3px;height:100%;border-radius:2px;background:#232D3F;transition:background .15s,width .15s}',
   '.phc-cb-split:hover>span,.phc-cb-split:focus-visible>span,.phc-cb-split.phc-split-on>span{width:4px;background:#6FEA77}',
   '.phc-cb-split:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
-  '@media (max-width:999px){.phc-cb-split,.phc-grip,.phc-cb-layout-reset{display:none!important}.phc-cb-row{flex-direction:row!important}}',
+  '@media (max-width:999px){.phc-cb-split,.phc-grip,.phc-cb-layout-reset{display:none!important}.phc-cb-row{flex-direction:row!important}.phc-cb-left{max-width:none!important}}',
   '.phc-reduce .phc-grip,.phc-reduce .phc-cb-split>span{transition:none}',
 ].join('');
 

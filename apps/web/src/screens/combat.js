@@ -8,6 +8,7 @@ import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
   lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions } from '@engine';
 import { act, getState, go } from '../game/store';
+import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { castFight } from '../game/cast';
 import { openReport } from '../game/report';
@@ -135,6 +136,7 @@ ensureMotionCss();
 ensureStyle('phc-combat-motion', COMBAT_CSS);
 ensureStyle('phc-combat-layout', LAYOUT_CSS);
 ensureStyle('phc-resources', RES_CSS);
+ensureStyle('phc-combat-mapzoom', ZOOM_CSS);
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
 let LIVE = null;
@@ -162,7 +164,10 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–6 flip the action tabs on your turn; a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.panelKey(e); LIVE.numKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
+  // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
+  window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
+    e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
   // The turn card's commands were customised (game/commandsDialog.tsx): the mini-bar's quick commands follow.
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
@@ -187,9 +192,9 @@ const ASIDE_MIN = 410;
 const PANEL_KEY = 'phc.combatPanel';
 // The adjustable layout (game/combatLayout.ts): the zones' split and where each panel sits, per browser.
 let LAYOUT = readLayout();
+// The map's size (game/mapZoom.ts): Auto fits it to its zone at any resolution; Manual is the player's own size.
+let ZOOM = readZoom();
 let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
-/** How far the grid may zoom in when the column is hidden and the map has the room. */
-const ZOOM_MAX_WIDE = 1.4;
 /** About how tall the hidden-panel turn mini-bar is (the grid keeps clear of it). */
 const MINI_H = 196;
 const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
@@ -345,6 +350,26 @@ export class CombatLogic extends DCLogic {
       if (to != null && panel.scrollTo) panel.scrollTo({ top: Math.max(0, to), behavior: reducedMotion() ? 'auto' : 'smooth' });
     }));
   }
+  /** The map's size: a step in or out (Manual from then on), back to Auto, or 100%. */
+  zoomBy(what) {
+    ZOOM = normaliseZoom(zoomAction(ZOOM, this._zoom || 1, what)); saveZoom(ZOOM);
+    this._fitKey = null; this.fitGrid(); this.setState({});
+  }
+  /** − and + (= too) size the map; not while typing, not under a dialog or the turn card. */
+  zoomKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !['-', '+', '='].includes(e.key)) return;
+    if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (!getState().game?.combat) return;
+    e.preventDefault(); this.zoomBy(e.key === '-' ? 'out' : 'in');
+  }
+  /** The map toolbar's bindings. */
+  zoomVals() {
+    const z = this._zoom || 1, auto = ZOOM.mode === 'auto';
+    return { label: zoomLabel(z), auto: auto ? 'true' : 'false', manual: auto ? 'false' : 'true',
+      out: () => this.zoomBy('out'), in: () => this.zoomBy('in'), toAuto: () => this.zoomBy('auto'), reset: () => this.zoomBy('reset'),
+      cantOut: !auto && ZOOM.scale <= ZOOM_MIN, cantIn: !auto && ZOOM.scale >= ZOOM_MAX,
+      pctTitle: auto ? 'Auto: the map fits its zone (' + zoomLabel(z) + '). Click for 100%.' : 'Click for 100%', autoTitle: 'Auto: fit the map to its zone at any screen size' };
+  }
   /** A new layout (a panel dropped, the splitter let go, Reset): saved for this browser, then the grid refits. */
   setLayout(l) {
     LAYOUT = normalise(l); saveLayout(LAYOUT); this._liveW = null; this._fitKey = null;
@@ -376,8 +401,9 @@ export class CombatLogic extends DCLogic {
       splitReset: () => this.setLayout({ ...LAYOUT, width: null }),
     };
   }
-  /** Size the grid to the room beside the action column (CSS zoom, so the effects layer's tile rects stay true):
-   *  never larger than 1, never smaller than about half. Narrow windows fit the width only. */
+  /** Size the grid (CSS zoom, so the effects layer's tile rects stay true). Auto: the largest that fits beside the
+   *  action column, up to the manual maximum (2.5), never smaller than about half; narrow windows fit the width only.
+   *  Manual: the player's size (game/mapZoom.ts). */
   fitGrid() {
     if (typeof document === 'undefined' || typeof window === 'undefined') return;
     const sec = document.querySelector('.phc-cb-left'), row = sec && sec.parentElement, cb = getState().game?.combat;
@@ -387,8 +413,13 @@ export class CombatLogic extends DCLogic {
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
     const sized = !narrow && !PANEL_HIDDEN && (LAYOUT.width || this._liveW);
-    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18;
-    let fit = Math.min(PANEL_HIDDEN && !narrow ? ZOOM_MAX_WIDE : 1, availW / natW, availH / natH);
+    // The map's size toolbar sits above the grid: Auto leaves it its room.
+    const tb = sec.querySelector('.phc-mapzoom'), toolH = tb ? tb.offsetHeight + 6 : 0;
+    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH;
+    // Manual: the player's own size (the map scrolls inside its zone when bigger).
+    if (ZOOM.mode === 'manual') { if (ZOOM.scale !== (this._zoom || 1)) { this._zoom = ZOOM.scale; this.setState({}); } return; }
+    // Auto: the largest size that fits, growing past 100% on big screens (up to the manual maximum).
+    let fit = Math.min(ZOOM_MAX, availW / natW, availH / natH);
     // Panel hidden: the grid sits on the left and stays clear of the turn mini-bar in the bottom-right corner, either
     // beside it or above it (whichever leaves the bigger map), so no tile hides under it.
     if (PANEL_HIDDEN && !narrow) {
@@ -409,7 +440,7 @@ export class CombatLogic extends DCLogic {
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
-    if (!cb) return { ...lightboxVals(this), lay: this.layoutVals(PANEL_HIDDEN), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', confirmText: 'Confirm', pad: {}, magicLegend: [] };
+    if (!cb) return { ...lightboxVals(this), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', confirmText: 'Confirm', pad: {}, magicLegend: [] };
     const cur = active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
     const mineTurn = !cb.over && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
@@ -887,7 +918,9 @@ export class CombatLogic extends DCLogic {
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
       rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px' + (lay.swap ? '; flex-direction: row-reverse' : ''), lay,
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
-      leftStyle: 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      mz: this.zoomVals(),
+      // A big Manual size never pushes the action zone below its minimum: the map scrolls inside its zone instead.
+      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
       turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
