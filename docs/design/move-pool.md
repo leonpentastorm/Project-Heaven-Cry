@@ -123,3 +123,20 @@ at 6 and its partner at 5. A squared class needs its attribute at 9. Both open f
 | Shade | hybrid | Perception + Determination | 2 | Silent kills that leave nightmares | shade |
 | Inquisitor | hybrid | Perception + Virtue | 2 | Sees the sin, delivers the sentence | rtc_contractor |
 | Hexer | hybrid | Expression + Insight | 2 | Fear given a face | hexer |
+
+## The Grand Sigilist's Grand form pass (merged 8 Nov 2026, shelved with its class)
+
+Built on `feature/grand-sigilist` by a separate owner, then merged while advanced classes are shelved. Everything below
+is in the engine and tested, but nobody can use it until the Grand Sigilist (Intelligence squared, batch 1) comes back.
+Spec items 582–586, decision 101, draft `docs/design/grand-sigilist-draft.md`.
+
+| What | Where | Engine state |
+|---|---|---|
+| A Grand form for all 40 Sigil words: the 17 words new in 1.4 got their own jobs (ACID Etching ground, ARC Mortar pit, …), and SPREAD, TWICE, CONDENSE and PUSH were changed so the engine runs them; none is left to the Narrator | `data/sigils.json` (`grand` on each word), spec items 582–584 | handlers in `src/classes/k.ts` (Enlarge, the Grand form zone); tested in `classes-k.test.ts`, `sigil14-classes-k.test.ts` |
+| Grand forms end with their fight (with the smoke, light and ramparts the staff raised) | spec item 585 | fixed in `src/classes/k.ts` / `game.ts`; tested |
+| The two-glyph hook: nobody else gets it yet | spec item 586 | rule only |
+| Grand forms drawn on the grid: each word's ground look and tint, the edge ring, the planted staff ◎, the tooltip, the legend, a ring wave on planting | `apps/web/src/game/fx/grand.ts`, `fx/ambient.ts`, `sigilView.ts` | unit test `fx/grand.test.ts`; e2e `apps/web/e2e/grand.mjs` (skips while shelved) |
+
+**Not shelved:** the Sigil damage balance from the same branch (spec items 587–591: Elemental on the Physical slope,
+Sigil and Elemental bonuses added instead of multiplied, one main element per spell, the 350 / 500 ceiling) applies to
+every Sigil caster now.

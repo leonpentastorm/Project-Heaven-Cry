@@ -9,10 +9,13 @@ import { type Sfx, setSfxLoops } from '../sfx';
 import { centre, layerEl, put, tileEl } from './dom';
 import { type ElementId, elementFx, elementId, fieldNode, turretNode } from './elements';
 import { AURA_LOOP, heartNode } from './soul';
+import { grandNode, grandLook } from './grand';
 
 /** A standing look: a Sigil field tile, a WATCH turret, or a held Outburst's heart (rules 1.5: its glow by stage, its
  *  elemental aura, Heart Overwatch's eye) over its holder, which follows the holder as it moves. */
-export interface AmbientItem { key: string; kind: 'field' | 'turret' | 'heart'; tile: string; element: ElementId; mine: boolean; stage?: number; watch?: boolean; unit?: string }
+export interface AmbientItem { key: string; kind: 'field' | 'turret' | 'heart' | 'grand'; tile: string; element: ElementId; mine: boolean; stage?: number; watch?: boolean; unit?: string;
+  /** A Grand form tile: its word, and whether it is inside, on the edge ring or the staff's tile. */
+  word?: string; where?: 'inner' | 'edge' | 'staff'; seed?: number }
 /** What stands on the map on screen: every field tile and turret the viewer may see (the view already drops secret
  *  ones; this drops them again, and an enemy's out of sight). Pure. */
 export function ambientOf(g: GameState | null | undefined, screen: string, seen?: Set<string> | null, side: 'pc' | 'foe' = 'pc'): AmbientItem[] {
@@ -28,6 +31,12 @@ export function ambientOf(g: GameState | null | undefined, screen: string, seen?
     const el = elementId(z.element ?? (z.words || []).find((w: string) => elementId(w) !== 'raw'));
     // A 1.2 wall still standing in an old save is a field now (the engine converts it the same way).
     if (z.kind === 'field' || z.kind === 'wall') { for (const t of z.tiles) if (mine || !seen || seen.has(t)) out.push({ key: z.id + '|' + t, kind: 'field', tile: t, element: el, mine }); }
+    // A Grand form (fx/grand.ts): every tile, everyone sees it (it is a battlefield, not a secret).
+    else if (z.kind === 'grand') {
+      const w = (z.words || [])[0] || '', c = z.centre as string | undefined, [cx, cy] = (c || z.tiles[0] || '0,0').split(',').map(Number);
+      z.tiles.forEach((t: string, i: number) => { const [x, y] = t.split(',').map(Number), d = Math.max(Math.abs(x - cx), Math.abs(y - cy));
+        out.push({ key: z.id + '|' + t + '|' + w, kind: 'grand', tile: t, element: elementId(grandLook(w).element || null), mine, word: w, where: t === c ? 'staff' : d >= 2 ? 'edge' : 'inner', seed: i }); });
+    }
     else if (z.kind === 'turret') { const t = z.tiles[0]; if (t && (mine || !seen || seen.has(t))) out.push({ key: z.id + '|' + t, kind: 'turret', tile: t, element: el, mine }); }
   }
   // Held hearts (a fight only): everyone sees a holder's glow, an enemy's only while in sight.
@@ -43,7 +52,7 @@ export function ambientOf(g: GameState | null | undefined, screen: string, seen?
 /** The sound beds for what stands: one loop per element with a field, a little louder for more tiles (capped). Pure. */
 export function loopsFor(items: AmbientItem[]): Partial<Record<Sfx, number>> {
   const n: Partial<Record<ElementId, number>> = {};
-  for (const it of items) if (it.kind === 'field') n[it.element] = (n[it.element] || 0) + 1;
+  for (const it of items) if (it.kind === 'field' || (it.kind === 'grand' && it.element !== 'raw')) n[it.element] = (n[it.element] || 0) + 1;
   const out: Partial<Record<Sfx, number>> = {};
   for (const [el, c] of Object.entries(n) as [ElementId, number][]) { const loop = elementFx(el).sound.loop; if (loop) out[loop] = Math.max(out[loop] || 0, Math.min(1, 0.45 + 0.12 * c)); }
   // A held elemental heart hums its aura's bed (the field loop, slowed and softened), louder as it grows.
@@ -63,19 +72,19 @@ export function syncAmbient(items: AmbientItem[]) {
     const had = nodes.get(k);
     if (had) { had.item = it; continue; } // a heart follows its holder
     const p = centre(it.tile), s = p?.s || 40, [w, h] = sizeOf(it, s);
-    const el = it.kind === 'field' ? fieldNode(it.element, 'sigil') : it.kind === 'heart' ? heartNode(it.stage || 0, it.element, !!it.watch, it.mine) : turretNode(it.element, it.mine);
+    const el = it.kind === 'grand' ? grandNode(it.word || '', it.where || 'inner', it.seed || 0) : it.kind === 'field' ? fieldNode(it.element, 'sigil') : it.kind === 'heart' ? heartNode(it.stage || 0, it.element, !!it.watch, it.mine) : turretNode(it.element, it.mine);
     const box = put(el, p || { x: -999, y: -999 }, w, h, 864e5);
     box.style.zIndex = it.kind === 'heart' ? '1' : '0'; box.style.opacity = '0';
     if (it.kind === 'heart') box.style.transition = 'opacity .25s';
     // A field brightens its tile (screen blend) rather than covering who stands on it.
-    if (it.kind === 'field') box.style.mixBlendMode = 'screen';
+    if (it.kind === 'field' || it.kind === 'grand') box.style.mixBlendMode = 'screen';
     nodes.set(k, { item: it, box, shown: false, checked: 0 });
   }
   setSfxLoops(loopsFor(items));
   if (nodes.size && !raf) raf = requestAnimationFrame(track);
 }
 /** A look's box: a field fills its tile, a turret stands on it, a heart's glow and aura spread two tiles across. */
-const sizeOf = (it: AmbientItem, s: number): [number, number] => (it.kind === 'turret' ? [s * 0.7, s * 0.9] : it.kind === 'heart' ? [s * 2, s * 2] : [s * 0.92, s * 0.92]);
+const sizeOf = (it: AmbientItem, s: number): [number, number] => (it.kind === 'turret' ? [s * 0.7, s * 0.9] : it.kind === 'heart' ? [s * 2, s * 2] : it.kind === 'grand' ? [s, s] : [s * 0.92, s * 0.92]);
 /** Drop every standing look and sound bed (leaving the room, a hidden tab). */
 export function clearAmbient() { for (const n of nodes.values()) n.box.remove(); nodes.clear(); setSfxLoops({}); }
 /** How many standing looks are up (tests). */

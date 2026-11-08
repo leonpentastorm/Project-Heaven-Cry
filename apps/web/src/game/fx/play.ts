@@ -7,6 +7,7 @@ import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyp
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
 import { classHandlers, classBeat } from './classes';
+import { grandLook } from './grand';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -385,6 +386,21 @@ const H: Record<string, Handler> = {
   glyph_fade(e) { const p = at(e.tile); if (!p) return; fallingSquares(p, MUTED, 5, 500); floatText((e.word || '').toUpperCase() + ' FADES', p, MUTED, { small: true }); },
   scuff(e) { const p = at(e.at); if (p) { dust(p, p.s); squares(p, MUTED, 6, 0.4, 400); } play('step', p, { rate: 0.7 }); },
   evoke(e) {
+    // The Grand Sigilist plants the staff (fx/grand.ts draws the standing form): a flash on the staff, a ring wave out
+    // across the radius in the word's tint, the tiles lighting up from the centre, the word's name.
+    if (e.shape === 'grand') {
+      const c = at(e.src || e.impact), w = (e.words || [])[0] || '', L = grandLook(w), tiles: string[] = e.tiles || [];
+      play('sigil_evoke', c || at(e.at), { rate: 0.7, gain: 1 });
+      if (!c) return;
+      burst('flash_star', c, c.s * 2.2, 420, { color: WHITE, from: 0.3, to: 1.4 });
+      if (!reducedMotion()) for (let i = 0; i < 2; i++) burst('ring', c, c.s * 5.4, 700, { color: L.tint, from: 0.15, to: 1, delay: i * 180, fade: 0 });
+      const [cx, cy] = String(e.src || e.impact).split(',').map(Number);
+      for (const k of tiles) { const q = at(k); if (!q) continue; const [x, y] = k.split(',').map(Number), d = Math.max(Math.abs(x - cx), Math.abs(y - cy));
+        burst('glow', q, q.s * 1.1, 420, { color: L.tint, from: 0.4, to: 1.1, delay: 80 + d * 120, blend: 'screen' }); }
+      if (L.element) after(() => elementImpact(c, elementFx(L.element).id, 'sigil', { power: 0.9, quiet: true }), 120);
+      floatText('GRAND ' + (w ? w.toUpperCase() : ''), c, L.tint, { delay: 260 });
+      return;
+    }
     const tiles: string[] = e.tiles || [], el = e.element || null;
     const missiles: any[] = Array.isArray(e.missiles) && e.missiles.length ? e.missiles : e.src && e.impact ? [{ origin: e.src, impact: e.impact, kind: e.cone ? 'touch' : 'bolt', burst: [e.impact] }] : [];
     const src = centre(missiles[0]?.origin || e.src || e.at);

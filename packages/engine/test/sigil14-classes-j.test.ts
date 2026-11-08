@@ -72,8 +72,8 @@ describe('Blade Scribe under 1.4', () => {
     expect(f.cb.log.filter((l) => /strikes Foe 1/.test(l)).length).toBe(3);
     expect((f.cb.glyphs || []).length).toBe(0);
     expect(f.pc.mg!.charge).toBe(10 - (2 + 2 + 2) - 3); expect(f.pc.mg!.flux).toBe(3);
-    // FIRE + FIRE = 60, one repeat ×0.9 = 54; SEEK's Reach multiplier doesn't apply (Touch)
-    expect(logHas(f.cb, /The script resolves on Foe 1 \(3 charge\) · FIRE hits Foe 1 \(d20 \d+\) · 54 damage to Foe 1/)).toBe(true);
+    // FIRE + half a FIRE = 45 (item 589), one repeat ×0.9 = 41 (40.5 rounds up); SEEK's Reach multiplier doesn't apply (Touch)
+    expect(logHas(f.cb, /The script resolves on Foe 1 \(3 charge\) · FIRE hits Foe 1 \(d20 \d+\) · 41 damage to Foe 1/)).toBe(true);
     expect((f.cb.fx || []).some((e: any) => e.k === 'evoke' && e.shape === 'touch' && e.impact === '3,5')).toBe(true);
   });
   it('Three-Cut Script: a Burst applies at the last target (SPREAD catches the foe beside it, and an ally: friendly fire)', () => {

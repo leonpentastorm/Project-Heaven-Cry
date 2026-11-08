@@ -223,10 +223,10 @@ describe('Grand Sigilist', () => {
     const f = grand('ward'); const ally = f.turn(f.pcs[1].id); expect(ally.shield).toBe(20); expect(condOn(ally, 'guarded')).toBe(true);
     const g = grand('mend'); g.unit(g.pcs[1].id).hp = 50; expect(g.turn(g.pcs[1].id).hp).toBeGreaterThan(50);
   });
-  it('GALE (cyclone) shots through it −5; LIGHT enemies inside −2; PUSH from outside −3', () => {
+  it('GALE (cyclone) shots through it −5; LIGHT enemies inside −2; PUSH (Gust) blows an enemy starting inside 1 tile outward', () => {
     const g = grand('gale', '9,2'); expect(withGame(g.g, () => previewAttack(g.cb, g.unit(g.foe.id), g.unit(g.pcs[1].id), 'shot')).terms!.some((t) => /Cyclone/.test(t.label))).toBe(true);
     const l = grand('light', '5,2'); expect(withGame(l.g, () => previewAttack(l.cb, l.unit(l.foe.id), l.unit(l.pcs[1].id), 'shot')).terms!.some((t) => t.v === -2 && /Noon/.test(t.label))).toBe(true);
-    const p = grand('push', '12,2'); expect(withGame(p.g, () => previewAttack(p.cb, p.unit(p.foe.id), p.unit(p.pcs[1].id), 'shot')).terms!.some((t) => t.v === -3)).toBe(true);
+    const p = grand('push', '5,2'); p.turn(p.foe.id); expect(p.unit(p.foe.id).pos).toBe('6,2');
   });
   it('SLOW (mire): a foe walking through it pays double', () => {
     const walk = (word: string | null) => {
@@ -425,12 +425,13 @@ describe('Twinbound', () => {
 });
 
 describe('Lane K: more forms and story parts', () => {
-  it('Grand BIND (tar) Pins on entering; VEIL hides whoever is inside; BLIND (fog) cuts sight to 1 tile; CONDENSE and PULL draw foes to the staff', () => {
+  it('Grand BIND (tar) Pins on entering; VEIL hides whoever is inside; BLIND (fog) cuts sight to 1 tile; CONDENSE (Crush) grinds an enemy pressed against another creature; PULL draws foes to the staff', () => {
     const b = grand('bind', '9,2'); const foe = b.turn(b.foe.id); seed(b, 2);
     withGame(b.g, () => moveUnit(b.cb, b.unit(foe.id), '5,2', b.g.rng)); expect(condOn(b.unit(foe.id), 'pinned')).toBe(true); expect(b.unit(foe.id).pos).not.toBe('5,2');
     const v = grand('veil', '5,2'); expect(v.unit(v.foe.id).hidden).toBe(true); expect((v.cb.zones || []).some((z) => z.kind === 'veil')).toBe(true);
     const fg = grand('blind', '5,2'); fg.turn(fg.foe.id); expect(fg.unit(fg.foe.id).vision).toBe(1);
-    const c = grand('condense', '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).pos).toBe('5,2');
+    const c = grand('condense', '5,2'); c.unit(c.foe.id).armour = 0; at(c, c.pcs[1], '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).hp).toBe(c.unit(c.foe.id).maxHp - 10);
+    const lone = grand('condense', '6,0'); at(lone, lone.pcs[1], '2,4'); lone.turn(lone.foe.id); expect(lone.unit(lone.foe.id).hp).toBe(lone.unit(lone.foe.id).maxHp);
     const p = grand('pull', '8,2'); p.turn(p.foe.id); expect(p.unit(p.foe.id).pos).toBe('7,2');
   });
   it('Grand FREEZE (ice): difficult ground and a Body save on the move or Prone; MUDDLE (maze) staggers on a failed Brain save', () => {

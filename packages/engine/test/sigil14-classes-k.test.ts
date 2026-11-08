@@ -5,7 +5,7 @@
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
 import { describe, expect, it } from 'vitest';
-import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, type Unit, type Combat, type Character } from '../src';
+import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, emit, type Unit, type Combat, type Character } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -232,38 +232,55 @@ describe('Grand Sigilist under 1.4', () => {
     expect(Object.values(SIGIL).every((w: any) => !!w.grand)).toBe(true); expect(Object.keys(SIGIL).length).toBe(40); expect(SIGIL.return).toBeUndefined();
     const f = grand('kin'); expect((f.cb.zones || []).find((z: any) => z.kind === 'grand')!.words).toEqual(['kin']);
   });
-  it('ACID (corroding mire): 5 at turn start inside and Corroded on a failed Body save; the owner is Earthed', () => {
-    const f = grand('acid', '5,2'); f.unit(f.foe.id).armour = 0; const mine = f.pc.hp; seed(f, 2);
-    const t = f.turn(f.foe.id); expect(t.hp).toBe(999 - 5); expect(condOn(t, 'corroded')).toBe(true);
-    f.turn(f.pc.id); expect(f.pc.hp).toBe(mine);
+  it('ACID (Etching ground): cover inside loses 15 HP a round and crumbles; enemies inside are easier to hit (+2); no damage to people', () => {
+    const f = grand('acid', '5,2'); f.unit(f.foe.id).armour = 0;
+    f.cb.objects = [...objectsOf(f.cb), { id: 'c1', kind: 'crate', pos: '5,3', name: 'Crate', hp: 30, max: 30 } as any, { id: 'c2', kind: 'crate', pos: '12,3', name: 'Crate', hp: 30, max: 30 } as any];
+    const roundStart = () => withGame(f.g, () => emit(f.cb, 'round_start', { cb: f.cb, round: f.cb.round }));
+    roundStart(); expect(objectsOf(f.cb).find((o) => o.id === 'c1')!.hp).toBe(15); expect(objectsOf(f.cb).find((o) => o.id === 'c2')!.hp).toBe(30);
+    roundStart(); expect(objectsOf(f.cb).find((o) => o.id === 'c1' && (o.hp ?? 1) > 0)).toBeUndefined(); expect(logHas(f.cb, /Etching ground/)).toBe(true);
+    const a = at(f, f.pcs[1], '4,3'); a.ap = 6;
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(a.id), f.unit(f.foe.id), 'shot')).terms!.some((t) => t.v === 2 && /Etched/.test(t.label))).toBe(true);
+    expect(f.turn(f.foe.id).hp).toBe(999);
   });
-  it('COMMAND (court) kneels an enemy on a failed Brain save; QUICKEN gives allies (not you) +1 AP; CLEANSE washes a condition off', () => {
-    const c = grand('command', '5,2'); seed(c, 2); expect(c.turn(c.foe.id).prone).toBe(true);
+  it('COMMAND (Parade ground) halts an enemy (Pinned) on a failed Brain save; QUICKEN gives allies (not you) +1 AP; CLEANSE washes a condition off', () => {
+    const c = grand('command', '5,2'); seed(c, 2); const t = c.turn(c.foe.id); expect(condOn(t, 'pinned')).toBe(true); expect(t.prone).toBeFalsy();
     const q = grand('quicken'); const base = q.turn(q.pcs[1].id).ap; const p = fightWith([{}, {}], [{}]); expect(base).toBe(p.turn(p.pcs[1].id).ap + 1);
     expect(q.turn(q.pc.id).ap).toBe(p.turn(p.pcs[0].id).ap);
     const k = grand('cleanse'); k.unit(k.pcs[1].id).conds = { slowed: 2 }; expect(condOn(k.turn(k.pcs[1].id), 'slowed')).toBe(false);
   });
-  it('MASK (shroud) hides allies at turn start; SENSE (second sight) reveals Hidden enemies within 4 of the staff', () => {
-    const m = grand('mask'); expect(m.turn(m.pcs[1].id).hidden).toBe(true);
+  it('MASK (Hall of masks): enemies outside can\'t pick out your side inside from beyond 3 tiles; SENSE (second sight) reveals Hidden enemies within 4 of the staff', () => {
+    const m = grand('mask', '12,3'); m.unit(m.foe.id).ap = 6;
+    expect(withGame(m.g, () => previewAttack(m.cb, m.unit(m.foe.id), m.unit(m.pcs[1].id), 'shot')).why).toMatch(/Hall of masks/);
+    at(m, m.foe, '7,3'); expect(withGame(m.g, () => previewAttack(m.cb, m.unit(m.foe.id), m.unit(m.pcs[1].id), 'shot')).why || '').not.toMatch(/Hall of masks/);
+    expect(m.turn(m.pcs[1].id).hidden).toBeFalsy();
     const s = grand('sense', '8,2'); s.unit(s.foe.id).hidden = true; s.turn(s.pcs[1].id); expect(s.unit(s.foe.id).hidden).toBe(false);
   });
-  it('LEECH (bloodwell) drinks 5 from an enemy inside for you; WATCH (sentinel) strikes the nearest enemy inside at your turn start', () => {
-    const l = grand('leech', '5,2'); l.unit(l.foe.id).armour = 0; l.unit(l.pc.id).hp = 50;
-    l.turn(l.foe.id); expect(l.unit(l.foe.id).hp).toBe(999 - 5); expect(l.pc.hp).toBe(55);
-    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 10); expect(w.unit(w.foes[1].id).hp).toBe(999);
+  it('LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATCH (Sentinel) strikes 15 at your turn start and 10 at an enemy leaving', () => {
+    const l = grand('leech', '5,2'); const a = l.unit(l.pcs[1].id); a.hp = 50;
+    const hit = () => withGame(l.g, () => applyDamage(l.cb, l.unit(l.foe.id), 20, { by: l.unit(a.id), type: 'weapon', shield: true, credit: 'all' }));
+    hit(); expect(l.unit(a.id).hp).toBe(55); hit(); expect(l.unit(a.id).hp).toBe(55); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
+    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 15); expect(w.unit(w.foes[1].id).hp).toBe(999);
+    const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
+    expect(w.unit(foe.id).hp).toBe(999 - 15 - 10); expect(logHas(w.cb, /as it leaves/)).toBe(true);
   });
-  it('WAIT (tripwire): an enemy walking in stops at the edge and takes 10; STEP (fold) halves an ally\'s steps inside', () => {
+  it('WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move that stays inside costs 1 AP at most', () => {
     const f = grand('wait', '9,2'); const foe = f.turn(f.foe.id); f.unit(foe.id).armour = 0;
     withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '5,1', f.g.rng));
     expect(f.unit(foe.id).pos.split(',')[0]).toBe('6'); expect(f.unit(foe.id).hp).toBe(999 - 10); expect(logHas(f.cb, /tripwire/)).toBe(true);
     const walk = (word: string | null) => { const g = word ? grand(word) : fightWith([{}, {}], [{}]); const a = g.turn(g.pcs[1].id); at(g, a, '2,0'); g.unit(a.id).ap = 6; withGame(g.g, () => moveUnit(g.cb, g.unit(a.id), '6,0', g.g.rng)); return 6 - g.unit(a.id).ap; };
-    expect(walk('step')).toBeLessThan(walk(null));
+    expect(walk('step')).toBe(1); expect(walk(null)).toBeGreaterThan(1);
   });
-  it('SHARPEN (whetstone) +2 to allies attacking from inside; RAISE (bastion) −5 to shots from outside at allies inside', () => {
+  it('SHARPEN (Whetstone): +5 to your side\'s shots from inside, +10 to strikes; RAISE (Ramparts): up to 8 walls on the edge ring, gone with the staff', () => {
     const s = grand('sharpen', '9,1'); at(s, s.pcs[1], '4,1').ap = 6; const sp = withGame(s.g, () => previewAttack(s.cb, s.unit(s.pcs[1].id), s.unit(s.foe.id), 'shot'));
-    expect(sp.terms!.some((t) => t.v === 2 && /Whetstone/.test(t.label))).toBe(true);
-    const r = grand('raise', '12,1'); at(r, r.pcs[1], '4,1'); r.unit(r.foe.id).ap = 6; const rp = withGame(r.g, () => previewAttack(r.cb, r.unit(r.foe.id), r.unit(r.pcs[1].id), 'shot'));
-    expect(rp.terms!.some((t) => t.v === -5 && /Bastion/.test(t.label))).toBe(true);
+    const plain = fightWith([{}, {}], [{}]); at(plain, plain.pcs[1], '4,1').ap = 6; at(plain, plain.foe, '9,1');
+    const pp = withGame(plain.g, () => previewAttack(plain.cb, plain.unit(plain.pcs[1].id), plain.unit(plain.foe.id), 'shot'));
+    const add = sp.dmg!.total - pp.dmg!.total; expect(add).toBeGreaterThanOrEqual(5); expect(add).toBeLessThan(7); // +5 flat, then the shot's own multipliers
+    const r = grand('raise', '12,1'); const walls = objectsOf(r.cb).filter((o: any) => o.grandWall);
+    expect(walls.length).toBeGreaterThan(0); expect(walls.length).toBeLessThanOrEqual(8);
+    expect(walls.every((o) => Math.max(Math.abs(+o.pos.split(',')[0] - 4), Math.abs(+o.pos.split(',')[1] - 2)) === 2)).toBe(true);
+    expect(walls.some((o) => o.pos === r.unit(r.pcs[1].id).pos)).toBe(false);
+    r.unit(r.pc.id).ap = 6; perk(r, r.unit(r.pc.id), 'grand_sigilist.enlarge', { actionId: 'pull_staff' });
+    expect(objectsOf(r.cb).some((o: any) => o.grandWall)).toBe(false);
   });
   it('NULL (clean ground) wipes the Sigil magic inside (not a Keystone) and refuses any glyph drawn inside', () => {
     const f = fightWith([adv('grand_sigilist'), {}], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); caster(f.unit(u.id), ['null']); f.unit(u.id).ap = 9;
@@ -273,20 +290,16 @@ describe('Grand Sigilist under 1.4', () => {
     const a = f.turn(f.pcs[1].id); caster(f.unit(a.id), ['fire']); at(f, f.unit(a.id), '5,2');
     expect(() => act(f, f.unit(a.id), { type: 'combat/draw', word: 'fire', tile: '5,2' })).toThrow(/Clean ground/);
   });
-  it('RELAY (switchboard): an ally inside Evokes a pattern lying inside from 3 tiles away', () => {
-    const f = grand('relay', '12,2'); const a = f.turn(f.pcs[1].id); caster(f.unit(a.id), ['fire', 'seek']);
-    glyph(f, f.unit(a.id), 'fire', '5,1'); glyph(f, f.unit(a.id), 'seek', '6,1'); at(f, f.unit(a.id), '2,1');
-    const pv = withGame(f.g, () => previewEvoke(f.cb, f.unit(a.id), '5,1', '12,1'));
-    expect(pv.why || '').not.toMatch(/within 1 tile/); expect(pv.facing?.mode).toBe('along');
-    const g = fightWith([{}, {}], [{}]); const b = g.turn(g.pcs[1].id); caster(g.unit(b.id), ['fire', 'seek']); glyph(g, g.unit(b.id), 'fire', '5,1'); glyph(g, g.unit(b.id), 'seek', '6,1'); at(g, g.unit(b.id), '2,1');
-    expect(withGame(g.g, () => previewEvoke(g.cb, g.unit(b.id), '5,1', '12,1')).why).toMatch(/within 1 tile/);
+  it('RELAY (Relay net): +1 to hit for each other ally inside with a line to the target', () => {
+    const f = grand('relay', '9,2'); const a = at(f, f.pcs[1], '4,3'); a.ap = 6;
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(a.id), f.unit(f.foe.id), 'shot')).terms!.some((t) => t.v === 1 && /Relay net/.test(t.label))).toBe(true);
   });
-  it('CHAIN (conductor): your side\'s hit on an enemy inside arcs 5 to the nearest other enemy inside, once a round', () => {
+  it('CHAIN (Conductor): your side\'s hit on an enemy inside arcs 10 to the nearest other enemy inside, once a round', () => {
     const f = grand('chain', '5,2'); at(f, f.foes[1], '6,3'); f.unit(f.foes[1].id).armour = 0;
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(f.foes[1].id).hp).toBe(999 - 5); expect(logHas(f.cb, /Conductor/)).toBe(true);
+    expect(f.unit(f.foes[1].id).hp).toBe(999 - 10); expect(logHas(f.cb, /Conductor/)).toBe(true);
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(f.foes[1].id).hp).toBe(999 - 5);
+    expect(f.unit(f.foes[1].id).hp).toBe(999 - 10);
   });
   it('KIN (sanctum): allies inside take no damage from your side; an enemy\'s blow still lands', () => {
     const f = grand('kin', '9,2'); const ally = f.unit(f.pcs[1].id); const hp = ally.hp;
@@ -295,13 +308,30 @@ describe('Grand Sigilist under 1.4', () => {
     withGame(f.g, () => applyDamage(f.cb, f.unit(ally.id), 20, { by: f.foe, type: 'weapon', shield: true, credit: 'all' }));
     expect(f.unit(ally.id).hp).toBe(hp - 20);
   });
-  it('ARC (plunging fire): allies shooting from inside ignore half cover (the shot\'s cover term goes)', () => {
-    const cover = (word: string | null) => {
-      const f = word ? grand(word, '8,1') : fightWith([{}, {}], [{}]); const a = at(f, f.pcs[1], '4,1'); a.ap = 6; at(f, f.foe, '8,1');
-      const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(a.id), f.unit(f.foe.id), 'shot'));
-      return (pv.terms || []).map((t) => t.label + ':' + t.v);
-    };
-    expect(cover(null)).toContain('half cover:-5'); expect(cover('arc')).toContain('cover ignored:0'); expect(cover('arc')).not.toContain('half cover:-5');
+  it('ARC (Mortar pit): at your turn start the staff shells the best tile within 6 of it: 15 there, 5 next to it', () => {
+    const f = grand('arc', '8,2'); f.unit(f.foe.id).armour = 0; at(f, f.foes[1], '9,2'); f.unit(f.foes[1].id).armour = 0;
+    f.turn(f.pc.id);
+    const hits = [999 - f.unit(f.foe.id).hp, 999 - f.unit(f.foes[1].id).hp].sort((a, b) => a - b);
+    expect(hits).toEqual([5, 15]); expect(logHas(f.cb, /Mortar pit/)).toBe(true);
+    const far = grand('arc', '13,2'); at(far, far.foes[1], '14,9'); far.turn(far.pc.id); expect(far.unit(far.foe.id).hp).toBe(999);
+  });
+  it('SPREAD (Bloom): a spell your side lands inside also hits every enemy inside it missed for 10; TWICE (Echo field): the first spell a round echoes at half', () => {
+    const s = grand('spread', '5,2'); at(s, s.foes[1], '5,3'); for (const x of s.foes) s.unit(x.id).armour = 0;
+    withGame(s.g, () => emit(s.cb, 'evoked', { u: s.unit(s.pcs[1].id), impact: '5,2', targets: [s.unit(s.foe.id)], dealt: 40, cb: s.cb, rng: s.g.rng }));
+    expect(s.unit(s.foes[1].id).hp).toBe(999 - 10); expect(s.unit(s.foe.id).hp).toBe(999);
+    const t = grand('twice', '5,2'); t.unit(t.foe.id).armour = 0;
+    const ev = () => withGame(t.g, () => emit(t.cb, 'evoked', { u: t.unit(t.pcs[1].id), impact: '5,2', targets: [t.unit(t.foe.id)], dealt: 40, cb: t.cb, rng: t.g.rng }));
+    ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20); ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20);
+  });
+  it('a Grand form ends with the fight: after it, nothing of it (zone, VEIL smoke, RAISE ramparts) is left on the story map', () => {
+    for (const word of ['veil', 'raise', 'ward']) {
+      const f = grand(word, '12,2'); for (const x of f.foes) { const v = f.unit(x.id); v.hp = 0; v.dead = true; }
+      expect((f.cb.zones || []).some((z: any) => z.kind === 'grand')).toBe(true);
+      try { act(f, f.unit(f.pc.id), { type: 'combat/end-turn' }); } catch { /* the fight may already be over */ }
+      const g = f.g as any; expect(g.phase).toBe('story');
+      expect((g.story.zones || []).some((z: any) => z.kind === 'grand' || z.grandOf)).toBe(false);
+      expect((g.story.objects || []).some((o: any) => o.grandWall)).toBe(false);
+    }
   });
   it('the staff still forbids drawing and Evoking; a Grand form needs 3 charge and is once a fight', () => {
     const f = grand('quicken');

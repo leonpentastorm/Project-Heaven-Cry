@@ -455,7 +455,8 @@ export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
 /** The Soul multiplier (rules 1.5): 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed). PROVISIONAL. */
 export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
-export const elementalMult = (c: Character) => 1 + 0.2 * (A(c, 'expression') - 1) + 0.1 * P(c, 'visualization');
+// Balance pass (item 587, provisional): the same slope as the Physical multiplier (was 0.2 and 0.1; max ×2.4, was ×3.8).
+export const elementalMult = (c: Character) => 1 + 0.1 * (A(c, 'expression') - 1) + 0.05 * P(c, 'visualization');
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
