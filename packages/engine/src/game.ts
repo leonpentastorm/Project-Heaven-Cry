@@ -9,7 +9,7 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -17,7 +17,7 @@ import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
-import { advancedActive, bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
@@ -345,13 +345,31 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
-  for (const c of Object.values(g.characters || {})) { const notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c)]; if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441), rules 1.5 designs
+  for (const c of Object.values(g.characters || {})) {
+    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes
+    if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
+    if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n });
+  }
   try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
   g.v++;
   return g;
+}
+
+/** A character's class changed under a fight (a Revision 2 save migrated mid-fight): each of its units in the fight
+ * takes the new class and rank (u.held) and the new class's resources (a resource both classes have keeps its count,
+ * up to the new maximum; one the new class doesn't have is gone). */
+function refreshClassUnits(g: GameState, c: Character) {
+  for (const u of g.combat?.units || []) {
+    if (u.charId !== c.id || u.companion) continue;
+    if (u.held) u.held = heldOfChar(c);
+    const r = resourcesFor(c), old = u.res || {};
+    if (!r) { delete u.res; delete u.resMax; continue; }
+    for (const id of Object.keys(r.res)) if (old[id] != null) r.res[id] = Math.min(r.resMax[id], old[id]);
+    u.res = r.res; u.resMax = r.resMax;
+  }
 }
 
 function reduce(g: GameState, a: Action, by: string) {
@@ -1421,12 +1439,15 @@ export function viewFor(g: GameState, playerId: string): GameState {
   const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
+  // The viewer's side: 'pc', except team B of a Proving Ground team fight ('foe' in the engine; sandboxView flips it
+  // to 'pc' for that player's screen once everything secret from that side is filtered out here).
+  const me: 'pc' | 'foe' = g.sandbox?.mode === 'teams' && sandboxTeam(g.sandbox, playerId) === 'B' ? 'foe' : 'pc';
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
-  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !((o as any).rig && (o as any).side && (o as any).side !== 'pc')) }; // another side's rigged tile (Sabotage) too
+  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !((o as any).rig && (o as any).side && (o as any).side !== me)) }; // another side's rigged tile (Sabotage) too
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
-  if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, 'pc')), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === 'pc') };
-  if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, 'pc'));
+  if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me) };
+  if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
 }
@@ -3030,9 +3051,15 @@ function sandboxView(g: GameState, v: GameState, playerId: string) {
   const sb = g.sandbox!;
   v.sandbox = { ...sb, saved: { characters: {}, campaign: null, story: null, music: null } };
   if (sb.mode !== 'teams' || !v.combat || sandboxTeam(sb, playerId) !== 'B') return;
-  const flip = <T extends { side?: any }>(x: T): T => (x.side === 'pc' || x.side === 'foe' ? { ...x, side: x.side === 'pc' ? 'foe' : 'pc' } : x);
+  const other = (s: any) => (s === 'pc' ? 'foe' : s === 'foe' ? 'pc' : s);
+  const flip = <T extends { side?: any }>(x: T): T => (x.side === 'pc' || x.side === 'foe' ? { ...x, side: other(x.side) } : x);
   const cb = v.combat;
-  v.combat = { ...cb, units: cb.units.map(flip), glyphs: cb.glyphs?.map(flip), zones: cb.zones?.map(flip), fx: cb.fx?.map((e) => flip(e as { side?: any }) as typeof e),
+  // Every side-tagged thing turns round: units, glyphs, zones, objects (a rigged tile), False Images, and fx (their
+  // side and their `only` audience; viewFor already dropped what this player's side may not see).
+  v.combat = { ...cb, units: cb.units.map(flip), glyphs: cb.glyphs?.map(flip), zones: cb.zones?.map((z) => { const f = flip(z) as any; return f.spotted ? { ...f, spotted: f.spotted.map(other) } : f; }),
+    ...(cb.objects ? { objects: cb.objects.map((o) => flip(o as { side?: any }) as typeof o) } : {}),
+    ...(cb.images ? { images: cb.images.map(flip) } : {}),
+    fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any }); return (f.only ? { ...f, only: other(f.only) } : f) as typeof e; }),
     over: cb.over === 'win' ? 'loss' : cb.over === 'loss' ? 'win' : cb.over,
     ...(cb.lastSeen ? { lastSeen: { pc: cb.lastSeen.foe, foe: cb.lastSeen.pc } as any } : {}),
     ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}) };

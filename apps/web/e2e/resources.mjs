@@ -147,12 +147,16 @@ ok('Fighter: Momentum 3 / 5 in words: ' + t, /MOMENTUM/.test(t) && /3 \/ 5/.test
 await snap('fighter-1440');
 
 // 5. A Storm Hand with 2 Charges (named by the move that gives them, from the data).
+// Advanced classes are shelved (Class Roster Rev 3): this part comes back with the Storm Hand.
+const ADVANCED_LIVE = false;
+if (ADVANCED_LIVE) {
 await build([{ type: 'sandbox/unequip', slot: 'main' }, { type: 'sandbox/class', classId: 'storm_hand' }, { type: 'sandbox/kit', kind: 'soul' }]);
 await patch('u.res = { ...(u.res || {}), charges: 2 };');
 t = await rowText('res-charges');
 ok('Storm Hand: Charges 2 / 3, named by the move that gives them (Charged by …): ' + t, /CHARGES/.test(t) && /2 \/ 3/.test(t) && /Charged by \w+/.test(t));
 await snap('stormhand-1440');
 await snap('stormhand-1280', SMALL); await p.setViewportSize(BIG);
+} else console.log('  skipped: the Storm Hand (advanced classes shelved, Rev 3)');
 
 // 6. The area-map HUD (out of the fight): the same block under HP and AP, with the gun and the Evoker.
 await build([{ type: 'sandbox/kit', kind: 'both' }, { type: 'sandbox/give', item: 'hellraiser_service_rifle', equip: true }]);

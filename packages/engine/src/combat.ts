@@ -1205,14 +1205,17 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
 
 /** Reload (spec: Reloading): 2 AP. A magazine weapon swaps in the fullest spare and drops the one in the gun on the floor;
  *  a weapon loaded round by round tops up from loose rounds. Enemies carry unlimited spares. */
-export function reload(cb: Combat, u: Unit): string | null {
+export function reload(cb: Combat, u: Unit, o: { both?: boolean } = {}): string | null {
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
   if (!weaponActions(u).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   const rAp = reloadAp(u);
   if (u.ap < rAp) return 'Needs ' + rAp + ' AP.';
-  emit(cb, 'reload', { u, ap: rAp, cb });
+  // Every refusal comes before the hook: a refused reload is no reload (Speed Loader's use stays; spec item 564).
+  if (u.mags && w.reload === 'loose') { if (w.magazine - u.ammo <= 0) return 'Already full.'; if (!Math.min(w.magazine - u.ammo, u.loose || 0)) return 'No rounds left to load.'; }
+  else if (u.mags && !u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
+  emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}) });
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   if (!u.mags) { u.ap -= rAp; u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag') }); cb.log.push(u.name + ' reloads.'); return null; }
   if (w.reload === 'loose') {
@@ -1238,13 +1241,14 @@ export function reload(cb: Combat, u: Unit): string | null {
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both'): string | null {
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
-  const ap = hand === 'both' ? actionAp({ u }, 'reload_both', 3).ap : actionAp({ u }, 'reload', ow.reload_ap ?? 2).ap;
+  // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
+  const ap = hand === 'both' ? actionAp({ u }, 'reload_both', 3).ap : actionAp({ u }, 'reload', ow.reload_ap ?? 2, { hand: 'off' }).ap;
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const pool = ow.id === u.weapon ? u.mags : u.offMags;
   const takeOne = (): number | null => { if (!pool) return ow.magazine; if (!pool.length) return null; const i = pool.indexOf(Math.max(...pool)); const n = pool[i]; if (n <= 0) return null; pool.splice(i, 1); return n; };
   if (hand === 'both') {
     const w = WEAPON[u.weapon]; if (w.magazine == null) return 'Your main hand holds no gun.';
-    const keep = u.ap; u.ap = 99; const e = reload(cb, u); u.ap = keep; if (e && e !== 'Already full.') return e;
+    const keep = u.ap; u.ap = 99; const e = reload(cb, u, { both: true }); u.ap = keep; if (e && e !== 'Already full.') return e;
   }
   const fresh = takeOne(); if (fresh == null) return 'No loaded spare for the off-hand gun.';
   const left = u.offAmmo ?? 0; if (left) (cb.floor ||= []).push({ pos: u.pos, weapon: ow.id, rounds: left, text: (ow.reload_unit || 'magazine') + ' with ' + left + ' rounds' });
@@ -1405,9 +1409,11 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   const P = paths(cb, u.pos, u.id);
   const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
   const risky = anyOn(cb, 'ai_move_risk');
+  // A False Image it was fooled by is someone standing there, as far as it knows (spec item 573): never a tile to end on.
+  const imaged = new Set(pcs.filter((t) => isGhost(t)).map((t) => t.pos));
   let best: string | null = null, bestScore = Infinity;
   for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+    if (k === u.pos || imaged.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));

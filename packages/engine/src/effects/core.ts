@@ -147,14 +147,14 @@ export const COST_SITES = new Set(['field_repair', 'sprint', 'clear_jam', 'disen
 registerGeneric({ op: 'action_cost', claim: (e) => isPlain(e) && COST_SITES.has(e.action) && (typeof e.value === 'number' || typeof e.set === 'number') });
 /** The AP an action costs this unit: the base, then items' set (lowest wins) and value changes, never below 0
  * (lanes give their own floors, e.g. Field Medic's 1). Labels say why. */
-export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: string, base: number): { ap: number; labels: string[] } {
+export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: string, base: number, extra: Record<string, unknown> = {}): { ap: number; labels: string[] } {
   let ap = base, set: number | null = null; const labels: string[] = [];
   for (const { e, info } of genericEffects(x, 'action_cost')) {
     if (e.action !== action && !(action === 'stim' && e.action === 'heal') && !(action === 'stabilise' && e.action === 'heal')) continue;
     if (typeof e.set === 'number') { set = set == null ? e.set : Math.min(set, e.set); labels.push(info.name + ' (' + e.set + ' AP)'); }
     else { ap += e.value; labels.push(info.name + ' (' + (e.value > 0 ? '+' : '') + e.value + ')'); }
   }
-  const q = statQuery(x, 'ap_cost:' + action, { base }); ap += q.add; if (q.add) labels.push('perks');
+  const q = statQuery(x, 'ap_cost:' + action, { ...extra, base }); ap += q.add; if (q.add) labels.push('perks');
   return { ap: Math.max(0, set != null ? Math.min(set, ap) : ap), labels };
 }
 const FORBID_SITES = new Set(['disengage', 'sprint', 'reload', 'stim', 'analyze']);
