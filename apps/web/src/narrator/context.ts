@@ -4,6 +4,7 @@
 import { PERK_GUIDANCE } from './perk-guidance';
 import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
 import { beliefOf, devotionNow, FAITH_MIN, FAITH_PATRON } from '@engine';
+import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
@@ -96,7 +97,9 @@ export const PACING = `PACING (stage discipline)
 - Never skip a beat, jump time, or resolve an objective the players haven't reached by their own actions. "We carry everyone east" starts that beat; it doesn't finish the ones before it: show what stands in the way (the unsorted row, the question still unanswered).
 - Never end a scene (endScene, travel, a new sceneTitle) while the MISSION block's open required objectives here are still open, unless travelling is the objective.
 - When players stall or wait, don't advance for them: an NPC presses, two or three concrete options tied to the open objective come into view, or the clock costs something small. The decision stays theirs.
-- One new threat at a time: don't start a fight or bring new enemies the players haven't walked into or provoked, unless the open objective calls for it.`;
+- One new threat at a time: don't start a fight or bring new enemies the players haven't walked into or provoked, unless the open objective calls for it.
+- Plain objectives: people who give a task say what, where and why, plainly. Wit and evasion are fine for everything else, never for the objective.
+- Typing can't skip a check: never grant by fiat what an approach, a hazard or a check covers. A typed try at one is actions[] attempt (its id and the approach's number); the engine rolls it.`;
 
 /** The map checklist: at the end of the rules and as the submit_turn tool's description. */
 export const MAP_TRUTH = `THE MAP IS THE TRUTH (check before you call submit_turn)
@@ -104,7 +107,10 @@ export const MAP_TRUTH = `THE MAP IS THE TRUTH (check before you call submit_tur
 2. Anyone who moves in your prose moves on the map: npcs[] move (id, at) for people; moves[] for characters the story moves (actions[] when a player declared it).
 3. Anyone who leaves the scene is removed: npcs[] remove.
 4. A fight you start lists the enemies you described (combat.enemies); hostile tokens already on the map join it.
-5. Objectives the players achieved this turn are marked in missions[].`;
+5. Objectives the players achieved this turn are marked in missions[].
+6. Everyone and everything you describe is placed, with a face (kind); carried people ride in the inventory (carry, drop).
+7. Loot sits in caches; dangers are hazards; ambushes are triggers.
+8. Every NPC you place has wants (and talk when they matter); every objective you open has where.`;
 
 export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
 
@@ -169,6 +175,10 @@ MAP OBJECTS AND POINTS OF INTEREST
 - Objects sit on map tiles: ${OBJECT_KINDS.map((k: any) => k.id).join(', ')}. The engine runs what they do in a fight (cover, blocking, HP, traps, hazards, explosions, doors). Place, update or remove them with objects[] (an empty array otherwise): a place needs kind, at (a grid reference), name and text; update and remove need the object's id.
 - A point of interest is any object worth dealing with (a barricade, a locked door, a terminal, a rune, or a plain "poi" marker). When a player examines one (their line reads "examines … [id]"), describe it in your narration and update it with 2 to 4 approaches: each is a label (what they try), 1 to 3 skill ids, a TN, the stakes, and a success effect the engine applies by itself: remove (break or clear it), open (unlock or open), reveal (show something hidden), disarm (a trap), or "" (you narrate the result). Approaches stay on the object: players try them later without you, once per character per scene, and you see every try.
 - Mix approaches across Body, Mind and Soul skills, the way a good event offers brute force, cleverness and talk. Example: a rune-marked barricade could take Raw Power + Durability to break down (remove), Ingenuity + Lore Master to read the rune (""), or Charisma to talk the guard into opening it (remove).
+- Also success loot (the actor gets its items) and advance (marks objective done). Risky approaches get a fail the engine applies: hurt (damage by TN), alarm (hidden hostiles wake; start the fight if it fits), condition (failCondition), jam (locked this scene, approach gone), lose (failItem), or "". Never write numbers. Each character tries each approach once.
+- A cache (kind cache, items[] in the loot shape) is a crate, a body or a locker: Search empties it into the pack; locked needs open or loot first.
+- hazards[]: kind minefield, fire, radiation, gas or collapse; severity light or heavy; tiles or rect {from, to}; hidden (mines, radiation, gas). The engine fires them per tile entered and gives each a safe-path and a disarm approach.
+- triggers[]: when enter (tiles or rect), examine (objId) or objective; then spawn (npcs[] place shapes), fight (spawn, then the fight, difficulty) or reveal (ids); text shows when it fires. Once each, without you; SINCE YOUR LAST TURN says what fired.
 
 LOOT
 - Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a body searched, a locker opened, a reward). Relic and celestial are rare events.
@@ -182,7 +192,8 @@ INJURIES
 THE OVERWORLD (rounds)
 - Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.
 - People and enemies stand on the map as tokens (listed each turn with their ids, side and tile). Place, move, update (side or name) or remove them with npcs[]: a place needs name, side (hostile or neutral), tier, weapon id and at. Move them when the story moves them; a hostile stepping next to a hidden character makes that character roll to stay hidden. hidden: true places a lurker the players can't see until spotted.
-- Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone. Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
+- Faces and talk: kind (human, robot, drone, crawler, beast, machine), avatar ("": the engine picks), wants (one plain line), knows {objective, hint}, talk[] (2 to 4 approaches; success also ally or inform, fail also hostile). Players use them by buttons; answer each choice in character. carry (id, charId) and drop (id, charId, at) put someone in or out of a character's arms.
+- Players can also say what they do in words ("I move to A15 and shoot that guard with my pistol"). Turn the mechanical part into actions[]: the engine runs each one as that player's own action when the next round opens, from their fresh AP, in order, with every normal rule (paths, AP, sneaking, an attack starting the fight with the seen or hidden opening). act is move (to: a grid reference; how: move, sprint or sneak), attack (targetId: a token id; mode: shot, aimed or melee), analyze or stim (targetId), door (objId), reload, load, clear, repair or prone; carry (targetId), put_down (targetId, to), search (objId), attempt (objId or targetId: an object, hazard or person; index: the approach's number), ask (targetId; what: wants or objective). Narrate the intent, not the result: the engine reports what happens. Use moves[] only when the story itself moves people (a cutscene, a fall); a player acting uses actions[].
 - A person who is only in your prose can't be talked to on the map, followed, or attacked (THE MAP IS THE TRUTH, below).
 - Anyone and anything is a target: strangers, friends, allies, the party's own. Never refuse or soften an attack a player declares. Map it to actions[] (targetId may be a token id or the exact name of a token or character; objId for an object) and play the consequences: witnesses, attitudes, the law, grief, the victim's player.
 - If a player attacks a token from the overworld, the engine starts the fight by itself (a fight on people who weren't hostile gives no XP). A player shooting another player's character resolves on the map with no fight: you rule what follows. A character at 0 HP outside a fight is Downed until an ally's stim, or your treat with loc "all". HP the story takes out of a fight (a fall, a beating, a fire) goes in harm[] (charId, amount): the engine applies it, never narrate HP numbers yourself. If you start a fight on the current map, every hostile token joins where it stands; listing an enemy with a token's name means that token.
@@ -209,6 +220,7 @@ OUT OF CHARACTER (OOC)
 MISSIONS AND PACING (the bookkeeping; the discipline is PACING above)
 - When the campaign has missions, the turn carries a MISSION block: the active mission, its goal, its open objectives. Play them as PACING says; every scene offers a visible way forward.
 - If players stay confused after PACING's in-character options, or anyone asks OOC, answer plainly in ooc.
+- Give every open objective a where in missions[] (where {zone, refs: token, object or hazard ids, grid references}): the HERE card and map markers show it.
 - When an objective is clearly achieved (see its "done when" in MISSIONS), mark it in missions[] that same turn (status done, or failed when it can no longer happen) and frame the next step; don't linger on a finished scene. Reveal a hidden objective (status revealed) when the party finds it. Mark optional objectives too.
 - When a mission completes, close the scene (endScene) and open the next mission's scene. When a closed mission offers several next missions, set missionNext once the story has decided. You may add side jobs (side[]: id, title, text; status done or failed to settle one); you never edit main missions.
 - Never resolve the players' choices for them: give options, not answers.
@@ -344,12 +356,14 @@ export function turnPrompt(g: GameState): string {
   const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
     // Plain cover and exits are the engine's business (exits are listed with the zones); POIs, hazards, doors and anything with approaches stay.
     .filter((o) => o.approaches.length || !['crate', 'pillar', 'rubble', 'low_wall', 'barricade', 'exit'].includes(o.kind));
-  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null && o.hp <= 0 ? ', broken' : o.hp != null && o.max && o.hp < o.max ? ', damaged' : ''}${o.resolved ? ', dealt with' : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
-    + (o.approaches.length ? '\n    approaches: ' + o.approaches.map((a, i) => `${i + 1}. ${a.label} [${a.skills.join('+')} TN ${a.tn}${a.success ? ', ' + a.success : ''}]${a.tries.length ? ' tries: ' + a.tries.map((t) => t.name + ' ' + (t.ok ? 'succeeded' : 'failed') + ' (' + t.total + ')').join(', ') : ''}`).join('; ') : '')).join('\n  ');
+  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null && o.hp <= 0 ? ', broken' : o.hp != null && o.max && o.hp < o.max ? ', damaged' : ''}${o.resolved ? ', dealt with' : ''}${o.items ? ', holds: ' + (o.items.map((x) => (x.qty > 1 ? x.qty + '× ' : '') + (x.name || x.item)).join(', ') || 'nothing') : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
+    + (o.approaches.length ? '\n    approaches: ' + apText(o.approaches) : '')).join('\n  ');
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
   const moments = momentsOpen(g).map((m) => `${m.id}: ${m.when}`).join('\n  ');
-  const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.side}, ${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}${n.hidden ? ', lurking (unseen)' : ''}`).join('\n  ');
+  const people = npcsOf({ ...g, story: { ...g.story } }).map((n) => `${n.id} ${n.name} (${n.ally ? 'ally' : n.side}, ${n.kind && n.kind !== 'human' ? n.kind + ', ' : ''}${n.tier}, ${n.weapon}) at ${refOf(n.pos)}${n.analyzed ? ', analyzed' : ''}${n.hidden ? ', lurking (unseen)' : ''}${n.alerted ? ', alerted' : ''}${n.prisoner ? ', prisoner' : ''}`
+    + (n.wants ? '\n    wants: ' + n.wants + (n.wantsShown ? ' (asked)' : '') : n.side !== 'hostile' ? '\n    wants: (none set)' : '') + (n.knows ? '\n    knows ' + n.knows.objective + ': ' + n.knows.hint + (n.informed ? ' (told)' : '') : '') + (n.talk?.length ? '\n    talk: ' + apText(n.talk) : '')).join('\n  ');
+  const world = worldBlock(g);
   const sneaking = Object.values(g.characters).filter((c) => g.story.sneak?.[c.id]).map((c) => c.name + (g.story.hidden?.[c.id] ? ' (hidden)' : ' (sneaking, but seen)')).join(', ');
   const M = memoryOf({ ...g }), sceneMem = M.scenes.map((x) => `S${x.n} ${x.title}: ${x.summary}`).join('\n') || (g.story.journal.slice(-6).map((x, i) => `${i + 1}. ${x}`).join('\n') || 'none yet');
   const lookFor = [recent, g.story.scene.title, zoneMap(g).name, people, objs.map((o) => o.name).join(' ')].join('\n');
@@ -358,7 +372,25 @@ export function turnPrompt(g: GameState): string {
   const mission = missionBrief(g), opening = w.kind === 'epilogue' ? '' : actOpening(g);
   const ooc = (g.story.oocAsk || []).map((q) => `- ${Object.values(g.characters).filter((c) => c.owner === q.who).map((c) => c.name).join(' & ') || 'A spectator'}: ${q.text}`).join('\n');
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
-  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${world}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
+}
+
+/** Approaches as the Narrator reads them: number, label, skills, TN, effects, and every try. */
+function apText(list: Approach[]): string {
+  return list.map((a, i) => `${i + 1}. ${a.label} [${a.skills.join(a.pick === 'best' ? '/' : '+')} TN ${a.tn}${a.success ? ', ' + a.success + (a.objective ? ' ' + a.objective : '') : ''}${a.fail ? ', fail ' + a.fail + (a.failCondition ? ' ' + a.failCondition : a.failItem ? ' ' + a.failItem : '') : ''}${a.gone ? ', gone' : ''}]${a.tries.length ? ' tries: ' + a.tries.map((t) => t.name + ' ' + (t.ok ? 'succeeded' : 'failed') + ' (' + t.total + ')').join(', ') : ''}`).join('; ');
+}
+/** Rules 1.7 for the turn: hazards and triggers here, who carries whom, and what the engine ran since your last turn. */
+export function worldBlock(g: GameState): string {
+  const out: string[] = [];
+  const hz = zoneHazards({ ...g });
+  if (hz.length) out.push('HAZARDS ON THE MAP (the engine fires them per tile entered):\n  ' + hz.map((h) => `${h.id} ${h.name || h.kind} (${h.kind}, ${h.severity}${h.hidden ? ', unseen by the players' : ''}) at ${h.tiles.slice(0, 6).map(refOf).join(' ')}${h.tiles.length > 6 ? ' +' + (h.tiles.length - 6) : ''}${h.safe?.length ? '; safe path ' + h.safe.map(refOf).join(' ') : ''}${h.spent?.length ? '; spent ' + h.spent.map(refOf).join(' ') : ''}${h.approaches.some((a) => a.tries.length) ? '\n    approaches: ' + apText(h.approaches) : ''}`).join('\n  '));
+  const tg = zoneTriggers({ ...g }).filter((t) => !t.fired);
+  if (tg.length) out.push('TRIGGERS SET (unseen; they fire without you):\n  ' + tg.map((t) => `${t.id} on ${t.when}${t.tiles ? ' ' + t.tiles.slice(0, 4).map(refOf).join(' ') + (t.tiles.length > 4 ? ' +' + (t.tiles.length - 4) : '') : t.objId ? ' ' + t.objId : t.objective ? ' ' + t.objective : ''}: ${t.then}${t.spawn?.length ? ' ' + t.spawn.map((p) => p.name).join(', ') : ''}`).join('\n  '));
+  const carry = Object.values(g.characters).filter((c) => c.carried?.length).map((c) => c.name + ' carries ' + carriedOf(c).map((x) => x.name + ' (' + x.kind + ', ' + x.kg + ' kg, ' + x.id + ')').join(', '));
+  if (carry.length) out.push('CARRIED: ' + carry.join('; '));
+  const ev = g.story.events || [];
+  if (ev.length) out.push('SINCE YOUR LAST TURN (the engine ran these; narrate them, never re-roll them):\n' + ev.map((e) => '- ' + e.text).join('\n'));
+  return out.length ? '\n\n' + out.join('\n\n') : '';
 }
 
 /** Sigil magic standing on the area map, for PARTY CONDITION (only when there is some): glyphs by who drew them, and
@@ -447,27 +479,35 @@ export function wikiAnswer(keys: string[]): string {
 /** The tool the Narrator hands its turn in with: the turn schema plus map objects. Not strict: no grammar limit. */
 export function submitTool(g: GameState) {
   const schema: any = turnSchema(g);
+  // Rules 1.7: one approach shape for objects and people (success and fail effects the engine applies). Static enums only.
+  const ST = { type: 'string' }, APPROACH = { type: 'object', properties: { label: ST, skills: { type: 'array', items: ST }, tn: { type: 'integer', enum: [8, 12, 16, 20] }, stakes: ST,
+    success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm', 'loot', 'advance', 'ally', 'inform'] }, fail: { type: 'string', enum: ['', 'hurt', 'alarm', 'condition', 'jam', 'lose', 'hostile'] },
+    objective: ST, failCondition: ST, failItem: ST }, required: ['label', 'skills', 'tn', 'stakes', 'success'] };
+  const AREA = { tiles: { type: 'array', items: ST }, rect: { type: 'object', properties: { from: ST, to: ST } } };
   schema.properties.objects = { type: 'array', description: 'Place, update or remove map objects and write approaches (empty when nothing changes)', items: { type: 'object', properties: {
     action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: { type: 'string', description: 'The object id, for update and remove' },
     kind: { type: 'string', enum: OBJECT_KINDS.map((k: any) => k.id) }, at: { type: 'string', description: 'A grid reference, for place' },
     name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
-    approaches: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, skills: { type: 'array', items: { type: 'string' }, description: '1 to 3 skill ids' }, tn: { type: 'integer', enum: [8, 12, 16, 20] }, stakes: { type: 'string' }, success: { type: 'string', enum: ['', 'remove', 'open', 'reveal', 'disarm'] } }, required: ['label', 'skills', 'tn', 'stakes', 'success'] } },
+    approaches: { type: 'array', items: APPROACH },
+    items: { type: 'array', description: 'cache: its contents (loot shape)', items: { type: 'object', properties: { item: ST, qty: { type: 'integer' }, rarity: ST, name: ST, text: ST }, required: ['item', 'qty'] } },
   }, required: ['action'] } };
   // Plain text, not an enum: tool definitions must not change during a session, or the whole prompt cache resets.
   schema.properties.moment = { type: 'string', description: 'A story moment id from STORY MOMENTS OPEN HERE (an illustration to show now), or empty' };
-  schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map (empty when nothing changes)', items: { type: 'object', properties: {
-    action: { type: 'string', enum: ['place', 'move', 'update', 'remove'] }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
+  schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map; carry or drop someone (empty when nothing changes)', items: { type: 'object', properties: {
+    action: { type: 'string', enum: ['place', 'move', 'update', 'remove', 'carry', 'drop'] }, charId: { type: 'string', description: 'carry, drop: the carrier' },
+    avatar: ST, wants: ST, knows: { type: 'object', properties: { objective: ST, hint: ST } }, talk: { type: 'array', items: APPROACH }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
     side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
     hidden: { type: 'boolean', description: 'Lurking: unseen by the players until spotted (place, update)' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {
-    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'pump', 'release', 'letgo', 'steady', 'feed', 'heartwatch', 'syphon', 'crystallise'] },
+    charId: { type: 'string', enum: Object.keys(g.characters) }, act: { type: 'string', enum: ['move', 'attack', 'analyze', 'stim', 'door', 'reload', 'load', 'clear', 'repair', 'prone', 'carry', 'put_down', 'search', 'attempt', 'ask', 'draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'pump', 'release', 'letgo', 'steady', 'feed', 'heartwatch', 'syphon', 'crystallise'] },
     to: { type: 'string', description: 'A grid reference, for move' }, how: { type: 'string', enum: ['move', 'sprint', 'sneak'] }, targetId: { type: 'string', description: 'A token id or exact name, or a charId or character name' },
     mode: { type: 'string', enum: ['shot', 'aimed', 'melee'] }, objId: { type: 'string', description: 'An object id: a door for door; anything to attack' },
     word: { type: 'string', description: 'A Sigil word id, for draw (on the caster\'s own tile)' }, tile: { type: 'string', description: 'A grid reference: for evoke, a glyph of the Line' },
     aims: { type: 'array', items: { type: 'string' }, description: 'evoke TWICE: the other missiles\' aims' }, dest: { type: 'string', description: 'evoke STEP: where they land' },
     order: { type: 'string', enum: ['halt', 'kneel', 'drop', 'move'], description: 'evoke COMMAND' }, orderTo: { type: 'string', description: 'COMMAND move: the tile' },
     aim: { type: 'string', description: 'A grid reference or token id, for evoke, outburst and release' }, design: { type: 'string', description: 'An Outburst design id, for outburst' }, hold: { type: 'boolean', description: 'outburst: hold it to grow' },
+    index: { type: 'integer', description: 'attempt: the approach number' }, what: { type: 'string', enum: ['wants', 'objective'] },
   }, required: ['charId', 'act'] } };
   schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school, module or tone each', items: { type: 'object', properties: {
     charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, tone: { type: 'string' }, reason: { type: 'string' },
@@ -508,7 +548,13 @@ export function submitTool(g: GameState) {
   schema.properties.harm = opt({ charId: S, amount: I, type: { type: 'string', description: 'physical (default), fire, elemental, true' }, why: S }, ['charId', 'amount']);
   // OOC and missions: optional and enum-free like the fields above (the tool never changes, the cache holds).
   schema.properties.ooc = { type: 'string', description: 'A plain out-of-character answer to OUT-OF-CHARACTER QUESTIONS (at most about 80 words); empty when none' };
-  schema.properties.missions = opt({ mission: { type: 'string', description: 'mission id' }, objective: { type: 'string', description: 'objective id; omit to settle or reveal the whole mission' }, status: { type: 'string', description: 'done, failed or revealed' }, note: S }, ['mission', 'status']);
+  schema.properties.missions = opt({ mission: { type: 'string', description: 'mission id' }, objective: { type: 'string', description: 'objective id; omit to settle or reveal the whole mission' }, status: { type: 'string', description: 'done, failed or revealed' }, note: S,
+    where: { type: 'object', properties: { zone: S, refs: { type: 'array', items: S } } } }, ['mission']);
+  // Rules 1.7: hazards and triggers (optional; enum-free beyond fixed vocabularies, so the tool never changes).
+  schema.properties.hazards = opt({ action: { type: 'string', enum: ['place', 'update', 'remove'] }, id: S, kind: { type: 'string', enum: ['minefield', 'fire', 'radiation', 'gas', 'collapse'] },
+    severity: { type: 'string', enum: ['light', 'heavy'] }, ...AREA, hidden: B, name: S, text: S }, ['action']);
+  schema.properties.triggers = opt({ action: { type: 'string', enum: ['place', 'remove'] }, id: S, when: { type: 'string', enum: ['enter', 'examine', 'objective'] }, ...AREA, objId: S, objective: S,
+    then: { type: 'string', enum: ['spawn', 'fight', 'reveal'] }, spawn: { type: 'array', items: { type: 'object' }, description: 'npcs[] place shapes' }, difficulty: S, name: S, reveal: { type: 'array', items: S }, text: S }, ['action']);
   schema.properties.missionNext = { type: 'string', description: 'The next mission id, when a closed mission offers several (CHOOSE NEXT); else omit' };
   schema.properties.side = opt({ id: S, title: S, text: S, status: { type: 'string', description: 'open, done or failed' } }, ['id']);
   schema.required = [...schema.required, 'objects', 'moment', 'npcs', 'actions', 'magic', 'mana', 'memory', 'chapter'];
