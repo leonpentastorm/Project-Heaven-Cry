@@ -57,7 +57,28 @@ reason and Hold the Evoker in the fight), `sigil14.mjs` (pistol first), `heart.m
 
 ## Results
 
-RESULTS_TABLE
+Build: `npm run build` (ok), dev server on 8787 (`wrangler dev`).
+
+| Check | Result |
+|---|---|
+| e2e `classes-moves` | exit 0, 52 ok, 0 FAIL |
+| e2e `sandbox` | exit 0, 27 ok, 0 FAIL (3 new checks) |
+| e2e `magic` | exit 0, 46 ok, 0 FAIL (1 new check) |
+| e2e `sigil14` | exit 0, 36 ok, 0 FAIL |
+| e2e `heart` | exit 0, 25 ok, 0 FAIL |
+| e2e `resources` | exit 0, 20 ok, 0 FAIL (1 new check) |
+| e2e `faith` | exit 0, 29 ok |
+| e2e `faith-pg` | first run 25 ok, 1 FAIL ("a kill while Witnessed: Old Overcast intervenes": the loop needs a kill within 14 tries, so it rides on the dice); two reruns exit 0, 26 / 26 ok. Not focus-related (no magic in that step) |
+| e2e `classes` / `perks` / `tabs` / `combat-fixes` | exit 0: 34 / 27 / 28 / 9 ok, 0 FAIL |
+| e2e `two-players` | exit 0 (this script logs; it has no ok/FAIL lines) |
+| `npm test -w @phc/engine` | 59 files, 1447 passed, 1 skipped |
+| `PHC_COVERAGE_STRICT=1 npm test -w @phc/engine` | 59 files, 1448 passed |
+| `npm test -w @phc/web` | 40 files, 290 passed |
+| `npx tsc --noEmit` in `packages/engine` and `apps/web` | 0 errors |
+| `python3 tools/validate.py data` | 0 errors, 0 warnings |
+
+Note: a WIP checkpoint of this work (`65aa85c`) was already committed and pushed to `origin/develop` mid-way; the final
+commit adds the Hold-action footer fix, the sandbox UI checks and this file.
 
 ## Noticed, not fixed
 
