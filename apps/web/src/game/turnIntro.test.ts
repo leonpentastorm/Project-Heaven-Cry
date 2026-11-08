@@ -54,6 +54,15 @@ describe('turn banners', () => {
     expect(_test.estMs({ k: 'reload', dur: 1200 })).toBe(1200);
     expect(_test.estMs({ k: 'move', path: ['1,1', '2,1', '3,1'] })).toBeGreaterThan(_test.estMs({ k: 'move', path: ['1,1', '2,1'] }));
   });
+  it('the card side: Auto by default (the left, the right when the left would cover the unit), or always left or right; kept in this browser', () => {
+    expect(C.readCardSide()).toBe('auto');
+    expect(C.cardOnRight('auto', () => false)).toBe(false); expect(C.cardOnRight('auto', () => true)).toBe(true);
+    C.writeCardSide('right'); expect(store['phc.cutinSide']).toBe('right'); expect(C.readCardSide()).toBe('right');
+    expect(C.cardOnRight(C.readCardSide(), () => false)).toBe(true);
+    C.writeCardSide('left'); expect(C.cardOnRight(C.readCardSide(), () => true)).toBe(false);
+    C.writeCardSide('auto'); expect(store['phc.cutinSide']).toBeUndefined(); expect(C.readCardSide()).toBe('auto');
+    store['phc.cutinSide'] = 'sideways'; expect(C.readCardSide()).toBe('auto'); delete store['phc.cutinSide'];
+  });
   it('the four commands can be customised per character: picks keep their slots, the smart default fills the rest in its order, a pick that can\'t be used now is greyed with why, one not in the kit falls back', () => {
     const { g, cb, pc } = game();
     const smart = _test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action);

@@ -32,7 +32,7 @@ import { bigPortrait } from './charfile';
 import { sfx, SFX_FILES, reducedMotion, uiPrefs, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
-import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, type Command } from './commands';
+import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
 import { resourcesOf, resRowView, type ResRow } from './resources';
 
@@ -190,7 +190,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       const { game: g2 } = live.current, cb2 = g2?.combat;
       if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden || customOpen.current) return;
       const c = cutFor(g2, castFight(g2, cb2, ART) || cb2, unitId); if (!c) return;
-      c.right = underLeftCard(c.at);
+      c.right = cardOnRight(readCardSide(), () => underLeftCard(c.at)); // the player's choice (customise dialog), else Auto
       setCutOut(false); setCut(c); setCutImg(c.img); cue('cutin');
       if (/^data:/.test(c.img)) bigPortrait(c.img).then((big) => setCutImg((x) => (x === c.img ? big : x))).catch(() => {});
     }, reducedMotion() ? 150 : 380);

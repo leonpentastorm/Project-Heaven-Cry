@@ -9,7 +9,7 @@ import React from 'react';
 import { type GameState } from '@engine';
 import { ART } from '../screens/shared';
 import { castFight } from './cast';
-import { catalogue, readPrefs, resolveCommands, writePrefs, TAB_NAME, type CatEntry } from './commands';
+import { catalogue, readPrefs, resolveCommands, writePrefs, readCardSide, writeCardSide, TAB_NAME, type CatEntry, type CardSide } from './commands';
 import { SIGIL_INK, SOUL_INK } from './glyphs';
 
 const INK: Record<string, string> = { attack: '#F65157', sigils: SIGIL_INK, outbursts: SOUL_INK };
@@ -32,6 +32,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const by = new Map(cat.map((e) => [e.action, e]));
   const [slots, setSlots] = React.useState<(string | null)[]>(() => readPrefs(game, charId));
   const [at, setAt] = React.useState(0);
+  const [side, setSide] = React.useState<CardSide>(() => readCardSide());
   const shown = u ? resolveCommands(cast, u, ch, slots, opts) : [];
   const box = React.useRef<HTMLDivElement | null>(null);
 
@@ -60,7 +61,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
   const pick = (action: string) => { put(action); setAt((a) => Math.min(3, a + 1)); };
   const move = (i: number, d: number) => { const j = i + d; if (j < 0 || j > 3) return; setSlots((s) => { const n = [...s]; [n[i], n[j]] = [n[j], n[i]]; return n; }); setAt(j); };
   const clear = (i: number) => setSlots((s) => { const n = [...s]; n[i] = null; return n; });
-  const save = () => { writePrefs(game, charId, slots); onClose(); };
+  const save = () => { writePrefs(game, charId, slots); writeCardSide(side); onClose(); };
 
   const name = ch?.name || u?.name || 'this character';
   const tabs = Array.from(new Set(cat.map((e) => e.tab)));
@@ -120,6 +121,14 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
               </div>
             </div>
           ))}
+        </div>
+        {/* Which side of the screen the card comes in on (this browser, every character). */}
+        <div role="radiogroup" aria-label="Card side" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#A3AEC2', marginRight: 4 }}>CARD SIDE</span>
+          {([['auto', 'Auto', 'The left, unless the card would cover your unit there: then the right'], ['left', '◧ Left', 'Always on the left of the screen'], ['right', 'Right ◨', 'Always on the right of the screen']] as [CardSide, string, string][]).map(([v, label, title]) => (
+            <button key={v} type="button" role="radio" aria-checked={side === v} data-card-side={v} title={title} onClick={() => setSide(v)} style={{ ...btn(side === v), minHeight: 32, padding: '0 12px' }}>{label}</button>
+          ))}
+          <span style={{ fontSize: 11, color: '#A3AEC2' }}>{side === 'auto' ? 'Moves to the right when it would cover your unit.' : 'Every character, in this browser.'}</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <button type="button" onClick={() => { setSlots([null, null, null, null]); setAt(0); }} style={btn()}>Reset to smart default</button>
