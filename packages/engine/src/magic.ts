@@ -21,6 +21,8 @@ export interface Glyph { id: string; word: string; pos: string; by: string; side
  * spotted), 'turret' (WATCH; hp, def), 'veil' (smoke), 'light'. 'wall' is a 1.2 standing wall (read as a field).
  * Class and gadget zones (scramble, seal, sanctuary, grand…) use the same shape. */
 export interface Zone { id: string; kind: 'field' | 'trap' | 'turret' | 'wall' | 'veil' | 'light' | 'scramble'; tiles: string[]; words: string[]; by: string; side: 'pc' | 'foe'; left: number; mult: number; who: string; hit?: Record<string, number>;
+  /** field (item 422): the creatures it has ever affected (they take ×mult after), and its first-time multiplier. */
+  ever?: Record<string, boolean>; first?: number;
   /** field: the Burst multiplier per tile; trap/turret: hidden, the sides that spotted it, triggers left, hp, def; element. */
   tileMult?: Record<string, number>; hidden?: boolean; spotted?: string[]; triggers?: number; hp?: number; def?: number; element?: string | null; kin?: boolean; dir?: [number, number]; reachMult?: number }
 /** A unit's magic: what it knows and carries, and its running state. */

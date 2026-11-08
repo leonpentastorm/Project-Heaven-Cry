@@ -880,11 +880,12 @@
       "class": "delivery",
       "charge": 1,
       "flux": 1,
-      "text": "Field: the spell stands on what it covers for 2 rounds (+ the Sigil duration bonus) at x0.5, on whoever enters it or starts a turn in it. It doesn't strike when Evoked.",
+      "text": "Field: the spell strikes once when Evoked, at full, then stands on what it covers for 2 rounds (+ the Sigil duration bonus): whoever enters it or starts a turn in it takes it at full the first time, x0.5 once the field has affected them (its strike included). Once per creature per round.",
       "placed": "field",
       "lasts_rounds": 2,
       "duration_bonus": true,
       "mult": 0.5,
+      "first_mult": 1,
       "per_copy": {
         "rounds": 2
       },

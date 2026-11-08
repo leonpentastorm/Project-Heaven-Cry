@@ -137,12 +137,12 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     f.turn(f.pc);
     expect(f.pcs[1].hp).toBe(413); expect(logHas(f.cb, /Tester 2 heals 13/)).toBe(true);
   });
-  it('Acid rain, ACID · ARC · STAY · SPREAD: a 5 × 5 field; whoever starts a turn in it takes 15 × 0.8 × 0.6 × 0.5 = 4 and is Corroded', () => {
+  it('Acid rain, ACID · ARC · STAY · SPREAD: strikes once (15 × 0.8 × 0.6 = 7), then a 5 × 5 field; the one it struck, starting a turn in it, takes × 0.5 = 4 (+ 5 Corroded)', () => {
     const f = rig(['acid', 'arc', 'stay', 'spread'], ['9,6']); line(f, ['acid', 'arc', 'stay', 'spread'], L4);
     evoke(f, '3,5', '9,5');
-    const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(500);
-    f.turn(f.foe);
-    expect(500 - f.foe.hp).toBe(4); expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
+    const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(493);
+    f.cb.round++; f.turn(f.foe); // the next round: the strike counted as this round's bite
+    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5 expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
   });
   it('Swap a friend, STEP · RELAY: your relay jumps to the tile you pick (no save for your side)', () => {
     const f = rig(['step', 'relay'], ['14,9'], ['7,5']); line(f, ['step', 'relay'], L2);
@@ -189,12 +189,12 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('gaps 3–4: the Delivery and Burst mixes', () => {
-  it('STAY + TWICE: two fields, one at each aim; each bites ×0.5', () => {
+  it('STAY + TWICE: two fields, one at each aim; each bites a newcomer at full', () => {
     const f = rig(['fire', 'seek', 'stay', 'twice'], ['14,9']); line(f, ['fire', 'stay', 'twice', 'seek'], L4);
     evoke(f, '3,5', '9,4', { aims: ['9,4', '9,7'] });
     const fields = f.cb.zones!.filter((z) => z.kind === 'field' && z.by === f.pc.id);
     expect(fields.map((z) => z.tiles)).toEqual([['9,4'], ['9,7']]);
-    f.foe.pos = '9,7'; f.turn(f.foe); expect(500 - f.foe.hp).toBe(15);
+    f.foe.pos = '9,7'; f.turn(f.foe); expect(500 - f.foe.hp).toBe(30);
   });
   it('WAIT + TWICE: two hidden traps; stepping on one sets it off at full strength', () => {
     const f = rig(['fire', 'seek', 'wait', 'twice'], ['14,9']); line(f, ['fire', 'wait', 'twice', 'seek'], L4);

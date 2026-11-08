@@ -463,21 +463,21 @@ describe('KIN, friendly fire and fizzle (spec: Filter; Friendly fire; Grammar 8�
 
 // ---------- what stays ----------
 describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
-  it('STAY: the field doesn\'t strike when Evoked; ×0.5 on whoever enters or starts a turn in it, once per creature per round (Burning ground 9)', () => {
+  it('STAY: the field strikes nobody out of its area when Evoked; full on a newcomer the first time, ×0.5 after, once per creature per round (Burning ground 18, then 9; item 422)', () => {
     const { cb, u, e, allies, rng } = setup(['fire', 'stay', 'spread', 'kin'], [{ at: '9,5' }], { allies: ['1,8'] });
     draw(cb, rng, u, ['fire', 'stay', 'spread', 'kin'], ['5,5', '4,5', '3,5', '2,5']);
     const hp = e.hp; evoke(cb, rng, u, '2,5', u.pos);
     const z = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.left).toBe(2); expect(e.hp).toBe(hp);
-    e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(9);
+    e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(18);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(e.hp).toBe(hp2); // once a round
     cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(9);
     const ah = allies[0].hp; allies[0].ap = 9; moveUnit(cb, allies[0], '1,6', rng); expect(allies[0].hp).toBe(ah); // KIN
     expect(fx(cb, 'field').length).toBe(1); expect(fx(cb, 'field_tick').length).toBe(2);
   });
-  it('Wall of fire: FIRE · ARC · STAY · SPREAD, 7 a time; STAY + PULL is a whirlpool', () => {
+  it('Wall of fire: FIRE · ARC · STAY · SPREAD, 14 the first time; STAY + PULL is a whirlpool', () => {
     const { cb, u, e, rng } = setup(['fire', 'arc', 'stay', 'spread'], [{ at: '12,12' }]);
     draw(cb, rng, u, ['fire', 'stay', 'spread', 'arc'], ['6,5', '5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '9,5');
-    e.pos = '12,5'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '11,5', rng); expect(hp - e.hp).toBe(7);
+    e.pos = '12,5'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '11,5', rng); expect(hp - e.hp).toBe(14);
     const w = setup(['bind', 'stay', 'pull', 'seek'], [{ at: '12,12' }]); draw(w.cb, w.rng, w.u, ['bind', 'stay', 'pull', 'seek'], ['6,5', '5,5', '4,5', '3,5']);
     w.cb.zones = []; evoke(w.cb, w.rng, w.u, '3,5', '9,5');
     w.e.pos = '9,5'; magicTurnStart(w.cb, w.rng, w.e); expect(w.e.pos).toBe('6,5');
@@ -640,7 +640,7 @@ describe('old saves (item 441)', () => {
     delete (cb as any).sigilV; migrateSigil(cb);
     expect(cb.glyphs).toEqual([]); expect(cb.zones![0].kind).toBe('field'); expect(cb.zones![0].words).toEqual(['fire', 'stay']);
     expect(cb.log.some((l) => /old glyphs/.test(l))).toBe(true);
-    const e = cb.units.find((x) => x.side === 'foe')!; e.pos = '6,7'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '6,6', rng); expect(hp - e.hp).toBe(15);
+    const e = cb.units.find((x) => x.side === 'foe')!; e.pos = '6,7'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '6,6', rng); expect(hp - e.hp).toBe(30); // full the first time (item 422)
   });
   it('characters: RETURN goes (one free word at the next rest); two starting words with no Reach word swap the non-Subject one for SEEK', () => {
     expect(migrateWords(['fire', 'return', 'condense']).words).toEqual(['fire', 'condense']);

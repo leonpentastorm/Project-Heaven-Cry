@@ -94,7 +94,7 @@ export function spellSummary(words: string[]): string {
   if (sp.chain) parts.push('chains ' + sp.chain + (sp.chain === 1 ? ' time' : ' times'));
   if (sp.pull) parts.push('pulls ' + sp.pull);
   if (sp.leech) parts.push('leech');
-  if (sp.stay) parts.push('stays as a field ' + sp.fieldRounds + ' rounds');
+  if (sp.stay) parts.push('strikes, then stays as a field ' + sp.fieldRounds + ' rounds (full the first time, half after)');
   if (sp.wait) parts.push('a hidden trap');
   if (sp.watch) parts.push('a turret ' + sp.turretRounds + ' rounds');
   if (sp.kin) parts.push('spares your side');
@@ -203,7 +203,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
       const t = T(k); t.layer = 'background: ' + tintOf(el) + '; box-shadow: inset 0 0 0 ' + (core ? 3 : 1) + 'px ' + SIGIL_GLOW;
       if (sp?.burst || core) mark(k, { key: 'mult' + m.i, text: (core ? 'CORE ' : '') + '×' + round2(mult), style: badge(core ? SIGIL_GLOW : 'rgba(10, 13, 19, 0.75)', core ? '#0A0D13' : SIGIL_INK) + '; ' + CORNER.bl, title: core ? 'CONDENSE core' : 'burst' }, (core ? 'CONDENSE core ' : 'burst ') + '×' + round2(mult));
     }
-    if (m.placed) mark(m.impact, { key: 'placed' + m.i, text: m.placed === 'field' ? '▦ FIELD' : m.placed === 'trap' ? '⧗ TRAP' : '▲ TURRET', style: badge(SIGIL_GLOW) + '; ' + CORNER.tl, title: 'it stays here' }, 'a ' + m.placed + ' stays here');
+    if (m.placed) mark(m.impact, { key: 'placed' + m.i, text: m.placed === 'field' ? '▦ FIELD' : m.placed === 'trap' ? '⧗ TRAP' : '▲ TURRET', style: badge(SIGIL_GLOW) + '; ' + CORNER.tl, title: m.placed === 'field' ? 'it strikes, then stays here (full the first time, half after)' : 'it stays here' }, m.placed === 'field' ? 'it strikes, then a field stays here (full the first time, half after)' : 'a ' + m.placed + ' stays here');
     m.chain.forEach((j: any, i: number) => mark(j.to, { key: 'chain' + m.i + i, text: '⚡' + (i + 1) + ' ×' + round2(j.mult), style: badge('#E3BF51') + '; ' + CORNER.tl, title: 'CHAIN jump ' + (i + 1) }, 'CHAIN jump ' + (i + 1) + ' ×' + round2(j.mult)));
     m.pull.forEach((p: any) => mark(p.to, { key: 'pull' + p.unit, text: '⇠ PULLED', style: badge('#FFFFFF') + '; ' + CORNER.br, title: 'PULL leaves them here' }, 'PULL leaves ' + nameOf(cb, p.unit) + ' here'));
     m.step.forEach((p: any) => mark(p.to, { key: 'step' + p.unit, text: '⇢ STEP', style: badge('#FFFFFF') + '; ' + CORNER.br, title: 'STEP lands them here' }, 'STEP lands ' + nameOf(cb, p.unit) + ' here'));
@@ -330,7 +330,7 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<
     const ink = z.mine ? SIGIL_GLOW : HOSTILE_INK, owner = z.mine ? 'yours' : 'hostile', rounds = z.left >= 90 ? 'for the scene' : z.left + (z.left === 1 ? ' round' : ' rounds') + ' left';
     const words = (z.words || []).filter((w: string) => SIGIL[w]).map(up).join(' · ');
     let label = '', layer = '', text = '', badgeText = '';
-    if (z.kind === 'field') { label = (z.element ? up(z.element) + ' ' : '') + 'field'; layer = 'background: ' + tintOf(z.element) + '; box-shadow: inset 0 0 0 2px ' + ink; badgeText = '▦' + z.left; text = words + ' field (' + owner + '): hits whoever enters or starts a turn there, ' + rounds; }
+    if (z.kind === 'field') { label = (z.element ? up(z.element) + ' ' : '') + 'field'; layer = 'background: ' + tintOf(z.element) + '; box-shadow: inset 0 0 0 2px ' + ink; badgeText = '▦' + z.left; text = words + ' field (' + owner + '): hits whoever enters or starts a turn there, full the first time, half after, ' + rounds; }
     else if (z.kind === 'trap') { label = z.mine ? 'Your trap' : 'Spotted trap'; layer = 'box-shadow: inset 0 0 0 2px ' + ink + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.08) 0 4px, transparent 4px 8px)'; badgeText = '⧗' + (z.triggers != null ? '×' + z.triggers : ''); text = (z.mine ? words + ' trap (yours, hidden from the other side)' : 'hostile Sigil trap (spotted)' + (words ? ': ' + words : '')) + ', goes off when someone steps on it, ' + rounds; }
     else if (z.kind === 'turret') { label = 'Turret'; layer = 'box-shadow: inset 0 0 0 2px ' + ink; badgeText = '▲' + z.left + (z.hp != null ? ' ' + z.hp + 'hp' : ''); text = words + ' turret (' + owner + '), shoots the nearest creature it can reach each round, ' + rounds + (z.hp != null ? ', ' + z.hp + ' HP' : ''); }
     else if (z.kind === 'raise') { label = 'RAISE wall'; layer = 'background: rgba(201, 211, 227, 0.32); box-shadow: inset 0 0 0 2px ' + ink; badgeText = '▇' + (z.hp != null ? z.hp : ''); text = 'RAISE wall (' + owner + '): blocks movement and sight' + (z.hp != null ? ', ' + z.hp + ' HP' : '') + ', ' + rounds; }
@@ -356,7 +356,7 @@ export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: stri
   const out: { key: string; img?: string; box?: string; name: string }[] = [];
   if (anyGlyph) out.push({ key: 'gl', img: glyphUri('fire', SIGIL_INK, { glow: true, frame: false }), name: 'Your side\'s glyph' }, { key: 'gf', img: glyphUri('fire', HOSTILE_INK, { frame: false }), name: 'Hostile glyph you can read' }, { key: 'gs', img: scratchUri(HOSTILE_INK), name: 'Unreadable glyph' });
   const box = (s: string) => 'width: 14px; height: 14px; border-radius: 2px; ' + s;
-  if (kinds.has('field')) out.push({ key: 'zf', box: box('background: ' + ELEMENT_TINT.fire + '; box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▦ Field (tinted by its element; hurts whoever enters)' });
+  if (kinds.has('field')) out.push({ key: 'zf', box: box('background: ' + ELEMENT_TINT.fire + '; box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▦ Field (tinted by its element; hurts whoever enters: full the first time, half after)' });
   if (kinds.has('trap')) out.push({ key: 'zt', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.2) 0 3px, transparent 3px 6px)'), name: '⧗ Trap (yours, or a spotted one)' });
   if (kinds.has('turret')) out.push({ key: 'zu', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▲ Turret (rounds left, HP)' });
   if (kinds.has('raise')) out.push({ key: 'zr', box: box('background: rgba(201, 211, 227, 0.32)'), name: '▇ RAISE wall (HP)' });
