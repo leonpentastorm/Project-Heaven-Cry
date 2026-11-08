@@ -39,6 +39,10 @@ await btn.click({ timeout: 300 }).catch(() => {}); // a second press files nothi
 await p.waitForSelector('text=✓ LOCKED IN', { timeout: 8000 });
 ok('the lock-in completes (✓ LOCKED IN in the room) after ' + (Date.now() - t0) + ' ms', true);
 const chars = await p.evaluate(() => Object.values(window.__phc.getState().game?.characters || {}).filter((c) => c.name === 'Stamp Test').length);
+// The screen leaves as a frozen copy (App.tsx): the stamp in that copy carries on from where it was, never slams twice.
+const ghost = await p.evaluate(() => window.__phcGhostAnims || []);
+const slam = ghost.find((a) => a.name === 'phc-stamp-slam');
+ok('the leaving copy keeps the stamp down (slam at ' + (slam && Math.round(slam.t)) + ' ms of 300, not replayed)', !!slam && slam.t >= 290);
 ok('filed once: ' + chars + ' character(s) named Stamp Test', chars === 1);
 ok('the stamp sound was fetched: ' + sounds.filter((s) => /stamp/.test(s)).join(','), sounds.some((s) => /stamp/.test(s)));
 await p.screenshot({ path: OUT + 'slate-stamp-after.png' });

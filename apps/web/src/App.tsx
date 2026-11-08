@@ -126,6 +126,35 @@ const IN_CLS: Record<Exclude<Ghost, null>, string> = { forward: 'phc-slide-in-ri
 const GHOST_MS: Record<Exclude<Ghost, null>, number> = { forward: 340, back: 340, 'combat-in': COMBAT_IN_MS, 'combat-out': 520 };
 const IN_MS: Record<Exclude<Ghost, null>, number> = { forward: 450, back: 450, 'combat-in': COMBAT_IN_MS, 'combat-out': 780 };
 
+/** A CSS animation on the old screen when it was copied: [element index (−1: the root), name, pseudo-element, time]. */
+type AnimRec = [number, string, string | null, number | null];
+const indexOf = (root: HTMLElement) => { const m = new Map<Element, number>([[root, -1]]); root.querySelectorAll('*').forEach((el, i) => m.set(el, i)); return m; };
+const animKey = (i: number | undefined, name: string, pseudo: string | null | undefined) => i + '|' + name + '|' + (pseudo || '');
+function cssAnims(root: HTMLElement): { a: Animation; key: string }[] {
+  if (typeof root.getAnimations !== 'function') return [];
+  const idx = indexOf(root), out: { a: Animation; key: string }[] = [];
+  for (const a of root.getAnimations({ subtree: true })) {
+    const name = (a as any).animationName as string | undefined, ef = a.effect as KeyframeEffect | null;
+    if (!name || !ef || !ef.target || !idx.has(ef.target)) continue; // Web Animations (the page shake) aren't copied
+    out.push({ a, key: animKey(idx.get(ef.target), name, ef.pseudoElement) });
+  }
+  return out;
+}
+/** The old screen's CSS animations and how far along each one was. */
+export function animsOf(root: HTMLElement): AnimRec[] {
+  return cssAnims(root).map(({ a, key }) => { const [i, name, pseudo] = key.split('|'); return [Number(i), name, pseudo || null, a.currentTime == null ? null : Number(a.currentTime)] as AnimRec; });
+}
+/** The copy's CSS animations, set to where the old screen's were (finished ones jump to their end, never replay). */
+export function carryAnims(copy: HTMLElement, rec: AnimRec[]) {
+  const was = new Map(rec.map(([i, n, p, t]) => [animKey(i, n, p), t]));
+  const seen: { name: string; t: number | null }[] = [];
+  for (const { a, key } of cssAnims(copy)) {
+    if (was.has(key)) { const t = was.get(key); if (t != null) a.currentTime = t; }
+    else { try { a.finish(); } catch { a.cancel(); } } // done before the copy (no fill): end it; an endless one just stops
+    seen.push({ name: (a as any).animationName, t: a.currentTime == null ? null : Number(a.currentTime) });
+  }
+  (globalThis as any).__phcGhostAnims = seen; // for the e2e (the copy lives in a closed shadow root)
+}
 const roots = new WeakMap<HTMLElement, ShadowRoot | HTMLElement>();
 /** The holder's closed shadow root (made once), or the holder itself where shadow DOM is missing. */
 function ghostRoot(holder: HTMLElement): ShadowRoot | HTMLElement {
@@ -135,7 +164,7 @@ function ghostRoot(holder: HTMLElement): ShadowRoot | HTMLElement {
 }
 function useScreenTransition(screen: Screen, phase: string | undefined) {
   const wrap = React.useRef<HTMLDivElement>(null), ghostHolder = React.useRef<HTMLDivElement>(null);
-  const prev = React.useRef(screen), kind = React.useRef<Ghost>(null), snap = React.useRef<{ node: HTMLElement; y: number; scrolls: [number, number, number][] } | null>(null);
+  const prev = React.useRef(screen), kind = React.useRef<Ghost>(null), snap = React.useRef<{ node: HTMLElement; y: number; scrolls: [number, number, number][]; anims: AnimRec[] } | null>(null);
   const [ghost, setGhost] = React.useState<Ghost>(null), [inCls, setInCls] = React.useState('');
   // combat-in is for a fight that has just begun (the phase turned to combat), not for going back to a fight already on
   // (the combat header's STORY tab and back): the flag is raised when the phase changes and spent by the next screen change.
@@ -154,7 +183,7 @@ function useScreenTransition(screen: Screen, phase: string | undefined) {
       try {
         const all = old.querySelectorAll('*'), scrolls: [number, number, number][] = [];
         all.forEach((el, i) => { if (el.scrollTop || el.scrollLeft) scrolls.push([i, el.scrollTop, el.scrollLeft]); });
-        snap.current = { node: old.cloneNode(true) as HTMLElement, y: window.scrollY, scrolls };
+        snap.current = { node: old.cloneNode(true) as HTMLElement, y: window.scrollY, scrolls, anims: animsOf(old) };
       } catch { snap.current = null; }
     }
   }
@@ -177,6 +206,11 @@ function useScreenTransition(screen: Screen, phase: string | undefined) {
       box.appendChild(s.node);
       root.replaceChildren(...[...document.querySelectorAll('style, link[rel="stylesheet"]')].map((n) => n.cloneNode(true)), box);
       try { const all = s.node.querySelectorAll('*'); for (const [i, t, l] of s.scrolls) { const el = all[i] as HTMLElement | undefined; if (el) { el.scrollTop = t; el.scrollLeft = l; } } } catch { /* */ }
+      // A copy restarts every CSS animation from zero (the Approved stamp slammed twice, cards rose in again): carry
+      // each one on from where it was, and end the ones that had already finished.
+      // The holder shows now, not on the next render: under display none there is no animation to carry.
+      if (holder) holder.style.display = 'block';
+      try { carryAnims(s.node, s.anims); } catch { /* */ }
       setGhost(k);
       tG = setTimeout(() => { root.replaceChildren(); setGhost(null); }, rm ? 180 : GHOST_MS[k]);
     } else { root?.replaceChildren(); setGhost(k === 'combat-in' && !rm ? k : null); if (k === 'combat-in' && !rm) tG = setTimeout(() => setGhost(null), GHOST_MS[k]); }
