@@ -10,11 +10,11 @@
 // The held Outburst and Strain are read ONLY through heldOutburstOf() below: the Soul engine is changing shape
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
-import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator,
+import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
-export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY';
+export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
 export interface ResRow {
   key: string; label: string; value: string; now?: number; max?: number; kind: ResKind; colour: string;
   warn?: ResWarn; /** alert: act now (red chip); caution: soon (white chip); ready: something good to spend (green). */ level?: 'alert' | 'caution' | 'ready';
@@ -227,7 +227,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   }
   // ---- Sigil magic: the Evoker's charge, spare cores, Flux (Mind cyan) ----
   const mg = u?.mg, sm = c ? (g?.story?.magic || {})[c.id] || {} : {};
-  const evoker = mg ? !!mg.evoker : !!c && hasEvoker(c);
+  // A focus counts only in a hand (spec: Hands 2, item 630); carried, it keeps its store, so the row stays, marked STOWED.
+  const evoHeld = mg ? !!mg.evoker : !!c && hasEvoker(c), evoker = evoHeld || (!!c && carriesEvoker(c));
   if (evoker) {
     // Spare cores are the ones Swap core can load (mg.cores); cores crystallised this fight (coresMade) join them only after it.
     const charge = mg ? mg.charge : evoChargeNow(c), cores = mg ? mg.cores || 0 : coresCarried(c), made = mg ? mg.coresMade || 0 : 0;
@@ -235,7 +236,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const madeTxt = made ? ' ' + plural(made, 'core') + ' crystallised this fight ' + (made === 1 ? 'joins' : 'join') + ' your spares after it, not before.' : '';
     const row: ResRow = { key: 'charge', label: 'Evoker charge', value: charge + ' / ' + CORE_CHARGE + ' · ' + plural(cores, 'spare core') + (made ? ' · ' + made + ' crystallised' : ''), now: charge, max: CORE_CHARGE, kind: 'bar', colour: RES_INK.mind,
       hint: 'The core in your Evoker: each glyph spends its charge. ' + (cores > 0 ? 'Swap core (2 AP) loads a fresh one (' + CORE_CHARGE + ').' : 'No spare cores: crystallise one, or find some.') + madeTxt };
-    if (locked) Object.assign(row, { warn: 'LOCKED', level: 'alert', hint: 'Overloaded: the Evoker is locked until next round.' });
+    if (!evoHeld) Object.assign(row, { warn: 'STOWED', level: 'caution', hint: NEEDS_EVOKER + ' Your Evoker is in the pack: it keeps its charge, but no Sigils until you hold it (the off hand; a two-handed weapon fills both hands).' });
+    else if (locked) Object.assign(row, { warn: 'LOCKED', level: 'alert', hint: 'Overloaded: the Evoker is locked until next round.' });
     else if (charge <= 0) Object.assign(row, cores > 0 ? { warn: 'RELOAD CORE', level: 'alert', hint: 'The core is spent: Swap core (2 AP) before you draw again.' } : { warn: 'EMPTY', level: 'alert', hint: 'The core is spent and you have no spares to swap in: fight another way.' + madeTxt });
     else if (charge <= 3) Object.assign(row, cores > 0 ? { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left: swap core (2 AP) when it runs out (most words cost 1–3).' } : { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left and no spare cores.' });
     rows.push(row);
@@ -247,15 +249,16 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     rows.push(fr);
   }
   // ---- Soul magic: MP (MP blue), Strain and the held Outburst (Soul violet) ----
-  const emanator = mg ? !!mg.emanator : !!c && hasEmanator(c);
+  const emaHeld = mg ? !!mg.emanator : !!c && hasEmanator(c), emanator = emaHeld || (!!c && carriesEmanator(c));
   if (emanator) {
     const mp = Math.round(mg ? mg.mp : mpNow(c)), mpMax = mg ? mg.mpMax : maxMp(c);
     const row: ResRow = { key: 'mp', label: 'MP', value: mp + ' / ' + mpMax, now: mp, max: mpMax, kind: 'bar', colour: RES_INK.mp, hint: 'Your Emanator\'s mana: Outbursts spend it. Syphon (1 AP) draws more from the air.' };
-    if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' });
+    if (!emaHeld) Object.assign(row, { warn: 'STOWED', level: 'caution', hint: NEEDS_EMANATOR + ' Your Emanator is in the pack: it keeps its MP, but Outbursts draw on the air (+2 Strain) and Syphon waits until you hold it.' });
+    else if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' });
     else if (mp < mpMax * 0.25) Object.assign(row, { warn: 'LOW', level: 'caution', hint: 'Low MP: Syphon (1 AP) draws mana from the air.' });
     rows.push(row);
   }
-  const soul = mg ? mg.emanator || (mg.designs || []).length > 0 : !!c && (hasEmanator(c) || (c.outbursts || []).length > 0);
+  const soul = emanator || (mg ? (mg.designs || []).length > 0 : !!c && (c.outbursts || []).length > 0);
   if (soul) {
     const hh = mg ? heldOutburstOf(mg, undefined, undefined, { cb, u }) : heldOutburstOf({ ...sm, emanator: !!c && hasEmanator(c) }, c?.outbursts || [], strainLimit(c), { mana: g?.story?.mana });
     rows.push(...strainRows(hh));

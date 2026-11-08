@@ -17,7 +17,7 @@ import { previewPerkAction, bindGame } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
-import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
+import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
@@ -93,19 +93,25 @@ const SIG_LINE = /draws [A-Z]+ at|evokes [A-Z]|scuffs out|vents \d+ Flux|loads a
 const magicInk = (t) => (SIG_LINE.test(t || '') ? SIGIL_INK : SOUL_LINE.test(t || '') ? SOUL_INK : '');
 const bandName = (b) => b.id.charAt(0).toUpperCase() + b.id.slice(1);
 const soulM = (c) => magicOf(c) || { costSave: soulCostSaving(c), soulAp: soulCastAp(c), soulRange: soulRangeBonus(c) };
+/** Where a focus is, in words (spec: Hands 2): a hand, or the pack where it counts for nothing. */
+const handWord = (at) => (at === 'main' ? 'in your main hand' : at === 'off' ? 'in your off hand' : at === 'pack' ? 'in the pack (not in hand)' : 'none');
+/** Which focus an item is, if any. */
+const focusKindOf = (id) => (FOCUS_IDS.evoker.includes(id) ? 'evoker' : FOCUS_IDS.emanator.includes(id) ? 'emanator' : null);
 function magicVals(self, g, c) {
   const S = self.state, set = (p) => self.setState({ mgDraft: { ...self.state.mgDraft, ...p } });
   const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, sig: { words: [], stats: [] }, soul: { designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
   if (!c) return { ...none, emptyText: 'You have no character in this session.' };
   const words = c.sigils || [], designs = c.outbursts || [], known = c.soulKnown || { schools: [], modules: [] }, evo = hasEvoker(c), ema = hasEmanator(c);
+  // A focus counts only in a hand (spec: Hands 2, item 630); carried, it keeps its store (charge, MP), so the sheet shows it.
+  const evoC = carriesEvoker(c), emaC = carriesEmanator(c), evoAt = focusHand(c, 'evoker'), emaAt = focusHand(c, 'emanator');
   const N = magicNow(g, c), fight = N.inFight, mana = N.mana, m = soulM(c);
-  const showSigil = words.length > 0 || evo, showSoul = designs.length > 0 || known.schools.length > 0 || known.modules.length > 0 || ema || !!N.held;
+  const showSigil = words.length > 0 || evoC, showSoul = designs.length > 0 || known.schools.length > 0 || known.modules.length > 0 || emaC || !!N.held;
   // Sigils: the words known, as glyph cards (click for the Grand form).
   const wordCards = words.filter((id) => SIGIL[id]).sort((a, b) => WORD_ORDER.indexOf(SIGIL[a].class) - WORD_ORDER.indexOf(SIGIL[b].class)).map((id) => { const w = SIGIL[id], open = S.mgWord === id;
     return { key: id, img: glyphUri(id, SIGIL_INK, { glow: true }), word: w.word, cls: WORD_CLASS[w.class] || '', charge: 'CHARGE ' + w.charge, text: w.text, title: w.grand ? 'Grand form (Grand Sigilist): ' + w.grand : '',
       open: open ? 'true' : 'false', toggle: () => self.setState({ mgWord: open ? null : id }), hasGrand: open && !!w.grand, grand: w.grand || '', hint: w.grand ? (open ? '▾' : '▸') : '',
       style: 'display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 10px; align-items: start; width: 100%; padding: 8px 10px; border-radius: 10px; text-align: left; font-family: inherit; color: inherit; cursor: pointer; background: #10151F; border: 1px solid ' + (open ? SIG_CYAN : '#232D3F') + '; border-left: 3px solid ' + SIG_CYAN }; });
-  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (old words retired in rules 1.4)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker charge', evo ? N.charge + ' / ' + CORE_CHARGE : '—'],
+  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (old words retired in rules 1.4)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
     ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
@@ -117,7 +123,7 @@ function magicVals(self, g, c) {
       forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
       locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (held ? SOUL_VIOLET : '#232D3F') + '; border-left: 3px solid ' + SOUL_VIOLET }; });
-  const soulStats = [['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
+  const soulStats = [['Emanator', handWord(emaAt)], ['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
     ['Air', 'MANA ' + mana + ' · ' + bandName(N.band) + (N.band.soul_cost_mult !== 1 ? ' (costs ×' + N.band.soul_cost_mult + ')' : '')]].map(([k, v]) => ({ k, v }));
   // The builder: a school, its option, modules up to the slots, a name. The engine checks everything again on Save.
   const B = S.mgDraft, slots = moduleSlots(c), two = (c.skills.will_power || 0) >= SECOND_SCHOOL.fromWill;
@@ -186,9 +192,9 @@ function magicVals(self, g, c) {
   const anyMagic = showSigil || showSoul;
   return {
     has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
-    showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
+    showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: evoC ? '⚠ ' + NEEDS_EVOKER + ' Yours is in the pack: it keeps its charge, but you can\'t draw until you hold it (GEAR: the off hand).' : '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
     sig: { words: wordCards, stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
-    soul: { designs: designCards, noDesigns: !designs.length, stats: soulStats, ema, noEma: !ema, noEmaText: 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
+    soul: { designs: designCards, noDesigns: !designs.length, stats: soulStats, ema: emaC, noEma: !ema, noEmaText: emaC ? NEEDS_EMANATOR + ' Yours is in the pack: it keeps its MP, but an Outburst pulls from the air instead, at +2 Strain a cast, and Syphon waits (GEAR: the off hand).' : 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
       mpText: N.mp + ' / ' + mpMax + ' MP', mpFill: 'height: 100%; width: ' + Math.max(0, Math.min(100, mpPct)) + '%; background: ' + MP_BLUE,
       held: !!N.held, heldText: N.held ? 'HOLDING ' + ((designs.find((d) => d.id === N.held.design) || {}).name || 'an Outburst').toUpperCase() + ' · STAGE ' + N.held.stage + ' · it grows each round, and strains the heart, until you release it' : '', heldImg: heartUri(N.held ? N.held.stage : 1),
       head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', option2: '', tone: 'raw', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
@@ -217,8 +223,8 @@ export class MainLogic extends DCLogic {
     // ---------- the sheet ----------
     const echo = c ? c.echo : 0;
     const echoPips = [0, 1, 2].map((i) => ({ style: 'width: 12px; height: 12px; transform: rotate(45deg); box-sizing: border-box; ' + (i < echo ? 'background: #FFFFFF' : 'border: 1px solid #FFFFFF') }));
-    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && hasEmanator(c), next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
-    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax : 'no Emanator'],
+    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesEmanator(c), emaHeld = !!c && hasEmanator(c), next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
+    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (emaHeld ? '' : ' · in the pack') : 'no Emanator'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
@@ -310,7 +316,7 @@ export class MainLogic extends DCLogic {
         }
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
         return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
-          note: wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, wdef.grants ? wdef.grants.name + ': ' + wdef.grants.text : ''].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || '', acts, hasActs: acts.length > 0, src: it }]; }
+          note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, wdef.grants ? wdef.grants.name + ': ' + wdef.grants.text : ''].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
@@ -353,7 +359,8 @@ export class MainLogic extends DCLogic {
         : twoHanded ? [] : [...(c.offHand ? [{ key: 'off-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'off' }); this.setState({ gearMenu: null }); } }] : []),
           ...cand((it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand', 'Hold', 'off')];
       const r = st.rarity || 'standard';
-      return { key, side: ((isMain ? mainSide : mainSide === 'right' ? 'left' : 'right') + ' hand').toUpperCase(), tag: isMain ? 'MAIN' : 'OFF', name: twoHanded ? 'Both hands: ' + (WEAPON[c.weapon]?.name || '') : id ? tips[key].title : 'Empty',
+      const fk = id && !twoHanded ? focusKindOf(id) : null; // the focus this hand holds (it counts only in a hand)
+      return { key, side: ((isMain ? mainSide : mainSide === 'right' ? 'left' : 'right') + ' hand').toUpperCase(), tag: (isMain ? 'MAIN' : 'OFF') + (fk ? ' · ' + fk.toUpperCase() : ''), name: twoHanded ? 'Both hands: ' + (WEAPON[c.weapon]?.name || '') : id ? tips[key].title : 'Empty',
         img: id ? artOf(id) : '', hasImg: !!(id && artOf(id)), noImg: !(id && artOf(id)), glyph: twoHanded ? '═' : id ? glyphOf(id) : '·', marks: id ? marks(r) : '', rarity: id ? RW(r) : '',
         frameStyle: 'position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; background: #0D1119; border: ' + (id ? (RARITY[r]?.marks ? 2 + RARITY[r].marks : 1) + 'px solid ' + (RARITY[r]?.marks ? '#E7EBF3' : '#3B475D') : '1px dashed #3B475D') + '; font-size: 40px; color: #5B6577; cursor: pointer',
         nameStyle: 'font-size: 13px; font-weight: 700; color: ' + (id || twoHanded ? '#E7EBF3' : '#5B6577'), ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length,

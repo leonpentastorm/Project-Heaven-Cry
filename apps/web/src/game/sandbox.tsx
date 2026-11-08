@@ -19,7 +19,7 @@ import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
 import {
   magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
+  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE } from '@engine';
@@ -397,6 +397,11 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
   return [];
 }
 const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
+/** Where a focus is (spec: Hands 2, item 630: it counts only in a hand). */
+function focusNow(c: Character, k: 'evoker' | 'emanator'): string {
+  const at = focusHand(c, k), n = k === 'evoker' ? 'Evoker' : 'Emanator';
+  return at === 'main' || at === 'off' ? '✓ ' + n + ' (' + at + ' hand)' : at === 'pack' ? n + ' in the pack: not in hand' : 'no ' + n;
+}
 function GearTab({ c }: { c: Character }) {
   const pack = packOf(c), mainName = WEAPON[c.weapon]?.name || c.weapon;
   const worn = Object.entries(c.worn || {});
@@ -410,7 +415,7 @@ function GearTab({ c }: { c: Character }) {
       <span style={{ fontSize: 12, lineHeight: 1.45, color: C.muted }}>
         <span style={{ color: C.mind }}>Sigils:</span> an Evoker in the off hand, 4 mana cores, {MAGIC_KIT.words.map((w) => w.toUpperCase()).join(' · ')}.{' '}
         <span style={{ color: C.soul }}>Outbursts:</span> an Emanator with full MP and two designs ({MAGIC_KIT.designs.map((d) => d.name).join(', ')}).
-        {' '}Now: {hasEvoker(c) ? '✓ Evoker' : 'no Evoker'} · {hasEmanator(c) ? '✓ Emanator' : 'no Emanator'} · {(c.sigils || []).length} words · {(c.outbursts || []).length} designs.
+        {' '}Now: {focusNow(c, 'evoker')} · {focusNow(c, 'emanator')} · {(c.sigils || []).length} words · {(c.outbursts || []).length} designs.
       </span>
     </Section>
     <Section title="EQUIPPED" aria="Equipped">
@@ -520,8 +525,8 @@ function MagicTab({ c }: { c: Character }) {
     <Section title="FOCI">
       <div style={row}>
         <button type="button" style={{ ...primary, background: C.white }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'both' })}>✦ Magic kit</button>
-        {!hasEvoker(c) && <button type="button" style={btn} onClick={() => give('evoker')}>+ Evoker (Sigils)</button>}
-        {!hasEmanator(c) && <button type="button" style={btn} onClick={() => give('emanator')}>+ Emanator (Outbursts)</button>}
+        {!carriesEvoker(c) && <button type="button" style={btn} onClick={() => give('evoker')}>+ Evoker (Sigils)</button>}
+        {!carriesEmanator(c) && <button type="button" style={btn} onClick={() => give('emanator')}>+ Emanator (Outbursts)</button>}
         <button type="button" style={btn} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'standard_core', qty: 4 })}>+4 mana cores</button>
       </div>
     </Section>

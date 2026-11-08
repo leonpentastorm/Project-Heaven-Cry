@@ -74,6 +74,13 @@ await drawer.locator('section[aria-label="Pack"]').getByRole('button', { name: /
 await p.waitForTimeout(200);
 g = await G();
 ok('Equip from the pack puts it back in hand, loaded: ' + g.characters[me.id].weapon + ' ' + g.characters[me.id].loaded, g.characters[me.id].weapon === 'drifter_revolver' && g.characters[me.id].loaded > 0);
+// A focus counts only in a hand (spec: Hands 2, item 630): the Recruit's rifle filled both hands, so the kit put the
+// Evoker in the pack. With the one-handed revolver in hand, the pack's button takes it into the off hand.
+await drawer.locator('section[aria-label="Pack"]').getByRole('button', { name: /^Equip · off hand: Evoker/ }).first().click();
+await p.waitForTimeout(200);
+g = await G();
+ok('the Evoker goes into the off hand from the pack: ' + g.characters[me.id].offHand?.id + ' (' + ((await drawer.locator('section[aria-label="Magic kit"]').textContent()) || '').match(/Now: [^·]+/)?.[0] + ')',
+  g.characters[me.id].offHand?.id === 'evoker' && /✓ Evoker \(off hand\)/.test((await drawer.locator('section[aria-label="Magic kit"]').textContent()) || ''));
 await snap('02-gear');
 await drawer.getByRole('tab', { name: 'Squad' }).click();
 const sel = drawer.getByLabel('Class', { exact: true });

@@ -4,7 +4,8 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry } from '@engine';
+import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
+  packOf, focusHand, twoHands, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, ITEM } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
 import { faithView, beliefOf, FAITH_MIN } from '@engine';
@@ -127,6 +128,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
       ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'Grappled: d20 + the better of Raw Power and Athletics against the grappler\'s.'] as ActionItem] : []),
       ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until then you attack with your fists.'] as ActionItem] : []),
+      ...focusItems(ch),
       ...(offW && offW.magazine != null && w && w.magazine != null ? [['reload2', 'Reload both guns', '3 AP', 'Each gun takes its own spare.'] as ActionItem] : []),
       ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'Only out of every enemy\'s sight, and never while Marked. Hidden: enemies can\'t target you; your first attack from hiding is an ambush (crit on 19–20, × your Ambush multiplier). Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'Marked.' : null] as ActionItem] : []),
       ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
@@ -140,17 +142,19 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
   if (hasMagic) {
     const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;
+    // A focus counts only in a hand (spec: Hands 2, item 630): the buttons stay, greyed with the engine's reason.
+    const evoWhy = mg.evoker ? undefined : NEEDS_EVOKER, emaWhy = mg.emanator ? undefined : NEEDS_EMANATOR;
     const MG: ActionGroup[] = [];
     if (sig) MG.push(['MAGIC · SIGILS', [
-      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile: one glyph a tile. Step and draw again to walk a Line (2 to 4 in a straight row). It costs the word\'s charge from your Evoker and adds its Flux.'],
-      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs (a Subject and another word). Where you stand sets the way it opens: behind an end, it fires along the Line; beside it, across. Charge ' + mg.charge + '/' + CORE_CHARGE + '.'],
+      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile: one glyph a tile. Step and draw again to walk a Line (2 to 4 in a straight row). It costs the word\'s charge from your Evoker and adds its Flux.', evoWhy],
+      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs (a Subject and another word). Where you stand sets the way it opens: behind an end, it fires along the Line; beside it, across. Charge ' + mg.charge + '/' + CORE_CHARGE + '.', evoWhy],
       ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
-      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.' + apNote(cur, 'vent')],
-      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.']], SIGIL_GLOW, 'sigils']);
+      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.' + apNote(cur, 'vent'), evoWhy],
+      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy]], SIGIL_GLOW, 'sigils']);
     if (soul) MG.push(['MAGIC · OUTBURSTS', [
       // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
       // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
-      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: Begin a design (2 AP, Swift 1) and hold it at stage 0, then Pump it up (1 AP a stage, to stage 4) and Release it (1 AP). Or Snap it: Begin and Release at once, 3 AP at ×0.6.'] as ActionItem] : []),
+      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: Begin a design (2 AP, Swift 1) and hold it at stage 0, then Pump it up (1 AP a stage, to stage 4) and Release it (1 AP). Or Snap it: Begin and Release at once, 3 AP at ×0.6.' + (mg.emanator ? '' : ' No Emanator in hand: it draws on the air (no MP, +2 Strain).')] as ActionItem] : []),
       ...(held ? (() => { const hp = cb ? heartPanel(cb, cur) : null; if (!hp) return [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held Outburst go.'] as ActionItem];
         return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'A heartbeat: +1 stage (stage multipliers ×' + stageMult(0) + ' to ×' + stageMult(4) + '). Free while the round\'s Empathy Pumps last.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
           ['release', 'Release · stage ' + hp.stage + ' ×' + hp.mult, hp.release.cost, 'Fire ' + hp.name + ' at the stage reached (' + hp.shape + ').', hp.release.ok ? null : hp.release.why] as ActionItem,
@@ -158,8 +162,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
           ['letgo', 'Let it go' + (hp.letgo.strainOff ? ' · −' + hp.letgo.strainOff + ' Strain' : ''), 'free', hp.letgo.title, hp.letgo.ok ? null : hp.letgo.why] as ActionItem,
           ...(hp.feedShow ? [['feed', 'Feed the glyph', hp.feed.cost, hp.feed.title, hp.feed.ok ? null : hp.feed.why] as ActionItem] : []),
           ['heartwatch', hp.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free', hp.watchBtn.title, hp.watchBtn.ok ? null : hp.watchBtn.why] as ActionItem]; })() : []),
-      ...(mg.emanator ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air (' + band.syphon_mp + ' in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus). The meter drops.'] as ActionItem,
-        ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.'] as ActionItem] : [])], SOUL_INK, 'outbursts']);
+      ...(mg.emanator || (ch && focusHand(ch, 'emanator')) ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air (' + band.syphon_mp + ' in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus). The meter drops.', emaWhy] as ActionItem,
+        ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.', emaWhy] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
   }
   // Faith (rules 1.6): Whispers, Hymns and the Miracle, in Virtue ink.
@@ -175,6 +179,19 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
 // ---------- the turn card's four commands ----------
 export interface Command { action: string; label: string; sub: string; key: string; off?: boolean; custom?: boolean }
 export interface CatEntry { action: string; label: string; cost: string; text: string; tab: string; ink: string | null; why: string | null }
+
+/** A focus only in the pack (spec: Hands 2, item 630; item 633): take it into the off hand, 1 AP (combat/swap to 'off').
+ *  Ids 'hold-evoker' / 'hold-emanator'; FOCUS_PACK_IDX finds its pack slot for the action. */
+export const FOCUS_ACTS: Record<string, 'evoker' | 'emanator'> = { 'hold-evoker': 'evoker', 'hold-emanator': 'emanator' };
+export const focusPackIdx = (ch: any, kind: 'evoker' | 'emanator') => (ch ? packOf(ch).findIndex((x: any) => x.qty > 0 && FOCUS_IDS[kind].includes(x.weapon || x.item || x.id)) : -1);
+function focusItems(ch: any): ActionItem[] {
+  if (!ch) return [];
+  return (['evoker', 'emanator'] as const).filter((k) => focusHand(ch, k) === 'pack').map((k) => {
+    const name = k === 'evoker' ? 'Evoker' : 'Emanator', off = ch.offHand ? ((WEAPON as any)[ch.offHand.id]?.name || (ITEM as any)[ch.offHand.id]?.name || ch.offHand.id) : '';
+    const why = twoHands(ch, ch.weapon) ? 'Your ' + ((WEAPON as any)[ch.weapon]?.name || 'weapon') + ' fills both hands.' : null;
+    return ['hold-' + k, 'Hold the ' + name + ' (off hand)', '1 AP', 'Take your ' + name + ' from the pack into the off hand' + (off ? ' (the ' + off + ' goes to the pack)' : '') + ': ' + (k === 'evoker' ? 'Sigils need an Evoker in hand.' : 'Outbursts spend MP, and Syphon works, only with an Emanator in hand.'), why] as ActionItem;
+  });
+}
 
 /** A quick "not now" for a command (a hint for the card; the engine still rules on the action itself). */
 export function whyNot(u: any, action: string, cost: string): string | null {

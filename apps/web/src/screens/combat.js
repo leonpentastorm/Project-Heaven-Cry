@@ -25,14 +25,15 @@ import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from 
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
-import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray } from '../game/commands';
+import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, FOCUS_ACTS, focusPackIdx } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard } from './faithCombat';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
-const SELF_TEXT = { reload2: 'Confirm to reload both guns.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
+const SELF_TEXT = { reload2: 'Confirm to reload both guns.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.',
+  'hold-evoker': 'Confirm to take the Evoker into your off hand (Sigils need it in a hand).', 'hold-emanator': 'Confirm to take the Emanator into your off hand (MP and Syphon need it in a hand).' };
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
 
 // ---------- magic (spec: Mana, rules 1.2; look: docs/design/magic-presentation.md) ----------
@@ -578,7 +579,7 @@ export class CombatLogic extends DCLogic {
     this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
     const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0;
     const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap : undefined; // the weapon's own AP
-    const cost = pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' || S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
+    const cost = pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' || FOCUS_ACTS[S.action] ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' || S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
     const floorAt = {}; (cb.floor || []).forEach((f) => { (floorAt[f.pos] ||= []).push(f.text); });
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
@@ -873,7 +874,7 @@ export class CombatLogic extends DCLogic {
     const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot'));
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
-    const cantConfirm = !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && !pickSel) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+    const cantConfirm = !mineTurn || isMove || (FOCUS_ACTS[S.action] && !!((ITEMS.flatMap((gr) => gr[1]).find((it) => it[0] === S.action) || [])[4])) || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && !pickSel) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
     const apNow = mineTurn ? (ap - cost < 0 ? 'needs ' + cost + ' · ' + ap + ' left' : Math.round((ap - cost) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
@@ -1047,6 +1048,7 @@ export class CombatLogic extends DCLogic {
     if (a === 'reload2') return act({ type: 'combat/reload', unitId: cur.id, hand: 'both' });
     if (a === 'hide') return act({ type: 'combat/hide', unitId: cur.id });
     if (a === 'extinguish') return act({ type: 'combat/extinguish', unitId: cur.id });
+    if (FOCUS_ACTS[a]) { const ch = getState().game.characters[cur.charId], i = focusPackIdx(ch, FOCUS_ACTS[a]); return i >= 0 && act({ type: 'combat/swap', unitId: cur.id, from: i, to: 'off' }); }
     if (a === 'escape') return act({ type: 'combat/escape', unitId: cur.id });
     if (a === 'recover') return act({ type: 'combat/recover', unitId: cur.id });
     if (a === 'prone') return act({ type: 'combat/prone', unitId: cur.id });

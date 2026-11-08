@@ -113,6 +113,9 @@ await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === '
 let s = await st();
 const cid = Object.values(s.g.characters)[0].id;
 await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
+// A focus counts only in a hand (item 630): the Recruit's rifle fills both, so a one-handed pistol first, then the kit's
+// Evoker goes into the off hand.
+await must({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true }, 'a pistol');
 await must({ type: 'sandbox/kit', charId: cid, kind: 'sigil' });
 await must({ type: 'sandbox/level', charId: cid, level: 10 });
 await must({ type: 'sandbox/give', charId: cid, item: 'standard_core', qty: 2 }, 'cores');

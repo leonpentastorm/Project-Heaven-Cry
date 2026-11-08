@@ -3,7 +3,7 @@
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
 import { beliefOf, devotionNow, FAITH_MIN, FAITH_PATRON } from '@engine';
-import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -229,7 +229,7 @@ export function campaignPrompt(g: GameState): string {
 function magicBrief(c: Character): string {
   const words = (c.sigils || []).map((w) => SIGIL[w]?.word || w), designs = (c.outbursts || []).map((d) => `${d.id} ${d.name} (${[d.school, d.school2].filter(Boolean).join('+')}${d.modules.length ? ': ' + d.modules.join(', ') : ''}${d.tone && d.tone !== 'raw' ? ', ' + d.tone : ''})`);
   if (!words.length && !designs.length) return '';
-  return `\n  Magic: ${words.length ? 'Sigil words ' + words.join(', ') + (hasEvoker(c) ? '' : ' (no Evoker carried)') : 'no Sigil words'}; ${designs.length ? 'Outburst designs ' + designs.join('; ') + (hasEmanator(c) ? '' : ' (no Emanator carried)') : 'no Outbursts'}.`;
+  return `\n  Magic: ${words.length ? 'Sigil words ' + words.join(', ') + (hasEvoker(c) ? '' : carriesEvoker(c) ? ' (Evoker in the pack, not in hand: no Sigils until held)' : ' (no Evoker carried)') : 'no Sigil words'}; ${designs.length ? 'Outburst designs ' + designs.join('; ') + (hasEmanator(c) ? '' : carriesEmanator(c) ? ' (Emanator in the pack, not in hand: Outbursts draw on the air)' : ' (no Emanator carried)') : 'no Outbursts'}.`;
 }
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
@@ -341,8 +341,8 @@ export function sigilsOnMap(g: GameState): string {
 /** A caster's live magic for PARTY CONDITION: MP, Evoker charge and cores, Flux, Strain, a held Outburst. */
 function liveMagic(g: GameState, c: Character): string {
   const m = g.story.magic?.[c.id], out: string[] = [];
-  if (hasEmanator(c)) out.push(`MP ${mpNow(c)}/${maxMp(c)}`);
-  if (hasEvoker(c)) out.push(`Evoker ${evoChargeNow(c)} charge, ${coresCarried(c)} spare cores`);
+  if (carriesEmanator(c)) out.push(`MP ${mpNow(c)}/${maxMp(c)}${hasEmanator(c) ? '' : ' (Emanator in the pack)'}`);
+  if (carriesEvoker(c)) out.push(`Evoker ${evoChargeNow(c)} charge${hasEvoker(c) ? '' : ' (in the pack)'}, ${coresCarried(c)} spare cores`);
   if (m?.flux) out.push(`Flux ${m.flux}`); if (m?.strain) out.push(`Strain ${m.strain}`); if (m?.held) out.push('holding an Outburst');
   const conds = Object.keys(m?.conds || {}); if (conds.length) out.push(conds.join(', '));
   return out.length ? ', ' + out.join(', ') : '';

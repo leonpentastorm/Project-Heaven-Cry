@@ -170,6 +170,8 @@ if (await closeTools.count()) { await closeTools.first().click(); await p.waitFo
 const hud = p.locator('[aria-label="Your status"] [aria-label="Your resources"]').first();
 const ht = ((await hud.textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 ok('area-map HUD: the resources block under HP: ' + ht.slice(0, 120), (await hud.count()) > 0 && /AMMO/.test(ht) && /loaded/.test(ht) && /EVOKER CHARGE/.test(ht));
+// The two-handed rifle stowed the kit's Evoker (spec: Hands 2, item 630): its charge still shows, marked STOWED.
+ok('area-map HUD: the stowed Evoker keeps its charge row, marked STOWED (' + (ht.match(/EVOKER CHARGE.{0,60}/) || [''])[0] + ')', /EVOKER CHARGE[^A-Z]*\d+ \/ 10[^]*?STOWED/.test(ht));
 await snap('areamap-1440');
 await snap('areamap-1280', SMALL);
 

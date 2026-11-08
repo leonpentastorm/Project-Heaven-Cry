@@ -78,6 +78,13 @@ async function setClass(id, rank, extra = async () => {}) {
   await extra();
   await host.waitForTimeout(250);
 }
+/** The magic kit with its focus in a hand (spec: Hands 2, item 630: a focus counts only in a hand): a one-handed pistol
+ *  in the main hand first (the Recruit's rifle fills both) and a free off hand, so the kit puts the Evoker or Emanator in the off hand. */
+async function withFocus(kind) {
+  await act(host, { type: 'sandbox/give', charId: hostChar, item: 'service_pistol', equip: true });
+  await act(host, { type: 'sandbox/unequip', charId: hostChar, slot: 'off' }); // an earlier kit's focus there goes to the pack
+  return act(host, { type: 'sandbox/kit', charId: hostChar, kind });
+}
 /** Open the CLASS tab and press a move's button there (the base Shove lives on another tab under the same name). */
 async function pickClass(name) {
   await host.locator('#phc-tab-class').click(); await host.waitForTimeout(120);
@@ -204,7 +211,7 @@ await snap('05-sabotage');
 
 // ---------- 4. Trickster: Read, False Image, Silver Tongue, Sleight ----------
 await act(host, { type: 'sandbox/clear' });
-await setClass('trickster', 3, () => act(host, { type: 'sandbox/kit', charId: hostChar, kind: 'sigil' }));
+await setClass('trickster', 3, () => withFocus('sigil'));
 await act(host, { type: 'sandbox/refill', charId: hostChar });
 u = await me();
 const far = await (async () => { const cb = (await G()).combat, [x, y] = xy(u.pos); for (const d of [4, 5, 3, 6]) for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [d, 1], [-d, 1]]) { const k = (x + dx) + ',' + (y + dy), [a, b] = xy(k); if (a < 0 || b < 0 || a >= cb.map.w || b >= cb.map.h || cb.map.solid.includes(k) || cb.units.some((v) => !v.dead && v.pos === k)) continue; if (!(await act(host, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'service_pistol', at: ref(k), name: 'Gunner' }))) return k; } return null; })();
@@ -270,7 +277,7 @@ ok('and on again (' + (r || 'confirmed') + ')', !r && (await host.locator('[role
 await snap('10-duck-toggles');
 
 // ---------- 7. Mage: Vent and Swap core at the engine's AP ----------
-await setClass('mage', 2, () => act(host, { type: 'sandbox/kit', charId: hostChar, kind: 'sigil' }));
+await setClass('mage', 2, () => withFocus('sigil'));
 ok('host turn', await newTurn());
 await pickAction(host, /^Swap core/);
 const costOf = (t) => host.locator('[role="tabpanel"] button', { hasText: t }).first().locator('span').last().textContent();
@@ -279,7 +286,7 @@ ok('Vent 0 AP and Swap core 1 AP on the Sigils tab (Bleed the Flux, Core Change)
 await snap('11-mage-costs');
 
 // ---------- 8. Channeler: Eye of the Storm ----------
-await setClass('channeler', 3, () => act(host, { type: 'sandbox/kit', charId: hostChar, kind: 'soul' }));
+await setClass('channeler', 3, () => withFocus('soul'));
 ok('host turn', await newTurn());
 n0 = await fxN();
 r = await useMove(/^Eye of the Storm/);

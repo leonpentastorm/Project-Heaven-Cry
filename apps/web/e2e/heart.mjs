@@ -89,8 +89,11 @@ await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { t
 await p.mouse.move(1430, 990);
 
 // =============================================================== Part A: one Soul caster (with an Evoker for Feed)
-const SOUL_STEPS = [{ type: 'sandbox/kit', kind: 'both' }, { type: 'sandbox/level', level: 10 },
+// A focus counts only in a hand (item 630): the Emanator gauntlet in the main hand (Will Power 3), so the kit's Evoker
+// goes into the off hand and both are held (the Recruit's two-handed rifle would leave both in the pack).
+const SOUL_STEPS = [{ type: 'sandbox/level', level: 10 },
   ...['will_power', 'empathy', 'visualization'].map((sk) => ({ type: 'sandbox/skill', skill: sk, points: 8 })),
+  { type: 'sandbox/give', item: 'emanator_gauntlet', equip: true }, { type: 'sandbox/kit', kind: 'both' },
   ...[{ school: 'damage' }, { school: 'control' }, { school: 'buff' }, { tone: 'fire' }, { tone: 'storm' }, { module: 'burst' }, { module: 'lance' }, { module: 'wave' }, { module: 'size' }].map((x) => ({ type: 'sandbox/learn', ...x })),
   { type: 'sandbox/design', design: { id: 'fb', name: 'Heartfire', school: 'damage', modules: ['burst'], tone: 'fire' } },
   { type: 'sandbox/design', design: { id: 'sl', name: 'Stormlance', school: 'damage', modules: ['lance'], tone: 'storm' } }];
