@@ -1,6 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV } from './data';
 import { statQuery, setRankRule } from './effects/hooks';
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
@@ -16,7 +16,9 @@ export interface Sheet {
   /** Starting magic chosen at creation (spec: The Magic panel): 2 Sigil words that make a Stack, and 1 Outburst design. */
   sigils?: string[];
   /** Sigil rules revision the words were checked under (14 = rules 1.4); free words owed from retired ones (RETURN). */
-  sigilRev?: number; sigilFree?: number; outburst?: { name?: string; school: string; modules: string[]; option?: string } | null;
+  sigilRev?: number; sigilFree?: number; outburst?: { name?: string; school: string; modules: string[]; option?: string; tone?: string } | null;
+  /** Soul rules revision the designs were converted to (15 = rules 1.5, Outburst 2.0). */
+  soulRev?: number;
 }
 
 export interface Character extends Sheet {
@@ -41,7 +43,7 @@ export interface Character extends Sheet {
   worn?: Record<string, string>;
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
    * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
-  outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[] };
+  outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[]; tones?: string[] };
   mp?: number; evoCharge?: number; learnedScene?: number;
   /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). */
   advancedClass?: string | null;
@@ -70,7 +72,10 @@ export interface Character extends Sheet {
   collection?: string[];
 }
 export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | string; name: string; hp?: number; /** The twin's: half its owner's maximum when called. */ maxHp?: number; img?: string }
-export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string }
+/** An Outburst design (rules 1.5, Outburst 2.0). modules holds at most one form module (wave, burst, aura, lance; none:
+ * a Bolt). tone: 'raw' (or unset) or an element tone (soul_modules.json tones). school2 (Will Power 5) is a rider at
+ * half strength with its own option2. */
+export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string; option2?: string; tone?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
 /** Rarity (spec: Weapons v2, Rarity): accuracy, damage and durability bonuses; price multiplier. */
@@ -164,6 +169,7 @@ export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skill
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
     if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
+    if (s.outburst.tone && s.outburst.tone !== 'raw') { if (!TONE[s.outburst.tone]) return 'Unknown Outburst tone.'; if (((s.skills || {}) as any).visualization < 1 || !((s.skills || {}) as any).visualization) return 'A tone needs Visualization 1.'; }
     // One school and exactly one module; the Will Power module slots are for designs made in play.
     if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
   }
@@ -174,9 +180,14 @@ function startingMagic(c: Character) {
   const bp = c.skills.brain_power || 0, wp = c.skills.will_power || 0;
   c.sigils = c.sigils && c.sigils.length ? [...c.sigils] : bp >= 1 || c.kit === 'sigil' ? [...STARTING_DEFAULT] : [];
   c.sigilRev = SIGIL_REV;
-  const o = c.outburst || (wp >= 1 || c.kit === 'soul' ? { school: 'damage', modules: ['move'] } : null);
-  c.outbursts = o ? [{ id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}) }] : [];
-  c.soulKnown = o ? { schools: [o.school], modules: [...(o.modules || [])] } : { schools: [], modules: [] };
+  const o: Sheet['outburst'] = c.outburst || (wp >= 1 || c.kit === 'soul' ? { school: 'damage', modules: ['move'] } : null);
+  // A tone (rules 1.5): one at Visualization 1, picked with the starting design.
+  const tone = o?.tone && o.tone !== 'raw' && TONE[o.tone] && (c.skills.visualization || 0) >= 1 ? o.tone : undefined;
+  c.outbursts = o ? [{ id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}), ...(tone ? { tone } : {}) }] : [];
+  c.soulKnown = o ? { schools: [o.school], modules: [...(o.modules || [])].filter((m) => MODULE[m] && !(MODULE[m] as any).form), tones: tone ? [tone] : [] } : { schools: [], modules: [], tones: [] };
+  // A form module picked at creation is known too (it is a module).
+  if (o) for (const m of o.modules || []) if ((MODULE[m] as any)?.form && !c.soulKnown.modules.includes(m)) c.soulKnown.modules.push(m);
+  c.soulRev = SOUL_REV;
   delete c.outburst;
 }
 
@@ -190,6 +201,38 @@ export function migrateCharacterSigils(c: Character): string[] {
   const m = migrateWords(c.sigils); if (!m.notes.length) return [];
   c.sigils = m.words; if (m.free) c.sigilFree = (c.sigilFree || 0) + m.free;
   return m.notes.map((n) => c.name + ': ' + n);
+}
+/** An Outburst design under rules 1.5 (Outburst 2.0; spec: the modules table): retired modules become a form or a
+ * survivor (rain → Burst; Size alone on a single target → Burst; Rain + Size → Burst + Size; Teleport → Ether) or go
+ * (Duplicate, Bounce, Periodic, Proximity, Expire, Mastery); one form at most; an unknown tone becomes Raw. Pure. */
+export function migrateDesign(d: OutburstDesign): OutburstDesign {
+  const was = d.modules || [], out: string[] = [];
+  const add = (m: string) => { if (MODULE[m] && !out.includes(m)) out.push(m); };
+  const hadRain = was.includes('rain'), hasForm = was.some((m) => (MODULE[m] as any)?.form);
+  for (const m of was) {
+    if (MODULE[m]) { if (m === 'size' && !hadRain && !hasForm) { add('burst'); continue; } add(m); continue; }
+    const r = RETIRED_MODULE[m]; if (r?.becomes) add(r.becomes);
+  }
+  // One form: the first one kept.
+  const forms = out.filter((m) => (MODULE[m] as any)?.form); const keep = out.filter((m) => !(MODULE[m] as any)?.form || m === forms[0]);
+  const tone = d.tone && d.tone !== 'raw' && TONE[d.tone] ? d.tone : undefined;
+  const n: OutburstDesign = { ...d, modules: keep }; if (tone) n.tone = tone; else delete n.tone;
+  return n;
+}
+/** An old character's Outburst designs and learned modules under rules 1.5 (runs once: c.soulRev). Returns log notes. */
+export function migrateCharacterSoul(c: Character): string[] {
+  if (c.soulRev === SOUL_REV) return [];
+  c.soulRev = SOUL_REV;
+  const notes: string[] = [];
+  if (c.outbursts?.length) c.outbursts = c.outbursts.map((d) => { const n = migrateDesign(d); if (n.modules.join() !== (d.modules || []).join()) notes.push(c.name + ': the Outburst ' + d.name + ' now reads ' + (n.modules.map((m) => MODULE[m]?.name || m).join(', ') || 'a plain Bolt') + ' (rules 1.5).'); return n; });
+  if (c.soulKnown) {
+    const k = c.soulKnown, mods: string[] = [];
+    for (const m of k.modules || []) { const to = MODULE[m] ? m : RETIRED_MODULE[m]?.becomes; if (to && MODULE[to] && !mods.includes(to)) mods.push(to); }
+    // Size alone used to make a single target an area: a design converted to Burst teaches Burst.
+    for (const d of c.outbursts || []) for (const m of d.modules) if (!mods.includes(m)) mods.push(m);
+    k.modules = mods; k.tones ||= [];
+  }
+  return notes;
 }
 /** The highest armour Class a character's traits allow (armor_class_max), or null for none. */
 export function armourCap(c: { traits?: string[] }): number | null {
@@ -359,7 +402,8 @@ export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * 
 export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
-export const soulMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.15 * P(c, 'will_power');
+/** The Soul multiplier (rules 1.5): 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed). PROVISIONAL. */
+export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 export const elementalMult = (c: Character) => 1 + 0.2 * (A(c, 'expression') - 1) + 0.1 * P(c, 'visualization');
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
@@ -367,7 +411,11 @@ export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') 
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power');
-export const soulCastAp = (c: Character) => Math.max(1, Math.ceil(3 - 0.5 * P(c, 'empathy')));
+/** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
+ * under its 1.2 name for the class moves priced "Soul cast AP". */
+export const soulCastAp = (c: Character) => { void c; return 2; };
+/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
+export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', P(c, 'empathy') >= 7 ? 2 : P(c, 'empathy') >= 3 ? 1 : 0)));
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'lore_master')));
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
