@@ -1,5 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
+import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, CLASS, CLASS_MIGRATION, CLASS_RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
@@ -20,7 +21,15 @@ export interface Sheet {
   sigilRev?: number; sigilFree?: number; outburst?: { name?: string; school: string; modules: string[]; option?: string; tone?: string } | null;
   /** Soul rules revision the designs were converted to (15 = rules 1.5, Outburst 2.0). */
   soulRev?: number;
+  /** Belief (rules 1.6, Blessing 2.0): Faithful to one patron, or Atheist. Chosen at creation; old saves derive it from
+   * their pact (faith.ts beliefOf). */
+  belief?: Belief;
 }
+
+/** Belief (rules 1.6): sworn to one patron (Devotion is the standing), or an Atheist who prays by dice. */
+export type Belief = { kind: 'faithful'; patron: string } | { kind: 'atheist' };
+/** A vow sworn at the start of a fight (rules 1.6): its id (patrons.json vows), the ally it names, and how it stands. */
+export interface Vow { id: string; allyId?: string; state: 'sworn' | 'kept' | 'broken' }
 
 export interface Character extends Sheet {
   id: string; owner: string;
@@ -56,8 +65,13 @@ export interface Character extends Sheet {
   // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
   /** Tutors met (Narrator-granted, by advanced class id or tutor name): an advanced class needs one (spec: Classes). */
   tutors?: string[];
-  /** A patron pact (spec: Patrons and prayer): the patron's id, Devotion 0-10, the Miracle's session stamp. */
+  /** A patron pact (spec: Patrons and prayer): the patron's id, Devotion 0-10, the Miracle's session stamp. Rules 1.6
+   * keeps patron in step with belief (the Faithful's patron; null for an Atheist). */
   patron?: string | null; devotion?: number; miracleSession?: number;
+  /** Rules 1.6 (faith.ts): knowledge pieces by patron (each unlocks that patron's next Hymn in order); the Hymns prayed
+   * by dice, "<patronId>.<hymnId>" (an Atheist's, or kept from another patron under an Open rule); the vow of the
+   * current fight (also on the unit); the session each rite was last kept in; the faith rules revision (16). */
+  faithPieces?: Record<string, number>; hymns?: string[]; vow?: Vow | null; ritesKept?: Record<string, number>; faithRev?: number;
   /** Karma −100 (Chaotic) to +100 (Lawful) (spec: Karma); 0 for old saves. */
   karma?: number;
   /** Companions who fight beside the character (a drone, a beast): their kind, name and HP between fights. */
@@ -150,6 +164,8 @@ export function validateSheet(s: Sheet): string | null {
   if (!s.origin) return 'Pick an origin.';
   if (!s.kit) return 'Pick a starting kit.';
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
+  // Belief (rules 1.6): Faithful to a patron of the patron list, or Atheist. Optional (old drafts have none: Atheist).
+  if (s.belief && !(s.belief.kind === 'atheist' || (s.belief.kind === 'faithful' && ((patronsJ as any).items || []).some((p: any) => p.id === (s.belief as any).patron)))) return 'Pick a patron, or be an Atheist.';
   if (musicTraitCount(s.traits) > 1) return 'Only one music trait.';
   // Traits marked as excluding each other can't be taken together (spec: Traits).
   for (const t of s.traits || []) { const ex = (TRAITS.find((x) => x.id === t)?.excludes || []).find((x) => (s.traits || []).includes(x)); if (ex) return (TRAITS.find((x) => x.id === t) as any)?.name + ' and ' + ((TRAITS.find((x) => x.id === ex) as any)?.name || ex) + ' can\'t be taken together.'; }
@@ -305,6 +321,9 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   // heavier plate isn't carried; PROVISIONAL, spec 14).
   { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
   c.hp = maxHp(c);
+  // Belief (rules 1.6): a Faithful character is sworn at creation, Devotion 3; an Atheist has no patron.
+  if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; c.devotion = (patronsJ as any).devotion?.start ?? 3; } else if (s.belief) c.patron = null;
+  if (s.belief) c.faithRev = 16;
   startingMagic(c);
   grantStartItems(c);
   startCollection(c);

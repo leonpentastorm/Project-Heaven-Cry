@@ -21,6 +21,7 @@ import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, hold
 import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
+import { type FaithAction, faithReduce, bindFaith, bindFaithSight } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -290,7 +291,9 @@ export type Action =
   // Perks, traits and class moves (effects/actions.ts): id is the item key ("perk:earthbreaker") or a bare id.
   | ({ type: 'combat/perk'; unitId: string; id: string; actionId?: string } & ActionArgs) | { type: 'combat/decline'; unitId: string }
   | ({ type: 'story/perk'; charId: string; id: string; actionId?: string } & ActionArgs)
-  | SandboxAction;
+  | SandboxAction
+  // Blessing 2.0 (rules 1.6): prayers, vows, rites, and the Narrator's pacts, pieces, Devotion and apostasy (faith.ts).
+  | FaithAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
 export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
@@ -321,6 +324,9 @@ const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id
 setStoryPoster((g: GameState, e: any) => { push(g, e); return g.story.entries.at(-1)!.id; });
 const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filter((c) => c.owner === pid && !c.dead);
 const isHost = (g: GameState, by: string) => by === g.hostId;
+// The faith rules (faith.ts) take these from here rather than importing game.ts (rules 1.6).
+bindFaith({ push: (g, e) => push(g, e), rollMod: (g, c, skill, roll) => sideRollMod(g, c, skill, roll), isHost });
+bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos));
 /** Players taking part in the round: everyone with a living character. */
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
@@ -374,6 +380,7 @@ function refreshClassUnits(g: GameState, c: Character) {
 
 function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
+  if (a.type.startsWith('faith/')) { const err = faithReduce(g, a as FaithAction, by); if (err) fail(err); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
