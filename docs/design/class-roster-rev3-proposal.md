@@ -1,176 +1,256 @@
-# Class Roster, Revision 3: one base class per attribute (DRAFT for Leon, 8 Nov 2026)
+# Class Roster, Revision 3: one base class per attribute (DRAFT 2 for Leon, 8 Nov 2026)
 
-Status: **draft, nothing in the spec, data or engine has changed.** Leon's direction (8 Nov 2026): each attribute gets
-a base class; advanced classes are shelved and rethought later as attribute pairs; base classes are rebuilt from the
-pooled abilities of all 34 classes, because base classes "are missing too many fantasy" and advanced classes "are a
-BITCH to get in gameplay". All thresholds are provisional.
+Status: **draft. Nothing in the spec, data or engine has changed.** Leon's direction (8 Nov 2026):
+
+- Each attribute gets one base class.
+- Advanced classes are shelved and rethought later as attribute pairs.
+- Classes are written **fantasy first**. An old move is reused only where it fits. Old moves are dropped freely (their
+  code stays in the engine). New moves are added where the fantasy needs them.
+- **Base moves are foundations.** An advanced class keeps its base class's moves. So every base move is something the
+  fantasy wants, whatever specialist it later turns into.
+
+Draft 1 kept all 39 old base moves and bent classes to fit them (Warden's walls on the Trickster, Hexer's fear on the
+Channeler). Draft 2 drops that. Every number marked NEW is provisional.
 
 ## 1. The shape
 
-- **9 base classes, one per attribute.** Each attribute owns an α (combat), a β (utility) and a γ (social) skill,
-  so each class covers fighting, utility and talk in one fantasy.
-- **The cores line up by themselves:** Body (Endurance, Strength, Agility) gets Defender, Fighter, Marksman; Mind
-  (Perception, Intelligence, Expression) gets Assassin, Mage, Trickster; Soul (Insight, Determination, Virtue) gets
-  Bard, Channeler, Guardian. The Assassin moves from Body to Mind (Perception is a Mind attribute); it needs no magic.
-- **Two moves per rank, six per class** (was one per rank, three per class): 54 moves in all.
-- **Every one of the 39 old base moves is kept**, and 15 advanced moves join them. The other 48 advanced moves are
-  shelved (section 4): their engine code and tests stay as they are; nobody can learn them until the advanced rethink.
-- Names: the nine keep today's names, so nothing the testers know is renamed. Renames are a free choice (section 6).
+- **9 base classes, one per attribute.**
+  - Each attribute's three skills are its combat, utility and social sides.
+  - The class's fantasy is read from those three skills.
+- **The cores line up by themselves.**
+  - Body: Defender, Fighter, Marksman.
+  - Mind: Infiltrator, Mage, Trickster.
+  - Soul: Bard, Channeler, Guardian.
+- **Two moves per rank, six per class: 54 moves in all.**
+  - 28 old base moves.
+  - 6 old advanced moves.
+  - **20 new moves.**
+- **Shelved: 11 old base moves and 57 advanced moves** (section 4).
+  - Their code and tests stay.
+  - They come back in the advanced rethink.
 
 ## 2. Getting a class and ranking up (provisional)
 
 | | Rule |
 |---|---|
-| Earn the class | Level 3 (unchanged): the class of your **highest attribute**; on a tie you choose among the tied ones. Nobody is classless. |
+| Earn the class | Level 3 (unchanged): the class of your **highest attribute**. On a tie you choose. Nobody is classless. |
 | Rank I | On gaining the class: both rank I moves. |
 | Rank II | That attribute at **5**: both rank II moves. |
 | Rank III | That attribute at **8**: both rank III moves. |
-| Changing class | At a level-up where another attribute has become your highest, you may switch (you keep nothing of the old class). PROVISIONAL; the alternative is that the class is fixed at level 3. |
+| Changing class | At a level-up where another attribute has become your highest, you may switch (you keep nothing of the old class). |
 
-Rank is read from the attribute, not from signature skill totals (the old 13 / 18). Attributes run 1 to 10 and are
-capped by their core, so a rank III class needs that core at 8+.
+Rank reads the attribute, not signature skill totals (the old 13 / 18).
 
 ## 3. The nine classes
 
-Source in brackets: the move's id stays the old one (`medic.triage`), so the engine runs it unchanged. AP and uses are
-today's. A resource travels with the moves that spend it.
+How to read the tables:
+
+- **[pool]** = an existing move, kept under its old id, so the engine runs it unchanged.
+- **NEW** = a new move (its numbers are provisional).
+- "Foundation for" names the specialists the class could grow into. Each base move is chosen so all of them still want it.
 
 ### Body
 
-**Defender (Endurance): the wall.** Durability, Pain Threshold, Sensory. Resource: Guard.
-| Rank | Move | What it does |
-|---|---|---|
-| I | Brace (2 AP) [defender] | Gain Guard (1 + Durability modifier, max 5), +2 Defense until you move; Interpose while you hold Guard. |
-| I | Deploy Cover (2 AP) [siege_engineer] | An adjacent barricade: half cover, 40 HP (full with a STAY glyph next to it). |
-| II | Draw Fire (1 AP, 1 Guard) [defender] | One enemy must attack you next turn or take −2 against anyone else. |
-| II | Unbroken (once a scene) [adamantile_knight] | The first time you'd drop to 0 HP, drop to 1 and gain 3 Guard. |
-| III | Reactive Plate (reaction) [defender] | Spend Guard as you take damage: −10 per point; shed bots raise the meter. |
-| III | Bulwark Line (4 AP, once a scene) [siege_engineer] | Until your next turn all cover within 3 tiles is full cover and gains 20 HP. |
+**Defender (Endurance): the body that doesn't fall.**
 
-**Fighter (Strength): blades, fists and fear.** Raw Power, Guts, Intimidation. Resource: Momentum.
-| Rank | Move | What it does |
-|---|---|---|
-| I | Lunge (1 Momentum) [fighter] | Move 2 tiles as part of a melee attack, no opportunity attacks. |
-| I | Empty Hand [grand_sigilist] | With empty hands, unarmed strikes deal 20 Physical for 2 AP, and +2 Defense. The brawler is a real build. |
-| II | Riposte (reaction, 1 Momentum) [fighter] | When a melee attack misses you, hit back for 0 AP. |
-| II | Lingering Dread [shade] | When you kill, enemies within 3 who saw it save or are Shaken. Intimidation in action. |
-| III | Finisher (3 AP) [fighter] | Spend all Momentum: +20% damage per point (up to +100%). |
-| III | Sweep (3 AP, 3 Momentum) [banner_dancer] | Move 3 tiles, one melee attack on each enemy you pass; each ally you pass heals 10. |
+- Skills: Durability (the tank), Pain Threshold (wounds don't slow you), Sensory (the ground under your feet).
+- Resource: Guard.
+- Foundation for: the emplaced gunner, the siege engineer, the plated knight, the bodyguard.
 
-**Marksman (Agility): the gun hand.** Athletics, Dexterity, Reaction Speed. Resource: Heat.
-| Rank | Move | What it does |
-|---|---|---|
-| I | Fire Discipline [marksman] | Aimed shots add no Heat; one Burst a turn costs 2 AP; bows +3 on Aimed. |
-| I | The Draw (once a combat) [gunslinger] | A free pistol or revolver shot before the first turn. |
-| II | Special Ammo (per rest) [marksman] | One magazine each of AP, hollow-point and incendiary; swap type while reloading. |
-| II | Called Shot (3 AP, −2) [gunslinger] | Head, arm or leg: on a hit, that injury without a crit. |
-| III | Killzone [marksman] | Overwatch holds two shots, at the first two enemies to move, both +2. |
-| III | Six for Six (4 AP, once a scene) [gunslinger] | Up to six pistol shots at targets within 4 tiles. |
+| Rank | Move | What it does | Why the fantasy keeps it |
+|---|---|---|---|
+| I | Brace (2 AP) [defender] | Gain Guard (1 + Durability modifier, max 5). +2 Defense until you move. Interpose while you hold Guard. | Makes Guard; protects an ally. |
+| I | Draw Fire (1 AP, 1 Guard) [defender] | One enemy must attack you next turn, or take −2 against anyone else. | Pulls the hits onto you. |
+| II | Unbroken (once a scene) [adamantile_knight] | The first time you'd drop to 0 HP, drop to 1 and gain 3 Guard. | The tank that doesn't fall. |
+| II | **Shrug It Off** (reaction, 1 Guard) NEW | When you gain Bleeding, Slowed, Weakened or Prone, end it. | Pain Threshold: wounds don't slow you. |
+| III | Reactive Plate (reaction) [defender] | Spend Guard as you take damage: −10 per point. Shed bots raise the meter. | Guard becomes damage you never take. |
+| III | **Anchor** NEW | While Braced you can't be pushed, pulled or knocked Prone. An enemy that starts its turn next to you and moves away provokes your opportunity attack. | Sensory: rooted. Holds the line for every specialist. |
+
+Dropped: Deploy Cover and Bulwark Line (gear; they belong to the siege engineer).
+
+**Fighter (Strength): close in and break them.**
+
+- Skills: Raw Power (heavy melee, fists, the counter), Guts (fear doesn't get a vote), Intimidation (rule through fear).
+- Resource: Momentum.
+- Foundation for: the blade-scribe, the storm-hand, the brawler, the banner dancer, the berserker.
+
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Lunge (1 Momentum) [fighter] | Move 2 tiles as part of a melee attack, with no opportunity attacks. | Closing the gap. |
+| I | **Shove** (1 AP) NEW | Push an adjacent enemy 1 tile, or knock it Prone (Body save against 12 + your Body debuff strength). | Raw Power's simplest verb. Every melee build wants it. |
+| II | Riposte (reaction, 1 Momentum) [fighter] | When a melee attack misses you, hit back for 0 AP. | The counter (Raw Power). |
+| II | Lingering Dread [shade] | When you kill, enemies within 3 who saw it save or become Shaken. | Intimidation, earned in blood. |
+| III | Finisher (3 AP) [fighter] | Spend all Momentum: +20% damage per point (up to +100%). | Momentum's payoff. |
+| III | **Unstoppable** (once a scene, 1 AP) NEW | Until your next turn, ignore Fear, Shaken, Slowed, Pinned and opportunity attacks, and gain 2 Momentum. | Guts. |
+
+Dropped: Empty Hand and Sweep (the brawler and the banner dancer).
+
+**Marksman (Agility): the gun hand and quick feet.**
+
+- Skills: Athletics (dodge, light blades), Dexterity (guns, reloads, recoil), Reaction Speed (moving in time).
+- Resource: Heat.
+- Foundation for: the gunslinger, the heavy gunner, the ballistician, the spellslinger.
+
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Fire Discipline [marksman] | Aimed shots add no Heat. One Burst a turn costs 2 AP. Bows get +3 on Aimed. | Heat control for every gun. |
+| I | **Speed Loader** NEW | Your first reload each turn costs 1 AP less (minimum 1). | Dexterity: reloads. |
+| II | Special Ammo (per rest) [marksman] | One magazine each of AP, hollow-point and incendiary. Swap type while reloading. | Every gun build wants the right round. |
+| II | **Duck and Roll** (reaction) NEW | When a ranged attack targets you, step 1 tile first. If that puts you in cover or out of sight, the attack is at −2 or has no target. | Athletics and Reaction Speed. |
+| III | Killzone [marksman] | Overwatch holds two shots, one each at the first two enemies to move, both at +2. | Owning the ground. |
+| III | Called Shot (3 AP, −2) [gunslinger] | Name head, arm or leg. A hit gives that injury without a crit. | Precision, for any gun. |
+
+Dropped: The Draw and Six for Six (the gunslinger's pistols).
 
 ### Mind
 
-**Assassin (Perception): eyes, poison, the patient kill.** Ingenuity, Proficiency, Vigilant. Resource: Marks, toxin doses.
-| Rank | Move | What it does |
-|---|---|---|
-| I | Mark (1 AP) [assassin] | Marked: your squad +1 to hit it; it can't hide. |
-| I | Case File [ccec_ballistician] | Analyze costs 1 AP and also Marks the target. |
-| II | Toxin (1 AP, 1 dose) [assassin] | Next hit adds Weakened, Slowed or Bleeding (save). |
-| II | Silent Kill [shade] | A kill from Hidden doesn't reveal you. |
-| III | Execution [assassin] | A hit on a Marked enemy at a quarter HP or less kills it (not bosses or Celestials). |
-| III | Weak Point [ccec_ballistician] | Aimed shots at a Marked target ignore armour and crit on 18–20. |
+**Infiltrator (Perception): see first, strike first, fix what breaks.**
 
-**Mage (Intelligence): Sigil damage and the long script.** Brain Power, Rumination, Eloquence. Resource: Flux. (Mage + Scribe.)
-| Rank | Move | What it does |
-|---|---|---|
-| I | Barrage [mage] | FIRE, FREEZE, SHOCK, STONE, ACID cost 1 charge less. |
-| I | Quicken (2 AP, 1 charge, once a turn) [scribe] | An ally gets +1 AP next turn. |
-| II | Overcharge (once a combat) [mage] | One word past your limit (4 glyphs max), free. |
-| II | Inscribe Gear (3 AP, 2 charge) [scribe] | Ally's weapon +10% damage or armour +5 until rest. |
-| III | Payload [mage] | Double area, or one more missile; Flux = glyph count. |
-| III | Stored Spell (per rest) [scribe] | Write a spell into an object; anyone fires it later for 1 AP. |
+- Skills: Ingenuity (stealth, sleight of hand), Proficiency (the mechanic), Vigilant (sight and intent).
+- Resources: Marks and toxin doses.
+- Foundation for: the assassin, the sniper-analyst, the saboteur, the shade.
 
-**Trickster (Expression): walls, binds and lies.** Visualization, Analysis, Charisma. Resource: Flux. (Trickster + Warden.)
-| Rank | Move | What it does |
-|---|---|---|
-| I | Bind [trickster] | BIND costs 1 less; its save is 14 + your debuff strength. |
-| I | Raise Cover [warden] | A lone STAY glyph Evoked as full cover on 2 tiles. |
-| II | Blind and Slow [trickster] | Learn BLIND, SLOW and MUDDLE, each 1 charge cheaper. |
-| II | Ward (2 AP, 1–3 charge) [warden] | Shield an ally: 10 per charge × healing multiplier. |
-| III | Rewrite (3 AP, 3 charge) [trickster] | An enemy buff flips into its opposite (save). |
-| III | Seal (3 AP, 2 charge) [warden] | A 3×3 zone where enemy Sigils and Soul spells cost double, 2 rounds. |
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Mark (1 AP) [assassin] | Marked: your squad gets +1 to hit it, and it can't hide. | Vigilant: you spot for everyone. |
+| I | **Vanish** (1 AP, once a turn) NEW | If no enemy can see you right now (fog, smoke, full cover), become Hidden. | Ingenuity. |
+| II | Toxin (1 AP, 1 dose) [assassin] | Your next hit also adds Weakened, Slowed or Bleeding (save). | Sleight of hand. |
+| II | **Field Fix** (2 AP) NEW | Adjacent: clear a jammed weapon, restore one item's durability, or repair a robot, drone or turret for 20. | Proficiency: the mechanic, missing until now. |
+| III | Execution [assassin] | A hit on a Marked enemy at a quarter HP or less kills it (not bosses or Celestials). | The patient kill. |
+| III | **Sabotage** (2 AP) NEW | Adjacent: disable an enemy machine, turret, drone or barricade for 2 rounds. Or rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save). | Proficiency turned around. |
+
+Name: "Assassin" is one of its specialists, so I'd call the base class Infiltrator.
+
+**Mage (Intelligence): the Sigil scholar. Power, reach and the long script.**
+
+- Skills: Brain Power (Sigil power and duration), Rumination (range, the library), Eloquence (logic as a weapon).
+- Resource: Flux.
+- Foundation for: every Sigil specialist (blade-scribe, spellslinger, glyph mason, grand sigilist, stroke gambler, circuit mage).
+
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Barrage [mage] | FIRE, FREEZE, SHOCK, STONE and ACID cost 1 charge less. | Cheaper damage words. |
+| I | **Core Change** NEW | Swapping a spent mana core costs 1 AP less (minimum 1). | The Evoker's reload. Every Sigil build needs it. |
+| II | Overcharge (once a combat) [mage] | One word past your limit (4 glyphs max), free. | Bigger spells. |
+| II | **Bleed the Flux** NEW | Venting costs 1 AP less and vents 1 more Flux. | Flux control for every Sigil class. |
+| III | Payload [mage] | Double area, or one more missile. Flux = glyph count. | The scholar's big answer. |
+| III | Stored Spell (per rest) [scribe] | Write a spell into an object. Anyone fires it later for 1 AP. | Rumination: the long script. |
+
+Dropped: Quicken and Inscribe Gear (a support Sigil specialist).
+
+**Trickster (Expression): images, reading people, lying with a smile.**
+
+- Skills: Visualization (thought into images), Analysis (reading a target), Charisma (persuasion and lies).
+- Resource: Flux.
+- Foundation for: the illusionist, the con artist, the duellist of minds, the stroke gambler.
+
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | **Read** NEW | Analyze costs 1 AP and also tells you the target's intended next action. | Analysis. |
+| I | **False Image** (2 AP, 1 charge) NEW | A decoy of you on a tile within Sigil range, for 2 rounds. Enemies who fail a Brain save treat it as you. | Visualization. |
+| II | Blind and Slow [trickster] | Learn BLIND, SLOW and MUDDLE, each 1 charge cheaper. | Deceiving the senses. |
+| II | **Silver Tongue** (2 AP) NEW | A target within 6 who can hear you makes a Brain save, or loses 2 AP next turn (bosses lose 1). | Charisma: lying with a smile. |
+| III | Rewrite (3 AP, 3 charge) [trickster] | An enemy buff flips into its opposite (save). | Changing what's true. |
+| III | **Sleight** (once a scene, 1 AP) NEW | Swap places with your False Image or a willing ally within 6. | The trick everyone remembers. |
+
+Dropped: Bind (Body binding is the Fighter's world) and all of the Warden (walls; for an Endurance + Mind pair later).
 
 ### Soul
 
-**Bard (Insight): nobody stays behind.** Empathy, Camaraderie, Implication. Resources: Supplies, MP and Strain. (Bard + Medic.)
-| Rank | Move | What it does |
-|---|---|---|
-| I | Triage (2 AP) [medic] | Heal an adjacent ally 20 × healing multiplier, end Bleeding; stabilise for 1 AP. No Supplies. |
-| I | Inspire (1 AP, 10 MP) [bard] | An ally +2 on their next roll; no Strain. |
-| II | Stim Throw (1 AP, 1 Supply) [medic] | Heal an ally within 4 tiles 30 × multiplier. |
-| II | Mend [bard] | A Buff-school heal of 40 × multiplier, stronger in rich air. |
-| III | Field Surgery (1 Supply, out of combat) [medic] | Treat a limb injury or clear every Body condition; repairs robots too. |
-| III | Gift (per rest) [bard] | Lend an ally one design; they cast it once for 3 AP at stage 1, on your MP and Strain. |
+**Bard (Insight): nobody stays behind.**
 
-Without an Emanator a Bard is a field medic through rank II (Triage, Stim Throw, Field Surgery work; Inspire, Mend and
-Gift need one).
+- Skills: Empathy (feeling the other side), Camaraderie (the squad is a world), Implication (subtext).
+- Resources: Supplies, MP and Strain.
+- Foundation for: the medic, the heart-binder, the devoted, the banner dancer.
 
-**Channeler (Determination): the storm and the nightmare.** Will Power, Lore Master, Composure. Resource: Strain. (Channeler + Hexer.)
-| Rank | Move | What it does |
-|---|---|---|
-| I | Shape [channeler] | First paid Pump a turn is free on a Damage design. |
-| I | Dread [hexer] | Fear spells cost 5 MP less; Fear lasts a round longer. |
-| II | Storm Front (+10 MP, once a turn) [channeler] | A Damage Bolt or Lance arcs to 2 more enemies with its tone's rider. |
-| II | Mind Fog [hexer] | Status spells can inflict a Brain Debuff, save TN +2. |
-| III | Heart Surge (once a turn) [channeler] | A Release fires a stage higher (×2.6 past 4) for double Strain. |
-| III | Puppet (60 MP, once a scene) [hexer] | You choose the target's next action (save; bosses roll twice). |
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Triage (2 AP) [medic] | Heal an adjacent ally 20 × healing multiplier and end Bleeding. Stabilise for 1 AP. No Supplies. | The first thing any support does. |
+| I | Inspire (1 AP, 10 MP) [bard] | An ally gets +2 on their next roll. No Strain. | Belief made useful. |
+| II | Stim Throw (1 AP, 1 Supply) [medic] | Heal an ally within 4 for 30 × multiplier. | Reach the one who's down. |
+| II | Mend [bard] | A Buff-school heal of 40 × multiplier, stronger in rich air. | The Soul heal. |
+| III | Field Surgery (1 Supply, out of combat) [medic] | Treat a limb injury, or clear every Body condition. Repairs robots too. | Injuries outlast fights. |
+| III | **Rally** (once a scene, 2 AP) NEW | Every ally within 4 heals 20 × multiplier and loses Fear and Shaken. | Camaraderie: the squad stands back up together. |
 
-**Guardian (Virtue): the shield and the judgement.** Faith, Conscience, Authority. Resources: MP, Strain, Devotion. (Guardian + Lumeri Templar.)
-| Rank | Move | What it does |
-|---|---|---|
-| I | Will Shield (20 MP) [guardian] | An ally gains a 30 × multiplier shield for the combat. |
-| I | Blessed Shells [lumeri_templar] | A successful prayer's Blessing loads into your weapon; it resolves on your next hit. |
-| II | Drink It In (reaction) [guardian] | An enemy spell hitting your shield feeds you its MP. |
-| II | Under the Eye [lumeri_templar] | While Witnessed, allies within 3 get +2 on your patron's theme. |
-| III | Sanctuary (60 MP, +1 Strain, once a scene) [guardian] | A 3×3 zone where allies take half damage until your next turn. |
-| III | Judgement (4 AP, 3 Devotion, once a scene) [lumeri_templar] | One attack dealing damage × (1 + Blessing power). |
+Without an Emanator, Triage, Stim Throw, Field Surgery and Rally still work. Dropped: Gift (a design-sharing specialist).
 
-## 4. Shelved for the advanced rethink (48 moves)
+**Channeler (Determination): an iron will and a storm in the heart.**
 
-Kept in the engine, tested, unlearnable. Suggested attribute pair in brackets, to start the rethink.
+- Skills: Will Power (the soul's strength), Lore Master (the occult library), Composure (a face that never moves).
+- Resource: Strain.
+- Foundation for: the storm-hand, the vessel, the heartfed, the devoted, the twinbound.
 
-- **Fully absorbed (nothing shelved):** Gunslinger (into Marksman), Lumeri Templar (into Guardian).
-- **Partly absorbed:** CCEC Ballistician (One Shot) [Perception + Agility]; Banner Dancer (Banner Thread, Rally Banner)
-  [Agility + Insight]; Siege Engineer (Sentry Turret) [Endurance + Expression]; Adamantile Knight (Adamantile Plate,
-  Bulwark of Will) [Endurance + Virtue]; Shade (Nightmare Mark) [Perception + Determination]; Grand Sigilist (Enlarge,
-  Earthed) [Intelligence + Endurance].
-- **Whole:** Hellraiser Heavy [Agility + Endurance], RTC Contractor [Virtue + Perception], Blade Scribe [Strength +
-  Intelligence], Spellslinger [Agility + Intelligence], Storm Hand [Strength + Determination], Stroke Gambler
-  [Intelligence + Expression], Devoted [Determination + Insight], Circuit Mage [Intelligence + Insight], Glyph Mason
-  [Expression + Endurance], Heartfed [Determination + Strength], Heartbinder [Insight + Endurance], Vessel [Determination
-  + Endurance], Twinbound [Determination + Expression].
-- Collisions to settle then: Glyph Mason, Heartbinder and Vessel all lean on Endurance; the 36-pair grid has room.
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Shape [channeler] | Your first paid Pump each turn is free on a Damage design. | The Pump economy. |
+| I | **Iron Heart** NEW | Strain limit +1. | Composure. Every Soul specialist lives at the limit. |
+| II | Storm Front (+10 MP, once a turn) [channeler] | A Damage Bolt or Lance arcs to 2 more enemies with its tone's rider. | The storm. |
+| II | **Occult Library** NEW | Learn one more tone; +1 ready design. | Lore Master. |
+| III | Heart Surge (once a turn) [channeler] | A Release fires a stage higher (×2.6 past 4) for double Strain. | The big moment. |
+| III | **Eye of the Storm** (once a scene) NEW | Your next Release this turn adds no Strain, and its tone's rider counts one stage higher. | Will over the body. |
+
+Dropped: all of the Hexer (fear and subtext are Strength and Insight; a pair later).
+
+**Guardian (Virtue): the saints judge, you deliver, and the squad follows.**
+
+- Skills: Faith (prayer, Blessings), Conscience (seeing where an act leads), Authority (leadership).
+- Resources: MP, Strain and Devotion.
+- Foundation for: the templar, the plated knight, the contractor-commander.
+
+| Rank | Move | What it does | Why |
+|---|---|---|---|
+| I | Will Shield (20 MP) [guardian] | An ally gains a 30 × multiplier shield for the combat. | Protecting the flock. |
+| I | **Command** (1 AP, once a turn) NEW | An ally within 6 who can hear you moves up to 2 tiles now, for free. Needs Leadership Squad (Authority 1). | Authority. |
+| II | Under the Eye [lumeri_templar] | While Witnessed, allies within 3 get +2 on actions that fit your patron. | Faith shared. |
+| II | Blessed Shells [lumeri_templar] | A successful prayer's Blessing loads into your weapon, and resolves on your next hit. | Faith delivered. |
+| III | Sanctuary (60 MP, +1 Strain, once a scene) [guardian] | A 3×3 zone where allies take half damage until your next turn. | Holy ground. |
+| III | Judgement (4 AP, 3 Devotion, once a scene) [lumeri_templar] | One attack dealing damage × (1 + Blessing power). | The saints judge. |
+
+Dropped: Drink It In (a shield specialist).
+
+## 4. Shelved for the advanced rethink
+
+All shelved moves stay in the engine and tests, and can't be learned.
+
+- **Old base moves (11):**
+  - Quicken and Inscribe Gear (Scribe).
+  - Raise Cover, Ward and Seal (Warden).
+  - Dread, Mind Fog and Puppet (Hexer).
+  - Bind (Trickster).
+  - Gift (Bard).
+  - Drink It In (Guardian).
+- **Advanced moves (57):** every advanced move except Unbroken, Lingering Dread, Called Shot, Under the Eye, Blessed Shells and Judgement.
+- **Partly folded in:** Gunslinger, Adamantile Knight, Shade and Lumeri Templar each give some moves to base classes.
+  - Their other moves are shelved with the rest.
+  - Lumeri Templar is fully absorbed.
 
 ## 5. What changes, and what it costs
 
-- **Engine:** class from the highest attribute; rank from that attribute; a class's move list may name an old move id
-  (one function, `classMove`); resources follow their moves (`CLASS_RES`); advanced learning returns "shelved".
-- **Saves:** old classes map to new ones (medic → bard, scribe → mage, warden → trickster, hexer → channeler; the rest
-  keep their id). A character with an advanced class **keeps it working** (grandfathered); nobody new can learn one.
-- **Data and spec:** the Classes section and classes.json rewritten; signature skills replaced by the attribute.
-- **UI:** level-up picker and class panel; the 34 emblems are reused.
-- **Narrator: lighter.** 9 classes to know instead of 34; no tutors to place.
-- **Tests:** eligibility and rank tests rewritten; every move test stays as it is.
+- **Engine:**
+  - Class from the highest attribute; rank from that attribute.
+  - Class move lists can name an old move id (one function).
+  - Resources follow their moves.
+  - Advanced learning returns "shelved".
+  - **20 new move handlers**, with tests.
+- **Saves:**
+  - Old classes map to new ones: medic → bard, scribe → mage, warden → trickster, hexer → channeler, assassin → infiltrator. The rest keep their id.
+  - Moves the new class doesn't have stop working.
+  - A character with an advanced class keeps it working (grandfathered).
+- **Data and spec:** the Classes section and classes.json are rewritten.
+- **UI:** the level-up picker and class panel. Old emblems are reused; the Infiltrator needs one new emblem.
+- **Narrator: lighter.** It knows 9 classes instead of 34, and places no tutors.
 
 ## 6. Flags for Leon
 
-1. **Ranks at attribute 5 and 8** (provisional). With 10 attribute points at creation, a focused build reaches rank II
-   early; rank III needs the core at 8.
-2. **Switching class** at a level-up when your highest attribute changes: yes (my pick) or fixed at level 3?
-3. **Sweep** keeps its "each ally you pass heals 10", a Banner Dancer leftover on a Fighter. Keep, or drop the heal?
-4. **The Bard's rank III is quiet in combat** (Field Surgery and Gift both work out of combat). Swap Gift for Rally
-   Banner (a per-scene shield banner) if you want a combat capstone.
-5. **Proficiency (the mechanic) has no move** in the Assassin: the only tinker moves (Inscribe Gear, Sentry Turret) need
-   Sigil charge. A mechanic move is a gap for a new move or for the advanced rethink.
-6. **Names:** keep all nine, or rename (for example Assassin → Infiltrator, Guardian → Templar, Bard → Heart).
-7. **Two moves per rank** doubles what a class gives. If that's too much at level 3, rank I can give one move and the
-   second at rank I½ (attribute 3).
+1. **20 new moves.** That's the price of fantasy first. They need tuning in the balance pass.
+2. **Ranks at attribute 5 and 8** (provisional).
+3. **Switching class** at a level-up when your highest attribute changes: yes (my pick), or fixed at level 3?
+4. **The Guardian leans on a patron.**
+   - Under the Eye, Blessed Shells and Judgement need prayer.
+   - Without a patron, a Guardian has Will Shield, Command and Sanctuary.
+   - Fine for a paladin fantasy, but say if a patronless Guardian should have more.
+5. **Conscience has no move.** It's the Karma skill, so story-side. I left it that way on purpose.
+6. **Names:**
+   - Infiltrator is new.
+   - Bard reads as a medic now. Keep "Bard", or call it "Medic"?
+7. **Two moves per rank** doubles what a class gives at level 3. Too much?
