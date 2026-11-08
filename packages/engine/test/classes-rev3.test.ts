@@ -54,6 +54,14 @@ describe('getting a class at level 3', () => {
     expect(eligibleClasses(charOf({ strength: 4, perception: 4, virtue: 2 })).map((x) => x.id).sort()).toEqual(['fighter', 'infiltrator']);
     expect(eligibleClasses(charOf({})).length).toBe(9); // all 1s: nobody is classless
   });
+  it('every attribute tied (all at 3): all nine classes are offered, any one can be picked, and it is then fixed', () => {
+    const all3 = { endurance: 3, strength: 3, agility: 3, perception: 3, intelligence: 3, expression: 3, insight: 3, determination: 3, virtue: 3 };
+    expect(eligibleClasses(charOf(all3)).map((x) => x.id).sort()).toEqual(CLASSES.map((k) => k.id).sort());
+    const s = storyWith([{ attrs: all3, level: 3 }]); const id = s.chars[0].id;
+    s.act({ type: 'levelup/class', charId: id, classId: 'guardian' });
+    expect(s.g.characters[id].classId).toBe('guardian');
+    expect(() => s.act({ type: 'levelup/class', charId: id, classId: 'fighter' })).toThrow(/Your class is set/);
+  });
   it('the pick is checked by the reducer; a class not of the highest attribute is refused', () => {
     const s = storyWith([{ attrs: { endurance: 1, strength: 5, agility: 5, perception: 1, intelligence: 1, expression: 1, insight: 1, determination: 1, virtue: 1 }, level: 3 }]);
     const id = s.chars[0].id;

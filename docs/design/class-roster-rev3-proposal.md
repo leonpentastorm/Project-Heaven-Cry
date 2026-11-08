@@ -1,6 +1,16 @@
-# Class Roster, Revision 3: one base class per attribute (DRAFT 2 for Leon, 8 Nov 2026)
+# Class Roster, Revision 3: one base class per attribute (draft 2, 8 Nov 2026)
 
-Status: **draft. Nothing in the spec, data or engine has changed.** Leon's direction (8 Nov 2026):
+Status: **accepted, implemented in phase A** (8 Nov 2026: spec, data and the engine's class model; decision 100). Phase B
+writes the 20 new move handlers; phase C the web class screens. Leon's answers during the build:
+
+- **No class switching:** the level-3 class is fixed (section 2's "Changing class" row is withdrawn; changing class
+  will be its own system later).
+- **Ties:** with every attribute tied, all nine classes are offered.
+- **Advanced classes:** shelved and not grandfathered. A held one stays in the save but gives nothing.
+
+Every shelved move, with its engine state and a suggested home, is in [`move-pool.md`](move-pool.md).
+
+Leon's direction (8 Nov 2026):
 
 - Each attribute gets one base class.
 - Advanced classes are shelved and rethought later as attribute pairs.
@@ -37,7 +47,7 @@ Channeler). Draft 2 drops that. Every number marked NEW is provisional.
 | Rank I | On gaining the class: both rank I moves. |
 | Rank II | That attribute at **5**: both rank II moves. |
 | Rank III | That attribute at **8**: both rank III moves. |
-| Changing class | At a level-up where another attribute has become your highest, you may switch (you keep nothing of the old class). |
+| Changing class | ~~At a level-up where another attribute has become your highest, you may switch.~~ Withdrawn (Leon): the class is fixed; changing class is a separate system for later. |
 
 Rank reads the attribute, not signature skill totals (the old 13 / 18).
 
@@ -210,7 +220,7 @@ Dropped: Drink It In (a shield specialist).
 
 ## 4. Shelved for the advanced rethink
 
-All shelved moves stay in the engine and tests, and can't be learned.
+All shelved moves stay in the engine and tests, and can't be learned. The full list is in [`move-pool.md`](move-pool.md).
 
 - **Old base moves (11):**
   - Quicken and Inscribe Gear (Scribe).

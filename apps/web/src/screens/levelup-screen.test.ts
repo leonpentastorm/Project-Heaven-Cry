@@ -48,6 +48,14 @@ describe('level-up screen', () => {
     expect(el.textContent).toContain('CLOSEST');
     root.unmount();
   });
+  it('level 3 with every attribute tied: the picker lists all nine classes (Class Roster Revision 3 tie rule)', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; for (const k of Object.keys(c.attrs)) c.attrs[k] = 3; Object.assign(c.cores, { body: 3, mind: 3, soul: 3 }); });
+    const { el, root } = await mount();
+    const ids = (Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLElement[]).map((b) => b.getAttribute('data-class')).sort();
+    expect(ids).toEqual(Object.keys(CLASS).sort());
+    expect(ids.length).toBe(9);
+    root.unmount();
+  });
   it('level 3: class choice cards carry emblems; picking one fills the class panel', async () => {
     setup((c) => { c.level = 3; c.xp = 250; });
     const { el, root } = await mount();

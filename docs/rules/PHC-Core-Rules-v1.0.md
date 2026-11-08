@@ -187,31 +187,62 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 ## Classes
 
-Classes aren't picked; skills earn them. Each base class has three **signature skills**, and every one of the 27 skills appears in at least one class.
+**Class Roster Revision 3 (accepted 8 Nov 2026; `docs/design/class-roster-rev3-proposal.md`).** Each of the 9 attributes has one base class. A class's three skills are that attribute's combat, utility and social sides (α, β, γ), and the class's fantasy is read from them. The cores line up by themselves: Body is Defender, Fighter and Marksman; Mind is Infiltrator, Mage and Trickster; Soul is Bard, Channeler and Guardian.
 
-**Getting your class (level 3).** For each base class, add up your points in its three signature skills. You may take any class whose total is among your two highest totals (ties included). Nobody is left without a class; a character who spread points thin just starts at a lower total.
+**Getting your class (level 3).** You get the class of your **highest attribute** (trait bonuses never count). On a tie you choose among the tied classes. If every attribute is tied, all nine are offered. Nobody is left without a class (item 551).
 
-**Class rank** follows that total: rank I when you gain the class, rank II at a signature total of 13, rank III at 18. Each rank unlocks the class's next signature move. On the pacing target, a focused character reaches rank II around level 5 and rank III around level 11; a spread-out one later.
+**The class is fixed.** The class picked at level 3 is kept for good, even if another attribute later grows higher. A second pick is refused: "Your class is set; changing class is a separate system for later." Changing class will be its own system later (item 553).
 
-**Advanced classes** mix two base classes. To learn one you need a signature total of 15 in one parent class and 9 in the other, plus a tutor from the faction that teaches it (the Narrator places the tutor in the story). You don't need to hold either parent class yourself. When the Narrator marks the tutor as met, the player learns the class from the level-up screen; the engine checks the totals then (rules 1.3). You hold it alongside your base class, with all three of its moves at once, one advanced class at a time (item 80, item 96).
+**Class rank** reads the class's own attribute: rank I when you gain the class, rank II at that attribute **5**, rank III at **8** (item 552). Each rank gives **two moves**, so a class has six. When ranks II and III arrive on the pacing target is for playtests to show.
 
-| Core | Class | Role | Signature skills | Resource |
-|---|---|---|---|---|
-| Body | Marksman | Ranged offense (guns or bows) | Dexterity, Vigilant, Reaction Speed | Heat |
-| Body | Fighter | Melee offense | Athletics, Raw Power, Guts | Momentum |
-| Body | Defender | Defense | Durability, Pain Threshold, Guts | Guard |
-| Body | Medic | Support | Sensory, Camaraderie, Proficiency | Supplies |
-| Body | Assassin | Debuff | Ingenuity, Intimidation, Reaction Speed | Marks, toxins |
-| Mind | Mage | Offense | Brain Power, Visualization, Vigilant | Flux |
-| Mind | Warden | Defense | Rumination, Composure, Analysis | Flux |
-| Mind | Scribe | Support | Proficiency, Eloquence, Rumination | Flux |
-| Mind | Trickster | Debuff | Analysis, Charisma, Eloquence | Flux |
-| Soul | Channeler | Offense | Will Power, Empathy, Visualization | Strain |
-| Soul | Guardian | Defense | Lore Master, Conscience, Faith | Strain |
-| Soul | Bard | Support | Camaraderie, Implication, Authority | Strain |
-| Soul | Hexer | Debuff | Intimidation, Implication, Lore Master | Strain |
+| Core | Class | Attribute | Rank I | Rank II | Rank III |
+|---|---|---|---|---|---|
+| Body | Defender | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
+| Body | Fighter | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
+| Body | Marksman | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
+| Mind | Infiltrator | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
+| Mind | Mage | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
+| Mind | Trickster | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
+| Soul | Bard | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
+| Soul | Channeler | Determination | Shape (`channeler.shape`) · **Iron Heart** (new) | Storm Front (`channeler.storm_front`) · **Occult Library** (new) | Heart Surge (`channeler.heart_surge`) · **Eye of the Storm** (new) |
+| Soul | Guardian | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
 
-Each class's three signature moves, and all 21 advanced classes (six added in rules 1.2), are in classes.json.
+The 54 moves:
+
+- **28 old base moves and 6 old advanced moves**, each kept under its old key (`class:<origin>.<moveId>`), so the engine runs it unchanged. classes.json lists them as `{"ref": "<origin>.<moveId>"}`. For example, the Bard's Triage is `class:medic.triage`.
+- **20 new moves** (item 554). Their handlers are pending: until each lands, what the engine doesn't run goes to the Narrator with the move's text.
+
+**Resources follow the moves.**
+
+- Defender: Guard.
+- Fighter: Momentum.
+- Marksman: Heat (the shared gun rule).
+- Infiltrator: Marks and toxin doses.
+- Mage and Trickster: Flux.
+- Bard: Supplies, MP and Strain.
+- Channeler: Strain.
+- Guardian: MP, Strain and Devotion (the patron's).
+
+The Guardian's Under the Eye, Blessed Shells and Judgement need a patron and prayer. Without one, a Guardian has Will Shield, Command and Sanctuary (item 555).
+
+**Shelved moves.** 11 old base moves and 57 advanced moves are on no class's list. Their data, handlers and tests stay in the engine; `docs/design/move-pool.md` lists each with a suggested future home.
+
+**Advanced classes are shelved (item 556).**
+
+- None can be learned. The level-up screen and the reducer say: "Advanced classes are being rebuilt; not learnable yet."
+- The Narrator places no tutors.
+- A character who already holds one keeps the field in the save, but gets none of its moves, resources or effects until advanced classes return.
+- They come back as **attribute pairs** (proposal section 7). **Squared** is a base attribute twice: 9 classes, batch 1. **Hybrid** is a base attribute with one from another core: 27 classes; batch 2 is a ring of 9, batch 3 the other 18.
+- Every advanced class in classes.json carries `kind`, `pair`, `batch` and, where it maps to a roadmap slot, `roadmap`. `advanced_roadmap` lists the slots.
+- The gate (item 557; engine `advancedPairError`): a hybrid needs its base attribute at 6 and its partner at 5, from level 7. A squared class needs its attribute at 9, from level 7.
+- Turning a batch on is data only: `assignment.advanced.live` and each class's `shelved` flag.
+- Advanced classes keep every base move.
+
+**Old saves (item 558).**
+
+- A Revision 2 character's class becomes its Revision 3 class once, on load: medic → bard, scribe → mage, warden → trickster, hexer → channeler, assassin → infiltrator. The rest keep their id.
+- Moves the new class doesn't list stop working.
+- A note in the log says what changed.
 
 ## Combat on the grid
 
@@ -1784,7 +1815,9 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **Masterpiece** (both Oils, once a session, 0 AP): an ally's next d20 gets +2: a story check, a save against an
   enemy's condition, or an attack roll. An Echo reroll of that same check keeps the +2.
 
-### The 13 base classes
+### Class moves in play
+
+- **Revision 3 (8 Nov 2026):** the nine attribute classes above; the notes below were written for the 13 Revision 2 classes and still describe how each kept move runs (Ward, Seal, Quicken, Inscribe, Puppet and Drink It In are shelved).
 
 - **Class moves are actions in the Class tab** (combat/perk with `id: 'class:<class>.<move>'`). A move with options
   becomes one action per option: Ward ×1/×2/×3, Toxin by condition, ammo by type, Inscribe weapon or armour, self
@@ -1804,6 +1837,8 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 
 ### Advanced classes, part 1
 
+- **Shelved in Class Roster Revision 3** (item 556): these notes describe the built handlers, which run only in tests until advanced classes return.
+
 - **Advanced moves are held all at once** (no ranks), alongside the base class (`c.advancedClass`). They show in the
   combat Class tab and, where they have a story part, in the story Perks strip.
 - **Credits.** A character's account is `c.state.credits` (the Narrator sets it with `traitState {key: 'credits'}`).
@@ -1817,6 +1852,8 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **Extraction** is a third way a fight ends: everyone left was lifted out. No win, no win XP, not a defeat (J15).
 
 ### Advanced classes, part 2 (the magic advanced classes)
+
+- **Shelved in Class Roster Revision 3** (item 556), like part 1.
 
 - **Advanced magic classes keep their state on the character for the scene**: Heartfed gauges
   (`c.state.heartfed`), Heartbinder links (`c.state.links`), Vessel body forms (`c.state.vessel`), the twin
@@ -3828,3 +3865,25 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 549. **Resonance is for the players' side.** Player characters and the units on their side (companions, the Twinbound twin) resonate with each other; enemies (side `foe`: the Heart adept, the Heartfire elite, the Heart sovereign) never do, among themselves or with anyone: their releases aren't counted and they get no bonus, so the enemy AI's previews never count it. The Resonance perk widens only the players' window. You and your own twin still don't resonate with each other (item 533). What counts is a character behind the unit, not the side it stands on: in a Proving Ground team fight Team B's player characters stand on the enemy side, and they resonate with each other just as Team A does (never across the teams).
 550. **A Vessel holds at most 2 body forms at once.** The third form from Will Power 5 is retired (items 75, 362, 532): a third Inner Charge is refused ("You hold 2 forms already: a Vessel holds at most 2."), in a fight or in the story, whatever the Will Power. A save from before this change that still holds three keeps the first two taken; the third is dropped and adds nothing.
+
+**Class Roster Revision 3 (8 Nov 2026; Leon's flags in `docs/design/class-roster-rev3-proposal.md` section 6, with his answers). PROVISIONAL.**
+
+551. **Class from the highest attribute.** Level 3 gives the class of the highest attribute. On a tie the player chooses among the tied, and with every attribute tied all nine are offered (Leon). Replaces the signature-total closest-class rule (two highest totals) and the 13 / 18 rank totals.
+552. **Ranks at the class's attribute 5 and 8.** Rank I on gaining the class. Rank reads the class's own attribute, not the highest one.
+553. **No class switching (Leon).** The level-3 class is fixed. A second pick is refused. Changing class is a separate system for later.
+554. **20 new moves, numbers provisional, handlers pending.**
+    - Defender: Shrug It Off, Anchor.
+    - Fighter: Shove, Unstoppable.
+    - Marksman: Speed Loader, Duck and Roll.
+    - Infiltrator: Vanish, Field Fix, Sabotage.
+    - Mage: Core Change, Bleed the Flux.
+    - Trickster: Read, False Image, Silver Tongue, Sleight.
+    - Bard: Rally.
+    - Channeler: Iron Heart, Occult Library, Eye of the Storm.
+    - Guardian: Command.
+    - Until each handler lands, its active part is a default action and the rest goes to the Narrator (`packages/engine/src/classes/rev3-pending.ts`).
+    - Two moves per rank doubles what a class gives at level 3 (flag 7): watch it in the balance pass.
+555. **The Guardian leans on a patron** (flag 4). Without one: Will Shield, Command and Sanctuary. Conscience has no class move; it stays the story's Karma skill (flag 5). Names are kept as drafted: Infiltrator, and Bard rather than "Medic" (flag 6).
+556. **Advanced classes are shelved, not grandfathered (Leon).** No learning; no tutors placed. A held advanced class stays in the save and gives nothing (moves, resources, effects) while shelved. The handlers and tests stay; tests turn them on with a test-only switch.
+557. **The advanced gate by attribute pair:** hybrid base 6 + partner 5, squared 9, both from level 7. Behind the shelving; turning a batch on is data only.
+558. **Save migration:** medic → bard, scribe → mage, warden → trickster, hexer → channeler, assassin → infiltrator, once (`classRev` 3). Moves the new class doesn't list stop working.
