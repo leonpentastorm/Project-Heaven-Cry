@@ -1,7 +1,7 @@
 // What the mission board, its toasts and the end screens show (spec: OOC, missions and end states). Pure functions of
 // the game state, so they are tested without a browser (missionView.test.ts); missionBoard.tsx draws them.
 import { missionBoard, missionsOf, type GameState, type Entry } from '@engine';
-import { classLabel } from './classView';
+import { classLabel, emblemOf, heldClassId } from './classView';
 
 export const MARK = { open: '☐', done: '✓', failed: '✕' } as const;
 /** The header button: "MISSIONS · 3" (open objectives and side jobs), or null without missions. */
@@ -52,6 +52,6 @@ export function endingView(g: GameState | null, seen: number[]) {
   if (!g.story.complete || seen.includes(e.seq)) return null;
   const credits: string[] = Array.isArray((g.campaign as any)?.credits) ? (g.campaign as any).credits.filter((x: any) => typeof x === 'string') : [];
   return { kind: 'campaign' as const, seq: e.seq, title: e.title, epilogue: (e.epilogue || '').split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean),
-    cards: Object.values(g.characters).map((c) => ({ key: c.id, name: c.name, img: c.portrait || '', cls: c.classId ? classLabel(c) : 'No class', level: c.level, dead: !!c.dead, deeds: (c.deeds || []).slice(-4) })),
+    cards: Object.values(g.characters).map((c) => ({ key: c.id, name: c.name, img: c.portrait || '', cls: c.classId ? classLabel(c) : 'No class', clsIcon: emblemOf(heldClassId(c)).icon, level: c.level, dead: !!c.dead, deeds: (c.deeds || []).slice(-4) })),
     credits };
 }

@@ -4,7 +4,7 @@
 //  · a class from the tools (Fighter): the CLASS tab carries the emblem, the You card too, and Lunge (a class move) runs;
 //  · a passive: Used to the Pain's AP line in the fight log after a drill unit's hit;
 //  · weapon-granted actions: the gun shows its reload (Swap magazine…), the sabre shows none;
-//  · the level-up screen's class panel (emblem, rank, signature progress, moves);
+//  · the level-up screen's class panel (emblem, rank, the class attribute's progress, moves by rank);
 //  · a story check in a room with the scripted Narrator: a trait's +1 is named in the dice table's roll math.
 // Screenshots: e2e/shots/perks-*.png.
 import { readFileSync } from 'fs';

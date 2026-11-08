@@ -8,6 +8,7 @@ import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
+import { heldClassId, currentClassId } from './classView';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -38,10 +39,12 @@ export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
 /** "2 AP · 1/combat" */
 export const pkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
 export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator rules what the engine doesn\'t.');
-/** The class (and advanced class) a character holds, for the Class tab's name and emblem. */
-export function classOf(ch: any): { id: string; name: string; ink: string; icon: string } | null {
-  const id = ch?.advancedClass || ch?.classId; if (!id) return null;
-  const name = ch?.advancedClass ? ADVANCED[ch.advancedClass]?.name : (CLASS as any)[id]?.name, core = classCore(id), ink = core ? CORE_INK[core] : '#E7EBF3';
+/** The class a character holds, for the Class tab's name and emblem: an active advanced class, else the base class (a
+ *  shelved advanced class shows nothing). With no character, a move's origin (an action entry's cls, e.g. medic for
+ *  the Bard's Triage) stands in, mapped to the Revision 3 class that holds it now. */
+export function classOf(ch: any, origin?: string | null): { id: string; name: string; ink: string; icon: string } | null {
+  const id = heldClassId(ch) || currentClassId(origin); if (!id) return null;
+  const name = (CLASS as any)[id]?.name || ADVANCED[id]?.name, core = classCore(id), ink = core ? CORE_INK[core] : '#E7EBF3';
   return { id, name: name || id, ink, icon: classIconUri(id, ink) };
 }
 
@@ -89,7 +92,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
       ['pickup', 'Pick up', '1 AP', 'Take everything on your tile or one adjacent tile (marked ▪): dropped magazines, empty or not.'],
       ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],
-      ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Medic, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
+      ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Bard, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
       ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor: your favourite song takes over the room until the fight ends, and your music trait\'s bonus is on while it plays. It can replace another holder\'s kept-on song, never a spotlight.'] as ActionItem] : []),
       // Rules 1.3 (lane 0B): these show only when they apply.
       ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
@@ -104,7 +107,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const pkItem = (e: PerkActionEntry): ActionItem => [pkId(e), e.label, pkCost(e), pkText(e), e.why];
   const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
   if (perks.length) ITEMS.push(['PERKS & TRAITS', perks.map(pkItem), null, 'perks']);
-  if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null)); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
+  if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), moves[0].cls); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
   // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
   if (hasMagic) {
     const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;

@@ -1,7 +1,8 @@
 // game/classView.ts: attribute progress (Class Roster Revision 3), closest classes, advanced classes in reach, moves by rank, uses left.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, newCharacter, CLASS, type Character } from '@engine';
-import { signatureOf, closestClasses, advancedInReach, classMoves, usesLine, classLabel, emblemOf } from './classView';
+import { attributeProgress, closestClasses, advancedInReach, classMoves, classRanks, classCard, resourceLine, heldClassId, currentClassId, usesLine, classLabel, emblemOf } from './classView';
+import { classOf } from './commands';
 
 const charWith = (o: Partial<Character> = {}): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
@@ -14,10 +15,11 @@ const setAttr = (c: Character, cls: string, v: number) => { c.attrs[CLASS[cls].a
 describe('classView', () => {
   it('attribute progress to the next rank (5, 8)', () => {
     const c = charWith({ classId: 'marksman' }); setAttr(c, 'marksman', 4);
-    const s = signatureOf(c, 'marksman')!;
+    const s = attributeProgress(c, 'marksman')!;
     expect(s.total).toBe(4); expect(s.rank).toBe(1); expect(s.next).toBe(5); expect(s.nextLine).toBe('Rank II at Agility 5 · 1 to go');
     expect(s.skills.map((x: any) => x.id)).toEqual(CLASS.marksman.skills);
-    setAttr(c, 'marksman', 8); expect(signatureOf(c, 'marksman')!.nextLine).toBe('Top rank');
+    expect(s.label).toBe('AGILITY 4'); expect(s.ink).toBe('#E3BF51'); // the attribute's ink
+    setAttr(c, 'marksman', 8); expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Top rank');
   });
   it('moves by rank, two a rank: earned lit, the rest locked with their threshold; reused moves keep their old key', () => {
     const c = charWith({ classId: 'marksman' }); setAttr(c, 'marksman', 5); // rank II
@@ -27,6 +29,31 @@ describe('classView', () => {
     expect(m.find((x) => x.id === 'called_shot')!.key).toBe('class:gunslinger.called_shot');
     m.forEach((x) => expect(['Engine runs it', 'Narrator rules it', 'Both']).toContain(x.badge));
     expect(classLabel(c)).toBe('Marksman II');
+  });
+  it('ranks: three, two moves each, with the attribute value that unlocks them', () => {
+    const c = charWith({ classId: 'bard' }); setAttr(c, 'bard', 5);
+    const r = classRanks({}, c, 'bard');
+    expect(r.map((x) => x.head)).toEqual(['RANK I · WITH THE CLASS', 'RANK II · INSIGHT 5', 'RANK III · INSIGHT 8']);
+    expect(r.map((x) => x.unlocked)).toEqual([true, true, false]);
+    r.forEach((x) => expect(x.moves.length).toBe(2));
+    expect(r[0].moves[0].key).toBe('class:medic.triage'); // a reused move keeps its old key
+  });
+  it('picker card: attribute with its ink, the fantasy line, resources, both rank I moves', () => {
+    const c = charWith(); for (const k of Object.keys(c.attrs)) c.attrs[k] = 3;
+    const v = classCard(c, 'infiltrator')!;
+    expect(v.attributeName).toBe('Perception'); expect(v.attrInk).toBe('#40BAA0'); expect(v.value).toBe(3);
+    expect(v.tagline).toBe(CLASS.infiltrator.tagline); expect(v.resource).toBe('Marks (max 3) · Toxin doses');
+    expect(v.moves.map((m: any) => m.name)).toEqual(CLASS.infiltrator.ranks.I.moves.map((m: any) => m.name));
+    expect(v.moves.length).toBe(2); expect(v.icon).toMatch(/^data:image\/svg\+xml,/);
+    expect(resourceLine('bard')).toBe('Supplies · MP · Strain');
+  });
+  it('a held shelved advanced class shows nothing of its own; a move origin maps to the class that holds it now', () => {
+    const c = charWith({ classId: 'marksman', advancedClass: 'gunslinger' } as any);
+    expect(heldClassId(c)).toBe('marksman');
+    expect(classOf(c)!.name).toBe('Marksman');
+    expect(currentClassId('medic')).toBe('bard'); expect(currentClassId('assassin')).toBe('infiltrator'); expect(currentClassId('mage')).toBe('mage');
+    expect(classOf(null, 'medic')!.name).toBe('Bard'); // the Class tab with no character: Triage's origin → Bard
+    expect(classOf({ classId: 'bard' }, 'medic')!.id).toBe('bard');
   });
   it('closest classes mark the closest-class options', () => {
     const c = charWith(); const cl = closestClasses(c, 4);

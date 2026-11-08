@@ -1,15 +1,17 @@
 // Level up, ported from design/canvas-build/levelup.logic.js onto the real character: spend skill, Attribute and
-// Core points under the tree's caps, take perk steps, and earn a class at level 3 (closest-class rule).
-// Layout (Leon, 7 Nov 2026: "the level up screen is super lopsided"): the left two thirds hold the work (the class
-// choice at level 3, the perk steps as a 3-column grid of cards with both choices side by side, skill points, then
-// Attributes and Cores); the right third is the class panel (emblem, name and rank, signature totals with the progress
-// to the next rank, every move by rank with who runs it, and the advanced classes in reach). Narrow screens stack the
-// class panel above the work.
+// Core points under the tree's caps, take perk steps, and earn a class at level 3 (Class Roster Revision 3: the class
+// of the highest attribute; on a tie, the player picks among the tied, and the pick is for good).
+// Layout (Leon, 7 Nov 2026: "the level up screen is super lopsided"): at level 3 the class picker runs the full width
+// on top (up to nine cards, three to a row, then a confirm bar: the choice is permanent); below it the left two thirds
+// hold the work (the perk steps as a 3-column grid of cards with both choices side by side, skill points, then
+// Attributes and Cores); the right third is the class panel (emblem, name and rank, the class attribute with the
+// progress to rank II at 5 and III at 8, the three ranks with both moves each and who runs them; while picking, a
+// preview of the selected class). Narrow screens stack the class panel above the work.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle } from './shared';
-import { CLASS, PERK, ADVANCED, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
+import { CLASS, PERK, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go } from '../game/store';
-import { emblemOf, classMoves, advancedMoves, signatureOf, closestClasses, advancedInReach, ROMAN_RANK } from '../game/classView';
+import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 
 const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const PERK_ICON = {};
@@ -26,6 +28,10 @@ ensureStyle('phc-levelup', [
   '.phc-lu-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}',
   '.phc-lu-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}',
   '.phc-lu-class{position:sticky;top:16px}',
+  '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',
+  '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(280px,calc((100% - 24px) / 3)),1fr));gap:12px}',
+  '.phc-lu-confirm{position:sticky;bottom:0;z-index:3;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 132px 12px 16px;border-radius:12px;background:#10151F;border:1px solid #232D3F;box-shadow:0 -8px 24px rgba(10,13,19,0.85)}',
+  '@media (max-width:1000px){.phc-lu-pick{padding:16px 16px 0}}',
   '@media (max-width:1400px){.phc-lu-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}',
   '@media (max-width:1000px){.phc-lu-body{grid-template-columns:minmax(0,1fr);padding:16px}.phc-lu-class{order:-1;position:static}}',
   '@media (max-width:640px){.phc-lu-steps{grid-template-columns:minmax(0,1fr)}}',
@@ -36,13 +42,29 @@ export class LevelUpLogic extends DCLogic {
   constructor(props) { super(props); this.state = {}; }
   renderVals() {
     const st = getState(), g = st.game, c = g && g.characters[st.levelupChar];
-    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? (g.phase === 'combat' ? 'combat' : 'main') : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], skillRows: [], coreRows: [], steps: [], attrBtns: [], coreBtns: [], nextSteps: [], cls: { sig: [], moves: [], adv: [], closest: [], advMoves: [] } }; }
+    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? (g.phase === 'combat' ? 'combat' : 'main') : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], skillRows: [], coreRows: [], steps: [], attrBtns: [], coreBtns: [], nextSteps: [], pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
     const choosing = c.level >= 3 && !c.classId;
-    // ---------- the class choice at level 3 (closest-class rule), each card with its emblem ----------
-    const classCards = choosing ? eligibleClasses(c).map((t) => { const k = D.classesFull.find((x) => x.id === t.id), em = emblemOf(k.id);
-      return { key: k.id, name: k.name, total: t.total, icon: em.icon, meta: k.core.toUpperCase() + ' · ' + k.role.replace(/_/g, ' ').toUpperCase(), sig: (ATTR[k.attribute]?.name || k.attribute) + ' ' + t.total + ' · ' + k.sig.map((s) => SK[s].name + ' ' + (c.skills[s] || 0)).join(' · '),
-        resource: k.resource, move: k.move, moveText: k.moveText, pick: () => act({ type: 'levelup/class', charId: c.id, classId: k.id }), pressed: 'false', nameStyle: 'font-size: 22px; font-weight: 700; color: ' + D.core[k.core],
-        style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 16px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; background: #10151F; border: 2px solid #232D3F' }; }) : [];
+    // ---------- the class choice at level 3 (Class Roster Revision 3): every class of the highest attribute, ties all
+    // offered; a card selects, the confirm bar commits (the class is for good) ----------
+    const offered = choosing ? eligibleClasses(c) : [], onlyOne = offered.length === 1;
+    const sel = choosing ? (offered.some((t) => t.id === this.state.pickCls) ? this.state.pickCls : onlyOne ? offered[0].id : null) : null;
+    const classCards = offered.map((t) => { const v = classCard(c, t.id), on = sel === t.id, ink = D.core[v.core];
+      return { ...v, key: v.id, pick: () => this.setState({ pickCls: v.id }), pressed: on ? 'true' : 'false', label: v.name + ', ' + v.attributeName + ' ' + v.value + (on ? ', selected' : ''),
+        attr: v.attributeName.toUpperCase() + ' ' + v.value, attrStyle: 'flex: none; margin-left: auto; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; border: 1px solid ' + v.attrInk + '; color: ' + v.attrInk,
+        coreLine: v.core.toUpperCase() + ' CLASS · ' + v.skills.join(' · '), nameStyle: 'font-size: 22px; font-weight: 700; line-height: 1.1; color: ' + ink,
+        moves: v.moves.map((m) => ({ ...m, head: m.name + (m.ap ? ' · ' + m.ap : '') })),
+        style: 'display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 0; text-align: left; padding: 14px 16px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; background: ' + (on ? '#1C2536' : '#10151F') + '; border: 2px solid ' + (on ? ink : '#232D3F') + (on ? '; box-shadow: 0 0 0 1px ' + ink + '55, 0 0 24px ' + ink + '22' : '') }; });
+    const selK = sel ? CLASS[sel] : null, tiedAttrs = offered.map((t) => ATTR[t.attribute]?.name || t.attribute);
+    const pick = !choosing ? {} : {
+      intro: onlyOne ? 'Your highest attribute is ' + tiedAttrs[0] + ' ' + offered[0].total + ', so the ' + CLASS[offered[0].id].name + ' has found you.'
+        : offered.length === 9 ? 'All nine attributes are tied at ' + offered[0].total + ', so every class is open to you. Choose the one you mean to be.'
+          : tiedAttrs.slice(0, -1).join(', ') + ' and ' + tiedAttrs[tiedAttrs.length - 1] + ' are tied at ' + offered[0].total + ' as your highest attributes: choose among their classes.',
+      hint: c.unspent.attr || c.unspent.core ? 'You still have Attribute or Core points to spend below: raising an attribute first can change what is on offer.' : '',
+      hasHint: !!(c.unspent.attr || c.unspent.core), count: offered.length + (offered.length === 1 ? ' CLASS ON OFFER' : ' CLASSES ON OFFER'),
+      hasSel: !!sel, noSel: !sel, confirmLabel: selK ? 'Become ' + (/^[AEIOU]/.test(selK.name) ? 'an ' : 'a ') + selK.name : '', selIcon: sel ? emblemOf(sel).icon : '',
+      confirm: () => { if (sel) { act({ type: 'levelup/class', charId: c.id, classId: sel }); this.setState({ pickCls: null }); } },
+      confirmStyle: 'min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer',
+    };
     // ---------- skill points ----------
     const skillRows = D.skills.map((s) => {
       const p = c.skills[s.id] || 0, why = canRaise(c, 'skill', s.id), ink = ATTR[s.attr].ink, cap = c.attrs[s.attr];
@@ -70,26 +92,30 @@ export class LevelUpLogic extends DCLogic {
     const nextSteps = steps.length ? [] : D.skills.map((s) => ({ s, p: c.skills[s.id] || 0 })).filter((x) => x.p > 0 && x.p < 10)
       .map((x) => { const nx = MASTERY.find(([n]) => n > x.p); return { key: x.s.id, name: x.s.name, at: nx[0], gap: nx[0] - x.p, word: nx[1], style: 'font-size: 12px; font-weight: 700; color: ' + ATTR[x.s.attr].ink }; })
       .sort((a, b) => a.gap - b.gap).slice(0, 3).map((x) => ({ ...x, line: x.word + ' at ' + x.at + ' points (' + x.gap + ' more)' }));
-    // ---------- the class panel ----------
-    const id = c.classId, k = id ? CLASS[id] : null, rank = id ? classRank(c) : 0, sig = id ? signatureOf(c, id) : null, em = emblemOf(c.advancedClass || id);
-    const moveRow = (m) => ({ ...m, badgeStyle: badgeStyle(m.verdict), hasUses: !!m.uses, hasUnlock: !!m.unlock, meta: [m.rank, m.ap].filter(Boolean).join(' · '),
+    // ---------- the class panel (the held class, or while picking a preview of the selected one) ----------
+    const id = c.classId || sel, preview = !c.classId && !!sel, k = id ? CLASS[id] : null;
+    const pc = preview ? { ...c, classId: sel } : c, rank = id ? classRank(pc) : 0, prog = id ? attributeProgress(c, id) : null, em = emblemOf(id);
+    const moveRow = (m) => ({ ...m, badgeStyle: badgeStyle(m.verdict), hasUses: !!m.uses, hasUnlock: !m.earned && !preview, meta: m.ap,
       nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (m.earned ? '#E7EBF3' : '#7F8BA1'),
-      style: 'display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (m.earned ? em.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.55') });
-    const adv = id ? advancedInReach(c, 3).map((a) => ({ ...a, key: a.id, learn: () => act({ type: 'levelup/advanced', charId: c.id, classId: a.id }), hasMissing: a.missing.length > 0, missingLine: 'Missing: ' + a.missing.join(' · '),
-      nameStyle: 'font-size: 14px; font-weight: 700; color: ' + a.ink, tutorLine: a.tutorMet ? '✓ Tutor met: ' + a.tutor : 'Tutor: ' + a.tutor })) : [];
-    const closest = !id ? closestClasses(c, 4).map((x) => ({ ...x, key: x.id, tag: x.offered ? (c.level >= 3 ? 'ON OFFER' : 'CLOSEST') : '', hasTag: x.offered, nameStyle: 'font-size: 14px; font-weight: 700; color: ' + x.ink,
+      style: 'display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (m.earned ? em.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.6') });
+    const ranks = id ? classRanks(g, pc, id).map((r) => ({ ...r, key: r.rank, state: r.unlocked ? (preview ? '✓ WITH THE CLASS' : '✓ UNLOCKED') : 'LOCKED',
+      stateStyle: 'font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: ' + (r.unlocked ? '#6FEA77' : '#FFFFFF'), moves: r.moves.map(moveRow) })) : [];
+    const closest = !id && c.level < 3 ? closestClasses(c, 4).map((x) => ({ ...x, key: x.id, tag: x.offered ? 'LEADS' : '', hasTag: x.offered, nameStyle: 'font-size: 14px; font-weight: 700; color: ' + x.ink,
+      sigStyle: 'font-size: 11px; font-weight: 700; color: ' + x.attrInk,
       style: 'display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (x.offered ? x.ink : '#232D3F') })) : [];
     const cls = {
-      has: !!id, none: !id, icon: em.icon, ink: em.ink,
-      name: id ? (c.advancedClass && ADVANCED[c.advancedClass] ? ADVANCED[c.advancedClass].name : k.name) : c.level >= 3 ? 'Choose your class' : 'No class yet',
+      has: !!id, none: !id, icon: em.icon, ink: em.ink, preview, kicker: preview ? 'PREVIEW · NOT CHOSEN YET' : 'CLASS',
+      name: id ? k.name : c.level >= 3 ? 'Choose your class' : 'No class yet',
       nameStyle: "font-family: 'Spectral', serif; font-size: 34px; font-weight: 600; line-height: 1.05; color: " + (id ? em.ink : '#E7EBF3'),
       rank: id ? 'RANK ' + ROMAN_RANK[rank] : '', rankStyle: 'font-size: 22px; font-weight: 700; letter-spacing: 0.14em; color: #E7EBF3',
-      sub: id ? (c.advancedClass ? 'Advanced class · ' + k.name + ' ' + ROMAN_RANK[rank] : k.core.toUpperCase() + ' · ' + (k.tagline || '')) : c.level >= 3 ? 'Pick one on the left.' : 'Your class finds you at level 3 (250 XP), from your signature totals. Until then, these are closest.',
-      sig: sig ? sig.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: 13px; font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
-      total: sig ? 'SIGNATURE ' + sig.total : '', nextLine: sig ? sig.nextLine : '', bar: sig ? 'height: 100%; border-radius: 99px; background: ' + em.ink + '; width: ' + sig.pct + '%' : '',
-      moves: id ? classMoves(g, c, id).map(moveRow) : [], advMoves: c.advancedClass ? advancedMoves(g, c, c.advancedClass).map(moveRow) : [], hasAdvMoves: !!c.advancedClass,
-      advName: c.advancedClass && ADVANCED[c.advancedClass] ? 'ADVANCED · ' + ADVANCED[c.advancedClass].name.toUpperCase() : '',
-      adv, hasAdv: !c.advancedClass && adv.length > 0, closest, hasClosest: closest.length > 0,
+      sub: id ? k.core.toUpperCase() + ' · ' + (k.tagline || '') : c.level >= 3 ? 'Pick one of the classes above, then confirm.' : 'Your class finds you at level 3 (250 XP): the class of your highest attribute (on a tie, you choose). Until then, these lead.',
+      sig: prog ? prog.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: 13px; font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
+      total: prog ? prog.label : '', totalStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
+      bar: prog ? 'height: 100%; border-radius: 99px; background: ' + (prog.ink) + '; width: ' + prog.pct + '%' : '',
+      movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5, RANK III AT 8' : '',
+      ranks, closest, hasClosest: closest.length > 0,
+      // Advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing to learn.
+      advNote: 'Advanced classes are being rebuilt.', hasAdvNote: !!c.classId && !advancedLive(),
     };
     const left = c.unspent.skill;
     const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)
@@ -99,8 +125,8 @@ export class LevelUpLogic extends DCLogic {
       kicker: 'LEVEL ' + c.level + ' · ' + c.xp.toLocaleString() + ' XP', title: c.name + (choosing ? ' reaches level ' + c.level : ' grows'), hpChip: 'MAX HP ' + maxHp(c),
       pointChip: left ? '◆ ' + left + ' SKILL POINT' + (left > 1 ? 'S' : '') : '✓ SKILL POINTS SPENT', pointChipStyle: chip(!left),
       stepChip: owed ? '◆ ' + owed + ' PERK STEP' + (owed > 1 ? 'S' : '') : '✓ NO PERK STEPS', stepChipStyle: chip(!steps.length),
-      classChip: id ? '✓ ' + k.name.toUpperCase() + ' ' + ROMAN_RANK[rank] : c.level >= 3 ? '◆ CHOOSE A CLASS' : 'CLASS AT LEVEL 3', classChipStyle: chip(!!id || c.level < 3), hasClassIcon: !!id, classIcon: em.icon,
-      choosing, classCards, cls,
+      classChip: c.classId ? '✓ ' + k.name.toUpperCase() + ' ' + ROMAN_RANK[rank] : c.level >= 3 ? '◆ CHOOSE A CLASS' : 'CLASS AT LEVEL 3', classChipStyle: chip(!!c.classId || c.level < 3), hasClassIcon: !!c.classId, classIcon: em.icon,
+      choosing, classCards, pick, cls,
       skillHead: left ? 'SPEND ' + left + ' SKILL POINT' + (left > 1 ? 'S' : '') + ' · A SKILL CAN\'T PASS ITS ATTRIBUTE' : 'NO SKILL POINTS TO SPEND · YOUR SKILLS',
       skillRows, coreRows, hasSteps: steps.length > 0, noSteps: !steps.length, steps, nextSteps, hasNext: nextSteps.length > 0,
       stepsHead: owed ? 'PERK STEPS · ' + owed + ' WAITING · ONE PER MASTERY LEVEL (3, 5, 7, 9 POINTS)' : 'PERK STEPS · NONE WAITING',

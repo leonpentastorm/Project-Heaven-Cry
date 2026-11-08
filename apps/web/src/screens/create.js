@@ -9,6 +9,7 @@ import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 import { spellSummary } from '../game/sigilView';
 import { sfx, reducedMotion } from '../game/sfx';
+import { emblemOf } from '../game/classView';
 
 // ---------- the lock-in stamp ----------
 // Pressing Lock in slams a big red AHOC seal onto the personnel record where the white one sits, with APPROVED across it,
@@ -89,7 +90,7 @@ function derive(skills, aSet, cSet) {
   const coreLeft = CORE_PTS - coreSpent - traded, attrLeft = ATTR_PTS + traded * TRADE - attrSpent;
   const ok = coreLeft >= 0 && Object.values(attr).every((v) => v <= STAT_CAP) && Object.values(core).every((v) => v <= STAT_CAP) && spent <= BUDGET;
   // Class Roster Revision 3: the class of the highest attribute (every tied one) is the one level 3 offers.
-  const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, total: attr[c.attribute] || 1 }));
+  const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, attribute: c.attribute, total: attr[c.attribute] || 1 }));
   const top = Math.max(...totals.map((t) => t.total));
   const leans = spent ? totals.filter((t) => t.total === top) : [];
   return { attr, core, spent, leans, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
@@ -222,6 +223,7 @@ export class CreateLogic extends DCLogic {
         nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
       leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
+      leanIcons: A ? A.leans.map((l) => ({ key: l, name: CLASSNAME[l], icon: emblemOf(l).icon, style: 'display: inline-flex; gap: 4px; align-items: center; font-weight: 700; color: ' + emblemOf(l).ink })) : [], hasLeans: !!A, noLeans: !A,
       budget: A ? budgetOf(A) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place',
     };
     const useArch = () => this.setState({ skills: A ? { ...A.preset } : {}, aSet: A ? { ...A.attributes } : {}, cSet: A ? { ...A.cores } : {}, applied: A ? A.id : null, step: 'skills', hover: A ? Object.keys(A.preset)[0] : 'durability' });
@@ -287,8 +289,11 @@ export class CreateLogic extends DCLogic {
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
-    const leanList = der.leans.length ? der.leans.map((l) => ({ name: l.name, total: l.total, chip: 'padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid ' + D.core[l.core] + '; color: ' + D.core[l.core] }))
-      : [{ name: 'Place some points', total: '', chip: 'font-size: 12px; color: #A3AEC2' }];
+    // Class Roster Revision 3: level 3 offers the class of the highest attribute (every tied one).
+    const leanChip = (ink) => 'display: inline-flex; gap: 5px; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink;
+    const leanList = !der.leans.length ? [{ name: 'Place some points', total: '', icon: '', hasIcon: false, chip: 'font-size: 12px; color: #A3AEC2' }]
+      : der.leans.length > 3 ? [{ name: der.leans.length + ' tied', total: '', icon: '', hasIcon: false, chip: leanChip('#E7EBF3') }]
+        : der.leans.map((l) => ({ name: l.name, total: l.total, icon: emblemOf(l.id).icon, hasIcon: true, chip: leanChip(D.core[l.core]) }));
     const archNote = S.applied ? 'Started from the ' + ARCH[S.applied].name + ' archetype. Change anything; the archetype is not saved.' : 'Built from scratch.';
 
     // traits
@@ -399,8 +404,9 @@ export class CreateLogic extends DCLogic {
     const magicSigils = canSigil ? sig.map((w) => ({ word: SIGIL[w]?.word || w, img: glyphUri(w, SIGIL_INK), text: SIGIL[w]?.text || '' })) : [];
     const magicLine = canSigil && !sigErr ? stackLine(sig, S.skills) : '';
     const magicOb = { name: obName, school: (SCHOOL[ob.school]?.name || '').toUpperCase() + ' SCHOOL', parts: obParts, cost: obInfo.line, heart: obInfo.icon };
-    const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id);
-      return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
+    const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id), an = ATTR[l.attribute].name;
+      return { key: l.id, name: l.name, total: an + ' ' + l.total, icon: emblemOf(l.id).icon, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core],
+        attrStyle: 'font-size: 12px; font-weight: 700; color: ' + ATTR[l.attribute].ink }; });
 
     return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE · ' + der.coreLeft + ' CORE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'), budgets,
@@ -416,7 +422,7 @@ export class CreateLogic extends DCLogic {
       resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
       magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
       summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),
-      trainedSkills, traitNames, leanText: der.leans.length ? der.leans.map((l) => l.name).join(' or ') : 'Place some points first',
+      trainedSkills, traitNames, leanText: der.leans.length ? (der.leans.length > 1 ? 'Tied: at level 3 you choose one of these, for good.' : 'Your highest attribute decides it. A tie lets you choose.') : 'Place some points first: your highest attribute decides your class.',
       record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, kitItems, kitName: kit ? kit.name : 'No kit yet', voiceList, hasVoices: voiceList.length > 0, leanCards,
       originName: o ? o.name : 'No origin yet', hasOriginRows: !!o,
       checks, cantLock, lockOff: cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: ' + (S.stamp ? 'default' : 'pointer') + '; ' + (S.stamp ? 'background: ' + STAMP_RED + '; color: #FFFFFF' : cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),

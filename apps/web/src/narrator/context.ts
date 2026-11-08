@@ -2,7 +2,7 @@
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
-import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -23,6 +23,10 @@ const slug = (t: string) => t.replace(/\([^)]*\)/g, '').replace(/[*.:]/g, '').tr
 const SECTION: Record<string, string> = { 'truth': 'truth', 'worlds-and-the-war': 'worlds', 'three-schools-of-magic': 'magic', 'mana-loop': 'mana' };
 /** Is any advanced class active (Class Roster Revision 3 shelves them all)? */
 const ADV_LIVE = Object.keys(ADVANCED).some((id) => advancedActive(id));
+/** The nine base classes, compactly: "Defender (Endurance), Fighter (Strength), …" (Class Roster Revision 3). */
+const CLASS_LINE = Object.values(CLASS).map((k: any) => k.name + ' (' + (ATTR as any)[k.attribute]?.name + ')').join(', ');
+/** Wiki class keys: the base classes, plus advanced ones only while some are active. */
+const wikiClasses = () => wikiKinds().class.filter((id: string) => (CLASS as any)[id] || (ADV_LIVE && advancedActive(id)));
 const NEVER = ['advanced-classes', 'how-the-existing-material', 'open-questions'];
 export interface LoreChunk { key: string; head: string; text: string }
 export const BIBLE: LoreChunk[] = (() => {
@@ -93,6 +97,9 @@ OVERREACH
 XP (per character, or charId "all")
 - Sources and allowed amounts: dialogue 25-100 (a scene won through talk), discovery 25-75 (a secret, a place, a truth), quest 50-300 (an objective completed). The engine awards combat XP itself. Pacing: session 1 (about one story scene and one fight) should reach about 250 XP per character, so classes arrive at level 3. Award XP when it is earned, with a short reason.
 
+CLASSES
+- One per attribute: ${CLASS_LINE}. Level 3 gives the highest attribute's class (tie: player picks), for good. Rank II at that attribute 5, III at 8. ${ADV_LIVE ? 'Advanced: wiki_lookup class:<id>.' : 'Advanced classes are being rebuilt: never offer one.'}
+
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
 - Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
@@ -135,7 +142,7 @@ LOOT
 - Anything else (a key, a letter, a keepsake) is a plot item: give it with item "" and its name and text (one line); it holds no stats. When the story uses one up, send it back with its [plot:id] and a negative qty. text is "" for real items.
 
 INJURIES
-- The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest with a Medic, surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
+- The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest under a medic's care, a Bard's Field Surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
 
 THE OVERWORLD (rounds)
 - Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.
@@ -182,7 +189,7 @@ WORLD RULES THAT NEVER BREAK
 
 THE WIKI (wiki_lookup)
 - You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
-- Conditions: ${wikiKinds().condition.join(', ')}. Classes: ${wikiKinds().class.join(', ')}. Patrons: ${wikiKinds().patron.join(', ')}.\n- Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
+- Conditions: ${wikiKinds().condition.join(', ')}.${ADV_LIVE ? ' Advanced classes: ' + wikiClasses().filter((id: string) => !(CLASS as any)[id]).join(', ') + '.' : ''} Patrons: ${wikiKinds().patron.join(', ')}.\n- Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
 - Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
 
@@ -234,7 +241,7 @@ export function characterBrief(g: GameState, c: Character): string {
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
   const id = c.identity || {};
   return `CHARACTER ${c.name} (charId ${c.id})${c.dead ? ' — DEAD' : ''}
-  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] + (c.advancedClass && ADVANCED[c.advancedClass] ? (advancedActive(c.advancedClass) ? ' and ' + ADVANCED[c.advancedClass].name + ' (advanced)' : ' (advanced classes are being rebuilt: their ' + ADVANCED[c.advancedClass].name + ' gives nothing for now)') : '') + (moves ? ' — moves: ' + moves : '') : 'none yet (earned at level 3; closest: ' + eligibleClasses(c).map((x) => x.name).join(' or ') + ')'}.
+  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] + (c.advancedClass && ADVANCED[c.advancedClass] ? (advancedActive(c.advancedClass) ? ' and ' + ADVANCED[c.advancedClass].name + ' (advanced)' : ' (advanced classes are being rebuilt: their ' + ADVANCED[c.advancedClass].name + ' gives nothing for now)') : '') + (moves ? ' — moves: ' + moves : '') : 'none yet (level 3 offers ' + eligibleClasses(c).map((x) => x.name).join(' or ') + ')'}.
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}

@@ -45,7 +45,8 @@ describe('level-up screen', () => {
     const closest = el.querySelectorAll('.phc-lu-closest');
     expect(closest.length).toBeGreaterThanOrEqual(4);
     expect(closest[0].querySelector('img.phc-lu-emblem')!.getAttribute('src')).toMatch(/^data:image\/svg\+xml,/);
-    expect(el.textContent).toContain('CLOSEST');
+    expect(el.textContent).toContain('CLASSES THAT LEAD');
+    expect(el.textContent).not.toMatch(/signature/i);
     root.unmount();
   });
   it('level 3 with every attribute tied: the picker lists all nine classes (Class Roster Revision 3 tie rule)', async () => {
@@ -54,23 +55,48 @@ describe('level-up screen', () => {
     const ids = (Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLElement[]).map((b) => b.getAttribute('data-class')).sort();
     expect(ids).toEqual(Object.keys(CLASS).sort());
     expect(ids.length).toBe(9);
+    // Each card: emblem, name, the attribute (in its ink), the fantasy line, resource, both rank I moves.
+    const mk = el.querySelector('button.phc-lu-class-card[data-class="infiltrator"]')!;
+    expect(mk.querySelector('img.phc-lu-emblem')).toBeTruthy();
+    expect(mk.querySelector('.phc-lu-card-attr')!.textContent).toBe('PERCEPTION 3');
+    expect((mk.querySelector('.phc-lu-card-attr') as HTMLElement).style.color).toBe('rgb(64, 186, 160)');
+    expect(mk.textContent).toContain(CLASS.infiltrator.tagline); expect(mk.textContent).toContain('Resource: Marks');
+    expect(mk.querySelectorAll('.phc-lu-card-move').length).toBe(2);
+    expect(el.querySelector('.phc-lu-permanent')!.textContent).toMatch(/PERMANENT/);
+    expect(el.querySelector('.phc-lu-pick-intro')!.textContent).toMatch(/All nine attributes are tied at 3/);
+    expect(el.querySelector('.phc-lu-adv-note')).toBeNull();
     root.unmount();
   });
-  it('level 3: class choice cards carry emblems; picking one fills the class panel', async () => {
-    setup((c) => { c.level = 3; c.xp = 250; });
+  it('level 3: a card selects and previews; the confirm bar commits, for good', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; c.attrs.agility = 4; c.attrs.perception = 4; c.attrs.insight = 4; for (const k of ['endurance', 'strength', 'intelligence', 'expression', 'determination', 'virtue']) c.attrs[k] = 2; });
     const { el, root } = await mount();
     const cards = Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLButtonElement[];
-    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.map((b) => b.getAttribute('data-class')).sort()).toEqual(['bard', 'infiltrator', 'marksman']);
     cards.forEach((b) => expect(b.querySelector('img.phc-lu-emblem')).toBeTruthy());
-    const id = cards[0].getAttribute('data-class')!;
-    await React.act(async () => { cards[0].click(); });
+    expect(el.querySelector('button.phc-lu-confirm-btn')).toBeNull(); // nothing selected yet
+    const id = cards[1].getAttribute('data-class')!;
+    await React.act(async () => { cards[1].click(); });
+    expect(G.characters[Object.keys(G.characters)[0]].classId).toBeFalsy(); // a card only selects
+    expect(el.querySelector('.phc-lu-class-kicker')!.textContent).toMatch(/PREVIEW/);
+    expect(el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS[id].name);
+    const confirm = el.querySelector('button.phc-lu-confirm-btn') as HTMLButtonElement;
+    expect(confirm.textContent).toContain(CLASS[id].name);
+    await React.act(async () => { confirm.click(); });
     expect(G.characters[Object.keys(G.characters)[0]].classId).toBe(id);
+    expect(el.querySelector('button.phc-lu-class-card')).toBeNull();
+    // A second pick is refused by the engine: the class is fixed.
+    const other = cards.map((b) => b.getAttribute('data-class')!).find((x) => x !== id)!;
+    expect(() => apply(G, { type: 'levelup/class', charId: Object.keys(G.characters)[0], classId: other } as any, ME)).toThrow(/set/);
     expect(el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS[id].name);
     expect(el.querySelector('.phc-lu-rank')!.textContent).toBe('RANK I');
     const moves = Array.from(el.querySelectorAll('.phc-lu-move'));
     // Class Roster Revision 3: two moves a rank; II at the class's attribute 5, III at 8.
     expect(moves.length).toBe(6);
     expect(moves[0].textContent).toMatch(/Engine runs it|Narrator rules it|Both/);
+    const groups = Array.from(el.querySelectorAll('.phc-lu-rank-group'));
+    expect(groups.length).toBe(3);
+    expect(groups.map((x) => x.querySelector('.phc-lu-rank-state')!.textContent)).toEqual(['✓ UNLOCKED', 'LOCKED', 'LOCKED']);
+    expect(el.querySelector('.phc-lu-attr')!.textContent).toMatch(/^(AGILITY|PERCEPTION|INSIGHT) 4$/);
     const an = ({ endurance: 'Endurance', strength: 'Strength', agility: 'Agility', perception: 'Perception', intelligence: 'Intelligence', expression: 'Expression', insight: 'Insight', determination: 'Determination', virtue: 'Virtue' } as any)[CLASS[id].attribute];
     expect(moves[2].textContent).toContain('unlocks at ' + an + ' 5');
     expect(moves[4].textContent).toContain('unlocks at ' + an + ' 8');
@@ -89,14 +115,16 @@ describe('level-up screen', () => {
     expect(G.characters[c0.id].perks.length).toBe(1);
     root.unmount();
   });
-  it('advanced classes are shelved (Class Roster Revision 3): they say so, and there is no Learn button', async () => {
-    setup((c) => { c.level = 12; c.classId = 'marksman';
+  it('advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing listed, nothing to learn', async () => {
+    setup((c) => { c.level = 12; c.classId = 'marksman'; c.advancedClass = 'gunslinger';
       Object.assign(c.cores, { body: 10, mind: 10, soul: 10 }); for (const k of Object.keys(c.attrs)) c.attrs[k] = 10; c.tutors = ['gunslinger']; });
     const m = await mount();
-    const adv = m.el.querySelector('.phc-lu-adv')!;
-    expect(adv).toBeTruthy();
-    expect(adv.textContent).toContain('Advanced classes are being rebuilt');
-    expect(m.el.querySelector('.phc-lu-adv button.phc-lu-learn')).toBeNull();
+    expect(m.el.querySelector('.phc-lu-adv-note')!.textContent).toBe('Advanced classes are being rebuilt.');
+    expect(m.el.querySelector('.phc-lu-adv')).toBeNull();
+    expect(m.el.querySelector('button.phc-lu-learn')).toBeNull();
+    expect(m.el.querySelector('.phc-lu-class-name')!.textContent).toBe('Marksman'); // the shelved Gunslinger isn't shown
+    expect(m.el.textContent).not.toMatch(/Gunslinger|tutor/i);
+    expect(Array.from(m.el.querySelectorAll('.phc-lu-rank-state')).map((x) => x.textContent)).toEqual(['✓ UNLOCKED', '✓ UNLOCKED', '✓ UNLOCKED']);
     expect(m.el.querySelectorAll('.phc-lu-move').length).toBe(6); // the base class's 6 moves only
     m.root.unmount();
   });

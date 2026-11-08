@@ -11,26 +11,42 @@
 </div>
 </header>
 
-<div class="phc-lu-body">
-<section aria-label="Level up" class="phc-stagger" style="min-width: 0; display: flex; flex-direction: column; gap: 16px">
-
-<sc-if value="{{choosing}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{choosing}}" hint-placeholder-val="{{true}}"><section aria-label="Choose your class" class="phc-lu-pick phc-stagger">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 520px; min-width: 0">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">Your class has found you</h1>
-<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 66ch">You choose among the classes with your two highest signature totals. Spend your skill point first if you like: it can change the list.</p>
+<p class="phc-lu-pick-intro" style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 72ch">{{pick.intro}}</p>
+<sc-if value="{{pick.hasHint}}"><p style="margin: 0; font-size: 13px; line-height: 1.5; color: #C9D3E3; max-width: 72ch">{{pick.hint}}</p></sc-if>
 </div>
-<div aria-label="Classes on offer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px">
+<span style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-left: auto">
+<span class="phc-lu-permanent" style="padding: 6px 12px; border-radius: 999px; border: 1px solid #FFFFFF; color: #FFFFFF; font-size: 12px; font-weight: 700; letter-spacing: 0.1em">◆ PERMANENT · NO SWITCHING LATER</span>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{pick.count}}</span>
+</span>
+</div>
+<div class="phc-lu-pick-grid" aria-label="Classes on offer">
 <sc-for list="{{classCards}}" as="c" hint-placeholder-count="3">
-<button type="button" class="phc-pop-in phc-lu-class-card" data-class="{{c.key}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">
-<span style="display: flex; gap: 10px; align-items: center; width: 100%"><img class="phc-lu-emblem" src="{{c.icon}}" alt="" style="width: 40px; height: 40px; flex: none"><span style="{{c.nameStyle}}">{{c.name}}</span><span style="margin-left: auto; font-size: 12px; color: #A3AEC2">signature {{c.total}}</span></span>
-<span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{c.meta}}</span>
-<span style="font-size: 13px; color: #C9D3E3">Signature: {{c.sig}}</span>
+<button type="button" class="phc-pop-in phc-lu-class-card" data-class="{{c.key}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" aria-label="{{c.label}}" style="{{c.style}}">
+<span style="display: flex; gap: 10px; align-items: center; width: 100%; min-width: 0"><img class="phc-lu-emblem" src="{{c.icon}}" alt="" style="width: 44px; height: 44px; flex: none"><span style="{{c.nameStyle}}">{{c.name}}</span><span class="phc-lu-card-attr" style="{{c.attrStyle}}">{{c.attr}}</span></span>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 16px; line-height: 1.35; color: #E7EBF3">{{c.tagline}}</span>
+<span style="font-size: 11px; letter-spacing: 0.08em; color: #A3AEC2">{{c.coreLine}}</span>
 <span style="font-size: 13px; color: #C9D3E3">Resource: {{c.resource}}</span>
-<span style="display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 8px; background: #0A0D13; width: 100%; box-sizing: border-box"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em">RANK I · {{c.move}}</span><span style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{c.moveText}}</span></span>
-<span style="font-size: 12px; color: #A3AEC2">Rank II at 13 · rank III at 18</span>
+<span style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 8px; background: #0A0D13; width: 100%; box-sizing: border-box">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">RANK I · BOTH MOVES</span>
+<sc-for list="{{c.moves}}" as="m" hint-placeholder-count="2"><span class="phc-lu-card-move" style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 700; color: #E7EBF3">{{m.head}}</span><span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{m.text}}</span></span></sc-for>
+</span>
+<span style="font-size: 11px; color: #A3AEC2">{{c.rankLine}}</span>
 </button>
 </sc-for>
 </div>
-</sc-if>
+<div class="phc-lu-confirm" role="group" aria-label="Confirm your class">
+<sc-if value="{{pick.hasSel}}"><button type="button" class="phc-lu-confirm-btn" onClick="{{pick.confirm}}" style="{{pick.confirmStyle}}"><img src="{{pick.selIcon}}" alt="" style="width: 22px; height: 22px">{{pick.confirmLabel}}</button>
+<span style="font-size: 13px; line-height: 1.45; color: #C9D3E3; flex: 1 1 260px">This is permanent: your class stays yours for good. Its rank grows with its attribute (II at 5, III at 8).</span></sc-if>
+<sc-if value="{{pick.noSel}}"><span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">Select a class to preview all six of its moves in the class panel, then confirm. The choice is permanent.</span></sc-if>
+</div>
+</section></sc-if>
+
+<div class="phc-lu-body">
+<section aria-label="Level up" class="phc-stagger" style="min-width: 0; display: flex; flex-direction: column; gap: 16px">
 
 <div class="phc-lu-steps-panel" aria-label="Perk steps" style="display: flex; flex-direction: column; gap: 10px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #FFFFFF">{{stepsHead}}</span>
@@ -89,7 +105,7 @@
 <div style="display: flex; gap: 14px; align-items: center">
 <sc-if value="{{cls.has}}"><img class="phc-lu-emblem" src="{{cls.icon}}" alt="" style="width: 72px; height: 72px; flex: none"></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
-<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CLASS</span>
+<span class="phc-lu-class-kicker" style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{cls.kicker}}</span>
 <span class="phc-lu-class-name" style="{{cls.nameStyle}}">{{cls.name}}</span>
 <sc-if value="{{cls.has}}"><span class="phc-lu-rank" style="{{cls.rankStyle}}">{{cls.rank}}</span></sc-if>
 </div>
@@ -97,41 +113,29 @@
 <span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">{{cls.sub}}</span>
 
 <sc-if value="{{cls.has}}">
-<div aria-label="Signature skills" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 10px; background: #0A0D13; border: 1px solid #232D3F">
-<span style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{cls.total}}</span><span style="font-size: 11px; color: #A3AEC2">{{cls.nextLine}}</span></span>
+<div aria-label="Class attribute" class="phc-lu-progress" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 10px; background: #0A0D13; border: 1px solid #232D3F">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap"><span class="phc-lu-attr" style="{{cls.totalStyle}}">{{cls.total}}</span><span style="font-size: 11px; color: #A3AEC2">{{cls.nextLine}}</span></span>
 <div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{cls.bar}}"></div></div>
-<div style="display: flex; flex-wrap: wrap; gap: 6px 14px"><sc-for list="{{cls.sig}}" as="s" hint-placeholder-count="3"><span style="font-size: 13px"><span style="{{s.style}}">{{s.name}}</span> <span style="font-weight: 700">{{s.pts}}</span></span></sc-for></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 14px"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">CLASS SKILLS</span><sc-for list="{{cls.sig}}" as="s" hint-placeholder-count="3"><span style="display: inline-flex; gap: 5px; font-size: 13px"><span style="{{s.style}}">{{s.name}}</span><span style="font-weight: 700">{{s.pts}}</span></span></sc-for></div>
 </div>
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">MOVES · RANK II AT 13, RANK III AT 18</span>
-<sc-for list="{{cls.moves}}" as="m" hint-placeholder-count="3"><div class="phc-lu-move" data-move="{{m.key}}" style="{{m.style}}">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">{{cls.movesHead}}</span>
+<sc-for list="{{cls.ranks}}" as="r" hint-placeholder-count="3"><div class="phc-lu-rank-group" data-rank="{{r.key}}" style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #C9D3E3">{{r.head}}</span><span class="phc-lu-rank-state" style="{{r.stateStyle}}">{{r.state}}</span></span>
+<sc-for list="{{r.moves}}" as="m" hint-placeholder-count="2"><div class="phc-lu-move" data-move="{{m.key}}" style="{{m.style}}">
 <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="{{m.nameStyle}}">{{m.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{m.meta}}</span><span title="Who runs it: the engine (numbers), the Narrator (judgement), or both" style="{{m.badgeStyle}}">{{m.badge}}</span></span>
 <span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{m.text}}</span>
 <sc-if value="{{m.hasUnlock}}"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF">LOCKED · {{m.unlock}}</span></sc-if>
 <sc-if value="{{m.hasUses}}"><span style="font-size: 11px; color: #C9D3E3">{{m.uses}}</span></sc-if>
 </div></sc-for>
-<sc-if value="{{cls.hasAdvMoves}}"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">{{cls.advName}}</span>
-<sc-for list="{{cls.advMoves}}" as="m"><div class="phc-lu-move" data-move="{{m.key}}" style="{{m.style}}">
-<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="{{m.nameStyle}}">{{m.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2">{{m.meta}}</span><span title="Who runs it: the engine (numbers), the Narrator (judgement), or both" style="{{m.badgeStyle}}">{{m.badge}}</span></span>
-<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">{{m.text}}</span>
-<sc-if value="{{m.hasUses}}"><span style="font-size: 11px; color: #C9D3E3">{{m.uses}}</span></sc-if>
-</div></sc-for></sc-if>
-<sc-if value="{{cls.hasAdv}}"><div aria-label="Advanced classes in reach" style="display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid #232D3F">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">ADVANCED CLASSES IN REACH · 15 IN ONE PARENT, 9 IN THE OTHER, A TUTOR</span>
-<sc-for list="{{cls.adv}}" as="a" hint-placeholder-count="3"><div class="phc-lu-adv" data-class="{{a.key}}" style="display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid #232D3F">
-<span style="display: flex; gap: 8px; align-items: center"><img class="phc-lu-emblem" src="{{a.icon}}" alt="" style="width: 28px; height: 28px; flex: none"><span style="{{a.nameStyle}}">{{a.name}}</span></span>
-<span style="font-size: 12px; color: #C9D3E3">{{a.parents}}</span>
-<span style="font-size: 12px; color: #A3AEC2">{{a.tutorLine}}</span>
-<sc-if value="{{a.hasMissing}}"><span style="font-size: 11px; font-weight: 700; color: #FFFFFF">{{a.missingLine}}</span></sc-if>
-<sc-if value="{{a.ready}}"><button type="button" class="phc-lu-learn" onClick="{{a.learn}}" style="align-self: flex-start; min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: #6FEA77; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">✓ Learn {{a.name}}</button></sc-if>
 </div></sc-for>
-</div></sc-if>
+<sc-if value="{{cls.hasAdvNote}}"><span class="phc-lu-adv-note" style="font-size: 12px; color: #7F8BA1; padding-top: 8px; border-top: 1px solid #232D3F">{{cls.advNote}}</span></sc-if>
 </sc-if>
 
-<sc-if value="{{cls.hasClosest}}"><div aria-label="Closest classes" style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CLOSEST CLASSES · BY SIGNATURE TOTAL</span>
+<sc-if value="{{cls.hasClosest}}"><div aria-label="Classes that lead" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CLASSES THAT LEAD · BY ATTRIBUTE</span>
 <sc-for list="{{cls.closest}}" as="x" hint-placeholder-count="4"><div class="phc-lu-closest" data-class="{{x.key}}" style="{{x.style}}">
 <img class="phc-lu-emblem" src="{{x.icon}}" alt="" style="width: 32px; height: 32px">
-<span style="display: flex; flex-direction: column; min-width: 0"><span style="{{x.nameStyle}}">{{x.name}}</span><span style="font-size: 11px; color: #A3AEC2">{{x.sig}}</span><span style="font-size: 11px; color: #A3AEC2">Rank I: {{x.move}}</span></span>
+<span style="display: flex; flex-direction: column; min-width: 0"><span style="{{x.nameStyle}}">{{x.name}}</span><span style="{{x.sigStyle}}">{{x.sig}}</span><span style="font-size: 11px; color: #A3AEC2">Rank I: {{x.move}}</span></span>
 <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 20px; font-weight: 700">{{x.total}}</span><sc-if value="{{x.hasTag}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF">{{x.tag}}</span></sc-if></span>
 </div></sc-for>
 </div></sc-if>

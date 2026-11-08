@@ -1,4 +1,5 @@
-// Class emblems: one geometric line icon per class (13 base + 21 advanced), our own strokes in a 24 × 24 box with round
+// Class emblems: one geometric line icon per class (9 Revision 3 base classes, the 5 Revision 2 ids that live on as
+// move origins, and 21 advanced), our own strokes in a 24 × 24 box with round
 // caps, in the same hand as the Sigil glyphs (glyphs.ts) but never one of them. Each base emblem sits in a light frame
 // by core (Body a square-ish shield, Mind a hexagon, Soul a circle); an advanced class gets a double frame of its first
 // parent's shape and combines its parents' motifs. Colour is the core's family ink (CLAUDE.md, colour-system.md); an
@@ -72,8 +73,8 @@ export const CLASS_ICON_PATHS: Record<string, ClassIcon> = {
   assassin: { frame: 'body', paths: ['M12 5.6 V8.6', 'M7.4 8.6 Q12 12.6 16.6 8.6', 'M8.6 10.2 L7.8 11.4 M15.4 10.2 L16.2 11.4', 'M10.7 10.6 L12 18 L13.3 10.6'], dots: [[12, 4.8]] },
 
   // ── Mind ────────────────────────────────────────────────────────────────────────────────────────────────────
-  // Infiltrator (Revision 3, Perception): the Assassin's dagger-and-eye for now, in the Mind frame (its own emblem to come).
-  infiltrator: { frame: 'mind', paths: ['M12 5.6 V8.6', 'M7.4 8.6 Q12 12.6 16.6 8.6', 'M8.6 10.2 L7.8 11.4 M15.4 10.2 L16.2 11.4', 'M10.7 10.6 L12 18 L13.3 10.6'], dots: [[12, 4.8]] },
+  // Infiltrator (Revision 3, Perception): an open eye watching over a lockpick laid across like a blade: ring, shaft and hooked tip.
+  infiltrator: { frame: 'mind', paths: ['M6.4 10.2 Q12 4.6 17.6 10.2 Q12 15.8 6.4 10.2 Z', CIRCLE(12, 10.2, 1.9), CIRCLE(8.3, 18.1, 1.2), 'M9.4 17.5 L15.4 14.4 L16.3 15.6'], dots: [[12, 10.2]] },
   // Mage: an open Sigil square firing a stroke out of it.
   mage: { frame: 'mind', paths: ['M7.5 10.5 V16.5 H13.5', 'M10.5 13.5 L16.5 7.5 M12.5 7.5 H16.5 V11.5'] },
   // Warden: a crenellated watchtower with a gate.

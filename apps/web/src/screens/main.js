@@ -15,7 +15,7 @@ import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, 
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
 import { previewPerkAction, bindGame } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
-import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, signatureOf, classLabel } from '../game/classView';
+import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
@@ -263,13 +263,13 @@ export class MainLogic extends DCLogic {
         tier: x.tier === 'I' || x.tier === 'II' ? 'TIER ' + x.tier : x.tier.toUpperCase(), chip: p.skills.map((s) => SKILL[s].name).join(' + ') || 'Ultimate',
         chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier), ...usesOf('perk:' + x.id, x.tier) }; }) : [];
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
-    // who runs it and the uses left, under the emblem, the rank and the signature progress.
-    const klass = c ? classOf(c) : null, clsEm = emblemOf(c && (c.advancedClass || c.classId));
+    // who runs it and the uses left, under the emblem, the rank and the class attribute's progress (II at 5, III at 8).
+    const klass = c ? classOf(c) : null, clsEm = emblemOf(heldClassId(c));
     const moveCard = (m) => ({ ...m, rank: m.rank + (m.ap ? ' · ' + m.ap : '') + (m.earned ? '' : ' · LOCKED: ' + m.unlock), locked: !m.earned, badgeStyle: badgeStyleOf(m.verdict), hasUses: !!m.uses,
       style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (m.earned ? clsEm.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.55') });
     const classMoves = !c ? [] : [...(c.classId ? classMovesOf(g, c, c.classId) : []), ...(c.advancedClass ? advancedMoves(g, c, c.advancedClass) : [])].map(moveCard);
-    const clsSig = c && c.classId ? signatureOf(c, c.classId) : null;
-    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, ink: klass.ink, sig: clsSig ? 'Signature ' + clsSig.total + ' (' + clsSig.skills.map((s) => s.name + ' ' + s.pts).join(', ') + ') · ' + clsSig.nextLine : '',
+    const clsSig = c && c.classId ? attributeProgress(c, c.classId) : null;
+    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, ink: klass.ink, sig: clsSig ? clsSig.attributeName + ' ' + clsSig.total + ' · ' + clsSig.nextLine : '',
       bar: clsSig ? 'height: 100%; border-radius: 99px; background: ' + klass.ink + '; width: ' + clsSig.pct + '%' : '' } : null;
     const top = c ? Object.entries(c.skills).filter(([, p]) => p > 0 && p < 10).sort((a, b) => b[1] - a[1])[0] : null;
     const mp = top ? masteredVals(this, SK[top[0]].ep.mastered, ATTR[SK[top[0]].attr].ink, SK[top[0]].name, top[1]) : {};
@@ -395,7 +395,7 @@ export class MainLogic extends DCLogic {
       .filter(([, v]) => v).map(([k, v]) => ({ k, v })) : [];
     const lvlUp = c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0);
     const pc = c ? { name: c.name, img: c.portrait, line1: [I.association, c.origin].filter(Boolean).join(' · ') || c.origin,
-      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(c.advancedClass || c.classId).icon } : { name: 'Spectating', img: IMG['wick-welcome'], line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
+      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(heldClassId(c)).icon } : { name: 'Spectating', img: IMG['wick-welcome'], line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
     const myChars = mine.map((x) => ({ key: x.id, name: x.name, pick: () => this.setState({ sel: x.id }), pressed: x.id === (c && c.id) ? 'true' : 'false',
       style: 'min-height: 32px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (x.id === (c && c.id) ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
 

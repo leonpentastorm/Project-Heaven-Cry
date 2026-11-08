@@ -1,6 +1,6 @@
 // The Proving Ground's entry points: the title opens a room and goes straight in; nothing waits on a Narrator.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES } from '@engine';
+import { ARCHETYPES, CLASS } from '@engine';
 
 const calls: any[] = [];
 let role: string | null = null, phase = 'story';
@@ -11,7 +11,7 @@ vi.mock('./store', () => ({
 vi.mock('./charfile', () => ({ importCharacter: async () => null }));
 vi.mock('./fx/FxLayer', () => ({ fxBusyUntil: () => 0 }));
 vi.mock('./sfx', () => ({ sfx: () => {}, reducedMotion: () => false }));
-const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy, leaveProvingGround } = await import('./sandbox');
+const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy, leaveProvingGround, sandboxClassOptions, sandboxClassHelp } = await import('./sandbox');
 
 describe('opening the Proving Ground', () => {
   it('from the title: a fresh room, then sandbox/start in the same tick', () => {
@@ -41,5 +41,20 @@ describe('the Proving Ground with friends', () => {
     calls.length = 0; role = null;
     startProvingGround(undefined, { friends: true });
     expect(calls).toEqual(['hostRoom', { type: 'sandbox/start', standalone: true }]);
+  });
+});
+
+describe('the Proving Ground class menu (Class Roster Revision 3)', () => {
+  it('lists the nine base classes, each with its attribute, and no advanced class', () => {
+    const o = sandboxClassOptions();
+    expect(o.map((x) => x.id).sort()).toEqual(Object.keys(CLASS).sort());
+    expect(o.length).toBe(9);
+    expect(o.find((x) => x.id === 'infiltrator')!.label).toBe('Infiltrator · Perception');
+    expect(o.some((x) => /gunslinger|adv:/i.test(x.id + x.label))).toBe(false);
+  });
+  it('the help line gives the new rank rule, never signature totals', () => {
+    expect(sandboxClassHelp({ classId: 'marksman' } as any)).toBe('Rank reads Agility: rank II at Agility 5, rank III at 8; picking II or III raises it that far. Advanced classes are being rebuilt.');
+    expect(sandboxClassHelp({ classId: null } as any)).toMatch(/rank II at 5, rank III at 8/);
+    expect(sandboxClassHelp({ classId: 'bard' } as any)).not.toMatch(/signature|13|18/);
   });
 });

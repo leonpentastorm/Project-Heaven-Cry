@@ -18,7 +18,7 @@ import { wordRows } from './sigilView';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
 import {
-  magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ADVANCED_CLASSES, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
+  magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, hasEvoker, hasEmanator, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
@@ -26,6 +26,7 @@ import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
+import { emblemOf } from './classView';
 
 // ---------- starting it ----------
 /** From the title: open a fresh room and go straight into the Proving Ground with a test character (or the host's
@@ -290,18 +291,28 @@ const Stepper = ({ value, min, max, set, name }: { value: number; min: number; m
   <button type="button" style={{ ...btn, padding: '0 10px' }} aria-label={'Raise ' + name} disabled={value >= max} onClick={() => set(value + 1)}>›</button>
 </span>;
 
+/** The Proving Ground's class menu (Class Roster Revision 3): the nine base classes, one per attribute; advanced
+ *  classes are shelved, so none is offered. */
+export const sandboxClassOptions = () => CLASSES.map((k) => ({ id: k.id, label: k.name + ' · ' + (ATTR[k.attribute]?.name || k.attribute) }));
+/** The line under the class menu: the rank rule (II at the class's attribute 5, III at 8). */
+export function sandboxClassHelp(c: Pick<Character, 'classId'>): string {
+  const an = c.classId ? ATTR[CLASS[c.classId]?.attribute]?.name : null;
+  return (an ? 'Rank reads ' + an + ': rank II at ' + an + ' 5, rank III at 8; picking II or III raises it that far.'
+    : 'One class per attribute. Rank reads the class\'s attribute: rank II at 5, rank III at 8.') + ' Advanced classes are being rebuilt.';
+}
+
 function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: boolean }) {
-  const u = game.phase === 'combat' ? game.combat?.units.find((x) => x.charId === c.id) : undefined, adv = game.sandbox!.advanced[c.id];
+  const u = game.phase === 'combat' ? game.combat?.units.find((x) => x.charId === c.id) : undefined;
   const [skill, setSkill] = React.useState(SKILLS[0].id);
   const [perk, setPerk] = React.useState(PERKS[0].id);
   const [trait, setTrait] = React.useState(TRAITS[0].id);
-  const clsVal = adv ? 'adv:' + adv : c.classId || '';
+  const clsVal = c.classId || '';
   return <>
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       {c.portrait ? <img src={c.portrait} alt="" style={{ width: 56, height: 70, objectFit: 'cover', borderRadius: 8, background: '#000' }} /> : <span style={{ width: 56, height: 70, borderRadius: 8, background: C.raised, display: 'grid', placeItems: 'center', fontWeight: 700 }}>{c.name.slice(0, 2).toUpperCase()}</span>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 13 }}>
         <span style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</span>
-        <span style={{ color: C.muted }}>Level {c.level} · {adv ? ADVANCED_CLASSES.find((x) => x.id === adv)?.name : c.classId ? CLASS[c.classId]?.name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] : 'Classless'}</span>
+        <span style={{ color: C.muted, display: 'inline-flex', alignItems: 'center', gap: 6 }}>Level {c.level} · {c.classId && <img className="phc-class-emblem" src={emblemOf(c.classId).icon} alt="" style={{ width: 16, height: 16 }} />}{c.classId ? CLASS[c.classId]?.name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] : 'Classless'}</span>
         {u ? <span><span style={{ color: C.red }}>HP {u.hp}/{u.maxHp}</span> · AP {u.ap} · {WEAPON[u.weapon]?.name}{WEAPON[u.weapon]?.magazine != null ? ' ' + u.ammo + '/' + WEAPON[u.weapon].magazine : ''}{u.mg?.emanator ? <span style={{ color: C.mp }}> · MP {Math.round(u.mg.mp)}</span> : null}</span>
           : <span><span style={{ color: C.red }}>HP {c.hp}/{maxHp(c)}</span> · {WEAPON[c.weapon]?.name}{WEAPON[c.weapon]?.magazine != null ? ' ' + (c.loaded ?? 0) + '/' + WEAPON[c.weapon].magazine : ''}</span>}
       </div>
@@ -318,13 +329,13 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
     </Section>}
     <Section title="LEVEL (HP RECOMPUTED, FULL)"><Stepper name="level" value={c.level} min={1} max={20} set={(n) => act({ type: 'sandbox/level', charId: c.id, level: n })} /><span style={{ fontSize: 12, color: C.muted }}>{maxHp(c)} HP at this level. Unspent points from levels go to Level up.</span></Section>
     <Section title="CLASS">
-      <select value={clsVal} style={field} aria-label="Class" onChange={(e) => { const v = e.target.value; act({ type: 'sandbox/class', charId: c.id, classId: v ? v.replace(/^adv:/, '') : null, rank: 1 }); }}>
+      <select value={clsVal} style={field} aria-label="Class" onChange={(e) => { const v = e.target.value; act({ type: 'sandbox/class', charId: c.id, classId: v || null, rank: 1 }); }}>
         <option value="">Classless</option>
-        <optgroup label="Base classes">{CLASSES.map((k) => <option key={k.id} value={k.id}>{k.name} · {k.core}</option>)}</optgroup>
-        <optgroup label="Advanced classes">{ADVANCED_CLASSES.map((k) => <option key={k.id} value={'adv:' + k.id}>{k.name} ({k.parents.map((p) => CLASS[p]?.name || p).join(' + ')})</option>)}</optgroup>
+        {/* Class Roster Revision 3: the nine base classes, one per attribute; advanced classes are shelved (being rebuilt). */}
+        {sandboxClassOptions().map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
-      {c.classId && !adv && <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
-      <span style={{ fontSize: 12, color: C.muted }}>{adv ? 'An advanced class is held with its first parent at its own rank: both sets of moves are in the Class tab.' : 'Rank II and III raise the signature skills to 13 and 18.'}</span>
+      {c.classId && <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
+      <span style={{ fontSize: 12, color: C.muted }}>{sandboxClassHelp(c)}</span>
     </Section>
     <Section title="SKILL POINTS (ATTRIBUTE AND CORE FOLLOW)">
       <div style={row}>

@@ -128,7 +128,7 @@ export function MissionLayer({ game, screen }: { game: GameState | null; screen:
               {E.cards.map((c) => <div key={c.key} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
                 {c.img ? <img src={c.img} alt={c.name} style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', borderRadius: 8, background: '#000', filter: c.dead ? 'grayscale(1)' : undefined }} /> : null}
                 <span style={{ fontFamily: 'Spectral, serif', fontSize: 20, fontWeight: 600 }}>{c.name}</span>
-                <span style={{ fontSize: 12, color: ink.muted }}>Level {c.level} · {c.cls}{c.dead ? ' · DEAD' : ''}</span>
+                <span style={{ fontSize: 12, color: ink.muted, display: 'inline-flex', alignItems: 'center', gap: 5 }}>Level {c.level} · {c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 14, height: 14 }} />}{c.cls}{c.dead ? ' · DEAD' : ''}</span>
                 {c.deeds.map((d, i) => <span key={i} style={{ fontSize: 12, color: '#C9D3E3' }}>★ {d}</span>)}
               </div>)}
             </section>
