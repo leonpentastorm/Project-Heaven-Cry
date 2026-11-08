@@ -53,6 +53,17 @@ for mid, a in C.get("maps", {}).items():
 for sid, a in C.get("sprites", {}).items():
     w, h = a.get("dimensions", [256, 256])
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
+# Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
+# drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
+#   art/character-portraits/patrons/v1/<id>.png -> patron-<id> (4:5 portrait)
+#   art/emblems/patrons/v1/<id>.png             -> patron-mark-<id> (white mark)
+#   art/ui/prayers/v1/<file>.png                -> prayer-<file> (whisper-luck, hymn-<patron>-<n>, miracle-<patron>)
+for src in sorted((ROOT / "art/character-portraits/patrons/v1").glob("*.png")):
+    emit("patron-" + src.stem, src, (320, 400), (800, 1000))
+for src in sorted((ROOT / "art/emblems/patrons/v1").glob("*.png")):
+    emit("patron-mark-" + src.stem, src, (128, 128), (512, 512), 90)
+for src in sorted((ROOT / "art/ui/prayers/v1").glob("*.png")):
+    emit("prayer-" + src.stem, src, (128, 128), (512, 512), 90)
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
