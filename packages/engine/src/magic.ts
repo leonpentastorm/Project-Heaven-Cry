@@ -915,6 +915,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   const orl: any = emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, form, tone, reaction, cb, rng });
   const res = wild ? { bonus: 0, with: [] as string[] } : resonanceFor(cb, u);
   const sm = (stageMult(stage) + res.bonus) * (orl.mult || 1), rs = riderStage(cb, stage);
+  const heldWas = m.held ? { ...m.held } : null;
   m.held = null;
   if (has('random') && !wild) { const pool = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= heartReach(m, d)); if (pool.length) aim = pool[die(rng, pool.length) - 1].pos; }
   const tiles = outburstArea(cb, u, d, aim), targets = affectedBy(cb, u, d, tiles);
@@ -922,11 +923,12 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   if (res.with.length) emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: res.with, bonus: res.bonus });
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: targets.map((t) => t.id) });
-  const line: string[] = [], hitFoes: Unit[] = [];
+  const line: string[] = [], hitFoes: Unit[] = [], hits: Unit[] = [];
   const s2 = d.school2 && d.school2 !== d.school ? d.school2 : null;
   for (const t of targets) {
     if (t.dead) continue;
     const h = schoolOn(cb, rng, u, d, t, d.school, d.option, sm, 1, true, rs, tone, line);
+    if (h.landed) hits.push(t);
     if (!h.landed || t.dead) continue;
     if (s2) schoolOn(cb, rng, u, d, t, s2, d.option2, sm, half, false, rs, tone, line);
     if (tone !== 'raw' && t.side !== u.side && !t.dead) { const rr = applyToneRiders(cb, rng, u, t, tone, rs, form === 'burst' ? aim : u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); if (rr) line.push(rr.replace(/^ · /, '')); hitFoes.push(t); }
@@ -946,6 +948,11 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   }
   if (!targets.length) line.push('nobody ' + (form === 'bolt' ? 'at ' + refOf(aim) : 'in the ' + form));
   cb.log.push(u.name + ' releases ' + d.name + ' (' + form.toUpperCase() + (tone !== 'raw' ? ' · ' + TONE[tone].name : '') + ') at stage ' + stage + ' (×' + Math.round(sm * 100) / 100 + (res.bonus ? ', resonance +' + res.bonus.toFixed(1) : '') + ')' + (wild ? ' (wild)' : '') + (reaction ? ' (Heart Overwatch)' : '') + ': ' + line.filter(Boolean).join(' · ') + '.');
+  // 'outburst_after' {u, design, held, stage, aim, mult, riderStage, form, tone, area, targets, hits, wild, reaction}:
+  // after the primary hit, the second school, the tone's riders and the chains have landed (Twin Souls' third school,
+  // Storm Front's arcs). `held` is the Outburst as it was held (null on a wild release with nothing held); `targets`
+  // are everyone the area took in, `hits` those the primary school landed on (a missed roll is not a hit).
+  emit(cb, 'outburst_after', { u, design: d, held: heldWas, stage, aim, mult: sm, riderStage: rs, form, tone, area: tiles, targets, hits, wild, reaction, cb, rng });
 }
 /** The held heart at a turn start (rules 1.5): Strain −1 (always), the swell (+1 stage and +1 Strain, +2 Flooded,
  * unless steadied), the elemental aura's tick on adjacent enemies, the round's free Pumps back, and 'held_turn_start'
@@ -1006,7 +1013,8 @@ export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', a
   const no = (why: string, extra: Partial<OutburstPlan> = {}): OutburstPlan => ({ ok: false, why, ap: 0, mp: 0, strain: 0, strainAfter: m?.strain ?? 0, strainLimit: m?.strainLimit ?? 0, burnWarning: 0, shortWarning: false, stage: 0, mult: stageMult(0), riderStage: 0,
     form: 'bolt', tone: 'raw', element: null, reach: 0, reachTiles: [], area: [], affected: [], resonance: false, resonanceBonus: 0, riderText: '', needsAim: true, ...extra });
   if (!m) return no('You have no Outbursts.');
-  const held = src === 'held' || (m.held && src === m.held.design && !m.designs.some((x) => x.id === src && false));
+  // 'held' previews the held Outburst; a design id (even the held design's) previews a fresh snap of that design.
+  const held = src === 'held';
   const d = findDesign(m, src === 'held' ? m.held?.design : src); if (!d) return no(src === 'held' ? 'Nothing held.' : 'No such design.');
   const form = formOf(d), tone = toneOf(d), stage0 = held && m.held ? m.held.stage : 0, stage = Math.max(0, Math.min(MAX_STAGE, opts.stage ?? stage0));
   const res = resonanceFor(cb, u), sm = stageMult(stage) + res.bonus, rs = riderStage(cb, stage), reach = heartReach(m, d);

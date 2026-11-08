@@ -113,7 +113,7 @@ describe('Resonance (rules 1.5: the perk widens the rule\'s window, item 535)', 
     const ua = f.turn(a); ua.ap = 9; f.act({ type: 'combat/outburst', unitId: ua.id, design: ua.mg!.designs[0].id, aim: '5,5' });
     f.cb.round += 1; // the next round
     const ub = f.turn(b); ub.ap = 9; f.act({ type: 'combat/outburst', unitId: ub.id, design: ub.mg!.designs[0].id, aim: '5,5' });
-    return (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1).mult as number;
+    return (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1)!.mult as number;
   }
   it('without the perk, a release last round gives nothing (the rule is one round)', () => { expect(twoRounds({}, {})).toBe(0.6); });
   it('I: the holder\'s release hears an ally\'s release from the round before: +0.2', () => { expect(twoRounds({}, { resonance: 'I' })).toBe(0.8); });

@@ -32,7 +32,7 @@ describe('design cards', () => {
     const burst = designInfo(u.mg, DESIGNS[0]), bolt = designInfo(u.mg, DESIGNS[1]), wave = designInfo(u.mg, DESIGNS[2]);
     expect(burst.line).toMatch(/^BURST · radius 1 · reach \d+ · Fire · \d+ MP$/);
     expect(bolt.line).toMatch(/^BOLT · one target · reach \d+ · Raw · \d+ MP$/);
-    expect(wave.line).toMatch(/^WAVE · cone 3 · reach 3 · Raw/);
+    expect(wave.line).toMatch(/^WAVE · cone 3 from you · Raw/); expect(wave.line).not.toMatch(/reach/);
     expect(burst.isArea).toBe(true); expect(bolt.isArea).toBe(false);
     expect(wave.schools).toMatch(/Damage.*\+ Control \(Push 3 tiles\) at half/);
   });

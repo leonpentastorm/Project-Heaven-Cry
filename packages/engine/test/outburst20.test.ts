@@ -338,6 +338,10 @@ describe('the preview standard (section 7)', () => {
     me(f).mg!.strain = 0; begin(f, d); const h = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
     expect(h.ok).toBe(true); expect(h.ap).toBe(1); expect(h.mp).toBe(0); expect(h.stage).toBe(0);
     const bad = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '15,5')); expect(bad.ok).toBe(false); expect(bad.why).toMatch(/reach/);
+    // the held design's own id previews a fresh snap of that design, not the held one (refused while holding)
+    me(f).mg!.held!.stage = 2;
+    const fresh = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '6,5')), still = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
+    expect(fresh.stage).toBe(0); expect(fresh.ok).toBe(false); expect(fresh.why).toMatch(/holding/); expect(still.stage).toBe(2); expect(still.ok).toBe(true);
   });
 });
 

@@ -107,7 +107,7 @@ blooming into the element's colour.
 | Aura | Radius 1 around you, all at once | module |
 | Lance | A 4-tile line that pierces | module |
 
-Design cards carry a shape icon and read like "WAVE · cone 3 · reach 4 · Fire". On the grid, before Release (and while
+Design cards carry a shape icon and read like "WAVE · cone 3 from you · Fire" (a Wave and a Lance start at you, so their size is their reach; a Bolt or Burst card reads "reach 4"). On the grid, before Release (and while
 holding): the reach ring, the tinted area, everyone affected (allies and enemies marked) with expected numbers and
 saves, and this stage's rider; the same preview standard as Sigil 1.4 (spec section "What the player must see").
 

@@ -85,7 +85,7 @@ const tileOf = (k) => p.locator('.phc-grid button.phc-tok').nth((() => { const [
 await dismissCut(); await tab('Outbursts');
 await p.locator('[role="tabpanel"] [data-act="outburst"]').click(); await p.waitForTimeout(300);
 const cards = await p.locator('[aria-label="Your Outbursts"] button[aria-pressed]').allTextContents();
-ok('design cards carry the shape line: ' + JSON.stringify(cards.map((t) => t.replace(/\s+/g, ' ').slice(0, 90))), cards.some((t) => /BURST · radius 1 · reach \d+ · Fire/.test(t)) && cards.some((t) => /LANCE · line 4, pierces/.test(t)));
+ok('design cards carry the shape line: ' + JSON.stringify(cards.map((t) => t.replace(/\s+/g, ' ').slice(0, 90))), cards.some((t) => /BURST · radius 1 · reach \d+ · Fire/.test(t)) && cards.some((t) => /LANCE · line 4 from you, pierces/.test(t)));
 await p.locator('[aria-label="Your Outbursts"] button', { hasText: 'Heartfire' }).first().click(); await p.waitForTimeout(200);
 await snap('1-cards');
 await p.locator('[aria-label="Begin or snap"] button', { hasText: 'Begin' }).click(); await p.waitForTimeout(700);

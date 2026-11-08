@@ -47,21 +47,31 @@ export function optionName(school: string, v?: string): string {
   const o = ((SCHOOL as any)[school]?.options || []).find((x: string) => optValue(x) === o0 || x === o0);
   return o ? OPT_LABEL[o] || o : o0.replace(/_/g, ' ');
 }
-/** The shape and its size in words: 'one target', 'cone 3', 'radius 1', 'radius 1 around you', 'line 4, pierces'. */
+/** The shape and its size in words: 'one target', 'cone 3 from you', 'radius 1', 'radius 1 around you', 'line 4 from
+ * you, pierces'. A Wave and a Lance start at you: their size is their reach (the engine's rule), so the card names no
+ * separate reach for them. */
 export function shapeText(d: any): string {
   const f = formOf(d) as Form, n = formSize(d);
-  return f === 'bolt' ? 'one target' : f === 'wave' ? 'cone ' + n : f === 'burst' ? 'radius ' + n : f === 'aura' ? 'radius ' + n + ' around you' : 'line ' + n + ', pierces';
+  return f === 'bolt' ? 'one target' : f === 'wave' ? 'cone ' + n + ' from you' : f === 'burst' ? 'radius ' + n : f === 'aura' ? 'radius ' + n + ' around you' : 'line ' + n + ' from you, pierces';
+}
+/** Where a design reaches, in words: a Bolt and a Burst are aimed ('reach 4 tiles'); a Wave and a Lance start at you
+ * ('cone 3 from you', 'line 4 from you'); an Aura sits on you ('around you'). m: the caster's magic, or {soulRange}. */
+export function reachWords(m: any, d0: any): string {
+  const d = migrateDesign(d0), f = formOf(d) as Form, mm = m || { costSave: 0, soulRange: 0 }, n = formSize(d);
+  return f === 'bolt' || f === 'burst' ? 'reach ' + designRange(mm, d) + ' tiles' : f === 'wave' ? 'cone ' + n + ' from you' : f === 'lance' ? 'line ' + n + ' from you' : 'radius ' + n + ' around you';
 }
 export interface DesignInfo { id: string; name: string; form: Form; formName: string; icon: string; tone: string; toneName: string; ink: string; reach: number; mp: number; line: string; schools: string; title: string; isArea: boolean }
-/** A design card's facts, all from the engine: "WAVE · cone 3 · reach 3 · Fire · 30 MP". m: the caster's magic (a
+/** A design card's facts, all from the engine: "WAVE · cone 3 from you · Fire · 30 MP", "BOLT · one target · reach 4 ·
+ * Raw · 20 MP" (a reach only where you aim it away from you: a Bolt and a Burst). m: the caster's magic (a
  * unit's u.mg, or magicOf(c)); mana: the air (Normal when unknown). */
 export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
   const d = migrateDesign(d0), form = formOf(d) as Form, tone = toneOf(d), ink = toneInk(tone);
   const mm = m || { costSave: 0, soulRange: 0 };
   const reach = form === 'aura' ? 0 : form === 'bolt' || form === 'burst' ? designRange(mm, d) : heartReach(mm, d);
+  const aimed = form === 'bolt' || form === 'burst';
   const mp = designCost(mm, d, mana ?? MANA_START);
   const schools = (SCHOOL as any)[d.school]?.name + (d.option || DEFAULT_OPT[d.school] ? ' (' + optionName(d.school, d.option) + ')' : '') + (d.school2 ? ' + ' + (SCHOOL as any)[d.school2]?.name + ' (' + optionName(d.school2, d.option2) + ') at half' : '');
-  const line = FORM_NAME[form].toUpperCase() + ' · ' + shapeText(d) + (reach ? ' · reach ' + reach : '') + ' · ' + toneName(tone) + ' · ' + mp + ' MP';
+  const line = FORM_NAME[form].toUpperCase() + ' · ' + shapeText(d) + (aimed && reach ? ' · reach ' + reach : '') + ' · ' + toneName(tone) + ' · ' + mp + ' MP';
   return { id: d.id, name: d.name, form, formName: FORM_NAME[form], icon: formIconUri(form, ink), tone, toneName: toneName(tone), ink, reach, mp, line, schools,
     title: d.name + ': ' + line + '. ' + schools + '.' + (d.modules.length ? ' Modules: ' + d.modules.map((x: string) => (MODULE as any)[x]?.name || x).join(', ') + '.' : ''), isArea: form !== 'bolt' };
 }

@@ -2797,7 +2797,7 @@ function sandboxGear(g: GameState, a: Action, by: string) {
     'gear/mod': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: 'mod' }),
     'magic/design': () => ({ type: 'sandbox/design', charId, design: (a as any).design }),
     'magic/forget': () => ({ type: 'sandbox/forget', charId, designId: (a as any).designId }),
-    'magic/learn': () => ({ type: 'sandbox/learn', charId, word: (a as any).word, school: (a as any).school, module: (a as any).module }),
+    'magic/learn': () => ({ type: 'sandbox/learn', charId, word: (a as any).word, school: (a as any).school, module: (a as any).module, tone: (a as any).tone }),
   };
   if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
   const to = m[a.type]; if (!to) fail('Unknown action.');

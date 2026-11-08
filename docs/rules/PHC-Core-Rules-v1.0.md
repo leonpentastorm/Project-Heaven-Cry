@@ -1216,7 +1216,7 @@ The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), 
 | Lance | a straight line of 4 tiles from you toward the aim (8 directions), piercing everyone on it (Size: 6); walls and cover stop it | a direction | ×0.8, rolls each | module |
 
 - **Who is reached:** Damage, Control and Status reach **everyone in the area but you** (friendly fire); Buff reaches **allies only** (you too in an Aura); Inverse damage shields allies only. The cone uses the same test as Sigil's (within its length, about 45 degrees of the line to the aim); areas need sight from their centre unless Ether.
-- **Design cards** carry a shape icon and read like "WAVE · cone 3 · reach 4 · Fire".
+- **Design cards** carry a shape icon and read like "WAVE · cone 3 from you · Fire" (a Wave and a Lance start at you: their size is their reach, so they name no separate reach; a Bolt or a Burst card reads "BOLT · one target · reach 4 · Raw").
 - **The preview standard (as Sigil 1.4's "What the player must see"):** before a Begin or a Release, and while holding, the grid shows the **reach ring**, the **tinted area**, **everyone affected** (allies and enemies marked) with **expected numbers after the multipliers and armour**, the **roll's chance** where it rolls, the **saves** with their TNs, **this stage's rider** in words, the AP, MP and **Strain after** with the **burn** (8 a point over) and **Short** warnings, and **Resonance** when it applies. The engine's `previewOutburstPlan` is the one source; the screen never computes its own numbers.
 
 **Modules under 1.5** (soul_modules.json; old designs convert on load):

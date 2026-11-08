@@ -1203,7 +1203,8 @@ register({
 
 // ---------- Storm Front (rank II, once a turn; a toggle on Begin; rules 1.5) ----------
 // +10 MP (flat, after the air and your saving), paid at Begin: when the Damage Outburst releases as a Bolt or a Lance,
-// the storm arcs on to up to 2 more enemies within 2 tiles of the first creature it reached (or of the aim, if none),
+// once it has landed ('outburst_after'), the storm arcs on to up to 2 more enemies within 2 tiles of the first creature
+// it hit (else the first in its area, else the aim),
 // nearest first, outside the release's own area: each takes the design's Damage at the release's stage multiplier, one
 // roll each where the design rolls (At Once: no roll, half), with its tone's rider at the release's rider stage. The
 // area shapes (Wave, Burst, Aura) already reach a crowd: they can't take it (item 523, PROVISIONAL). Enemies only.
@@ -1217,16 +1218,17 @@ register({
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'storm') && stormable(ctx.design)) ctx.mp += 10; },
     outburst_begin: (ctx, h) => { if (ctx.u === h.u && modOn(h, 'storm') && stormable(ctx.design) && uses(h).take('per_turn', 1, h.key + '#storm')) stateOf(h).storm = ctx.design.id; },
-    outburst_release: (ctx, h) => {
+    // After the primary hit (the 'outburst_after' hook): from the first creature the release hit (else the first in
+    // its area, else the aim), so the arcs land once the bolt has.
+    outburst_after: (ctx, h) => {
       const st = stateOf(h), u = h.u!, cb = h.cb!; if (ctx.u !== u || st.storm !== ctx.design.id) return; st.storm = null;
-      const d = migrateDesign(ctx.design), area = outburstArea(cb, u, d, ctx.aim), inArea = new Set(area);
-      const first = area.map((k) => cb.units.find((v) => !v.dead && v !== u && v.pos === k)).find(Boolean) || null, from = first ? first.pos : ctx.aim;
+      const d = migrateDesign(ctx.design), inArea = new Set<string>(ctx.area || []);
+      const first: Unit | null = (ctx.hits || [])[0] || (ctx.targets || []).find((v: Unit) => v !== u) || null, from = first ? first.pos : ctx.aim;
       const more = cb.units.filter((v) => v !== first && v !== u && !v.dead && !v.surrendered && v.side !== u.side && !inArea.has(v.pos) && dist(v.pos, from) <= 2).sort((a, b) => dist(a.pos, from) - dist(b.pos, from) || a.id.localeCompare(b.id)).slice(0, 2);
       if (!more.length) { say(cb, 'Storm Front: nobody else within 2 tiles.'); return; }
-      const sm = stageMult(ctx.stage) * (ctx.mult || 1), rs = riderStage(cb, ctx.stage), rng = rngOf(h, ctx), lines: string[] = [];
+      const sm = ctx.mult ?? stageMult(ctx.stage), rs = ctx.riderStage ?? riderStage(cb, ctx.stage), rng = rngOf(h, ctx), lines: string[] = [];
       for (const t of more) { emitFx(cb, 'chain', { unit: u.id, from, to: t.pos, target: t.id, element: toneElement(toneOf(d)), storm: true }); lines.push(soulStrike(cb, rng, u, d, t, sm, rs, designRolls(d))); }
       cb.log.push('Storm Front arcs on: ' + lines.join(' · ') + '.');
-      if (rel && rel.cb === cb && rel.u === u) rel.at = cb.log.length;
     },
   },
   brief: () => null,

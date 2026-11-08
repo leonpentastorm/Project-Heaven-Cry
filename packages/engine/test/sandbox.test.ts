@@ -274,6 +274,9 @@ describe('the tools', () => {
     g = apply(g, { type: 'sandbox/learn', charId: c.id, school: 'buff', module: 'aura' }, HOST);
     expect(charOf(g).sigils).toContain('fire'); expect(pc(g).mg!.words).toContain('fire');
     expect(charOf(g).soulKnown!.schools).toContain('buff');
+    // the MAGIC tab's own learn action maps through to the Proving Ground's, tone included
+    g = apply(g, { type: 'magic/learn', charId: c.id, tone: 'fire', from: 'plate' } as any, HOST);
+    expect(charOf(g).soulKnown!.tones).toContain('fire');
     g = apply(g, { type: 'sandbox/design', charId: c.id, design: { id: '', name: 'Mend', school: 'buff', modules: ['aura'] } }, HOST);
     expect(pc(g).mg!.designs.some((d) => d.name === 'Mend')).toBe(true);
     expect(refused(g, { type: 'sandbox/learn', charId: c.id, word: 'not_a_word' })).toMatch(/word/);

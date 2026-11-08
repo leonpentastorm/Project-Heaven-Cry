@@ -24,7 +24,7 @@ import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/gly
 import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
-import { designInfo, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
+import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
@@ -110,7 +110,7 @@ function magicVals(self, g, c) {
   const designCards = designs.map((d) => { const cost = designCost(m, d, mana), held = !!(N.held && N.held.design === d.id), di = designInfo(m, d, mana);
     return { key: d.id, name: d.name, icon: di.icon, shapeLine: di.line, shapeStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + di.ink, schools: di.schools, schools0: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.option ? ' · ' + optLabel(d.school, d.option) : ''),
       mods: d.modules.map((x) => ({ key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + epRgba(SOUL_VIOLET, 0.6) + '; color: ' + SOUL_VIOLET })),
-      hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · reach ' + designRange(m, d) + ' tiles', held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
+      hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · ' + reachWords(m, d), held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
       edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '', option2: d.option2 || '', tone: d.tone || 'raw' }, mgSaved: null }),
       forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
       locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
@@ -955,7 +955,7 @@ export class MainLogic extends DCLogic {
             modsHead: 'MODULES · ' + d.modules.length + ' / ' + sv.slots, hasModules: sv.modules.length > 0,
             modules: sv.modules.map((o) => { const on = d.modules.includes(o.id), off = !on && full; return { key: o.id, label: o.label + ' ' + signed(o.cost), title: o.title, pressed: on ? 'true' : 'false', locked: off, style: soulChip(on, off), pick: () => upd(i, 'module', o.id) }; }),
             name: d.name || '', onName: (ev) => upd(i, 'name', ev.target.value), nameHolder: 'Name (optional)',
-            cost: d.school ? designCost(soulM(c), { id: 'draft', ...d }, mana) + ' MP · ' + designAp(soulM(c), { id: 'draft', ...d }) + ' AP · reach ' + designRange(soulM(c), { id: 'draft', ...d }) + ' tiles' : 'Pick a school.' }; });
+            cost: d.school ? designCost(soulM(c), { id: 'draft', ...d }, mana) + ' MP · ' + designAp(soulM(c), { id: 'draft', ...d }) + ' AP · ' + reachWords(soulM(c), { id: 'draft', ...d }) : 'Pick a school.' }; });
         return { key: f.key, head: '', isChips: false, opts: [], isEmpty: false, isProse: false, isDesigns: true, slots };
       }) : [];
       const built = open && P ? buildArgs(P, V, px) : null, pv = built && typeof built !== 'string' && !why ? pvOf(e, how, built) : null;

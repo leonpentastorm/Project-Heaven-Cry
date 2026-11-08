@@ -278,5 +278,22 @@ describe('Soul perks and traits under 1.5', () => {
     A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); A(f, f.unit(u.id), { type: 'combat/pump' }); A(f, f.unit(u.id), { type: 'combat/pump' });
     A(f, f.unit(u.id), { type: 'combat/release', aim: '4,2' });
     expect(lost(f.unit(f.foe.id))).toBe(Math.floor(20 * stageMult(2) * 0.5));
+    // 'outburst_after': the third school's line comes after the release's own line (it lands after the primary hit)
+    const rel = f.cb.log.findIndex((l) => / releases /.test(l)), third = f.cb.log.findIndex((l) => /third school/.test(l));
+    expect(rel).toBeGreaterThanOrEqual(0); expect(third).toBeGreaterThan(rel);
+  });
+});
+
+describe('outburst_after: the post-release hook (Storm Front, Twin Souls land after the primary hit)', () => {
+  it('Storm Front arcs after the bolt has landed: the release line first, then the arcs; hits name the creature hit', () => {
+    const f = fightWith([cls('channeler', 2)], [{}, {}]); clean(f);
+    const u = f.turn(f.pc); u.ap = 9; place(f, u, '2,2'); const [a, b] = f.foes; place(f, a, '6,2'); place(f, b, '7,2');
+    const d = give(f.unit(u.id), {}); seed(f, 10, 10, 10);
+    A(f, f.unit(u.id), { type: 'combat/outburst', design: d, mods: ['class:channeler.storm_front#storm'] });
+    A(f, f.unit(u.id), { type: 'combat/release', aim: '6,2' });
+    const rel = f.cb.log.findIndex((l) => / releases /.test(l)), arc = f.cb.log.findIndex((l) => /Storm Front arcs on/.test(l));
+    expect(rel).toBeGreaterThanOrEqual(0); expect(arc).toBeGreaterThan(rel);
+    const fx = f.cb.fx || [], ri = fx.findIndex((e: any) => e.k === 'release'), ci = fx.findIndex((e: any) => e.k === 'chain' && e.storm);
+    expect(ci).toBeGreaterThan(ri); expect(lost(f.unit(b.id))).toBeGreaterThan(0);
   });
 });

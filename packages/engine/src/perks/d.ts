@@ -313,8 +313,8 @@ register({
 // carry a third school (school3, option3), +20 MP before the band and Insight saving; "mid-level" dropped (plan 6a).
 // Rules 1.5 (item 537): the third school is a second rider, as the second school is: half strength, its own option, no
 // roll, on everyone its own reach rule takes in the release's area (Buff: allies; the rest: everyone but you), at the
-// release's stage multiplier and rider stage (the 1.5 maths: magic.ts outburstArea and outburstDamage). It lands as the
-// release begins (the engine has no hook after the first two schools), so it lands where the primary may miss.
+// release's stage multiplier and rider stage (the 1.5 maths: magic.ts outburstArea and outburstDamage). It lands after
+// the primary hit, the second school and the tone's riders (the 'outburst_after' hook), on whoever is still standing.
 // =====================================================================================================================
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, stage: number, aim: string): string {
@@ -338,9 +338,9 @@ register({
   }],
   on: {
     outburst_cost: (ctx, h) => { const d = ctx.design; if (me(h, ctx.u) && d?.school3) ctx.mp += 20 * manaBand(manaOf(ctx.cb)).soul_cost_mult * (1 - (h.u!.mg?.costSave || 0)); },
-    outburst_release: (ctx, h) => {
+    outburst_after: (ctx, h) => {
       const d = ctx.design; if (!me(h, ctx.u) || !d?.school3 || !h.u!.mg) return;
-      const sm = stageMult(ctx.stage ?? 0) * (ctx.mult || 1);
+      const sm = ctx.mult ?? stageMult(ctx.stage ?? 0);
       log(ctx.cb, h.u!.name + '\'s third school (' + d.school3 + ' at half, Twin Souls): ' + extraSchool(ctx.cb, rngOf(h, ctx), h.u!, d, d.school3, d.option3, sm, ctx.stage ?? 0, ctx.aim) + '.');
     },
   },
