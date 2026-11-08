@@ -770,7 +770,12 @@ function beatOf(e: FxEvent): number {
   }
 }
 let timers: number[] = [];
-let queueEnd = 0, idleTimer = 0;
+let queueEnd = 0, idleTimer = 0, turnsUntil = 0;
+/** The longest the screen may hold the player's input while other units' turns play (a stuck clock never locks play). */
+export const TURNS_HOLD_MAX = 8000;
+/** Until when (performance.now() clock) other units' turns are still being shown: the engine runs the enemies' turns at
+ *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then. */
+export const turnsBusyUntil = () => Math.min(turnsUntil, performance.now() + TURNS_HOLD_MAX);
 /** When the queued effects will have played (performance.now() clock): a turn banner can wait for the enemies' moves. */
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). */
@@ -782,24 +787,45 @@ export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string) {
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
   try { window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })); } catch { /* */ }
 }
-/** Queue events to play in order, each after the previous one's beat. A long backlog speeds up so play never lags far. */
-export function queueFx(evs: FxEvent[], stream?: string) {
+/** How much faster than normal a backlog may play: past this, the oldest effects are skipped instead (they never play in a
+ *  blur: "the battle keeps going in super speed"). */
+export const MAX_SPEEDUP = 1.35;
+/** Skip an effect: nothing drawn or heard, but its place in the stream is announced so turn banners keep their clock. */
+function skipFx(e: FxEvent, stream?: string) { if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
+/** Which events of a batch play, and how fast: the newest that fit in the room at no more than MAX_SPEEDUP; keep (when
+ *  given) plays only the last few (a decided fight). Pure (tests). */
+export function planQueue(beats: number[], room: number, keep?: number): { from: number; speed: number } {
+  let from = keep != null ? Math.max(0, beats.length - keep) : 0;
+  const sum = (i: number) => beats.slice(i).reduce((t, b) => t + b, 0);
+  while (from < beats.length - 1 && sum(from) / MAX_SPEEDUP > room) from++;
+  const total = sum(from);
+  return { from, speed: total > room ? Math.max(1 / MAX_SPEEDUP, room / total) : 1 };
+}
+/** Queue events to play in order, each after the previous one's beat. A long backlog plays a little faster, and past that
+ *  its oldest effects are skipped, so play never lags far and never races. keep: play only the last few (the fight is
+ *  decided: what happened after it matters, not a replay of every step). */
+export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number } = {}) {
   if (!evs.length) return;
   const now = performance.now(), base = Math.max(now, queueEnd);
-  const total = evs.reduce((t, e) => t + beatOf(e), 0), backlog = base - now, room = Math.max(1500, 7000 - backlog);
-  const speed = total > room ? room / total : 1;
-  let t = base;
+  const backlog = base - now, room = Math.max(1500, 7000 - backlog);
+  const plan = planQueue(evs.map(beatOf), room, opts.keep), speed = plan.speed;
+  for (const e of evs.slice(0, plan.from)) skipFx(e, stream);
+  evs = evs.slice(plan.from);
+  let t = base, lastTurn = -1;
   for (const e of evs) {
+    if (e.k === 'turn') lastTurn = t;
     const wait = t - now;
     if (wait <= 4) playFx(e, stream);
     else { const id: number = window.setTimeout(() => { timers = timers.filter((x) => x !== id); playFx(e, stream); }, wait); timers.push(id); }
     t += beatOf(e) * speed;
   }
   queueEnd = t;
+  // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
+  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120);
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden). */
-export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; volley = null; bumpGen(); }
+export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; turnsUntil = 0; volley = null; bumpGen(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

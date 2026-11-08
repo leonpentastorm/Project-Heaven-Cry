@@ -341,6 +341,20 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       <div style={row}>
         <select value={skill} onChange={(e) => setSkill(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Skill">{SKILLS.map((s) => <option key={s.id} value={s.id}>{s.name} ({c.skills[s.id] || 0})</option>)}</select>
         <Stepper name={SKILL[skill]?.name || 'skill'} value={c.skills[skill] || 0} min={0} max={10} set={(n) => act({ type: 'sandbox/skill', charId: c.id, skill, points: n })} />
+        <button type="button" data-sb-skill-max={skill} disabled={(c.skills[skill] || 0) >= 10} title="This skill to 10 (Mastered)" style={{ ...btn, opacity: (c.skills[skill] || 0) >= 10 ? 0.5 : 1 }} onClick={() => act({ type: 'sandbox/skill', charId: c.id, skill, points: 10 })}>Max</button>
+      </div>
+      <div style={row}>
+        <button type="button" data-sb-skills="max" title="Every skill to 10 (Mastered); attributes and cores follow, the Mastered perks come" style={{ ...btn, border: '1px solid ' + C.text }} onClick={() => act({ type: 'sandbox/skills', charId: c.id, points: 10 })}>Max every skill</button>
+        <button type="button" data-sb-skills="zero" title="Every skill back to 0 (attributes and cores stay)" style={btn} onClick={() => act({ type: 'sandbox/skills', charId: c.id, points: 0 })}>All to 0</button>
+      </div>
+      {/* Every skill on one list, each with its own Max (the quick way to build a test character). */}
+      <div role="list" aria-label="Every skill" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 4 }}>
+        {SKILLS.map((s) => { const v = c.skills[s.id] || 0, full = v >= 10;
+          return <div key={s.id} role="listitem" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 4px', borderRadius: 6, border: '1px solid ' + C.line }}>
+            <span style={{ flex: 1, minWidth: 0, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={s.name}>{s.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: full ? '#6FEA77' : C.muted, minWidth: 18, textAlign: 'right' }}>{v}</span>
+            <button type="button" data-sb-skill-max={s.id} disabled={full} aria-label={'Max ' + s.name} title={full ? s.name + ' is Mastered' : s.name + ' to 10 (Mastered)'} style={{ ...btn, minHeight: 24, padding: '0 6px', fontSize: 11, opacity: full ? 0.4 : 1 }} onClick={() => act({ type: 'sandbox/skill', charId: c.id, skill: s.id, points: 10 })}>{full ? '✓' : 'Max'}</button>
+          </div>; })}
       </div>
     </Section>
     <Section title="PERKS (ANY TIER, NO POINTS NEEDED)">

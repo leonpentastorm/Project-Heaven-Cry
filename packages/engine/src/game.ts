@@ -2197,6 +2197,8 @@ export type SandboxAction =
   | { type: 'sandbox/kit'; charId: string; kind?: MagicKit }
   | { type: 'sandbox/class'; charId: string; classId: string | null; rank?: number }
   | { type: 'sandbox/level'; charId: string; level: number } | { type: 'sandbox/skill'; charId: string; skill: string; points: number }
+  /** Every skill to the same points at once (the Proving Ground's Max every skill: 10). */
+  | { type: 'sandbox/skills'; charId: string; points: number }
   | { type: 'sandbox/perk'; charId: string; perk: string; tier?: 'I' | 'II' | null } | { type: 'sandbox/trait'; charId: string; trait: string; on?: boolean }
   | { type: 'sandbox/refill'; charId?: string }
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string }
@@ -2753,6 +2755,11 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId);
       sbChange(g, c, () => sbSetSkill(c, a.skill, a.points));
       sbLog(g, c.name + ': ' + SKILL[a.skill].name + ' ' + (c.skills[a.skill] || 0) + '.'); return;
+    }
+    case 'sandbox/skills': {
+      const c = mine(a.charId), n = Math.max(0, Math.min(10, Math.round(Number(a.points) || 0)));
+      sbChange(g, c, () => { for (const id of Object.keys(SKILL)) sbSetSkill(c, id, n); });
+      sbLog(g, c.name + ': every skill ' + n + (n === 10 ? ' (Mastered)' : '') + '.'); return;
     }
     case 'sandbox/perk': {
       // Any perk at any tier, without the skill points it needs (the Proving Ground is for trying things); tier null takes it away.

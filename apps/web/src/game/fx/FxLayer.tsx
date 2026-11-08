@@ -10,6 +10,10 @@ import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
 import { canDraw, clearFx, queueFx, rememberTokens, setContext, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
+import { getState } from '../store';
+
+/** A decided fight plays only its last few effects (fx/play.ts queueFx keep). */
+const DECIDED_KEEP = 6;
 
 export { playFx, queueFx, fxBusyUntil, FX_EVENT, FX_IDLE } from './play';
 
@@ -80,7 +84,12 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     const go = () => {
       if (latest.current.game?.code !== game.code) return;
       const busy = Date.now() < readyAt || (opening && !!document.querySelector('.phc-combat-in'));
-      if ((!busy && canDraw()) || tries++ > 30) { queueFx(fresh, stream); return; }
+      // A decided fight (won, lost, or every one of the viewer's fighters down): only its last moments play, at normal
+      // speed; the steps the engine ran after it was decided aren't replayed.
+      const cb = latest.current.game?.combat as any, me = latest.current.game ? Object.values(latest.current.game.characters || {}).filter((c: any) => c.owner === getState().me.id).map((c: any) => c.id) : [];
+      const mine = cb ? (cb.units || []).filter((u: any) => u.charId && me.includes(u.charId)) : [];
+      const decided = !!cb && (!!cb.over || (mine.length > 0 && mine.every((u: any) => u.dead || u.downed)));
+      if ((!busy && canDraw()) || tries++ > 30) { queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); return; }
       setTimeout(go, busy ? 60 : 150);
     };
     go();
