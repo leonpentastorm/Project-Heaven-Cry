@@ -20,7 +20,7 @@ import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
-  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, withElement, withSpellFrom, magicSpellWords, condName,
+  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName,
 } from './magic';
 import { makeObject, OBJ } from './objects';
 
@@ -1074,7 +1074,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     const sp = compileSpell(words), L = words.length, charge = words.reduce((t, x) => t + glyphCost(cb, u, x, true, u.pos).charge, 0) + Math.max(1, L - (m.coreSave || 0));
     const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > FLUX_MAX, needCore = charge > m.charge;
     if (needCore && m.cores < 1) continue;
-    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? SPELL_AP.vent : 0) + (needCore ? SPELL_AP.core : 0);
+    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u) : 0) + (needCore ? coreAp(u) : 0);
     if (cost > u.ap) continue;
     const boon = sp.subjects.every((x) => isBoonWord(x)), pool = boon ? friends.filter((t) => t.hp < t.maxHp || (t.shield || 0) < 10) : foes;
     for (const t of pool.slice(0, 6)) {

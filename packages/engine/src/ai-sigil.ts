@@ -26,7 +26,8 @@ import {
   planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady, freeTile, dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
   enemyMagic, W, isElement, isAffliction, isBoonWord, around, MAX_GLYPHS, SIGIL_REV,
 } from './sigil';
-import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn } from './magic';
+import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
+import { fooledBy } from './illusion';
 
 // ---------- caster archetypes (data/enemies.json `casters`) ----------
 export interface CasterDef { id: string; name: string; tier: string; weapon: string; sigils: string[]; spell_bias?: number; text?: string; provisional?: boolean }
@@ -71,7 +72,8 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
   let r = 0; for (let t = k; t && t !== u.pos; t = P.prev[t]) r += aiTileRisk(cb, u, t);
   return r;
 }
-const players = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden);
+// A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them.
+const players = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t));
 const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.side && !t.dead);
 
 // ---------- every enemy: avoid, and clear what blocks ----------
@@ -332,8 +334,8 @@ function linePrice(cb: Combat, u: Unit, words: string[], tiles: string[], evokeA
   }
   const pre: ('vent' | 'core')[] = [];
   if (fx > FLUX_MAX) return null;
-  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += SPELL_AP.vent; }
-  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += SPELL_AP.core; }
+  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u); }
+  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u); }
   ap += evokeAp;
   return ap <= u.ap ? { ap, pre } : null;
 }

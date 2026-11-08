@@ -9,6 +9,7 @@ import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
+import { type Image, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
@@ -139,6 +140,8 @@ export interface Unit {
   res?: Record<string, number>; resMax?: Record<string, number>;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
+  /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
+  readIntent?: Intent & { by: string; round: number };
 }
 export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
   /** What lies on the floor: dropped magazines and the rounds left in them. */
@@ -173,6 +176,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   lastSeen?: Record<string, Record<string, string>>;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
   fear?: boolean;
+  /** Decoys on the grid (the Trickster's False Image, illusion.ts): not units; the enemies they fooled target them. */
+  images?: Image[];
   /** The Narrator's word on whether the fight broke out of the talk just had (Talks Broke Down); absent: not said. */
   fromTalk?: boolean }
 
@@ -980,8 +985,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   for (let i = 0; i < route.length; i++) {
     const k = route[i], was = u.pos;
     u.pos = k; seg.push(k);
-    const t = objectsAt(cb, k).find(isTrap);
-    if (t) { t.resolved = true; t.hidden = false; flush(); emitFx(cb, 'trap', { unit: u.id, at: k }); const td: any = t; sprung = ' · steps on a trap' + hurtUnit(u, td.damage ?? kindOf(t).trap!.damage, false, cb, 'trap', td.owner ? cb.units.find((x) => x.id === td.owner) || null : null); cb.objects = objectsOf(cb).filter((x) => x !== t); emit(cb, 'trap_sprung', { u, obj: t, cb }); stopped = 'trap'; }
+    const t = objectsAt(cb, k).find((o) => isTrap(o) && !((o as any).side && (o as any).side === u.side)); // a side's own rigged tile (Sabotage) never springs on it
+    if (t) { t.resolved = true; t.hidden = false; flush(); emitFx(cb, 'trap', { unit: u.id, at: k }); const td: any = t; sprung = ' · steps on a trap' + hurtUnit(u, td.damage ?? kindOf(t).trap!.damage, false, cb, 'trap', td.owner ? cb.units.find((x) => x.id === td.owner) || null : null); cb.objects = objectsOf(cb).filter((x) => x !== t); emit(cb, 'trap_sprung', { u, obj: t, cb, rng }); stopped = 'trap'; }
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
     const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng });
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
@@ -1338,7 +1343,9 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
 /** Enemy turn: shoot the most hurt PC in sight and range; otherwise close in. Deterministic given the RNG. The AI
  * also keeps the conditions' rules (rules 1.3): it puts itself out when Burning, breaks a grapple, recovers a dropped
  * weapon, attacks the one who Taunted it, never attacks or closes on what it fears, obeys a Commanded order, and
- * ignores Hidden PCs (it doesn't know where they are). */
+ * ignores Hidden PCs (it doesn't know where they are). An enemy a False Image fooled sees the image where its owner
+ * stands (illusion.ts: it attacks and closes on the image instead). enemyIntent below reads the same choices without
+ * acting (the Trickster's Read). */
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
@@ -1361,34 +1368,86 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
     if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
-    const dry = w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0);
-    if (w.magazine != null && u.ammo <= 0 && !dry && u.ap >= 2 && !condOn(u, 'disarmed')) { reload(cb, u); continue; }
-    const mode: 'melee' | 'shot' = isMelee(w) || dry || condOn(u, 'disarmed') ? 'melee' : 'shot';
-    const pcs = cb.units.filter((t) => t.side === 'pc' && !t.dead && !t.hidden && !t.surrendered);
-    const tauntBy = condSource(u, 'taunted');
-    const targets = order === 'hold' || order === 'flee' ? [] : pcs
-      .map((t) => ({ t, pv: previewAttack(cb, u, t, mode) }))
-      .filter((x) => x.pv.ok)
-      .sort((a, b) => (b.t.id === tauntBy ? 1 : 0) - (a.t.id === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
-    if (targets.length) { resolveAttack(cb, rng, u, targets[0].t, mode, null); checkOver(cb); continue; }
+    if (enemyNeedsReload(u) && u.ap >= 2) { reload(cb, u); continue; }
+    const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
+    const targets = enemyTargets(cb, u, mode, order, pcs);
+    if (targets.length) { const t = targets[0].t; if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
-    // close in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never nearer the
-    // source; fleeing: the tile farthest from every PC)
-    const P = paths(cb, u.pos, u.id);
     if (!pcs.length) break;
-    const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
-    let best: string | null = null, bestScore = Infinity;
-    for (const [k, tiles] of Object.entries(P.dist)) {
-      if (k === u.pos || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
-      if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
-      const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
-      const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
-      const score = (order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
-      if (score < bestScore) { bestScore = score; best = k; }
-    }
-    if (!best || moveUnit(cb, u, best, rng)) break;
+    const best = enemyCloseTile(cb, u, mode, order, pcs, w);
+    if (!best || moveUnit(cb, u, best.tile, rng)) break;
   }
+}
+const enemyDry = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0); };
+const enemyNeedsReload = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !enemyDry(u) && !condOn(u, 'disarmed'); };
+const enemyMode = (u: Unit): 'melee' | 'shot' => (isMelee(WEAPON[u.weapon]) || enemyDry(u) || condOn(u, 'disarmed') ? 'melee' : 'shot');
+/** The PCs an enemy would attack now, best first: its Taunter, standing before Downed, the most hurt, the likeliest hit. */
+function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[]) {
+  const tauntBy = condSource(u, 'taunted');
+  const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
+  return order === 'hold' || order === 'flee' ? [] : pcs
+    .map((t) => ({ t, pv: previewAttack(cb, u, t, mode) }))
+    .filter((x) => x.pv.ok)
+    .sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
+}
+/** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
+ * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
+ * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
+function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon]): { tile: string; near: Unit | null } | null {
+  const P = paths(cb, u.pos, u.id);
+  const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
+  const risky = anyOn(cb, 'ai_move_risk');
+  let best: string | null = null, bestScore = Infinity;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+    if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
+    const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
+    const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
+    let score = (order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
+    if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
+    if (score < bestScore) { bestScore = score; best = k; }
+  }
+  if (!best) return null;
+  const b = best;
+  return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null };
+}
+/** What an enemy means to do on its next turn (the Trickster's Read): the first thing enemyTurn would do, read with a
+ * fresh turn's AP and nothing rolled or changed. Sigil and Soul casters are named as weighing a spell (their planners
+ * keep per-turn state), with the weapon choice that follows if they don't cast. */
+export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' | 'spell' | 'outburst' | 'reload' | 'attack' | 'move' | 'wait'; text: string; targetId?: string; to?: string; image?: string }
+export function enemyIntent(cb: Combat, u: Unit): Intent {
+  if (u.dead || u.downed || u.surrendered) return { kind: 'none', text: 'nothing: it is out of the fight' };
+  if (condOn(u, 'stunned')) return { kind: 'lost', text: 'nothing: Stunned, it loses the turn' };
+  const save = { ap: u.ap, bank: u.bank, shots: u.shotsThisTurn, moved: u.moved };
+  u.ap = AP_BASE; u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
+  try { return intentInner(cb, u); } finally { u.ap = save.ap; u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
+}
+const AP_BASE = 6;
+function intentInner(cb: Combat, u: Unit): Intent {
+  const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
+  if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
+  if (condOn(u, 'burning')) return { kind: 'recover', text: 'beat out the flames on it' };
+  if (condOn(u, 'grappled')) return { kind: 'recover', text: 'break the grapple' };
+  if (condOn(u, 'disarmed') || condOn(u, 'lowered')) return { kind: 'recover', text: 'recover its weapon' };
+  if (u.prone) return { kind: 'recover', text: 'stand up' };
+  if (u.jammed) return { kind: 'recover', text: 'clear its jammed weapon' };
+  if ((cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return { kind: 'scuff', text: 'scuff the glyph under its feet' };
+  const caster = u.mg?.evoker && (u.mg.words || []).length ? 'spell' : u.mg && !u.mg.evoker && u.mg.emanator && (u.mg.designs || []).length ? 'outburst' : null;
+  let then = '';
+  if (enemyNeedsReload(u)) return { kind: 'reload', text: 'reload' };
+  const mode = enemyMode(u), pcs = perceivedFoes(cb, u), targets = enemyTargets(cb, u, mode, order, pcs);
+  let out: Intent;
+  if (targets.length) {
+    const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
+    out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name), targetId: owner!.id, ...(ghost ? { image: t.id } : {}) };
+  } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };
+  else {
+    const best = enemyCloseTile(cb, u, mode, order, pcs);
+    out = best ? { kind: 'move', text: 'move to ' + refOf(best.tile) + (best.near ? ' toward ' + (isGhost(best.near) ? 'the False Image of ' + (cb.units.find((x) => x.id === (best.near as any).ghostOf)?.name || 'someone') : best.near.name) : ''), to: best.tile, ...(best.near ? { targetId: (best.near as any).ghostOf || best.near.id } : {}) } : { kind: 'wait', text: 'hold where it is' };
+  }
+  if (caster) { then = out.text; return { ...out, kind: caster, text: (caster === 'spell' ? 'weigh a Sigil spell against its weapon' : u.mg!.held ? 'hold or release its Outburst (stage ' + u.mg!.held.stage + ')' : 'begin an Outburst') + '; otherwise ' + then }; }
+  return out;
 }
 const extinguishSelf = (cb: Combat, u: Unit): boolean => { u.ap -= 1; endCond(u, 'burning', cb); cb.log.push(u.name + ' beats out the flames.'); return true; };
 function escapeHold(cb: Combat, rng: Rng, u: Unit) { escapeGrappleT(cb, rng, u); }

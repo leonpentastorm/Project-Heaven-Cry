@@ -69,7 +69,9 @@ export type HookName =
   | 'scene_change' | 'session_start' | 'rest' | 'xp_grant'
   | 'notice' | 'stay_hidden' | 'world_move_cost' | 'karma_award'
   | 'action_refuse' | 'evoke_reach' | 'spell_roll' | 'session_heal' | 'story_blessing' | 'ap_gift' | 'npc_moved' | 'npc_sense' | 'zone_enter' | 'story_harm'
-  | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift';
+  | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift'
+  // Class Roster Rev 3 (classes/rev3.ts): a Vent's extra Flux into the air; an enemy's walk priced by items
+  | 'vent' | 'ai_move_risk';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable
  * fields may be changed. Return nothing. */

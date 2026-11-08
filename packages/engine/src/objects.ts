@@ -41,7 +41,8 @@ export function makeObject(id: string, kind: string, pos: string, extra: Partial
 
 export const kindOf = (o: MapObject) => OBJ[o.kind] || OBJ.poi;
 const live = (o: MapObject) => o.hp == null || o.hp > 0;
-export const blocksMove = (o: MapObject) => live(o) && kindOf(o).blocks_move && !(kindOf(o).door && o.open);
+/** A barricade an Infiltrator sabotaged (Sabotage, Class Roster Rev 3) stops blocking the way until o.sabotaged's round. */
+export const blocksMove = (o: MapObject) => live(o) && kindOf(o).blocks_move && !(kindOf(o).door && o.open) && !(o as any).sabotaged;
 export const blocksSight = (o: MapObject) => live(o) && kindOf(o).blocks_sight && !(kindOf(o).door && o.open);
 export const coverKind = (o: MapObject): 'half' | 'full' | null => (live(o) ? kindOf(o).cover : null);
 export const isDifficult = (o: MapObject) => !!kindOf(o).difficult;

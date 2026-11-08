@@ -30,6 +30,7 @@ import {
   setHeartWatch, steadyHeart, letGo, syphon, pumpsAp, condOn, condSource, formOf, heartReach, manaOf, manaBand, SOUL_AP, MAX_STAGE, SHORT_AT_OVER,
 } from './magic';
 import { aiRouteRisk } from './ai-sigil';
+import { fooledBy } from './illusion';
 
 // ---------- Soul caster archetypes (data/enemies.json `soul_casters`) ----------
 export interface HeartCasterDef {
@@ -65,7 +66,7 @@ const live = (t: Unit) => !t.dead && !t.downed && !t.surrendered;
 const isHeart = (u: Unit) => !!u.mg && !u.mg.evoker && u.mg.emanator && u.mg.designs.length > 0 && u.side === 'foe';
 const blocked = (u: Unit) => u.dead || u.downed || condOn(u, 'silenced');
 const desperate = (u: Unit) => u.hp <= 0.3 * u.maxHp;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden);
+const foesOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
 const hostile = (d: OutburstDesign) => d.school !== 'buff' && !(d.school === 'damage' && d.modules.includes('inverse'));
 
 /** A plan's worth to the caster: expected damage on the players it can see (after armour, × the roll's chance), 6 a

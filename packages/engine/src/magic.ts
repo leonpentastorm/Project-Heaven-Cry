@@ -10,7 +10,7 @@ import {
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
-import { emit, boundGame } from './effects/hooks';
+import { emit, boundGame, statQuery } from './effects/hooks';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
@@ -429,16 +429,27 @@ export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
   emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
   return ' OVERLOAD: the Evoker bursts' + harmFor('overload', () => harm(cb, rng, null, u, 10 * over, 'true')) + ', locked until next round';
 }
+/** Vent's and a core swap's AP (1 and 2), through the items (stat 'ap_cost:vent' / 'ap_cost:swap_core': the Mage's
+ * Bleed the Flux and Core Change, Class Roster Rev 3). The UI and the enemy planner read these. */
+export const ventAp = (u: Unit) => actionAp({ u }, 'vent', SPELL_AP.vent).ap;
+export const coreAp = (u: Unit) => actionAp({ u }, 'swap_core', SPELL_AP.core).ap;
+/** Vent (1 AP): all the Flux goes into the air. 'vent' {u, flux, extra} (extra mutable: more goes into the air with it,
+ * Bleed the Flux) after the Flux is gone. */
 export function vent(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
-  if (u.ap < SPELL_AP.vent) return 'Needs 1 AP.'; if (!m.flux) return 'No Flux to vent.';
-  u.ap -= SPELL_AP.vent; const n = m.flux; m.flux = 0; emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: n }); cb.log.push(u.name + ' vents ' + n + ' Flux into the air.'); shiftMana(cb, n, 'vented Flux');
+  const ap = ventAp(u);
+  if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (!m.flux) return 'No Flux to vent.';
+  u.ap -= ap; const n = m.flux; m.flux = 0;
+  const vc: any = emit(cb, 'vent', { u, flux: n, extra: 0, cb });
+  const all = n + Math.max(0, vc.extra || 0);
+  emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: all }); cb.log.push(u.name + ' vents ' + n + ' Flux into the air' + (all > n ? ' (' + (all - n) + ' more with it)' : '') + (ap !== SPELL_AP.vent ? ' (' + ap + ' AP)' : '') + '.'); shiftMana(cb, all, 'vented Flux');
   return null;
 }
 export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
-  if (u.ap < SPELL_AP.core) return 'Needs 2 AP.'; if (m.cores < 1) return 'No spare cores.';
-  u.ap -= SPELL_AP.core; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  const ap = coreAp(u);
+  if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (m.cores < 1) return 'No spare cores.';
+  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */
@@ -507,6 +518,9 @@ const flooded = (cb: Combat) => manaBand(manaOf(cb)).id === 'flooded';
 export const riderShift = (cb: Combat) => { const b = manaBand(manaOf(cb)).id; return b === 'flooded' ? (SR.stage_shift?.flooded ?? 1) : b === 'thin' ? (SR.stage_shift?.thin ?? -1) : 0; };
 /** The stage a tone's riders read at, for a release at `stage` (0 to 4). */
 export const riderStage = (cb: Combat, stage: number) => Math.max(0, Math.min(MAX_STAGE, stage + riderShift(cb)));
+/** Stages a release's tone riders count above its own (stat 'rider_stage', asked with {cb, release: true}: the
+ * Channeler's Eye of the Storm). Not for a wild release or a Heart Overwatch reaction (off the caster's own turn). */
+export const riderBonus = (cb: Combat, u: Unit, off: boolean) => (off || (!u.charId && !u.held) ? 0 : Math.max(0, Math.floor(statQuery({ u, cb }, 'rider_stage', { cb, release: true }).add)));
 /** A tone's riders at a stage (after the air's shift), and their words. */
 export function toneRiders(tone: string, stage: number): { text: string; riders: ToneRider[] } {
   const t = TONE[tone]; if (!t || !t.element || stage <= 0) return { text: t && t.element ? 'No rider at stage 0.' : 'No rider.', riders: [] };
@@ -954,7 +968,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   // 'outburst_release' {u, design, stage, aim, wild, mult, form, tone, reaction} (mult multiplies the stage multiplier).
   const orl: any = emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, form, tone, reaction, cb, rng });
   const res = wild ? { bonus: 0, with: [] as string[] } : resonanceFor(cb, u);
-  const sm = (stageMult(stage) + res.bonus) * (orl.mult || 1), rs = riderStage(cb, stage);
+  const sm = (stageMult(stage) + res.bonus) * (orl.mult || 1), rs = riderStage(cb, stage + riderBonus(cb, u, reaction || wild));
   const heldWas = m.held ? { ...m.held } : null;
   m.held = null;
   if (has('random') && !wild) { const pool = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= heartReach(m, d)); if (pool.length) aim = pool[die(rng, pool.length) - 1].pos; }
@@ -1087,7 +1101,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     if (!stage) itemMult = pv.relMult || 1; // a snap cast's item multiplier (Heart Surge's snap)
     if (!pv.ok) why = pv.why; else if (u.ap < ap) why = 'Needs ' + ap + ' AP.';
   }
-  const sm = (stageMult(stage) + res.bonus) * itemMult, rs = riderStage(cb, stage);
+  const sm = (stageMult(stage) + res.bonus) * itemMult, rs = riderStage(cb, stage + riderBonus(cb, u, false));
   // The reach ring is the range the aim check uses (items' changes included): Bolt and Burst; the shapes their size.
   const reach = form === 'bolt' || form === 'burst' ? range : heartReach(m, d);
   const reachTiles: string[] = []; { const [x, y] = XY(u.pos); for (let i = x - reach; i <= x + reach; i++) for (let j = y - reach; j <= y + reach; j++) { const k = i + ',' + j; if (onGrid(cb, k) && k !== u.pos && standable(cb.map, k)) reachTiles.push(k); } }
