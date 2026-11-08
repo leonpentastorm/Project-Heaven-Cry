@@ -1387,7 +1387,17 @@ register({
 // scene (taken on the area map they carry into a fight). Silenced: no new form and no Pump.
 type Form = 'iron' | 'surge' | 'swift' | 'pain' | 'steady' | 'heartbeat';
 const FORMS: Record<Form, string> = { iron: 'Iron', surge: 'Surge', swift: 'Swift', pain: 'Pain to Power', steady: 'Steady', heartbeat: 'Heartbeat' };
-function formsOf(h: { c?: Character | null; g?: any }): { form: Form; stage: number }[] { const st = cs(h.c).vessel; return st && st.scene === sceneOf(h) ? st.forms : []; }
+/** A Vessel holds at most two body forms at once, whatever its Will Power (rules 1.5 follow-up, item 550; the Will Power 5
+ * third form is retired). */
+const MAX_FORMS = 2;
+const TOO_MANY = 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.';
+/** The forms held this scene. A save from before item 550 can hold three: the extra ones (the latest taken) are dropped
+ * on the next read, so the retired third form can't swell or add to a Release. */
+function formsOf(h: { c?: Character | null; g?: any }): { form: Form; stage: number }[] {
+  const st = cs(h.c).vessel; if (!st || st.scene !== sceneOf(h)) return [];
+  if (st.forms.length > MAX_FORMS && h.c) st.forms = st.forms.slice(0, MAX_FORMS);
+  return st.forms;
+}
 function setForms(h: { c?: Character | null; g?: any }, forms: { form: Form; stage: number }[]) { charState(h.c).vessel = { scene: sceneOf(h), forms }; }
 /** A form's multiplier: the 1.5 stage table (magic.ts STAGE_MULT). A form is never below stage 1. */
 const vesselMult = (stage: number) => stageMult(Math.max(1, stage));
@@ -1404,19 +1414,16 @@ function endForms(cb: Combat, u: Unit, why: string) {
   const h = holderOf({ u, cb }, 'vessel.inner_charge'); if (!h || !formsOf(h).length) return;
   setForms(h, []); vSync({ ...h, cb }); say(cb, u.name + '\'s body forms gutter out (' + why + ').');
 }
-/** A Vessel holds at most two body forms at once, whatever its Will Power (rules 1.5 follow-up; the Will Power 5 third
- * form is retired). */
-const MAX_FORMS = 2;
 register({
   id: 'vessel.inner_charge', claims: 'all',
   actions: [
     { id: 'inner_charge', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none', ap: () => SOUL_AP.begin,
       text: 'Take a body form (iron, surge, swift, pain, steady, heartbeat): 20 MP, 1 Strain; it grows each turn like an Outburst.',
-      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= MAX_FORMS ? 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '. Release them first.' : true),
+      available: (h) => (!h.u?.mg ? 'Needs a heart that knows the body (an Emanator or the air).' : condOn(h.u, 'silenced') ? 'Silenced.' : formsOf(h).length >= MAX_FORMS ? TOO_MANY : true),
       preview: (h, a) => {
         const f = a.choice as Form; if (!FORMS[f]) return { ok: false, why: 'Choose iron, surge, swift, pain, steady or heartbeat.' };
         if (formsOf(h).some((x) => x.form === f)) return { ok: false, why: FORMS[f] + ' is already held.' };
-        if (formsOf(h).length >= MAX_FORMS) return { ok: false, why: 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.' };
+        if (formsOf(h).length >= MAX_FORMS) return { ok: false, why: TOO_MANY };
         const m = h.u!.mg!, cost = Math.round(20 * (manaBand(manaOf(h.cb!)).soul_cost_mult ?? 1)); if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP.' };
         return { lines: [FORMS[f] + ': ' + cost + ' MP, 1 Strain; grows each turn.'] };
       },
@@ -1447,7 +1454,7 @@ register({
       } },
     { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
       text: 'Take a body form before the trouble starts (20 MP): it lasts the scene and carries into a fight.',
-      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: 'You hold ' + MAX_FORMS + ' forms already: a Vessel holds at most ' + MAX_FORMS + '.' } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
+      preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: TOO_MANY } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
   ],
   on: {

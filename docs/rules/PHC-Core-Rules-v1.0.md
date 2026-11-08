@@ -1202,7 +1202,7 @@ The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), 
 
 1. **The aura:** holding an elemental Outburst leaks it: enemies adjacent to you at the start of your turn take **5 Elemental** and the tone's **stage-1 rider** (shifted by the air). Holding next to enemies is a threat. Raw leaks nothing.
 2. **Heart Overwatch:** while holding, turn on **watching** (free, Heart Overwatch). The first enemy who **enters your design's reach** in your sight (Ether: through walls) draws the release **as your reaction**, at the stage reached, aimed at it (an Aura around you). It uses your one reaction for the round.
-3. **Resonance:** an ally who releases after another ally's release in the same round gets **+0.2 on the stage multiplier for each earlier ally releaser** that round, **at most +0.4 in total per release** (Leon, 8 Nov 2026) (the first release has already landed, so the bonus goes to the later ones). **Allies on the players' side only:** player characters and the units fighting with them (companions, the Twinbound twin) resonate; enemies never resonate with each other, never give it and never get it (item 549). You and your own twin don't resonate with each other (item 533).
+3. **Resonance:** an ally who releases after another ally's release in the same round gets **+0.2 on the stage multiplier for each earlier ally releaser** that round, **at most +0.4 in total per release** (Leon, 8 Nov 2026) (the first release has already landed, so the bonus goes to the later ones). **Allies on the players' side only:** player characters and the units fighting with them (companions, the Twinbound twin) resonate; enemies never resonate with each other, never give it and never get it (item 549). In a Proving Ground team fight each team resonates within itself. You and your own twin don't resonate with each other (item 533).
 4. **Feeding** (1 AP): absorb a glyph on your own tile (yours, an ally's or an enemy's; never a Keystone) into your held Outburst: **+1 stage**; the glyph is gone. The one bridge between the two magics.
 
 #### 7. Shapes (forms) and showing them
@@ -3519,7 +3519,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     heal 10: each × its stage. Pain to Power +1 AP next turn per 20 taken, at most +2 (no stage). Two forms (three
     from Will Power 5; the third retired, item 550), each once. Damage can slip the newest form (d20 + Will Power vs 10 + damage/10). A failed Mana
     Short ends all forms. Silenced: no new form. Story: take a form before the trouble (20 MP), with a ruling. Data
-    delta: the six forms, their numbers, the 2/3 cap and the Strain as structured data (spec item 75). OPEN: Swift +5
+    delta: the six forms, their numbers, the 2-form cap (item 550) and the Strain as structured data (spec item 75). OPEN: Swift +5
     and Iron +25 at stage 4 are strong (audit 1). PROVISIONAL.
 363. *(K29)* **Release** (audit 1-4). The standalone strike is a melee attack roll (1 AP); with the toggle on, any melee hit
     releases for free. +15 Soul per stage, summed, **capped at 8 stages**, × the Soul multiplier, armour ignored. The
@@ -3826,5 +3826,5 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 **Rules 1.5: follow-ups (8 Nov 2026). PROVISIONAL.**
 
-549. **Resonance is for the players' side.** Player characters and the units on their side (companions, the Twinbound twin) resonate with each other; enemies (side `foe`: the Heart adept, the Heartfire elite, the Heart sovereign) never do, among themselves or with anyone: their releases aren't counted and they get no bonus, so the enemy AI's previews never count it. The Resonance perk widens only the players' window. You and your own twin still don't resonate with each other (item 533).
-550. **A Vessel holds at most 2 body forms at once.** The third form from Will Power 5 is retired (items 75, 362, 532): a third Inner Charge is refused ("You hold 2 forms already: a Vessel holds at most 2") whatever the Will Power.
+549. **Resonance is for the players' side.** Player characters and the units on their side (companions, the Twinbound twin) resonate with each other; enemies (side `foe`: the Heart adept, the Heartfire elite, the Heart sovereign) never do, among themselves or with anyone: their releases aren't counted and they get no bonus, so the enemy AI's previews never count it. The Resonance perk widens only the players' window. You and your own twin still don't resonate with each other (item 533). What counts is a character behind the unit, not the side it stands on: in a Proving Ground team fight Team B's player characters stand on the enemy side, and they resonate with each other just as Team A does (never across the teams).
+550. **A Vessel holds at most 2 body forms at once.** The third form from Will Power 5 is retired (items 75, 362, 532): a third Inner Charge is refused ("You hold 2 forms already: a Vessel holds at most 2."), in a fight or in the story, whatever the Will Power. A save from before this change that still holds three keeps the first two taken; the third is dropped and adds nothing.

@@ -336,6 +336,19 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     const p2 = f.turn(a); p2.ap = 60; f.g.rng.state = SEED; begin(f, d2, p2); pump(f, 1, p2); release(f, '6,7', p2); expect(lost(f.unit(e2.id))).toBe(24);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: a.id, with: [f.pc.id], bonus: 0.2 });
   });
+  it('Resonance in a Proving Ground team fight: Team B\'s player characters stand on side foe and still resonate with each other, like Team A', () => {
+    const f = rig(['12,9'], ['3,7', '3,9']); const ids = f.pcs.map((p) => p.id), [b1, b2] = [f.pcs[1], f.pcs[2]];
+    for (const b of [b1, b2]) f.unit(b.id).side = 'foe'; // as sbBeginTeams seats Team B
+    const by = (i: number) => (i < 2 ? 'host' : 'p' + i);
+    const B = (i: number, a: Record<string, any>) => f.act({ unitId: ids[i], ...a } as any, by(i));
+    const target = f.unit(f.pc.id); target.pos = '6,7';
+    for (const i of [1, 2]) {
+      const d = give(f.unit(ids[i]), {}); f.turn(f.unit(ids[i])).ap = 60; f.g.rng.state = SEED;
+      const hp = f.unit(f.pc.id).hp; B(i, { type: 'combat/outburst', design: d }); B(i, { type: 'combat/pump' }); B(i, { type: 'combat/release', aim: '6,7' });
+      expect(hp - f.unit(f.pc.id).hp).toBe(i === 1 ? 20 : 24);
+    }
+    expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: b2.id, with: [b1.id], bonus: 0.2 });
+  });
   it('Feeding (combat/feed, 1 AP): a glyph on your own tile goes into the held Outburst: +1 stage; the glyph is gone', () => {
     const f = rig(); const d = give(f.pc, {}); begin(f, d);
     expect(() => A(f, { type: 'combat/feed' })).toThrow(/No glyph/);

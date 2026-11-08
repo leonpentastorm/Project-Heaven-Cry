@@ -7,7 +7,8 @@ The frame for the damage balance pass that follows Outburst 2.0. Every damage nu
 - **About 350 damage** in one hit for a fully built character with the best equipment.
 - **About 500** on a mega critical (the best build, the best gear, a critical and every stacking bonus).
 - Nothing in the game should exceed these. Today's outliers (maxed FIRE ×11 ≈ 331 per hit and 662 on a crit; Vessel's
-  three-form Release ≈ 242) are measured against them in the pass.
+  two-form Release at stage 4 ≈ 162, spec item 532; the three-form 242 is gone with item 550) are measured against them
+  in the pass.
 
 ## Damage per turn, relative to a plain weapon
 

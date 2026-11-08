@@ -151,6 +151,20 @@ describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
     expect(() => perk(f, f.pc, 'vessel.inner_charge', { choice: 'swift' })).toThrow(/hold 2 forms already: a Vessel holds at most 2/);
     expect((f.g.characters[f.pc.charId!] as any).state.vessel.forms.map((x: any) => x.form)).toEqual(['iron', 'steady']);
   });
+  it('Inner Charge in the story is capped at 2 forms too, with the same reason; a save holding a retired third form keeps only 2', () => {
+    const s = storyWith([adv('vessel', { skills: { will_power: 9 } })]); const v = s.chars[0];
+    const take = (choice: string) => s.act({ type: 'story/perk', charId: v.id, id: 'vessel.inner_charge', actionId: 'inner_charge_story', choice } as any);
+    take('iron'); take('steady');
+    expect(() => take('swift')).toThrow(/^.*You hold 2 forms already: a Vessel holds at most 2\.$/);
+    const st = (s.g.characters[v.id] as any).state.vessel; expect(st.forms.map((x: any) => x.form)).toEqual(['iron', 'steady']);
+    // An old save (Will Power 5+, before item 550) with three forms: the third is dropped when the forms are next read,
+    // here as the fight starts, so it adds nothing (no Swift Movement).
+    st.forms.push({ form: 'swift', stage: 4 });
+    expect(() => take('surge')).toThrow(/hold 2 forms already/);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    expect((s.g.characters[v.id] as any).state.vessel.forms.map((x: any) => x.form)).toEqual(['iron', 'steady']);
+    expect((s.g.combat!.units.find((x) => x.charId === v.id) as any).vsl.move).toBe(0);
+  });
   it('Release sums 15 × each form\'s stage multiplier', () => {
     const f = fightWith([adv('vessel', { weapon: 'fists' })], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 12; place(f, u, '3,2'); place(f, f.foe, '4,2');
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'steady' });

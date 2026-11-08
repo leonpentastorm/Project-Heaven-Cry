@@ -18,7 +18,7 @@ import {
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
-  RESONANCE_BONUS, type Affected,
+  RESONANCE_BONUS, resonates, type Affected,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -179,7 +179,7 @@ register({
   id: 'resonance', claims: 'all', priority: 50,
   on: {
     outburst_release: (ctx, h) => {
-      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || r.side !== 'pc') return; // the players' side only
+      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || !resonates(r)) return; // the players' side only (item 549)
       const list = relSeen(h);
       if (!ctx.wild) {
         // I: my release hears allies who released last round. II: an ally's release hears mine from last round.
