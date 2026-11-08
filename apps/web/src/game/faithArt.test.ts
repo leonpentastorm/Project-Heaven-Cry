@@ -25,7 +25,10 @@ describe('Blessing art placeholders', () => {
     expect(svgOf(vowIconUri('stand'))).toMatch(/<path/); expect(svgOf(witnessedUri())).toMatch(/<path/);
     expect(patronMarkSvg('old_overcast', '#000000', 48)).toMatch(/width="48"/);
   });
-  it('no portrait until it is painted (callers show the mark instead)', () => expect(patronPortrait('nerukhan')).toBeNull());
+  it('the painted portraits are wired for all eight (two files carry "the_"); an unpainted patron has none', () => {
+    for (const id of ['nerukhan', 'the_quartermaster', 'the_laughing_mask', 'toll_keeper', 'mother_ember', 'old_overcast', 'the_matchmaker', 'counting_weaver']) expect(patronPortrait(id)).toMatch(/\/assets\/patron-/);
+    expect(patronPortrait('a_future_patron')).toBeNull();
+  });
   it('colours: Virtue ink for words, gold light, each patron light for effects; the data wins when it gives one', () => {
     expect(FAITH_INK).toBe('#D36A90'); expect(FAITH_GOLD).toBe('#F2C46A');
     for (const p of PATRON_IDS) expect(PATRON_ACCENT[p]).toMatch(/^#[0-9A-F]{6}$/i);

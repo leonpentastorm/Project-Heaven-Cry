@@ -304,7 +304,7 @@
       "domain": "Judgement, sanctity, the Lumeri saints",
       "costume": "A stern holy father of the Lumeri saint-church who speaks for the saints; never breaks costume. 'Only the saints may judge.'",
       "archetype": "the judge-saint",
-      "accent": "#F2D27A",
+      "accent": "#E9D6A2",
       "likes": [
         "judge",
         "mercy",
@@ -500,7 +500,7 @@
       "domain": "Supply, soldiers, the long war",
       "costume": "The logistics god of a war that never ended: a clerk's visor, a requisition stamp worn on a chain, and a deep love of forms filed in triplicate.",
       "archetype": "the quartermaster of a war god",
-      "accent": "#9DB36B",
+      "accent": "#8B9F47",
       "likes": [
         "supply",
         "hold",
@@ -703,7 +703,7 @@
       "domain": "Tricks, luck, stagecraft",
       "costume": "The trickster: a grinning mask that never comes off. Joined the Accords to troll them and demands a show.",
       "archetype": "the trickster",
-      "accent": "#E85BB0",
+      "accent": "#B83243",
       "likes": [
         "trick",
         "burn",
@@ -886,7 +886,7 @@
       "domain": "The dead, the last crossing, passage paid",
       "costume": "A quiet Celestial in a boatman's oilskin with a coin box at the hip, who answers at dusk; the guide of the dead at the last crossing.",
       "archetype": "the ferryman of the dead",
-      "accent": "#6FC7B8",
+      "accent": "#79BDB6",
       "likes": [
         "mercy",
         "heal",
@@ -1069,7 +1069,7 @@
       "domain": "The hearth, home, the ones who come back",
       "costume": "The hearth-mother: a kettle always on, an apron, flour on the sleeves; calls everyone 'love'.",
       "archetype": "the hearth-mother",
-      "accent": "#FF8A3D",
+      "accent": "#ED8A3C",
       "likes": [
         "heal",
         "protect",
@@ -1261,7 +1261,7 @@
       "domain": "Thunder, the sky, a good loud entrance",
       "costume": "The thunder sky-father, played big and theatrical: a beard of cloud, a lightning rod carried like a sceptre. Has a rival Thunder-Father (a future patron).",
       "archetype": "the thunder sky-father",
-      "accent": "#9FB8FF",
+      "accent": "#4E8DD1",
       "likes": [
         "storm",
         "kill",
@@ -1461,7 +1461,7 @@
       "domain": "Love, bonds, the people you'd die for",
       "costume": "The love goddess, played as a wedding planner: a clipboard, a seating chart, and spools of red thread.",
       "archetype": "the love goddess",
-      "accent": "#E8485F",
+      "accent": "#D879AF",
       "likes": [
         "protect",
         "mercy",
@@ -1646,7 +1646,7 @@
       "domain": "Fate, the count, what is owed",
       "costume": "The fate-spinner, played as an auditor: a loom of ledger tape and an abacus of beads that clicks while she listens.",
       "archetype": "the fate-spinner",
-      "accent": "#C9B68A",
+      "accent": "#9C82D7",
       "likes": [
         "hold",
         "trick",

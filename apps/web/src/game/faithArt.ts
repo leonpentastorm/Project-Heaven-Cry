@@ -91,9 +91,10 @@ export const assetFor = (key: string, large = false): string | null => (large ? 
 // ---------- resolvers (painted art first, the placeholder otherwise) ----------
 /** A patron's mark: the painted emblem, else the code-drawn one. */
 export const patronMarkSvg = (patron: string, color = '#FFFFFF', size = 24) => lineSvg(PATRON_MARK_PATHS[patron] || GENERIC_MARK, color, size);
-export const patronMarkUri = (patron: string, color = '#FFFFFF') => assetFor('patron-mark-' + patron) || uri(patronMarkSvg(patron, color));
+export const patronMarkUri = (patron: string, color = '#FFFFFF') => assetFor('patron-mark-' + patron) || assetFor('patron-mark-the_' + patron) || uri(patronMarkSvg(patron, color));
 /** A patron's portrait (4:5), or null until it is painted (callers show the mark large instead). */
-export const patronPortrait = (patron: string, large = false) => assetFor('patron-' + patron, large);
+// The art set names two patrons with their article (the_toll_keeper, the_counting_weaver): accept either spelling.
+export const patronPortrait = (patron: string, large = false) => assetFor('patron-' + patron, large) || assetFor('patron-the_' + patron, large) || assetFor('patron-' + patron.replace(/^the_/, ''), large);
 /** The file name the art brief gives a prayer's icon (without .png). */
 export function prayerFile(kind: 'whisper' | 'hymn' | 'miracle', id: string, patron?: string | null, level?: number): string {
   if (kind === 'whisper') return 'whisper-' + id.replace(/_/g, '-');
