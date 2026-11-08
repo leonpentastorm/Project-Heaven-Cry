@@ -96,6 +96,8 @@ export function hitBreakdown(pv) {
 //   .phc-pip-drain   an AP pip just spent: flashes white, then drains
 //   .phc-wait-dots   the waiting card's three dots
 const COMBAT_CSS = [
+  '.phc-cb-dock[data-lock="wait"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg), .phc-cb-dock[data-lock="held"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg){opacity:.38;filter:grayscale(1);pointer-events:none;transition:opacity .2s}',
+  '.phc-cb-lockmsg{flex:none;padding:6px 10px;border:1px solid #232D3F;border-radius:8px;background:#10151F;color:#A3AEC2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}',
   '@keyframes phcYtIn{0%{transform:translateX(70px) skewX(-14deg);opacity:0}60%{transform:translateX(-4px) skewX(-14deg);opacity:1}100%{transform:skewX(-14deg);opacity:1}}',
   '@keyframes phcYtShine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(260%) skewX(-20deg)}}',
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn .42s cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
@@ -183,6 +185,8 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
   // The turn card's commands were customised (game/commandsDialog.tsx): the mini-bar's quick commands follow.
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
+  // The enemies' turns started playing: grey the action panel out now (Leon: no acting until it's really your turn).
+  window.addEventListener('phc-fx-hold', () => { if (LIVE && onScreen()) LIVE.setState({}); });
   window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
 }
 
@@ -908,8 +912,14 @@ export class CombatLogic extends DCLogic {
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+    // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
+    // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
+    const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
+    if (holding && !this._holdTimer) this._holdTimer = setTimeout(() => { this._holdTimer = null; if (LIVE === this) this.setState({}); }, Math.ceil(holdUntil - performance.now()) + 30);
+    const lock = cb.over ? '' : holding ? 'held' : !mineTurn ? 'wait' : '';
+    const lockMsg = lock === 'held' ? 'The other turns are still playing out…' : lock === 'wait' ? (cur && cur.side === 'foe' ? 'Hostiles acting…' : cur ? 'Waiting for ' + cur.name + '…' : 'Waiting…') : '';
     const T = {
-      tabs, tabPanel, showWho: !mePanel,
+      tabs, tabPanel, showWho: !mePanel, lock, lockMsg,
       mine: mineTurn, waiting: !mineTurn, wait, ytInk: curInk, ytSub: 'ROUND ' + cb.round + ' · ' + ap + ' AP',
       ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
       who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, groups, sel, pad,

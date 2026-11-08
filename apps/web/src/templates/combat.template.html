@@ -161,7 +161,8 @@
 <sc-for list="{{T.apPips}}" as="p" hint-placeholder-count="6"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for>
 </div>
 </div>
-<div class="phc-cb-dock" style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px">
+<div class="phc-cb-dock" data-lock="{{T.lock}}" style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-if value="{{T.lockMsg}}"><div class="phc-cb-lockmsg" role="status">{{T.lockMsg}}</div></sc-if>
 <sc-if value="{{say.can}}">
 <form class="phc-cb-say2" onSubmit="{{say.submit}}" style="flex: none; display: none; gap: 6px; margin: 0">
 <input aria-label="Docked Say box: say or attempt something (the Narrator hears it after the fight)" value="{{say.value}}" onChange="{{say.onChange}}" placeholder="Say or attempt something… (0 AP)" maxlength="300" style="flex: 1; min-width: 0; min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: 'Spectral', serif; font-size: 14px">

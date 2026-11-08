@@ -12,7 +12,7 @@ import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, 
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
-export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle';
+export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hold';
 
 // ---------- what the layer knows about the game right now ----------
 interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean }
@@ -839,7 +839,7 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number }
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
-  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120);
+  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120); if (turnsUntil !== was) try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } }
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden). */

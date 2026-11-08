@@ -50,6 +50,11 @@ const u0 = await me();
 await p.locator('.phc-cb-root').getByRole('button', { name: /^End turn$/ }).first().click();
 await myTurn();
 const hold = await p.evaluate(() => { const until = window.__phcHold ? window.__phcHold() : 0; return until; });
+// Leon (8 Nov 2026): the whole action panel greys out until it's really your turn.
+const lockNow = await p.evaluate(() => document.querySelector('.phc-cb-dock')?.getAttribute('data-lock') || '');
+const lockMsg = await p.locator('.phc-cb-lockmsg').first().textContent().catch(() => '');
+ok('while their turns still play, the action panel is greyed: data-lock "' + lockNow + '", "' + lockMsg + '"', lockNow === 'held' && /still playing out/i.test(lockMsg || ''));
+await p.waitForTimeout(600); await p.screenshot({ path: 'apps/web/e2e/shots/combat-fixes-locked.png' });
 for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await p.waitForTimeout(150); }
 const k = await free(), u1 = await me();
 const enemiesActed = await p.evaluate(() => (window.__phc.getState().game.combat.fx || []).some((e) => e.k === 'turn' && e.side === 'foe'));
@@ -65,6 +70,7 @@ await p.locator('button.phc-tok[aria-label^="' + ref(k2) + ' "]').first().click(
 for (const lbl of [/^Confirm/]) { const b = p.locator('.phc-cb-root').getByRole('button', { name: lbl }).first(); if (await b.count() && await b.isEnabled()) { await b.click(); await p.waitForTimeout(400); } }
 const u3 = await me();
 ok('once they have played, the move goes through (' + ref(u1.pos) + ' → ' + ref(u3.pos) + ')', u3.pos !== u1.pos);
+ok('and the action panel is live again: data-lock "' + (await p.evaluate(() => document.querySelector('.phc-cb-dock')?.getAttribute('data-lock') || '')) + '"', (await p.evaluate(() => document.querySelector('.phc-cb-dock')?.getAttribute('data-lock') || '')) === '');
 void u0; void hold;
 console.log('errors', errors);
 await browser.close();
