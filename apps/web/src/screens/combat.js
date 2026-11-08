@@ -15,6 +15,7 @@ import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from 
 import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
+import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
 const SELF_TEXT = { reload2: 'Confirm to reload both guns.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
@@ -104,13 +105,13 @@ const COMBAT_CSS = [
   // The column, top to bottom: a bar (You in one line on short windows · Customise · Hide panel), the You card and the
   // squad (capped on your turn, scrolling on their own), the Say row (pinned), then the turn box (YOUR TURN, AP, the tabs,
   // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
-  // The cap leaves the turn box what it needs (about 550 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
-  '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(34%, calc(100% - 560px))}.phc-cb-top:empty{display:none}',
+  // The cap leaves the turn box what it needs (about 520 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
+  '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(42%, calc(100% - 520px))}.phc-cb-top:empty{display:none}',
   '.phc-cb-hide,.phc-cb-link,.phc-cb-show{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-hide:hover,.phc-cb-link:hover,.phc-cb-show:hover{background:#1C2536!important;color:#FFFFFF!important;border-color:#A3AEC2!important}',
   '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
   // initiative strip and the grid still show everyone's HP), so the turn box keeps its room.
-  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{display:none!important}.phc-me-mini{display:flex!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}}',
+  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:flex!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}}',
   // Very short windows (1093×526): the squad list goes (the initiative strip and the grid still show it), one line of
   // action text, slimmer tabs, pips and buttons, no portrait on the target card. The tab panel keeps at least 44 px.
   '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
@@ -129,6 +130,7 @@ const COMBAT_CSS = [
 ensureMotionCss();
 ensureStyle('phc-combat-motion', COMBAT_CSS);
 ensureStyle('phc-combat-layout', LAYOUT_CSS);
+ensureStyle('phc-resources', RES_CSS);
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
 let LIVE = null;
@@ -704,8 +706,9 @@ export class CombatLogic extends DCLogic {
     const magicLine = (u) => { const m = u.mg, cs = condChips(u); let t = '';
       if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + FLUX_MAX + ' · Charge ' + m.charge;
       if (m && m.emanator) t += ' · MP ' + Math.round(m.mp) + '/' + m.mpMax;
-      if (m && (m.strain || m.held)) t += ' · Strain ' + m.strain + '/' + m.strainLimit;
-      if (m && m.held) { const d = m.designs.find((x) => x.id === m.held.design); t += ' · Holding ' + (d ? d.name : 'an Outburst') + ' (stage ' + m.held.stage + ')'; }
+      const hh = m ? heldOutburstOf(m) : null;
+      if (hh && (hh.strain || hh.held)) t += ' · Strain ' + hh.strain + '/' + hh.limit;
+      if (hh && hh.held) t += ' · Holding ' + hh.held.name + ' (stage ' + hh.held.stage + ')';
       return t + (cs.length && (u.side === 'pc' || u.analyzedBy) ? ' · ' + cs.map((c) => c.k).join(' · ') : ''); };
     const who = cur ? { name: cur.name, img: cur.img || IMG['wick-welcome'], title: cb.over ? 'The fight is over' : cur.side === 'foe' ? cur.name + ' acts' : mineTurn ? 'Your turn: ' + cur.name : cur.name + '\'s turn' + (curOwner ? ' (' + curOwner.name + ')' : ''),
       line: 'HP ' + cur.hp + ' / ' + cur.maxHp + ' · AP ' + cur.ap + (w && w.magazine ? ' · Ammo ' + cur.ammo + '/' + w.magazine : '') + (cur.heat ? ' · Heat ' + cur.heat : '') + (cur.jammed ? ' · JAMMED' : '') + (ch ? ' · Stims ' + ch.stims + ' · Echo ' + ch.echo : '') + magicLine(cur),
@@ -723,27 +726,16 @@ export class CombatLogic extends DCLogic {
     const myU = (mineTurn ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || null;
     const mc = myU ? g.characters[myU.charId] : null, mw = myU ? WEAPON[myU.weapon] : null;
     const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
-    /** Your magic in the You card: Flux gauge (cyan, red near overload), Evoker charge and cores, the heart. */
-    const meMagic = (u) => { const m = u.mg; if (!m) return { hasMagic: false };
-      const fx = m.flux, hot = fx >= FLUX_MAX - 1, warm = fx >= FLUX_MAX - 3, fluxCol = hot ? '#F65157' : warm ? '#FFFFFF' : SIGIL_GLOW;
-      const d = m.held ? m.designs.find((x) => x.id === m.held.design) : null, near = m.strain >= m.strainLimit;
-      return { hasMagic: m.evoker || m.emanator || m.words.length > 0 || m.designs.length > 0, hasEvoker: m.evoker,
-        flux: fx + ' / ' + FLUX_MAX + (hot ? ' !' : ''), fluxFill: bar(fx / FLUX_MAX * 100, fluxCol), fluxStyle: 'text-align: right; font-weight: 700; color: ' + fluxCol,
-        fluxTitle: 'Flux: each glyph adds 1. Past ' + FLUX_MAX + ' the Evoker overloads: it hurts you and locks until next round. Vent to clear it.',
-        charge: 'EVOKER ' + m.charge + '/' + CORE_CHARGE + ' charge · ' + m.cores + (m.cores === 1 ? ' spare core' : ' spare cores'), chargeIcon: glyphUri('spark', SIGIL_INK, { frame: false }),
-        hasHeart: m.emanator || m.designs.length > 0, strainIcon: heartUri(1), strain: 'STRAIN ' + m.strain + ' / ' + m.strainLimit + (near ? ' · at the limit: one more risks a Mana Short' : ''),
-        strainStyle: 'display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: ' + (near ? '#F65157' : SOUL_INK),
-        hasHeld: !!m.held, heldIcon: m.held ? heartUri(m.held.stage) : '', held: m.held ? 'HOLDING: ' + (d ? d.name : 'an Outburst') + ' · stage ' + m.held.stage + ' ×' + stageMult(m.held.stage) : '',
-        heldStyle: 'display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: ' + (m.held ? ['#AE9BFF', '#C59BE8', '#DDB0A8', '#F2C46A'][Math.min(3, m.held.stage - 1)] : SOUL_INK) }; };
     const meCls = mc ? classOf(mc) : null; // the class emblem and name beside YOU (classIcons.ts)
     const mePanel = myU && mc ? { name: myU.name, img: myU.img || IMG['wick-welcome'], zoom: zoomer(this, myU.img || '', myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
       hp: myU.hp + ' / ' + myU.maxHp, hpFill: abar(myU.hp / myU.maxHp * 100, '#F65157'), hpChip: abar(myU.hp / myU.maxHp * 100, '#FFFFFF'),
-      // MP lives in an Emanator (spec: Soul magic): without one it is 0, and the card says so, as the sheet does.
-      mp: myU.mg && myU.mg.emanator ? Math.round(myU.mg.mp) + ' / ' + myU.mg.mpMax : 'no Emanator', mpFill: bar(myU.mg && myU.mg.emanator ? myU.mg.mp / Math.max(1, myU.mg.mpMax) * 100 : 0, '#5C9EFF'),
-      ...meMagic(myU),
-      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + (mw && mw.magazine != null ? ' · Ammo ' + myU.ammo + '/' + mw.magazine + (mw.reload === 'loose' ? ' · ' + (myU.loose ?? 0) + ' loose' : myU.mags ? ' · ' + myU.mags.length + ' spare' : '') : '') + (myU.maxDur ? ' · Weapon ' + ((myU.dur ?? myU.maxDur) <= 0 ? 'BROKEN' : (myU.dur ?? myU.maxDur) + '/' + myU.maxDur) : '') + ' · Stims ' + mc.stims + ' · Echo ' + mc.echo,
-      // The one-line summary that stands in for the card on short windows (the bar at the top of the column).
-      miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (mw && mw.magazine != null ? ' · ' + (myU.jammed ? 'JAMMED' : 'Ammo ' + myU.ammo + '/' + mw.magazine) : '') + (myU.mg && myU.mg.emanator ? ' · MP ' + Math.round(myU.mg.mp) + '/' + myU.mg.mpMax : '') + (myU.mg && myU.mg.evoker ? ' · Flux ' + myU.mg.flux + '/' + FLUX_MAX : '') + (myU.mg && myU.mg.held ? ' · HOLDING' : '') + (effectsOf(myU).length || condChips(myU).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU).map((c) => c.k)].join(' · ') : ''),
+      // Everything you spend, below the HP bar (game/resources.ts): ammo, Heat, Evoker charge, cores, Flux, MP, Strain, the
+      // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
+      res: resView(resourcesOf(myU, mc, g)),
+      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims + ' · Echo ' + mc.echo,
+      // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
+      // urgent resources sit in their own row under it (me.res.urgent).
+      miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU).map((c) => c.k)].join(' · ') : ''),
       fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU)], noFx: !effectsOf(myU).length && !condChips(myU).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: ART(u.img) || u.img || '', hasImg: !!u.img, short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),

@@ -1,6 +1,7 @@
 // Story mode, ported from design/canvas-build/main.logic.js. Everything the prototype faked now comes from the game:
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
+import { resourcesOf, resView, RES_CSS } from '../game/resources';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
@@ -28,6 +29,7 @@ const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
+ensureStyle('phc-resources', RES_CSS);
 ensureStyle('phc-main-motion', '.phc-dice-verdict{animation:phcMRise .3s ease-out .75s both}'
   + '@keyframes phcPlanPulse{0%,100%{opacity:.75}50%{opacity:1}}.phc-plan-target{animation:phcPlanPulse 1.4s ease-in-out infinite}'
   + '.phc-rm .phc-die{animation:phcMFadeIn .2s ease-out both!important}.phc-rm .phc-dice-verdict{animation:phcMFadeIn .15s ease-out .2s both}.phc-rm .phc-plan-target{animation:none}');
@@ -1032,16 +1034,12 @@ export class MainLogic extends DCLogic {
       areaHint: mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
       areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
       areaTitle: 'AREA MAP · ' + (SB ? 'PROVING GROUND' : st0.short.toUpperCase() + ' · ' + map.name.toUpperCase()), inFight,
-      hud: (() => { if (!c) return { has: false, bars: [], ammo: '', ammoStyle: '', magic: [] };
-        const w = WEAPON[c.weapon], ap = inFight ? 0 : apLeft(g, c), spare = (packOf(c).find((it) => it.weapon === c.weapon && it.mags) || { mags: [] }).mags.length, loaded = loadedOf(c);
-        const hb = bars.filter((b) => b.label !== 'XP').concat(inFight ? [] : [{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
-        const ammo = !w ? 'No weapon' : w.magazine ? (w.name || c.weapon) + ' · ' + loaded + ' / ' + w.magazine + ' loaded · ' + spare + ' spare' + (loaded <= 0 ? ' · EMPTY: reload (2 AP)' : '') : (w.name || c.weapon);
-        // Magic: Evoker charge and Flux (cyan), Strain and a held Outburst (violet), when there's anything to say; the air's mana always.
-        const ml = [];
-        if (myWords.length || hasEvoker(c)) ml.push({ key: 'sig', text: 'EVOKER ' + (hasEvoker(c) ? MN.charge + ' / ' + CORE_CHARGE + ' charge · ' + MN.cores + ' spare' : 'not carried') + (MN.flux ? ' · FLUX ' + MN.flux + ' / ' + FLUX_MAX : ''), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: ' + (MN.flux >= FLUX_MAX - 1 ? '#F65157' : SIG_CYAN) });
-        if (MN.strain || MN.held) ml.push({ key: 'soul', text: (MN.strain ? 'STRAIN ' + MN.strain + ' / ' + strainLimit(c) : '') + (MN.strain && MN.held ? ' · ' : '') + (MN.held ? '♥ HOLDING · STAGE ' + MN.held.stage : ''), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: ' + (MN.strain >= strainLimit(c) ? '#F65157' : SOUL_VIOLET) });
-        ml.push({ key: 'mana', text: 'MANA ' + MN.mana + ' · ' + bandName(MN.band), style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' });
-        return { has: true, bars: hb, ammo, ammoStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: ' + (w && w.magazine && loaded <= 0 ? '#F65157' : '#E7EBF3'), magic: ml }; })(),
+      hud: (() => { if (!c) return { has: false, bars: [], res: resView([]), magic: [] };
+        const ap = inFight ? 0 : apLeft(g, c);
+        // HP and AP as bars; everything you spend below them (game/resources.ts: the same block as the combat You card).
+        const hb = bars.filter((b) => b.label !== 'XP' && b.label !== 'MP').map((b) => ({ ...b, labelStyle: b.labelStyle.replace('font-size: 11px', 'font-size: 13px') })).concat(inFight ? [] : [{ label: 'AP', text: ap + ' / ' + ROUND_AP, labelStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #FFFFFF', fill: 'width: ' + Math.round(ap / ROUND_AP * 100) + '%; height: 100%; background: #FFFFFF' }]);
+        const ml = [{ key: 'mana', text: 'MANA ' + MN.mana + ' · ' + bandName(MN.band), style: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2' }];
+        return { has: true, bars: hb, res: resView(resourcesOf(MN.cu || null, c, g)), magic: ml }; })(),
       ...(() => { const E = g.story.entries; let from = E.length; while (from > 0 && E[from - 1].kind !== 'narration') from--;
         const L = E.slice(from).filter((e) => e.act || e.kind === 'check' || (e.kind === 'system' && /hidden|spots|Downed|stim|learns the|Outburst module|school of Outbursts/i.test(e.text))).slice(-12).map((e) => ({ key: e.id, text: (e.head ? e.head + ' · ' : '') + e.text,
           style: 'font-size: 12px; line-height: 1.4; color: ' + (magicInk(e.text) || (e.act && /\b(fires|shoots|aimed shot|strikes|smashes|attacks)\b/.test(e.text) ? '#F6A3A6' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : '#E7EBF3')) }));

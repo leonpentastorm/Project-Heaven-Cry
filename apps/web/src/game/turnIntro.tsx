@@ -34,6 +34,7 @@ import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
+import { resourcesOf, urgentRows, chipStyle, type ResRow } from './resources';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -78,7 +79,7 @@ export function cue(name: Cue) {
 // ---------- what a banner and a cut-in show ----------
 interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number }
 interface Cut { id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
-  hp: [number, number]; mp: [number, number] | null; ap: number; weapon: string; ammo: string; magic: string[]; cmds: Command[]; at?: string; right?: boolean }
+  hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): the most urgent four, in their order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
 const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
 const unitImg = (u: any) => (u?.img && (ART(u.img) || u.img)) || '';
@@ -110,19 +111,17 @@ function underLeftCard(key: string | undefined): boolean {
 function cutFor(g: GameState, cb: any, unitId: string): Cut | null {
   const u = cb.units.find((x: any) => x.id === unitId), ch = u?.charId ? g.characters[u.charId] : null;
   if (!u || !ch || u.downed || u.dead || cb.over) return null;
-  const owner = g.players.find((p) => p.id === ch.owner), w = WEAPON[u.weapon], mg = u.mg;
+  const owner = g.players.find((p) => p.id === ch.owner), w = WEAPON[u.weapon];
   const portrait = ch.portrait || u.img || '';
   const img = ART_BIG(portrait) || ART(portrait) || portrait || IMG['wick-welcome'];
   // The four commands: the player's own picks for this character (game/commandsDialog.tsx), else the smart default.
   const cmds: Command[] = resolveCommands(cb, u, ch, readPrefs(g, u.charId), { noNarrator: !!g.sandbox, g });
-  const magic: string[] = [];
-  if (mg?.held) { const d = mg.designs?.find((x: any) => x.id === mg.held.design); magic.push('HOLDING ' + (d ? d.name : 'an Outburst').toUpperCase() + ' · STAGE ' + mg.held.stage); }
-  if (mg?.evoker || (mg?.words?.length && mg.flux)) magic.push('FLUX ' + mg.flux + ' / ' + FLUX_MAX + (mg.flux >= FLUX_MAX - 1 ? ' · NEAR OVERLOAD' : ''));
+  // The resources block (the same rows as the combat You card): the four that matter most, kept in their own order.
+  const all = resourcesOf(u, ch, g), top = new Set(urgentRows(all, 4).map((r) => r.key)), res = all.filter((r) => top.has(r.key));
   return {
     id: 'c' + unitId + ':' + cb.round + ':' + Date.now(), unitId, charId: u.charId, at: u.pos, name: ch.name || u.name, img, color: owner?.color || '#FFFFFF', kicker: 'YOUR TURN · ROUND ' + cb.round,
     line: 'Level ' + ch.level + ' · ' + (classOf(ch)?.name || (ch.classId && CLASS[ch.classId] ? CLASS[ch.classId].name : 'Classless')), clsIcon: classOf(ch)?.icon || '',
-    hp: [u.hp, u.maxHp], mp: mg?.emanator ? [Math.round(mg.mp), mg.mpMax] : null, ap: u.ap,
-    weapon: w ? w.name : 'Unarmed', ammo: w && w.magazine != null ? (u.jammed ? 'JAMMED' : u.ammo + ' / ' + w.magazine) : '', magic, cmds,
+    hp: [u.hp, u.maxHp], ap: u.ap, weapon: w ? w.name : 'Unarmed', res, cmds,
   };
 }
 
@@ -361,20 +360,43 @@ function Bar({ label, v, max, color }: { label: string; v: number; max: number; 
   );
 }
 
+/** One resource row on the cut-in: label, value, warning chip, and its bar or pips (hover for the hint). */
+function ResLine({ r }: { r: ResRow }) {
+  const max = Math.max(0, r.max || 0), now = Math.max(0, r.now ?? 0), pct = max ? Math.max(0, Math.min(100, (now / max) * 100)) : 0;
+  const ink = r.level === 'alert' && ['heat', 'flux', 'strain'].includes(r.key) ? '#F65157' : r.colour;
+  const css = (st: string) => Object.fromEntries(st.split(';').map((x) => x.trim()).filter(Boolean).map((x) => { const i = x.indexOf(':'); return [x.slice(0, i).trim().replace(/-([a-z])/g, (_, ch) => ch.toUpperCase()), x.slice(i + 1).trim()]; }));
+  return (
+    <div role="listitem" data-res={r.key} title={r.hint} aria-label={r.label + ': ' + r.value + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint} style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr)', columnGap: 8, rowGap: 3, alignItems: 'center' }}>
+      <span aria-hidden="true" />
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        <span style={{ flex: 'none', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: r.colour, textTransform: 'uppercase' }}>{r.label}</span>
+        <span style={{ flex: '1 1 auto', minWidth: 0, fontSize: 15, fontWeight: 700, color: '#E7EBF3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value}</span>
+        {r.warn && <span role="status" style={css(chipStyle(r.level))}>{r.warn}</span>}
+      </span>
+      {r.kind !== 'text' && max > 0 && <><span aria-hidden="true" /><span aria-hidden="true" style={{ display: 'flex', gap: 3, height: 8 }}>
+        {r.kind === 'pips' && max <= 12 ? Array.from({ length: max }, (_, i) => <span key={i} style={{ flex: 1, background: i < now ? ink : '#1C2536', boxShadow: i < now ? undefined : 'inset 0 0 0 1px #2E3A50' }} />)
+          : <span style={{ flex: 1, background: '#1C2536', overflow: 'hidden' }}><span style={{ display: 'block', width: pct + '%', height: '100%', background: ink }} /></span>}
+      </span></>}
+    </div>
+  );
+}
+
 function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img: string; out: boolean; rm: boolean; onPick: (c: Cut, cmd: Command) => void; onCustomise: (c: Cut) => void; onHover: (h: boolean) => void }) {
   ensureCss();
   // Mirrored (from the right) when the left card would cover the unit itself.
   const R = !!c.right, sfx2 = R ? 'R' : '';
   const anim = out ? (rm ? 'phcFadeOut .15s ease-in both' : 'phcCutOut' + sfx2 + ' .3s cubic-bezier(.5,0,.75,0) both') : rm ? 'phcFadeIn .15s ease-out both' : 'phcCutIn' + sfx2 + ' .42s cubic-bezier(.2,.8,.2,1) both';
   const slab = R ? 'polygon(0 0, 100% 0, 100% 100%, 22% 100%)' : 'polygon(0 0, 100% 0, 78% 100%, 0 100%)';
+  // The card grows with its resource rows (about 38 px each past the second), and stays centred.
+  const H = 420 + 38 * Math.max(0, c.res.length - 2);
   return (
     <>
       {/* A dark veil on the left so the card reads over the grid; never clickable. */}
       <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 57, pointerEvents: 'none', background: 'linear-gradient(' + (R ? 270 : 90) + 'deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.45) 38%, transparent 62%)', animation: out ? 'phcFadeOut .3s ease-in both' : 'phcCutVeil .3s ease-out both' }} />
       <div data-phc-cutin="" role="dialog" aria-label={'Your turn: ' + c.name} onPointerMove={(e) => { if (e.movementX || e.movementY) onHover(true); }} onMouseLeave={() => onHover(false)}
-        style={{ position: 'fixed', [R ? 'right' : 'left']: 0, top: '50%', marginTop: -210, zIndex: 57, width: 'min(640px, 96vw)', display: 'flex', flexDirection: R ? 'row-reverse' : 'row', alignItems: 'stretch', fontFamily: "'Chakra Petch', sans-serif", color: '#E7EBF3', animation: anim, pointerEvents: out ? 'none' : 'auto' }}>
+        style={{ position: 'fixed', [R ? 'right' : 'left']: 0, top: '50%', marginTop: -H / 2, zIndex: 57, width: 'min(640px, 96vw)', display: 'flex', flexDirection: R ? 'row-reverse' : 'row', alignItems: 'stretch', fontFamily: "'Chakra Petch', sans-serif", color: '#E7EBF3', animation: anim, pointerEvents: out ? 'none' : 'auto' }}>
         {/* The portrait, cut on a diagonal, on a slab in the player's colour. */}
-        <div style={{ position: 'relative', flex: 'none', width: 'min(230px, 36vw)', height: 420 }}>
+        <div style={{ position: 'relative', flex: 'none', width: 'min(230px, 36vw)', height: H }}>
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: c.color, clipPath: slab }} />
           <img src={img} alt="" style={{ position: 'absolute', inset: R ? '0 0 0 10px' : '0 10px 0 0', width: 'calc(100% - 10px)', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', background: '#000', clipPath: slab }} />
           {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak .6s ease-out .2s both' }} /></div>}
@@ -384,13 +406,12 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 600, lineHeight: 1.05, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
           <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
-          {c.mp && <Bar label="MP" v={c.mp[0]} max={c.mp[1]} color="#5C9EFF" />}
+          {c.res.length > 0 && <div role="list" aria-label="Your resources" style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 34, fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#FFFFFF' }}>AP</span>
             <span aria-label={c.ap + ' AP'} style={{ display: 'flex', gap: 4 }}>{Array.from({ length: Math.max(0, Math.min(9, Math.round(c.ap))) }, (_, i) => <span key={i} style={{ width: 14, height: 14, transform: 'rotate(45deg)', background: '#FFFFFF' }} />)}</span>
           </div>
-          <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}{c.ammo ? ' · ' : ''}{c.ammo && <b style={{ color: c.ammo === 'JAMMED' ? '#F65157' : '#E7EBF3' }}>{c.ammo}</b>}</span>
-          {c.magic.map((m) => <span key={m} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: m.startsWith('FLUX') ? '#8BDEEE' : '#AE9BFF' }}>{m}</span>)}
+          <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}</span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
               <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} title={cmd.off ? cmd.label + ': ' + cmd.sub : undefined}
