@@ -1175,7 +1175,7 @@
       "pool": "epccg-cast"
     },
     "first-patch-revival--rumination": {
-      "label": "Thalat\u00fbl the Librarian",
+      "label": "Thalatûl the Librarian",
       "collection": "first-patch-revival",
       "path": "art/character-portraits/first-patch-revival/mind/intelligence/rumination.png",
       "sha256": "3e167bd8b6c5ec97a434dacd498c07c63206a2b6883e467ca43136f1d804243b",
@@ -1215,7 +1215,7 @@
       "usage": "character portrait",
       "epccg_entry": 16,
       "epccg_skill": "Visualization",
-      "epccg_quoted_by": "R\u00e9my \u00c9tienne",
+      "epccg_quoted_by": "Rémy Étienne",
       "pool": "epccg-cast"
     },
     "first-patch-revival--analysis": {
@@ -1394,7 +1394,7 @@
       "pool": "epccg-cast"
     },
     "mpat": {
-      "label": "MPAT \u2014 M1.4 8R4-D83-RRY",
+      "label": "MPAT — M1.4 8R4-D83-RRY",
       "collection": "m813",
       "version": 1,
       "path": "art/character-portraits/m813/mpat.png",
@@ -1456,7 +1456,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-nine-nine.prompt.txt",
-      "label": "M813 \u2014 Sergeant Nine-Nine",
+      "label": "M813 — Sergeant Nine-Nine",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1499,7 +1499,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-seven-seven.prompt.txt",
-      "label": "M813 \u2014 Seven-Seven",
+      "label": "M813 — Seven-Seven",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1542,7 +1542,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-hum.prompt.txt",
-      "label": "M813 \u2014 Hum",
+      "label": "M813 — Hum",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1585,7 +1585,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-lantern.prompt.txt",
-      "label": "M813 \u2014 Lantern",
+      "label": "M813 — Lantern",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1628,7 +1628,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-soft-hands.prompt.txt",
-      "label": "M813 \u2014 Soft-Hands",
+      "label": "M813 — Soft-Hands",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1674,7 +1674,7 @@
       "previous_revision_path": "art/character-portraits/m813/v2/m813-rook.png",
       "revision": 2,
       "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-rook.prompt.txt",
-      "label": "M813 \u2014 Rook",
+      "label": "M813 — Rook",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1717,7 +1717,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-penny.prompt.txt",
-      "label": "M813 \u2014 Penny",
+      "label": "M813 — Penny",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1760,7 +1760,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-keel.prompt.txt",
-      "label": "M813 \u2014 Chief Engineer Keel",
+      "label": "M813 — Chief Engineer Keel",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1803,7 +1803,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-ilse-varga.prompt.txt",
-      "label": "M813 \u2014 Ilse Varga",
+      "label": "M813 — Ilse Varga",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1846,7 +1846,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-a.prompt.txt",
-      "label": "M813 \u2014 Engineer A",
+      "label": "M813 — Engineer A",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1889,7 +1889,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-engineer-b.prompt.txt",
-      "label": "M813 \u2014 Engineer B",
+      "label": "M813 — Engineer B",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1935,7 +1935,7 @@
       "previous_revision_path": "art/character-portraits/m813/v2/m813-novikov.png",
       "revision": 2,
       "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-novikov.prompt.txt",
-      "label": "M813 \u2014 Colonel Alexei Novikov",
+      "label": "M813 — Colonel Alexei Novikov",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -1981,7 +1981,7 @@
       "previous_revision_path": "art/character-portraits/m813/v2/m813-security-guard.png",
       "revision": 2,
       "prompt_path": "art/character-portraits/m813/v2/revisions/v2/sources/m813-security-guard.prompt.txt",
-      "label": "M813 \u2014 Station Security Guard",
+      "label": "M813 — Station Security Guard",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -2024,7 +2024,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-guard-captain.prompt.txt",
-      "label": "M813 \u2014 Guard Captain",
+      "label": "M813 — Guard Captain",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -2067,7 +2067,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-scavenger-drone.prompt.txt",
-      "label": "M813 \u2014 Scavenger Drone",
+      "label": "M813 — Scavenger Drone",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -2110,7 +2110,7 @@
       "collection": "m813",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/character-portraits/m813/v2/sources/m813-rearguard.prompt.txt",
-      "label": "M813 \u2014 Enemy Rearguard Trooper",
+      "label": "M813 — Enemy Rearguard Trooper",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -3135,7 +3135,7 @@
   },
   "traits": {
     "mind-without-fog": {
-      "label": "Wick \u2014 Mind Without Fog",
+      "label": "Wick — Mind Without Fog",
       "path": "art/traits/wick/mind-without-fog/mind-without-fog.png",
       "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444",
       "width": 1254,
@@ -3155,7 +3155,7 @@
       "data_id": "mind_without_fog"
     },
     "humanity-first": {
-      "label": "Wick \u2014 Humanity First",
+      "label": "Wick — Humanity First",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/humanity-first.png",
       "sha256": "6c488328cb2198f9fae9f8834563ccdbaaae9e006f25f79bd76a5d49fd070a47",
@@ -3181,7 +3181,7 @@
       "previous_path": "art/traits/wick/test-set-1/humanity-first.png"
     },
     "the-old-blood": {
-      "label": "Wick \u2014 The Old Blood",
+      "label": "Wick — The Old Blood",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/the-old-blood.png",
       "sha256": "becf8562aa9d2b2ab7a7ff247b71236b53037734fee5f74a1ff3185fa7cd073e",
@@ -3207,7 +3207,7 @@
       "previous_path": "art/traits/wick/test-set-1/the-old-blood.png"
     },
     "factory-made": {
-      "label": "Wick \u2014 Factory Made",
+      "label": "Wick — Factory Made",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/round-3/factory-made.png",
       "sha256": "34f3656eafdef41d6ee2c668d6bbbed853f23f5bec98f3c665721ad1e8fc4c15",
@@ -3234,7 +3234,7 @@
       "previous_revision_path": "art/traits/wick/test-set-1/revisions/factory-made.png"
     },
     "chain-smoker": {
-      "label": "Wick \u2014 Chain Smoker",
+      "label": "Wick — Chain Smoker",
       "collection": "wick-test-set-1",
       "path": "art/traits/wick/test-set-1/chain-smoker.png",
       "sha256": "bf9efba0b96b583029481b026f98b7fc0958f3128ef1e966cb80af3542b4662b",
@@ -3257,7 +3257,7 @@
       }
     },
     "raised-by-orks": {
-      "label": "Wick \u2014 Raised by Orks",
+      "label": "Wick — Raised by Orks",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/raised-by-orks.png",
       "sha256": "3aea8cea3c68efc95389544f4fa5529e494a23e34f167451bfded671177620d6",
@@ -3283,7 +3283,7 @@
       "previous_path": "art/traits/wick/test-set-1/raised-by-orks.png"
     },
     "the-brightest-light": {
-      "label": "Wick \u2014 The Brightest Light",
+      "label": "Wick — The Brightest Light",
       "collection": "wick-test-set-1",
       "path": "art/traits/wick/test-set-1/the-brightest-light.png",
       "sha256": "baeaf49173e6c5ee4d9cef9598139582c30b20cfe12eb3411debb9a33e97c5f3",
@@ -3306,7 +3306,7 @@
       }
     },
     "rabbits-foot": {
-      "label": "Wick \u2014 Rabbit's Foot",
+      "label": "Wick — Rabbit's Foot",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/rabbits-foot.png",
       "sha256": "c6988e937c31b81cdb9bc364c2a51f12ca3bceafb74be7884e2dac4e271419d1",
@@ -3332,7 +3332,7 @@
       "previous_path": "art/traits/wick/test-set-1/rabbits-foot.png"
     },
     "forlorn-hope": {
-      "label": "Wick \u2014 Forlorn Hope",
+      "label": "Wick — Forlorn Hope",
       "collection": "wick-test-set-1",
       "path": "art/traits/wick/test-set-1/forlorn-hope.png",
       "sha256": "a2901e5687bb70119c3e3c3d977d465f0d8a8aeaca48e50f639601822fa21744",
@@ -3355,7 +3355,7 @@
       }
     },
     "southern-fist": {
-      "label": "Wick \u2014 Southern Fist",
+      "label": "Wick — Southern Fist",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/revisions/v2/southern-fist.png",
       "sha256": "fff961310cf5ffa97dc2f0061045392049fdfc919258832717514f4023dc95a1",
@@ -3382,7 +3382,7 @@
       "previous_revision_path": "art/traits/wick/production-v1/southern-fist.png"
     },
     "blade-recluse": {
-      "label": "Wick \u2014 Blade Recluse",
+      "label": "Wick — Blade Recluse",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/blade-recluse.png",
       "sha256": "38b10281a126d2e032365abe5339751fcae5e7a343879dfb333a239a556b8ce3",
@@ -3406,7 +3406,7 @@
       }
     },
     "grenadiers-arm": {
-      "label": "Wick \u2014 Grenadier's Arm",
+      "label": "Wick — Grenadier's Arm",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/grenadiers-arm.png",
       "sha256": "d474a0d845acc0a138249d980ab4bf3a5fa77c19394b836cd44c28fc05f7bc7b",
@@ -3430,7 +3430,7 @@
       }
     },
     "glass-runner": {
-      "label": "Wick \u2014 Glass Runner",
+      "label": "Wick — Glass Runner",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/revisions/v2/glass-runner.png",
       "sha256": "23327c0dfdcdd225ab11896961b83e6284d700ece20eb2712495fe0f2092d95e",
@@ -3457,7 +3457,7 @@
       "previous_revision_path": "art/traits/wick/production-v1/glass-runner.png"
     },
     "pain-eater": {
-      "label": "Wick \u2014 Pain Eater",
+      "label": "Wick — Pain Eater",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/pain-eater.png",
       "sha256": "dfbac65aba5734224e292af07123c291035aa46effb33d709d549b4d4d1d57a8",
@@ -3481,7 +3481,7 @@
       }
     },
     "bottle-butts-for-eyes": {
-      "label": "Wick \u2014 Bottle Butts for Eyes",
+      "label": "Wick — Bottle Butts for Eyes",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/bottle-butts-for-eyes.png",
       "sha256": "a51298f06cd66e3889e5c87cd04468f1a5ea3a3344eea26814dce2c1d36a9319",
@@ -3505,7 +3505,7 @@
       }
     },
     "the-mask": {
-      "label": "Wick \u2014 The Mask",
+      "label": "Wick — The Mask",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/the-mask.png",
       "sha256": "3672b5338cc56d84827ba510dbce5cd5bf2539c05315a7c890177fb71dab0bee",
@@ -3529,7 +3529,7 @@
       }
     },
     "machine-faced": {
-      "label": "Wick \u2014 Machine-Faced",
+      "label": "Wick — Machine-Faced",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/machine-faced.png",
       "sha256": "f0af12a7d6ad64e7b452b1433fba522f3867b024f6e93edafa7f3a7b09f8e0d4",
@@ -3553,7 +3553,7 @@
       }
     },
     "right-of-way": {
-      "label": "Wick \u2014 Right of Way",
+      "label": "Wick — Right of Way",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/right-of-way.png",
       "sha256": "c34f970b48c5fcd36200fbc72edbf870e284fd65ff939db2c39e88da55e98276",
@@ -3577,7 +3577,7 @@
       }
     },
     "drill-echo": {
-      "label": "Wick \u2014 Drill Echo",
+      "label": "Wick — Drill Echo",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/drill-echo.png",
       "sha256": "9033d99591e2a898af82f45fda6ed7255c7351fc39d33300840e911effb80979",
@@ -3601,7 +3601,7 @@
       }
     },
     "holo-drama-addict": {
-      "label": "Wick \u2014 Holo-Drama Addict",
+      "label": "Wick — Holo-Drama Addict",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/holo-drama-addict.png",
       "sha256": "95e83b6e7cedd86b5c5c998406aa79b3153e0969dfadc1f1ccbcfa3418940e3d",
@@ -3625,7 +3625,7 @@
       }
     },
     "oil-in-my-mind": {
-      "label": "Wick \u2014 Oil in My Mind",
+      "label": "Wick — Oil in My Mind",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/oil-in-my-mind.png",
       "sha256": "9878f6fb218e1574259e0bb70e577b2d3c839874b6ad8e48af46253642000fc1",
@@ -3649,7 +3649,7 @@
       }
     },
     "oil-in-my-soul": {
-      "label": "Wick \u2014 Oil in My Soul",
+      "label": "Wick — Oil in My Soul",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/oil-in-my-soul.png",
       "sha256": "ea9590ff45b24ea8bf0e63c92a8c08d3e09db7e9a816f8a141fe80fbba463990",
@@ -3673,7 +3673,7 @@
       }
     },
     "lunarshine": {
-      "label": "Wick \u2014 Lunarshine",
+      "label": "Wick — Lunarshine",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/lunarshine.png",
       "sha256": "5b28cdc7a7f416ca0508bc9854adafdef860ceb15d1718bc0e14e94e83f06098",
@@ -3697,7 +3697,7 @@
       }
     },
     "heavyworlder": {
-      "label": "Wick \u2014 Heavyworlder",
+      "label": "Wick — Heavyworlder",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/heavyworlder.png",
       "sha256": "8fff15dca376a2345263d042170651d8648a23a5f52bfb67b50257d723571f4d",
@@ -3721,7 +3721,7 @@
       }
     },
     "born-performer": {
-      "label": "Wick \u2014 Born Performer",
+      "label": "Wick — Born Performer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/born-performer.png",
       "sha256": "5bc1919ff08bc42473043ff21395d7b7d7d5901c2499ed824881eb2ac47fe8fb",
@@ -3745,7 +3745,7 @@
       }
     },
     "ghost-soldier": {
-      "label": "Wick \u2014 Ghost Soldier",
+      "label": "Wick — Ghost Soldier",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/ghost-soldier.png",
       "sha256": "64c3a237563f8d9cd32b2f281c162eec5840db54e60a5e1fda0d3a38eb79ad13",
@@ -3769,7 +3769,7 @@
       }
     },
     "symbol-of-order": {
-      "label": "Wick \u2014 Symbol of Order",
+      "label": "Wick — Symbol of Order",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/symbol-of-order.png",
       "sha256": "05ae9e1ee9a1cb5adc7a6806c05836d5070a6904294e12d78327e1ce6076ecfe",
@@ -3793,7 +3793,7 @@
       }
     },
     "rogue-element": {
-      "label": "Wick \u2014 Rogue Element",
+      "label": "Wick — Rogue Element",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/rogue-element.png",
       "sha256": "32fe56d4124bb1d59ea8c336fee3152572e9a40759f38a7e6de1412feff145d9",
@@ -3817,7 +3817,7 @@
       }
     },
     "the-soundscape-of-the-soul": {
-      "label": "Wick \u2014 The Soundscape of the Soul",
+      "label": "Wick — The Soundscape of the Soul",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/the-soundscape-of-the-soul.png",
       "sha256": "cbf2249859ad80bc3b842a7f9a19f24b5e7bb21b9052a0ee02e52bcae3be3d3a",
@@ -3841,7 +3841,7 @@
       }
     },
     "headbanger": {
-      "label": "Wick \u2014 Headbanger",
+      "label": "Wick — Headbanger",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/headbanger.png",
       "sha256": "dc6f46936ae04afbc34afd55c97f01159acd3459b4ca818a578e51209519395a",
@@ -3865,7 +3865,7 @@
       }
     },
     "underground-sound": {
-      "label": "Wick \u2014 Underground Sound",
+      "label": "Wick — Underground Sound",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/underground-sound.png",
       "sha256": "8dfa99de802b32bf675d5976387753167941271b6592ab4ec57f6d5e3500f351",
@@ -3889,7 +3889,7 @@
       }
     },
     "worldline-fracture": {
-      "label": "Wick \u2014 Worldline Fracture",
+      "label": "Wick — Worldline Fracture",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/worldline-fracture.png",
       "sha256": "7f103ce7c393aaa3941daa454ec03d7040fc077515f73fad04b2d2fbb22a6f8d",
@@ -3913,7 +3913,7 @@
       }
     },
     "lowland-born": {
-      "label": "Wick \u2014 Lowland Born",
+      "label": "Wick — Lowland Born",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/lowland-born.png",
       "sha256": "444db22796d3f4a5fea0a02de96088534b5676db97b62c5400810ee124a78dbe",
@@ -3937,7 +3937,7 @@
       }
     },
     "central-city-kid": {
-      "label": "Wick \u2014 Central City Kid",
+      "label": "Wick — Central City Kid",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/central-city-kid.png",
       "sha256": "e53f36e0543c40f6e6f1593e634a2e6400c26597b3c9cc4df229b7ca6fabb234",
@@ -3961,7 +3961,7 @@
       }
     },
     "daggerfall-veteran": {
-      "label": "Wick \u2014 Daggerfall Veteran",
+      "label": "Wick — Daggerfall Veteran",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/revisions/v2/daggerfall-veteran.png",
       "sha256": "cc4601921e1e5e379cc051209918cbb398b26476db18cf14f26ea86b44477844",
@@ -3988,7 +3988,7 @@
       "previous_revision_path": "art/traits/wick/production-v1/daggerfall-veteran.png"
     },
     "upper-touched": {
-      "label": "Wick \u2014 Upper-Touched",
+      "label": "Wick — Upper-Touched",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/revisions/v2/upper-touched.png",
       "sha256": "af4c610beb81ca39f976ad953fd48e762ac3a165dbfc0b97566b6a11a52a697a",
@@ -4015,7 +4015,7 @@
       "previous_revision_path": "art/traits/wick/production-v1/upper-touched.png"
     },
     "gun-nut": {
-      "label": "Wick \u2014 Gun Nut",
+      "label": "Wick — Gun Nut",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/gun-nut.png",
       "sha256": "cb61924b77a0b8ecd848a16b6ef1840e9b774450e23d96e57e3fe3024639dc0f",
@@ -4039,7 +4039,7 @@
       }
     },
     "old-school": {
-      "label": "Wick \u2014 Old School",
+      "label": "Wick — Old School",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/old-school.png",
       "sha256": "d4a55f350565e22d938f76d14d8ff703d02a64c70aac56f52e82116699e8bd7c",
@@ -4063,7 +4063,7 @@
       }
     },
     "spray-and-pray": {
-      "label": "Wick \u2014 Spray and Pray",
+      "label": "Wick — Spray and Pray",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/spray-and-pray.png",
       "sha256": "547de5c3a99b89fdaaa53a3c8a737d64883c3fecbf7f55c0c75453556fd37b30",
@@ -4087,7 +4087,7 @@
       }
     },
     "one-shot": {
-      "label": "Wick \u2014 One Shot",
+      "label": "Wick — One Shot",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/one-shot.png",
       "sha256": "c053d65b30338f108433ad71932f45b15fde3682483fbb5dcc356f1509436841",
@@ -4111,7 +4111,7 @@
       }
     },
     "sigil-savant": {
-      "label": "Wick \u2014 Sigil Savant",
+      "label": "Wick — Sigil Savant",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/sigil-savant.png",
       "sha256": "6cc8e12c4b77d769f19f832792e7b80a2dceccaf88a42a1cb43b101ca582b94f",
@@ -4135,7 +4135,7 @@
       }
     },
     "hollow-heart": {
-      "label": "Wick \u2014 Hollow Heart",
+      "label": "Wick — Hollow Heart",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/hollow-heart.png",
       "sha256": "fd3fd037700b4356edaba40b41855c8a2fc7f938a161c200445b0753990b69ac",
@@ -4159,7 +4159,7 @@
       }
     },
     "heretic": {
-      "label": "Wick \u2014 Heretic",
+      "label": "Wick — Heretic",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/heretic.png",
       "sha256": "3420efe7a427a430a504182709550b56bb9b62f91ae17bedc13f318b476af87e",
@@ -4183,7 +4183,7 @@
       }
     },
     "gambler": {
-      "label": "Wick \u2014 Gambler",
+      "label": "Wick — Gambler",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/gambler.png",
       "sha256": "cf1c52324b5ea8bcc7414570fa50e7687fa0729e9c25a54feb32ba2199b50a51",
@@ -4207,7 +4207,7 @@
       }
     },
     "insomniac": {
-      "label": "Wick \u2014 Insomniac",
+      "label": "Wick — Insomniac",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/insomniac.png",
       "sha256": "d05a9f43f2ced63fb680add4ef93b553541aded1cfff073d8e8177a3daa6eb37",
@@ -4231,7 +4231,7 @@
       }
     },
     "live-to-fight-another-day": {
-      "label": "Wick \u2014 Live to Fight Another Day",
+      "label": "Wick — Live to Fight Another Day",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/live-to-fight-another-day.png",
       "sha256": "93b29a07c776a206d494c5491f85cafb384198a3394a5c09a1daa17e9c35d36b",
@@ -4255,7 +4255,7 @@
       }
     },
     "sworn-sibling": {
-      "label": "Wick \u2014 Sworn Sibling",
+      "label": "Wick — Sworn Sibling",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/revisions/v4/sworn-sibling.png",
       "sha256": "b9530e81198a9bc2782f1d393a56c621c867005c4730921823627c8320e0cd0b",
@@ -4283,7 +4283,7 @@
       "user_override": "Leon explicitly requested two full Wicks sharing an oath in the supplied two-person pose reference; this overrides the one-full-figure rule. Review4 readability correction keeps his direction instead of reverting to the cord concept."
     },
     "rival": {
-      "label": "Wick \u2014 Rival",
+      "label": "Wick — Rival",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/rival.png",
       "sha256": "37d663f24faaa0feca54898452d1defda9845c799ece8f5d225bea12006dafeb",
@@ -4307,7 +4307,7 @@
       }
     },
     "wanted": {
-      "label": "Wick \u2014 Wanted",
+      "label": "Wick — Wanted",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/wanted.png",
       "sha256": "786aed28338e0256e0fd7a420788e606e551e61aca557c70a6f61b16c587349b",
@@ -4331,7 +4331,7 @@
       }
     },
     "company-man": {
-      "label": "Wick \u2014 Company Man",
+      "label": "Wick — Company Man",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/company-man.png",
       "sha256": "9998663d58da03056790b37b55517869044fa496118910593981270cdcc41af3",
@@ -4355,7 +4355,7 @@
       }
     },
     "field-medic": {
-      "label": "Wick \u2014 Field Medic",
+      "label": "Wick — Field Medic",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/field-medic.png",
       "sha256": "9c0ebd9606ac83f572eea88a2cc440382cede7dddf5ba528406c71a77539f62f",
@@ -4379,7 +4379,7 @@
       }
     },
     "squad-anchor": {
-      "label": "Wick \u2014 Squad Anchor",
+      "label": "Wick — Squad Anchor",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/squad-anchor.png",
       "sha256": "d5c4d9f644b91a5661da63bd4ebdb2afd34cf594d159ab62112dd46d963a7fee",
@@ -4403,7 +4403,7 @@
       }
     },
     "born-officer": {
-      "label": "Wick \u2014 Born Officer",
+      "label": "Wick — Born Officer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/born-officer.png",
       "sha256": "39716f2b9f97045dd60d83ea7adc682619073a29f822971e04864c3d55051230",
@@ -4427,7 +4427,7 @@
       }
     },
     "cold-case": {
-      "label": "Wick \u2014 Cold Case",
+      "label": "Wick — Cold Case",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/cold-case.png",
       "sha256": "f67434ca669f237eb6e956addec0c1db7ddc6bad24a9de74d04d13c26a481b59",
@@ -4451,7 +4451,7 @@
       }
     },
     "interrogator": {
-      "label": "Wick \u2014 Interrogator",
+      "label": "Wick — Interrogator",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/interrogator.png",
       "sha256": "6f7b1c0c28d20143b608bcc46e9ccc27860c23fac204ddf3f20eea076abb7953",
@@ -4475,7 +4475,7 @@
       }
     },
     "trench-poet": {
-      "label": "Wick \u2014 Trench Poet",
+      "label": "Wick — Trench Poet",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/trench-poet.png",
       "sha256": "a4f05c4eb5143842c45dcecbda21fb6d25460882757d054f27e86094b814efcc",
@@ -4499,7 +4499,7 @@
       }
     },
     "grudge-bearer": {
-      "label": "Wick \u2014 Grudge Bearer",
+      "label": "Wick — Grudge Bearer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/grudge-bearer.png",
       "sha256": "12414614c56bffc88d1bce715264efc7f0353fca22a9a8e147b348074a5651da",
@@ -4523,7 +4523,7 @@
       }
     },
     "crowded-head": {
-      "label": "Wick \u2014 Crowded Head",
+      "label": "Wick — Crowded Head",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/crowded-head.png",
       "sha256": "6aa4a81dc3fbc8768ab09d1b949b3bda15f697a25a11d905091c5c7087d357f5",
@@ -4547,7 +4547,7 @@
       }
     },
     "market-blood": {
-      "label": "Wick \u2014 Market Blood",
+      "label": "Wick — Market Blood",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/market-blood.png",
       "sha256": "744a071725f8bd9b8b02356abbb91c8581630be4d50e50054e2e36e7c9399c91",
@@ -4571,7 +4571,7 @@
       }
     },
     "cover-story": {
-      "label": "Wick \u2014 Cover Story",
+      "label": "Wick — Cover Story",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/cover-story.png",
       "sha256": "b917db45551a1968ee8e4aca8873d64d672f2391f59df618b83970d0d37a46c0",
@@ -4595,7 +4595,7 @@
       }
     },
     "inner-ring-heir": {
-      "label": "Wick \u2014 Inner Ring Heir",
+      "label": "Wick — Inner Ring Heir",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/inner-ring-heir.png",
       "sha256": "f3c77737f26c905146197cee544e7dafb57e2f97ffbdd4227d55418a899745ca",
@@ -4619,7 +4619,7 @@
       }
     },
     "slicer": {
-      "label": "Wick \u2014 Slicer",
+      "label": "Wick — Slicer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/slicer.png",
       "sha256": "08c394258eca5656880e5023b4e2d39e6db58c88128dbfbd662eaae35181911d",
@@ -4643,7 +4643,7 @@
       }
     },
     "demolitionist": {
-      "label": "Wick \u2014 Demolitionist",
+      "label": "Wick — Demolitionist",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/demolitionist.png",
       "sha256": "a62fb11217093689ca91ccd94efa150b0ad13d30d605ba6f36ffb31407185183",
@@ -4667,7 +4667,7 @@
       }
     },
     "drone-handler": {
-      "label": "Wick \u2014 Drone Handler",
+      "label": "Wick — Drone Handler",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/drone-handler.png",
       "sha256": "15e00687692bede0c93a7f1255bd57d464cf85a9091585cd5bfcd495bc40649f",
@@ -4691,7 +4691,7 @@
       }
     },
     "augmented": {
-      "label": "Wick \u2014 Augmented",
+      "label": "Wick — Augmented",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/augmented.png",
       "sha256": "3150ef92b7ff968e2d6791f15d16b9c416c3da44a39d5c70aa4f2c9ab78cee1a",
@@ -4715,7 +4715,7 @@
       }
     },
     "true-believer": {
-      "label": "Wick \u2014 True Believer",
+      "label": "Wick — True Believer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/true-believer.png",
       "sha256": "21b86740434fe6f491660221227eac28acae1de891397843ab2ad901e178672f",
@@ -4739,7 +4739,7 @@
       }
     },
     "heavens-faithful": {
-      "label": "Wick \u2014 Heaven's Faithful",
+      "label": "Wick — Heaven's Faithful",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/heavens-faithful.png",
       "sha256": "e1ddff8af1cf463edf382ebe59ef6d681b2a1e7cb5047ad1a24bf85bc5dc0043",
@@ -4763,7 +4763,7 @@
       }
     },
     "occultist": {
-      "label": "Wick \u2014 Occultist",
+      "label": "Wick — Occultist",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/occultist.png",
       "sha256": "e40ae58d03174161828357d41afaded741634bf0358e71548dcc72ca0a122b3b",
@@ -4787,7 +4787,7 @@
       }
     },
     "crawler-blooded": {
-      "label": "Wick \u2014 Crawler-Blooded",
+      "label": "Wick — Crawler-Blooded",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/crawler-blooded.png",
       "sha256": "e48ef15aacfc2d174c333700a4f54c826079600807e25966393f3986a1f5499c",
@@ -4811,7 +4811,7 @@
       }
     },
     "old-timer": {
-      "label": "Wick \u2014 Old Timer",
+      "label": "Wick — Old Timer",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/old-timer.png",
       "sha256": "48e89f878f7f0b634f9706cc3bae4617db4d06599ee25a6eb1d42987c5d19b52",
@@ -4835,7 +4835,7 @@
       }
     },
     "pacifist": {
-      "label": "Wick \u2014 Pacifist",
+      "label": "Wick — Pacifist",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/pacifist.png",
       "sha256": "3e911ffa8a9febc8fa3165dd99b4b1947ee3c839e7da86990303f5cdf189a916",
@@ -4859,7 +4859,7 @@
       }
     },
     "moon-hunter": {
-      "label": "Wick \u2014 Moon Hunter",
+      "label": "Wick — Moon Hunter",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/moon-hunter.png",
       "sha256": "d3ae20d433e911f02170ed92767fd36f6f0f9bdb0264c754b6ecd2e3a2fcffb7",
@@ -4883,7 +4883,7 @@
       }
     },
     "beast-handler": {
-      "label": "Wick \u2014 Beast Handler",
+      "label": "Wick — Beast Handler",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/beast-handler.png",
       "sha256": "3fb0f35869d7dd730a0f956b7545da688635249b3c2037bf54e49c3ee0cda2fb",
@@ -4907,7 +4907,7 @@
       }
     },
     "ace-pilot": {
-      "label": "Wick \u2014 Ace Pilot",
+      "label": "Wick — Ace Pilot",
       "collection": "wick-production-v1",
       "path": "art/traits/wick/production-v1/ace-pilot.png",
       "sha256": "a5989b18d518aef797b912484dca317c85036f2939f91d555d8f176a0783a4cb",
@@ -4933,25 +4933,25 @@
   },
   "character_collections": {
     "new-faces": {
-      "label": "New Faces \u2014 world characters",
+      "label": "New Faces — world characters",
       "path": "art/character-portraits/heavenprint-new-faces",
       "count": 27,
       "use": "Named original characters, each painted to embody one skill. Pool for random NPCs; names are proposals, not canon."
     },
     "original-heavenprint": {
-      "label": "Original Heavenprint \u2014 world characters",
+      "label": "Original Heavenprint — world characters",
       "path": "art/character-portraits/original-heavenprint",
       "count": 27,
       "use": "Unnamed original characters, each painted to embody one skill. Pool for random NPCs."
     },
     "first-patch-revival": {
-      "label": "First-Patch Revival \u2014 the EPCCG cast",
+      "label": "First-Patch Revival — the EPCCG cast",
       "path": "art/character-portraits/first-patch-revival",
       "count": 27,
       "use": "Named EPCCG characters (the 27 people quoted in the EPCCG skill entries)."
     },
     "m813": {
-      "label": "M813 \u2014 MPAT and the tutorial cast",
+      "label": "M813 — MPAT and the tutorial cast",
       "path": "art/character-portraits/m813",
       "count": 18,
       "version": 2,
@@ -4969,7 +4969,7 @@
   "character_collections_note": "All three sets were first painted as skill icons (one character per skill). Playtesters found it made no sense for skills to be people in the world, so skills became the abstract figures in art/skills/. All three sets are now character portraits. historical_skill_id records which skill each was painted to embody.",
   "perks": {
     "field-surgeon": {
-      "label": "Wick \u2014 Field Surgeon",
+      "label": "Wick — Field Surgeon",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/round-3/field-surgeon.png",
       "sha256": "e12f6c9406f1aa817722ccd55beeedcbb7c03302d717b297067c71b376985a9e",
@@ -4996,7 +4996,7 @@
       "previous_revision_path": "art/traits/wick/test-set-1/revisions/field-surgeon.png"
     },
     "supreme-command": {
-      "label": "Wick \u2014 Supreme Command",
+      "label": "Wick — Supreme Command",
       "collection": "wick-test-set-1-revisions",
       "path": "art/traits/wick/test-set-1/revisions/round-4/supreme-command.png",
       "sha256": "b6acf30c1da7626d665a6eccd7c84666583882b41fc71b7ae801eec3ea092076",
@@ -5025,7 +5025,7 @@
       "previous_revision_path": "art/traits/wick/test-set-1/revisions/supreme-command.png"
     },
     "bulwark": {
-      "label": "Wick \u2014 Bulwark",
+      "label": "Wick — Bulwark",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/bulwark.png",
       "sha256": "cfd23b5e5064c3acbadc95e2adf1c1fdaa82054e704752ea36c1655075780902",
@@ -5049,7 +5049,7 @@
       }
     },
     "shrug-it-off": {
-      "label": "Wick \u2014 Shrug It Off",
+      "label": "Wick — Shrug It Off",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/shrug-it-off.png",
       "sha256": "c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e",
@@ -5073,7 +5073,7 @@
       }
     },
     "used-to-the-pain": {
-      "label": "Wick \u2014 Used to the Pain",
+      "label": "Wick — Used to the Pain",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/used-to-the-pain.png",
       "sha256": "aeea9d63e98ee791a428ff6988ea92a3f737a99cdf2659d6e2abb288fd2b2706",
@@ -5097,7 +5097,7 @@
       }
     },
     "scar-tissue": {
-      "label": "Wick \u2014 Scar Tissue",
+      "label": "Wick — Scar Tissue",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/scar-tissue.png",
       "sha256": "ad9f81cfac6f04d7ef4224bbedc266c45aac3721d9e5629c4a74adfe713a6dea",
@@ -5121,7 +5121,7 @@
       }
     },
     "wind-on-the-skin": {
-      "label": "Wick \u2014 Wind on the Skin",
+      "label": "Wick — Wind on the Skin",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/wind-on-the-skin.png",
       "sha256": "3b6d0e969f93f22ba42f83a0b3b34a444c394c15a9cc29d00c17995c92cee31a",
@@ -5145,7 +5145,7 @@
       }
     },
     "bedside-manner": {
-      "label": "Wick \u2014 Bedside Manner",
+      "label": "Wick — Bedside Manner",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/bedside-manner.png",
       "sha256": "88698e6aa1c10ffebf8bc0c8020088a44f00a4887e723094d43d1afce831cc9a",
@@ -5169,7 +5169,7 @@
       }
     },
     "breaching-strike": {
-      "label": "Wick \u2014 Breaching Strike",
+      "label": "Wick — Breaching Strike",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/breaching-strike.png",
       "sha256": "dc64b9b975d5ad5e7d8d2e5cea0e5f36a9366ca72b672969356dce6e7be149b5",
@@ -5193,7 +5193,7 @@
       }
     },
     "grapple": {
-      "label": "Wick \u2014 Grapple",
+      "label": "Wick — Grapple",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/grapple.png",
       "sha256": "599e091b6e9cb044e28a38260fec3c3d86b5e7e82dfea1bfcfee6c609d48653c",
@@ -5217,7 +5217,7 @@
       }
     },
     "into-the-dark": {
-      "label": "Wick \u2014 Into the Dark",
+      "label": "Wick — Into the Dark",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/into-the-dark.png",
       "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad",
@@ -5245,7 +5245,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/into-the-dark.png"
     },
     "iron-stomach": {
-      "label": "Wick \u2014 Iron Stomach",
+      "label": "Wick — Iron Stomach",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/iron-stomach.png",
       "sha256": "6825d55077dce6315b2b1a333634bced5cd4ac91d03a1a88bde713ceae445ab3",
@@ -5269,7 +5269,7 @@
       }
     },
     "grim-reaper": {
-      "label": "Wick \u2014 Grim Reaper",
+      "label": "Wick — Grim Reaper",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/grim-reaper.png",
       "sha256": "1af37818f9a89684c17918e4a8ef0114a205649e077bc39cec4b46097e651743",
@@ -5293,7 +5293,7 @@
       }
     },
     "bone-talk": {
-      "label": "Wick \u2014 Bone Talk",
+      "label": "Wick — Bone Talk",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/bone-talk.png",
       "sha256": "00576be483b0cc19ce0caa8e0f4168cf27e9dc987b8ccb476df5ecf4b3d18ff4",
@@ -5317,7 +5317,7 @@
       }
     },
     "wall-run": {
-      "label": "Wick \u2014 Wall Run",
+      "label": "Wick — Wall Run",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/wall-run.png",
       "sha256": "0ec9d2022d26a4d0e8b94f57ca50777117503738e82e8cc9896f3de9f49ba6fa",
@@ -5341,7 +5341,7 @@
       }
     },
     "roll-with-it": {
-      "label": "Wick \u2014 Roll With It",
+      "label": "Wick — Roll With It",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/roll-with-it.png",
       "sha256": "53174d3432e8764758296d4c6b986eaaaba9d71130417e8e4548ad972451ae35",
@@ -5365,7 +5365,7 @@
       }
     },
     "origami-hands": {
-      "label": "Wick \u2014 Origami Hands",
+      "label": "Wick — Origami Hands",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/origami-hands.png",
       "sha256": "3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9",
@@ -5389,7 +5389,7 @@
       }
     },
     "running-reload": {
-      "label": "Wick \u2014 Running Reload",
+      "label": "Wick — Running Reload",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/running-reload.png",
       "sha256": "2f308ab2e6541caf456e8839495771730a6b042e5487249f8e6aae506acd72e6",
@@ -5413,7 +5413,7 @@
       }
     },
     "rounding-up": {
-      "label": "Wick \u2014 Rounding Up",
+      "label": "Wick — Rounding Up",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/rounding-up.png",
       "sha256": "2a203f3bc83ffdeb15c2441a1e4a8aed048927efcf83a3a21e0fb82338211346",
@@ -5437,7 +5437,7 @@
       }
     },
     "catch": {
-      "label": "Wick \u2014 Catch",
+      "label": "Wick — Catch",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/catch.png",
       "sha256": "b019edb80709a754b8966d6d158a3a748c3545ad6e257657595c9799c5db15de",
@@ -5461,7 +5461,7 @@
       }
     },
     "sleight-of-hand": {
-      "label": "Wick \u2014 Sleight of Hand",
+      "label": "Wick — Sleight of Hand",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/sleight-of-hand.png",
       "sha256": "c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161",
@@ -5485,7 +5485,7 @@
       }
     },
     "shadow-step": {
-      "label": "Wick \u2014 Shadow Step",
+      "label": "Wick — Shadow Step",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/shadow-step.png",
       "sha256": "07db9826e5e267b6f64d4e596c0cc0fbaecfef02cebce413621fbfb5c46decda",
@@ -5509,7 +5509,7 @@
       }
     },
     "jury-rig": {
-      "label": "Wick \u2014 Jury-Rig",
+      "label": "Wick — Jury-Rig",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/jury-rig.png",
       "sha256": "4406d87940e5cafcc2326a7bc29640e08687fa5fd9f58e6b3abeee346ef81b4f",
@@ -5533,7 +5533,7 @@
       }
     },
     "hot-swap": {
-      "label": "Wick \u2014 Hot-Swap",
+      "label": "Wick — Hot-Swap",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/hot-swap.png",
       "sha256": "8a5119a66d6f88cbeed23261b7f6584b92f16518b44c136a2dc3632f50947fb9",
@@ -5557,7 +5557,7 @@
       }
     },
     "got-you-in-my-sight": {
-      "label": "Wick \u2014 Got You in My Sight",
+      "label": "Wick — Got You in My Sight",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/got-you-in-my-sight.png",
       "sha256": "1206dad25818b3b74649c4a0e89993cf04eb1d54923a70500f79cc9635e19a44",
@@ -5581,7 +5581,7 @@
       }
     },
     "eyes-in-the-back": {
-      "label": "Wick \u2014 Eyes in the Back",
+      "label": "Wick — Eyes in the Back",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/eyes-in-the-back.png",
       "sha256": "627a28d60c5ab332ec18e45a2ded9c1700da32a31cefc3993627752fa596fe69",
@@ -5605,7 +5605,7 @@
       }
     },
     "hold-the-stroke": {
-      "label": "Wick \u2014 Hold the Stroke",
+      "label": "Wick — Hold the Stroke",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/hold-the-stroke.png",
       "sha256": "dd89f4e2135fab19e8d9d7f1a4b2e31730d1fd79bff1764b8ebbb0c9507aab78",
@@ -5629,7 +5629,7 @@
       }
     },
     "parallel-thought": {
-      "label": "Wick \u2014 Parallel Thought",
+      "label": "Wick — Parallel Thought",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/parallel-thought.png",
       "sha256": "360447b90e393a4d96b3194598372152ffc967ba3cf4bd48d05237f085f6bcbf",
@@ -5653,7 +5653,7 @@
       }
     },
     "footnote": {
-      "label": "Wick \u2014 Footnote",
+      "label": "Wick — Footnote",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/footnote.png",
       "sha256": "449bdb3c4952e9900712164a7c5d347b19929b604a36eafc71b4f0463425bc64",
@@ -5677,7 +5677,7 @@
       }
     },
     "lab-coat": {
-      "label": "Wick \u2014 Lab Coat",
+      "label": "Wick — Lab Coat",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/lab-coat.png",
       "sha256": "856da7ba1b88b2e81d4f725e6e34521db746b8dfae7d073aab6382bfc2604cad",
@@ -5701,7 +5701,7 @@
       }
     },
     "overruled": {
-      "label": "Wick \u2014 Overruled!",
+      "label": "Wick — Overruled!",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/overruled.png",
       "sha256": "e7d456d30e7c19875de90047ecfd1940a5e025c97eb779aa32f74c673c3040b6",
@@ -5725,7 +5725,7 @@
       }
     },
     "burden-of-proof": {
-      "label": "Wick \u2014 Burden of Proof",
+      "label": "Wick — Burden of Proof",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/burden-of-proof.png",
       "sha256": "3ddae6b09d2c6a3a650ef861a5e54bcf1368b47603b6fde8582c19bd05962369",
@@ -5749,7 +5749,7 @@
       }
     },
     "mirage": {
-      "label": "Wick \u2014 Mirage",
+      "label": "Wick — Mirage",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/mirage.png",
       "sha256": "6605ced5415055069a6a38ab981de041a7060382fc92998745a999a81af46d09",
@@ -5773,7 +5773,7 @@
       }
     },
     "blueprint": {
-      "label": "Wick \u2014 Blueprint",
+      "label": "Wick — Blueprint",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/blueprint.png",
       "sha256": "c8502dd54eab14e50b0d65f5c055863cb886eb5c526500733c5d9ce5ab86cc3e",
@@ -5797,7 +5797,7 @@
       }
     },
     "detectives-eye": {
-      "label": "Wick \u2014 Detective's Eye",
+      "label": "Wick — Detective's Eye",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/detectives-eye.png",
       "sha256": "736ed86831e7a2221202135c547e6f5dc17207bf3ab7dfe0a2d8bbd65e3c9a52",
@@ -5821,7 +5821,7 @@
       }
     },
     "pattern-lock": {
-      "label": "Wick \u2014 Pattern Lock",
+      "label": "Wick — Pattern Lock",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/pattern-lock.png",
       "sha256": "d903c5b52fafa3ce40fc7b1f04fd695b879f73a81d51fdc2e03e09490816951c",
@@ -5845,7 +5845,7 @@
       }
     },
     "talks-broke-down": {
-      "label": "Wick \u2014 Talks Broke Down",
+      "label": "Wick — Talks Broke Down",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/talks-broke-down.png",
       "sha256": "9ff7caf955c5f8ce29df363a66c106cb34927ffabd88a9d213b1ffaf00057bb7",
@@ -5869,7 +5869,7 @@
       }
     },
     "crowd-pleaser": {
-      "label": "Wick \u2014 Crowd Pleaser",
+      "label": "Wick — Crowd Pleaser",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/crowd-pleaser.png",
       "sha256": "8d10c11cca353fcff23934b335ceed2ec13a8e429352766b0d1a0f9011e3cc6c",
@@ -5893,7 +5893,7 @@
       }
     },
     "shared-breath": {
-      "label": "Wick \u2014 Shared Breath",
+      "label": "Wick — Shared Breath",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/shared-breath.png",
       "sha256": "6c86bc6c428761f0f5cc217707ba0b351cb9fa0a3bc2a4e9a0e75d7f907fa36b",
@@ -5917,7 +5917,7 @@
       }
     },
     "lay-down-arms": {
-      "label": "Wick \u2014 Lay Down Arms",
+      "label": "Wick — Lay Down Arms",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/lay-down-arms.png",
       "sha256": "4041e4644d3bc2db32f3d8c19d6458aa10993c6574837c5e3dd9608916f820d5",
@@ -5941,7 +5941,7 @@
       }
     },
     "soulmate": {
-      "label": "Wick \u2014 Soulmate",
+      "label": "Wick — Soulmate",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/soulmate.png",
       "sha256": "3476404f20dd0e61ed4a40d33639e9168ea038605cd751aad2790c27490bcea8",
@@ -5965,7 +5965,7 @@
       }
     },
     "rally-cry": {
-      "label": "Wick \u2014 Rally Cry",
+      "label": "Wick — Rally Cry",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/rally-cry.png",
       "sha256": "be1c96b1364db87643416cfd75171a5c528d142919e6838a1a449d78bf79f015",
@@ -5989,7 +5989,7 @@
       }
     },
     "sweet-talker": {
-      "label": "Wick \u2014 Sweet Talker",
+      "label": "Wick — Sweet Talker",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/sweet-talker.png",
       "sha256": "e856b0b08661d456e8d961a276f4158c81d2d348e94e9445360d9ebf4ff546fc",
@@ -6013,7 +6013,7 @@
       }
     },
     "double-meaning": {
-      "label": "Wick \u2014 Double Meaning",
+      "label": "Wick — Double Meaning",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/double-meaning.png",
       "sha256": "1bd7e0fdc30f4314fcc62ccce84daf07ee6c60bee32d29f93c8081a36ac959e0",
@@ -6037,7 +6037,7 @@
       }
     },
     "heart-overload": {
-      "label": "Wick \u2014 Heart Overload",
+      "label": "Wick — Heart Overload",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/heart-overload.png",
       "sha256": "1de31002763ed9b22ca5bd7d180fa859466d6dac7ed703b636f811f0e073ba0e",
@@ -6061,7 +6061,7 @@
       }
     },
     "resonance": {
-      "label": "Wick \u2014 Resonance",
+      "label": "Wick — Resonance",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/resonance.png",
       "sha256": "026ddf3b51a513d00756ab16249f5b19c9873516a71efe0efee108ae4161f251",
@@ -6085,7 +6085,7 @@
       }
     },
     "old-tongue": {
-      "label": "Wick \u2014 Old Tongue",
+      "label": "Wick — Old Tongue",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/old-tongue.png",
       "sha256": "32fa00cd9e1aae4c922128f2e6aa7e020cb16a3b7f3248add612c34cfa882771",
@@ -6109,7 +6109,7 @@
       }
     },
     "rite-in-the-field": {
-      "label": "Wick \u2014 Rite in the Field",
+      "label": "Wick — Rite in the Field",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/rite-in-the-field.png",
       "sha256": "b0cc974c9e15790c1d1cfae0a5fed26c845eff2e84a03a7b890e970def12c597",
@@ -6133,7 +6133,7 @@
       }
     },
     "you-get-used-to-it": {
-      "label": "Wick \u2014 You Get Used to It",
+      "label": "Wick — You Get Used to It",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/you-get-used-to-it.png",
       "sha256": "666fc84ce0f2a29241323dfb1cfb3e1c406289ac0eb6916e3322cf729be8b64e",
@@ -6157,7 +6157,7 @@
       }
     },
     "flat-line": {
-      "label": "Wick \u2014 Flat Line",
+      "label": "Wick — Flat Line",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/flat-line.png",
       "sha256": "e8624b84c299255559a7cbecd1dd81c863477de942ced2f1bbef5673a60c6f16",
@@ -6181,7 +6181,7 @@
       }
     },
     "litany": {
-      "label": "Wick \u2014 Litany",
+      "label": "Wick — Litany",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/litany.png",
       "sha256": "35723a7b8ce5f1d8e354e3e25cb62d88e9b8b2f6f115c6c4aec086bb58317ffd",
@@ -6205,7 +6205,7 @@
       }
     },
     "holy-ordnance": {
-      "label": "Wick \u2014 Holy Ordnance",
+      "label": "Wick — Holy Ordnance",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/holy-ordnance.png",
       "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4",
@@ -6233,7 +6233,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/holy-ordnance.png"
     },
     "red-line": {
-      "label": "Wick \u2014 Red Line",
+      "label": "Wick — Red Line",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/red-line.png",
       "sha256": "9998a9892e26b748e7fe5982dde860a293717f434f338a14be6ec22d9d784f9e",
@@ -6257,7 +6257,7 @@
       }
     },
     "clean-hands": {
-      "label": "Wick \u2014 Clean Hands",
+      "label": "Wick — Clean Hands",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/clean-hands.png",
       "sha256": "6c50eb5cd85dc41ca01d375c83a35e8e88007a51d72f99ded2c657fe67943acb",
@@ -6281,7 +6281,7 @@
       }
     },
     "outclassed": {
-      "label": "Wick \u2014 Outclassed",
+      "label": "Wick — Outclassed",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/outclassed.png",
       "sha256": "33026562cc74514b7d1b75eef19d14b582d16210717d70449822ea2317bc599c",
@@ -6305,7 +6305,7 @@
       }
     },
     "real-power": {
-      "label": "Wick \u2014 Real Power",
+      "label": "Wick — Real Power",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/real-power.png",
       "sha256": "088e0b295407d78f1ce5976bf5f5612b4abae19d6de042778a615d4aab17b6d5",
@@ -6330,7 +6330,7 @@
       "tier": "acquired"
     },
     "charge": {
-      "label": "Wick \u2014 Charge!",
+      "label": "Wick — Charge!",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/charge.png",
       "sha256": "f4e5a4336d1193bab9c0493518fa430a9012f486ab090efd422a1fd68b2cf5c0",
@@ -6355,7 +6355,7 @@
       "tier": "achieved"
     },
     "make-way": {
-      "label": "Wick \u2014 Make Way",
+      "label": "Wick — Make Way",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/make-way.png",
       "sha256": "c124e046de1e5d21744e19bf1292fd91959b0ec69675b8e459fb0c06e75b0723",
@@ -6383,7 +6383,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/make-way.png"
     },
     "just-the-repairman": {
-      "label": "Wick \u2014 Just the Repairman",
+      "label": "Wick — Just the Repairman",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/just-the-repairman.png",
       "sha256": "0e94f8cedc2bc2d6d6f9c1f9f1807196118312cff0ecb49b77d2c8438bfd9d76",
@@ -6408,7 +6408,7 @@
       "tier": "achieved"
     },
     "spoon-feed": {
-      "label": "Wick \u2014 Spoon-Feed",
+      "label": "Wick — Spoon-Feed",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/spoon-feed.png",
       "sha256": "68338b6f2e3498cfcde0b1f4bf4d21232c040eed3d4fd5183103423ad0fc0277",
@@ -6433,7 +6433,7 @@
       "tier": "achieved"
     },
     "cultured": {
-      "label": "Wick \u2014 Cultured",
+      "label": "Wick — Cultured",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/cultured.png",
       "sha256": "3c35d4fb0f080f598a2597130982abd47b8f946933354e38ee176e28a8f1d182",
@@ -6458,7 +6458,7 @@
       "tier": "achieved"
     },
     "dance-of-iron": {
-      "label": "Wick \u2014 Dance of Iron",
+      "label": "Wick — Dance of Iron",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/dance-of-iron.png",
       "sha256": "b1ad4970a479e46bab581b5fd4debd100e148f86f48a30f34aa79abb7336146a",
@@ -6483,7 +6483,7 @@
       "tier": "achieved"
     },
     "cold-read": {
-      "label": "Wick \u2014 Cold Read",
+      "label": "Wick — Cold Read",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/cold-read.png",
       "sha256": "f0faaeef5b7c690023e00cfd7c7eee9ca05d940c082c2acd65d3feb58399d271",
@@ -6508,7 +6508,7 @@
       "tier": "achieved"
     },
     "fire-sermon": {
-      "label": "Wick \u2014 Fire Sermon",
+      "label": "Wick — Fire Sermon",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/fire-sermon.png",
       "sha256": "9d5727d5e12a36d36ccd654e1117eff3723afae104e1b9253ba9c2947601f88c",
@@ -6533,7 +6533,7 @@
       "tier": "achieved"
     },
     "silent-partner": {
-      "label": "Wick \u2014 Silent Partner",
+      "label": "Wick — Silent Partner",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/silent-partner.png",
       "sha256": "af95ce6307cf0a5b586d529845b37276b27c224e726a89e83f834a3e1de56a02",
@@ -6558,7 +6558,7 @@
       "tier": "achieved"
     },
     "verse-of-war": {
-      "label": "Wick \u2014 Verse of War",
+      "label": "Wick — Verse of War",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/verse-of-war.png",
       "sha256": "931c200b1a129c131f93ef0414fb7b805ec34d877b6042ff5bd2dadbdb9f3c5c",
@@ -6586,7 +6586,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/verse-of-war.png"
     },
     "between-heartbeats": {
-      "label": "Wick \u2014 Between Heartbeats",
+      "label": "Wick — Between Heartbeats",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/between-heartbeats.png",
       "sha256": "7f9972d9cd55aa95a13a255e1c5ac6ec873fbc9d1401786e434db4b0315d47d4",
@@ -6611,7 +6611,7 @@
       "tier": "achieved"
     },
     "siege-engine": {
-      "label": "Wick \u2014 Siege Engine",
+      "label": "Wick — Siege Engine",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/siege-engine.png",
       "sha256": "14053cc1e357a3aaa6f0bb052503f5ed892ba17fe1c9d5608622e12d03de2744",
@@ -6636,7 +6636,7 @@
       "tier": "achieved"
     },
     "dead-signal": {
-      "label": "Wick \u2014 Dead Signal",
+      "label": "Wick — Dead Signal",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/dead-signal.png",
       "sha256": "673d771942d5cea1ac4e072284201e61c3d21df2007b6b3655ee52057b9cd1cf",
@@ -6661,7 +6661,7 @@
       "tier": "achieved"
     },
     "twin-souls": {
-      "label": "Wick \u2014 Twin Souls",
+      "label": "Wick — Twin Souls",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/twin-souls.png",
       "sha256": "6e531bab5f504810adeb3794a332c30a45cd45910f0a17147bf5867bb6890c97",
@@ -6686,7 +6686,7 @@
       "tier": "achieved"
     },
     "the-voice": {
-      "label": "Wick \u2014 The Voice",
+      "label": "Wick — The Voice",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/the-voice.png",
       "sha256": "efdc9b1258cc361d559fef986c1a338df80fa1b113840a08a1f7ea7675c80d3b",
@@ -6711,7 +6711,7 @@
       "tier": "achieved"
     },
     "war-footing": {
-      "label": "Wick \u2014 War Footing",
+      "label": "Wick — War Footing",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/war-footing.png",
       "sha256": "4c18229512a4449a2b8a3fe454f2d0d7138a7b74c76be94e8b312fb01c319ae9",
@@ -6737,7 +6737,7 @@
       "visibility": "awarded-only"
     },
     "last-charge": {
-      "label": "Wick \u2014 Last Charge",
+      "label": "Wick — Last Charge",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/last-charge.png",
       "sha256": "f355e0d81e9de5e029c3af7833baade922ba1d73d73b26c54ef5b76dc3a3c295",
@@ -6766,7 +6766,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/last-charge.png"
     },
     "angel-of-the-trenches": {
-      "label": "Wick \u2014 Angel of the Trenches",
+      "label": "Wick — Angel of the Trenches",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/angel-of-the-trenches.png",
       "sha256": "ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6",
@@ -6792,7 +6792,7 @@
       "visibility": "awarded-only"
     },
     "every-lie-is-a-door": {
-      "label": "Wick \u2014 Every Lie Is a Door",
+      "label": "Wick — Every Lie Is a Door",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/every-lie-is-a-door.png",
       "sha256": "d10a9f21acd7dc0ce45722e1cf62f622441e66e938f92542843002c1fcc455e9",
@@ -6818,7 +6818,7 @@
       "visibility": "awarded-only"
     },
     "twin-discipline": {
-      "label": "Wick \u2014 Twin Discipline",
+      "label": "Wick — Twin Discipline",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/twin-discipline.png",
       "sha256": "a4dc08eda9a781cd7709a7983d7ca5315f91eb41c3882903405b6bd6d355a0fa",
@@ -6844,7 +6844,7 @@
       "visibility": "awarded-only"
     },
     "bite-the-bullet": {
-      "label": "Wick \u2014 Bite the Bullet",
+      "label": "Wick — Bite the Bullet",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/bite-the-bullet.png",
       "sha256": "7eeeee539d0e962b68d8b5be28c1406084ce6a114ef49b2e5b332f6ac98e6ac4",
@@ -6869,7 +6869,7 @@
       "tier": "achieved"
     },
     "sixth-sense": {
-      "label": "Wick \u2014 Sixth Sense",
+      "label": "Wick — Sixth Sense",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/sixth-sense.png",
       "sha256": "ab9961d2ab4af82353e3c659bb7897a527d4acbed295c0d3ae7c6991000c6f53",
@@ -6894,7 +6894,7 @@
       "tier": "achieved"
     },
     "what-could-be": {
-      "label": "Wick \u2014 What Could Be",
+      "label": "Wick — What Could Be",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/what-could-be.png",
       "sha256": "12c3a57db3f1a7f970c66e50a7d0819ab6b81048fbda5dd3bf17cba0bec935e5",
@@ -6919,7 +6919,7 @@
       "tier": "achieved"
     },
     "last-wall": {
-      "label": "Wick \u2014 Last Wall",
+      "label": "Wick — Last Wall",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/last-wall.png",
       "sha256": "40e302a8b87d453883cedec6e36c8a073111c6def92eda62bb3f61ab3ad8496e",
@@ -6946,7 +6946,7 @@
       "medallion_safe_circle": 0.9
     },
     "walking-wounded": {
-      "label": "Wick \u2014 Walking Wounded",
+      "label": "Wick — Walking Wounded",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/walking-wounded.png",
       "sha256": "783a18fa21c352858a570e715812fcc9fc8a2c4f6ac89fef7e68fa772f87dbc4",
@@ -6973,7 +6973,7 @@
       "medallion_safe_circle": 0.9
     },
     "skin-map": {
-      "label": "Wick \u2014 Skin Map",
+      "label": "Wick — Skin Map",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/skin-map.png",
       "sha256": "6a91bb570d5fa46d43c019cdde10423abef21e3cf71cd6fc545d3707dfdbc021",
@@ -7000,7 +7000,7 @@
       "medallion_safe_circle": 0.9
     },
     "earthbreaker": {
-      "label": "Wick \u2014 Earthbreaker",
+      "label": "Wick — Earthbreaker",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/earthbreaker.png",
       "sha256": "ea9fc47cddefe9abbfecac0f776f8e0432358823c6b204b00ba822d7eb34f047",
@@ -7027,7 +7027,7 @@
       "medallion_safe_circle": 0.9
     },
     "nothing-left-to-fear": {
-      "label": "Wick \u2014 Nothing Left to Fear",
+      "label": "Wick — Nothing Left to Fear",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/nothing-left-to-fear.png",
       "sha256": "7423f320ddaa42bbd9963ccfefd6abb635ee7b1ed29f28681ffe36a5c46f4dd3",
@@ -7054,7 +7054,7 @@
       "medallion_safe_circle": 0.9
     },
     "the-name-they-whisper": {
-      "label": "Wick \u2014 The Name They Whisper",
+      "label": "Wick — The Name They Whisper",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/the-name-they-whisper.png",
       "sha256": "31bc47d1540c122a0458755a77a0a90847bae888fb51e08efd8c87f1638b3c38",
@@ -7081,7 +7081,7 @@
       "medallion_safe_circle": 0.9
     },
     "never-there": {
-      "label": "Wick \u2014 Never There",
+      "label": "Wick — Never There",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/never-there.png",
       "sha256": "cac47e09783c2fff00d502ce4063b2ef3affdad166896c72749fb1198bf6c1e2",
@@ -7108,7 +7108,7 @@
       "medallion_safe_circle": 0.9
     },
     "trick-shot": {
-      "label": "Wick \u2014 Trick Shot",
+      "label": "Wick — Trick Shot",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/trick-shot.png",
       "sha256": "362a1afe137652ad96fd92c64725da5c990bd560b1ef4c1afb200415713f52f3",
@@ -7135,7 +7135,7 @@
       "medallion_safe_circle": 0.9
     },
     "before-the-blink": {
-      "label": "Wick \u2014 Before the Blink",
+      "label": "Wick — Before the Blink",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/before-the-blink.png",
       "sha256": "7a1b47f867faed3a0b0758f47f96b97111a33780be0c933fc4094b5732462be1",
@@ -7162,7 +7162,7 @@
       "medallion_safe_circle": 0.9
     },
     "vanishing-act": {
-      "label": "Wick \u2014 Vanishing Act",
+      "label": "Wick — Vanishing Act",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/vanishing-act.png",
       "sha256": "bfa39f947dfa51314ee4fb4f9c8e1623a73558a190bd114eb4bc516c3223a9e2",
@@ -7189,7 +7189,7 @@
       "medallion_safe_circle": 0.9
     },
     "overhaul": {
-      "label": "Wick \u2014 Overhaul",
+      "label": "Wick — Overhaul",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/overhaul.png",
       "sha256": "d58532bab2303a3d81f343b554697deaea7bf19aba1eaf53060e083c3e5dbf67",
@@ -7216,7 +7216,7 @@
       "medallion_safe_circle": 0.9
     },
     "nothing-gets-past": {
-      "label": "Wick \u2014 Nothing Gets Past",
+      "label": "Wick — Nothing Gets Past",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/nothing-gets-past.png",
       "sha256": "1b7f6bec26fc3011635a4c3672243b341e14ef36d73a3468db841159526298eb",
@@ -7243,7 +7243,7 @@
       "medallion_safe_circle": 0.9
     },
     "clean-draw": {
-      "label": "Wick \u2014 Clean Draw",
+      "label": "Wick — Clean Draw",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/clean-draw.png",
       "sha256": "f055a642081c161af6fb01e3ffce2fdf67f699ede5464c8749944ac143582896",
@@ -7273,7 +7273,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/clean-draw.png"
     },
     "established-fact": {
-      "label": "Wick \u2014 Established Fact",
+      "label": "Wick — Established Fact",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/established-fact.png",
       "sha256": "8b93b3083372b9151c552cb1e3e4d36deb79c027a33c47e511f51586a6d739c2",
@@ -7300,7 +7300,7 @@
       "medallion_safe_circle": 0.9
     },
     "closing-argument": {
-      "label": "Wick \u2014 Closing Argument",
+      "label": "Wick — Closing Argument",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/closing-argument.png",
       "sha256": "2cfa28262ce2c4f2a00fe272e22b0fded31ef90957d5ef97c46ca4b95bad1971",
@@ -7327,7 +7327,7 @@
       "medallion_safe_circle": 0.9
     },
     "solid-image": {
-      "label": "Wick \u2014 Solid Image",
+      "label": "Wick — Solid Image",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/solid-image.png",
       "sha256": "9ac15d707d42b4816b4b017eddd597a12b7abf57cf1d29f37004824393be98d9",
@@ -7354,7 +7354,7 @@
       "medallion_safe_circle": 0.9
     },
     "case-closed": {
-      "label": "Wick \u2014 Case Closed",
+      "label": "Wick — Case Closed",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/case-closed.png",
       "sha256": "f59c29c0de2500f272cd6cee7dee4fc04a7a6e765cacc8b444bc58202004ca1e",
@@ -7381,7 +7381,7 @@
       "medallion_safe_circle": 0.9
     },
     "everyones-friend": {
-      "label": "Wick \u2014 Everyone's Friend",
+      "label": "Wick — Everyone's Friend",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/everyones-friend.png",
       "sha256": "3adb1ef51fe75cd8dbf4c27f982f2292d5cb7e25a493c9630aed8df480f3e470",
@@ -7408,7 +7408,7 @@
       "medallion_safe_circle": 0.9
     },
     "open-hand": {
-      "label": "Wick \u2014 Open Hand",
+      "label": "Wick — Open Hand",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/open-hand.png",
       "sha256": "6c9a26b30225ad912ab1ac238a066b3769d57cd58321fecc79a258d1e8ec21a2",
@@ -7435,7 +7435,7 @@
       "medallion_safe_circle": 0.9
     },
     "many-hands": {
-      "label": "Wick \u2014 Many Hands",
+      "label": "Wick — Many Hands",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/many-hands.png",
       "sha256": "c3a9d4ec68abbd8ee8345af2132cefff892b488d3fd6ede45751475513ff1d21",
@@ -7462,7 +7462,7 @@
       "medallion_safe_circle": 0.9
     },
     "their-own-idea": {
-      "label": "Wick \u2014 Their Own Idea",
+      "label": "Wick — Their Own Idea",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/their-own-idea.png",
       "sha256": "0a793743501ec865ffc8cf44a72ae431c121a35490e397efcfc4b4b5f3704681",
@@ -7489,7 +7489,7 @@
       "medallion_safe_circle": 0.9
     },
     "the-twin-pays": {
-      "label": "Wick \u2014 The Twin Pays",
+      "label": "Wick — The Twin Pays",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/the-twin-pays.png",
       "sha256": "79611eeba5ee47688706201f945ad9cbf1501f8e124e050dfe2743e446245a22",
@@ -7516,7 +7516,7 @@
       "medallion_safe_circle": 0.9
     },
     "true-name": {
-      "label": "Wick \u2014 True Name",
+      "label": "Wick — True Name",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/true-name.png",
       "sha256": "d9d6ed4038a4aba4894b2261cc476e3aba307c598829fbcb9fdc66272de115f2",
@@ -7543,7 +7543,7 @@
       "medallion_safe_circle": 0.9
     },
     "still-water": {
-      "label": "Wick \u2014 Still Water",
+      "label": "Wick — Still Water",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/still-water.png",
       "sha256": "7c15325c0debc96a4536de3365a1cb1d5af4eccdb395309954ec2b15689b0eb1",
@@ -7570,7 +7570,7 @@
       "medallion_safe_circle": 0.9
     },
     "judgement-day": {
-      "label": "Wick \u2014 Judgement Day",
+      "label": "Wick — Judgement Day",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/revisions/v2/judgement-day.png",
       "sha256": "e0968216d85a72d837d5897de0b84da7f46df5d6783392cd59eaaf74ec3010e3",
@@ -7600,7 +7600,7 @@
       "previous_revision_path": "art/perks/wick/production-v1/judgement-day.png"
     },
     "foreseen": {
-      "label": "Wick \u2014 Foreseen",
+      "label": "Wick — Foreseen",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/foreseen.png",
       "sha256": "f5c0caebb5ab4c3e0b4d08ab3cd0120bdcf2e9a0c1fece315ff0adbda8f0c7e2",
@@ -7627,7 +7627,7 @@
       "medallion_safe_circle": 0.9
     },
     "on-my-mark": {
-      "label": "Wick \u2014 On My Mark",
+      "label": "Wick — On My Mark",
       "collection": "wick-production-v1",
       "path": "art/perks/wick/production-v1/on-my-mark.png",
       "sha256": "c9952624a72210b380606191a65eaad883e394c57998325ac91cd6c1de62a83a",
@@ -7656,7 +7656,7 @@
   },
   "illustrations": {
     "outpost813": {
-      "label": "Outpost-813 \u2014 abandoned landing pad",
+      "label": "Outpost-813 — abandoned landing pad",
       "collection": "m813-v1",
       "version": 1,
       "path": "art/illustrations/m813/v1/outpost813.png",
@@ -7670,7 +7670,7 @@
       "visibility": "opening-safe"
     },
     "outpost1-repair-bay": {
-      "label": "Outpost-1 \u2014 the last repair",
+      "label": "Outpost-1 — the last repair",
       "collection": "m813-v1",
       "version": 1,
       "path": "art/illustrations/m813/v1/spoilers/outpost1-repair-bay.png",
@@ -7695,7 +7695,7 @@
         900
       ],
       "mode": "RGB",
-      "brief_row": "| A1 | `m813-shield-line` \u00b7 `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |",
+      "brief_row": "| A1 | `m813-shield-line` · `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -7715,7 +7715,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Shield Line",
+      "label": "M813 — Shield Line",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7736,7 +7736,7 @@
         900
       ],
       "mode": "RGB",
-      "brief_row": "| A2 | `m813-rear-pad-loading` \u00b7 `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
+      "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -7757,7 +7757,7 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-rear-pad-loading.prompt.txt",
-      "label": "M813 \u2014 Rear Pad Loading",
+      "label": "M813 — Rear Pad Loading",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7777,7 +7777,7 @@
         900
       ],
       "mode": "RGB",
-      "brief_row": "| A3 | `m813-outpost-hangar` \u00b7 `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |",
+      "brief_row": "| A3 | `m813-outpost-hangar` · `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |",
       "spoiler": false,
       "visibility": "zone-entry",
       "proposal": true,
@@ -7800,7 +7800,7 @@
       "previous_path": "art/illustrations/m813/v2/outpost-hangar.png",
       "previous_revision_path": "art/illustrations/m813/v2/outpost-hangar.png",
       "revision": 2,
-      "label": "M813 \u2014 Outpost Hangar",
+      "label": "M813 — Outpost Hangar",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7820,7 +7820,7 @@
         900
       ],
       "mode": "RGB",
-      "brief_row": "| A4 | `m813-outpost-1` \u00b7 `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |",
+      "brief_row": "| A4 | `m813-outpost-1` · `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |",
       "spoiler": false,
       "visibility": "zone-entry",
       "proposal": true,
@@ -7841,7 +7841,7 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-outpost-1.prompt.txt",
-      "label": "M813 \u2014 Outpost 1",
+      "label": "M813 — Outpost 1",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7882,7 +7882,7 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-how-many.prompt.txt",
-      "label": "M813 \u2014 How Many",
+      "label": "M813 — How Many",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7925,7 +7925,7 @@
       "previous_revision_path": "art/illustrations/m813/v2/m813-the-ramp.png",
       "revision": 2,
       "prompt_path": "art/illustrations/m813/v2/revisions/v2/sources/m813-the-ramp.prompt.txt",
-      "label": "M813 \u2014 The Ramp",
+      "label": "M813 — The Ramp",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -7965,7 +7965,7 @@
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
       "prompt_path": "art/illustrations/m813/v2/sources/m813-the-choice.prompt.txt",
-      "label": "M813 \u2014 The Choice",
+      "label": "M813 — The Choice",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8008,7 +8008,7 @@
       "previous_revision_path": "art/illustrations/m813/v2/spoilers/m813-the-demand.png",
       "revision": 2,
       "prompt_path": "art/illustrations/m813/v2/spoilers/revisions/v2/sources/m813-the-demand.prompt.txt",
-      "label": "M813 \u2014 The Demand",
+      "label": "M813 — The Demand",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8018,7 +8018,7 @@
   },
   "mascot": {
     "wick-welcome": {
-      "label": "Wick \u2014 welcome pose (app mark)",
+      "label": "Wick — welcome pose (app mark)",
       "path": "art/mascot/wick-welcome.png",
       "sha256": "757b112eb8a7a3b7c263f56daa2ba211308bca455e463d0e6d1b1b54353e6939",
       "width": 1024,
@@ -8063,7 +8063,7 @@
         1100
       ],
       "mode": "RGB",
-      "brief_row": "| C1 | `map-m813-shield-line` \u00b7 `art/maps/m813/v1/shield_line.png` | The shield line | Grey ash plain, shell scars and scorch rings, tracks of the squads; west half (A\u2013F) is no-man's-land with craters and wreckage; the trench line behind the stakes; coolant stains to the east. |",
+      "brief_row": "| C1 | `map-m813-shield-line` · `art/maps/m813/v1/shield_line.png` | The shield line | Grey ash plain, shell scars and scorch rings, tracks of the squads; west half (A–F) is no-man's-land with craters and wreckage; the trench line behind the stakes; coolant stains to the east. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8087,7 +8087,7 @@
       "previous_path": "art/maps/m813/v1/shield_line.png",
       "previous_revision_path": "art/maps/m813/v1/shield_line.png",
       "revision": 2,
-      "label": "M813 \u2014 Shield Line",
+      "label": "M813 — Shield Line",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8107,7 +8107,7 @@
         1100
       ],
       "mode": "RGB",
-      "brief_row": "| C2 | `map-m813-rear-pad` \u00b7 `.../rear_pad.png` | The rear pad | Scorched landing pad plating with painted landing markings (invented, no real symbols); the ship's hull in N1\u2013P6 seen from above (wing and hull plates, ramp edge toward M); the wreck field's edge along rows 10\u201311. |",
+      "brief_row": "| C2 | `map-m813-rear-pad` · `.../rear_pad.png` | The rear pad | Scorched landing pad plating with painted landing markings (invented, no real symbols); the ship's hull in N1–P6 seen from above (wing and hull plates, ramp edge toward M); the wreck field's edge along rows 10–11. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8131,7 +8131,7 @@
       "previous_path": "art/maps/m813/v1/rear_pad.png",
       "previous_revision_path": "art/maps/m813/v1/rear_pad.png",
       "revision": 2,
-      "label": "M813 \u2014 Rear Pad",
+      "label": "M813 — Rear Pad",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8151,7 +8151,7 @@
         1100
       ],
       "mode": "RGB",
-      "brief_row": "| C3 | `map-m813-outpost` \u00b7 `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1\u2013E4), infirmary tiles (G1\u2013J4), comms room (L1\u2013P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8\u201311). Walls as thick ceramic-concrete. |",
+      "brief_row": "| C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11). Walls as thick ceramic-concrete. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8175,7 +8175,7 @@
       "previous_path": "art/maps/m813/v1/outpost.png",
       "previous_revision_path": "art/maps/m813/v1/outpost.png",
       "revision": 2,
-      "label": "M813 \u2014 Outpost",
+      "label": "M813 — Outpost",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8195,7 +8195,7 @@
         1100
       ],
       "mode": "RGB",
-      "brief_row": "| C4 | `map-m813-outpost-1` \u00b7 `.../outpost_1.png` | Outpost-1 | Polished institutional floors; the Colonel's office carpet (A1\u2013E4); security room (L1\u2013P3); atrium (A6\u2013F11); the repair bay's clean deck with drainage grilles (H7\u2013P11); the bay doors' frame along the east wall. |",
+      "brief_row": "| C4 | `map-m813-outpost-1` · `.../outpost_1.png` | Outpost-1 | Polished institutional floors; the Colonel's office carpet (A1–E4); security room (L1–P3); atrium (A6–F11); the repair bay's clean deck with drainage grilles (H7–P11); the bay doors' frame along the east wall. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8219,7 +8219,7 @@
       "previous_path": "art/maps/m813/v1/outpost_1.png",
       "previous_revision_path": "art/maps/m813/v1/outpost_1.png",
       "revision": 2,
-      "label": "M813 \u2014 Outpost 1",
+      "label": "M813 — Outpost 1",
       "campaign_id": "m813",
       "art_mode": "heavenprint",
       "usage": [
@@ -8241,7 +8241,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E1 | `obj-barrier-stakes` | Scorched barrier stakes in a short row (low wall) | Shield line G3\u2013G9 |",
+      "brief_row": "| E1 | `obj-barrier-stakes` | Scorched barrier stakes in a short row (low wall) | Shield line G3–G9 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8264,7 +8264,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Barrier Stakes",
+      "label": "M813 — Barrier Stakes",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8288,7 +8288,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E2 | `obj-platinum-crates` | Stack of platinum crates, one split showing metal bars (crate) | Rear pad L3\u2013L5 |",
+      "brief_row": "| E2 | `obj-platinum-crates` | Stack of platinum crates, one split showing metal bars (crate) | Rear pad L3–L5 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8311,7 +8311,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Platinum Crates",
+      "label": "M813 — Platinum Crates",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8359,7 +8359,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Tool Rack",
+      "label": "M813 — Tool Rack",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8407,7 +8407,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Cargo Pylon",
+      "label": "M813 — Cargo Pylon",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8455,7 +8455,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Toppled Pylon",
+      "label": "M813 — Toppled Pylon",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8503,7 +8503,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Door Closed",
+      "label": "M813 — Door Closed",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8551,7 +8551,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Door Open",
+      "label": "M813 — Door Open",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8576,7 +8576,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E8 | `obj-crater` | Shell crater, deep, debris sliding in (hole) | Shield line K2\u2013K3 |",
+      "brief_row": "| E8 | `obj-crater` | Shell crater, deep, debris sliding in (hole) | Shield line K2–K3 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8599,7 +8599,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Crater",
+      "label": "M813 — Crater",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8647,7 +8647,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Mine",
+      "label": "M813 — Mine",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8672,7 +8672,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E10 | `obj-coolant` | Coolant pool, iridescent green-blue (toxic) | Shield line N5\u2013N6 |",
+      "brief_row": "| E10 | `obj-coolant` | Coolant pool, iridescent green-blue (toxic) | Shield line N5–N6 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -8695,7 +8695,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Coolant",
+      "label": "M813 — Coolant",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8743,7 +8743,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Fire",
+      "label": "M813 — Fire",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8791,7 +8791,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Fuel Drum",
+      "label": "M813 — Fuel Drum",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8839,7 +8839,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Rubble",
+      "label": "M813 — Rubble",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8887,7 +8887,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Fallen Squad",
+      "label": "M813 — Fallen Squad",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8935,7 +8935,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Triage Line",
+      "label": "M813 — Triage Line",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -8983,7 +8983,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Footlockers",
+      "label": "M813 — Footlockers",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9031,7 +9031,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Cookbook",
+      "label": "M813 — Cookbook",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9079,7 +9079,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Platinum Net",
+      "label": "M813 — Platinum Net",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9127,7 +9127,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Terminal Field",
+      "label": "M813 — Terminal Field",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9175,7 +9175,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Drop Pod",
+      "label": "M813 — Drop Pod",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9223,7 +9223,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Console",
+      "label": "M813 — Console",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9248,7 +9248,7 @@
         512
       ],
       "mode": "RGBA",
-      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 \u00d7 512, centred on H9 | Outpost H9 |",
+      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -9271,7 +9271,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Escape Craft",
+      "label": "M813 — Escape Craft",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9296,7 +9296,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 \u00d7 256, two tiles | Outpost K10, Outpost-1 L9 |",
+      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -9319,7 +9319,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Repair Cradles",
+      "label": "M813 — Repair Cradles",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9367,7 +9367,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Poi Marker",
+      "label": "M813 — Poi Marker",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9416,7 +9416,7 @@
       "production_approved": false,
       "collection": "M813 tutorial campaign v1",
       "brief": "art/briefs/m813-tutorial-campaign.md",
-      "label": "M813 \u2014 Field Lamp",
+      "label": "M813 — Field Lamp",
       "campaign_id": "m813",
       "art_mode": "painted-topdown",
       "version": 1,
@@ -9448,6 +9448,112 @@
       "ink": "#FFFFFF",
       "background": "transparent",
       "preview": "art/mascot/wick-anim/preview.gif"
+    }
+  },
+  "patrons": {
+    "nerukhan": {
+      "name": "Holy Father Nerukhan",
+      "path": "art/character-portraits/patrons/v1/nerukhan.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "497e49ee929476be0a2d2a8474d63c654aa1b9c97662db64f3744b7f458e321d",
+      "colour_name": "pale gold",
+      "colour_anchor": "#E9D6A2",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "the_quartermaster": {
+      "name": "The Quartermaster",
+      "path": "art/character-portraits/patrons/v1/the_quartermaster.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "61a59ca976b3c351ef01bff7f4d9db8518676ff1b6353c00751f780ab3cf8ecc",
+      "colour_name": "olive green",
+      "colour_anchor": "#8B9F47",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "the_laughing_mask": {
+      "name": "The Laughing Mask",
+      "path": "art/character-portraits/patrons/v1/the_laughing_mask.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "83934dd04e9aeaca2aaeb6b15fe1bc452f6348c2df812f7dace920af1e63879d",
+      "colour_name": "crimson",
+      "colour_anchor": "#B83243",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "the_toll_keeper": {
+      "name": "The Toll-Keeper",
+      "path": "art/character-portraits/patrons/v1/the_toll_keeper.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "623ec6a52a99cad9eb764fd54764d72a1a85231fd61f9ddbe494735f44fa01a8",
+      "colour_name": "silver teal",
+      "colour_anchor": "#79BDB6",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "mother_ember": {
+      "name": "Mother Ember",
+      "path": "art/character-portraits/patrons/v1/mother_ember.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "be18186d8996b3519ec8d6d11b56c11e10918140e4301ebf755197c40be1fcb4",
+      "colour_name": "ember orange",
+      "colour_anchor": "#ED8A3C",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "old_overcast": {
+      "name": "Old Overcast",
+      "path": "art/character-portraits/patrons/v1/old_overcast.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "f3f67ab798ebf15b0640c7e12ea3ef8cf319d67e3fcbea994fea3fdd56d5b4fa",
+      "colour_name": "storm blue",
+      "colour_anchor": "#4E8DD1",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "the_matchmaker": {
+      "name": "The Matchmaker",
+      "path": "art/character-portraits/patrons/v1/the_matchmaker.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "558d626cb961efffa395f36b7d3b6eb7019a88d68ee68170d6bc18edea615c3a",
+      "colour_name": "rose pink",
+      "colour_anchor": "#D879AF",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
+    },
+    "the_counting_weaver": {
+      "name": "The Counting Weaver",
+      "path": "art/character-portraits/patrons/v1/the_counting_weaver.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "78bc299855f0266b8c8305f35e8eb486ba75b78f5a024c5a455c5f8c6c0a7ec3",
+      "colour_name": "violet",
+      "colour_anchor": "#9C82D7",
+      "status": "review-candidate",
+      "collection": "patrons-v1",
+      "usage": "divine patron portrait",
+      "manifest": "art/character-portraits/patrons/v1/manifest.json"
     }
   }
 }
