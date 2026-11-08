@@ -339,7 +339,8 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
    * optional tile it points to; shown once asked or told), and their talk approaches. */
   wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: Approach[];
   /** On the party's side (a talk success on someone neutral); asked what they want; told their hint; alerted by an alarm. */
-  ally?: boolean; wantsShown?: boolean; informed?: boolean; alerted?: boolean }
+  ally?: boolean; wantsShown?: boolean; informed?: boolean; alerted?: boolean;
+  /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean }
 
 export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise' | 'pump' | 'letgo' | 'steady' | 'feed' | 'heartwatch';
@@ -2032,7 +2033,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
   g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
-  cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
+  cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
   if (!wasHostile) cbx.noXp = true;
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);

@@ -6,7 +6,7 @@
 import { SKILL, TN_LADDER, WEAPON } from './data';
 import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg } from './character';
 import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf } from './combat';
-import { type MapObject, type Approach, type CacheItem, OBJ, kindOf, blocksMove, makeObject, triedBy } from './objects';
+import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
 import { applyCond, isCondition } from './magic';
 import { songMod } from './music';
@@ -150,7 +150,7 @@ export function applyHazardOp(g: GameState, op: NonNullable<NarratorTurn['hazard
   if (!op || typeof op !== 'object') return null;
   const zone = zoneMap(g).id, list = (g.story.hazards ||= []);
   const h = op.id ? list.find((x) => x.id === op.id) : undefined;
-  if (op.action === 'remove') { if (h) { g.story.hazards = list.filter((x) => x !== h); worldFx(g, 'hazard_gone', { id: h.id, tiles: h.tiles, why: 'removed' }); } return null; }
+  if (op.action === 'remove') { if (h) { g.story.hazards = list.filter((x) => x !== h); if (!h.hidden) worldFx(g, 'hazard_gone', { id: h.id, tiles: h.tiles, why: 'removed' }); } return null; }
   if (op.action === 'update') {
     if (!h) return null;
     if (op.hidden === false) h.hidden = false; if (op.name) h.name = String(op.name).slice(0, 60); if (op.text) h.text = String(op.text).slice(0, 300);
@@ -514,7 +514,7 @@ export function talkAsk(g: GameState, c: Character, by: string, npcId: string, w
   readyToAct(g, c, by, WORLD_AP.ask);
   const n = npcsOf(g).find((x) => x.id === npcId); if (!n || n.hidden) fail('Nobody like that here.');
   if (dist(positionsOf(g)[c.id], n!.pos) > TALK_RANGE) fail('Get within ' + TALK_RANGE + ' tiles of ' + n!.name + ' first.');
-  if (what === 'wants' && !n!.wants) fail(n!.name + ' has nothing to say about that.');
+  if (what === 'wants' && !n!.wants && !n!.wantsHidden) fail(n!.name + ' has nothing to say about that.');
   if (what === 'objective' && !n!.knows) fail(n!.name + ' doesn\'t know anything about it.');
   const I = W();
   I.spendAp(g, c, WORLD_AP.ask); g.story.needs = true;
@@ -533,7 +533,7 @@ export function talkOptions(g: GameState, tokenId: string, charId?: string): Tal
   const near = !c || (!!at && dist(at, n.pos) <= TALK_RANGE), apL = c ? apLeft(g, c) : 99, open = g.phase === 'story' && g.story.await === 'players';
   const gate = (ap: number) => (!open ? 'Wait for the round to open.' : !near ? 'Get within ' + TALK_RANGE + ' tiles.' : apL < ap ? 'Needs ' + ap + ' AP.' : '');
   const out: TalkOption[] = [];
-  if (n.wants) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'wants', label: 'Ask what they want', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
+  if (n.wants || n.wantsHidden) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'wants', label: 'Ask what they want', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
   if (n.knows) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'objective', label: 'Ask about the objective', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
   (n.talk || []).forEach((a, i) => { if (a.gone) return; const tried = !!c && triedBy(a, c.id), why = tried ? 'Already tried.' : gate(WORLD_AP.attempt), pv = c ? previewOdds(g, c, a.skills, a.tn, a.pick) : null;
     out.push({ kind: 'approach', idx: i, label: a.label, ap: WORLD_AP.attempt, skills: a.skills, tn: a.tn, success: a.success, ...(a.fail ? { fail: a.fail } : {}), ...(pv ? { odds: pv.chance, mod: pv.mod } : {}), tried, available: !why, ...(why ? { why } : {}) }); });
@@ -544,7 +544,7 @@ export function talkOptions(g: GameState, tokenId: string, charId?: string): Tal
 export function npcView(g: GameState, tokenId: string, charId?: string) {
   const n = npcsOf(g).find((x) => x.id === tokenId); if (!n || n.hidden) return null;
   return { id: n.id, name: n.name, kind: n.kind || 'human', avatar: avatarOf(g, n), side: (n.ally ? 'ally' : n.side) as 'hostile' | 'neutral' | 'ally', tier: n.tier, pos: n.pos, ref: refOf(n.pos),
-    prisoner: !!n.prisoner, carryable: carryable(n), wants: n.wantsShown ? n.wants || null : null, hasWants: !!n.wants,
+    prisoner: !!n.prisoner, carryable: carryable(n), wants: n.wantsShown ? n.wants || null : null, hasWants: !!n.wants || !!n.wantsHidden,
     knows: n.knows && n.informed ? { objective: n.knows.objective, hint: n.knows.hint } : null, hasKnows: !!n.knows, talk: talkOptions(g, tokenId, charId) };
 }
 /** Every approach on an object, a hazard or a person, with charId's odds (the panel's buttons). */
@@ -693,9 +693,7 @@ export function worldView(v: GameState) {
 function stripNpc(n: Npc): Npc {
   if (!n.wants && !n.knows) return n;
   const x: any = { ...n };
-  if (!n.wantsShown) delete x.wants;
+  if (!n.wantsShown && n.wants) { x.wants = ''; x.wantsHidden = true; } // the button stays, the words don't
   if (n.knows && !n.informed) x.knows = { objective: '', hint: '' };
   return x;
 }
-/** Is this a world-play object op field set (cache items) worth applying on an update? */
-export const objectKinds = () => Object.keys(OBJ);

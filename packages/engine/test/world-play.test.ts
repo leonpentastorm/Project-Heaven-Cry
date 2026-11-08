@@ -364,7 +364,10 @@ describe('talking without typing (section 7)', () => {
       { label: 'Lean on him', skills: ['intimidation'], tn: 16, stakes: '', success: 'advance', objective: 'find', fail: 'hurt' }] }] });
   it('wants and the hint are hidden until asked (1 AP each, within 3 tiles), and a hint puts a marker on the map', () => {
     let g = keel(); const n = npc(g, 'Keel');
-    expect(viewFor(g, P2).story.npcs!.find((x) => x.id === n.id)!.wants).toBeUndefined();
+    const vn = viewFor(g, P2).story.npcs!.find((x) => x.id === n.id)!; expect(vn.wants).toBe(''); expect(vn.wantsHidden).toBe(true);
+    // The web works from the view: the Ask buttons are there, the words aren't.
+    expect(talkOptions(viewFor(g, P2), n.id, ash(g).id).filter((o) => o.kind === 'ask').map((o) => o.what)).toEqual(['wants', 'objective']);
+    expect(npcView(viewFor(g, P2), n.id)).toMatchObject({ hasWants: true, wants: null, hasKnows: true, knows: null });
     expect(JSON.stringify(viewFor(g, P2))).not.toMatch(/past the cradles|escape craft/);
     expect(npcView(g, n.id, rook(g).id)).toMatchObject({ wants: null, hasWants: true, knows: null, hasKnows: true, side: 'hostile' });
     expect(talkOptions(g, n.id, rook(g).id).map((o) => o.label)).toEqual(['Ask what they want', 'Ask about the objective', 'Talk him down', 'Ask about the core', 'Lean on him']);
