@@ -117,7 +117,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       play('soul_choir' as Sfx, null, { rate: 0.85, gain: 0.9 });
       const acc = accentOf(e.patron, e.accent);
       const pd = FAITH_PATRON[e.patron];
-      miracleOverlay({ patron: e.patron, name: e.name || pd?.miracle?.name, line: e.line || pd?.lines?.miracle?.[0], accent: acc });
+      miracleOverlay({ patron: e.patron, name: e.name || pd?.miracle?.name, line: e.line, accent: acc });
       const area: string[] = Array.isArray(e.area) && e.area.length ? e.area : e.at ? [e.at] : [];
       area.slice(0, 25).forEach((k, i) => { const q = at(k); if (q) after(() => { rays(q, acc, 3, 700); if (!reducedMotion()) burst('glow', q, q.s * 1.3, 700, { color: acc, blend: 'screen' }); }, (reducedMotion() ? 300 : 1500) + i * 25); });
     },
