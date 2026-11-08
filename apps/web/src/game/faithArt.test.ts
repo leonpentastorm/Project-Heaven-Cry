@@ -8,7 +8,7 @@ const svgOf = (u: string) => decodeURIComponent(u.replace('data:image/svg+xml,',
 describe('Blessing art placeholders', () => {
   it('a code-drawn mark for each of the eight patrons, a glyph for each Whisper and vow', () => {
     expect(PATRON_IDS.length).toBe(8);
-    for (const p of PATRON_IDS) { expect(PATRON_MARK_PATHS[p]?.length, p).toBeGreaterThan(0); expect(svgOf(patronMarkUri(p))).toMatch(/^<svg[^>]*stroke="#FFFFFF"/); }
+    for (const p of PATRON_IDS) { expect(PATRON_MARK_PATHS[p]?.length, p).toBeGreaterThan(0); expect(patronMarkSvg(p, '#FFFFFF')).toMatch(/^<svg[^>]*stroke="#FFFFFF"/); }
     for (const w of WHISPER_IDS) expect(WHISPER_PATHS[w]?.length, w).toBeGreaterThan(0);
     for (const v of VOW_IDS) expect(VOW_PATHS[v]?.length, v).toBeGreaterThan(0);
     expect(new Set(PATRON_IDS.map((p) => PATRON_MARK_PATHS[p].join())).size).toBe(8); // all different
@@ -19,7 +19,8 @@ describe('Blessing art placeholders', () => {
     expect(prayerFile('miracle', 'x', 'nerukhan')).toBe('miracle-nerukhan');
   });
   it('a Hymn carries its patron mark small, a Miracle large behind; unknown ids still draw', () => {
-    const h = svgOf(prayerIconUri('hymn', 'x', 'mother_ember', 2)), m = svgOf(prayerIconUri('miracle', 'x', 'mother_ember'));
+    // placeholders (painted art now covers the real ids): a Hymn level with no file, a Miracle for an unpainted patron
+    const h = svgOf(prayerIconUri('hymn', 'x', 'mother_ember', 9)), m = svgOf(prayerIconUri('miracle', 'x', 'a_future_patron'));
     expect(h).toMatch(/scale\(\.33\)/); expect(m).toMatch(/scale\(\.667\)/);
     expect(svgOf(prayerIconUri('whisper', 'nonsense'))).toMatch(/<path/); expect(svgOf(patronMarkUri('a_future_patron'))).toMatch(/<path/);
     expect(svgOf(vowIconUri('stand'))).toMatch(/<path/); expect(svgOf(witnessedUri())).toMatch(/<path/);
@@ -28,6 +29,14 @@ describe('Blessing art placeholders', () => {
   it('the painted portraits are wired for all eight (two files carry "the_"); an unpainted patron has none', () => {
     for (const id of ['nerukhan', 'the_quartermaster', 'the_laughing_mask', 'toll_keeper', 'mother_ember', 'old_overcast', 'the_matchmaker', 'counting_weaver']) expect(patronPortrait(id)).toMatch(/\/assets\/patron-/);
     expect(patronPortrait('a_future_patron')).toBeNull();
+  });
+  it('the painted marks and prayer icons are wired for all eight patrons and the six Whispers', () => {
+    const ids = ['nerukhan', 'the_quartermaster', 'the_laughing_mask', 'toll_keeper', 'mother_ember', 'old_overcast', 'the_matchmaker', 'counting_weaver'];
+    for (const id of ids) {
+      expect(patronMarkUri(id)).toMatch(/\/assets\/patron-mark-/); expect(prayerIconUri('miracle', id, id)).toMatch(/\/assets\/prayer-miracle-/);
+      for (const n of [1, 2, 3]) expect(prayerIconUri('hymn', 'x', id, n)).toMatch(/\/assets\/prayer-hymn-/);
+    }
+    for (const w of ['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage']) expect(prayerIconUri('whisper', w)).toMatch(/\/assets\/prayer-whisper-/);
   });
   it('colours: Virtue ink for words, gold light, each patron light for effects; the data wins when it gives one', () => {
     expect(FAITH_INK).toBe('#D36A90'); expect(FAITH_GOLD).toBe('#F2C46A');

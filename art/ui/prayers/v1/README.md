@@ -46,3 +46,7 @@ Source atlases are preserved in `source-atlases/`. White ink and alpha are valid
 - `miracle-the_counting_weaver.png`: cell 8 of `exec-87fdbe9e-e823-453d-9d82-fd4261a8c774.png`
 
 See the art brief for each named motif and spell. The primary portraits were already delivered separately.
+
+## Note on exports (8 Nov 2026, integration)
+
+The package checksums list `exports/<size>/` PNGs that were not committed with this delivery. The game builds its own sizes from the masters (`npm run assets`), so those lines were dropped from `art/checksums.sha256`; deliver the exports later if they are wanted in the library.

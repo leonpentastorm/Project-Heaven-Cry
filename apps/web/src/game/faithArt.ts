@@ -104,7 +104,9 @@ export function prayerFile(kind: 'whisper' | 'hymn' | 'miracle', id: string, pat
 /** A prayer's icon: the painted one, else a placeholder (a Hymn carries its patron's mark small in a corner, a Miracle
  *  carries it large behind, as the brief asks). */
 export function prayerIconUri(kind: 'whisper' | 'hymn' | 'miracle', id: string, patron?: string | null, level?: number, color = '#FFFFFF'): string {
-  const painted = assetFor('prayer-' + prayerFile(kind, id, patron, level)); if (painted) return painted;
+  // The painted set names two patrons with their article (hymn-the_toll_keeper-1): try both spellings.
+  const alt = patron ? (patron.startsWith('the_') ? patron.slice(4) : 'the_' + patron) : null;
+  const painted = assetFor('prayer-' + prayerFile(kind, id, patron, level)) || (alt ? assetFor('prayer-' + prayerFile(kind, id, alt, level)) : null); if (painted) return painted;
   if (kind === 'whisper') return uri(lineSvg(WHISPER_PATHS[id] || GENERIC_MARK, color));
   const mark = PATRON_MARK_PATHS[patron || ''] || GENERIC_MARK;
   if (kind === 'miracle') return uri(lineSvg(MIRACLE_PATHS, color, 24, `<g opacity=".45" transform="translate(4 4) scale(.667)">${mark.map((d) => `<path d="${d}"/>`).join('')}</g>`));
