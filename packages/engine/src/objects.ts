@@ -17,9 +17,23 @@ export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map(
 /** One way to deal with an object, written by the Narrator: a check, and what success does by itself. */
 export interface Approach {
   label: string; skills: string[]; tn: number; stakes: string;
-  success: '' | 'remove' | 'open' | 'reveal' | 'disarm';
+  /** What success does by itself (rules 1.7 adds loot, advance, and on people ally and inform; safe: a hazard's safe path). */
+  success: '' | 'remove' | 'open' | 'reveal' | 'disarm' | 'loot' | 'advance' | 'ally' | 'inform' | 'safe';
+  /** What failure does by itself (rules 1.7; hostile on people; hazard: one tile of the hazard on the actor). */
+  fail?: '' | 'hurt' | 'alarm' | 'condition' | 'jam' | 'lose' | 'hostile' | 'hazard';
+  /** advance: the objective it completes ("mission/objective" or a bare objective id). */
+  objective?: string;
+  /** fail condition: the condition it applies; fail lose: the item it takes (an item id or a plot item's name). */
+  failCondition?: string; failItem?: string;
+  /** 'best': roll the actor's best one of the skills (a hazard's "Vigilant or Sensory"), not a combined check. */
+  pick?: 'best';
+  /** Gone for good (a jam took it). */
+  gone?: boolean;
   tries: { charId: string; name: string; ok: boolean; total: number; scene: number }[];
 }
+/** A cache's contents (rules 1.7), in the loot shape: an item or weapon id, how many, a rarity and a name; an unknown
+ * or empty id is a plot item (name, and text as its one line). */
+export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string }
 export interface MapObject {
   id: string; kind: string; pos: string; name: string; text: string;
   hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
@@ -30,6 +44,10 @@ export interface MapObject {
   /** A person at this point of interest who became a token when attacked, and whether they died (spec: Anyone is a target). */
   npcId?: string; dead?: boolean;
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
+  /** A cache's contents (rules 1.7); searched: emptied by a search or a loot success. */
+  items?: CacheItem[]; searched?: boolean;
+  /** Jammed: locked for the rest of this scene number (a failed approach's jam). */
+  jam?: number;
 }
 
 export function makeObject(id: string, kind: string, pos: string, extra: Partial<MapObject> = {}): MapObject {
@@ -51,8 +69,9 @@ export const hazardOf = (o: MapObject) => kindOf(o).hazard || null;
 
 /** A new approach from the Narrator, keeping the tries of an approach with the same label. */
 export function mergeApproaches(old: Approach[], fresh: Omit<Approach, 'tries'>[]): Approach[] {
-  return fresh.map((a) => ({ ...a, tries: old.find((o) => o.label.toLowerCase() === a.label.toLowerCase())?.tries || [] }));
+  return fresh.map((a) => { const o = old.find((x) => x.label.toLowerCase() === a.label.toLowerCase()); return { ...a, tries: o?.tries || [], ...(o?.gone ? { gone: true } : {}) }; });
 }
-/** May this character try this approach now? Once per character per scene. */
-export const triedThisScene = (a: Approach, charId: string, scene: number) => a.tries.some((t) => t.charId === charId && t.scene === scene);
+/** Has this character tried this approach? Rules 1.7: each character tries each approach once (scene is kept for old callers). */
+export const triedThisScene = (a: Approach, charId: string, _scene?: number) => a.tries.some((t) => t.charId === charId);
+export const triedBy = (a: Approach, charId: string) => a.tries.some((t) => t.charId === charId);
 export const lightOf = (o: MapObject) => ((o.hp == null || o.hp > 0) && !(o as any).disabled ? kindOf(o).light || 0 : 0);

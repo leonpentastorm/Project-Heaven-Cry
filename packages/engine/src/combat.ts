@@ -18,6 +18,7 @@ import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
+import { type Hazard, hazardStep, spotHazards, hazardLiveAt } from './hazards';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
@@ -182,7 +183,12 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Decoys on the grid (the Trickster's False Image, illusion.ts): not units; the enemies they fooled target them. */
   images?: FalseImage[];
   /** The Narrator's word on whether the fight broke out of the talk just had (Talks Broke Down); absent: not said. */
-  fromTalk?: boolean }
+  fromTalk?: boolean;
+  /** Rules 1.7: hazards on this map (fired per tile entered), the dice the area map's throwaway fight rolls them with
+   * (the game's own rng; a fight passes its rng to every move), what they hit this action, and creatures a Downed
+   * carrier dropped (tokens again when the fight ends). */
+  hazards?: Hazard[]; worldRng?: Rng; hazardHits?: { id: string; kind: string; unit: string; charId?: string; name: string; at: string; dmg: number; cond?: string; attempt?: boolean }[];
+  dropped?: { npc: any; at: string; by: string }[] }
 
 /** A presentation event: what just happened, precisely enough to animate (the client plays new ones by n). Tiles are
  * "x,y" keys; unit fields are unit ids. Kinds and fields:
@@ -994,6 +1000,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
     const t = objectsAt(cb, k).find((o) => isTrap(o) && !((o as any).side && (o as any).side === u.side)); // a side's own rigged tile (Sabotage) never springs on it
     if (t) { t.resolved = true; t.hidden = false; flush(); emitFx(cb, 'trap', { unit: u.id, at: k }); const td: any = t; sprung = ' · steps on a trap' + hurtUnit(u, td.damage ?? kindOf(t).trap!.damage, false, cb, 'trap', td.owner ? cb.units.find((x) => x.id === td.owner) || null : null); cb.objects = objectsOf(cb).filter((x) => x !== t); emit(cb, 'trap_sprung', { u, obj: t, cb, rng }); stopped = 'trap'; }
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
+    // Rules 1.7: hazards fire on every tile entered, at any speed (the area map's moves roll on cb.worldRng).
+    if (!stopped && cb.hazards?.some((h) => hazardLiveAt(h, k, u.side))) { flush(); const hz = hazardStep(cb, rng || cb.worldRng, u, k); if (hz) stopped = hz; }
     const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng });
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
     if (reacts && !u.dead && !u.downed) {
@@ -1018,7 +1026,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   // The bank: tiles paid for and not walked carry over (a walk cut short keeps them).
   if (how === 'move' && !mc.free) u.bank = bank0 + ap * u.movement - walked;
   cb.log.push(u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
-  if (u.side === 'pc' && !u.dead) spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l));
+  if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);
   // 'moved' {u, from, to, tiles, how, forced:false, route}
   emit(cb, 'moved', { u, from, to: end, tiles: walked, how, forced: false, route: route.slice(0, route.indexOf(end) + 1), stopped: stopped || null, cb, rng });

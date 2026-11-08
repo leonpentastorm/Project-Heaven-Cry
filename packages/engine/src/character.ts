@@ -90,6 +90,8 @@ export interface Character extends Sheet {
    * at most the trait's count (3), in the order they came; an id twice for two of the same gun. Set at creation and
    * when a gun is gained; old saves without it fill it from what they carry (collectionOf). */
   collection?: string[];
+  /** Rules 1.7: creatures this character carries (a token off the map: its whole token, and its weight by kind). */
+  carried?: { npc: any; kg: number }[];
 }
 export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | string; name: string; hp?: number; /** The twin's: half its owner's maximum when called. */ maxHp?: number; img?: string }
 /** An Outburst design (rules 1.5, Outburst 2.0). modules holds at most one form module (wave, burst, aura, lance; none:
@@ -441,7 +443,7 @@ export function carriedKg(c: Character) {
   const off = c.offHand ? (WEAPON[c.offHand.id]?.weight_kg ?? (ITEM[c.offHand.id]?.weight_kg || 0)) : 0;
   const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
     armour: (ARMOUR_KG[c.armourClass] || 0) + Object.values(c.worn || {}).reduce((t, id) => t + (ITEM[id]?.weight_kg || 0), 0),
-    pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) };
+    pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) + (c.carried || []).reduce((t, x) => t + (Number(x.kg) || 0), 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
 }
 export const carryLimit = (c: Character) => fx(c, 'carry', 20 + 5 * (A(c, 'strength') - 1) + gearBonus(c, 'carry_bonus'));

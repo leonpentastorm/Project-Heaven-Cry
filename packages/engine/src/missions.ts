@@ -20,7 +20,12 @@ export interface MissionObjective {
   hidden?: boolean;
   /** When it counts as done: guidance for the Narrator, not code. */
   done_when: string;
+  /** Rules 1.7: where it happens (a zone id and token, object or tile references), for the HERE card and markers. */
+  where?: Where;
 }
+/** Where an objective happens (rules 1.7): a zone id, and references: token ids, object ids, hazard ids or grid
+ * references ("C7"). Resolved when shown, so a token that walks off takes its marker along. */
+export interface Where { zone?: string; refs?: string[] }
 export interface MissionEnd { kind: 'act' | 'campaign'; title: string; epilogue_guidance?: string }
 export interface Mission {
   id: string; title: string; act: number;
@@ -73,6 +78,9 @@ export interface MissionState {
   epilogueDue?: boolean;
   /** Where the current act began: the scene number and each character's XP. */
   act: { scene: number; xp: Record<string, number> };
+  /** Rules 1.7: where each objective happens, as the Narrator set it ("mission/objective" → where); the campaign's own
+   * `where` on an objective is the default. */
+  where?: Record<string, Where>;
 }
 
 /** Limits (spec: OOC, missions and end states; provisional). */
@@ -150,6 +158,8 @@ function update(g: GameState, ms: MissionState, u: NonNullable<NarratorTurn['mis
   if (!u || typeof u !== 'object') return;
   const m = missionById(g, String(u.mission || '')); if (!m) return; // unknown ids are ignored
   const status = u.status, objId = u.objective ? String(u.objective) : '';
+  // Rules 1.7: where an objective happens (any status, or none).
+  if ((u as any).where && objId && m.objectives.some((o) => o.id === objId)) setWhere(ms, m.id + '/' + objId, (u as any).where);
   if (status === 'revealed') {
     const key = objId ? m.id + '/' + objId : m.id;
     if (objId && !m.objectives.some((o) => o.id === objId)) return;
@@ -241,7 +251,9 @@ export function missionBrief(g: GameState): string {
     const st = ms.objectives[id] || {}, open = m.objectives.filter((o) => st[o.id] === 'open');
     const shown = open.filter((o) => objVisible(ms, m, o)), secret = open.filter((o) => !objVisible(ms, m, o));
     out.push(`${m.id}${m.hidden && !ms.revealed.includes(m.id) ? ' (hidden from players)' : ''}: ${m.goal}`);
-    if (shown.length) out.push('  open: ' + shown.map((o) => o.id + ' ' + o.text + (o.optional ? ' (optional)' : '')).join('; '));
+    // Rules 1.7: where you set it (the campaign's own where is in the cached campaign block).
+    const wh = (o: MissionObjective) => { const w = ms.where?.[id + '/' + o.id]; return w ? ' @' + [w.zone, ...(w.refs || [])].filter(Boolean).join(' ') : ''; };
+    if (shown.length) out.push('  open: ' + shown.map((o) => o.id + ' ' + o.text + (o.optional ? ' (optional)' : '') + wh(o)).join('; '));
     if (secret.length) out.push('  hidden (Narrator only; reveal when found): ' + secret.map((o) => o.id + ' ' + o.text).join('; '));
   }
   const side = ms.side.filter((j) => j.status === 'open');
@@ -258,7 +270,7 @@ export function missionsCampaign(c: { missions?: Mission[]; board_npc?: BoardNpc
   const list = Array.isArray(c?.missions) ? c!.missions! : []; if (!list.length) return '';
   return 'MISSIONS (the players see titles, goals and objectives on their mission board; hidden ones only once you reveal them):\n' + list.map((m) => [
     `- ${m.id} (act ${m.act}): ${m.title}. Goal: ${m.goal}${m.hidden ? ' [hidden mission]' : ''}`,
-    ...m.objectives.map((o) => `    ${o.id}${o.optional ? ' (optional)' : ''}${o.hidden ? ' [hidden]' : ''}: ${o.text}. Done when: ${o.done_when}`),
+    ...m.objectives.map((o) => `    ${o.id}${o.optional ? ' (optional)' : ''}${o.hidden ? ' [hidden]' : ''}: ${o.text}. Done when: ${o.done_when}${o.where ? ' Where: ' + [o.where.zone, ...(o.where.refs || [])].filter(Boolean).join(' ') : ''}`),
     listOf(m.next).length ? '    next: ' + listOf(m.next).join(' or ') : '',
     m.end ? `    ends the ${m.end.kind}: ${m.end.title}` : '',
     m.narrator_notes ? '    notes: ' + m.narrator_notes : '',
@@ -330,4 +342,46 @@ export function validateMissions(c: any): string[] {
     need(zone, 'board_npc is in unknown zone "' + b?.zone + '".');
   }
   return errs;
+}
+
+// ---------- rules 1.7: where objectives happen, and objectives by key ----------
+/** Clean a where (zone id, up to 8 references) and store it; an empty one clears it. */
+export function setWhere(ms: MissionState, key: string, w: any) {
+  if (!w || typeof w !== 'object') return;
+  const refs = (Array.isArray(w.refs) ? w.refs : []).filter((x: any) => typeof x === 'string' && x.trim()).map((x: string) => x.trim().slice(0, 40)).slice(0, 8);
+  const zone = typeof w.zone === 'string' && w.zone.trim() ? w.zone.trim().slice(0, 40) : undefined;
+  const all = (ms.where ||= {});
+  if (!zone && !refs.length) { delete all[key]; return; }
+  all[key] = { ...(zone ? { zone } : {}), refs };
+}
+/** An objective key ("mission/objective", or a bare objective id: the active missions first, then any) as its parts. */
+export function objectiveOf(g: GameState, key: string): { mission: Mission; objective: MissionObjective; key: string } | null {
+  const k = String(key || '').trim(); if (!k) return null;
+  const ms = missionsOf(g), [a, b] = k.includes('/') ? k.split('/') : ['', k];
+  const list = a ? [missionById(g, a)].filter(Boolean) as Mission[] : [...(ms ? ms.active.map((id) => missionById(g, id)).filter(Boolean) as Mission[] : []), ...missionsData(g)];
+  for (const m of list) { const o = m.objectives.find((x) => x.id === b); if (o) return { mission: m, objective: o, key: m.id + '/' + o.id }; }
+  return null;
+}
+/** An objective's status ('open', 'done', 'failed'), or null when it isn't in play. */
+export function objectiveStatus(g: GameState, key: string): ObjStatus | null {
+  const o = objectiveOf(g, key), ms = missionsOf(g); if (!o || !ms) return null;
+  return ms.objectives[o.mission.id]?.[o.objective.id] || null;
+}
+/** Mark an objective done or failed from the engine (an approach's advance): the same path as the Narrator's missions[]. */
+export function markObjective(g: GameState, key: string, status: 'done' | 'failed', post: (e: Omit<Entry, 'id'>) => void, note?: string): boolean {
+  const o = objectiveOf(g, key), ms = missionsOf(g); if (!o || !ms || !ms.active.includes(o.mission.id)) return false;
+  if (ms.objectives[o.mission.id]?.[o.objective.id] !== 'open') return false;
+  update(g, ms, { mission: o.mission.id, objective: o.objective.id, status, ...(note ? { note } : {}) } as any, post);
+  return true;
+}
+/** Every open objective of the active missions the players can see, in order, with where it happens. */
+export function openObjectives(g: GameState): { key: string; mission: string; id: string; text: string; optional: boolean; where: Where | null }[] {
+  const ms = missionsOf(g); if (!ms) return [];
+  const out: { key: string; mission: string; id: string; text: string; optional: boolean; where: Where | null }[] = [];
+  for (const id of ms.active) {
+    const m = missionById(g, id); if (!m || !visible(ms, m)) continue;
+    for (const o of m.objectives) { if (ms.objectives[id]?.[o.id] !== 'open' || !objVisible(ms, m, o)) continue;
+      const key = id + '/' + o.id; out.push({ key, mission: id, id: o.id, text: o.text, optional: !!o.optional, where: ms.where?.[key] || o.where || null }); }
+  }
+  return out;
 }
