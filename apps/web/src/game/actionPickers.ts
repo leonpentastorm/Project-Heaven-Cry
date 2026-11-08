@@ -256,7 +256,10 @@ const COMBAT: Record<string, Maker> = {
   'trait:slicer#backdoor': (e) => ({ head: 'Backdoor', hint: 'Click a door, terminal, camera, alarm or turret within 5 tiles.', fields: [chipsF('choice', 'For a door (none: open it if shut, shut it if open)', optsOf(['open', 'close', 'lock']), 1, true)] }),
   'perk:many_hands#hand_off': (e) => ({ head: 'Hand-Off', hint: e.text, fields: [chipsF('choice', 'How many AP', optsOf(['1', '2', '3'], (n) => n + ' AP'))] }),
   // ---- faith ----
-  'trait:heretic#stolen_fire': (e, x) => ({ head: 'Stolen Fire', hint: e.text.replace(/\s*choice:.*$/, ''), fields: [chipsF('choice', 'A patron\'s Blessing', (PATRONS as any[]).flatMap((p) => (p.blessings || []).map((b: any) => ({ id: p.id + ':' + b.id, label: p.name + ' · ' + b.name, title: b.text || '' })))), unitF('targetId', 'Who it is for (optional)', 'any', true)] }),
+  'trait:heretic#stolen_fire': (e, x) => ({ head: 'Stolen Fire', hint: e.text.replace(/\s*choice:.*$/, ''), fields: [chipsF('choice', 'A patron\'s Blessing', (PATRONS as any[]).flatMap((p) => (p.blessings || []).map((b: any) => ({ id: p.id + ':' + b.id, label: p.name + ' · ' + b.name, title: b.text || '' })))), unitF('targetId', 'Who it is for (optional)', 'any', true, 2), tileF('tile', 'Where (a Hymn aimed at a place; optional)', true)],
+    // Rules 1.6: the stolen Hymn is prayed as a Hymn: a target, a second one (Switcheroo, Red Thread, Together), or a tile.
+    build: (v) => { const ids = all(v, 'targetId'), t = all(v, 'tile')[0], ch = all(v, 'choice')[0];
+      return ch ? { choice: ch, ...(ids[0] ? { targetId: ids[0] } : {}), ...(ids[1] ? { targetId2: ids[1] } : {}), ...(t ? { tile: t } : {}) } as any : 'Pick a patron\'s Blessing.'; } }),
   // ---- orders, pleas and words ----
   'perk:the_voice#the_voice': (e) => ({ head: 'The Voice', hint: e.text,
     fields: [chipsF('order', 'The order', [['halt', 'Halt'], ['hold', 'Hold fire'], ['drop', 'Drop it'], ['kneel', 'Kneel'], ['flee', 'Fall back'], ['other', 'Something else']].map(([id, label]) => ({ id, label }))), prose('Your words (optional; needed for “Something else”)', 'What you shout', true)],

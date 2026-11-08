@@ -15,7 +15,7 @@ import { actionAp, pushAway } from './effects/core';
 import { sessionN } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
-import { apDebt, bankAp } from './effects/ap';
+import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, canSurrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
 import { d20, die, type Rng } from './rng';
@@ -237,6 +237,7 @@ export interface FaithView {
   hymns: { key: string; patron: string; patronName: string; id: string; name: string; tier: number; text: string; source: 'patron' | 'kept' | 'learned'; preview: PrayerPreview }[];
   miracle: { id: string; name: string; text: string; usedThisSession: boolean; preview: PrayerPreview } | null;
   pieces: Record<string, number>;
+  /** The vow sworn this fight (null out of a fight). */
   vow: Vow | null; vows: { id: string; name: string; words: string; brokenWhen: string; needsAlly: boolean }[];
   rites: { id: string; name: string; text: string; engine: boolean; keptThisSession: boolean; available: boolean; why?: string }[];
   rule: 'open' | 'jealous' | null;
@@ -263,7 +264,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
-    vow: u?.vow || c.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, needsAlly: !!v.needs_ally })),
+    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g) },
@@ -673,7 +674,7 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 40 * pw));
     case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: P(10) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
-    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(9, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
+    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(AP_MAX, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { let out = ''; for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += ' · ' + v.name + healLine(cb, u, v, v.maxHp); return out; }
     // Old Overcast
     case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && dist(x.pos, a.tile!) <= 2)) out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); return out || ' · nobody there'; }

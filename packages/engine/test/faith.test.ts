@@ -512,6 +512,14 @@ describe('compatibility', () => {
     for (let i = 0; i < 12; i++) { f.turn(f.pc); f.unit(f.pc.id).prayedRound = undefined; f.act({ type: 'faith/pray', unitId: f.pc.id, kind: 'hymn', id: 'saints_shield', targetId: al.id } as any); }
     slid = f.cb.log.filter((l) => /slides off/.test(l)).length; expect(slid).toBeGreaterThan(0); expect(slid).toBeLessThan(12); expect(logHas(f.cb, /Saint's Shield/)).toBe(true);
   });
+  it('Heretic\'s Stolen Fire prays any patron\'s Hymn by dice on Will Power, with its tile (Thunderclap)', () => {
+    const f = fightWith([{ traits: ['heretic'], skills: { will_power: 7, faith: 0 } }], [{ at: 'F6' }]);
+    const me = f.turn(f.pc), foe = f.foe; foe.pos = '6,5'; me.pos = '2,5';
+    f.g.rng.state = rngFor(20, 1);
+    f.act({ type: 'combat/perk', unitId: me.id, id: 'heretic', actionId: 'stolen_fire', choice: 'old_overcast:thunderclap', tile: '5,5' } as any);
+    expect(logHas(f.cb, /prays to Old Overcast: Thunderclap/)).toBe(true); expect(logHas(f.cb, /vs 14/)).toBe(true);
+    const c = f.g.characters[me.charId!]; expect(c.patron ?? null).toBeNull(); expect(c.skills.faith || 0).toBe(0); expect(c.belief).toBeUndefined();
+  });
   it('the Proving Ground: sandbox/faith sets belief, patron, Devotion, pieces and a vow', () => {
     let g = newGame('PGF', { id: 'host', name: 'Host' });
     g = apply(g, { type: 'sandbox/start', archetype: 'sharpshooter' } as any, 'host');
