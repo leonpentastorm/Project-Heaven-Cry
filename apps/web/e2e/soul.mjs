@@ -102,8 +102,6 @@ if (process.env.PROBE) {
     ['feed', { k: 'feed', unit: uid, at: me, word: 'fire', stage: 2, mult: 1.4 }, [250, 600]],
     ['discharge', { k: 'explode', at: tgt, radius: 1, what: 'discharge', element: 'shock', charges: 3, shake: true }, [150, 400]],
     ['charge', { k: 'charge', unit: uid, at: me, charges: 2 }, [300]],
-    ['x-frag', { k: 'explode', at: tgt, radius: 1 }, [200]],
-    ['x-sigilfire', { k: 'field', id: 'zz', tiles: [tgt], words: ['fire', 'stay'], element: 'fire', side: 'pc', rounds: 1 }, [150]],
   ];
   const clip = { x: Math.max(0, 0), y: 150, width: 840, height: 620 };
   for (const [name, ev, times] of probes.filter((x) => !process.env.ONLY || process.env.ONLY.split(',').includes(x[0]))) {

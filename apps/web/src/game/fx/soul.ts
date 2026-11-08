@@ -63,9 +63,21 @@ function rise(p: Pt, color: string, n: number, ms: number, spread = 0.8) {
     particle({ x: p.x + x, y: p.y + p.s * 0.1 }, sz, 'border-radius:50%;background:' + color + ';box-shadow:0 0 8px ' + color, [{ transform: 'translate(0,0)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: 'translate(' + x * 0.4 + 'px,-' + p.s * (0.7 + Math.random() * 0.6) + 'px)', opacity: 0 }], ms * (0.7 + Math.random() * 0.5), i * 35);
   }
 }
+/** A soft, bright bloom of light (a radial gradient, screened): the sprites' glow is too faint on the grid for the heart,
+ *  so the Soul family draws its own. Holds its light for a moment before it fades. */
+function bloom(p: { x: number; y: number }, size: number, ms: number, o: { color?: string; from?: number; to?: number; delay?: number; blend?: string; core?: boolean } = {}) {
+  const run = () => {
+    const c = o.color || SOUL_INK, d = document.createElement('div');
+    d.style.cssText = 'width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,' + (o.core === false ? c : '#FFFFFF') + ' 0,' + c + 'EE 22%,' + c + '88 45%,' + c + '00 70%)';
+    const box = put(d, p, size, size, ms); box.style.mixBlendMode = 'screen';
+    const a = o.from ?? 0.3, b = o.to ?? 1.15;
+    anim(box, reducedMotion() ? [{ opacity: 0.9 }, { opacity: 0 }] : [{ transform: 'scale(' + a + ')', opacity: 0 }, { transform: 'scale(' + (a + (b - a) * 0.5) + ')', opacity: 1, offset: 0.18 }, { opacity: 0.8, offset: 0.5 }, { transform: 'scale(' + b + ')', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.25,.6,.35,1)', fill: 'forwards' });
+  };
+  if (o.delay) after(run, o.delay); else run();
+}
 /** A soft glow at the chest that swells in (Begin) or flares (a pump). */
 function glow(p: Pt, color: string, size: number, ms: number, o: { from?: number; to?: number; delay?: number } = {}) {
-  burst('glow', chest(p), p.s * size, ms, { color, from: o.from ?? 0.3, to: o.to ?? 1.1, blend: 'screen', delay: o.delay });
+  bloom(chest(p), p.s * size, ms, { color, from: o.from ?? 0.3, to: o.to ?? 1.1, blend: 'screen', delay: o.delay });
 }
 /** The token's heartbeat: a throb (scale) that doesn't touch the template's own transform. */
 function throb(tok: HTMLElement | null, k: number, ms = 360) {
@@ -103,7 +115,7 @@ function cracks(p: Pt, color = HP, ms = 900) {
   const path = 'M50 50 L' + (34 + +r()) + ' ' + (30 + +r()) + ' L' + (26 + +r()) + ' ' + (18 + +r()) + ' M50 50 L' + (70 + +r()) + ' ' + (36 + +r()) + ' L' + (82 + +r()) + ' ' + (30 + +r()) + ' M50 50 L' + (46 + +r()) + ' ' + (72 + +r()) + ' L' + (54 + +r()) + ' ' + (84 + +r()) + ' M50 50 L' + (30 + +r()) + ' ' + (60 + +r());
   const s = svg(100, 100, '<path d="' + path + '" fill="none" stroke="#0A0D13" stroke-width="6" stroke-linejoin="miter" opacity=".7"/><path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="3" stroke-linejoin="miter" style="filter:drop-shadow(0 0 4px ' + color + ')"/><circle cx="50" cy="50" r="5" fill="#FFFFFF"/>');
   const box = put(s, c, p.s * 0.95, p.s * 0.95, ms); box.style.zIndex = '2';
-  anim(box, [{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.1 }, { opacity: 1, offset: 0.7 }, { transform: 'scale(1.05)', opacity: 0 }], { duration: ms, easing: 'steps(3, end)', fill: 'forwards' });
+  anim(box, [{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.06 }, { opacity: 1, offset: 0.7 }, { transform: 'scale(1.05)', opacity: 0 }], { duration: ms, easing: 'linear', fill: 'forwards' });
 }
 /** A curved violet link between two hearts (resonance). */
 function link(a: Pt, b: Pt, color: string, ms: number) {
@@ -130,16 +142,16 @@ function cone(a: Pt, aim: Pt, reach: number, el: ElementFx, ms: number) {
   const deg = (Math.atan2(aim.y - a.y, aim.x - a.x) * 180) / Math.PI, R = Math.max(a.s * 1.5, reach), col = stageColour(3, el);
   const half = 38, x1 = 50 + 50 * Math.cos((-half * Math.PI) / 180), y1 = 50 + 50 * Math.sin((-half * Math.PI) / 180), x2 = 50 + 50 * Math.cos((half * Math.PI) / 180), y2 = 50 + 50 * Math.sin((half * Math.PI) / 180);
   const id = 'cg' + Math.floor(Math.random() * 1e9);
-  const s = svg(100, 100, '<defs><radialGradient id="' + id + '" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="' + SOUL_INK + '" stop-opacity=".1"/><stop offset=".55" stop-color="' + col + '" stop-opacity=".55"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs><path d="M50 50 L' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A50 50 0 0 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z" fill="url(#' + id + ')" style="filter:blur(2px)"/>');
+  const s = svg(100, 100, '<defs><radialGradient id="' + id + '" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="' + SOUL_INK + '" stop-opacity=".35"/><stop offset=".6" stop-color="' + col + '" stop-opacity=".85"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs><path d="M50 50 L' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A50 50 0 0 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z" fill="url(#' + id + ')" style="filter:blur(2px)"/>');
   const box = put(s, a, R * 2, R * 2, ms); box.style.mixBlendMode = 'screen';
-  anim(box, reducedMotion() ? [{ transform: 'rotate(' + deg + 'deg)', opacity: 1 }, { transform: 'rotate(' + deg + 'deg)', opacity: 0 }] : [{ transform: 'rotate(' + deg + 'deg) scale(.15)', opacity: 0.9 }, { transform: 'rotate(' + deg + 'deg) scale(1)', opacity: 0.85, offset: 0.55 }, { transform: 'rotate(' + deg + 'deg) scale(1.08)', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+  anim(box, reducedMotion() ? [{ transform: 'rotate(' + deg + 'deg)', opacity: 1 }, { transform: 'rotate(' + deg + 'deg)', opacity: 0 }] : [{ transform: 'rotate(' + deg + 'deg) scale(.15)', opacity: 1 }, { transform: 'rotate(' + deg + 'deg) scale(1)', opacity: 1, offset: 0.5 }, { transform: 'rotate(' + deg + 'deg) scale(1.06)', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
 }
 /** The element's soft cloud on a tile, violet first (the Soul family), raw magic as violet smoke and embers. */
 function cloud(q: Pt, el: ElementFx, power: number, delay = 0, sound?: (s: Sfx, o?: any) => void) {
   elementImpact(q, el.id, 'soul', { power, delay, quiet: !sound, sound });
   // The warming: the violet bloom gives way to the element itself a beat later (fire's flame, frost's star, shock's arc…).
-  if (el.id !== 'raw') after(() => { const sp = el.sprites[el.sprites.length - 1]; burst(sp.name, q, q.s * sp.scale * (0.8 + 0.35 * power), sp.ms * 1.3, { color: el.ink, from: 0.3, to: 1.25, blend: 'screen' }); burst('flare', q, q.s * (0.7 + 0.4 * power), 260, { color: el.core, from: 0.3, to: 1.2, blend: 'screen' }); }, delay + 160);
-  if (el.id === 'raw') { after(() => { burst('smoke_soft', q, q.s * (1 + 0.4 * power), 1100, { color: SOUL_INK, from: 0.4, to: 1.4, blend: 'screen' }); rise(q, SOUL_INK, 4, 900); }, delay); }
+  if (el.id !== 'raw') after(() => { const sp = el.sprites[el.sprites.length - 1]; bloom(q, q.s * (0.9 + 0.5 * power), 700, { color: el.ink, from: 0.3, to: 1.2 }); burst(sp.name, q, q.s * sp.scale * (0.8 + 0.35 * power), sp.ms * 1.3, { color: el.ink, from: 0.3, to: 1.25, blend: 'screen' }); burst('flare', q, q.s * (0.7 + 0.4 * power), 260, { color: el.core, from: 0.3, to: 1.2, blend: 'screen' }); }, delay + 160);
+  if (el.id === 'raw') { after(() => { bloom(q, q.s * (0.8 + 0.4 * power), 800, { color: SOUL_INK, from: 0.3, to: 1.2, core: false }); burst('smoke_soft', q, q.s * (1 + 0.4 * power), 1100, { color: SOUL_INK, from: 0.4, to: 1.4, blend: 'screen' }); rise(q, SOUL_INK, 4, 900); }, delay); }
 }
 const tilesOf = (e: FxEvent): string[] => (Array.isArray(e.area) ? e.area : Array.isArray(e.tiles) ? e.tiles : []).filter((k: any) => typeof k === 'string');
 
@@ -272,7 +284,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
         switch (form) {
           case 'bolt': {
             if (from && to) { beam(from, to, el, 200); for (let i = 0; i < 4 + st; i++) particle(from, Math.max(3, from.s * 0.08), shardCss(el, 'soul', i / 6), [{ transform: 'translate(0,0)', opacity: 0.2 }, { transform: 'translate(' + (to.x - from.x) + 'px,' + (to.y - from.y) + 'px)', opacity: 1 }], 220 + i * 20, i * 18); }
-            after(() => { if (to) { cloud(to, el, R.power, 0, snd); burst('glow', to, to.s * (1.3 + 0.3 * st), 600, { color: col, from: 0.3, to: 1.2, blend: 'screen' }); } }, from ? 210 : 0);
+            after(() => { if (to) { cloud(to, el, R.power, 0, snd); bloom(to, to.s * (1.3 + 0.3 * st), 600, { color: col, from: 0.3, to: 1.2, blend: 'screen' }); } }, from ? 210 : 0);
             break;
           }
           case 'lance': {
@@ -286,7 +298,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
           }
           case 'wave': {
             const reach = from ? Math.max(...tiles.map((k) => { const q = at(k); return q ? Math.hypot(q.x - from.x, q.y - from.y) : 0; }), 0) + from.s * 0.6 : 0;
-            if (from && to) cone(from, to, reach, el, 700);
+            if (from && to) { cone(from, to, reach, el, 800); cone(from, to, reach * 0.7, ELEMENTS.raw, 600); }
             if (from) hit(from, 80, 60); else if (to) cloud(to, el, R.power, 0, snd);
             if (from && tiles.length) snd(el.sound.impact, { rate: el.sound.rate * 0.82, gain: 0.8, delay: 140 });
             break;
@@ -295,7 +307,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
             // A nova around the holder: rings out, every tile around struck from the centre outward.
             const c = from || to!;
             ring(c, col, 700, { from: 0.4, to: 2.2 + 0.3 * st, width: 6 + st }); ring(c, WHITE, 500, { from: 0.3, to: 1.6 + 0.2 * st, width: 3, delay: 80 });
-            burst('glow', c, c.s * (2.2 + 0.4 * st), 700, { color: col, from: 0.3, to: 1.2, blend: 'screen' });
+            bloom(c, c.s * (2.2 + 0.4 * st), 700, { color: col, from: 0.3, to: 1.2, blend: 'screen' });
             hit(c, 70, 40); if (tiles.length) snd(el.sound.impact, { rate: el.sound.rate * 0.82, gain: 0.9, delay: 60 });
             break;
           }
@@ -305,7 +317,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
             if (from && to && fly) for (let i = 0; i < 7 + st * 2; i++) { const sz = 6 + Math.random() * 5, wob = (Math.random() - 0.5) * 40; particle(from, sz, 'border-radius:50%;background:' + (i % 2 ? SOUL_INK : col) + ';box-shadow:0 0 10px ' + col + ';filter:blur(.6px)', [{ transform: 'translate(0,0)', opacity: 0.2 }, { transform: 'translate(' + ((to.x - from.x) / 2 + wob) + 'px,' + ((to.y - from.y) / 2 - wob - from.s * 0.4) + 'px)', opacity: 1, offset: 0.5 }, { transform: 'translate(' + (to.x - from.x) + 'px,' + (to.y - from.y) + 'px)', opacity: 0.5 }], fly + Math.random() * 100, i * 20); }
             after(() => {
               const area = Math.max(1, Math.sqrt(tiles.length || 1));
-              burst('glow', o, o.s * (1.2 + 0.35 * st + area * 0.5), 750, { color: col, from: 0.2, to: 1.25, blend: 'screen' });
+              bloom(o, o.s * (1.2 + 0.35 * st + area * 0.5), 750, { color: col, from: 0.2, to: 1.25, blend: 'screen' });
               burst('flare', o, o.s * (1 + 0.3 * st), 300, { color: WHITE, from: 0.2, to: 1.3, blend: 'screen' });
               burst('smoke_soft', o, o.s * (1 + 0.3 * st + area * 0.4), 1000, { color: SOUL_INK, from: 0.4, to: 1.35, blend: 'screen' });
               ring(o, col, 650, { from: 0.3, to: 1 + area * 0.6 + 0.15 * st, width: 4 + st });
@@ -314,7 +326,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
           }
         }
         if (R.shake) after(() => shakeScreen(R.shake), 220);
-        if (e.school === 'buff' || e.school === 'heal' || e.school === 'shield') after(() => { for (const k of tiles.slice(0, 8)) { const q = at(k); if (q) burst('glow', q, q.s, 600, { color: e.school === 'shield' ? MP : '#6FEA77', from: 0.4, to: 1.1, blend: 'screen' }); } }, 300);
+        if (e.school === 'buff' || e.school === 'heal' || e.school === 'shield') after(() => { for (const k of tiles.slice(0, 8)) { const q = at(k); if (q) bloom(q, q.s, 600, { color: e.school === 'shield' ? MP : '#6FEA77', from: 0.4, to: 1.1, blend: 'screen' }); } }, 300);
         if (e.resonance && from) floatText('RESONANCE +' + e.resonance, from, SOUL_WARM, { small: true, delay: 200 });
       };
       if (wild) { if (from) { floatText('WILD', from, SOUL_WARM, { small: true }); shake(tokOf(e.unit, e.at), 1.2); } after(go, 220); }
@@ -367,6 +379,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
     letgo(e) {
       const p = at(e.at); play('soul_sigh', p, { gain: 0.9 });
       if (!p) return;
+      for (let i = 0; i < 4; i++) { const q = { x: p.x + (i - 1.5) * p.s * 0.22, y: p.y }, d = document.createElement('div'); d.style.cssText = 'width:100%;height:100%;border-radius:50%;filter:blur(3px);background:radial-gradient(circle,' + SOUL_INK + 'CC 0,' + SOUL_INK + '55 45%,' + SOUL_INK + '00 70%)'; const box = put(d, q, p.s * 0.9, p.s * 0.9, 1500); box.style.mixBlendMode = 'screen'; anim(box, reducedMotion() ? [{ opacity: 0.8 }, { opacity: 0 }] : [{ transform: 'translateY(0) scale(.5)', opacity: 0 }, { opacity: 0.9, offset: 0.2 }, { transform: 'translateY(-' + p.s * (0.9 + i * 0.15) + 'px) scale(1.4)', opacity: 0 }], { duration: 1300 + i * 100, delay: i * 90, easing: 'ease-out', fill: 'both' }); }
       for (let i = 0; i < 3; i++) burst('smoke_soft', { x: p.x + (i - 1) * p.s * 0.25, y: p.y - p.s * 0.2 }, p.s * (1 + i * 0.2), 1400, { color: SOUL_INK, from: 0.4, to: 1.5, fade: 0, blend: 'screen', delay: i * 140 });
       rise(p, SOUL_INK, 8, 1300, 1); ring(p, SOUL_INK, 1100, { from: 0.9, to: 1.6, width: 2 });
       floatText('LET GO', p, SOUL_INK, { small: true });
@@ -435,7 +448,7 @@ export function discharge(K: SoulKit, e: FxEvent) {
   K.play('soul_release', p, { rate: 1.15, gain: 0.8 }); K.play(el.sound.impact, p, { rate: el.sound.rate * 0.85, gain: 1, lowpass: 3200 }); if (el.sound.extra) K.play(el.sound.extra, p, { delay: 150, gain: 0.6 });
   if (n >= 3) K.play('explosion_boom', p, { rate: 1.4, gain: 0.45 });
   ring(p, col, 600, { from: 0.4, to: 1.8 + 0.25 * n, width: 5 + n }); ring(p, WHITE, 420, { from: 0.3, to: 1.4, width: 3, delay: 60 });
-  burst('glow', p, p.s * (1.8 + 0.4 * n), 600, { color: col, from: 0.3, to: 1.2, blend: 'screen' });
+  bloom(p, p.s * (1.8 + 0.4 * n), 600, { color: col, from: 0.3, to: 1.2, blend: 'screen' });
   cloud(p, el, 0.8 + 0.2 * n);
   const [x, y] = String(e.at).split(',').map(Number);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { if (!dx && !dy) continue; const q = K.at(x + dx + ',' + (y + dy)); if (q) cloud(q, el, 0.4 + 0.15 * n, 60 + (Math.abs(dx) + Math.abs(dy)) * 40); }
