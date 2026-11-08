@@ -28,8 +28,8 @@ describe('the craft blocks in the rules', () => {
     expect(i('PACING (stage discipline)')).toBeLessThan(i('THE SPLIT'));
     expect(RULES_PROMPT.trim().endsWith(MAP_TRUTH)).toBe(true);
   });
-  it('CRAFT is tight (about 350 words) and says the things Leon asked for', () => {
-    expect(words(CRAFT)).toBeLessThan(420);
+  it('CRAFT is tight (about 400 words, with the no-running-gags line) and says the things Leon asked for', () => {
+    expect(words(CRAFT)).toBeLessThan(450);
     for (const x of ['Never recap', 'Never repeat yourself', 'People speak', 'the air is thick with', 'suddenly', 'Never "What do you do?"', '40 to 120 words', '220 at most', 'Bad (M813)', 'Good:']) expect(CRAFT).toContain(x);
     expect(PACING).toMatch(/one beat per turn/); expect(PACING).toMatch(/Never skip a beat, jump time/); expect(PACING).toMatch(/don't advance for them/);
     expect(RULES_PROMPT).not.toMatch(/move the story toward them/);
