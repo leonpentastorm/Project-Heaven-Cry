@@ -51,6 +51,8 @@ export interface Character extends Sheet {
   advancedClass?: string | null;
   /** Class roster revision the class was converted to (3 = Revision 3: medic → bard and so on). */
   classRev?: number;
+  /** The focus rule's revision (item 630; migrateCharacterFocus). */
+  focusRev?: number;
   /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
   uses?: Record<string, { s: string; n: number }>;
   // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
@@ -299,7 +301,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
-    injuries: [], pack: kit.pack.map((x) => ({ ...x })),
+    injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV,
   };
   // A trait that caps armour (Forlorn Hope: Class I at most) drops the kit's armour to the cap at lock-in (the kit's
   // heavier plate isn't carried; PROVISIONAL, spec 14).
@@ -375,15 +377,16 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
 const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
-export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; pack: PackItem[] }> = {
+/** The starting kits. A focus starts in the off hand (spec: Hands 2; item 630: it counts only in a hand). */
+export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; offHand?: string; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
     pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set'), gear('spare_parts', 3)] },
   soldier: { weapon: 'hellraiser_service_rifle', armourClass: 3, armourName: 'Flak vest', stims: 0,
     pack: [magsOf('hellraiser_service_rifle', 3), roundsOf('rifle', 48), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }, gear('ration_pack')] },
-  sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('evoker', 1, 'Holds one core; Sigil magic'), gear('standard_core', 4), gear('chalk_and_wax')] },
-  soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0,
-    pack: [magsOf('drifter_revolver', 2), roundsOf('revolver', 12), gear('emanator', 1, 'The heart link; Soul magic'), gear('prayer_beads')] },
+  sigil: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'evoker',
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('standard_core', 4), gear('chalk_and_wax')] },
+  soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'emanator',
+    pack: [magsOf('drifter_revolver', 2), roundsOf('revolver', 12), gear('prayer_beads')] },
 };
 /** The pack, with saves from before magazines were tracked brought up to date. */
 export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || KITS.medic).pack).map((it) => {
@@ -477,14 +480,35 @@ export const readyDesigns = (c: Character) => fx(c, 'ready_designs', 2 + Math.fl
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
 export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
 export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));
+// ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
+/** What counts as each focus: the focus items, and the mana arms that count as one. */
+export const FOCUS_IDS: Record<'evoker' | 'emanator', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'] };
+/** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
+export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
+/** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */
+export function focusHand(c: Character, kind: 'evoker' | 'emanator'): 'main' | 'off' | 'pack' | null {
+  const ids = FOCUS_IDS[kind], held = inHands(c);
+  if (ids.includes(held[0])) return 'main';
+  if (held[1] && ids.includes(held[1])) return 'off';
+  return carries(c, ids) ? 'pack' : null;
+}
 const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
-export const hasEvoker = (c: Character) => carries(c, ['evoker', 'evoker_blade', 'spellslinger_pistol']);
-export const hasEmanator = (c: Character) => carries(c, ['emanator', 'emanator_gauntlet']);
+/** An Evoker in a hand: Sigils can be drawn and Evoked (spec: Hands 2). */
+export const hasEvoker = (c: Character) => { const h = focusHand(c, 'evoker'); return h === 'main' || h === 'off'; };
+/** An Emanator in a hand: MP can be spent and filled (spec: Hands 2; without one an Outburst draws on the air). */
+export const hasEmanator = (c: Character) => { const h = focusHand(c, 'emanator'); return h === 'main' || h === 'off'; };
+/** An Evoker anywhere (a hand or the pack): it keeps its core's charge. */
+export const carriesEvoker = (c: Character) => carries(c, FOCUS_IDS.evoker);
+/** An Emanator anywhere (a hand or the pack): it keeps its MP. */
+export const carriesEmanator = (c: Character) => carries(c, FOCUS_IDS.emanator);
+/** Why a character can't cast now, by focus (null: it can). */
+export const focusWhy = (c: Character, kind: 'evoker' | 'emanator'): string | null => ((kind === 'evoker' ? hasEvoker(c) : hasEmanator(c)) ? null : kind === 'evoker' ? NEEDS_EVOKER : NEEDS_EMANATOR);
+export const NEEDS_EVOKER = 'Needs an Evoker in hand.', NEEDS_EMANATOR = 'Needs an Emanator in hand.';
 export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0);
 /** MP now: the Emanator's charge (full when first carried); no Emanator, no MP. */
-export const mpNow = (c: Character) => (hasEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
+export const mpNow = (c: Character) => (carriesEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
-export const evoChargeNow = (c: Character) => (hasEvoker(c) ? c.evoCharge ?? 10 : 0);
+export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
 export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + mod(P(c, skill)) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
@@ -596,6 +620,23 @@ export function classPickError(c: Character, classId: string): string | null {
 /** A Revision 2 save's class under Revision 3 (medic → bard, scribe → mage, warden → trickster, hexer → channeler,
  * assassin → infiltrator; the rest keep their id). Moves the new class doesn't list stop working; an advanced class is
  * kept in the save but gives nothing while advanced classes are shelved. Runs once (c.classRev). Returns notes. */
+/** The focus rule's revision (item 630): a save from before it is moved once (migrateCharacterFocus). */
+export const FOCUS_REV = 1;
+/** A save from when a carried focus counted (item 77): a focus only in the pack goes to a free off hand (the Evoker
+ * first, for a character with Sigil words; else the Emanator), so nobody loses their magic to the new rule. A two-handed
+ * weapon or a full off hand leaves it in the pack, with a note. Runs once (c.focusRev). Returns notes. */
+export function migrateCharacterFocus(c: Character): string[] {
+  if (c.focusRev === FOCUS_REV) return [];
+  c.focusRev = FOCUS_REV;
+  const kinds = (['evoker', 'emanator'] as const).filter((k) => focusHand(c, k) === 'pack');
+  if (!kinds.length || kinds.length < (['evoker', 'emanator'] as const).filter((k) => focusHand(c, k)).length) return []; // one is held already
+  const want = kinds.includes('evoker') && ((c.sigils || []).length || !kinds.includes('emanator') || !(c.outbursts || []).length) ? 'evoker' : 'emanator';
+  const name = want === 'evoker' ? 'Evoker' : 'Emanator';
+  if (twoHands(c, c.weapon) || c.offHand) return [c.name + ': a focus counts only in a hand now; the ' + name + ' stays in the pack (' + (c.offHand ? 'the off hand is full' : 'a two-handed weapon') + '): swap it into a hand to cast.'];
+  const at = packOf(c).findIndex((x) => x.qty > 0 && FOCUS_IDS[want].includes(x.weapon || x.item || x.id));
+  const err = at < 0 ? 'not found' : equip(c, at, 'off');
+  return err ? [] : [c.name + ': a focus counts only in a hand now; the ' + name + ' goes to the off hand.'];
+}
 export function migrateCharacterClass(c: Character): string[] {
   if (c.classRev === CLASS_REV) return [];
   c.classRev = CLASS_REV;

@@ -563,7 +563,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 3. Hands, off hands and dual wielding
 
 1. **Hands.** A 2H weapon fills both hands. The off hand takes a 1H weapon, a shield, a torch or a focus.
-2. **Focuses must be held.** Sigils need an Evoker in a hand; Soul spells need an Emanator in a hand. The Evoker blade and the Emanator gauntlet (mana arms) count as their focus, so a spellsword can hold a blade-focus and a shield. Swapping what a hand holds costs 1 AP per hand (spec: draw or swap a weapon). Dropping is free.
+2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Swapping what a hand holds costs 1 AP per hand (spec: draw or swap a weapon). Dropping is free.
 3. **Single attacks.** With a weapon in each hand, attack with either one at its normal cost and modifiers.
 4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity for guns, Athletics for blades), to a minimum of −1.
 5. **Two guns.** Each gun tracks its own heat, ammo and recoil. Reloading one gun is 2 AP; reloading both is 3 AP.
@@ -784,7 +784,7 @@ Weapon skills and lore:
 - **Incendiary · Firebreak:** you choose which tiles in the radius burn. *"The frontier's least favourite smell."*
 - **Bot-scrambler · Static:** mana arms in the radius stay jammed until cleared (2 AP). *"Science Team surplus, sold out the back door."*
 
-##### 7.11 Mana arms: 6 types (new family; requirements listed)
+##### 7.11 Mana arms: 7 types (new family; requirements listed)
 
 Guns use Dexterity; melee uses Athletics or Raw Power. These are the class weapons for Spellslinger, Storm Hand, Blade Scribe, Lumeri Templar and Banner Dancer, but anyone who meets the requirement can use them.
 
@@ -796,6 +796,7 @@ Guns use Dexterity; melee uses Athletics or Raw Power. These are the class weapo
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
 | Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Camaraderie 3 |
+| Grand staff | 2H | 24 | 1 | counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
 
 Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanced rounds.
 
@@ -1184,7 +1185,7 @@ Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per ki
 
 > **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
-An Emanator stores bots as MP, up to your Max MP. Without one, your MP is 0 and every Begin pays straight from the air at +2 Strain. You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
+An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hands 2, item 630): without one in hand, every Begin pays straight from the air at +2 Strain (the MP stays in the carried Emanator). You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
 
 #### 1. The heart cycle: Begin, Pump, Release
 
@@ -2295,7 +2296,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 74. **Heartfed and Heartbinder:** the four gauges and what fills them, 10% per point, Link range 6, Share half, 2 Strain when a link is Downed.
 75. **Vessel:** the six body forms and their numbers, at most 2 held forms (item 550; the Will Power 5 third form is retired), Release 15 × each form's stage multiplier, summed (rules 1.5, item 532).
 76. **Twinbound:** the Twin's HP 50%, 4 AP, 6-tile leash, 3 Strain on its loss, three fixed built-in Outbursts.
-77. **Magic in the engine (first build; the Ring and Stack parts superseded by rules 1.4):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); the Evoker and Emanator count when carried, not only in hand; learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.
+77. **Magic in the engine (first build; the Ring and Stack parts superseded by rules 1.4):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); ~~the Evoker and Emanator count when carried, not only in hand~~ (retired by item 630: a focus counts only in a hand); learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.
 78. **The perk, trait and class-move runtime (first build, provisional):** item skill modifiers reach every d20 that uses the skill (checks, passives, saves, weapon attacks, initiative), never derived per-point stats; an active perk's or class move's other effects run only when its action runs, while a trait's effects always stand; story hooks reach every character; a per-scene use spans a fight in that scene; a story use the Narrator refuses is refunded.
 79. **Weapon-granted actions (provisional):** a weapon shows only the actions it grants (Reload by its own name: Swap magazine, Speedloader, Swap drum, Feed belt, Nock an arrow, Load a bolt…; Load a magazine; Clear jam; Brace; Field Repair; Overwatch or Hold a strike). Only weapons with a Heat limit jam; the rest fumble on a natural 1 (−1 AP next turn) and build no Heat. Brace only for weapons that need or reward it. The breacher tube reloads for 3 AP (data `reload_ap`).
 80. **Holding an advanced class (provisional):** held alongside the base class, with all three moves at once; it doesn't replace the base class's moves.
@@ -3542,7 +3543,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 354. *(K20)* **Empty Hand (Grand Sigilist)** (audit 1-4). Empty hands = an unarmed weapon and nothing in the off hand. Unarmed
     strikes deal at least 20 (max of the weapon's and 20). +2 Defense, on the sheet too (stat `defense`) and kept right
     through a swap. Data fix: `stat_mod unarmed_damage value 20` → `set: 20` (it reads as +20), `when: hands_empty` on
-    both effects. OPEN (audit 4): spec item 77 counts a carried Evoker, so an empty-handed Sigilist can still draw.
+    both effects. ~~OPEN (audit 4): spec item 77 counts a carried Evoker, so an empty-handed Sigilist can still draw.~~ Settled by item 630: a focus counts only in a hand, so an empty-handed Sigilist holds no Evoker and can't draw.
     PROVISIONAL.
 355. *(K21)* **Earthed** (audit 1-3). Inside your own Grand form you ignore its harm and hindrance (not SILENCE). Unarmed
     strikes inside an element form (FIRE, FREEZE, SHOCK, SPARK) are Elemental (half armour, as a flat add of half the
@@ -3949,4 +3950,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 589. **One main element:** the strongest damaging Subject glyph in full, every other one at half. FIRE · FIRE · CONDENSE is 61 (was 81); FIRE ×3 · CONDENSE 73 (was 109).
 590. **The Sigil ceiling:** 350 a hit, 500 on a critical, per creature per spell, before armour (balance-targets.md). With items 587–589 a maxed caster's strongest single-target Line (STONE · FIRE · SHOCK · CONDENSE) is about 346 (was about 1,144; 2,288 on a critical), so the ceiling only trims the extreme cases.
 591. **Weapons exceed the ceilings too** (not changed here; for the damage simulator): the breacher tube at about 290 a hit for a maxed build with a masterwork, and about 990 on a critical (Critical multiplier up to 3.4).
+630. **A focus counts only in a hand** (Leon, 8 Nov 2026; retires item 77's "the Evoker and Emanator count when carried"; closes item 354's open note). The main or the off hand; a 2H weapon fills both, so an off-hand focus doesn't count beside one (and equipping one stows it). Evokers: the Evoker, the Evoker blade, the spellslinger's pistol, the Grand staff (2H). Emanators: the Emanator, the Emanator gauntlet. The refusals read "Needs an Evoker in hand." and "Needs an Emanator in hand." Carried, a focus keeps its store (core charge, MP; rests and refills still reach it), but nothing is cast or spent from it. Enemy casters hold theirs.
+631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
+632. **Putting a focus away mid-fight** (swapping a 2H weapon into the main hand, or something else into the off hand) stops new casts at once: drawing, Evoking, swapping a core, Venting, Syphon, Crystallise and MP. Glyphs already drawn stay on the ground (Evoking them needs an Evoker again). An Outburst already held stays held: it swells, can be Pumped, Fed, Steadied, let go and Released (the spec gives no rule that ends it). Disarmed leaves a focus weapon in reach: it still counts (the condition stops attacks, not casting).
+633. **Swapping a focus in a fight:** a focus from the pack into the off hand is 1 AP (one hand), like any swap; a 2H weapon into the main hand is 1 AP and stows the off hand with it (one motion). Story and area-map casting read the same hands.
+634. **The Grand staff** (mana arms, 2H, 24 physical, reach 1, 2.5 kg, 2,400 credits, Brain Power 3, counts as an Evoker; item 353's data delta). PROVISIONAL: every number; the Grand Sigilist (shelved) doesn't need it to plant its Grand form yet.
+635. **The Proving Ground's magic kits** put the Evoker in the off hand when it is free and the main hand is 1H (the Sigil kit; also the both kit), the Emanator there for the Soul kit; anything that doesn't fit (a 2H weapon, a full off hand, the second focus of the both kit) goes to the pack, and the tool's line says where each one went.
 

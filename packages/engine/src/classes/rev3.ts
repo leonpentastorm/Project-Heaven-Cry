@@ -464,7 +464,7 @@ register({
 // Needs an Evoker and adds no Flux (it isn't a word). Combat only.
 const IMAGE_RANGE = 8;
 function evokerWhy(h: Holder): string | null {
-  const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'You need an Evoker for this.';
+  const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'Needs an Evoker in hand.';
   if (u.dead || u.downed) return 'Downed.'; if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
   if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
   return null;

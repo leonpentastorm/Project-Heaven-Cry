@@ -319,3 +319,10 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **Two-glyph hook:** nobody else gets it yet (item 586).
     - **Sigil damage balance:** Elemental power on the Physical slope, Sigil and Elemental bonuses added instead of multiplied, one main element per spell, and the 350 / 500 ceiling per creature per spell (items 587–590). A maxed caster's strongest single-target Line falls from about 1,144 (2,288 on a critical) to about 346. Sigils keep the highest ceiling through area Bursts and setups, as the balance targets ask. Weapons also exceed the ceilings (item 591): left to the damage simulator.
 
+103. **A magic focus counts only when it is held in a hand** (8 Nov 2026; Leon's task "a magic focus counts only when it is held in a hand"; branch `fix/focus-in-hand`). The spec's Hands rule ("Focuses must be held") and item 77 ("count when carried") disagreed and the engine followed item 77, so a character with a two-handed rifle and an Evoker in the pack could still draw. Leon wants the held rule: it makes one-handed guns and melee weapons worth more.
+    - **The rule:** a focus counts in the main or the off hand only; a 2H weapon fills both hands, so no focus beside it unless the weapon is one (the new Grand staff). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator (spec items 630, 634).
+    - **Outbursts without an Emanator in hand** keep drawing on the air (+2 Strain, no MP), as Soul magic says; only MP needs the Emanator in hand (Leon chose this over blocking Outbursts; item 631).
+    - **Mid-fight:** putting a focus away stops new casts; an Outburst already held stays held (item 632). Swaps are 1 AP per hand (item 633).
+    - **What carrying still does:** the Evoker keeps its core charge and the Emanator its MP in the pack, and rests and refills still reach them.
+    - **Proving Ground:** the magic kits put the focus in the off hand where it fits and say when it went to the pack (item 635).
+

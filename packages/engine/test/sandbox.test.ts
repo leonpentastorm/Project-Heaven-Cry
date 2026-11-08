@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
-  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf, SKILL,
+  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf, SKILL,
 } from '../src';
 import { beforeAll, afterAll } from 'vitest';
 import { _setAdvancedLive } from '../src';
@@ -244,8 +244,11 @@ describe('the tools', () => {
     // items and armour
     g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'field_helmet', equip: true }, HOST);
     expect(charOf(g).worn?.head).toBe('field_helmet');
+    // A focus counts only in a hand (item 630): given to the pack it is carried, not held; equipped it goes to the off hand.
     g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'evoker' }, HOST);
-    expect(hasEvoker(charOf(g))).toBe(true); expect(pc(g).mg?.evoker).toBe(true);
+    expect(hasEvoker(charOf(g))).toBe(false); expect(pc(g).mg?.evoker ?? false).toBe(false);
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'evoker', equip: true }, HOST);
+    expect(charOf(g).offHand?.id).toBe('evoker'); expect(hasEvoker(charOf(g))).toBe(true); expect(pc(g).mg?.evoker).toBe(true);
     g = apply(g, { type: 'sandbox/armour', charId: c.id, armourClass: 4 }, HOST); expect(pc(g).armour).toBeGreaterThanOrEqual(20);
     // the ordinary equip action works mid-fight here (it is refused in a normal fight)
     const idx = packOf(charOf(g)).findIndex((it) => it.weapon === 'hellraiser_service_rifle' && it.kind === 'weapon');
@@ -358,9 +361,13 @@ describe('the tools', () => {
     let g = open(); const c = charOf(g);
     g = apply(g, { type: 'sandbox/kit', charId: c.id }, HOST);
     const ch = charOf(g);
-    expect(hasEvoker(ch)).toBe(true); expect(hasEmanator(ch)).toBe(true);
-    // In the off hand where it fits; next to a two-handed weapon it is carried in the pack (carried is enough).
-    expect((WEAPON[ch.weapon] as any).hands === '2H' ? packOf(ch).some((it) => (it.item || it.id) === 'evoker') : ch.offHand?.id === 'evoker').toBe(true);
+    // A focus counts only in a hand (item 630): the off hand where it fits; next to a two-handed weapon (or as the second
+    // focus of the both kit) it goes to the pack, and the tool's line says so (item 635).
+    const twoH = (WEAPON[ch.weapon] as any).hands === '2H';
+    expect(hasEvoker(ch)).toBe(!twoH); expect(carriesEvoker(ch)).toBe(true); expect(carriesEmanator(ch)).toBe(true);
+    expect(twoH ? packOf(ch).some((it) => (it.item || it.id) === 'evoker') : ch.offHand?.id === 'evoker').toBe(true);
+    expect(hasEmanator(ch)).toBe(false); expect(packOf(ch).some((it) => (it.item || it.id) === 'emanator')).toBe(true);
+    expect(g.story.entries.some((e) => /an Emanator \(in the pack: your off hand holds Evoker/.test(String(e.text)) || (twoH && /in the pack/.test(String(e.text))))).toBe(true);
     expect(packOf(ch).find((it) => (it.item || it.id) === 'standard_core')!.qty).toBeGreaterThanOrEqual(4);
     expect(ch.sigils).toEqual(expect.arrayContaining(['fire', 'seek'])); // a Reach word, so the kit casts at once (rules 1.4)
     expect((ch.outbursts || []).map((d) => d.school)).toEqual(expect.arrayContaining(['damage', 'buff']));
@@ -371,9 +378,18 @@ describe('the tools', () => {
     expect(packOf(charOf(again)).filter((it) => (it.item || it.id) === 'evoker').length + (charOf(again).offHand?.id === 'evoker' ? 1 : 0)).toBe(1);
     // In the fight: draw FIRE on our own tile, and the Outburst designs are ready.
     g = apply(apply(g, { type: 'sandbox/ai', on: false }, HOST), { type: 'sandbox/fight' }, HOST);
-    const u = pc(g);
-    expect(u.mg?.evoker).toBe(true); expect(u.mg!.words).toContain('fire'); expect(u.mg!.designs.length).toBeGreaterThanOrEqual(2);
+    let u = pc(g);
+    expect(u.mg!.words).toContain('fire'); expect(u.mg!.designs.length).toBeGreaterThanOrEqual(2);
     for (let i = 0; i < 4 && active(g.combat!)!.id !== u.id; i++) g = apply(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id }, HOST);
+    if (twoH) {
+      // The two-handed rifle fills both hands: no drawing until a one-handed gun is in the main hand and the Evoker in
+      // the off hand (the Proving Ground's tools work mid-fight).
+      expect(u.mg?.evoker).toBe(false); expect(refused(g, { type: 'combat/draw', unitId: u.id, word: 'fire', tile: refOf(u.pos) })).toMatch(/Needs an Evoker in hand/);
+      g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'service_pistol', equip: true }, HOST);
+      g = apply(g, { type: 'sandbox/equip', charId: c.id, idx: packOf(charOf(g)).findIndex((it) => (it.item || it.id) === 'evoker'), to: 'off' }, HOST);
+      u = pc(g);
+    }
+    expect(u.mg?.evoker).toBe(true);
     g = apply(g, { type: 'combat/draw', unitId: u.id, word: 'fire', tile: refOf(u.pos) }, HOST);
     expect((g.combat!.glyphs || []).some((x) => x.word === 'fire')).toBe(true);
     // a Sigils-only kit for someone else, mid-fight

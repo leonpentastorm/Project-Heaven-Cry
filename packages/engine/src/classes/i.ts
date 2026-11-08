@@ -74,7 +74,7 @@ const fmt = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
 
 // ---------- the Evoker (Mind classes) ----------
 function evokerReady(h: Holder): string | null {
-  const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'You need an Evoker for this.';
+  const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'Needs an Evoker in hand.';
   if (u.dead || u.downed) return 'Downed.';
   if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
   if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
@@ -934,7 +934,7 @@ const inscribeDef = (kind: 'weapon' | 'armour', self: boolean, scope: 'combat' |
   text: kind === 'weapon' ? '2 charge: +10% damage with the weapon until the next rest.' : '2 charge: +5 armour value until the next rest.' + (scope === 'story' ? ' Name the ally in what you say (else yourself).' : ''),
   available: (h) => {
     if (scope === 'combat') { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 2) return 'Needs 2 charge.'; return true; }
-    if (!h.c || !hasEvoker(h.c)) return 'You need an Evoker.'; if (evoChargeNow(h.c) < 2) return 'Needs 2 charge in the core.'; return true;
+    if (!h.c || !hasEvoker(h.c)) return 'Needs an Evoker in hand.'; if (evoChargeNow(h.c) < 2) return 'Needs 2 charge in the core.'; return true;
   },
   run: (h, args) => {
     if (scope === 'combat') {
@@ -1011,7 +1011,7 @@ register({
     {
       id: 'write', label: 'Store a spell', scope: ['story', 'world'], target: 'text', ap: 0,
       text: 'Write a Sigil spell onto an object (say its words: "FIRE SEEK SPREAD"); pay its charge now. It fades at the next rest. In a fight it goes off from your tile with its own Reach, all around.',
-      available: (h) => { const c = h.c; if (!c || !hasEvoker(c)) return 'You need an Evoker.'; if (storedOf(h).length >= storedCap(c)) return 'You keep ' + storedCap(c) + ' stored spell(s) at most.'; return true; },
+      available: (h) => { const c = h.c; if (!c || !hasEvoker(c)) return 'Needs an Evoker in hand.'; if (storedOf(h).length >= storedCap(c)) return 'You keep ' + storedCap(c) + ' stored spell(s) at most.'; return true; },
       run: (h, args) => {
         const c = h.c!, words = parseSpell(args.text || ''), known = new Set([...(c.sigils || []), ...itemWords(c)]);
         if (words.length < 2) return 'Name the words (at least two: a Subject and another word).';
@@ -1143,7 +1143,7 @@ register({
     {
       id: 'rewrite_story', label: 'Rewrite', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: 'Flip a blessing, ward or advantage someone relies on (pick who and what). The engine rolls their Brain save; the Narrator rules the flip.',
-      available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'You need an Evoker.'),
+      available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'Needs an Evoker in hand.'),
       run: (h, args) => {
         const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + debuffStrength(c, 'brain'), ok = r === 20 || (r !== 1 && r >= tn);
         const eid = postStory(h, c.name + ' rewrites: "' + String(args.text).slice(0, 160) + '"');
@@ -1355,7 +1355,7 @@ register({
     {
       id: 'sanctuary_story', label: 'Sanctuary', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: 'Raise a sanctuary around the party (60 MP): the Narrator rules what it keeps out.',
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'You need an Emanator.'),
+      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => { const c = h.c!; c.mp = mpNow(c) - 60; const eid = postStory(h, c.name + ' raises a Sanctuary' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '.'));
         pendRuling(h.g, c, h.key, 'Sanctuary out of combat (60 MP paid): a 3×3 safe zone where allies take half damage until the danger passes. Rule what it keeps out.', eid || undefined); },
     },
@@ -1399,7 +1399,7 @@ register({
     {
       id: 'inspire_story', label: 'Inspire', scope: ['story'], target: 'none', ap: 0,
       text: '10 MP: an ally (named in what you say) gets +2 on their next check.',
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 10 ? 'Needs 10 MP.' : true) : 'You need an Emanator (MP).'),
+      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 10 ? 'Needs 10 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
         const t = charNamed(h, args); if (!t || t === h.c) return 'Name the ally you inspire.';
         h.c!.mp = mpNow(h.c!) - 10; encouraged(h.g)[t.id] = h.c!.id; postStory(h, h.c!.name + ' inspires ' + t.name + ': +2 on their next check.');
@@ -1545,7 +1545,7 @@ register({
     {
       id: 'puppet_story', label: 'Puppet', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: '60 MP: say who and what they do. The engine rolls their Heart save; the Narrator plays out the forced act.',
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'You need an Emanator.'),
+      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
         const c = h.c!; c.mp = mpNow(c) - 60; const r = d20(h.g.rng), tn = 12 + debuffStrength(c, 'heart');
         const eid = postStory(h, c.name + ' reaches for someone\'s strings: "' + String(args.text).slice(0, 160) + '"');

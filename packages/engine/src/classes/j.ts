@@ -789,7 +789,7 @@ register({
   actions: [{
     id: 'sentry_turret', label: 'Sentry Turret', scope: ['combat'], ap: 3, target: 'tile',
     text: 'Spend 2 charge: deploy a turret (40 HP, Defense 10) that fires once a round at the nearest enemy (+4 to hit, 20 damage). One at a time.',
-    available: (h) => (!h.u ? false : !h.u.mg?.evoker ? 'Needs an Evoker (2 charge).' : (h.u.mg.charge || 0) < 2 ? 'Needs 2 charge.' : turretOf(h) ? 'Your turret is still up.' : true),
+    available: (h) => (!h.u ? false : !h.u.mg?.evoker ? 'Needs an Evoker in hand (2 charge).' : (h.u.mg.charge || 0) < 2 ? 'Needs 2 charge.' : turretOf(h) ? 'Your turret is still up.' : true),
     preview: (h, a) => {
       const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
       if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'A tile next to you.' };
@@ -876,7 +876,7 @@ register({
   actions: [{
     id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
     text: 'Out of combat: inscribe up to 6 rounds with an element or an affliction word, 1 charge per round.',
-    available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
+    available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
     preview: (h, a) => {
       const m = magicOf(h.c!)!, w = String(a.choice || '').toLowerCase(), n = Math.max(1, Math.min(6, Number(a.text) || 6));
       if (!inscribable(w)) return { ok: false, why: 'Pick an Element or an Affliction word.' };
@@ -938,7 +938,7 @@ register({
   actions: [
     { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 4, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
       text: 'Out of combat: store a whole Sigil spell in a magazine, paying its charge now.',
-      available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker.' : true; },
+      available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
       preview: (h, a) => {
         const m = magicOf(h.c!)!, words = wordsOf(a.choice);
         const unk = words.find((w) => !SIGIL[w] || !m.words.includes(w)); if (!words.length || unk) return { ok: false, why: unk ? 'You don\'t know ' + unk.toUpperCase() + '.' : 'Name the spell\'s words.' };
@@ -1028,7 +1028,7 @@ register({
     run: (h, a) => { const el = String(a.choice).toLowerCase(); charState(h.c)[h.key] = { element: el }; const line = 'infuses the gauntlet with ' + el.toUpperCase() + '.'; if (h.cb) say(h.cb, h.c!.name + ' ' + line); else postStory(h, line, { private: true }); return null; },
   }],
   toggles: [{ id: 'infusion', label: 'Infusion', on: ['combat/attack'], defaultOn: true,
-    available: (h, actx) => { const u = h.u; if (!u || !infusionOf(h)) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false; return !u.mg?.emanator ? 'Needs an Emanator.' : (u.mg.mp || 0) < 5 ? 'Needs 5 MP.' : true; },
+    available: (h, actx) => { const u = h.u; if (!u || !infusionOf(h)) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false; return !u.mg?.emanator ? 'Needs an Emanator in hand.' : (u.mg.mp || 0) < 5 ? 'Needs 5 MP.' : true; },
     preview: (h) => '+10 ' + String(infusionOf(h)).toUpperCase() + ' for 5 MP.' }],
   on: {
     on_hit: (ctx, h) => {

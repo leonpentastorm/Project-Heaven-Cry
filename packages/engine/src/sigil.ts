@@ -18,6 +18,7 @@ import { type Rng, d20 } from './rng';
 import { emit } from './effects/hooks';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
+import { NEEDS_EVOKER } from './character';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName,
@@ -42,7 +43,7 @@ function revealUnit(cb: Combat, u: Unit, why: string): string {
 // ---------- ready, costs ----------
 const canCast = (u: Unit): string | null => (u.dead || u.downed ? 'Downed.' : condOn(u, 'silenced') ? 'Silenced: no magic this round.' : null);
 export function sigilReady(cb: Combat, u: Unit): string | null {
-  const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker for Sigils.';
+  const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER; // a focus counts only in a hand (item 630)
   if (m.lockRound != null && cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
   return canCast(u);
 }

@@ -2555,6 +2555,50 @@
       }
     },
     {
+      "id": "grand_staff",
+      "name": "Grand staff",
+      "category": "mana",
+      "damage": 24,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "athletics",
+      "weight_kg": 2.5,
+      "accuracy": 0,
+      "price_credits": 2400,
+      "properties": [
+        "counts_as_evoker"
+      ],
+      "mastery_family": "mana_arms",
+      "hands": "2H",
+      "durability": 250,
+      "mod_slots": [
+        "grip"
+      ],
+      "grants": {
+        "name": "Staff Evoker",
+        "text": "Counts as an Evoker while held in both hands. The Grand Sigilist plants a staff to raise a Grand form (spec item 634).",
+        "effect": {
+          "op": "narrator"
+        }
+      },
+      "type": "grand_staff",
+      "provisional": true,
+      "requires": {
+        "brain_power": 3
+      },
+      "tags": [
+        "evoker_linked"
+      ]
+    },
+    {
       "id": "beast_bite",
       "name": "Bite and claws",
       "category": "unarmed",

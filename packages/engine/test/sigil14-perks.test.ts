@@ -192,7 +192,7 @@ describe('Twin Discipline on the area map under 1.4', () => {
   it('a fused Line whose SEEK finds a token opens the fight with the cast; the hold is spent and the glyphs fade', () => {
     const s = storyWith([{ perks: { twin_discipline: 'ultimate' }, archetype: 'stormcaller', kit: 'soul' }]); const c = s.chars[0];
     const ch = s.g.characters[c.id]; ch.mp = 500;
-    ch.pack = [...(ch.pack || []), { id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'tool' } as any];
+    ch.weapon = 'evoker_blade'; ch.loaded = 0; // a focus counts only in a hand (item 630): the blade (an Evoker) beside the Emanator
     ch.sigils = ['spark', 'seek']; ch.evoCharge = 10;
     const full = () => { s.g.story.ap = { ...(s.g.story.ap || {}), [c.id]: 9 }; };
     // A straight row of three free tiles from the character: the Line on the first two, the token on the far side.

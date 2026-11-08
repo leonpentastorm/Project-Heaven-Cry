@@ -6,7 +6,7 @@ import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, t
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
-  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
+  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
 import { type Rng, d20, die } from './rng';
@@ -122,8 +122,9 @@ export function noteDeaths(cb: Combat) {
 
 // ---------- units ----------
 export function magicOf(c: Character): MagicUnit | undefined {
+  // A focus counts only in a hand (spec: Hands 2; item 630); one in the pack keeps its charge or MP for later.
   const words = [...new Set([...(c.sigils || []), ...itemWords(c)])], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c);
-  if (!words.length && !designs.length && !evoker && !emanator) return undefined;
+  if (!words.length && !designs.length && !carriesEvoker(c) && !carriesEmanator(c)) return undefined;
   return {
     words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator,
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c),
@@ -138,8 +139,9 @@ export function magicOf(c: Character): MagicUnit | undefined {
 /** Write a unit's magic back to its character (after a fight, or after an overworld action). */
 export function magicToCharacter(c: Character, u: Unit) {
   const m = u.mg; if (!m) return;
-  if (m.emanator) c.mp = Math.max(0, Math.min(m.mpMax, Math.round(m.mp)));
-  if (m.evoker) c.evoCharge = m.charge;
+  // What the focus stores goes home with it, held or carried (a focus put away mid-fight keeps its charge and MP).
+  if (m.emanator || carriesEmanator(c)) c.mp = Math.max(0, Math.min(m.mpMax, Math.round(m.mp)));
+  if (m.evoker || carriesEvoker(c)) c.evoCharge = m.charge;
   const had = coresCarried(c), want = m.cores + m.coresMade;
   if (want !== had) {
     let left = had - want; // positive: cores spent; negative: cores made
@@ -436,7 +438,7 @@ export const coreAp = (u: Unit) => actionAp({ u }, 'swap_core', SPELL_AP.core).a
 /** Vent (1 AP): all the Flux goes into the air. 'vent' {u, flux, extra} (extra mutable: more goes into the air with it,
  * Bleed the Flux) after the Flux is gone. */
 export function vent(cb: Combat, u: Unit): string | null {
-  const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
+  const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = ventAp(u);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (!m.flux) return 'No Flux to vent.';
   u.ap -= ap; const n = m.flux; m.flux = 0;
@@ -446,7 +448,7 @@ export function vent(cb: Combat, u: Unit): string | null {
   return null;
 }
 export function swapCore(cb: Combat, u: Unit): string | null {
-  const m = u.mg; if (!m || !m.evoker) return 'You need an Evoker.';
+  const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = coreAp(u);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (m.cores < 1) return 'No spare cores.';
   u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
@@ -1171,7 +1173,7 @@ export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: 
 }
 /** Syphon (1 AP): MP from the air by the band, × the Syphon bonus; the meter drops 2. */
 export function syphon(cb: Combat, u: Unit): string | null {
-  const m = u.mg; if (!m || !m.emanator) return 'You need an Emanator to Syphon.';
+  const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
   if (u.ap < SPELL_AP.syphon) return 'Needs 1 AP.'; if (m.mp >= m.mpMax) return 'Your Emanator is full.';
   u.ap -= SPELL_AP.syphon; const gain = Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), was = m.mp; m.mp = Math.min(m.mpMax, m.mp + gain);
   emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: m.mp - was }); shiftMana(cb, -2); cb.log.push(u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
@@ -1179,7 +1181,7 @@ export function syphon(cb: Combat, u: Unit): string | null {
 }
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
-  const m = u.mg; if (!m || !m.emanator) return 'You need an Emanator to Crystallise.';
+  const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
   const cap = actionAp({ u }, 'crystallise', SPELL_AP.crystallise).ap; // items price it (hooks gap D8)
   if (u.ap < cap) return 'Needs ' + cap + ' AP.'; if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
   u.ap -= cap; m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');

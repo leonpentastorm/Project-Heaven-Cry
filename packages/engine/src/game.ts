@@ -5,10 +5,10 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -259,7 +259,7 @@ export type Action =
   | { type: 'gear/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number }
   | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both' } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
-  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number }
+  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number; to?: 'main' | 'off' }
   | { type: 'combat/pray'; unitId: string; choice?: string; targetId?: string; miracle?: boolean }
   | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
   | { type: 'combat/hide'; unitId: string } | { type: 'combat/extinguish'; unitId: string; targetId?: string } | { type: 'combat/escape'; unitId: string } | { type: 'combat/recover'; unitId: string }
@@ -346,7 +346,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes
+    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630)
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
     if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n });
   }
@@ -412,7 +412,7 @@ function reduce(g: GameState, a: Action, by: string) {
       // Session start counts as a long rest. 'session_heal' {g, mult}: an item may give a character only part of it
       // (Insomniac's Wired: half of what it would restore; perk-runtime H gap 2).
       { const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
-        for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (hasEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); } }
+        for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); } }
       emitStory(g, 'session_start', { g, n: g.sessionN }); // 'session_start' {g, n}: start items, Echo, faction starts (lanes)
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
@@ -901,7 +901,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
     if (g.story.heat) g.story.heat[c.id] = 0;
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
-    if (kind === 'long') { if (hasEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
+    if (kind === 'long') { if (carriesEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
 }
@@ -1237,7 +1237,7 @@ function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Char
 }
 /** Swap what a hand holds mid-fight (spec: 1 AP per hand): the off hand into the main hand, or a weapon or mod from
  * the pack. The unit's weapon numbers are rebuilt from the character; the old weapon keeps its rounds and wear. */
-function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number }): string | null {
+function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number; to?: 'main' | 'off' }): string | null {
   if (u.companion) return 'A companion has no pack.';
   const ctx: any = emitHook(cb, 'swap', { u, c, from: a.from, mod: a.mod, ap: 1, cb });
   const ap = Math.max(0, ctx.ap); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
@@ -1250,16 +1250,29 @@ function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Cha
     const main = { id: c.weapon, ...(c.weaponState || {}) }, off = c.offHand, offRounds = u.offAmmo ?? 0;
     c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods }; c.offHand = { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods };
     const wasLoaded = c.loaded ?? 0; c.loaded = offRounds; u.offAmmo = wasLoaded;
-  } else if (typeof a.from === 'number' || /^\d+$/.test(String(a.from))) err = equip(c, Number(a.from), 'main');
+  } else if (typeof a.from === 'number' || /^\d+$/.test(String(a.from))) err = equip(c, Number(a.from), a.to === 'off' ? 'off' : 'main'); // a focus goes in the off hand (item 633)
   else return 'Swap from your off hand, or a weapon in your pack.';
   if (err) return err;
   const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state });
   for (const k of ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'mags', 'loose', 'ammoType', 'magTypes', 'unarmedBonus', 'def'] as const) (u as any)[k] = (fresh as any)[k];
   if (a.from !== 'off') u.offAmmo = fresh.offAmmo;
-  u.heat = 0; u.jammed = false; u.braced = false; u.ap -= ap;
-  cb.log.push(c.name + (a.mod != null ? ' fits a mod' : ' swaps to the ' + (WEAPON[u.weapon]?.name || u.weapon)) + ' (' + ap + ' AP).');
+  // A focus counts only in a hand (item 630): what the hands hold now decides what this fighter can cast. Its store
+  // (core charge, MP) stays with it either way; an Outburst already held stays held (item 632).
+  if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; } }
+  else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; }
+  if (a.to !== 'off') { u.heat = 0; u.jammed = false; }
+  u.braced = false; u.ap -= ap;
+  const offName = c.offHand ? WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id : '';
+  cb.log.push(c.name + (a.mod != null ? ' fits a mod' : a.to === 'off' ? ' takes the ' + offName + ' in the off hand' : ' swaps to the ' + (WEAPON[u.weapon]?.name || u.weapon)) + ' (' + ap + ' AP)' + (a.mod == null && u.mg ? focusLine(c) : '') + '.');
   syncSong(g);
   return null;
+}
+
+/** After a swap: which focuses the hands hold now (item 630). */
+function focusLine(c: Character): string {
+  const e = focusHand(c, 'evoker'), m = focusHand(c, 'emanator'), held = (h: string | null) => h === 'main' || h === 'off';
+  const bits = [e ? (held(e) ? 'an Evoker in hand' : 'the Evoker stowed: no Sigils') : '', m ? (held(m) ? 'an Emanator in hand' : 'the Emanator stowed: Outbursts draw on the air') : ''].filter(Boolean);
+  return bits.length ? ' · ' + bits.join(', ') : '';
 }
 
 /** Enemies act on their own turns until a PC is up or the fight ends. */
@@ -2314,9 +2327,9 @@ function sbRefill(c: Character) {
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
-  if (hasEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
+  if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
   c.pack = pack;
-  if (hasEmanator(c)) c.mp = maxMp(c);
+  if (carriesEmanator(c)) c.mp = maxMp(c);
   c.stims = Math.max(c.stims, 3);
   if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
 }
@@ -2372,8 +2385,9 @@ function sbUnequip(c: Character, slot: string): string | null {
   c.weapon = 'fists'; c.weaponState = {}; c.loaded = 0;
   return null;
 }
-/** The magic kit: an Evoker in the off hand (where it can go) with cores and a few words, an Emanator carried with full MP
- * and two ready designs, so Sigils and Outbursts can be tried at once. */
+/** The magic kit: the focus in the off hand where it fits (spec: Hands 2; a focus counts only in a hand, item 630), with
+ * cores and a few words for Sigils, full MP and two ready designs for Outbursts. A focus that doesn't fit (a two-handed
+ * weapon, a full off hand, the second focus of the both kit) goes to the pack, and the line says so (item 635). */
 function sbKit(g: GameState, c: Character, kind: MagicKit): string[] {
   const got: string[] = [];
   const learn = (m: { word?: string; school?: string }) => {
@@ -2381,17 +2395,23 @@ function sbKit(g: GameState, c: Character, kind: MagicKit): string[] {
     const k = (c.soulKnown ||= { schools: [], modules: [] });
     if (m.school && SCHOOL[m.school] && !k.schools.includes(m.school)) { k.schools.push(m.school); got.push(SCHOOL[m.school].name + ' (school)'); }
   };
+  /** Give a focus, into the off hand if it can go there; say where it went. */
+  const focus = (kindF: 'evoker' | 'emanator', name: string) => {
+    const where = focusHand(c, kindF);
+    if (where === 'main' || where === 'off') { got.push(name + ' (already in your ' + (where === 'main' ? 'main' : 'off') + ' hand)'); return; }
+    const at = where === 'pack' ? packOf(c).findIndex((x) => x.qty > 0 && FOCUS_IDS[kindF].includes(x.weapon || x.item || x.id)) : sbGive(c, kindF, 1, 'standard');
+    const why = twoHands(c, c.weapon) ? 'your two-handed ' + (WEAPON[c.weapon]?.name || 'weapon') + ' fills both hands' : c.offHand ? 'your off hand holds ' + (WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id) : '';
+    const err = why || at < 0 ? why || 'not found' : equip(c, at, 'off');
+    if (!err) { got.push(name + ' (off hand)'); return; }
+    got.push(name + ' (in the pack: ' + err.replace(/\.$/, '').replace(/^./, (x) => x.toLowerCase()) + '; swap it into a hand to cast)');
+  };
   if (kind !== 'soul') {
-    if (!hasEvoker(c)) {
-      const at = sbGive(c, 'evoker', 1, 'standard'); got.push('an Evoker');
-      // In the off hand where it fits (a two-handed weapon or a shield there keeps it in the pack: carried is enough).
-      if (!c.offHand && (WEAPON[c.weapon] as any)?.hands !== '2H' && !equip(c, at, 'off')) got[got.length - 1] += ' (off hand)';
-    }
+    focus('evoker', 'an Evoker');
     sbGive(c, 'standard_core', 4, 'standard'); c.evoCharge = CORE_CHARGE; got.push('4 mana cores');
     for (const w of MAGIC_KIT.words) learn({ word: w });
   }
   if (kind !== 'sigil') {
-    if (!hasEmanator(c)) { sbGive(c, 'emanator', 1, 'standard'); got.push('an Emanator'); }
+    focus('emanator', 'an Emanator');
     c.mp = maxMp(c);
     for (const s of MAGIC_KIT.schools) learn({ school: s });
     const list = (c.outbursts ||= []);
@@ -2698,7 +2718,9 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
           if (to && it) err = sbEquip(c, at, to);
         }
       });
-      sbLog(g, c.name + ' gets ' + (WEAPON[a.item]?.name || ITEM[a.item]?.name) + (WEAPON[a.item] && rarity !== 'standard' ? ' (' + rarity + ')' : '') + (a.equip && !err ? ', equipped' : '') + '.');
+      // A focus counts only in a hand (item 630): say so when one lands in the pack.
+      const fk = FOCUS_IDS.evoker.includes(a.item) ? 'evoker' : FOCUS_IDS.emanator.includes(a.item) ? 'emanator' : null, fh = fk ? focusHand(c, fk) : null;
+      sbLog(g, c.name + ' gets ' + (WEAPON[a.item]?.name || ITEM[a.item]?.name) + (WEAPON[a.item] && rarity !== 'standard' ? ' (' + rarity + ')' : '') + (a.equip && !err ? ', equipped' : '') + (fk && fh === 'pack' ? ' (in the pack: a focus counts only in a hand; equip it to cast)' : '') + '.');
       if (err) fail(err);
       return;
     }

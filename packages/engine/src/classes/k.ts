@@ -75,7 +75,7 @@ function nudge(cb: Combat, t: Unit, toward: string, n: number): string {
 /** Flux through the engine's own rule (magic.ts flux, exported for class moves: hooks gap K1). */
 const fluxUp = (cb: Combat, rng: Rng, u: Unit, n: number): string => engineFlux(cb, rng, u, n);
 const sigilBlock = (cb: Combat, u: Unit): string | null => {
-  const m = u.mg; if (!m || !m.evoker) return 'Needs an Evoker.';
+  const m = u.mg; if (!m || !m.evoker) return 'Needs an Evoker in hand.';
   if (m.lockRound != null && cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
   if (u.downed || u.dead) return 'Downed.'; if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
   return null;
@@ -564,7 +564,7 @@ register({
   actions: [{
     id: 'vent_heart', label: 'Vent into your heart (Closed Loop)', scope: ['combat', 'world'], target: 'none', ap: 1,
     text: 'Vent your Flux into your own Emanator at 10 MP per Flux; the air takes nothing.',
-    available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.evoker ? 'Needs an Evoker.' : !m.emanator ? 'Needs an Emanator.' : !m.flux ? 'No Flux to vent.' : true; },
+    available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.evoker ? 'Needs an Evoker in hand.' : !m.emanator ? 'Needs an Emanator in hand.' : !m.flux ? 'No Flux to vent.' : true; },
     preview: (h) => { const m = h.u!.mg!; return { lines: [m.flux + ' Flux → +' + Math.min(m.mpMax - m.mp, 10 * m.flux) + ' MP (' + m.mp + '/' + m.mpMax + ').'] }; },
     run: (h) => {
       const u = h.u!, m = u.mg!, n = m.flux, was = m.mp; m.mp = Math.min(m.mpMax, m.mp + 10 * n); m.flux = 0;
@@ -585,7 +585,7 @@ register({
   actions: [
     { id: 'self_crystallise', label: 'Self-Crystallise', scope: ['combat', 'world'], target: 'none', ap: 3,
       text: 'Spend 100 MP from your Emanator to make one standard core, ignoring the meter (Virtue cores a long rest; they can\'t be sold).',
-      available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.emanator ? 'Needs an Emanator.' : m.mp < 100 ? 'Needs 100 MP (' + Math.floor(m.mp) + ').' : selfLeft(h) <= 0 ? 'Virtue (' + selfCap(h.c) + ') cores this rest already.' : true; },
+      available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.emanator ? 'Needs an Emanator in hand.' : m.mp < 100 ? 'Needs 100 MP (' + Math.floor(m.mp) + ').' : selfLeft(h) <= 0 ? 'Virtue (' + selfCap(h.c) + ') cores this rest already.' : true; },
       run: (h) => {
         const u = h.u!, m = u.mg!; if (!uses(h).take('per_rest', selfCap(h.c), h.key + '#cores')) return 'Virtue cores this rest already.';
         m.mp -= 100; m.coresMade++; const st = charState(h.c); st.selfCores = (st.selfCores || 0) + 1;
@@ -626,7 +626,7 @@ const fusionStandIn = (d: OutburstDesign) => (d.school === 'buff' ? 'ward' : 'bl
 const STANDING = ['stay', 'wait', 'watch'];
 function fusionCheck(h: Holder, a: ActionArgs): { ok: false; why: string } | { ok: true; p: Pattern; d: OutburstDesign; aim: string | null; ap: number; charge: number; held: boolean; cost: number; strain: number; plan: ReturnType<typeof planEvoke> } {
   const u = h.u!, cb = h.cb!, m = u.mg; const no = (why: string) => ({ ok: false as const, why });
-  if (!m?.evoker || !m.emanator) return no('Fusion needs an Evoker and an Emanator.');
+  if (!m?.evoker || !m.emanator) return no('Fusion needs an Evoker and an Emanator in hand.');
   const sb = sigilBlock(cb, u); if (sb) return no(sb);
   const t = aimOf(cb, a, 'tile'); if (!t) return no('Pick a glyph of the pattern.');
   const p = findPattern(cb, t, u.pos); if (typeof p === 'string') return no(p);
@@ -648,7 +648,7 @@ register({
   actions: [{
     id: 'fusion', label: 'Fusion', scope: ['combat', 'world'], target: 'tile', ap: (h, a) => { const r = h.u && h.cb ? fusionCheck(h, a) : null; return r && r.ok ? r.ap : 1; },
     text: 'Fire a Line of non-Subject words (Reach, Delivery, Burst, Filter) with an Outburst as its Subject: both costs, +1 Strain, +2 Flux. Celestials notice.',
-    available: (h) => (!h.u ? false : !h.u.mg?.evoker || !h.u.mg.emanator ? 'Needs an Evoker and an Emanator.' : true),
+    available: (h) => (!h.u ? false : !h.u.mg?.evoker || !h.u.mg.emanator ? 'Needs an Evoker and an Emanator in hand.' : true),
     preview: (h, a) => {
       const r = fusionCheck(h, a); if (!r.ok) return { ok: false, why: r.why };
       const live = r.plan.affected.filter((x) => !x.kinSpared && !x.skipped);
