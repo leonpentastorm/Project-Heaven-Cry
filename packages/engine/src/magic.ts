@@ -85,7 +85,8 @@ const CONDS: Record<string, CondDef> = {
   last_turn: { name: 'Last Turn', fam: 'body', rounds: 1, boon: true, text: 'Still standing on borrowed time.' },
   quickened: { name: 'Quickened', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 AP on your next turn (within the ceiling of 9).' },
   sharpened: { name: 'Sharpened', fam: 'body', rounds: 1, boon: true, text: 'Your next attack: +3 to hit and ×1.25 damage (until that attack, or the end of your next turn).' },
-  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 1, boon: true, text: 'Your patron is watching: on-theme actions +2, off-theme ones cost 1 Devotion (the Narrator judges).' },
+  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 1, boon: true, text: 'Your patron is watching (rules 1.6): attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion.' },
+  smitten: { name: 'Smitten', fam: 'heart', rounds: 1, text: 'You can\'t attack the one who smote you, or the allies linked to them (Sweet Nothings).' },
 };
 /** Data and older ids for the same conditions (conditions.json uses the long names). */
 const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
@@ -155,6 +156,8 @@ export function magicToCharacter(c: Character, u: Unit) {
  * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
+/** Is a condition a boon (Guarded, Inspired, Witnessed…)? (Unravel ends them; rules 1.6.) */
+export const condIsBoon = (id: string) => !!CONDS[condId(id)]?.boon;
 export function unitSave(u: Unit, fam: Fam): number {
   const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : TIER_SAVE[u.tier || 'minion'] ?? 0;
   return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'charisma') : fam === 'heart' ? condSkillMod(u, 'composure') : 0);

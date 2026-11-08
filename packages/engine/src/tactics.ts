@@ -229,35 +229,7 @@ export const PATRON: Record<string, any> = Object.fromEntries(PATRONS.map((p) =>
 /** Devotion (0-10, starts at 3 when the pact is made). */
 export const devotionOf = (c: Character) => Math.max(0, Math.min(10, c.devotion ?? 3));
 export function changeDevotion(c: Character, n: number) { c.devotion = Math.max(0, Math.min(10, devotionOf(c) + n)); }
-/** Pray (3 AP, Faith 3+, a patron, not Silenced, the cooldown): d20 + mod(Faith) + half Devotion against the patron's
- * mood (TN 12 unless the Narrator moves it). Success: a Blessing from the patron's list × Blessing power (Miracle: ×3,
- * Faith 7, once a session, all Devotion, at least 5). Witnessed at Faith 5. A natural 1 costs 1 Devotion. The meter
- * drops 5. What the engine can't run of a Blessing goes to the Narrator with its text. */
-export function pray(cb: Combat, rng: Rng, u: Unit, args: { choice?: string; targetId?: string; miracle?: boolean }): string | null {
-  const c = charOfUnit(u); if (!c) return 'Only a character can pray.';
-  const p = PATRON[c.patron || '']; if (!p) return 'You have no patron to pray to.';
-  const faith = c.skills.faith || 0; if (faith < 3) return 'Prayer needs Faith 3.';
-  if (condOn(u, 'silenced')) return 'Silenced: no prayers.';
-  const cd = prayerCooldown(c); if (u.prayedRound != null && cb.round - u.prayedRound < cd) return 'Your patron heard you ' + (cb.round - u.prayedRound) + ' round(s) ago: wait ' + cd + '.';
-  const g = boundGame(), miracle = !!args.miracle;
-  if (miracle) { if (faith < 7) return 'A Miracle needs Faith 7.'; if (devotionOf(c) < 5) return 'A Miracle needs at least 5 Devotion.'; if (c.miracleSession === sessionN(g)) return 'One Miracle a session.'; }
-  const ap = actionAp({ u }, 'pray', 3).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  const bl = (p.blessings || []).find((b: any) => b.id === args.choice) || (p.blessings || [])[0]; if (!bl) return 'Your patron offers no Blessings.';
-  const t = args.targetId ? cb.units.find((x) => x.id === args.targetId) : u; if (!t || t.dead) return 'Pick someone in sight.';
-  if (t !== u && !unitSees(cb, u, t.pos)) return 'You can\'t see them.';
-  u.ap -= ap; u.prayedRound = cb.round;
-  const tn = g?.story?.patronMood?.[p.id] ?? 12, dv = devotionOf(c), m = mod(faith) + Math.floor(dv / 2) + (u.sk?.faith || 0);
-  const r = miracle ? 20 : d20(rng), ok = miracle || r === 20 || (r !== 1 && r + m >= tn);
-  shiftMana(cb, -5, 'a prayer');
-  let line = u.name + (miracle ? ' calls for a MIRACLE from ' : ' prays to ') + p.name + (miracle ? '' : ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn);
-  if (miracle) { c.devotion = 0; c.miracleSession = sessionN(g); }
-  if (!ok) { if (r === 1) { changeDevotion(c, -1); line += ' · a natural 1: −1 Devotion'; } cb.log.push(line + ' · no answer.'); return null; }
-  const power = (u.blessPower || 1) * (miracle ? 3 : 1);
-  line += ' · ' + bl.name + ' (×' + Math.round(power * 100) / 100 + ')' + blessing(cb, rng, u, t, bl, power);
-  if (faith >= 5) line += applyCond(cb, rng, u, u, 'witnessed', 1, undefined, { skipSave: true });
-  cb.log.push(line + '.');
-  return null;
-}
+/* Prayer itself is rules 1.6 (faith.ts: combatPray in a fight, faith/pray in the story); the patron's mood is retired. */
 /** A Blessing lands: 'blessing_in' {u, t, blessing, power, handled} first (a lane may run it), then the effects the
  * engine knows (heal, Soul damage, shield, a condition, cleanse); the rest goes to the Narrator with its text. */
 export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power: number): string {
