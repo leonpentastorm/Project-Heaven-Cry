@@ -52,7 +52,10 @@ this work (Leon: "after Outburst 2.0 is in we will start balancing damage number
   3. **Tending others:** your first heal, stim, shield or cleanse given to an ally each turn: −1 Strain.
   4. **Let it go:** drop a held Outburst without releasing it: Strain falls by its stage (the built power is lost; a
      harmless violet sigh, the mana meter +1). Free action, on your turn.
-  5. **Breathe (2 AP):** −1 Strain and your next Begin this fight costs +1 Strain (a debt; the heart remembers).
+  5. **Steady the heart (1 AP, only while holding):** −1 Strain, and the held Outburst **doesn't swell** at the start
+     of your next turn. Growth traded for safety: keep a charged heart ready (for Heart Overwatch or the right moment)
+     without drifting over the limit. (Leon, 8 Nov 2026: the first draft, Breathe for 2 AP with a Strain debt, was a
+     net zero for 2 AP.)
   Crystallise still turns the air into a core; Syphon still draws air into MP.
 
 ## 4. Second school: a rider
