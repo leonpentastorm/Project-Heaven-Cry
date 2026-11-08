@@ -231,7 +231,9 @@ export function urgentRows(rows: ResRow[], n = 3): ResRow[] {
 // ---------- the view for the prototype templates (combat.template.html, main.template.html) ----------
 /** CSS for the block: large readable rows, the hint on hover or focus (a tap on touch screens focuses the row). */
 export const RES_CSS = [
-  '.phc-res{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid #232D3F}',
+  // Two columns where the card is wide enough (the combat You card), one in the narrow HUD; long rows take the full width.
+  '.phc-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 14px;padding-top:8px;border-top:1px solid #232D3F}',
+  '.phc-res>.phc-res-row[data-wide=true]{grid-column:1/-1}',
   '.phc-res-row{position:relative;display:flex;flex-direction:column;gap:3px;outline:none;border-radius:6px;padding:2px 4px;margin:0 -4px;cursor:help}',
   '.phc-res-row:hover,.phc-res-row:focus-visible{background:#151C29}.phc-res-row:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
   '.phc-res-hint{display:none;font-size:12px;line-height:1.4;color:#C9D3E3;font-weight:500;letter-spacing:0}',
@@ -240,7 +242,7 @@ export const RES_CSS = [
   '@keyframes phcResPulse{0%,100%{box-shadow:0 0 0 0 rgba(246,81,87,.0)}50%{box-shadow:0 0 0 4px rgba(246,81,87,.35)}}',
   '.phc-rm .phc-res-row .phc-res-chip{animation:none!important}',
   '@media (prefers-reduced-motion: reduce){.phc-res-row .phc-res-chip{animation:none!important}}',
-  '.phc-res-urgent{display:flex;flex-wrap:wrap;gap:6px}.phc-res-mini{flex:1 1 140px;min-width:0}',
+  '.phc-res-urgent{display:flex;flex-direction:column;gap:5px}.phc-res-mini{min-width:0}',
 ].join('\n');
 
 export function chipStyle(level?: string): string {
@@ -258,11 +260,12 @@ export function resRowView(r: ResRow, compact = false) {
   const ink = fillInk(r), n = Math.max(0, Math.round(r.max || 0)), on = Math.max(0, Math.round(r.now ?? 0));
   const pipsN = r.kind === 'pips' ? Math.min(n, 12) : 0, over = r.kind === 'pips' && r.max && (r.now ?? 0) > r.max ? on - n : 0;
   return {
-    key: r.key, label: r.label.toUpperCase(), value: compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
+    key: r.key, wide: ['ammo', 'held', 'thr', 'off'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value: compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
     aria: r.label + ': ' + r.value + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
     isBar: r.kind === 'bar', isPips: r.kind === 'pips', isText: r.kind === 'text',
     labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour,
     valueStyle: 'flex: 1 1 auto; min-width: 0; font-size: ' + (compact ? 14 : 15) + 'px; font-weight: 700; color: #E7EBF3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums',
+    miniValueStyle: 'flex: none; font-size: 15px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums',
     warnStyle: chipStyle(r.level),
     subStyle: 'font-size: 12px; font-weight: 500; color: #A3AEC2',
     trackStyle: 'position: relative; display: block; height: ' + (compact ? 8 : 10) + 'px; border-radius: 3px; background: #1C2536; overflow: hidden',

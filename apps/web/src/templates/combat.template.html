@@ -84,9 +84,7 @@
 </div>
 <sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-me-urgent phc-res-urgent" style="flex: none; display: none">
 <sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
-<span style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}"> · {{r.sub}}</span></sc-if></span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
-<sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
-<sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
 </div></sc-for>
 </div></sc-if>
 <div class="phc-cb-top phc-col-scroll" style="flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px">
@@ -102,7 +100,7 @@
 <svg viewBox="-4 -4 128 248" width="40" height="78" role="img" aria-label="Your injuries" style="flex: none"><sc-for list="{{me.fig.parts}}" as="p"><path d="{{p.d}}" fill="{{p.fill}}" stroke="{{p.stroke}}" stroke-width="{{p.sw}}" stroke-linejoin="round"></path></sc-for></svg>
 </div>
 <sc-if value="{{me.res.has}}"><div role="list" aria-label="Your resources" class="phc-res">
-<sc-for list="{{me.res.rows}}" as="r"><div role="listitem" class="phc-res-row" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
+<sc-for list="{{me.res.rows}}" as="r"><div role="listitem" class="phc-res-row" data-res="{{r.key}}" data-level="{{r.level}}" data-wide="{{r.wide}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
 <span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}"> · {{r.sub}}</span></sc-if></span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
 <sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
 <sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
@@ -261,9 +259,7 @@
 <div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for></div>
 <sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-res-urgent" style="flex: none">
 <sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" title="{{r.hint}}" aria-label="{{r.aria}}">
-<span style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span style="{{r.valueStyle}}">{{r.value}}<sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}"> · {{r.sub}}</span></sc-if></span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
-<sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
-<sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
 </div></sc-for>
 </div></sc-if>
 <div role="group" aria-label="Quick commands (keys 1–4)" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
