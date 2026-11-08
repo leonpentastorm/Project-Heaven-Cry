@@ -477,3 +477,24 @@ Use the painting alone in the picker. Archetype names on the contact sheet are r
 # Title-screen Part A — layered Heavenprint candidate
 
 The three key-art layers in `art/ui/title-screen/` retain Heavenprint's gouache, broken ink and material colours. Keep the opaque sky/city/Celestial beneath the transparent battlefield and five-hero ridge. The left 38% is reserved for UI. Violet Soul lightning belongs to the lead's Emanator glove; the mage's cyan geometry comes through an Evoker. Use the collection README for overscan, alpha, phone framing, source-resolution disclosure and validation. This art delivery does not alter Wick or Part B of the brief.
+
+
+
+## Patron apparition colour identities — review set, 2026-11-08
+
+For the current patron portraits, the user directs monumental divine apparitions in the approved Celestial/pilot language. Do not expose hidden origins through ordinary mortal casting. Use focused radiance, sacred negative space and a patron-specific halo or answering emblem. Ivory effigies, masks or radiant absence can supply the humanoid presence. Preserve Heavenprint gouache and broken ink.
+
+Each patron has its own accent family, applied through light, vestments and motifs. Ivory and charcoal remain shared neutrals. These patron accents do not replace the skill/attribute palette, or the pure-white patron-mark and prayer-icon rules. Hexes are design anchors, not exact indexed paint colours.
+
+| Patron | Accent | Anchor |
+|---|---|---|
+| Holy Father Nerukhan | pale gold | `#E9D6A2` |
+| The Quartermaster | olive green | `#8B9F47` |
+| The Laughing Mask | crimson | `#B83243` |
+| The Toll-Keeper | silver teal | `#79BDB6` |
+| Mother Ember | ember orange | `#ED8A3C` |
+| Old Overcast | storm blue | `#4E8DD1` |
+| The Matchmaker | rose pink | `#D879AF` |
+| The Counting Weaver | violet | `#9C82D7` |
+
+This palette follows the user’s request for distinct colours and supersedes the overlapping accents in the initial blessing brief. Portraits remain review candidates at `art/character-portraits/patrons/v1/`; see its manifest for native dimensions and prompts.
