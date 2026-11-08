@@ -42,17 +42,17 @@
 <h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHERE YOU GREW UP · EARTH SECTOR</h2>
 <span style="font-size: 13px; color: #A3AEC2">Checks about your home's places and people are one step easier.</span>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px">
+<div class="phc-cc-grid" style="--n: 3; --min: 180px; --h: 70px; --gap: 8px">
 <sc-for list="{{originCards}}" as="o" hint-placeholder-count="14">
-<button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.home}}" style="{{o.style}}">
+<button type="button" data-origin="{{o.num}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.name}}: {{o.home}}" style="{{o.style}}">
 <span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
-<span style="font-size: 14px; font-weight: 700; line-height: 1.25">{{o.name}}</span>
+<span class="phc-cc-clamp2" style="font-size: 14px; font-weight: 700; line-height: 1.25">{{o.name}}</span>
 </button>
 </sc-for>
 </div>
 </div>
 <sc-if value="{{hasOrigin}}" hint-placeholder-val="{{true}}">
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<div class="phc-cc-scroll" data-origin-detail="" style="height: 380px; box-sizing: border-box; flex: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 14px 24px; padding: 18px 20px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <div style="grid-column: 1 / -1; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600">{{origin.name}}</div>
 <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">HOME</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Home}}</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">UPBRINGING</span><span style="font-family: 'Spectral', serif; font-size: 15px; line-height: 1.5">{{origin.Upbringing}}</span></div>
@@ -116,15 +116,15 @@
 </div>
 <p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
 <p style="margin: 0; font-size: 12px; color: #A3AEC2">Portraits here are suggested character icons, not part of the build: you pick yours on the Identity step.</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px">
+<div class="phc-cc-grid" data-arch-grid="" style="--n: 2; --min: 400px; --h: 208px; --gap: 12px">
 <sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
-<button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
-<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="Suggested portrait for {{a.name}}" loading="lazy" style="flex: none; width: 72px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #232D3F; background: #000"></sc-if>
-<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
-<sc-if value="{{a.hasKicker}}" hint-placeholder-val="{{false}}"><span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{a.kicker}}</span></sc-if>
-<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 18px; font-weight: 700">{{a.name}}</span><span style="font-size: 10px; letter-spacing: 0.1em; color: #A3AEC2; text-align: right">{{a.role}}</span></span>
-<span style="font-family: 'Spectral', serif; font-size: 14px; line-height: 1.4; color: #C9D3E3">{{a.blurb}}</span>
-<span style="display: flex; gap: 6px; flex-wrap: wrap">
+<button type="button" data-arch="{{a.key}}" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
+<sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="Suggested portrait for {{a.name}}" loading="lazy" style="flex: none; width: 140px; height: 100%; object-fit: cover; object-position: 50% 15%; border-radius: 10px; border: 1px solid #232D3F; background: #000"></sc-if>
+<span style="flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{a.hasKicker}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{a.kicker}}</span></sc-if>
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 21px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2; text-align: right">{{a.role}}</span></span>
+<span class="phc-cc-scroll" style="font-family: 'Spectral', serif; font-size: 16px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
+<span style="flex: none; display: flex; gap: 6px; flex-wrap: wrap">
 <sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
 </span>
 </span>
@@ -133,7 +133,7 @@
 </div>
 </div>
 
-<aside style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start; position: sticky; top: 16px">
+<aside class="phc-cc-scroll" data-arch-preview="" style="flex: 1 1 440px; min-width: 0; max-height: calc(100vh - 32px); box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start; position: sticky; top: 16px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">PREVIEW</span>
 <sc-if value="{{pv.hasCard}}" hint-placeholder-val="{{false}}"><figure style="margin: 0; display: flex; flex-direction: column; gap: 6px"><button type="button" onClick="{{pv.zoomCard}}" aria-label="Enlarge the suggested portrait" style="{{zoomBtn}}; width: 100%"><img src="{{pv.card}}" alt="Suggested portrait for {{pv.name}}" style="width: 100%; max-height: 420px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button><figcaption style="font-size: 11px; letter-spacing: 0.08em; color: #A3AEC2">SUGGESTED CHARACTER ICON · pick yours on the Identity step</figcaption></figure></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pv.name}}</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #A3AEC2">{{pv.role}}</span></div>
@@ -144,14 +144,14 @@
 <span style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
 </div>
 </sc-for>
-<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid #232D3F">
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid #232D3F; min-height: 155px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILL POINTS</span>
 <sc-for list="{{pv.skills}}" as="k" hint-placeholder-count="4">
 <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="{{k.style}}">{{k.name}}</span><span style="color: #E7EBF3">{{k.pts}}</span></div>
 </sc-for>
 </div>
 <span class="phc-arch-leans" style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; color: #A3AEC2">Leans toward:<sc-if value="{{pv.hasLeans}}"><sc-for list="{{pv.leanIcons}}" as="li"><span style="{{li.style}}"><img class="phc-class-emblem" src="{{li.icon}}" alt="" style="width: 18px; height: 18px">{{li.name}}</span></sc-for></sc-if><sc-if value="{{pv.noLeans}}"><span style="color: #E7EBF3">{{pv.leans}}</span></sc-if></span>
-<span style="font-size: 13px; color: #A3AEC2">{{pv.budget}}</span>
+<span style="font-size: 13px; line-height: 1.4; min-height: 2.8em; color: #A3AEC2">{{pv.budget}}</span>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <button type="button" onClick="{{useArch}}" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{useLabel}}</button>
 </div>
@@ -187,10 +187,10 @@
 <div class="phc-card" onMouseEnter="{{k.hover}}" style="{{k.style}}">
 <button type="button" onClick="{{k.zoom}}" aria-label="Enlarge the {{k.name}} skill portrait" style="{{zoomBtn}}; width: 100%"><img src="{{k.img}}" alt="{{k.name}} skill portrait" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 6px; background: #000"></button>
 <button type="button" class="phc-help" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
-<span style="{{k.nameStyle}}">{{k.name}}</span>
+<span title="{{k.name}}" style="{{k.nameStyle}}">{{k.name}}</span>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px">
 <button type="button" aria-label="Lower {{k.name}}" onClick="{{k.dec}}" disabled="{{k.noDec}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">‹</button>
-<span style="display: flex; flex-direction: column; align-items: center; line-height: 1"><span style="font-size: 20px; font-weight: 700">{{k.pts}}</span><span style="{{k.modStyle}}">{{k.modShort}}</span></span>
+<span style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 34px; min-width: 0; line-height: 1"><span style="font-size: 20px; font-weight: 700">{{k.pts}}</span><span style="{{k.modStyle}}">{{k.modShort}}</span></span>
 <button type="button" aria-label="Raise {{k.name}}" title="{{k.incTitle}}" onClick="{{k.inc}}" disabled="{{k.noInc}}" style="width: 34px; height: 34px; border-radius: 7px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-size: 18px; cursor: pointer">›</button>
 </div>
 </div>
@@ -203,7 +203,7 @@
 </div>
 <div style="{{detail.style}}">
 <button type="button" onClick="{{detail.zoom}}" aria-label="Enlarge the {{detail.name}} skill portrait" style="{{zoomBtn}}"><img src="{{detail.img}}" alt="" style="width: 48px; height: 60px; object-fit: cover; border-radius: 6px; background: #000"></button>
-<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+<div class="phc-cc-scroll" style="display: flex; flex-direction: column; gap: 3px; min-width: 0; max-height: 100%">
 <span style="{{detail.nameStyle}}">{{detail.name}} · {{detail.attr}} · {{detail.mod}}</span>
 <span style="font-size: 13px; color: #C9D3E3">{{detail.summary}}</span>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; color: #A3AEC2">“{{detail.quiet}}”</span>
@@ -225,16 +225,18 @@
 <button type="button" role="tab" aria-selected="{{c.selected}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.name}}</button>
 </sc-for>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px">
+<div class="phc-cc-grid" data-trait-grid="" style="--n: 3; --min: 340px; --h: 440px; --gap: 14px">
 <sc-for list="{{traitCards}}" as="t" hint-placeholder-count="6">
-<article style="{{t.style}}">
-<div style="display: flex; gap: 12px; align-items: flex-start">
-<button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 56px; height: 56px; flex: none"></button>
-<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 18px; font-weight: 700">{{t.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
+<article data-trait="{{t.key}}" style="{{t.style}}">
+<div style="flex: none; display: flex; gap: 14px; align-items: center">
+<button type="button" onClick="{{t.zoom}}" aria-label="Enlarge the {{t.name}} icon" style="{{zoomBtn}}"><img class="phc-icon" src="{{t.icon}}" alt="" style="width: 84px; height: 84px; flex: none"></button>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="font-size: 21px; font-weight: 700; line-height: 1.2">{{t.name}}</span><span style="font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">{{t.cat}}</span></div>
 </div>
-<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{t.flavour}}</span>
-<sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
-<sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 13px; line-height: 1.4"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>
+<div class="phc-cc-scroll" style="display: flex; flex-direction: column; gap: 8px; padding-right: 4px">
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 16px; line-height: 1.5; color: #C9D3E3">{{t.flavour}}</span>
+<sc-for list="{{t.up}}" as="u" hint-placeholder-count="1"><span style="font-size: 14.5px; line-height: 1.45"><span style="color: #6FEA77; font-weight: 700">✓ </span>{{u.text}}</span></sc-for>
+<sc-for list="{{t.down}}" as="d" hint-placeholder-count="1"><span style="font-size: 14.5px; line-height: 1.45"><span style="color: #F65157; font-weight: 700">✕ </span>{{d.text}}</span></sc-for>
+</div>
 <button type="button" onClick="{{t.toggle}}" disabled="{{t.disabled}}" aria-pressed="{{t.pressed}}" style="{{t.btnStyle}}">{{t.btn}}</button>
 </article>
 </sc-for>
@@ -254,17 +256,19 @@
 <button type="button" role="radio" data-belief="faithful" aria-checked="{{beliefFaithful.pressed}}" onClick="{{beliefFaithful.pick}}" style="{{beliefFaithful.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">FAITHFUL</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Sworn to a patron</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefFaithful.text}}</span></button>
 <button type="button" role="radio" data-belief="atheist" aria-checked="{{beliefAtheist.pressed}}" onClick="{{beliefAtheist.pick}}" style="{{beliefAtheist.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">ATHEIST · PILGRIM</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Belong to no god</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefAtheist.text}}</span></button>
 </div>
-<sc-if value="{{showPatrons}}" hint-placeholder-val="{{false}}"><div role="radiogroup" aria-label="Patrons" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px">
+<sc-if value="{{showPatrons}}" hint-placeholder-val="{{false}}"><div role="radiogroup" aria-label="Patrons" class="phc-cc-grid" data-patron-grid="" style="--n: 2; --min: 500px; --h: 430px; --gap: 14px">
 <sc-for list="{{patronCards}}" as="p" hint-placeholder-count="8"><article data-patron="{{p.key}}" style="{{p.style}}">
-<div style="display: flex; gap: 12px; align-items: flex-start">
-<img src="{{p.portrait}}" alt="" style="width: 64px; height: 80px; object-fit: cover; flex: none; border-radius: 8px; background: #05070B; padding: 6px; box-sizing: border-box">
-<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="display: flex; gap: 6px; align-items: center"><img src="{{p.mark}}" alt="" style="width: 22px; height: 22px"><span style="font-family: 'Spectral', serif; font-size: 19px; font-weight: 600">{{p.name}}</span></span><span style="font-size: 12px; color: #A3AEC2">{{p.archetype}}</span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #D36A90">{{p.rule}}</span></div>
+<button type="button" class="phc-cc-art" data-patron-art="{{p.key}}" onClick="{{p.zoom}}" aria-label="View the art of {{p.name}}" title="View {{p.name}}" style="{{p.artStyle}}"><img src="{{p.portrait}}" alt="{{p.name}}, {{p.archetype}}" style="{{p.imgStyle}}"><span class="phc-cc-zoom" aria-hidden="true">⤢ VIEW</span></button>
+<div style="flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; gap: 10px">
+<div style="flex: none; display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="display: flex; gap: 8px; align-items: center"><img src="{{p.mark}}" alt="" style="width: 26px; height: 26px; flex: none"><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600; line-height: 1.15">{{p.name}}</span></span><span style="font-size: 13px; color: #A3AEC2">{{p.archetype}}</span><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #D36A90">{{p.rule}}</span></div>
+<div class="phc-cc-scroll" style="display: flex; flex-direction: column; gap: 10px; padding-right: 4px">
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 16px; line-height: 1.5; color: #C9D3E3">{{p.costume}}</span>
+<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">LIKES</span><sc-for list="{{p.likes}}" as="t"><span style="padding: 2px 8px; border-radius: 999px; border: 1px solid #6FEA77; font-size: 12px; font-weight: 700"><span style="color: #6FEA77">✓ </span>{{t.text}}</span></sc-for></div>
+<div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">TABOOS</span><sc-for list="{{p.taboos}}" as="t"><span style="padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 12px; font-weight: 700"><span style="color: #F65157">✕ </span>{{t.text}}</span></sc-for></div>
+<div style="display: flex; flex-direction: column; gap: 3px; font-size: 14px"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">HYMNS</span><sc-for list="{{p.hymns}}" as="h"><span>{{h.text}}</span></sc-for><span style="color: #C9D3E3">MIRACLE · {{p.miracle}}</span></div>
 </div>
-<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #C9D3E3">{{p.costume}}</span>
-<div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">LIKES</span><sc-for list="{{p.likes}}" as="t"><span style="padding: 1px 7px; border-radius: 999px; border: 1px solid #6FEA77; font-size: 11px; font-weight: 700"><span style="color: #6FEA77">✓ </span>{{t.text}}</span></sc-for></div>
-<div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">TABOOS</span><sc-for list="{{p.taboos}}" as="t"><span style="padding: 1px 7px; border-radius: 999px; border: 1px solid #F65157; font-size: 11px; font-weight: 700"><span style="color: #F65157">✕ </span>{{t.text}}</span></sc-for></div>
-<div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">HYMNS</span><sc-for list="{{p.hymns}}" as="h"><span>{{h.text}}</span></sc-for><span style="color: #C9D3E3">MIRACLE · {{p.miracle}}</span></div>
 <button type="button" role="radio" data-swear="{{p.key}}" aria-checked="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.btnStyle}}">{{p.btn}}</button>
+</div>
 </article></sc-for>
 </div></sc-if>
 </section>
@@ -274,11 +278,11 @@
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out. Everyone also gets one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px">
+<div class="phc-cc-grid" data-kit-grid="" style="--n: 4; --min: 240px; --h: 190px; --gap: 12px">
 <sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
 <button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
-<span style="font-size: 20px; font-weight: 700">{{k.name}}</span>
-<sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 14px; color: #C9D3E3">{{i.text}}</span></sc-for>
+<span style="flex: none; font-size: 21px; font-weight: 700">{{k.name}}</span>
+<span class="phc-cc-scroll" style="width: 100%; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 15px; color: #C9D3E3">{{i.text}}</span></sc-for></span>
 </button>
 </sc-for>
 </div>
@@ -299,11 +303,11 @@
 <sc-for list="{{sigilGroups}}" as="g" hint-placeholder-count="5">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{g.label}}</span>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<div class="phc-cc-grid" style="--n: 4; --min: 220px; --h: 112px; --gap: 8px">
 <sc-for list="{{g.words}}" as="w" hint-placeholder-count="6">
 <button type="button" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" disabled="{{w.disabled}}" title="{{w.title}}" style="{{w.style}}">
 <img src="{{w.img}}" alt="" style="width: 36px; height: 36px; flex: none; padding: 4px; border-radius: 8px; background: #0A0D13">
-<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{w.charge}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{w.text}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0; height: 100%"><span style="flex: none; display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{w.charge}}</span></span><span class="phc-cc-scroll" style="font-size: 12.5px; line-height: 1.35; color: #C9D3E3">{{w.text}}</span></span>
 </button>
 </sc-for>
 </div>
@@ -326,9 +330,9 @@
 <label style="display: flex; flex-direction: column; gap: 6px; max-width: 420px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">NAME</span>
 <input value="{{obName}}" onChange="{{onObName}}" maxlength="40" placeholder="{{obPlaceholder}}" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px; letter-spacing: 0"></label>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SCHOOL</span>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<div class="phc-cc-grid" style="--n: 4; --min: 220px; --h: 112px; --gap: 8px">
 <sc-for list="{{schoolCards}}" as="c" hint-placeholder-count="4">
-<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #AE9BFF">{{c.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{c.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{c.text}}</span></button>
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}"><span style="flex: none; display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #AE9BFF">{{c.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{c.cost}}</span></span><span class="phc-cc-scroll" style="font-size: 12.5px; line-height: 1.35; color: #C9D3E3">{{c.text}}</span></button>
 </sc-for>
 </div>
 <sc-if value="{{hasOpts}}" hint-placeholder-val="{{false}}">
@@ -341,9 +345,9 @@
 <sc-for list="{{modGroups}}" as="g" hint-placeholder-count="3">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">MODULES · {{g.label}}</span>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
+<div class="phc-cc-grid" style="--n: 4; --min: 220px; --h: 112px; --gap: 8px">
 <sc-for list="{{g.mods}}" as="m" hint-placeholder-count="5">
-<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; color: #AE9BFF"><sc-if value="{{m.hasIcon}}"><img src="{{m.icon}}" alt="" style="width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px"></sc-if>{{m.mark}} {{m.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{m.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{m.text}}</span></button>
+<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; color: #AE9BFF"><sc-if value="{{m.hasIcon}}"><img src="{{m.icon}}" alt="" style="width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px"></sc-if>{{m.mark}} {{m.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{m.cost}}</span></span><span class="phc-cc-scroll" style="font-size: 12.5px; line-height: 1.35; color: #C9D3E3">{{m.text}}</span></button>
 </sc-for>
 </div>
 </div>
@@ -369,7 +373,7 @@
 <span style="font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">{{headerName}}</span>
 <span style="font-size: 14px; color: #A3AEC2">{{summaryLine}}</span>
 <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 6px 14px; padding-top: 4px">
-<sc-for list="{{record}}" as="r" hint-placeholder-count="8"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2; padding-top: 3px">{{r.k}}</span><span style="{{r.vStyle}}">{{r.v}}</span></sc-for>
+<sc-for list="{{record}}" as="r" hint-placeholder-count="8"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2; padding-top: 3px">{{r.k}}</span><span class="phc-cc-scroll" style="{{r.vStyle}}">{{r.v}}</span></sc-for>
 </div>
 </div>
 </div>

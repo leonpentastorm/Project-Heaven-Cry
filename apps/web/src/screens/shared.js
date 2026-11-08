@@ -39,7 +39,7 @@ export function expand(tpl) {
 
 // ---------- lightbox ----------
 const LB_BIG = D.big || {};
-const LB_KIND = { portrait: 'CHARACTER PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'WICK ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
+const LB_KIND = { portrait: 'CHARACTER PORTRAIT', patron: 'PATRON · CELESTIAL PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'WICK ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
 export function zoomer(self, img, caption, kind) { return () => {
   if (!img) return;
   self.setState({ lb: { img: LB_BIG[img] || img, caption: caption || '', kind: kind || 'portrait' } });

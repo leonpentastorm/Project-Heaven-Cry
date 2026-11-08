@@ -13,6 +13,28 @@ import { emblemOf } from '../game/classView';
 import { patronCards, BELIEF_TEXT, FAITH_INK } from '../game/faithView';
 import { patronPortrait } from '../game/faithArt';
 
+// ---------- card layout (every step) ----------
+// A card grid never holds more than --n cards a row (never narrower than --min; one column when the screen is narrower
+// still), and every card in it is the same height (--h): a long text scrolls inside its card instead of pushing the
+// row, the buttons or the page around.
+const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var(--h,auto);'
+  + 'grid-template-columns:repeat(auto-fill,minmax(min(100%,max(var(--min,280px),calc((100% - (var(--n,3) - 1) * var(--gap,12px)) / var(--n,3)))),1fr))}'
+  + '.phc-cc-grid>*{box-sizing:border-box;min-width:0;min-height:0;height:100%;overflow:hidden}'
+  + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
+  + '.phc-cc-scroll::-webkit-scrollbar{width:6px}.phc-cc-scroll::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:3px}'
+  + '.phc-cc-clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
+  + '.phc-cc-art{position:relative;display:block;flex:none;height:100%;padding:0;border:0;border-radius:10px;overflow:hidden;background:#05070B;cursor:zoom-in}'
+  + '.phc-cc-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%;transition:transform .25s ease}'
+  + '.phc-cc-art:hover img,.phc-cc-art:focus-visible img{transform:scale(1.04)}'
+  + '.phc-cc-art .phc-cc-zoom{position:absolute;right:6px;bottom:6px;padding:2px 7px;border-radius:999px;background:rgba(10,13,19,.8);border:1px solid #2E3A50;color:#E7EBF3;font:700 11px/1.4 "Chakra Petch",sans-serif;letter-spacing:.08em}'
+  + '.phc-rm .phc-cc-art img,.phc-reduce .phc-cc-art img{transition:none}'
+  // A phone: a patron's art stacks above their text (side by side, both would be a sliver).
+  + '@media (max-width:640px){[data-patron-grid]{--h:640px!important}[data-patron]{flex-direction:column}[data-patron] .phc-cc-art{width:100%!important;height:240px!important}}';
+function ensureCcLayout() {
+  if (typeof document === 'undefined' || !document.head || document.getElementById('phc-cc-layout')) return;
+  const st = document.createElement('style'); st.id = 'phc-cc-layout'; st.textContent = CC_CSS; document.head.appendChild(st);
+}
+
 // ---------- the lock-in stamp ----------
 // Pressing Lock in slams a big red AHOC seal onto the personnel record where the white one sits, with APPROVED across it,
 // then files the record (STAMP_MS later, so the stamp is seen). Reduced motion: it fades in, no shake.
@@ -155,7 +177,7 @@ export class CreateLogic extends DCLogic {
   setState(x) { const before = this.state.step; super.setState(x); if (this.state.step !== before) window.scrollTo(0, 0); }
   constructor(props) {
     super(props);
-    CreateLogic.current = this; ensureStampKit();
+    CreateLogic.current = this; ensureStampKit(); ensureCcLayout();
     const arch = props.sampleArch && ARCH[props.sampleArch] ? props.sampleArch : null;
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? pIdx('mpat') : pIdx('mallow-3'),
@@ -215,7 +237,7 @@ export class CreateLogic extends DCLogic {
     const budgetOf = (arch) => 'Every point placed. Attributes: ' + raisedOf(arch);
     archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.card = cardFor(arch); c.hasCard = !!c.card; c.hasKicker = !!c.kicker; });
     archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.budget = arch ? budgetOf(arch) : 'All ' + CORE_PTS + ' Core, 10 Attribute and 10 Skill points are yours to place'; });
-    archCards.forEach((c) => { c.style = 'display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 12px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
+    archCards.forEach((c) => { c.key = (D.arch.items.find((x) => x.name === c.name) || { id: 'custom' }).id; c.style = 'display: flex; gap: 14px; align-items: stretch; text-align: left; padding: 12px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
     const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
     const pv = {
@@ -278,8 +300,8 @@ export class CreateLogic extends DCLogic {
         cards: D.skills.filter((s) => s.attr === a.id).map((s) => {
           const p = S.skills[s.id] || 0, m = mod(p);
           return { ...s, pts: p, modShort: fmt(m) + (p >= 5 ? ' M2' : p >= 3 ? ' M1' : ''),
-            modStyle: 'font-size: 11px; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
-            nameStyle: 'font-size: 12px; font-weight: 700; line-height: 1.2; min-height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
+            modStyle: 'font-size: 11px; white-space: nowrap; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
+            nameStyle: 'display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12px; font-weight: 700; line-height: 1.2; height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
             inc: setSkill(s.id, p + 1), dec: setSkill(s.id, p - 1), noInc: !costOf(s.id).ok, incTitle: costOf(s.id).text, noDec: p <= 0, hover: () => { if (this.state.hover !== s.id) this.setState({ hover: s.id }); },
             zoom: zoomer(this, s.img, s.name, 'skill'), help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'position: absolute; top: 10px; right: 10px'),
             style: 'position: relative; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; background: #10151F; border: 1px solid ' + (S.hover === s.id ? '#E7EBF3' : p > 0 ? a.ink : '#232D3F') };
@@ -289,7 +311,7 @@ export class CreateLogic extends DCLogic {
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
     const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(mod(hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
-      style: 'display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
+      style: 'display: flex; align-items: center; gap: 14px; height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
     // Class Roster Revision 3: level 3 offers the class of the highest attribute (every tied one).
     const leanChip = (ink) => 'display: inline-flex; gap: 5px; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink;
@@ -307,11 +329,11 @@ export class CreateLogic extends DCLogic {
     const traitCards = D.traits.filter((t) => S.tcat === 'All' || t.cat === S.tcat).map((t) => {
       // One music trait per character (engine: Only one music trait.): once one is picked the others are shut.
       const on = picked.includes(t.id), music = !on && isMusicTrait(t.id) && picked.some(isMusicTrait), ex = (blocked.has(t.id) || music) && !on, full = picked.length >= 2 && !on;
-      return { zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
+      return { key: t.id, zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
         toggle: () => this.setState({ traits: on ? picked.filter((x) => x !== t.id) : [...picked, t.id] }), disabled: ex || full, pressed: on ? 'true' : 'false',
         btn: on ? 'Remove' : music ? 'Only one music trait' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
-        btnStyle: 'margin-top: auto; min-height: 40px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
-        style: 'display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid ' + (on ? '#E7EBF3' : '#232D3F') + (ex ? '; opacity: 0.55' : '') };
+        btnStyle: 'flex: none; margin-top: auto; min-height: 42px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
+        style: 'display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 12px; background: #10151F; border: 1px solid ' + (on ? '#E7EBF3' : '#232D3F') + (ex ? '; opacity: 0.55' : '') };
     });
     const traitChip = picked.length + ' OF 2 PICKED';
 
@@ -382,7 +404,7 @@ export class CreateLogic extends DCLogic {
     const sample = !!this.props.sampleName;
     const I = S.idv; const record = [['Race', 'Human (races later)'], ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand],
       ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
-      .map(([k, v]) => ({ k, v: v || 'Not filled in', vStyle: 'font-size: 14px; line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
+      .map(([k, v]) => ({ k, v: v || 'Not filled in', vStyle: 'max-height: 4.35em; overflow-wrap: anywhere; font-size: 14px; line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
     const seenKey = o ? Object.keys(o).find((k) => k.startsWith('People see you as')) : null; // Bazaim's reads "(in Central City)"
     const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], [seenKey || 'People see you as', seenKey ? o[seenKey] : ''], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
       .filter(([, v]) => typeof v === 'string' && v).map(([k, v]) => ({ k: k.toUpperCase(), v: v.charAt(0).toUpperCase() + v.slice(1) })) : [];
@@ -458,11 +480,15 @@ export class CreateLogic extends DCLogic {
     const pick = (x) => () => this.setState({ belief: x });
     const cards = patronCards().map((p) => {
       const on = faithful && b.patron === p.id;
-      return { key: p.id, name: p.name, archetype: p.archetype, costume: p.costume, mark: p.mark, portrait: patronPortrait(p.id) || p.mark, hasPortrait: !!patronPortrait(p.id),
+      // The art: the patron's portrait (click to view it large); until it is painted, their mark on the dark ground.
+      const art = patronPortrait(p.id), big = patronPortrait(p.id, true) || art;
+      return { key: p.id, name: p.name, archetype: p.archetype, costume: p.costume, mark: p.mark, portrait: art || p.mark, hasPortrait: !!art,
+        zoom: zoomer(this, big || p.mark, p.name + (p.archetype ? ' · ' + p.archetype : ''), art ? 'patron' : 'icon'),
+        artStyle: 'width: 300px; border: 1px solid ' + (on ? '#FFFFFF' : '#232D3F'), imgStyle: art ? '' : 'object-fit: contain; padding: 48px; box-sizing: border-box',
         likes: p.likes.map((t) => ({ key: t, text: t })), taboos: p.taboos.map((t) => ({ key: t, text: t })), rule: p.ruleText, hymns: p.hymns.map((h, i) => ({ key: h, text: ['I', 'II', 'III'][i] + ' · ' + h })), miracle: p.miracle,
         pressed: on ? 'true' : 'false', pick: pick({ kind: 'faithful', patron: p.id }), btn: on ? '✓ Sworn to ' + p.name : 'Swear to ' + p.name,
-        style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: ' + (on ? '2px solid #FFFFFF' : '1px solid #232D3F'),
-        btnStyle: 'min-height: 40px; border-radius: 10px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: #E7EBF3') };
+        style: 'display: flex; gap: 16px; padding: 14px; border-radius: 12px; background: #10151F; border: ' + (on ? '2px solid #FFFFFF' : '1px solid #232D3F'),
+        btnStyle: 'flex: none; min-height: 42px; border-radius: 10px; font-size: 14px; font-family: inherit; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: #E7EBF3') };
     });
     return {
       beliefFaithful: { pick: pick(faithful ? b : { kind: 'faithful', patron: (patronCards()[0] || {}).id }), pressed: faithful ? 'true' : 'false', style: card(faithful), text: BELIEF_TEXT.faithful },
