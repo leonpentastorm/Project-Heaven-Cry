@@ -2,7 +2,8 @@
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
-import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE } from '@engine';
+import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
+import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus } from '@engine';
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -123,7 +124,7 @@ const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
 /** A draft's starting words under 1.4: kept when legal, else converted the engine's way (a 1.2 Stack's Form becomes
  * SEEK), else the defaults. */
 export const _draftSigils = (ws) => { if (!Array.isArray(ws) || !ws.length) return [...DEFAULT_SIGILS]; if (!startingWordsError(ws)) return [...ws]; const m = migrateWords(ws).words; return m.length === 2 && !startingWordsError(m) ? m : [...DEFAULT_SIGILS]; };
-const DEFAULT_SIGILS = [...STARTING_DEFAULT], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '' };
+const DEFAULT_SIGILS = [...STARTING_DEFAULT], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '', tone: 'raw' };
 const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1 || S.kit === 'sigil';
 const canSoulOf = (S) => (S.skills.will_power || 0) >= 1 || S.kit === 'soul';
 const slotsOf = (S) => moduleSlots({ skills: S.skills });
@@ -142,7 +143,9 @@ const optId = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
 const OPT_NAME = { hit: '+2 to hit', defense: '+2 Defense', heal: 'Heal 30', push: 'Push 3 tiles', pull: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed', fear: 'Fear', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
 const ENGINE_OPT = { buff: 'heal', control: 'push', status: 'shaken' }; // what the engine uses when no option is set
 const obOf = (S) => { const o = S.ob || DEFAULT_OB, opts = (SCHOOL[o.school]?.options || []).map(optId);
-  return { ...o, modules: (o.modules || []).filter((m) => MODULE[m]).slice(0, 1), option: opts.length ? (opts.includes(o.option) ? o.option : ENGINE_OPT[o.school] || opts[0]) : '' }; };
+  // A tone (rules 1.5) only at Visualization 1; without it the design is Raw.
+  const tone = o.tone && o.tone !== 'raw' && TONE[o.tone] && (S.skills.visualization || 0) >= 1 ? o.tone : 'raw';
+  return { ...o, tone, modules: (o.modules || []).filter((m) => MODULE[m]).slice(0, 1), option: opts.length ? (opts.includes(o.option) ? o.option : ENGINE_OPT[o.school] || opts[0]) : '' }; };
 
 export class CreateLogic extends DCLogic {
   setState(x) { const before = this.state.step; super.setState(x); if (this.state.step !== before) window.scrollTo(0, 0); }
@@ -163,7 +166,7 @@ export class CreateLogic extends DCLogic {
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
         sigils: _draftSigils(d.sigils),
-        ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '' } : { ...DEFAULT_OB } });
+        ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '', tone: d.outburst.tone || 'raw' } : { ...DEFAULT_OB } });
     }
   }
 
@@ -338,15 +341,21 @@ export class CreateLogic extends DCLogic {
       const cur = obOf(this.state);
       this.setState({ ob: { ...cur, modules: [id] } });
     };
-    const FAM = { behaviour: 'BEHAVIOUR', augment: 'AUGMENT', trigger: 'TRIGGER' };
-    const modGroups = Object.keys(FAM).map((f) => ({ label: FAM[f], mods: MODULES.filter((m) => m.family === f).map((m) => { const on = ob.modules.includes(m.id);
-      return { name: m.name, cost: (m.cost > 0 ? '+' : m.cost < 0 ? '−' : '') + Math.abs(m.cost) + ' MP', text: m.text, pick: toggleMod(m.id), pressed: on ? 'true' : 'false', mark: on ? '✓' : '',
+    const FAM = { form: 'SHAPE (BOLT WITHOUT ONE)', behaviour: 'BEHAVIOUR', augment: 'AUGMENT', trigger: 'TRIGGER' };
+    const modGroups = Object.keys(FAM).map((f) => ({ label: FAM[f], mods: MODULES.filter((m) => m.family === f && !(m.id === 'size')).map((m) => { const on = ob.modules.includes(m.id);
+      return { icon: f === 'form' ? formIconUri(m.id, toneInk(ob.tone)) : '', hasIcon: f === 'form', name: m.name, cost: (m.cost > 0 ? '+' : m.cost < 0 ? '−' : '') + Math.abs(m.cost) + ' MP', text: m.text, pick: toggleMod(m.id), pressed: on ? 'true' : 'false', mark: on ? '✓' : '',
         style: 'display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 8px 10px; border-radius: 9px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (on ? 'background: #1C2536; border: 1px solid ' + SOUL_INK : 'background: #10151F; border: 1px solid #232D3F') }; }) }));
     const obName = ob.name.trim() || (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst';
     const normal = (MANA_BANDS.find((b) => b.id === 'normal') || MANA_BANDS[1]).min;
-    const obCost = designCost({ costSave: soulCostSaving({ attrs: der.attr, skills: S.skills }) }, { school: ob.school, modules: ob.modules }, normal);
-    const obParts = [SCHOOL[ob.school]?.name, ob.option ? OPT_NAME[ob.option] || ob.option : '', ...ob.modules.map((m) => MODULE[m]?.name)].filter(Boolean).join(' · ');
+    const obDraft = { id: 'draft', name: obName, school: ob.school, modules: ob.modules, ...(ob.option ? { option: ob.option } : {}), ...(ob.tone !== 'raw' ? { tone: ob.tone } : {}) };
+    const obCost = designCost({ costSave: soulCostSaving({ attrs: der.attr, skills: S.skills }) }, obDraft, normal);
+    const obInfo = designInfo({ costSave: soulCostSaving({ attrs: der.attr, skills: S.skills }), soulRange: soulRangeBonus({ attrs: der.attr, skills: S.skills }) }, obDraft, normal);
+    const obParts = [SCHOOL[ob.school]?.name, ob.option ? OPT_NAME[ob.option] || ob.option : '', ...ob.modules.map((m) => MODULE[m]?.name), ob.tone !== 'raw' ? toneName(ob.tone) + ' tone' : ''].filter(Boolean).join(' · ');
     const obVerdict = obErr ? '◆ ' + obErr : '✓ ' + obName + ': ' + obParts + '. Costs ' + obCost + ' MP in Normal mana.';
+    // Tones (rules 1.5): Raw, or one element at Visualization 1 (learned with this design).
+    const visOk = (S.skills.visualization || 0) >= 1;
+    const obTones = toneChips([], visOk ? 1 : 0).map((t) => { const on = ob.tone === t.id, can = t.id === 'raw' || visOk;
+      return { key: t.id, name: t.name, title: t.text + (can ? '' : ' Needs Visualization 1.'), pick: can ? setOb({ tone: t.id }) : () => {}, pressed: on ? 'true' : 'false', locked: !can, style: btn(on, t.ink) + (can ? '' : '; opacity: 0.4; cursor: default') }; });
     const obVerdictStyle = 'font-size: 14px; line-height: 1.45; font-weight: 600; color: ' + (obErr ? '#FFFFFF' : '#6FEA77');
     const slotChip = 'ONE MODULE TO START · ' + slots + ' SLOT' + (slots === 1 ? '' : 'S') + ' FOR DESIGNS IN PLAY';
 
@@ -388,7 +397,7 @@ export class CreateLogic extends DCLogic {
       nameStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
     const magicSigils = canSigil ? sig.map((w) => ({ word: SIGIL[w]?.word || w, img: glyphUri(w, SIGIL_INK), text: SIGIL[w]?.text || '' })) : [];
     const magicLine = canSigil && !sigErr ? stackLine(sig, S.skills) : '';
-    const magicOb = { name: obName, school: (SCHOOL[ob.school]?.name || '').toUpperCase() + ' SCHOOL', parts: obParts, cost: 'Costs ' + obCost + ' MP in Normal mana', heart: heartUri(1) };
+    const magicOb = { name: obName, school: (SCHOOL[ob.school]?.name || '').toUpperCase() + ' SCHOOL', parts: obParts, cost: obInfo.line, heart: obInfo.icon };
     const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id);
       return { name: l.name, total: l.total, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core] }; });
 
@@ -400,7 +409,8 @@ export class CreateLogic extends DCLogic {
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
       kitCards, hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
-      schoolCards, obOpts, hasOpts: obOpts.length > 0, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
+      schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Visualization 1; your Outburst is Raw (it ignores armour).',
+      obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
       resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
       magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
@@ -435,7 +445,7 @@ export class CreateLogic extends DCLogic {
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null,
       // Starting magic goes on the sheet only for a build that can cast; the engine fills in the defaults otherwise.
       ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
-      ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}) }; })() } : {}) };
+      ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}), ...(ob.tone && ob.tone !== 'raw' ? { tone: ob.tone } : {}) }; })() } : {}) };
   }
   /** Lock in: validate, stamp the record, then file it (bring it to the room or save it to the library). A refused
    *  record gets no stamp, only the reason; a second press while the stamp is down does nothing. */

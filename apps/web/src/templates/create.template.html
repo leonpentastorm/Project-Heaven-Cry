@@ -295,6 +295,7 @@
 </div>
 <span style="font-size: 13px; line-height: 1.45; color: #A3AEC2">An Outburst is held in the heart and released. Your first design is one school and one module: pick a school, then a module (a new pick replaces it). Designs you make in play can carry more modules, up to your slots (1 + Will Power ÷ 3).</span>
 <span role="status" aria-live="polite" style="{{obVerdictStyle}}">{{obVerdict}}</span>
+<div style="display: flex; align-items: center; gap: 8px"><img src="{{obShapeIcon}}" alt="" style="width: 26px; height: 26px"><span style="{{obShapeStyle}}">{{obShapeLine}}</span></div>
 <label style="display: flex; flex-direction: column; gap: 6px; max-width: 420px"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">NAME</span>
 <input value="{{obName}}" onChange="{{onObName}}" maxlength="40" placeholder="{{obPlaceholder}}" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 15px; letter-spacing: 0"></label>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SCHOOL</span>
@@ -307,12 +308,15 @@
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHAT IT DOES</span>
 <div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obOpts}}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
 </sc-if>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TONE</span>
+<div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obTones}}" as="o" hint-placeholder-count="7"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" title="{{o.title}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
+<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{obToneHint}}</span>
 <sc-for list="{{modGroups}}" as="g" hint-placeholder-count="3">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">MODULES · {{g.label}}</span>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px">
 <sc-for list="{{g.mods}}" as="m" hint-placeholder-count="5">
-<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; color: #AE9BFF">{{m.mark}} {{m.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{m.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{m.text}}</span></button>
+<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; color: #AE9BFF"><sc-if value="{{m.hasIcon}}"><img src="{{m.icon}}" alt="" style="width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px"></sc-if>{{m.mark}} {{m.name}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{m.cost}}</span></span><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">{{m.text}}</span></button>
 </sc-for>
 </div>
 </div>

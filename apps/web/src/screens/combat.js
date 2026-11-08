@@ -16,6 +16,7 @@ import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegen
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
+import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
 const SELF_TEXT = { reload2: 'Confirm to reload both guns.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
@@ -23,7 +24,9 @@ const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1'
 
 // ---------- magic (spec: Mana, rules 1.2; look: docs/design/magic-presentation.md) ----------
 // Sigils are Mind cyan and square; Outbursts are Soul violet warming to gold. Never mixed on one control.
-const MAGIC = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'];
+const MAGIC = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise', 'pump', 'steady', 'letgo', 'feed', 'heartwatch'];
+/** The held heart's own moves (rules 1.5): no aim, the engine runs them at once (also from the HEART panel's buttons). */
+const HEART_ACTS = ['pump', 'steady', 'letgo', 'feed', 'heartwatch'];
 const SIGIL_ACTS = ['draw', 'evoke', 'scuff', 'vent', 'core'];
 const HOSTILE_INK = '#F65157';
 const BOONS = ['guarded', 'inspired'];
@@ -401,7 +404,7 @@ export class CombatLogic extends DCLogic {
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
     const curId = cb && active(cb) ? active(cb).id : null;
     const newTurn = curId !== this._curId;
-    if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', hold: false, word: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
+    if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
     if (!cb) return { ...lightboxVals(this), lay: this.layoutVals(PANEL_HIDDEN), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', confirmText: 'Confirm', pad: {}, magicLegend: [] };
     const cur = active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
@@ -449,31 +452,38 @@ export class CombatLogic extends DCLogic {
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
     const evV = mineTurn && mg && evTile ? evokeView(pcb, cur, evTile, S.evc || {}, S.hover, knows) : null;
     const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
-    // Outburst: the design picked, held or let go at once.
-    const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, holdIt = !!S.hold;
-    const obPv = S.action === 'outburst' && mineTurn && mg && dsel ? previewOutburst(pcb, cur, dsel.id, holdIt ? undefined : S.aim || undefined, !holdIt) : null;
-    const obHover = obPv && !holdIt && S.hover && S.hover !== S.aim && cur ? previewOutburst(pcb, cur, dsel.id, S.hover, true) : null;
+    // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
+    // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
+    // refusal, tile and number is the engine's preview.
     const held = mg && mg.held, heldD = held ? designs.find((d) => d.id === held.design) || null : null;
-    const relTry = S.action === 'release' && held ? tryIt((c, u, rng) => releaseOutburst(c, rng, u, S.aim || undefined)) : null;
-    const relHover = S.action === 'release' && held && mineTurn && S.hover && S.hover !== S.aim ? tryIt((c, u, rng) => releaseOutburst(c, rng, u, S.hover)) : null;
+    const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
+    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? designCards(pcb, cur) : [];
+    const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
+    const hp = mineTurn && held ? heartPanel(pcb, cur) : null;
+    // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
+    // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
+    let hz = noOverlay(), hzPlan = null;
+    if (mineTurn && mg) {
+      const at = S.aim || S.hover || null;
+      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(pcb, cur, dsel.id, obMode === 'snap' ? at : null); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(pcb, cur, dsel.id, S.aim).plan : null; }
+      else if (S.action === 'release' && held) { hz = aimOverlay(pcb, cur, 'held', at); hzPlan = aimOverlay(pcb, cur, 'held', S.aim).plan; }
+      else if (held && (HEART_ACTS.includes(S.action) || S.tab === 'outbursts')) hz = idleOverlay(pcb, cur);
+    }
     const SIMPLE = { scuff: scuffGlyph, vent: ventFlux, core: swapCore, syphon: syphonMp, crystallise: crystalliseCore };
     const simpleTry = isMagic && SIMPLE[S.action] ? tryIt((c, u) => SIMPLE[S.action](c, u)) : null;
     // Where the chosen spell reaches and whom it would touch (for the grid overlay).
-    const soulAct = S.action === 'outburst' || S.action === 'release' || S.action === 'syphon' || S.action === 'crystallise';
+    const soulAct = S.action === 'outburst' || S.action === 'release' || S.action === 'syphon' || S.action === 'crystallise' || HEART_ACTS.includes(S.action);
     const famInk = soulAct ? SOUL_INK : SIGIL_GLOW;
     // A hostile pattern shows only its tiles in sight, and only the words this side can read.
     let mReach = new Set(), tgtIds = [], patTiles = new Set(), aimTile = null;
     if (isMagic && mineTurn) {
       if (S.action === 'draw') mReach = drawReach;
       if (S.action === 'evoke' && hoverPanel) hoverPanel.tiles.filter((k) => hoverPanel.ours || vis.tiles.has(k)).forEach((k) => patTiles.add(k)); // the rest is evV's overlay
-      if (S.action === 'outburst' && dsel && !holdIt && obPv) { aimTile = S.aim || null; for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) { const k = x + ',' + y; if (dist(cur.pos, k) <= obPv.range) mReach.add(k); }
-        const at2 = obHover && obHover.ok ? S.hover : obPv.ok ? S.aim : null; if (at2) tgtIds = spellTargets(pcb, cur, 'outburst', undefined, at2, dsel.id); }
-      if (S.action === 'release' && heldD) { aimTile = S.aim || null; const rg = designRange(mg, heldD); for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) { const k = x + ',' + y; if (dist(cur.pos, k) <= rg) mReach.add(k); }
-        const at2 = relHover && !relHover.err ? S.hover : relTry && !relTry.err ? S.aim : null; if (at2) tgtIds = spellTargets(pcb, cur, 'release', undefined, at2); }
     }
     const tgtSet = new Set(tgtIds);
     /** The little tag over the hovered tile while aiming a spell. */
     const magicTag = (k) => {
+      if (hz.on && hz.mode === 'aim' && hz.chip && k === hz.aim) return hz.chip;
       if (!isMagic || !mineTurn || k !== S.hover) return '';
       const who = (ids) => (ids.length ? ids.length + (ids.length === 1 ? ' target' : ' targets') : 'no one there');
       if (S.action === 'draw') { const d = drawDiff(k); return d ? word.toUpperCase() + ' · −' + d.ap + ' AP · −' + d.charge + ' charge' + (d.over ? ' · OVERLOAD' : '') : ''; }
@@ -484,8 +494,7 @@ export class CombatLogic extends DCLogic {
       }
       // A refusal shows its own reason, cut to its first clause ("You are already holding an Outburst"), not always "Can't reach".
       const why = (t) => (/reach|range|too far|out of/i.test(t || '') ? 'Can\'t reach' : String(t || 'Not now').split(/[:.]/)[0]);
-      if (S.action === 'outburst' && obHover) return obHover.ok ? who(spellTargets(pcb, cur, 'outburst', undefined, k, dsel.id)) : why(obHover.why);
-      if (S.action === 'release' && relHover) return !relHover.err ? who(spellTargets(pcb, cur, 'release', undefined, k)) : why(relHover.err);
+      void who; void why;
       return '';
     };
     this._mg = { word, design: dsel ? dsel.id : null, evTile, seenGlyph, evV };
@@ -505,7 +514,7 @@ export class CombatLogic extends DCLogic {
     const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', evoke: 'combat/evoke' };
     const tgls = mineTurn && TOGGLE_ON[S.action] ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, TOGGLE_ON[S.action], { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
     this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
-    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obPv ? obPv.ap : 0) : SPELL_AP[S.action] || 0;
+    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp && hp.pump.ok && hp.pump.free ? 0 : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : SPELL_AP[S.action] || 0;
     const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap : undefined; // the weapon's own AP
     const cost = pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' || S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
@@ -560,6 +569,7 @@ export class CombatLogic extends DCLogic {
     const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
+      if (hz.on) { if (u && hz.marks.has(u.id)) return overlayRingStyle({ ...hz, ink: hz.marks.get(u.id).ink }); const st = overlayTileStyle(hz, k); if (st) return st; }
       if (u && tgtSet.has(u.id)) return 'position: absolute; inset: -1px; z-index: 1; border-radius: 4px; pointer-events: none; border: 3px solid ' + famInk + '; box-shadow: 0 0 10px ' + famInk;
       if (k === aimTile) return 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; border: 2px solid #FFFFFF';
       if (patTiles.has(k)) return 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; border: 2px solid ' + SIGIL_GLOW + '; box-shadow: 0 0 8px ' + SIGIL_GLOW + ', inset 0 0 8px rgba(79, 200, 223, 0.35)';
@@ -604,6 +614,7 @@ export class CombatLogic extends DCLogic {
           style: 'width: 16px; height: 16px; border-radius: 3px; background: rgba(5, 7, 11, 0.55); ' + (gl.side === 'pc' ? 'box-shadow: 0 0 6px rgba(79, 200, 223, 0.6)' : 'opacity: 0.85; box-shadow: 0 0 0 1px rgba(246, 81, 87, 0.5)') })),
         hasZone: !!sgLayer, zoneStyle: 'position: absolute; inset: 0; z-index: 1; border-radius: 2px; pointer-events: none; box-sizing: border-box; ' + sgLayer, hasMark: !!mk, markStyle: mk,
         hasSg: !!(sgT && sgT.marks.length), sg: sgT ? sgT.marks : [],
+        hasHz: !!(u && hz.marks.has(u.id)), hzText: u && hz.marks.has(u.id) ? markChipText(hz.marks.get(u.id)) : '', hzStyle: u && hz.marks.has(u.id) ? markChipStyle(hz.marks.get(u.id)) : '', hzTitle: u && hz.marks.has(u.id) ? hz.marks.get(u.id).title : '',
         hasHeart: !!(u && u.mg && u.mg.held), heart: u && u.mg && u.mg.held ? heartUri(u.mg.held.stage) : '', heartTitle: u && u.mg && u.mg.held ? u.name + ' is holding an Outburst: stage ' + u.mg.held.stage + ' (×' + stageMult(u.mg.held.stage) + ')' : '',
         sfx: isMagic && S.action === 'draw' && drawReach.has(k) ? 'none' : undefined,
         hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '', spriteStyle: spr ? spriteStyle(spr) : '',
@@ -646,7 +657,8 @@ export class CombatLogic extends DCLogic {
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (S.action === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
     const actName = { skill: sk ? sk.name : 'Weapon skill', paired: 'Both hands', repair: 'Field Repair', song: 'Play my song', sprint: 'Sprint', disengage: 'Disengage', prone: cur && cur.prone ? 'Stand up' : 'Drop prone', burst: 'Burst', auto: 'Full auto', shove: 'Shove', overwatch: 'Overwatch', brace: 'Brace', move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Melee', reload: 'Reload', clear: 'Clear a jam', stim: 'Stim an ally', analyze: 'Analyze', cover: 'Shoot an object', door: 'Open or close a door', pickup: 'Pick up', load: 'Load a magazine',
-      draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise' }[S.action];
+      draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
+      pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action];
     const sel = { name: actName + (isMove ? ' · ' + (hv ? moveAp + ' AP for ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : pv ? ' · ' + pv.ap + ' AP' : ''),
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? 'Hover a highlighted tile to see the path and its AP cost; click to move.' : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? (pickSel ? 'Pick up: ' + (cb.floor || []).filter((f) => f.pos === pickSel).map((f) => f.text).join(', ') + '.' : 'Click your tile or an adjacent tile marked ▪.') : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile.') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
       hasPick: false, pickFields: [], extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
@@ -669,14 +681,21 @@ export class CombatLogic extends DCLogic {
           : (evV.facing && evV.stage !== 'stand' ? 'Fires ' + evV.facing + '. ' : '') + evV.hint + (evV.fizzle ? ' ' + evV.fizzleText : ''));
         sel.extra = meter + (pp && pp.overload ? ' · ' + pp.overload : '');
       } else if (S.action === 'outburst') {
-        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (obPv && (obPv.ok || obPv.cost) ? ' · ' + obPv.cost + ' MP · ' + obPv.ap + ' AP' : ''); // a refusal comes back with no costs
-        sel.text = !dsel ? 'You have no Outburst designs.' : holdIt ? (obPv.ok ? 'Hold it in your heart: it grows a stage at the start of each of your turns (stage 2 hits ×' + stageMult(2) + ', stage 4 ×' + stageMult(4) + '), and holding strains you. Confirm to begin.' : obPv.why)
-          : !S.aim && obPv.why === 'Pick a target tile.' ? 'Click a tile or unit within ' + obPv.range + ' tiles to let it go at once, or choose Hold.' : obPv.ok ? 'At ' + refOf(S.aim) + '.' + hits(tgtIds) + ' Confirm to let it go.' : obPv.why;
-        sel.extra = (obPv && (obPv.ok || obPv.cost) ? 'Strain +' + obPv.strain + ' · ' : '') + heart;
+        const pl = hzPlan, aura = card && card.form === 'aura';
+        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×0.6' : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
+        sel.text = !dsel ? 'You have no Outburst designs.' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
+          : !S.aim && !aura ? (card.snapWhy || 'Snap: hover to preview, click a tile to aim (' + card.line + ').') : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
+        sel.extra = card ? card.line + ' · ' + heart : heart;
       } else if (S.action === 'release') {
-        sel.name = 'Release' + (heldD ? ' · ' + heldD.name : '') + (held ? ' · stage ' + held.stage + ' ×' + stageMult(held.stage) : '') + ' · ' + SPELL_AP.release + ' AP';
-        sel.text = !held ? 'Nothing held.' : !relTry.err ? 'At ' + refOf(S.aim) + '.' + hits(tgtIds) + ' Confirm to release.' : relTry.err === 'Pick a target tile.' && heldD ? 'Click a tile or unit within ' + designRange(mg, heldD) + ' tiles.' : relTry.err;
-        sel.extra = heart;
+        const pl = hzPlan, aura = hp && hp.form === 'aura';
+        sel.name = 'Release' + (heldD ? ' · ' + heldD.name : '') + (hp ? ' · stage ' + hp.stage + ' ×' + hp.mult : '') + ' · ' + (pl ? pl.ap : SPELL_AP.release) + ' AP';
+        sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.' : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
+        sel.extra = (hp && hp.rider ? hp.rider + ' · ' : '') + heart;
+      } else if (HEART_ACTS.includes(S.action)) {
+        const B = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn }[S.action] : null;
+        sel.name = actName + (B ? ' · ' + B.cost : '');
+        sel.text = !hp ? 'You hold no Outburst: Begin one first.' : B.ok ? B.title + ' Confirm (or use the HEART panel).' : B.why;
+        sel.extra = hp ? 'Stage ' + hp.stage + ' ×' + hp.mult + ' · Strain ' + hp.strain + '/' + hp.limit + (hp.warn ? ' · ' + hp.warn : '') : heart;
       } else {
         sel.name = actName + ' · ' + (SPELL_AP[S.action] || 0) + ' AP';
         sel.text = simpleWhy ? simpleWhy : 'Confirm to ' + VERB[S.action] + '.';
@@ -755,19 +774,24 @@ export class CombatLogic extends DCLogic {
           style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 64px; padding: 6px 2px; border-radius: 8px; font-family: inherit; cursor: pointer; color: ' + (wi.ok ? '#E7EBF3' : '#7F8BA1') + '; '
             + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : 'border: 1px solid #1F4A55; background: #0D1119') + (wi.ok ? '' : '; opacity: 0.55') }; }) : [],
       designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0,
-      designList: S.action === 'outburst' && mg ? designs.map((d) => { const on = dsel && d.id === dsel.id, can = previewOutburst(pcb, cur, d.id, undefined, false);
-        return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }),
-          school: (SCHOOL[d.school]?.name || d.school) + (d.school2 ? ' + ' + (SCHOOL[d.school2]?.name || d.school2) : '') + (d.option ? ' · ' + String(d.option).replace(/_/g, ' ') : ''),
-          modules: d.modules.length ? d.modules.map((x) => MODULE[x]?.name || x).join(' · ') : 'No modules',
-          mp: designCost(mg, d, mana) + ' MP', stats: designAp(mg, d) + ' AP · range ' + designRange(mg, d) + ' tiles', hasWhy: !can.ok, why: can.why || '',
-          style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
-            + (on ? 'border: 1px solid ' + SOUL_INK + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (can.ok ? '' : '; opacity: 0.7') }; }) : [],
-      now: () => this.setState({ hold: false }), hold: () => this.setState({ hold: true, aim: null }), nowPressed: holdIt ? 'false' : 'true', holdPressed: holdIt ? 'true' : 'false',
-      nowStyle: padBtn(!holdIt, SOUL_INK), holdStyle: padBtn(holdIt, SOUL_INK),
+      designList: S.action === 'outburst' && mg ? cards.map((d) => { const on = dsel && d.id === dsel.id;
+        return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title,
+          stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
+          style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
+            + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
+      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true }); this.setState({ aim: null, obMode: 'begin' }); } },
+      snap: () => this.setState({ obMode: 'snap', aim: null }),
+      beginLabel: 'Begin · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
+      beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×0.6: hover to preview, click a tile to aim, then Confirm.',
+      beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
       ...sigilPad(evV, S, (x) => this.setState(x)),
     };
-    const magicCant = !isMagic ? false : S.action === 'draw' ? true : S.action === 'evoke' ? !evV || !evV.ok : S.action === 'outburst' ? !obPv || !obPv.ok : S.action === 'release' ? !relTry || !!relTry.err : !simpleTry || !!simpleTry.err;
+    const hpB = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn } : {};
+    const magicCant = !isMagic ? false : S.action === 'draw' ? true : S.action === 'evoke' ? !evV || !evV.ok : S.action === 'outburst' ? (obMode === 'snap' ? !hzPlan || !hzPlan.ok : !card || !card.canBegin) : S.action === 'release' ? !hzPlan || !hzPlan.ok : HEART_ACTS.includes(S.action) ? !hpB[S.action] || !hpB[S.action].ok : !simpleTry || !!simpleTry.err;
+    // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
+    const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); });
+    if (heartV.show) heartV.btns = heartV.btns.map((x) => ({ ...x, pressed: S.action === x.key ? 'true' : 'false' }));
     const won = cb.over === 'win', extracted = cb.over === 'extracted';
     this._ids = new Set(ITEMS.flatMap((gr) => gr[1].map((x) => x[0])));
     // ---------- the turn panel: your actions (YOUR TURN), or a compact card for whoever is acting ----------
@@ -790,7 +814,8 @@ export class CombatLogic extends DCLogic {
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed && vis.seen.has(u.id));
-      S.tab = tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
+      // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
+      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
     }
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
@@ -816,7 +841,8 @@ export class CombatLogic extends DCLogic {
     });
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
-      items: tabG.items.map((a) => ({ ...a, padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
+      items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     const T = {
       tabs, tabPanel, showWho: !mePanel,
       mine: mineTurn, waiting: !mineTurn, wait, ytInk: curInk, ytSub: 'ROUND ' + cb.round + ' · ' + ap + ' AP',
@@ -895,6 +921,13 @@ export class CombatLogic extends DCLogic {
     this.setState({ hover: null });
   }
 
+  /** A held heart's move (rules 1.5): Pump, Steady, Let go, Feed, Heart Overwatch on or off. */
+  heartAct(id) {
+    const cb = getState().game?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
+    if (id === 'heartwatch') return act({ type: 'combat/heartwatch', unitId: cur.id, on: !(cur.mg.held && cur.mg.held.watch) });
+    if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id });
+    if (id === 'letgo') this.setState({ action: 'outburst', aim: null, obMode: 'begin' });
+  }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
   magicClick(k, cur) {
     const S = this.state, m = this._mg || {}, g = getState().game, cb = g.combat;
@@ -905,7 +938,7 @@ export class CombatLogic extends DCLogic {
       if (r.choice) return this.setState({ evc: r.choice, sgToast: '' });
       return this.setState({ sgToast: r.toast || '' });
     }
-    if (S.action === 'outburst' && !S.hold) return this.setState({ aim: k });
+    if (S.action === 'outburst') return this.setState({ aim: k, obMode: 'snap' }); // a tile click means a snap at it
     if (S.action === 'release') return this.setState({ aim: k });
   }
 
@@ -913,7 +946,8 @@ export class CombatLogic extends DCLogic {
     const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
     if (MAGIC.includes(a) && cur && cur.mg) {
       if (a === 'evoke') { if (m.evV && m.evV.payload) act({ type: 'combat/evoke', unitId: cur.id, ...m.evV.payload }); return this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }); }
-      if (a === 'outburst') { if (m.design) act({ type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.hold ? undefined : S.aim || undefined, hold: !!S.hold }); return this.setState({ aim: null, hold: false }); }
+      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true }); return this.setState({ aim: null, obMode: 'begin' }); }
+      if (HEART_ACTS.includes(a)) return this.heartAct(a);
       if (a === 'release') { act({ type: 'combat/release', unitId: cur.id, aim: S.aim || undefined }); return this.setState({ aim: null }); }
       if (['scuff', 'vent', 'core', 'syphon', 'crystallise'].includes(a)) return act({ type: 'combat/' + a, unitId: cur.id });
       return;

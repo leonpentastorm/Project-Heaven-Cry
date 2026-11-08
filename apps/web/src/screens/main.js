@@ -24,7 +24,8 @@ import { glyphUri, scratchUri, heartUri, SIGIL_INK, SOUL_INK } from '../game/gly
 import { drawStrip, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
-import { oocOf } from '@engine';
+import { designInfo, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
+import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
@@ -106,36 +107,50 @@ function magicVals(self, g, c) {
     ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
-  const designCards = designs.map((d) => { const cost = designCost(m, d, mana), held = !!(N.held && N.held.design === d.id);
-    return { key: d.id, name: d.name, schools: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.option ? ' · ' + optLabel(d.school, d.option) : ''),
+  const designCards = designs.map((d) => { const cost = designCost(m, d, mana), held = !!(N.held && N.held.design === d.id), di = designInfo(m, d, mana);
+    return { key: d.id, name: d.name, icon: di.icon, shapeLine: di.line, shapeStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + di.ink, schools: di.schools, schools0: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.option ? ' · ' + optLabel(d.school, d.option) : ''),
       mods: d.modules.map((x) => ({ key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + epRgba(SOUL_VIOLET, 0.6) + '; color: ' + SOUL_VIOLET })),
       hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · reach ' + designRange(m, d) + ' tiles', held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
-      edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '' }, mgSaved: null }),
+      edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '', option2: d.option2 || '', tone: d.tone || 'raw' }, mgSaved: null }),
       forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
       locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (held ? SOUL_VIOLET : '#232D3F') + '; border-left: 3px solid ' + SOUL_VIOLET }; });
   const soulStats = [['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
     ['Air', 'MANA ' + mana + ' · ' + bandName(N.band) + (N.band.soul_cost_mult !== 1 ? ' (costs ×' + N.band.soul_cost_mult + ')' : '')]].map(([k, v]) => ({ k, v }));
   // The builder: a school, its option, modules up to the slots, a name. The engine checks everything again on Save.
-  const B = S.mgDraft, slots = moduleSlots(c), two = (c.skills.will_power || 0) >= 5;
+  const B = S.mgDraft, slots = moduleSlots(c), two = (c.skills.will_power || 0) >= SECOND_SCHOOL.fromWill;
   // Close once the save lands: the designs changed, or the game moved on with no refusal since Save (an unchanged
   // design saves to the same thing, so a content diff alone would leave the builder open).
   const stNow = getState(), refused = !!(stNow.toast && !stNow.toast.ok && stNow.toast.at >= (S.mgSavedAt || 0));
   if (B && S.mgSaved != null && (JSON.stringify(c.outbursts || []) !== S.mgSaved || (stNow.game !== S.mgSavedGame && !refused))) queueMicrotask(() => self.setState({ mgDraft: null, mgSaved: null, mgSavedGame: null }));
   const opts = B ? (SCHOOL[B.school]?.options || []) : [];
-  const draftD = B && B.school ? { id: B.id || '', name: B.name, school: B.school, ...(B.school2 ? { school2: B.school2 } : {}), modules: B.modules, ...(B.option ? { option: B.option } : {}) } : null;
+  const opts2 = B && B.school2 ? (SCHOOL[B.school2]?.options || []) : [];
+  const draftD = B && B.school ? { id: B.id || '', name: B.name, school: B.school, ...(B.school2 ? { school2: B.school2 } : {}), modules: B.modules, ...(B.option ? { option: B.option } : {}), ...(B.school2 && B.option2 ? { option2: B.option2 } : {}), ...(B.tone && B.tone !== 'raw' ? { tone: B.tone } : {}) } : null;
+  // Rules 1.5: a tone (Raw default; the first one free at Visualization 1), one shape (Size only with a shape), the rest.
+  const kTones = known.tones || [], vis = c.skills.visualization || 0, shapeOn = B ? B.modules.find((x) => isShape(x)) || null : null;
+  const verdict = draftD ? designVerdict(m, draftD, mana) : null;
   const b = B ? {
     open: true, title: B.id ? 'EDIT ' + (B.name || 'DESIGN').toUpperCase() : 'NEW OUTBURST DESIGN', name: B.name, onName: (e) => set({ name: e.target.value.slice(0, 40) }),
-    school: B.school, onSchool: (e) => { const sc = e.target.value, o = SCHOOL[sc]?.options || []; set({ school: sc, option: o.length ? optValue(o[0]) : '' }); },
+    school: B.school, onSchool: (e) => { const sc = e.target.value, o = SCHOOL[sc]?.options || []; set({ school: sc, option: o.length ? optValue(o[0]) : '', ...(self.state.mgDraft.school2 === sc ? { school2: '', option2: '' } : {}) }); },
     schools: known.schools.map((x) => ({ key: x, value: x, label: SCHOOL[x]?.name || x })), schoolText: SCHOOL[B.school]?.text || '',
-    two: two && known.schools.length > 1, school2: B.school2 || '', onSchool2: (e) => set({ school2: e.target.value }),
-    schools2: [{ key: '-', value: '', label: 'None' }, ...known.schools.filter((x) => x !== B.school).map((x) => ({ key: x, value: x, label: SCHOOL[x]?.name || x }))],
-    hasOptions: opts.length > 0, options: opts.map((o) => { const v = optValue(o), on = B.option === v; return { key: o, label: OPT_LABEL[o] || o, pressed: on ? 'true' : 'false', pick: () => set({ option: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
-    slotsText: 'MODULES · ' + B.modules.length + ' / ' + slots + ' (Will Power)', noModules: !known.modules.length,
-    modules: known.modules.map((x) => { const on = B.modules.includes(x), full = !on && B.modules.length >= slots;
-      return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', pressed: on ? 'true' : 'false', locked: full,
-        pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (full ? '; opacity: 0.45; cursor: default' : '') }; }),
-    cost: draftD ? designCost(m, draftD, mana) + ' MP · ' + designAp(m, draftD) + ' AP · reach ' + designRange(m, draftD) + ' tiles (in ' + bandName(N.band) + ' air)' : 'Pick a school.',
+    twoHead: 'SECOND SCHOOL · A RIDER AT ' + Math.round(SECOND_SCHOOL.strength * 100) + '% (WILL POWER ' + SECOND_SCHOOL.fromWill + ', +' + SECOND_SCHOOL.cost + ' MP)',
+    two: two && known.schools.length > 1, noTwo: !two || known.schools.length < 2, noTwoText: !two ? 'A second school needs Will Power ' + SECOND_SCHOOL.fromWill + '.' : 'Learn a second school first (a teacher).',
+    schools2: [{ id: '', label: 'None' }, ...known.schools.filter((x) => x !== B.school).map((x) => ({ id: x, label: SCHOOL[x]?.name || x }))].map((o) => { const on = (B.school2 || '') === o.id;
+      return { key: o.id || 'none', label: o.label, pressed: on ? 'true' : 'false', title: o.id ? SCHOOL[o.id]?.text || '' : 'One school only.', style: chipStyle(SOUL_VIOLET, on),
+        pick: () => { const o2 = SCHOOL[o.id]?.options || []; set({ school2: o.id, option2: o2.length ? optValue(o2[0]) : '' }); } }; }),
+    hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
+    tones: toneChips(kTones, vis).map((t) => { const on = (B.tone || 'raw') === t.id, can = t.known || t.free;
+      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Visualization 1: learned with this design.' : ''),
+        pick: () => { if (can) set({ tone: t.id }); }, style: chipStyle(t.ink, on) + (can ? '' : '; opacity: 0.4; cursor: default') }; }),
+    shapes: [{ id: '', name: 'Bolt' }, ...known.modules.filter((x) => isShape(x)).map((x) => ({ id: x, name: MODULE[x]?.name || x }))].map((x) => { const on = (shapeOn || '') === x.id, full = !on && !!x.id && !shapeOn && B.modules.length >= slots;
+      return { key: x.id || 'bolt', label: x.name + (x.id ? ' ' + signed(MODULE[x.id]?.cost || 0) : ''), icon: formIconUri(x.id || 'bolt', toneInk(B.tone)), pressed: on ? 'true' : 'false', locked: full, title: x.id ? MODULE[x.id]?.text || '' : 'One target (the default; no module).',
+        pick: () => { if (full) return; const rest = self.state.mgDraft.modules.filter((y) => !isShape(y)); set({ modules: x.id ? [...rest, x.id] : rest.filter((y) => y !== 'size') }); }, style: chipStyle(SOUL_VIOLET, on) + (full ? '; opacity: 0.45; cursor: default' : '') }; }),
+    slotsText: 'MODULES · ' + B.modules.length + ' / ' + slots + ' (Will Power; the shape takes one)', noModules: !known.modules.filter((x) => !isShape(x)).length,
+    modules: known.modules.filter((x) => !isShape(x)).map((x) => { const on = B.modules.includes(x), full = !on && B.modules.length >= slots, noShape = x === 'size' && !shapeOn && !on, lock = full || noShape;
+      return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: (MODULE[x]?.text || '') + (noShape ? ' Size needs a shape.' : ''), pressed: on ? 'true' : 'false', locked: lock,
+        pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (lock ? '; opacity: 0.45; cursor: default' : '') }; }),
+    verdictEffects: verdict ? verdict.effects : '', verdictRider: verdict ? verdict.rider : '', verdictLine: verdict ? verdict.line : '', verdictIcon: draftD ? designInfo(m, draftD, mana).icon : formIconUri('bolt'),
+    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP ×0.6) · in ' + bandName(N.band) + ' air' : 'Pick a school.',
     cantSave: !draftD || fight, save: () => { if (!draftD) return; self.setState({ mgSaved: JSON.stringify(c.outbursts || []), mgSavedGame: getState().game, mgSavedAt: Date.now() }); act({ type: 'magic/design', charId: c.id, design: draftD }); },
     cancel: () => self.setState({ mgDraft: null, mgSaved: null }), saveLabel: B.id ? 'Save changes' : 'Save design',
   } : none.b;
@@ -146,9 +161,10 @@ function magicVals(self, g, c) {
   for (const x of Object.values(g.characters)) { if (x.id === c.id || x.dead) continue;
     (x.sigils || []).forEach((w) => { if (!words.includes(w) && SIGIL[w]) addT('word', w, SIGIL[w].word, x.name); });
     (x.soulKnown?.schools || []).forEach((s) => { if (!known.schools.includes(s) && SCHOOL[s]) addT('school', s, SCHOOL[s].name + ' school', x.name); });
-    (x.soulKnown?.modules || []).forEach((s) => { if (!known.modules.includes(s) && MODULE[s]) addT('module', s, MODULE[s].name + ' module', x.name); }); }
+    (x.soulKnown?.modules || []).forEach((s) => { if (!known.modules.includes(s) && MODULE[s]) addT('module', s, MODULE[s].name + ' module', x.name); });
+    (x.soulKnown?.tones || []).forEach((s) => { if (!(known.tones || []).includes(s) && TONE[s] && s !== 'raw') addT('tone', s, TONE[s].name + ' tone', x.name); }); }
   const ally = [...teach.values()].map((t) => ({ key: t.kind + t.id, label: t.label, sub: 'from ' + t.who.join(' or '), isWord: t.kind === 'word', img: t.kind === 'word' ? glyphUri(t.id, SIGIL_INK) : heartUri(1), locked: learnLocked,
-    title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : MODULE[t.id].text,
+    title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : t.kind === 'tone' ? TONE[t.id].text || '' : MODULE[t.id].text,
     go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
     style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
   const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate').map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
@@ -162,9 +178,9 @@ function magicVals(self, g, c) {
     soul: { designs: designCards, noDesigns: !designs.length, stats: soulStats, ema, noEma: !ema, noEmaText: 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
       mpText: N.mp + ' / ' + mpMax + ' MP', mpFill: 'height: 100%; width: ' + Math.max(0, Math.min(100, mpPct)) + '%; background: ' + MP_BLUE,
       held: !!N.held, heldText: N.held ? 'HOLDING ' + ((designs.find((d) => d.id === N.held.design) || {}).name || 'an Outburst').toUpperCase() + ' · STAGE ' + N.held.stage + ' · it grows each round, and strains the heart, until you release it' : '', heldImg: heartUri(N.held ? N.held.stage : 1),
-      head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
+      head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', option2: '', tone: 'raw', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
       newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (Empathy): forget one to make room.' : '',
-      knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
+      knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Tones: Raw' + (known.tones || []).map((x) => ', ' + (TONE[x]?.name || x)).join('') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
     b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
       why: fight ? 'Learn after the fight.' : learnedNow ? 'One new thing a scene: it takes a rest to sink in.' : 'One new thing a scene. Words: ' + words.length + ' / ' + wordsKnownCap(c) + ' known.' },
   };
@@ -527,7 +543,7 @@ export class MainLogic extends DCLogic {
     // ---------- magic on the area map (spec: Mana; Sigils rules 1.4): glyphs, placed magic, held hearts, and the spell actions ----------
     const MN = magicNow(g, c), myWords = c ? (c.sigils || []).filter((w) => SIGIL[w]) : [], myDesigns = c ? c.outbursts || [] : [];
     const evoW = !!c && hasEvoker(c), emaW = !!c && hasEmanator(c), hasMagic = !!c && (myWords.length > 0 || myDesigns.length > 0 || !!MN.held || evoW || emaW);
-    const MAGIC_W = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise'], M_INSTANT = ['scuff', 'vent', 'core', 'syphon', 'crystallise'], isMagicW = MAGIC_W.includes(W);
+    const HEART_W = ['pump', 'steady', 'letgo', 'feed', 'heartwatch'], MAGIC_W = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise', ...HEART_W], M_INSTANT = ['scuff', 'vent', 'core', 'syphon', 'crystallise'], isMagicW = MAGIC_W.includes(W);
     const sameMap = !g.story.glyphMap || g.story.glyphMap === map.id;
     const GLY = inFight ? g.combat?.glyphs || [] : sameMap ? g.story.glyphs || [] : [], ZON = inFight ? g.combat?.zones || [] : sameMap ? g.story.zones || [] : [];
     const glAt = {}; GLY.forEach((x) => { (glAt[x.pos] ||= []).push(x); });
@@ -541,7 +557,7 @@ export class MainLogic extends DCLogic {
     const mHi = { pattern: new Set(), aim: null, reach: new Set(), reachCol: '' };
     // Placed magic the party can see (fields tinted by element, your traps, spotted ones, turrets, RAISE walls, smoke, light).
     const placedW = ZON.length || (inFight && cb) ? (() => { try { const x = inFight ? cb : scb(); return x ? placedView(x, 'pc') : null; } catch { return null; } })() : null;
-    let mHint = '', mReady = false, mLabel = 'Confirm', drawInfo = null, evW = null;
+    let mHint = '', mReady = false, mLabel = 'Confirm', drawInfo = null, evW = null, mHz = noOverlay(), wHp = null, wCards = [];
     const knowsW = (w) => !!(c && (c.sigils || []).includes(w));
     const myAt = c ? pos[c.id] : null, mOpen = !!(S.area && mover && isMagicW && !inFight);
     const wordSel = S.wWord && myWords.includes(S.wWord) ? S.wWord : myWords[0] || null, designSel = myDesigns.find((d) => d.id === S.wDesign) || myDesigns[0] || null;
@@ -571,24 +587,32 @@ export class MainLogic extends DCLogic {
             + (evW.affected.length ? ' ' + evW.affected.map((a) => a.name + ' (' + a.tag.toLowerCase() + ': ' + a.text + ')').join('; ') + '.' : '') + (foe ? ' ' + foe.name + ' is a person on the map: this starts a fight.' : '');
         }
       } else if (W === 'outburst') {
+        // Rules 1.5 (game/heartView.ts): Begin (hold at stage 0) or Snap (Begin and Release at once, aimed). The overlay
+        // is the engine's plan: reach ring, the tinted shape, everyone affected with their numbers.
+        wCards = designCards(cbx, u);
+        const card = designSel ? wCards.find((x) => x.id === designSel.id) : null, snap = S.wObMode === 'snap';
         if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
-        else {
-          const hold = !!S.wHold, pv = previewOutburst(cbx, u, designSel.id, S.wAim || undefined, !hold);
-          if (!hold) { reachAround(pv.range || designRange(u.mg || soulM(c), designSel), SOUL_VIOLET); if (S.wAim) mHi.aim = S.wAim; }
-          const costs = pv.ok || pv.cost || pv.ap ? pv.cost + ' MP · ' + pv.ap + ' AP · +' + pv.strain + ' Strain' : ''; // an early refusal comes back with no costs
-          if (pv.ok) { mReady = true; mLabel = (hold ? 'Begin and hold · ' : 'Let it go · ') + pv.ap + ' AP';
-            mHint = (hold ? 'Begin ' + designSel.name + ' and hold it: it grows each round (and strains the heart) until you Release it for 1 AP. ' : designSel.name + ' at ' + refOf(S.wAim) + '. ') + costs + '.'
-              + (hold ? '' : touches(cbx, spellTargets(cbx, u, 'outburst', undefined, S.wAim, designSel.id))); }
-          else mHint = designSel.name + (costs ? ' (' + costs + ')' : '') + ': ' + (pv.why === 'Pick a target tile.' ? 'click a tile within ' + pv.range + ' tiles to aim, or switch to Hold.' : pv.why || 'not now.');
-        }
+        else if (u.mg && u.mg.held) mHint = 'You are holding an Outburst: Pump, Release or Let it go.';
+        else if (!snap) { mHz = { ...aimOverlay(cbx, u, designSel.id, null), mode: 'idle', area: new Set(), marks: new Map(), chip: '' };
+          mReady = !!(card && card.canBegin); mLabel = 'Begin · ' + (card ? card.beginAp : 2) + ' AP';
+          mHint = card ? (card.canBegin ? 'Begin ' + designSel.name + ' (' + card.line + '): it holds at stage 0; Pump it up and Release it. ' + card.costText + '.' : designSel.name + ': ' + card.beginWhy) : 'Not now.'; }
+        else { const at = S.wAim || S.hoverTile || null, ov = aimOverlay(cbx, u, designSel.id, at), pl = aimOverlay(cbx, u, designSel.id, S.wAim).plan; mHz = ov;
+          const aura = card && card.form === 'aura';
+          mReady = !!(pl && pl.ok && (S.wAim || aura)); mLabel = 'Snap · ' + (pl && pl.ap ? pl.ap : card ? card.snapAp : 3) + ' AP';
+          mHint = mReady ? designSel.name + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
+            : !S.wAim && !aura ? 'Snap ' + designSel.name + ' (' + (card ? card.line : '') + '): hover to preview, click a tile to aim.' : designSel.name + ': ' + ((pl && pl.why) || 'not now.'); }
       } else if (W === 'release') {
-        const d = MN.held && myDesigns.find((x) => x.id === MN.held.design), r = d ? designRange(u.mg || soulM(c), d) : 0;
-        if (!d) mHint = 'Nothing held.';
-        else { reachAround(r, SOUL_VIOLET); if (S.wAim) mHi.aim = S.wAim;
-          const why = dryMagic(cbx, u.id, (cc, uu, rng) => releaseOutburst(cc, rng, uu, S.wAim || undefined)).err;
-          if (!S.wAim && (!why || why === 'Pick a target tile.')) mHint = 'Click a tile within ' + r + ' tiles to release ' + d.name + ' (stage ' + MN.held.stage + ', 1 AP).';
-          else if (why) mHint = 'Release ' + d.name + ': ' + why;
-          else { mReady = true; mLabel = 'Release · 1 AP'; mHint = 'Release ' + d.name + ' at ' + refOf(S.wAim) + ' (stage ' + MN.held.stage + ').' + touches(cbx, spellTargets(cbx, u, 'release', undefined, S.wAim)); } }
+        wHp = MN.held ? heartPanel(cbx, u) : null;
+        if (!wHp) mHint = 'Nothing held.';
+        else { const aura = wHp.form === 'aura', at = S.wAim || S.hoverTile || null, ov = aimOverlay(cbx, u, 'held', at), pl = aimOverlay(cbx, u, 'held', S.wAim).plan; mHz = ov;
+          mReady = !!(pl && pl.ok && (S.wAim || aura)); mLabel = 'Release · ' + (pl && pl.ap ? pl.ap : 1) + ' AP';
+          mHint = mReady ? 'Release ' + wHp.name + ' at stage ' + wHp.stage + ' (×' + wHp.mult + ')' + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
+            : !S.wAim && !aura ? 'Click a tile to release ' + wHp.name + ' (' + wHp.shape + ', stage ' + wHp.stage + ').' : 'Release ' + wHp.name + ': ' + ((pl && pl.why) || 'not now.'); }
+      } else if (HEART_W.includes(W)) {
+        wHp = heartPanel(cbx, u); mHz = idleOverlay(cbx, u);
+        const B = wHp ? { pump: wHp.pump, steady: wHp.steadyBtn, letgo: wHp.letgo, feed: wHp.feed, heartwatch: wHp.watchBtn }[W] : null;
+        mReady = !!(B && B.ok); mLabel = (B ? B.label + ' · ' + B.cost : 'Confirm');
+        mHint = !wHp ? 'You hold no Outburst.' : B.ok ? B.title : B.label + ': ' + B.why;
       } else if (M_INSTANT.includes(W)) {
         const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(cbx, u.id, (cc, uu) => run(cc, uu)).err;
         const say = { scuff: 'Wipe out the glyphs on your own tile (1 AP).', vent: 'Let ' + MN.flux + ' Flux out of the Evoker into the air (1 AP): it thickens the mana.', core: 'Load a fresh core: charge back to ' + CORE_CHARGE + ' (2 AP, ' + MN.cores + ' spare).',
@@ -600,10 +624,12 @@ export class MainLogic extends DCLogic {
       showWords: !!(mOpen && W === 'draw' && myWords.length), showDesigns: !!(mOpen && W === 'outburst' && myDesigns.length),
       words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w]; return { key: w, img: glyphUri(w, SIGIL_INK, { glow: on }), word: def.word, charge: String(def.charge), title: on && drawInfo ? drawInfo.title : def.word + ' · ' + def.text, pressed: on ? 'true' : 'false',
         pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px solid ' + (on ? SIG_CYAN : '#232D3F') + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') }; }),
-      designs: myDesigns.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: [d.school, d.school2].filter(Boolean).map((x) => SCHOOL[x]?.name || x).join(' + ') + (d.modules.length ? ' · ' + d.modules.map((x) => MODULE[x]?.name || x).join(', ') : ''),
-        pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? SOUL_VIOLET : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') }; }),
-      holdLabel: S.wHold ? 'Hold it (release later)' : 'Let it go now', holdPressed: S.wHold ? 'true' : 'false', toggleHold: () => this.setState({ wHold: !this.state.wHold, wAim: null }),
-      holdStyle: 'min-height: 32px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: ' + SOUL_VIOLET + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (S.wHold ? epRgba(SOUL_VIOLET, 0.16) : 'transparent'),
+      designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: 10px; font-weight: 700; color: ' + d.ink,
+        pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
+      modes: [['begin', 'Begin · hold it'], ['snap', 'Snap · ×0.6 now']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
+        style: 'flex: 1; min-height: 32px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: ' + (on ? '#E7EBF3' : SOUL_VIOLET) + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.2) : 'transparent') }; }),
+      showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
+      hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null }); act({ type: 'world/act', charId: c.id, act: id, ...(id === 'heartwatch' ? { on: !(MN.held && MN.held.watch) } : {}) }); if (id === 'letgo') this.setState({ wAct: 'outburst' }); }),
     };
     const magicClick = (k) => {
       if (W === 'draw') { if (!wordSel) return toast('You know no words.'); act({ type: 'world/act', charId: mover.id, act: 'draw', word: wordSel, tile: k }); return; }
@@ -615,17 +641,19 @@ export class MainLogic extends DCLogic {
         if (r.choice) return this.setState({ wEvc: r.choice });
         return toast(r.toast || 'Click a glyph of a Line.');
       }
-      if (W === 'outburst') { if (S.wHold) return toast('Holding needs no target: Confirm to begin.'); return this.setState({ wAim: k }); }
+      if (W === 'outburst') return this.setState({ wAim: k, wObMode: 'snap' }); // a tile click means a snap at it
       if (W === 'release') return this.setState({ wAim: k });
+      if (HEART_W.includes(W)) return magicConfirm();
       return toast('No tile needed: Confirm.');
     };
     const magicConfirm = () => {
       const base = { type: 'world/act', charId: c.id, act: W };
       if (W === 'evoke') { const cbx = scb(), u = sU(cbx), v = cbx && u && S.wTile ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW) : null; if (v && v.payload) act({ ...base, ...v.payload }); }
-      else if (W === 'outburst') act({ ...base, design: designSel.id, hold: !!S.wHold, ...(!S.wHold && S.wAim ? { aim: S.wAim } : {}) });
-      else if (W === 'release') act({ ...base, aim: S.wAim });
+      else if (W === 'outburst') act(S.wObMode === 'snap' ? { ...base, design: designSel.id, hold: false, aim: S.wAim || myAt } : { ...base, design: designSel.id, hold: true });
+      else if (W === 'release') act({ ...base, ...(S.wAim ? { aim: S.wAim } : {}) });
+      else if (W === 'heartwatch') act({ ...base, on: !(MN.held && MN.held.watch) });
       else act(base);
-      this.setState({ wTile: null, wAim: null, wEvc: null });
+      this.setState({ wTile: null, wAim: null, wEvc: null, ...(W === 'outburst' ? { wObMode: 'begin', wAct: S.wObMode === 'snap' ? W : 'pump' } : W === 'release' || W === 'letgo' ? { wAct: 'outburst' } : {}) });
       if (getState().game?.phase === 'combat') { this.setState({ area: false }); go('combat'); }
     };
     // ---------- planning on the area map, as on the combat grid (Leon, combat feel v1) ----------
@@ -688,6 +716,7 @@ export class MainLogic extends DCLogic {
           const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
           const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');
           const glyph = o && !u && !spr && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
+          const hzU = labels && u && mHz.on ? mHz.marks.get(u.id) : null, hzL = labels && mHz.on ? overlayTileStyle(mHz, k) : '';
           // The planning layer (area map only): reachable tiles and the path; an attack's red reach and its targets.
           const pT = labels && plan.isAtk ? plan.tgt[k] : null, inRed = labels && plan.isAtk && plan.red.has(k), canGo = labels && plan.isMove && plan.reach.has(k) && !u;
           const planStyle = !labels ? '' : plan.hv === k && plan.isMove ? 'border: 2px solid #FFFFFF; background: rgba(255, 255, 255, 0.28)'
@@ -696,6 +725,9 @@ export class MainLogic extends DCLogic {
             : inRed ? 'border: 1px dashed ' + epRgba(RANGE_RED, [0.9, 0.55, 0.35, 0.25][Math.min(3, plan.red.get(k) || 0)]) + '; background: ' + epRgba(RANGE_RED, plan.hv === k ? 0.3 : [0.2, 0.11, 0.06, 0.04][Math.min(3, plan.red.get(k) || 0)]) : '';
           const tgtMark = !pT ? '' : pT.inRange ? (S.wTarget && u && u.id === S.wTarget ? '' : '; outline: 2px solid ' + RANGE_RED + '; outline-offset: -2px') : '; filter: grayscale(0.7) brightness(0.55)';
           out.push({ key: k, cls: 'phc-tok' + (pT && pT.inRange ? ' phc-plan-target' : ''),
+            hasHzL: !!hzL || !!hzU, hzLayer: hzU ? 'position: absolute; inset: 0; z-index: 2; border-radius: 2px; pointer-events: none; box-sizing: border-box; border: 3px solid ' + hzU.ink + '; box-shadow: 0 0 8px ' + hzU.ink : hzL,
+            hasHz: !!hzU, hzText: hzU ? markChipText(hzU) : '', hzStyle: hzU ? markChipStyle(hzU) : '', hzTitle: hzU ? hzU.title : '',
+            hasHzChip: labels && mHz.on && mHz.mode === 'aim' && !!mHz.chip && mHz.aim === k, hzChip: mHz.chip,
             hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; border-radius: 2px; ' + planStyle,
             hasArrow: labels && !!plan.route[k] && k !== myAt, arrow: plan.route[k] || '', hasCost: labels && plan.hv === k && !!plan.cost, cost: plan.cost,
             costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 6; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; '
@@ -836,8 +868,10 @@ export class MainLogic extends DCLogic {
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
       // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
       ...(hasMagic && (myWords.length || evoW) ? [['MAGIC · SIGILS', [['draw', 'Draw a glyph', glyphAp(c) + ' AP'], ['evoke', 'Evoke', '1 AP'], ['scuff', 'Scuff', '1 AP'], ['vent', 'Vent Flux', '1 AP'], ['core', 'Swap core', '2 AP']], SIG_CYAN]] : []),
-      ...(hasMagic && (myDesigns.length || MN.held || emaW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length ? [['outburst', 'Outburst', (() => { const mm = soulM(c), aps = myDesigns.map((d) => designAp(mm, d)), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi) + ' AP'; })()]] : []),
-        ...(MN.held ? [['release', 'Release', '1 AP']] : []), ...(emaW ? [['syphon', 'Syphon', '1 AP'], ['crystallise', 'Crystallise', '3 AP']] : [])], SOUL_VIOLET]] : []),
+      ...(hasMagic && (myDesigns.length || MN.held || emaW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length && !MN.held ? [['outburst', 'Outburst', 'Begin ' + (() => { const aps = myDesigns.map((d) => (d.modules || []).includes('swift') ? 1 : 2), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi); })() + ' · Snap +1']] : []),
+        ...(MN.held ? (() => { const x = scb(), uu = sU(x), hp0 = x && uu ? heartPanel(x, uu) : null; return [['pump', 'Pump · stage ' + MN.held.stage, hp0 ? hp0.pump.cost : '1 AP'], ['release', 'Release', hp0 ? hp0.release.cost : '1 AP'], ['steady', 'Steady the heart', '1 AP'], ['letgo', 'Let it go' + (hp0 && hp0.letgo.strainOff ? ' · −' + hp0.letgo.strainOff + ' Strain' : ''), 'free'],
+          ...(hp0 && hp0.feedShow ? [['feed', 'Feed the glyph', '1 AP']] : []), ['heartwatch', MN.held.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free']]; })() : []),
+        ...(emaW ? [['syphon', 'Syphon', '1 AP'], ['crystallise', 'Crystallise', '3 AP']] : [])], SOUL_VIOLET]] : []),
     ];
     const canAct = !!mover && mover.hp > 0 && g.story.await === 'players' && !(g.story.ended || {})[c.id];
     const wGroups = W_ITEMS.map(([name, items, ink]) => ({ name, style: 'margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (ink || '#A3AEC2'), items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
