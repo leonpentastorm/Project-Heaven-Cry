@@ -319,3 +319,20 @@ Each attribute appears exactly twice, so after batch 2 every base class has its 
   - Circuit Mage: Intelligence + Insight.
   - Vessel: Determination + Endurance.
   - Twinbound: Determination + Expression.
+
+### Nutso butso (Leon, 8 Nov 2026): any class with any class
+
+If we ever open it all up, same-core pairs come back:
+
+- **45 advanced classes:** 9 squared + 36 pairs.
+- **81** if order matters (Strength → Agility different from Agility → Strength).
+
+Build rules so that day stays cheap:
+
+- **Key every advanced class by its attribute pair in the data** (`pair: ["strength", "agility"]`), not by parent class ids.
+- Moves are effect ops, so a new class is mostly JSON.
+
+Homebrew rides the same rule. A homebrew class is a data entry:
+
+- built from existing moves or core ops;
+- any op the engine doesn't know falls back to the Narrator with the move's text, as every item already does.
