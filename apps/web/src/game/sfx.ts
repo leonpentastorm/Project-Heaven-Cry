@@ -18,7 +18,12 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
-  | ElementSfx | WordSfx;
+  | ElementSfx | WordSfx | SoulSfx;
+/** Outburst 2.0 (rules 1.5): the heart. A breath in (Begin), a thump per Pump, a gasp (Heart Overwatch), a long breath
+ *  out (calming, Steady), a violet sigh (Let go), a crack (Strain burns, a Mana Short), the choir under a big release; and
+ *  the held elemental aura's sound beds (the Sigil field loops played lower and softer, a stone rumble of its own). */
+export type SoulSfx = 'soul_breath_in' | 'soul_breath_out' | 'soul_sigh' | 'soul_gasp' | 'soul_thump' | 'soul_choir' | 'soul_crack'
+  | 'soul_fire_loop' | 'soul_storm_loop' | 'soul_frost_loop' | 'soul_stone_loop' | 'soul_gale_loop' | 'soul_acid_loop';
 /** Element impacts and field loops (game/fx/elements.ts; shared by Sigils now and Soul Outbursts later). */
 export type ElementSfx = 'el_fire' | 'el_freeze' | 'el_shatter' | 'el_shock' | 'el_zap' | 'el_stone' | 'el_stone_rise' | 'el_stone_crumble' | 'el_gale' | 'el_spark' | 'el_acid'
   | 'el_fire_loop' | 'el_freeze_loop' | 'el_shock_loop' | 'el_gale_loop' | 'el_acid_loop';
@@ -26,7 +31,13 @@ export type ElementSfx = 'el_fire' | 'el_freeze' | 'el_shatter' | 'el_shock' | '
 export type WordSfx = 'sg_blink' | 'sg_mask' | 'sg_leech' | 'sg_null' | 'sg_quicken' | 'sg_sharpen' | 'sg_mend' | 'sg_ward' | 'sg_command' | 'sg_trap_set' | 'sg_trap_sprung'
   | 'sg_light' | 'sg_turret' | 'sg_turret_break' | 'sg_fizzle' | 'sg_cleanse';
 /** The looping sounds (a field's bed under the fight); they play through setSfxLoops, never through sfx(). */
-export const LOOP_SFX: Sfx[] = ['el_fire_loop', 'el_freeze_loop', 'el_shock_loop', 'el_gale_loop', 'el_acid_loop'];
+export const LOOP_SFX: Sfx[] = ['el_fire_loop', 'el_freeze_loop', 'el_shock_loop', 'el_gale_loop', 'el_acid_loop',
+  'soul_fire_loop', 'soul_storm_loop', 'soul_frost_loop', 'soul_stone_loop', 'soul_gale_loop', 'soul_acid_loop'];
+/** How a loop is played: the Soul aura beds reuse the Sigil field files, slowed and darkened (rate, low-pass in Hz). */
+export const LOOP_OPTS: Partial<Record<Sfx, { rate?: number; lowpass?: number }>> = {
+  soul_fire_loop: { rate: 0.8, lowpass: 1600 }, soul_storm_loop: { rate: 0.75, lowpass: 2200 }, soul_frost_loop: { rate: 0.8, lowpass: 2600 },
+  soul_stone_loop: { rate: 1, lowpass: 900 }, soul_gale_loop: { rate: 0.82, lowpass: 1400 }, soul_acid_loop: { rate: 0.75, lowpass: 1500 },
+};
 const CB = (...n: string[]) => n.map((x) => '/sfx/cb/' + x + '.ogg');
 
 /** The chosen files (public/sfx/…, CC0; credits in game/sfxCredits.ts). A list plays one at random. Missing means the
@@ -52,6 +63,10 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   sg_blink: CB('sg_blink'), sg_mask: CB('sg_mask'), sg_leech: CB('sg_leech'), sg_null: CB('sg_null'), sg_quicken: CB('sg_quicken'), sg_sharpen: CB('sg_sharpen'), sg_mend: CB('sg_mend'),
   sg_ward: CB('sg_ward'), sg_command: CB('sg_command'), sg_trap_set: CB('sg_trap_set'), sg_trap_sprung: CB('sg_trap_sprung'), sg_light: CB('sg_light'), sg_turret: CB('sg_turret'),
   sg_turret_break: CB('sg_turret_break'), sg_fizzle: CB('sg_fizzle'), sg_cleanse: CB('sg_cleanse'),
+  soul_breath_in: CB('soul_breath_in'), soul_breath_out: CB('soul_breath_out'), soul_sigh: CB('soul_sigh'), soul_gasp: CB('soul_gasp'),
+  soul_thump: CB('soul_thump'), soul_choir: CB('soul_choir'), soul_crack: CB('soul_crack'),
+  soul_fire_loop: CB('el_fire_loop'), soul_storm_loop: CB('el_shock_loop'), soul_frost_loop: CB('el_freeze_loop'), soul_stone_loop: CB('soul_stone_loop'),
+  soul_gale_loop: CB('el_gale_loop'), soul_acid_loop: CB('el_acid_loop'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -63,6 +78,7 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   el_fire: 'hit', el_freeze: 'hit', el_shatter: 'miss', el_shock: 'evoke', el_zap: 'draw', el_stone: 'hit', el_stone_rise: 'hit', el_stone_crumble: 'down', el_gale: 'miss', el_spark: 'draw', el_acid: 'hit',
   sg_blink: 'evoke', sg_mask: 'release', sg_leech: 'outburst', sg_null: 'overload', sg_quicken: 'start', sg_sharpen: 'melee', sg_mend: 'start', sg_ward: 'draw', sg_command: 'evoke',
   sg_trap_set: 'draw', sg_trap_sprung: 'evoke', sg_light: 'start', sg_turret: 'draw', sg_turret_break: 'hit', sg_fizzle: 'error', sg_cleanse: 'draw',
+  soul_breath_in: 'outburst', soul_breath_out: 'release', soul_sigh: 'release', soul_gasp: 'miss', soul_thump: 'outburst', soul_choir: 'outburst', soul_crack: 'short',
 };
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
@@ -75,6 +91,8 @@ const MIX: Partial<Record<Sfx, number>> = {
   el_fire_loop: 0.16, el_freeze_loop: 0.08, el_shock_loop: 0.07, el_gale_loop: 0.12, el_acid_loop: 0.12,
   sg_blink: 0.4, sg_mask: 0.35, sg_leech: 0.4, sg_null: 0.45, sg_quicken: 0.35, sg_sharpen: 0.35, sg_mend: 0.35, sg_ward: 0.35, sg_command: 0.35,
   sg_trap_set: 0.2, sg_trap_sprung: 0.45, sg_light: 0.3, sg_turret: 0.35, sg_turret_break: 0.4, sg_fizzle: 0.35, sg_cleanse: 0.35,
+  soul_breath_in: 0.4, soul_breath_out: 0.32, soul_sigh: 0.3, soul_gasp: 0.42, soul_thump: 0.55, soul_choir: 0.32, soul_crack: 0.5,
+  soul_fire_loop: 0.12, soul_storm_loop: 0.06, soul_frost_loop: 0.07, soul_stone_loop: 0.14, soul_gale_loop: 0.1, soul_acid_loop: 0.1,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
@@ -125,7 +143,7 @@ let lastHover = 0;
 
 /** Options for one sound: rate (pitch and speed, 1 = as recorded), gain (× its mix), delay in ms (scheduled on the
  *  audio clock), pan (−1 left … 1 right, from where it happens on screen). */
-export interface SfxOpts { rate?: number; gain?: number; delay?: number; pan?: number }
+export interface SfxOpts { rate?: number; gain?: number; delay?: number; pan?: number; lowpass?: number }
 export function sfx(name: Sfx, o: SfxOpts = {}) {
   if (!unlocked || level() <= 0 || LOOP_SFX.includes(name)) return;
   if (name === 'hover') { const t = performance.now(); if (t - lastHover < 60) return; lastHover = t; }
@@ -135,13 +153,27 @@ export function sfx(name: Sfx, o: SfxOpts = {}) {
     let dest: AudioNode = out;
     if (o.pan && (ac as any).createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, o.pan)); p.connect(out); dest = p; }
     g.connect(dest);
+    // A low-pass (the Soul family's softer, rounder take on a shared sound) sits between the source and its gain.
+    let into: AudioNode = g;
+    if (o.lowpass) { const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = o.lowpass; lp.Q.value = 0.5; lp.connect(g); into = lp; }
     const list = files(name), file = list[Math.floor(Math.random() * list.length)], buf = file ? buffers.get(file) : null;
     const at = ac.currentTime + Math.max(0, (o.delay || 0) / 1000);
-    if (buf) { const s = ac.createBufferSource(); s.buffer = buf; if (o.rate) s.playbackRate.value = o.rate; s.connect(g); s.start(at); return; }
+    if (buf) { const s = ac.createBufferSource(); s.buffer = buf; if (o.rate) s.playbackRate.value = o.rate; s.connect(into); s.start(at); return; }
     if (file && !buffers.has(file)) load(file);
     const stand = (STAND_IN as Record<string, Sfx>)[name] || (name.startsWith('gun_') || name.startsWith('burst_') || name.startsWith('auto_') ? 'shot' : name);
     if (o.delay) setTimeout(() => synth(ac, g, stand), o.delay); else synth(ac, g, stand);
   } catch { /* sound must never break the game */ }
+}
+
+/** Everything drops near silent for a moment and comes back (a Mana Short: the heart stops, the room goes quiet).
+ *  Rides the master bus, so loops and sounds already playing duck too. */
+export function duckSfx(to = 0.08, ms = 900, back = 500) {
+  const ac = unlocked ? audio() : null; if (!ac || !out) return;
+  try {
+    const t = ac.currentTime, gn = out.gain;
+    gn.cancelScheduledValues(t); gn.setValueAtTime(gn.value, t); gn.linearRampToValueAtTime(Math.max(0.0001, to), t + 0.12);
+    gn.setValueAtTime(Math.max(0.0001, to), t + ms / 1000); gn.linearRampToValueAtTime(1, t + (ms + back) / 1000);
+  } catch { /* */ }
 }
 
 // ---------- loops (a field's bed: fire crackle, storm static, wind, bubbling) ----------
@@ -163,8 +195,10 @@ export function setSfxLoops(want: Partial<Record<Sfx, number>>) {
     const file = files(name)[0], buf = file ? buffers.get(file) : null;
     if (!buf) { if (file && !buffers.has(file)) load(file).then(() => { if ((loopWant[name] || 0) > 0 && !loops.has(name)) setSfxLoops(loopWant); }); continue; }
     try {
-      const src = ac.createBufferSource(), g = ac.createGain(); src.buffer = buf; src.loop = true; g.gain.value = 0.0001;
-      src.connect(g); g.connect(out); src.start(ac.currentTime, Math.random() * Math.max(0, buf.duration - 0.1));
+      const src = ac.createBufferSource(), g = ac.createGain(), lo = LOOP_OPTS[name]; src.buffer = buf; src.loop = true; g.gain.value = 0.0001;
+      if (lo?.rate) src.playbackRate.value = lo.rate;
+      if (lo?.lowpass) { const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = lo.lowpass; lp.Q.value = 0.5; src.connect(lp); lp.connect(g); } else src.connect(g);
+      g.connect(out); src.start(ac.currentTime, Math.random() * Math.max(0, buf.duration - 0.1));
       const l = { src, gain: g, want: target }; loops.set(name, l); fadeLoop(l, target);
     } catch { /* never break the game */ }
   }

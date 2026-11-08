@@ -74,17 +74,17 @@ describe('Interpose: the critical injury lands on whoever took the hit (item 66)
   });
 });
 
-describe('Heart Surge doubles a Control push (item 67)', () => {
-  it('a push Outburst (combat/outburst) moves the foe 3 tiles; with the surge 6', () => {
+describe('Heart Surge under rules 1.5 (item 67 superseded: item 524)', () => {
+  it('a surged snap push no longer doubles the distance: it reads one stage higher (×1, not ×0.6), for +1 Strain', () => {
     const run = (mods: string[], sd: number) => {
       const f = fightWith([cls('channeler', 3, SOUL)], [{}], { seed: 'HP' + sd }); open(f.cb);
       const u = f.turn(f.pc); at(f, u, '2,2'); const foe = at(f, f.foe, '3,2'); foe.hp = foe.maxHp = 999; (foe as any).saves = { body: -30, brain: 0, heart: 0 };
       f.unit(u.id).mg!.designs.push({ id: 'push1', name: 'Shove', school: 'control', option: 'push', modules: [] } as any); f.unit(u.id).mg!.mp = 300; f.unit(u.id).ap = 9;
       act(f, f.unit(u.id), { type: 'combat/outburst', design: 'push1', aim: '3,2', mods });
-      return cheb('3,2', f.unit(foe.id).pos);
+      return { tiles: cheb('3,2', f.unit(foe.id).pos), strain: f.unit(u.id).mg!.strain };
     };
     let ok = false;
-    for (let sd = 1; sd < 40 && !ok; sd++) { const plain = run([], sd); if (plain !== 3) continue; expect(run(['class:channeler.heart_surge#surge'], sd)).toBe(6); ok = true; }
+    for (let sd = 1; sd < 40 && !ok; sd++) { const plain = run([], sd); if (plain.tiles !== 3) continue; const s = run(['class:channeler.heart_surge#surge'], sd); expect(s.tiles).toBe(3); expect(s.strain).toBe(plain.strain + 1); ok = true; }
     expect(ok).toBe(true);
   });
 });

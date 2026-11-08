@@ -158,15 +158,14 @@ describe('Devoted', () => {
     expect(f.pc.mg!.strain).toBe(f.pc.mg!.strainLimit - 2 + 2); // limit was raised by 2 for it
     expect(logHas(f.cb, /MANA SHORT/)).toBe(false);
   });
-  it('Love Made Manifest: once a fight, a Beloved release triples', () => {
-    const run = (mods: string[]) => {
-      const f = fightWith([adv('devoted', SOUL)], [{}], { seed: 'LM' }); (charOf(f, f.pc) as any).state = { beloved: ['o1'] };
-      const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '6,2')); seed(f, 10);
-      act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1', aim: foe.pos, mods });
-      return 999 - f.unit(foe.id).hp;
-    };
-    const plain = run([]), tri = run(['class:devoted.love_made_manifest#manifest']);
-    expect(tri).toBeGreaterThanOrEqual(3 * plain - 2);
+  it('Love Made Manifest (rules 1.5): once a fight, a Beloved Outburst Begins at stage 4', () => {
+    const f = fightWith([adv('devoted', SOUL)], [{}], { seed: 'LM' }); (charOf(f, f.pc) as any).state = { beloved: ['o1'] };
+    const u = f.turn(f.pc); at(f, u, '3,2'); tough(at(f, f.foe, '6,2')); f.unit(u.id).ap = 9; f.unit(u.id).mg!.strainLimit = 20;
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1', mods: ['class:devoted.love_made_manifest#manifest'] });
+    expect(f.pc.mg!.held!.stage).toBe(4); expect(logHas(f.cb, /heart is full at once/)).toBe(true);
+    act(f, f.unit(u.id), { type: 'combat/letgo' }); f.unit(u.id).ap = 9;
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1', mods: ['class:devoted.love_made_manifest#manifest'] });
+    expect(f.pc.mg!.held!.stage).toBe(0); // once a fight
   });
 });
 
@@ -274,18 +273,20 @@ describe('Heartfed', () => {
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.unit(ally.id), f.unit(hf.id), 'guarded', 2, undefined, { skipSave: true }));
     expect(st().devotion).toBe(1);
   });
-  it('Fed: a keyed design costs 10% less a point and hits 10% harder; release empties the gauge', () => {
+  it('Fed (rules 1.5): a keyed design costs 10% less a point; "Feed a feeling" spends a point for a free Pump (2 a turn); release empties the gauge', () => {
     const s = storyWith([adv('heartfed', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'heartfed.four_hearts', actionId: 'key_design', choice: 'o1:rage' } as any);
     expect((s.g.characters[c.id] as any).state.heartKeys.o1).toBe('rage');
-    const run = (rage: number) => {
-      const f = fightWith([adv('heartfed', SOUL)], [{}], { seed: 'FED' }); (charOf(f, f.pc) as any).state = { heartKeys: { o1: 'rage' }, heartfed: { scene: f.g.story.scene.n, rage, grief: 0, fear: 0, devotion: 0, carry: 0 } };
-      const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '6,2')); const mp = f.unit(u.id).mg!.mp; seed(f, 10);
-      act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1', aim: foe.pos });
-      return { mp: mp - f.pc.mg!.mp, dmg: 999 - f.unit(foe.id).hp, left: (charOf(f, f.pc) as any).state.heartfed.rage };
-    };
-    const a = run(0), b = run(3);
-    expect(b.mp).toBe(Math.max(5, Math.round(a.mp * 0.7))); expect(b.dmg).toBeGreaterThanOrEqual(Math.floor(a.dmg * 1.3) - 1); expect(b.left).toBe(0);
+    const f = fightWith([adv('heartfed', SOUL)], [{}], { seed: 'FED' }); (charOf(f, f.pc) as any).state = { heartKeys: { o1: 'rage' }, heartfed: { scene: f.g.story.scene.n, rage: 4, grief: 0, fear: 0, devotion: 0, carry: 0 } };
+    const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '6,2')); const m = f.unit(u.id).mg!; m.freePumps = 0; m.freePumpsMax = 0; f.unit(u.id).ap = 9;
+    const plain = withGame(f.g, () => { const st = (charOf(f, f.pc) as any).state.heartfed; const r = st.rage; st.rage = 0; const c0 = previewOutburst(f.cb, f.unit(u.id), 'o1').cost; st.rage = r; return c0; });
+    const mp = m.mp; act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1' });
+    expect(mp - f.pc.mg!.mp).toBe(Math.max(5, Math.round(plain * 0.6)));
+    perk(f, f.pc, 'heartfed.fed'); perk(f, f.pc, 'heartfed.fed');
+    expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
+    expect(() => perk(f, f.pc, 'heartfed.fed')).toThrow(/Twice a turn/);
+    act(f, f.unit(u.id), { type: 'combat/release', aim: foe.pos });
+    expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(0); expect(logHas(f.cb, /takes the rest of the rage/)).toBe(true);
   });
   it('Overflow: a gauge reaching 5 makes the next keyed Begin stage 2 with no Strain (once a scene)', () => {
     const f = fightWith([adv('heartfed', SOUL)], [{}]); (charOf(f, f.pc) as any).state = { heartKeys: { o1: 'grief' }, heartfed: { scene: f.g.story.scene.n, rage: 0, grief: 4, fear: 0, devotion: 0, carry: 0 } };
@@ -299,6 +300,7 @@ describe('Heartfed', () => {
     const v = g.turn(g.pcs[0].id); const strain = v.mg!.strain;
     act(g, g.unit(v.id), { type: 'combat/outburst', design: 'o1', hold: true });
     expect(g.pc.mg!.strain).toBe(strain); expect(logHas(g.cb, /Overflow: Damage Outburst Begins at stage 2/)).toBe(true);
+    expect(g.unit(v.id).mg!.held!.stage).toBe(2); // rules 1.5: the held stage itself, at once
     g.turn(v.id); expect(g.unit(v.id).mg!.held!.stage).toBe(3);
     void f;
   });
@@ -342,24 +344,24 @@ describe('Vessel', () => {
     const f = fightWith([adv('vessel', SOUL)], [{}]); const u = f.turn(f.pc); const arm = f.unit(u.id).armour, mp = f.unit(u.id).mg!.mp;
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' });
     expect(f.pc.armour).toBe(arm + 10); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1);
-    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 15); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1);
+    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 14); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // rules 1.5: stage 2 is ×1.4
     expect(withGame(f.g, () => previewOutburst(f.cb, f.pc, 'o1', f.foe.pos)).ok).toBe(false);
   });
   it('Inner Charge: Steady can\'t be knocked Prone; Pain to Power gives AP next turn; Surge adds 15 to melee', () => {
     const f = fightWith([adv('vessel', { ...SOUL, weapon: 'fists' })], [{}]); const u = f.turn(f.pc); f.unit(u.id).ap = 9; f.unit(u.id).mg!.strainLimit = 20;
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'steady' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'pain' });
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'prone', undefined, undefined, { skipSave: true })); expect(f.pc.prone).toBeFalsy();
-    f.unit(f.pc.id).mg!.will = 50; // keep the forms through the hits
     withGame(f.g, () => applyDamage(f.cb, f.pc, 45, { by: f.foe, type: 'weapon', credit: 'all' }));
     const v = f.turn(f.pc.id); expect(v.ap).toBe(8);
   });
-  it('Release: one strike ends every form, +15 Soul a stage; Empty Hand fists strike for 20', () => {
+  it('Release (rules 1.5): one strike ends every form, +15 Soul × each form\'s stage multiplier; Empty Hand fists strike for 20', () => {
     const f = fightWith([adv('vessel', { ...SOUL, weapon: 'fists' })], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '4,2'), -40); f.unit(u.id).ap = 9;
     expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(10);
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
-    expect(logHas(f.cb, /RELEASE \(1 stages\)/)).toBe(true);
-    expect(999 - f.unit(foe.id).hp).toBeGreaterThanOrEqual(20 + 15 + 13) // rules 1.5: the lower Soul multiplier (TODO(outburst-2.0): Vessel re-derived);
+    expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
+    // fists 10 + Surge 15 (stage 1, ×1; past Empty Hand's floor of 20) + the release 15 × 1 × the Soul multiplier, armour 0
+    expect(999 - f.unit(foe.id).hp).toBe(25 + Math.floor(15 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

@@ -17,10 +17,12 @@ import {
 } from '../combat';
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
-  condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, type Affected,
+  condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
+  RESONANCE_BONUS, type Affected,
 } from '../magic';
+import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { pray, blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
-import { type Character, mod, prayerCooldown, maxSigilWords } from '../character';
+import { type Character, mod, prayerCooldown, maxSigilWords, migrateDesign } from '../character';
 import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
@@ -37,6 +39,8 @@ const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
 const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
 const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side === u.side && alive(v));
+/** Outburst damage (rules 1.5): Soul damage, or an elemental Outburst's (told from a Sigil's by the MP it carries). */
+const outburstHit = (src: any) => !!src && (src.type === 'soul' || (src.type === 'elemental' && src.spellMp != null));
 /** Whose glyph this is (a 1.3 save's Hold the Stroke tagged pooled glyphs "<unitId>#pool"; rules 1.4 asks 'ground_cap'). */
 const glyphOwner = (g: { by: string }) => String(g.by).split('#')[0];
 const myZones = (cb: Combat, u: Unit) => (cb.zones || []).filter((z) => z.by === u.id);
@@ -119,33 +123,35 @@ register({
 });
 
 // =====================================================================================================================
-// Heart Overload (Will Power). A toggle on Begin an Outburst: pay its MP in HP instead, 2 HP a point (II: 1). True HP
-// loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or shield (a
-// healing or shielding design is refused with the toggle on; any other heal or shield comes to 0) and can't be held to grow (holding pays mana as usual). No Emanator: the
-// perk does nothing; the toggle stays off and isn't offered (spec §14 item 371, Leon 7 Nov 2026).
+// Heart Overload (Will Power). A toggle on Begin an Outburst (or a snap cast): pay its MP in HP instead, 2 HP a point
+// (II: 1). True HP loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or
+// shield (a healing or shielding design is refused with the toggle on; any other heal or shield it makes comes to 0).
+// Rules 1.5 (item 534): it may be held and Pumped now (1.2's "can't be held" made it a snap-only ×0.6 perk); Pumps
+// cost AP, never MP, so only the Begin is paid in blood. HP for AP (a Pump paid in blood) was weighed and refused: it
+// would turn HP into stage 4 every turn. No Emanator: the perk does nothing; the toggle stays off and isn't offered
+// (spec §14 item 371, Leon 7 Nov 2026).
 // =====================================================================================================================
 register({
   id: 'heart_overload', claims: 'all', priority: 300,
   toggles: [{
     id: 'pay_hp', label: 'Pay with HP', on: ['combat/outburst'],
     available: (h) => !!h.u?.mg?.emanator, // no Emanator: nothing to pay, so no toggle at all (item 371)
-    preview: (h) => (h.tier === 'II' ? '1 HP' : '2 HP') + ' per point of mana; can\'t heal, shield or be held.',
+    preview: (h) => (h.tier === 'II' ? '1 HP' : '2 HP') + ' per point of mana; blood can\'t heal or shield.',
   }],
   on: {
     outburst_cost: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'pay_hp') || !h.u!.mg?.emanator || !ctx.release) return;
+      if (!me(h, ctx.u) || !modOn(h, 'pay_hp') || !h.u!.mg?.emanator || ctx.classMove) return;
       if (mends(ctx.design)) { ctx.fail ||= 'Heart Overload: blood can\'t mend. Turn off Pay with HP to heal or shield.'; return; } // outburst_cost's fail (hooks gap D5)
       const rate = h.tier === 'II' ? 1 : 2; ctx.hp = (ctx.hp || 0) + Math.round(ctx.mp) * rate; ctx.mp = 0;
     },
     outburst_begin: (ctx, h) => {
       if (!me(h, ctx.u) || !modOn(h, 'pay_hp')) return;
-      if (ctx.hold) { log(ctx.cb, 'Heart Overload: an Outburst held to grow is paid in mana, not blood.'); return; }
-      if (ctx.hp > 0) { stateOf(h).paid = true; log(ctx.cb, h.u!.name + ' pays ' + ctx.hp + ' HP from the heart (Heart Overload).'); }
+      if (ctx.hp > 0) { stateOf(h).paid = ctx.design.id; log(ctx.cb, h.u!.name + ' pays ' + ctx.hp + ' HP from the heart (Heart Overload).'); }
     },
     outburst_release: (ctx, h) => {
       if (!me(h, ctx.u)) return; const s = stateOf(h);
-      if (!s.paid) { s.noMend = null; return; }
-      s.paid = false;
+      if (!s.paid || s.paid !== ctx.design?.id) { s.noMend = null; if (s.paid && !h.u!.mg?.held) s.paid = null; return; }
+      s.paid = null;
       if (mends(ctx.design)) log(ctx.cb, 'Heart Overload: blood can\'t mend. This Outburst heals and shields nothing.');
       s.noMend = ctx.cb.log.length;
     },
@@ -156,20 +162,35 @@ register({
 });
 
 // =====================================================================================================================
-// Resonance (Will Power). When an ally begins an Outburst within 3 tiles of you, your next Outburst costs 20% less MP
-// (II: 40%). Doesn't stack; your next Begin uses it up. Allies only.
+// Resonance (Will Power). Rules 1.5 (item 535): the rule called Resonance gives a later release in the same round +0.2
+// for each earlier ally releaser (at most +0.4). The perk widens its window so the two are different things: I: an
+// ally's release in the round before counts for your Resonance too (your heart keeps their beat a round longer). II:
+// and allies keep yours: your release counts for theirs in the next round as well. The rule's +0.2 a releaser and its
+// +0.4 ceiling stand; a wild release neither gives nor gets it. 1.2's MP discount (20% / 40%) is gone.
 // =====================================================================================================================
+interface RelMark { id: string; side: string; round: number }
+/** Releases seen this fight (every holder of the perk keeps the same list on its own state). */
+const relSeen = (h: Holder): RelMark[] => (stateOf(h).seen ||= []);
+function lastRound(cb: Combat, list: RelMark[], u: Unit, exclude: (x: RelMark) => boolean): string[] {
+  const now = new Set(((cb as any).soulRel?.round === cb.round ? (cb as any).soulRel.by : []).map((x: any) => x.id));
+  return [...new Set(list.filter((x) => x.round === cb.round - 1 && x.side === u.side && x.id !== u.id && !now.has(x.id) && !exclude(x)).map((x) => x.id))];
+}
 register({
   id: 'resonance', claims: 'all', priority: 50,
   on: {
-    outburst_begin: (ctx, h) => {
-      const u = h.u, c: Unit = ctx.u; if (!u || !c) return; const s = stateOf(h);
-      if (me(h, c)) { if (s.disc) s.disc = 0; return; }
-      if (c.side !== u.side || !alive(u) || dist(c.pos, u.pos) > 3) return;
-      const v = h.tier === 'II' ? 0.4 : 0.2;
-      if ((s.disc || 0) < v) { s.disc = v; log(ctx.cb, u.name + ' resonates with ' + c.name + ': the next Outburst costs ' + v * 100 + '% less (Resonance).'); }
+    outburst_release: (ctx, h) => {
+      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb)) return;
+      const list = relSeen(h);
+      if (!ctx.wild) {
+        // I: my release hears allies who released last round. II: an ally's release hears mine from last round.
+        let extra: string[] = [];
+        if (me(h, r)) extra = lastRound(cb, list, r, () => false);
+        else if (h.tier === 'II' && r.side === u.side) extra = lastRound(cb, list, r, (x) => x.id !== u.id);
+        if (extra.length) { const f = resonanceExtra(cb, r, ctx.stage, RESONANCE_BONUS * extra.length); if (f > 1) { ctx.mult = (ctx.mult || 1) * f; log(cb, r.name + ' still feels ' + extra.map((id) => cb.units.find((x) => x.id === id)?.name || id).join(', ') + ' (Resonance).'); emitFx(cb, 'resonance', { unit: r.id, at: r.pos, with: extra, bonus: Math.round((f - 1) * 100) / 100, perk: true }); } }
+        list.push({ id: r.id, side: r.side, round: cb.round });
+        while (list.length > 24) list.shift();
+      }
     },
-    outburst_cost: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.u) && s.disc) ctx.mp = ctx.mp * (1 - s.disc); },
   },
   brief: () => null,
 });
@@ -255,8 +276,9 @@ register({
 
 // =====================================================================================================================
 // The Twin Pays (Mastered, Will Power 10). A toggle on Begin, once per combat: no MP, no meter drop, no Strain on the
-// cast or while it is held, and a Right Brain Debuff's +20% is 0 too. The engine adds a held Outburst's Strain at the
-// start of each turn through 'outburst_hold', which this item zeroes (the Mana Short check never sees it).
+// Begin or while it is held, and a Right Brain Debuff's +20% is 0 too. Rules 1.5: the swell's Strain (each turn start
+// while it is held) comes through 'outburst_hold', which this item zeroes; its Pumps never strained anyway. So a free
+// heart can be held and swelled to stage 4 for nothing but the AP: once a fight (item 536, flagged).
 // =====================================================================================================================
 register({
   id: 'the_twin_pays', claims: 'all', priority: 500,
@@ -289,35 +311,17 @@ register({
 // Twin Souls (Achieved: Will Power 5 + Lore Master 5). Story: once per session, ask your twin soul in the upper realm
 // one question; the Narrator answers truthfully in the twin's voice (short of proof: the Veil). Outbursts: a design may
 // carry a third school (school3, option3), +20 MP before the band and Insight saving; "mid-level" dropped (plan 6a).
-// The third school runs at release (before the first two: the engine has no hook after them).
+// Rules 1.5 (item 537): the third school is a second rider, as the second school is: half strength, its own option, no
+// roll, on everyone its own reach rule takes in the release's area (Buff: allies; the rest: everyone but you), at the
+// release's stage multiplier and rider stage (the 1.5 maths: magic.ts outburstArea and outburstDamage). It lands as the
+// release begins (the engine has no hook after the first two schools), so it lands where the primary may miss.
 // =====================================================================================================================
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-/** One extra school's effect at release, for the targets the design reaches (Twin Souls' third school). */
-function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, aim: string): string {
-  // TODO(outburst-2.0): Twin Souls' third school runs its own 1.2 release maths (25 base, Rain, no shapes or tones); re-derive on magic.ts outburstArea/outburstDamage.
-  const m = u.mg!, has = (x: string) => (d.modules || []).includes(x), area = (has('rain') ? 2 : 0) + (has('size') ? 1 : 0);
-  const targets = cb.units.filter((v) => !v.dead && (area ? dist(v.pos, aim) <= area : v.pos === aim));
-  const out: string[] = [];
-  for (const t of targets) {
-    if (school === 'damage') {
-      const base = ((SCHOOL as any).damage?.damage || 25) * m.soulMult * sm * (has('rain') ? 0.6 : 1) * (has('at_once') ? 0.5 : 1);
-      if (has('inverse') && t.side === u.side) { out.push(t.name + ' is shielded'); continue; }
-      const r = d20(rng), cover = !has('homing') && coverTileFor(cb, u.pos, t.pos) ? 5 : 0, tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (has('homing') ? 2 : 0) + condHit(u, t, cb) - cover;
-      if (!has('at_once') && (r === 1 || (r !== 20 && tot < t.def))) { out.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); continue; }
-      out.push(harm(cb, rng, u, t, base * (r === 20 ? 2 : 1), 'soul').replace(/^ · /, ''));
-    } else if (school === 'buff') {
-      const o = option || 'heal';
-      out.push((o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', 2 + (has('time') ? 2 : 0)) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', 2 + (has('time') ? 2 : 0)) : heal(t, 30 * m.healMult * sm, cb, u)).replace(/^ · /, ''));
-    } else if (school === 'control') {
-      const o = option || 'pinned';
-      if (o === 'push' || o === 'pull') { out.push(t.name + ' (' + o + ': yours to rule)'); (cb.notes ||= []).push(u.name + "'s third school pushes or pulls " + t.name + ' (Twin Souls): rule where they end up.'); }
-      else out.push(applyCond(cb, rng, u, t, o === 'pinned' ? 'pinned' : 'slowed', 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
-    } else if (school === 'status') {
-      const o = option || 'shaken', id = o === 'left_brain_debuff' ? 'ldebuff' : o === 'right_brain_debuff' ? 'rdebuff' : o;
-      out.push(applyCond(cb, rng, u, t, id, 2 + (has('time') ? 2 : 0)).replace(/^ · /, ''));
-    }
-  }
-  return out.filter(Boolean).join(' · ') || 'nobody at ' + refOf(aim);
+function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, stage: number, aim: string): string {
+  const dd = migrateDesign(d), tiles = new Set(outburstArea(cb, u, dd, formOf(dd) === 'aura' ? u.pos : aim)), rs = riderStage(cb, stage);
+  const targets = cb.units.filter((v) => !v.dead && (tiles.has(v.pos) || (school === 'buff' && formOf(dd) === 'aura' && v === u)) && (school === 'buff' ? v.side === u.side : v !== u));
+  const out = targets.map((t) => schoolRider(cb, rng, u, dd, t, school, option, sm, rs, SECOND_SCHOOL.strength)).filter(Boolean);
+  return out.join(' · ') || 'nobody it can reach';
 }
 register({
   id: 'twin_souls', claims: 'all',
@@ -336,8 +340,8 @@ register({
     outburst_cost: (ctx, h) => { const d = ctx.design; if (me(h, ctx.u) && d?.school3) ctx.mp += 20 * manaBand(manaOf(ctx.cb)).soul_cost_mult * (1 - (h.u!.mg?.costSave || 0)); },
     outburst_release: (ctx, h) => {
       const d = ctx.design; if (!me(h, ctx.u) || !d?.school3 || !h.u!.mg) return;
-      const sm = (1 + 0.5 * ((ctx.stage || 1) - 1)) * (ctx.mult || 1);
-      log(ctx.cb, h.u!.name + '\'s third school (' + d.school3 + ', Twin Souls): ' + extraSchool(ctx.cb, rngOf(h, ctx), h.u!, d, d.school3, d.option3, sm, ctx.aim) + '.');
+      const sm = stageMult(ctx.stage ?? 0) * (ctx.mult || 1);
+      log(ctx.cb, h.u!.name + '\'s third school (' + d.school3 + ' at half, Twin Souls): ' + extraSchool(ctx.cb, rngOf(h, ctx), h.u!, d, d.school3, d.option3, sm, ctx.stage ?? 0, ctx.aim) + '.');
     },
   },
   brief: () => 'Narrator: once a session, answers one question truthfully as their twin soul (pending ruling).',
@@ -347,8 +351,8 @@ register({
 // Twin Discipline (Ultimate: Twin Souls + Spoon-Feed). Fused Evoke: while holding a Begun Outburst, Evoke a Line you
 // can fire as fused. Rules 1.4: the Sigil's words set where it reaches (its Reach word and the facing rule, from where
 // you stand) and what it covers (its Burst, TWICE's missiles, CHAIN's jumps), with friendly fire (KIN spares your side);
-// the held Outburst's school, modules and stage decide what happens to each creature it covers, released at them
-// (Rain, Size, Random and Move are ignored, Ether is implied). Each one is hit once, at the Sigil's multiplier for its
+// the held Outburst's school, modules and stage decide what happens to each creature it covers, released at them as a
+// Bolt (rules 1.5: its shape, Size, Random and Far are set aside, Ether is implied). Each one is hit once, at the Sigil's multiplier for its
 // tile capped at ×1 (a Burst's edge or a chain jump weakens it; CONDENSE and repeats never grow an Outburst; PROVISIONAL).
 // The Sigil's own Subject words, PULL, STEP and LEECH don't fire; the glyphs fade (a Keystone stays). A placed spell
 // (STAY, WAIT, WATCH) can't carry an Outburst. Pay both: the Evoke's charge and AP now, the Outburst's MP and Strain
@@ -417,9 +421,10 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
     for (const x of hits) {
       const t = x.unit; if (t.dead) continue;
       s.fusing = { mult: x.mult };
-      // TODO(outburst-2.0): this release filters 1.2 modules (Rain); under 1.5 the shapes (wave/burst/aura/lance) decide the area.
-      m.held = { ...held }; d.modules = [...mods0.filter((y) => !['rain', 'size', 'random', 'move'].includes(y)), 'ether']; m.soulRange = range0 + 99;
-      u.ap += SPELL_AP.release; const err = releaseOutburst(cb, rng, u, t.pos); if (err) { u.ap -= SPELL_AP.release; break; }
+      // Rules 1.5: the Sigil decides the area, so each creature takes the held Outburst as a Bolt (its shape, Size,
+      // Random and Far set aside; Ether implied: classes/soul.ts asBolt).
+      m.held = { ...held };
+      u.ap += SPELL_AP.release; const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { u.ap -= SPELL_AP.release; break; }
     }
   } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
   // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Parallel Thought and Clean Draw.
@@ -442,6 +447,10 @@ register({
   toggles: [{
     id: 'verse', label: 'In verse', on: ['combat/outburst'],
     available: (h) => (!h.u?.mg ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
+    preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
+  }, {
+    id: 'verse', label: 'In verse', on: ['combat/release'],
+    available: (h) => (!h.u?.mg?.held ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
     preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
   }],
   actions: [{
@@ -468,12 +477,14 @@ register({
   }],
   on: {
     outburst_cost: (ctx, h) => { if (me(h, ctx.u) && ctx.release && modOn(h, 'verse') && sayLine(h)) ctx.range += 1; },
+    // Rules 1.5: most Outbursts are held, so the toggle rides the Release too.
+    release_cost: (ctx, h) => { if (me(h, ctx.u) && modOn(h, 'verse') && sayLine(h)) ctx.range += 1; },
     outburst_release: (ctx, h) => {
       if (!me(h, ctx.u)) return; const s = stateOf(h);
       if (!((modOn(h, 'verse') && sayLine(h)) || s.verseRelease) || ctx.wild) { s.verseAt = null; return; }
       verseNote(h); s.verseAt = ctx.cb.log.length;
     },
-    damage_in: (ctx, h) => { const s = stateOf(h); if (ctx.phase === 'reduce' && me(h, ctx.src?.by) && ctx.src?.type === 'soul' && s.verseAt != null && s.verseAt === ctx.cb?.log.length) ctx.dmg *= 1.1; },
+    damage_in: (ctx, h) => { const s = stateOf(h); if (ctx.phase === 'reduce' && me(h, ctx.src?.by) && outburstHit(ctx.src) && s.verseAt != null && s.verseAt === ctx.cb?.log.length) ctx.dmg *= 1.1; },
   },
   brief: () => 'Narrator: audit after the fight whether the declared lines were verse.',
 });
@@ -624,7 +635,7 @@ register({
       if (s.inside) return;
       const r = die(rngOf(h, ctx), 6), why = ' (Upper-Touched d6 ' + r + ')';
       if (r === 1) { ctx.handled = true; ctx.out = ' · the Blessing fails on ' + u.name + why; return; }
-      if (r === 2) { if (u.mg) u.mg.strain += 1; log(cb, 'The Blessing tugs at ' + u.name + '\'s heart: +1 Strain' + why + '.'); return; }
+      if (r === 2) { const out = u.mg ? addStrain(cb, rngOf(h, ctx), u, 1, 'Upper-Touched') : ''; log(cb, 'The Blessing tugs at ' + u.name + '\'s heart: +1 Strain' + why + out + '.'); return; }
       if (r === 3) { log(cb, 'The Blessing frightens ' + u.name + why + applyCond(cb, rngOf(h, ctx), null, u, 'shaken', 1, undefined, { skipSave: true }) + '.'); return; }
       if (r === 5) {
         s.inside = true;
@@ -689,22 +700,28 @@ register({
 });
 
 // =====================================================================================================================
-// Hollow Heart (trait). Hollow: a Mana Short can't kill you: you fall unconscious, Downed but stable (no death saves
-// fail, hits don't add failures; plan 6a, provisional), and stand at 1 HP after the fight or when healed; +10% Outburst
-// damage (Soul damage you deal). Echo Chamber: every Outburst you cast is loud: you are revealed and can't hide on a
-// turn you cast; the Narrator hears that every enemy within 10 tiles knows where you are. Story: casting on the area
-// map ends your sneak.
+// Hollow Heart (trait). Rules 1.5 (item 538): nobody's own heart kills them now (the burn Downs, never kills), so
+// Hollow is re-derived: when your own heart Downs you (the burn, 'strain' damage; an old save's Short), you fall
+// unconscious, Downed but stable (no death saves fail, hits don't add failures; plan 6a, provisional), and stand at 1 HP
+// after the fight or when healed; and a Mana Short doesn't Stun you (the hollow heart keeps beating: the wild release,
+// the backlash and Strain falling to the limit still happen). +10% Outburst damage (Soul damage you deal, and an
+// elemental Outburst's). Echo Chamber: every Outburst you cast is loud: you are revealed and can't hide on a turn you
+// cast; the Narrator hears that every enemy within 10 tiles knows where you are. Story: casting on the area map ends
+// your sneak.
 // =====================================================================================================================
 register({
   id: 'hollow_heart', claims: 'all',
   stat: (h, stat) => (stat === 'death_save' && h.u?.downed && stateOf(h).stable ? 20 : 0),
   on: {
-    on_downed: (ctx, h) => { if (me(h, ctx.victim) && !ctx.victim.dead && (ctx.src?.type === 'short' || ctx.src?.type === 'strain')) { /* TODO(outburst-2.0): rules 1.5 has no Downing Short; the heart's burn ('strain') is what Downs now */ stateOf(h).stable = true; log(ctx.cb, h.u!.name + ' falls unconscious, hollow and stable (Hollow Heart).'); } },
+    on_downed: (ctx, h) => { if (me(h, ctx.victim) && !ctx.victim.dead && (ctx.src?.type === 'short' || ctx.src?.type === 'strain')) { stateOf(h).stable = true; log(ctx.cb, h.u!.name + ' falls unconscious, hollow and stable (Hollow Heart).'); } },
+    // The automatic Short follows the Strain that reaches 3 over the limit (magic.ts addStrain): its Stun is refused.
+    strain_change: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (ctx.why === 'short') s.shorting = false; else if (ctx.to - (ctx.limit ?? 0) >= SHORT_AT_OVER && ctx.to > ctx.from) s.shorting = true; },
+    cond_apply: (ctx, h) => { const s = stateOf(h); if (!me(h, ctx.t) || ctx.id !== 'stunned' || ctx.by || !s.shorting) return; s.shorting = false; ctx.cancel = true; ctx.why = 'Hollow Heart: the heart keeps beating'; },
     turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (!h.u!.downed) s.stable = false; else if (s.stable) h.u!.saves.ok = 0; },
     damage_in: (ctx, h) => {
       if (ctx.phase !== 'reduce') return;
       if (me(h, ctx.t) && ctx.t.downed && stateOf(h).stable && ctx.dmg > 0) { ctx.dmg = 0; return; }
-      if (me(h, ctx.src?.by) && ctx.src?.type === 'soul') ctx.dmg *= 1.1;
+      if (me(h, ctx.src?.by) && outburstHit(ctx.src)) ctx.dmg *= 1.1;
     },
     outburst_begin: (ctx, h) => {
       if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, u = h.u!;

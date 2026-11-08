@@ -346,15 +346,21 @@ describe('Trickster', () => {
 // ======================================================================================================== CHANNELER
 const designOf = (u: Unit, school = 'damage', option?: string) => { const d = { id: 'd-' + school + (option || ''), name: school + ' test', school, modules: [], ...(option ? { option } : {}) }; u.mg!.designs.push(d as any); return d.id; };
 describe('Channeler', () => {
-  it('Shape: the first Damage Outburst a turn adds no cast Strain; the second does', () => {
+  it('Shape (rules 1.5): the first Pump a turn that would cost AP is free, on a Damage design; the second costs 1', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
-    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; f.unit(f.foe.id).hp = 999;
+    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; f.unit(f.foe.id).hp = 999; const m = f.unit(u.id).mg!; m.freePumps = 0; m.freePumpsMax = 0;
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
-    expect(withGame(f.g, () => previewOutburst(f.cb, f.pc, d, '6,2')).strain).toBe(0);
-    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '6,2' });
-    expect(f.pc.mg!.strain).toBe(0);
-    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '6,2' });
-    expect(f.pc.mg!.strain).toBe(1);
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); expect(f.pc.ap).toBe(7);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(1); expect(logHas(f.cb, /Shape: the first Pump/)).toBe(true);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(2);
+  });
+  it('Shape: Empathy\'s free Pump goes first; Shape takes the next one', () => {
+    const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
+    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1;
+    const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: d });
+    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(3);
   });
   it('Storm Front: +10 MP, two more enemies within 2 tiles of the first, once a turn', () => {
     const f = fightWith([cls('channeler', 2, SOUL)], [{}, {}, {}]);
@@ -365,17 +371,19 @@ describe('Channeler', () => {
     expect(f.pc.mg!.mp).toBe(mp - base - 10);
     expect(logHas(f.cb, /Storm Front arcs on: (hits|misses) Foe 2.*(hits|misses) Foe 3/)).toBe(true);
   });
-  it('Heart Surge: double damage at release, for +1 Strain (with Shape the net is the base, not 0)', () => {
+  it('Heart Surge (rules 1.5): a held release fires one stage higher, and +1 Strain lands after it; once a turn', () => {
     const run = (mods: string[]) => {
       const f = fightWith([cls('channeler', 3, SOUL)], [{}], { seed: 'HS' });
-      const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); const foe = f.unit(f.foe.id); foe.hp = 999; foe.maxHp = 999; foe.def = -40;
+      const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); const foe = f.unit(f.foe.id); foe.hp = 999; foe.maxHp = 999; foe.def = -40; f.unit(u.id).ap = 9; f.unit(u.id).mg!.strainLimit = 20;
       const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
-      act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '6,2', mods });
-      return { dmg: 999 - f.unit(f.foe.id).hp, strain: f.pc.mg!.strain };
+      act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' });
+      const s0 = f.pc.mg!.strain;
+      act(f, f.unit(u.id), { type: 'combat/release', aim: '6,2', mods });
+      return { f, rel: (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1) as any, strain: f.pc.mg!.strain - s0 };
     };
     const plain = run([]), surge = run(['class:channeler.heart_surge#surge']);
-    expect(surge.strain).toBe(plain.strain + 1);
-    expect(surge.dmg).toBeGreaterThanOrEqual(2 * plain.dmg - 1);
+    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.8);
+    expect(surge.strain).toBe(plain.strain + 1); expect(logHas(surge.f.cb, /Heart Surge: the heart pays for it/)).toBe(true);
   });
 });
 

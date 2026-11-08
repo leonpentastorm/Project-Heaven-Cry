@@ -1,4 +1,4 @@
-// The standing look of placed Sigil magic (rules 1.4): a STAY field's tiles live (lava cracks, ice sheen, acid bubbles,
+// The standing look of placed Sigil magic (rules 1.4), and of a held Outburst (rules 1.5, fx/soul.ts heartNode): a STAY field's tiles live (lava cracks, ice sheen, acid bubbles,
 // storm static, dust, a wind swirl) and a WATCH turret stands as a small glyph pillar with a turning eye, for as long as
 // the engine keeps them. It is kept in step with the game state on every render, not with the event stream, so a
 // field seen on joining, after a reload or a hidden tab looks the same as one watched being cast, and nothing outlives
@@ -8,8 +8,11 @@ import type { GameState } from '@engine';
 import { type Sfx, setSfxLoops } from '../sfx';
 import { centre, layerEl, put, tileEl } from './dom';
 import { type ElementId, elementFx, elementId, fieldNode, turretNode } from './elements';
+import { AURA_LOOP, heartNode } from './soul';
 
-export interface AmbientItem { key: string; kind: 'field' | 'turret'; tile: string; element: ElementId; mine: boolean }
+/** A standing look: a Sigil field tile, a WATCH turret, or a held Outburst's heart (rules 1.5: its glow by stage, its
+ *  elemental aura, Heart Overwatch's eye) over its holder, which follows the holder as it moves. */
+export interface AmbientItem { key: string; kind: 'field' | 'turret' | 'heart'; tile: string; element: ElementId; mine: boolean; stage?: number; watch?: boolean; unit?: string }
 /** What stands on the map on screen: every field tile and turret the viewer may see (the view already drops secret
  *  ones; this drops them again, and an enemy's out of sight). Pure. */
 export function ambientOf(g: GameState | null | undefined, screen: string, seen?: Set<string> | null, side: 'pc' | 'foe' = 'pc'): AmbientItem[] {
@@ -27,6 +30,14 @@ export function ambientOf(g: GameState | null | undefined, screen: string, seen?
     if (z.kind === 'field' || z.kind === 'wall') { for (const t of z.tiles) if (mine || !seen || seen.has(t)) out.push({ key: z.id + '|' + t, kind: 'field', tile: t, element: el, mine }); }
     else if (z.kind === 'turret') { const t = z.tiles[0]; if (t && (mine || !seen || seen.has(t))) out.push({ key: z.id + '|' + t, kind: 'turret', tile: t, element: el, mine }); }
   }
+  // Held hearts (a fight only): everyone sees a holder's glow, an enemy's only while in sight.
+  if (screen === 'combat' && g.combat) for (const u of (g.combat.units || []) as any[]) {
+    const h = u?.mg?.held; if (!h || u.dead || !u.pos) continue;
+    const mine = u.side === side;
+    if (!mine && (u.hidden || (seen && !seen.has(u.pos)))) continue;
+    const stage = Math.max(0, Math.min(4, Math.round(h.stage ?? 0)));
+    out.push({ key: 'heart|' + u.id + '|' + stage + '|' + (h.watch ? 'w' : '') , kind: 'heart', tile: u.pos, element: elementId(h.tone && h.tone !== 'raw' ? h.tone : null), mine, stage, watch: !!h.watch, unit: u.id });
+  }
   return out;
 }
 /** The sound beds for what stands: one loop per element with a field, a little louder for more tiles (capped). Pure. */
@@ -35,6 +46,8 @@ export function loopsFor(items: AmbientItem[]): Partial<Record<Sfx, number>> {
   for (const it of items) if (it.kind === 'field') n[it.element] = (n[it.element] || 0) + 1;
   const out: Partial<Record<Sfx, number>> = {};
   for (const [el, c] of Object.entries(n) as [ElementId, number][]) { const loop = elementFx(el).sound.loop; if (loop) out[loop] = Math.max(out[loop] || 0, Math.min(1, 0.45 + 0.12 * c)); }
+  // A held elemental heart hums its aura's bed (the field loop, slowed and softened), louder as it grows.
+  for (const it of items) if (it.kind === 'heart') { const loop = AURA_LOOP[it.element]; if (loop) out[loop] = Math.max(out[loop] || 0, Math.min(1, 0.4 + 0.15 * (it.stage || 0))); }
   return out;
 }
 
@@ -47,11 +60,13 @@ export function syncAmbient(items: AmbientItem[]) {
   const want = new Map(items.map((i) => [i.key + '|' + i.kind + '|' + i.element, i]));
   for (const [k, n] of [...nodes]) if (!want.has(k) || !n.box.isConnected) { n.box.remove(); nodes.delete(k); }
   if (layerEl()) for (const [k, it] of want) {
-    if (nodes.has(k)) continue;
-    const p = centre(it.tile), s = p?.s || 40;
-    const el = it.kind === 'field' ? fieldNode(it.element, 'sigil') : turretNode(it.element, it.mine);
-    const box = put(el, p || { x: -999, y: -999 }, it.kind === 'turret' ? s * 0.7 : s * 0.92, it.kind === 'turret' ? s * 0.9 : s * 0.92, 864e5);
-    box.style.zIndex = '0'; box.style.opacity = '0';
+    const had = nodes.get(k);
+    if (had) { had.item = it; continue; } // a heart follows its holder
+    const p = centre(it.tile), s = p?.s || 40, [w, h] = sizeOf(it, s);
+    const el = it.kind === 'field' ? fieldNode(it.element, 'sigil') : it.kind === 'heart' ? heartNode(it.stage || 0, it.element, !!it.watch, it.mine) : turretNode(it.element, it.mine);
+    const box = put(el, p || { x: -999, y: -999 }, w, h, 864e5);
+    box.style.zIndex = it.kind === 'heart' ? '1' : '0'; box.style.opacity = '0';
+    if (it.kind === 'heart') box.style.transition = 'opacity .25s';
     // A field brightens its tile (screen blend) rather than covering who stands on it.
     if (it.kind === 'field') box.style.mixBlendMode = 'screen';
     nodes.set(k, { item: it, box, shown: false, checked: 0 });
@@ -59,6 +74,8 @@ export function syncAmbient(items: AmbientItem[]) {
   setSfxLoops(loopsFor(items));
   if (nodes.size && !raf) raf = requestAnimationFrame(track);
 }
+/** A look's box: a field fills its tile, a turret stands on it, a heart's glow and aura spread two tiles across. */
+const sizeOf = (it: AmbientItem, s: number): [number, number] => (it.kind === 'turret' ? [s * 0.7, s * 0.9] : it.kind === 'heart' ? [s * 2, s * 2] : [s * 0.92, s * 0.92]);
 /** Drop every standing look and sound bed (leaving the room, a hidden tab). */
 export function clearAmbient() { for (const n of nodes.values()) n.box.remove(); nodes.clear(); setSfxLoops({}); }
 /** How many standing looks are up (tests). */
@@ -70,7 +87,7 @@ function track() {
   for (const n of nodes.values()) {
     const p = centre(n.item.tile);
     if (!p) { n.box.style.opacity = '0'; continue; }
-    const w = n.item.kind === 'turret' ? p.s * 0.7 : p.s * 0.92, h = n.item.kind === 'turret' ? p.s * 0.9 : p.s * 0.92;
+    const [w, h] = sizeOf(n.item, p.s);
     n.box.style.width = w + 'px'; n.box.style.height = h + 'px';
     n.box.style.left = p.x - w / 2 + 'px'; n.box.style.top = p.y - h / 2 - (n.item.kind === 'turret' ? p.s * 0.12 : 0) + 'px';
     if (now - n.checked > 200) { n.checked = now; n.shown = uncovered(n.item.tile, p); }

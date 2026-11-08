@@ -78,15 +78,16 @@ describe('Heart Overload', () => {
       expect(f.pc.mg!.mp).toBe(mp); expect(f.pc.hp).toBe(hp - cost * rate);
     }
   });
-  it('an HP-paid cast can\'t heal or shield; a held one pays mana', () => {
+  it('an HP-paid cast can\'t heal or shield; rules 1.5: a held one pays blood too (item 534)', () => {
     const f = soulFight({ heart_overload: 'II' }); f.pc.maxHp = 999; f.pc.hp = 500;
     f.pc.mg!.designs.push({ id: 'mend', name: 'Mend', school: 'buff', option: 'heal', modules: [] });
     const cost = designCost(f.pc.mg!, f.pc.mg!.designs[1], manaOf(f.cb));
     expect(() => f.act({ type: 'combat/outburst', unitId: f.pc.id, design: 'mend', aim: f.pc.pos, mods: ['pay_hp'] } as any)).toThrow(/blood can't mend/);
     expect(f.pc.hp).toBe(500); void cost;
-    const g = soulFight({ heart_overload: 'I' }), mp = g.pc.mg!.mp, hp = g.pc.hp;
-    g.act({ type: 'combat/outburst', unitId: g.pc.id, design: g.pc.mg!.designs[0].id, hold: true, mods: ['pay_hp'] } as any);
-    expect(g.pc.mg!.mp).toBeLessThan(mp); expect(g.pc.hp).toBe(hp);
+    const g = soulFight({ heart_overload: 'I' }); g.pc.maxHp = g.pc.hp = 999; const mp = g.pc.mg!.mp, hp = g.pc.hp, d = g.pc.mg!.designs[0], c0 = designCost(g.pc.mg!, d, manaOf(g.cb));
+    g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true, mods: ['pay_hp'] } as any);
+    expect(g.pc.mg!.mp).toBe(mp); expect(g.pc.hp).toBe(hp - 2 * c0); expect(g.pc.mg!.held!.stage).toBe(0);
+    g.act({ type: 'combat/pump', unitId: g.pc.id } as any); expect(g.pc.mg!.held!.stage).toBe(1); expect(g.pc.hp).toBe(hp - 2 * c0); // a Pump costs AP, never blood
   });
 });
 
@@ -103,17 +104,27 @@ describe('Heart Overload without an Emanator (item 371, Leon 7 Nov 2026)', () =>
   });
 });
 
-describe('Resonance', () => {
-  it('I: an ally begins an Outburst within 3 tiles: your next one costs 20% less (II: 40%), once', () => {
-    for (const [tier, cut] of [['I', 0.8], ['II', 0.6]] as const) {
-      const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { resonance: tier } }, { archetype: 'stormcaller', kit: 'soul', name: 'Ally' }], [{ at: 'H6' }]);
-      open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5'; f.foe.pos = '5,5'; f.foe.hp = f.foe.maxHp = 999;
-      f.turn(b); f.act({ type: 'combat/outburst', unitId: b.id, design: f.unit(b.id).mg!.designs[0].id, hold: true });
-      expect(logHas(f.cb, /resonates/)).toBe(true);
-      const u = f.turn(a); u.ap = 9; const d = u.mg!.designs[0], base = designCost(u.mg!, d, manaOf(f.cb)), mp = u.mg!.mp;
-      f.act({ type: 'combat/outburst', unitId: u.id, design: d.id, hold: true });
-      expect(mp - f.unit(a.id).mg!.mp).toBe(Math.round(base * cut));
-    }
+describe('Resonance (rules 1.5: the perk widens the rule\'s window, item 535)', () => {
+  /** Two Soul PCs side by side; a releases on round r, b on round r + 1; returns b's release multiplier. */
+  function twoRounds(perksA: Record<string, string>, perksB: Record<string, string>) {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: perksA, name: 'A' }, { archetype: 'stormcaller', kit: 'soul', perks: perksB, name: 'B' }], [{ at: 'H6' }]);
+    open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '2,6'; f.foe.pos = '5,5'; f.foe.hp = f.foe.maxHp = 9999; f.foe.def = -40;
+    for (const p of [a, b]) { const m = f.unit(p.id).mg!; m.mp = 999; m.strainLimit = 30; }
+    const ua = f.turn(a); ua.ap = 9; f.act({ type: 'combat/outburst', unitId: ua.id, design: ua.mg!.designs[0].id, aim: '5,5' });
+    f.cb.round += 1; // the next round
+    const ub = f.turn(b); ub.ap = 9; f.act({ type: 'combat/outburst', unitId: ub.id, design: ub.mg!.designs[0].id, aim: '5,5' });
+    return (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1).mult as number;
+  }
+  it('without the perk, a release last round gives nothing (the rule is one round)', () => { expect(twoRounds({}, {})).toBe(0.6); });
+  it('I: the holder\'s release hears an ally\'s release from the round before: +0.2', () => { expect(twoRounds({}, { resonance: 'I' })).toBe(0.8); });
+  it('II: and allies hear the holder\'s from the round before', () => { expect(twoRounds({ resonance: 'II' }, {})).toBe(0.8); expect(twoRounds({ resonance: 'I' }, {})).toBe(0.6); });
+  it('the 1.2 MP discount is gone', () => {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { resonance: 'II' } }, { archetype: 'stormcaller', kit: 'soul', name: 'Ally' }], [{ at: 'H6' }]);
+    open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5';
+    f.turn(b); f.act({ type: 'combat/outburst', unitId: b.id, design: f.unit(b.id).mg!.designs[0].id, hold: true });
+    const u = f.turn(a); u.ap = 9; const d = u.mg!.designs[0], base = designCost(u.mg!, d, manaOf(f.cb)), mp = u.mg!.mp;
+    f.act({ type: 'combat/outburst', unitId: u.id, design: d.id, hold: true });
+    expect(mp - f.unit(a.id).mg!.mp).toBe(base);
   });
 });
 
@@ -172,7 +183,7 @@ describe('Twin Souls', () => {
     const after = withGame(f.g, () => previewOutburst(f.cb, f.pc, d.id, f.foe.pos).cost);
     expect(after - before).toBeGreaterThanOrEqual(10);
     f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, aim: f.foe.pos });
-    expect(logHas(f.cb, /third school \(status, Twin Souls\)/)).toBe(true);
+    expect(logHas(f.cb, /third school \(status at half, Twin Souls\)/)).toBe(true);
   });
 });
 

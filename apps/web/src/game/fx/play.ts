@@ -5,6 +5,7 @@ import { type FxEvent, type GameState, SIGIL, visibility } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
+import { soulHandlers, soulBeat, discharge } from './soul';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -60,7 +61,7 @@ const visible = (k: string | null | undefined) => !k || !seenTiles || seenTiles.
 /** Where a unit's token is on screen now (it may have moved since the event). */
 const tokOf = (id: string | null | undefined, fallback?: string) => tokenEl(tileEl(unit(id)?.pos || fallback));
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
-const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number } = {}) => sfx(s, { ...o, pan: panOf(p) });
+const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => sfx(s, { ...o, pan: panOf(p) });
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
 
 // ---------- weapons ----------
@@ -325,7 +326,7 @@ const H: Record<string, Handler> = {
     else if (color) { squaresOrMotes(p, color, why === 'soul'); }
     if (why === 'acid') { bubbles(p, ELEMENTS.acid, 'sigil', 4, 900); play('stim', p, { gain: 0.4, rate: 1.2 }); }
     shake(tok, why === 'explosion' ? 1.6 : 0.8); flash(tok, color === SOUL_INK ? 'soul' : color ? 'magic' : 'hurt');
-    if (why !== 'explosion' && why !== 'trap') play(unit(e.target)?.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: why === 'bleed' || why === 'burn' ? 0.6 : 1 });
+    if (why !== 'explosion' && why !== 'trap' && why !== 'strain') play(unit(e.target)?.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: why === 'bleed' || why === 'burn' ? 0.6 : 1 });
     floatText(e.dmg > 0 ? '−' + e.dmg : 'HIT', p, HP);
   },
   shield(e) { const p = at(e.at); if (!p) return; ring(p, SIGIL_INK, 420, { from: 0.7, to: 1.05, width: 7 }); floatText('SHIELD −' + (e.absorbed || 0), p, SIGIL_INK, { small: true }); play('hit_metal', p, { rate: 1.4, gain: 0.6 }); },
@@ -338,7 +339,7 @@ const H: Record<string, Handler> = {
     dust({ x: p.x, y: p.y + p.s * 0.2 }, p.s);
     floatText(e.dead ? 'DEAD' : 'DOWNED', p, HP, { delay: 150 });
   },
-  explode(e) { explosion(e.at, e.radius || 1, e.what === 'fire' ? 'fire' : 'frag'); },
+  explode(e) { if (e.what === 'discharge') { discharge(SOUL_KIT, e); return; } explosion(e.at, e.radius || 1, e.what === 'fire' ? 'fire' : 'frag'); },
   object(e) { const p = at(e.at); if (!p) return; if (e.broken) { dust(p, p.s * 1.3); burst('smoke_soft', p, p.s, 700, { color: '#7F8BA1' }); play('body_fall', p, { rate: 0.8, delay: 90 }); floatText('BROKEN', p, MUTED, { small: true }); } },
   door(e) { const p = at(e.at); play(e.open ? 'door_open' : 'door_close', p || centre(e.at)); if (p) dust({ x: p.x, y: p.y + p.s * 0.3 }, p.s * 0.6); },
   trap(e) { const p = at(e.at); play('chop', p, { rate: 0.8 }); if (p) { burst('spark_burst', p, p.s, 300, { color: HP }); floatText('TRAP', p, HP, { small: true }); } },
@@ -396,6 +397,10 @@ const H: Record<string, Handler> = {
   chain(e) {
     const a = at(e.from) || centre(e.from), b = at(e.to); if (!a || !b) return;
     const el = elementFx(e.element);
+    if (e.jump == null && e.unit) { // Storm's chain off a released Outburst: violet first, then the element
+      jag(a, b, { ...el, core: WHITE, ink: SOUL_INK }, 'soul', 300); jag(a, b, el, 'soul', 240, 70);
+      elementImpact(b, el.id, 'soul', { power: 0.5, quiet: true }); play('el_zap', b, { rate: 0.9, gain: 0.7, lowpass: 2600 }); return;
+    }
     jag(a, b, { ...el, core: WHITE, ink: SIGIL_INK }, 'sigil', 260); jag(a, b, el, 'sigil', 200, 60);
     burst('zap', b, b.s * 1.1, 260, { color: WHITE, from: 0.5, to: 1.2 });
     chip(b, String(e.jump || 1), SIGIL_INK);
@@ -536,43 +541,19 @@ const H: Record<string, Handler> = {
   cond(e) { const p = at(e.at); if (!p) return; floatText(e.resisted ? 'RESISTED' : condWord(e.id), p, e.resisted ? MUTED : condBoon(e.id) ? OK : WHITE, { small: true, delay: 200 }); if (e.id === 'corroded' && !e.resisted) bubbles(p, ELEMENTS.acid, 'sigil', 4, 900, 200); },
   overload(e) { const p = at(e.at); play('sigil_overload', p || centre(e.at)); screenTint('red', 420); if (p) { glitch(p, 420); squares(p, HP, 14, 1.2, 500); shake(tokOf(e.unit, e.at), 1.2); } },
   vent(e) { const p = at(e.at); play('vent', p); if (p) for (let i = 0; i < 10; i++) squaresTo(p, { x: p.x + (Math.random() - 0.5) * p.s, y: p.y - p.s * (1.5 + Math.random()) }, SIGIL_INK, 1, 600, i * 40); },
-  // ---------- Outbursts: violet into gold, soft, breathing ----------
-  outburst(e) {
-    const p = at(e.at); play('heartbeat', p); if (e.hold) play('soul_hold', p, { delay: 120 });
-    if (!p) return;
-    ring(p, SOUL_INK, 700, { from: 0.5, to: 1.3, width: 5 }); ring(p, SOUL_INK, 700, { from: 0.5, to: 1.3, width: 3, delay: 420 });
-    motes(p, SOUL_INK, 8, true, 700); flash(tokOf(e.unit, e.at), 'soul');
-  },
+  // ---------- Outbursts (1.2 events in old logs; the 1.5 heart is in soul.ts) ----------
   grow(e) {
     const p = at(e.at), st = e.stage || 2, col = mix(SOUL_INK, SOUL_WARM, (st - 1) / 3);
     play('heartbeat', p, { rate: 1 + 0.12 * st });
     if (p) { ring(p, col, 600, { from: 0.5, to: 1.1 + 0.15 * st, width: 4 + st }); floatText('STAGE ' + st, p, col, { small: true }); }
   },
-  release(e) {
-    const from = at(e.at), to = centre(e.to), st = e.stage || 1, col = mix(SOUL_INK, SOUL_WARM, Math.min(1, (st - 1) / 3 + 0.25));
-    play('soul_release', from || to, { rate: e.wild ? 0.85 : 1 });
-    if (!to) return;
-    const go = () => {
-      if (from && !e.air) for (let i = 0; i < 9; i++) moteTo(from, to, i % 2 ? SOUL_INK : SOUL_WARM, 360 + Math.random() * 160, i * 25);
-      after(() => {
-        const size = to.s * (1.2 + 0.35 * st + (e.area || 0) * 1.2);
-        burst('glow', to, size, 650, { color: col, from: 0.3, to: 1.2 }); burst('smoke_soft', to, size * 0.9, 900, { color: SOUL_INK, from: 0.5, to: 1.3, blend: 'screen' });
-        // An elemental Outburst (planned): the same element ids as Sigils, in the Soul family's violet that warms.
-        if (e.element) { elementImpact(to, e.element, 'soul', { power: 0.6 + 0.2 * st, decalKey: e.to, sound: (s2, o) => play(s2, to, o) }); for (const k of (e.tiles || []).slice(0, 16)) { const q = at(k); if (q && k !== e.to) elementImpact(q, e.element, 'soul', { power: 0.5, quiet: true }); } }
-        ring(to, SOUL_WARM, 600, { from: 0.4, to: 1.2 + (e.area || 0) * 0.8, width: 5 });
-        if (e.school === 'buff') pluses(to, OK, 6);
-      }, from && !e.air ? 380 : 0);
-    };
-    if (e.wild) { if (from) floatText('WILD', from, SOUL_WARM, { small: true }); after(go, 220); } else go();
-  },
-  short(e) {
-    const p = at(e.at); screenTint('grey', 900); sfx('short');
-    if (p) { flash(tokOf(e.unit, e.at), 'white'); floatText(e.burst ? 'HEART BURSTS' : 'MANA SHORT', p, HP, { small: !e.burst, big: e.burst }); if (e.burst) burst('spark_burst', p, p.s * 1.3, 500, { color: HP }); }
-  },
   syphon(e) { const p = at(e.at); play('soul_hold', p, { rate: 1.4 }); if (p) { for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, r = p.s * (1.4 + Math.random()); moteTo({ x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r }, p, SOUL_INK, 500, i * 40); } floatText('+' + (e.mp || 0) + ' MP', p, '#5C9EFF', { small: true, delay: 300 }); } },
   mana() { /* the meter shows it */ },
   song() { /* the music plays it */ },
 };
+/** The Soul heart's handlers (fx/soul.ts), lent this layer's fog-aware lookups. They override the 1.2 names they share. */
+const SOUL_KIT = { at, tokOf, posOf: (id: string | null | undefined) => unit(id)?.pos, play };
+Object.assign(H, soulHandlers(SOUL_KIT));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
@@ -756,6 +737,8 @@ function chipShatter(p: Pt, word: string) {
 /** How long each kind holds the stage before the next event starts (ms). */
 function beatOf(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
+  const sb = soulBeat(e); if (sb !== undefined) return sb;
+  if (e.k === 'explode' && e.what === 'discharge') return 520;
   switch (e.k) {
     case 'turn': return 140;
     case 'move': return Math.min(1100, Math.max(160, ((e.path?.length || 2) - 1) * (e.how === 'sprint' ? 75 : 115)));
@@ -814,3 +797,5 @@ export function queueFx(evs: FxEvent[], stream?: string) {
 export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; volley = null; bumpGen(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
+/** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
+if (typeof window !== 'undefined') (window as any).__phcFx = { playFx, queueFx };
