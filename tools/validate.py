@@ -4,6 +4,7 @@ Usage: python3 validate.py /home/claude/phc-data
 Checks: every file parses, ids are unique, every skill/attr/class/perk/condition id that
 is referenced exists, effect ops are from the known set, one base class per attribute (Class Roster Rev 3).
 """
+import re
 import json, sys, pathlib, collections
 
 root = pathlib.Path(sys.argv[1])
@@ -556,6 +557,58 @@ if soul:
             errors.append(f"soul_modules: retired module {r['id']} is still in items")
         if r.get("becomes") and r["becomes"] not in mod_ids:
             errors.append(f"soul_modules: retired {r.get('id')} becomes unknown module {r['becomes']}")
+
+# patrons (rules 1.6, Blessing 2.0): tags exist, 3 Hymns at tiers 1-3, a Miracle, an Open or Jealous rule, two rites
+# (one an engine button), an intervention, every voice-line bank with 3 lines; Whispers and vows complete.
+pat = data.get("patrons") or {}
+if isinstance(pat, dict) and pat.get("tags"):
+    tag_ids = {t.get("id") for t in pat.get("tags") or []}
+    banks = pat.get("line_banks") or []
+    if len(banks) != 9:
+        errors.append(f"patrons: line_banks should list 9 banks, has {len(banks)}")
+    if len(pat.get("whispers") or []) != 6:
+        errors.append("patrons: there should be 6 Whispers")
+    for w in pat.get("whispers") or []:
+        for f in ("id", "name", "text", "target", "effects"):
+            if f not in w:
+                errors.append(f"patrons: Whisper {w.get('id')} has no {f}")
+    for v in pat.get("vows") or []:
+        for f in ("id", "name", "words", "broken_when"):
+            if f not in v:
+                errors.append(f"patrons: vow {v.get('id')} has no {f}")
+    for p in items("patrons"):
+        pid = p.get("id")
+        for f in ("costume", "archetype", "accent", "likes", "taboos", "rule", "rites", "intervention", "hymns", "miracle", "lines"):
+            if f not in p:
+                errors.append(f"patrons:{pid}: no {f}")
+        for t in (p.get("likes") or []) + (p.get("taboos") or []):
+            if t not in tag_ids:
+                errors.append(f"patrons:{pid}: unknown tag '{t}'")
+        if len(p.get("likes") or []) != 3 or len(p.get("taboos") or []) != 2:
+            errors.append(f"patrons:{pid}: needs 3 liked tags and 2 taboo tags")
+        if p.get("rule") not in ("open", "jealous"):
+            errors.append(f"patrons:{pid}: rule must be open or jealous")
+        if not re.fullmatch(r"#[0-9A-Fa-f]{6}", str(p.get("accent") or "")):
+            errors.append(f"patrons:{pid}: accent must be a #RRGGBB colour")
+        hy = p.get("hymns") or []
+        if sorted(h.get("tier") for h in hy) != [1, 2, 3]:
+            errors.append(f"patrons:{pid}: needs 3 Hymns at tiers 1, 2 and 3")
+        for h in hy + ([p["miracle"]] if p.get("miracle") else []):
+            for f in ("id", "name", "text", "target", "effects"):
+                if f not in h:
+                    errors.append(f"patrons:{pid}: {h.get('id')} has no {f}")
+        rites = p.get("rites") or []
+        if len(rites) != 2 or sum(1 for r in rites if r.get("engine")) != 1:
+            errors.append(f"patrons:{pid}: needs 2 rites, one of them an engine rite")
+        for r in rites:
+            if r.get("engine") and (r.get("check") or {}).get("kind") not in ("story", "after_rest", "tithe_item"):
+                errors.append(f"patrons:{pid}: engine rite {r.get('id')} needs check.kind story, after_rest or tithe_item")
+        if not (p.get("intervention") or {}).get("trigger"):
+            errors.append(f"patrons:{pid}: the intervention needs a trigger")
+        lines = p.get("lines") or {}
+        for b in banks:
+            if len(lines.get(b) or []) != 3:
+                errors.append(f"patrons:{pid}: line bank {b} needs 3 lines")
 
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
