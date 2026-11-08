@@ -7,6 +7,8 @@
 import { describe, expect, it } from 'vitest';
 import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, type Unit, type Combat, type Character } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 function rngFor(...ns: number[]): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }

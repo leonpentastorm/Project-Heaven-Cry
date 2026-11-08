@@ -39,8 +39,8 @@ export class LevelUpLogic extends DCLogic {
     if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? (g.phase === 'combat' ? 'combat' : 'main') : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], skillRows: [], coreRows: [], steps: [], attrBtns: [], coreBtns: [], nextSteps: [], cls: { sig: [], moves: [], adv: [], closest: [], advMoves: [] } }; }
     const choosing = c.level >= 3 && !c.classId;
     // ---------- the class choice at level 3 (closest-class rule), each card with its emblem ----------
-    const classCards = choosing ? eligibleClasses(c.skills).map((t) => { const k = D.classesFull.find((x) => x.id === t.id), em = emblemOf(k.id);
-      return { key: k.id, name: k.name, total: t.total, icon: em.icon, meta: k.core.toUpperCase() + ' · ' + k.role.replace(/_/g, ' ').toUpperCase(), sig: k.sig.map((s) => SK[s].name + ' ' + (c.skills[s] || 0)).join(' · '),
+    const classCards = choosing ? eligibleClasses(c).map((t) => { const k = D.classesFull.find((x) => x.id === t.id), em = emblemOf(k.id);
+      return { key: k.id, name: k.name, total: t.total, icon: em.icon, meta: k.core.toUpperCase() + ' · ' + k.role.replace(/_/g, ' ').toUpperCase(), sig: (ATTR[k.attribute]?.name || k.attribute) + ' ' + t.total + ' · ' + k.sig.map((s) => SK[s].name + ' ' + (c.skills[s] || 0)).join(' · '),
         resource: k.resource, move: k.move, moveText: k.moveText, pick: () => act({ type: 'levelup/class', charId: c.id, classId: k.id }), pressed: 'false', nameStyle: 'font-size: 22px; font-weight: 700; color: ' + D.core[k.core],
         style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 16px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; background: #10151F; border: 2px solid #232D3F' }; }) : [];
     // ---------- skill points ----------

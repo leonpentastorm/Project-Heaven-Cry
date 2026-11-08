@@ -10,6 +10,8 @@ import {
   type GameState, type Combat, type Unit,
 } from '../src';
 import { fightWith, storyWith, withGame, sheetOf, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -44,7 +46,7 @@ function freeNear(g: GameState, from: string, d: number): string {
   throw new Error('no free tile');
 }
 function cls(id: string, rank: 1 | 2 | 3, extra: CharSpec = {}): CharSpec {
-  const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
+  const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
   return { ...extra, classId: id, level: 5, skills: { ...Object.fromEntries(sig.map((s, i) => [s, pts[i]])), ...(extra.skills || {}) } };
 }
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;

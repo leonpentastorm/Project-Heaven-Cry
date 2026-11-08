@@ -2,7 +2,7 @@
 
 Usage: python3 validate.py /home/claude/phc-data
 Checks: every file parses, ids are unique, every skill/attr/class/perk/condition id that
-is referenced exists, effect ops are from the known set, signatures cover all 27 skills.
+is referenced exists, effect ops are from the known set, one base class per attribute (Class Roster Rev 3).
 """
 import json, sys, pathlib, collections
 
@@ -38,6 +38,9 @@ def ids_of(lst):
 cls = data.get("classes", {})
 base = cls.get("base", []) if isinstance(cls, dict) else []
 adv = cls.get("advanced", []) if isinstance(cls, dict) else []
+pool = (cls.get("move_pool") or {}).get("moves", []) if isinstance(cls, dict) else []
+# Class Roster Revision 3: the old base class ids live on as move origins (the pool) and in the save migration.
+legacy_ids = {m.get("origin") for m in pool} | set(((cls.get("migration") or {}).get("class_ids") or {}).keys()) if isinstance(cls, dict) else set()
 attrs_doc = data.get("attributes", {})
 attrs = attrs_doc.get("items", []) if isinstance(attrs_doc, dict) else []
 cores = attrs_doc.get("cores", []) if isinstance(attrs_doc, dict) else []
@@ -46,7 +49,7 @@ known = {
     "skill": set(SKILLS),
     "attr": ids_of(attrs),
     "core": ids_of(cores) or {"body", "mind", "soul"},
-    "class": ids_of(base) | ids_of(adv),
+    "class": ids_of(base) | ids_of(adv) | legacy_ids,
     "perk": ids_of(items("perks")),
     "trait": ids_of(items("traits")),
     "condition": ids_of(items("conditions")),
@@ -98,27 +101,119 @@ for name, d in data.items():
     if name == "classes":
         for x in base + adv:
             walk(x, f"classes:{x.get('id')}")
+        for m in pool:
+            walk(m, f"classes:pool.{m.get('origin')}.{m.get('id')}")
         continue
     for x in items(name) if isinstance(items(name), list) else []:
         if isinstance(x, dict):
             walk(x, f"{name}:{x.get('id')}")
 
-# class checks
-covered = set()
-for b in base:
-    sig = b.get("signature", [])
-    if len(sig) != 3:
-        errors.append(f"class {b.get('id')}: signature has {len(sig)} skills")
-    for s in sig:
-        if s not in SKILLS:
-            errors.append(f"class {b.get('id')}: bad signature skill {s}")
-    covered |= set(sig)
-if base and covered != set(SKILLS):
-    errors.append(f"signatures miss skills: {set(SKILLS)-covered}")
+# class checks (Class Roster Revision 3: one base class per attribute; moves by rank, refs into the pool)
+attr_core = {x["id"]: x.get("core") for x in attrs}
+skill_attr_all = {x["id"]: x.get("attribute") for x in items("skills") if isinstance(x, dict)}
+TAG_FIELDS = ("origin", "fantasy_tags", "attributes", "status")
+def move_tags(m, where):
+    for f in TAG_FIELDS:
+        if f not in m:
+            errors.append(f"{where}: move {m.get('id')} has no {f}")
+    if m.get("status") not in ("active", "shelved"):
+        errors.append(f"{where}: move {m.get('id')} status must be active or shelved")
+    for a in m.get("attributes", []):
+        if a not in attr_core:
+            errors.append(f"{where}: move {m.get('id')} unknown attribute {a}")
+    if not isinstance(m.get("fantasy_tags"), list) or not m.get("fantasy_tags"):
+        errors.append(f"{where}: move {m.get('id')} needs fantasy_tags")
+movesByKey = {}
+for m in pool:
+    movesByKey[f"{m.get('origin')}.{m.get('id')}"] = m
+    move_tags(m, "classes.move_pool")
 for a in adv:
+    for m in a.get("moves", []):
+        movesByKey[f"{a.get('id')}.{m.get('id')}"] = m
+        move_tags(m, f"advanced {a.get('id')}")
+        if m.get("origin") != a.get("id"):
+            errors.append(f"advanced {a.get('id')}: move {m.get('id')} origin should be {a.get('id')}")
+refd = set()
+seen_attr = collections.Counter()
+for b in base:
+    at = b.get("attribute")
+    seen_attr[at] += 1
+    if at not in attr_core:
+        errors.append(f"class {b.get('id')}: unknown attribute {at}")
+        continue
+    if b.get("core") != attr_core[at]:
+        errors.append(f"class {b.get('id')}: core {b.get('core')} but {at} is {attr_core[at]}")
+    want = sorted(k for k, v in skill_attr_all.items() if v == at)
+    if sorted(b.get("skills", [])) != want:
+        errors.append(f"class {b.get('id')}: skills should be {want}")
+    for r in ("I", "II", "III"):
+        ms = (b.get("ranks", {}).get(r) or {}).get("moves", [])
+        if len(ms) != 2:
+            errors.append(f"class {b.get('id')}: rank {r} has {len(ms)} moves (two per rank)")
+        for m in ms:
+            if "ref" in m:
+                if m["ref"] not in movesByKey:
+                    errors.append(f"class {b.get('id')}: ref {m['ref']} is not in the move pool or an advanced class")
+                elif movesByKey[m["ref"]].get("status") != "active":
+                    errors.append(f"class {b.get('id')}: ref {m['ref']} is marked shelved")
+                if m["ref"] in refd:
+                    errors.append(f"class {b.get('id')}: ref {m['ref']} is used twice")
+                refd.add(m["ref"])
+            else:
+                move_tags(m, f"class {b.get('id')}")
+                if m.get("origin") != b.get("id"):
+                    errors.append(f"class {b.get('id')}: new move {m.get('id')} origin should be {b.get('id')}")
+                if m.get("status") != "active":
+                    errors.append(f"class {b.get('id')}: new move {m.get('id')} must be active")
+if base and (set(seen_attr) != set(attr_core) or any(n != 1 for n in seen_attr.values())):
+    errors.append(f"classes: need exactly one base class per attribute (got {dict(seen_attr)})")
+for k, m in movesByKey.items():
+    if (m.get("status") == "active") != (k in refd):
+        errors.append(f"classes: move {k} status {m.get('status')} but it is {'' if k in refd else 'not '}named by a base class")
+# advanced classes: shelved flag; kind / pair / batch consistent (hybrid: two attributes of different cores; squared: one twice)
+def pair_ok(kind, pair, where):
+    if not isinstance(pair, list) or len(pair) != 2 or any(p not in attr_core for p in pair):
+        errors.append(f"{where}: pair must be two attribute ids"); return
+    if kind == "squared" and pair[0] != pair[1]:
+        errors.append(f"{where}: a squared class pairs one attribute with itself")
+    elif kind == "hybrid" and attr_core[pair[0]] == attr_core[pair[1]]:
+        errors.append(f"{where}: a hybrid pairs attributes of different cores")
+    elif kind not in ("squared", "hybrid"):
+        errors.append(f"{where}: kind must be squared or hybrid")
+for a in adv:
+    w = f"advanced {a.get('id')}"
+    if not isinstance(a.get("shelved"), bool):
+        errors.append(f"{w}: needs shelved true/false")
+    pair_ok(a.get("kind"), a.get("pair"), w)
+    if a.get("batch") not in (1, 2, 3):
+        errors.append(f"{w}: batch must be 1, 2 or 3")
+    if a.get("kind") == "squared" and a.get("batch") != 1:
+        errors.append(f"{w}: squared classes are batch 1")
     for p in a.get("parents", []):
-        if p not in ids_of(base):
-            errors.append(f"advanced {a.get('id')}: parent {p} not a base class")
+        if p not in ids_of(base) | legacy_ids:
+            errors.append(f"{w}: parent {p} is not a base class or a Revision 2 class id")
+rm = cls.get("advanced_roadmap", []) if isinstance(cls, dict) else []
+for r in rm:
+    w = f"advanced_roadmap {r.get('slot')}"
+    pair_ok(r.get("kind"), r.get("pair"), w)
+    if r.get("kind") == "squared" and r.get("batch") != 1:
+        errors.append(f"{w}: squared slots are batch 1")
+slots = {r.get("slot"): r for r in rm}
+for a in adv:
+    s = a.get("roadmap")
+    if s and s in slots and (slots[s].get("pair") != a.get("pair") or slots[s].get("kind") != a.get("kind")):
+        errors.append(f"advanced {a.get('id')}: roadmap slot {s} has pair {slots[s].get('pair')}, the class {a.get('pair')}")
+if rm:
+    sq = [r for r in rm if r.get("kind") == "squared"]
+    if sorted(r["pair"][0] for r in sq) != sorted(attr_core):
+        errors.append("advanced_roadmap: batch 1 needs one squared slot per attribute")
+    b2 = collections.Counter(p for r in rm if r.get("batch") == 2 for p in r.get("pair", []))
+    if b2 and (set(b2) != set(attr_core) or any(n != 2 for n in b2.values())):
+        errors.append(f"advanced_roadmap: batch 2 should use each attribute exactly twice ({dict(b2)})")
+mig = (cls.get("migration") or {}).get("class_ids", {}) if isinstance(cls, dict) else {}
+for o, n in mig.items():
+    if n not in ids_of(base):
+        errors.append(f"classes.migration: {o} -> {n} is not a base class")
 
 sig_ids = ids_of(items("sigils"))
 def words(o):
@@ -347,9 +442,9 @@ if isinstance(arch, dict):
             traded = -(-max(0, a_sp - A_PTS) // TR)
             if C_PTS - c_sp - traded != 0 or A_PTS + traded * TR - a_sp != 0:
                 errors.append(f"archetype {aid}: doesn't spend every creation point (core left {C_PTS - c_sp - traded}, attribute left {A_PTS + traded * TR - a_sp})")
-        tot = {b["id"]: sum(preset.get(s, 0) for s in b.get("signature", [])) for b in base}
-        top = sorted(set(tot.values()), reverse=True)[:2]
-        leans = sorted(c for c, v in tot.items() if v in top)
+        # leans: the class of the highest attribute, every tied one (Class Roster Revision 3)
+        top_at = max(at.values()) if at else 0
+        leans = sorted(b["id"] for b in base if at.get(b.get("attribute")) == top_at)
         if sorted(a.get("leans", [])) != leans:
             errors.append(f"archetype {aid}: leans should be {leans}")
 
@@ -466,7 +561,7 @@ for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
-print(f"base classes {len(base)}, advanced {len(adv)}")
+print(f"base classes {len(base)}, advanced {len(adv)} (shelved {sum(1 for a in adv if a.get('shelved'))}), move pool {len(pool)}")
 print(f"\n{len(errors)} errors")
 for e in errors[:80]:
     print("  ERR", e)

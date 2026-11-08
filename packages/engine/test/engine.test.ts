@@ -58,9 +58,9 @@ describe('creation', () => {
 });
 
 describe('classes and perk steps', () => {
-  it('closest-class rule offers the two highest totals', () => {
-    const e = eligibleClasses({ sensory: 3, camaraderie: 3, proficiency: 2, athletics: 2 });
-    expect(e[0].id).toBe('medic');
+  it('the class of the highest attribute (Class Roster Revision 3)', () => {
+    const e = eligibleClasses({ attrs: { endurance: 2, insight: 5, virtue: 3 } });
+    expect(e.map((x) => x.id)).toEqual(['bard']);
   });
   it('one perk step per Mastery level', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
@@ -374,7 +374,7 @@ function play(seed: string) {
   act({ type: 'check/accept', checkId: g.checks[0].id });
   expect(g.story.await).toBe('narrator');
   expect(g.characters[mpat.id].level).toBe(3);
-  const cls = eligibleClasses(g.characters[mpat.id].skills)[0].id;
+  const cls = eligibleClasses(g.characters[mpat.id])[0].id;
   act({ type: 'levelup/class', charId: mpat.id, classId: cls });
   act({ type: 'narrator/turn', turn: { narration: 'Guns come up.', combat: { name: 'Rear pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } });
   expect(g.phase).toBe('combat');

@@ -2,7 +2,7 @@
 // 1. rules and output contract (never changes) · 2. campaign lore (per campaign) · 3. party sheets (per level-up)
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
-import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -21,6 +21,8 @@ const drop = (md: string, heads: string[]) => md.split(/(?=^## )/m).filter((sec)
  */
 const slug = (t: string) => t.replace(/\([^)]*\)/g, '').replace(/[*.:]/g, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').replace(/^the-/, '').split('-').slice(0, 4).join('-');
 const SECTION: Record<string, string> = { 'truth': 'truth', 'worlds-and-the-war': 'worlds', 'three-schools-of-magic': 'magic', 'mana-loop': 'mana' };
+/** Is any advanced class active (Class Roster Revision 3 shelves them all)? */
+const ADV_LIVE = Object.keys(ADVANCED).some((id) => advancedActive(id));
 const NEVER = ['advanced-classes', 'how-the-existing-material', 'open-questions'];
 export interface LoreChunk { key: string; head: string; text: string }
 export const BIBLE: LoreChunk[] = (() => {
@@ -94,7 +96,7 @@ XP (per character, or charId "all")
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
 - Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
-- Optional fields (use only when they apply): perkLines (private lines an item owes its holder), conditions (an NPC Shaken for the scene; a character's condition for the scene, session or arc), traitState (what only you can set: a grudge, a cover, a rival), echo, karma (unlawful acts flagged), rest (short or long), identify, tutors (a tutor met for an advanced class), patrons (a pact, Devotion changes), patronMood (a prayer's TN). Start-of-fight enemies can carry kind, tags, unaware, no_surrender, hidden; combat.fear marks a frightening place. In a fight the engine runs surrender, Hidden, prayer and throws; you rule what they mean after.
+- Optional fields (use only when they apply): perkLines (private lines an item owes its holder), conditions (an NPC Shaken for the scene; a character's condition for the scene, session or arc), traitState (what only you can set: a grudge, a cover, a rival), echo, karma (unlawful acts flagged), rest (short or long), identify, ${ADV_LIVE ? 'tutors (a tutor met for an advanced class), ' : ''}patrons (a pact, Devotion changes), patronMood (a prayer's TN). Start-of-fight enemies can carry kind, tags, unaware, no_surrender, hidden; combat.fear marks a frightening place. In a fight the engine runs surrender, Hidden, prayer and throws; you rule what they mean after.
 ${PERK_GUIDANCE ? PERK_GUIDANCE + '\n' : ''}
 COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
@@ -232,7 +234,7 @@ export function characterBrief(g: GameState, c: Character): string {
   const voices = pts(c).map(([id]) => { const v = (SKILL[id] as any).voice || {}; return `  - ${SKILL[id].name}: ${v.persona} Wants: ${v.wants} Style: ${v.style} ${v.never || ''}`; }).join('\n');
   const id = c.identity || {};
   return `CHARACTER ${c.name} (charId ${c.id})${c.dead ? ' — DEAD' : ''}
-  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] + (c.advancedClass && ADVANCED[c.advancedClass] ? ' and ' + ADVANCED[c.advancedClass].name + ' (advanced)' : '') + (moves ? ' — moves: ' + moves : '') : 'none yet (earned at level 3; closest: ' + eligibleClasses(c.skills).map((x) => x.name).join(' or ') + ')'}.
+  Origin: ${c.origin}. Level ${c.level}. Class: ${c.classId ? CLASS[c.classId].name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] + (c.advancedClass && ADVANCED[c.advancedClass] ? (advancedActive(c.advancedClass) ? ' and ' + ADVANCED[c.advancedClass].name + ' (advanced)' : ' (advanced classes are being rebuilt: their ' + ADVANCED[c.advancedClass].name + ' gives nothing for now)') : '') + (moves ? ' — moves: ' + moves : '') : 'none yet (earned at level 3; closest: ' + eligibleClasses(c).map((x) => x.name).join(' or ') + ')'}.
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
@@ -433,7 +435,8 @@ export function submitTool(g: GameState) {
   schema.properties.karma = opt({ charId: S, amount: I, unlawful: B, why: S }, ['charId', 'amount']);
   schema.properties.rest = { anyOf: [{ type: 'null' }, { type: 'object', properties: { kind: { type: 'string', description: 'short or long' }, settlement: B }, required: ['kind'] }] };
   schema.properties.identify = opt({ charId: S, what: S }, ['charId', 'what']);
-  schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
+  // Tutors only while some advanced class is active (Class Roster Revision 3 shelves them all: no tutors to place).
+  if (ADV_LIVE) schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
   schema.properties.patrons = opt({ charId: S, patron: { type: 'string', description: 'patron id to make a pact' }, devotion: { type: 'integer', description: 'Devotion change' } }, ['charId']);
   schema.properties.patronMood = opt({ patron: S, tn: I }, ['patron', 'tn']);
   schema.properties.harm = opt({ charId: S, amount: I, type: { type: 'string', description: 'physical (default), fire, elemental, true' }, why: S }, ['charId', 'amount']);

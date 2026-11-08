@@ -7,6 +7,9 @@ import {
   manaOf, perkActionsFor, coverageOf, itemInfo, emit, type Unit, type Combat,
 } from '../src';
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+import { CLASS_MOVE_POOL, REV2_CLASSES } from '../src';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; };
@@ -15,7 +18,7 @@ const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const act = (f: F, u: Unit, a: any) => f.act({ unitId: u.id, ...a });
 /** A character of a class at a rank: its signature skills raised to the rank's total (1-3; 13 for II, 18 for III). */
 function cls(id: string, rank: 1 | 2 | 3, extra: CharSpec = {}): CharSpec {
-  const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
+  const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
   return { ...extra, classId: id, level: 5, skills: { ...Object.fromEntries(sig.map((s, i) => [s, pts[i]])), ...(extra.skills || {}) } };
 }
 /** Keep the foes out of the way: everyone stands on clear tiles of row 2 (the yard). */
@@ -24,10 +27,10 @@ const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 
 describe('class coverage', () => {
-  it('every move of the 13 base classes is run by a lane handler (no gaps)', () => {
-    for (const k of Object.values(CLASS)) for (const r of ['I', 'II', 'III']) for (const m of (k as any).ranks[r].moves) {
-      const rows = coverageOf(itemInfo('class:' + k.id + '.' + m.id)!);
-      expect(rows.filter((x) => x.owner === 'gap'), k.id + '.' + m.id).toEqual([]);
+  it('every move of the 13 Revision 2 base classes (the move pool) is run by a lane handler (no gaps)', () => {
+    for (const m of Object.values(CLASS_MOVE_POOL).filter((x: any) => REV2_CLASSES[x.origin])) {
+      const rows = coverageOf(itemInfo('class:' + m.origin + '.' + m.id)!);
+      expect(rows.filter((x) => x.owner === 'gap'), m.origin + '.' + m.id).toEqual([]);
     }
   });
   it('rank gates the moves: a rank I Marksman has Fire Discipline but no Killzone', () => {

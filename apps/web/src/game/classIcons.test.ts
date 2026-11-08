@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest';
 import classes from '../../../../data/classes.json';
 import { CLASS_ICON_PATHS, CORE_INK, classCore, classIconSvg, classIconUri } from './classIcons';
 
-const base = (classes as any).base as { id: string; core: 'body' | 'mind' | 'soul' }[];
+// The 9 Revision 3 classes, plus the Revision 2 ids that live on as move origins and advanced classes' parents.
+const base = [...(classes as any).base, ...(classes as any).move_pool.revision_2_classes.filter((k: any) => !(classes as any).base.some((b: any) => b.id === k.id))] as { id: string; core: 'body' | 'mind' | 'soul' }[];
 const advanced = (classes as any).advanced as { id: string; parents: string[] }[];
 const coreOf = Object.fromEntries(base.map((c) => [c.id, c.core]));
 const parse = (svg: string) => new DOMParser().parseFromString(svg, 'image/svg+xml');

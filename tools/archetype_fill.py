@@ -82,9 +82,9 @@ if __name__ == "__main__":
     base = json.loads((root / "classes.json").read_text())["base"]
     for a in d["items"]:
         a["attributes"], a["cores"] = fill(a["id"], a["preset"])
-        tot = {b["id"]: sum(a["preset"].get(s, 0) for s in b["signature"]) for b in base}
-        top = sorted(set(tot.values()), reverse=True)[:2]
-        a["leans"] = [b["id"] for b in sorted(base, key=lambda b: -tot[b["id"]]) if tot[b["id"]] in top]
+        # Class Roster Revision 3: the class of the highest attribute (every tied one).
+        top = max(a["attributes"].values())
+        a["leans"] = sorted(b["id"] for b in base if a["attributes"][b["attribute"]] == top)
     d["rules"]["budgets"] = "every archetype spends all three creation budgets: its preset places the 10 Skill points, and `attributes` and `cores` place every Attribute and Core point (tools/archetype_fill.py); picking one leaves nothing to spend"
     p.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
     for a in d["items"]:

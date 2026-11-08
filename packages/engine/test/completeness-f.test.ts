@@ -9,6 +9,8 @@ import {
   type GameState, type Combat, type Unit,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -18,7 +20,7 @@ const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; return f.un
 const act = (f: F, u: Unit, a: any, by = 'host') => f.act({ unitId: u.id, ...a }, by);
 const open = (cb: Combat) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; };
 function cls(id: string, rank: 1 | 2 | 3, extra: CharSpec = {}): CharSpec {
-  const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
+  const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
   return { ...extra, classId: id, level: 5, skills: { ...Object.fromEntries(sig.map((s, i) => [s, pts[i]])), ...(extra.skills || {}) } };
 }
 const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ advancedClass: id, level: 5, ...extra });

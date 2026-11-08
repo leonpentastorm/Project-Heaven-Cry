@@ -5,7 +5,7 @@
   "rules": {
     "preset_points": 10,
     "custom_option": true,
-    "leans": "base classes whose signature totals are among the preset's two highest (the level-3 closest-class rule); recomputed by tools/validate.py",
+    "leans": "base classes of the preset's highest attribute, every tied one (the level-3 rule, Class Roster Revision 3); recomputed by tools/validate.py",
     "budgets": "every archetype spends all three creation budgets: its preset places the 10 Skill points, and `attributes` and `cores` place every Attribute and Core point (tools/archetype_fill.py); picking one leaves nothing to spend",
     "preset_style": "presets keep everything at 5 or below as moderate examples; players have no creation cap (a 7/1/1 build is legal from Custom)"
   },
@@ -107,9 +107,8 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "defender",
-        "assassin"
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 3,
@@ -140,8 +139,8 @@
         "soul": 4
       },
       "leans": [
-        "fighter",
-        "defender"
+        "channeler",
+        "fighter"
       ],
       "attributes": {
         "endurance": 3,
@@ -173,8 +172,8 @@
         "soul": 3
       },
       "leans": [
-        "fighter",
-        "defender"
+        "defender",
+        "fighter"
       ],
       "attributes": {
         "endurance": 5,
@@ -239,9 +238,8 @@
         "soul": 4
       },
       "leans": [
-        "fighter",
-        "defender",
-        "warden"
+        "channeler",
+        "marksman"
       ],
       "attributes": {
         "endurance": 3,
@@ -272,9 +270,9 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "assassin",
-        "mage"
+        "defender",
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 4,
@@ -305,7 +303,7 @@
         "soul": 1
       },
       "leans": [
-        "defender",
+        "infiltrator",
         "marksman"
       ],
       "attributes": {
@@ -337,8 +335,9 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "mage"
+        "defender",
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 4,
@@ -370,12 +369,8 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "fighter",
-        "defender",
-        "medic",
-        "mage",
-        "scribe"
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 3,
@@ -391,7 +386,7 @@
     },
     {
       "id": "infiltrator",
-      "name": "Infiltrator",
+      "name": "Intruder",
       "family": "shadows",
       "role": "Stealth",
       "blurb": "In and out before the guard finishes yawning. Nobody remembers seeing them, which is the point.",
@@ -406,7 +401,8 @@
         "soul": 1
       },
       "leans": [
-        "assassin",
+        "defender",
+        "infiltrator",
         "marksman"
       ],
       "attributes": {
@@ -438,9 +434,9 @@
         "soul": 1
       },
       "leans": [
-        "assassin",
-        "marksman",
-        "hexer"
+        "fighter",
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 2,
@@ -471,10 +467,9 @@
         "soul": 1
       },
       "leans": [
-        "assassin",
-        "marksman",
-        "medic",
-        "scribe"
+        "defender",
+        "infiltrator",
+        "marksman"
       ],
       "attributes": {
         "endurance": 4,
@@ -505,9 +500,8 @@
         "soul": 3
       },
       "leans": [
-        "trickster",
-        "assassin",
-        "warden"
+        "infiltrator",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -538,9 +532,8 @@
         "soul": 1
       },
       "leans": [
-        "mage",
-        "marksman",
-        "channeler"
+        "defender",
+        "mage"
       ],
       "attributes": {
         "endurance": 4,
@@ -571,8 +564,8 @@
         "soul": 3
       },
       "leans": [
-        "warden",
-        "scribe"
+        "mage",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -603,8 +596,8 @@
         "soul": 4
       },
       "leans": [
-        "scribe",
-        "warden"
+        "bard",
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
@@ -635,8 +628,8 @@
         "soul": 3
       },
       "leans": [
-        "trickster",
-        "warden"
+        "mage",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -667,8 +660,8 @@
         "soul": 4
       },
       "leans": [
-        "trickster",
-        "warden"
+        "bard",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -699,10 +692,7 @@
         "soul": 1
       },
       "leans": [
-        "medic",
-        "scribe",
-        "warden",
-        "trickster"
+        "infiltrator"
       ],
       "attributes": {
         "endurance": 1,
@@ -733,8 +723,8 @@
         "soul": 4
       },
       "leans": [
-        "warden",
-        "scribe"
+        "channeler",
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
@@ -766,7 +756,7 @@
       },
       "leans": [
         "channeler",
-        "mage"
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -798,7 +788,7 @@
       },
       "leans": [
         "bard",
-        "medic"
+        "guardian"
       ],
       "attributes": {
         "endurance": 3,
@@ -829,9 +819,8 @@
         "soul": 5
       },
       "leans": [
-        "guardian",
-        "medic",
-        "bard"
+        "bard",
+        "guardian"
       ],
       "attributes": {
         "endurance": 3,
@@ -862,9 +851,8 @@
         "soul": 5
       },
       "leans": [
-        "guardian",
-        "assassin",
-        "hexer"
+        "channeler",
+        "guardian"
       ],
       "attributes": {
         "endurance": 1,
@@ -895,8 +883,8 @@
         "soul": 5
       },
       "leans": [
-        "hexer",
-        "guardian"
+        "bard",
+        "channeler"
       ],
       "attributes": {
         "endurance": 1,
@@ -927,8 +915,8 @@
         "soul": 5
       },
       "leans": [
-        "hexer",
-        "bard"
+        "bard",
+        "channeler"
       ],
       "attributes": {
         "endurance": 1,
@@ -959,10 +947,8 @@
         "soul": 3
       },
       "leans": [
-        "trickster",
-        "scribe",
-        "bard",
-        "hexer"
+        "mage",
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -994,7 +980,7 @@
       },
       "leans": [
         "bard",
-        "hexer"
+        "guardian"
       ],
       "attributes": {
         "endurance": 1,
@@ -1025,9 +1011,8 @@
         "soul": 4
       },
       "leans": [
-        "bard",
-        "medic",
-        "warden"
+        "defender",
+        "guardian"
       ],
       "attributes": {
         "endurance": 4,
@@ -1058,8 +1043,9 @@
         "soul": 4
       },
       "leans": [
-        "hexer",
-        "bard"
+        "bard",
+        "fighter",
+        "guardian"
       ],
       "attributes": {
         "endurance": 2,
@@ -1091,8 +1077,7 @@
       },
       "leans": [
         "mage",
-        "fighter",
-        "channeler"
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
@@ -1124,6 +1109,7 @@
       },
       "leans": [
         "defender",
+        "fighter",
         "guardian"
       ],
       "attributes": {
@@ -1156,8 +1142,8 @@
         "soul": 2
       },
       "leans": [
-        "marksman",
-        "mage"
+        "defender",
+        "marksman"
       ],
       "attributes": {
         "endurance": 4,
@@ -1189,7 +1175,6 @@
         "soul": 4
       },
       "leans": [
-        "medic",
         "bard"
       ],
       "attributes": {
@@ -1222,8 +1207,8 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "assassin"
+        "defender",
+        "marksman"
       ],
       "attributes": {
         "endurance": 5,
@@ -1256,19 +1241,11 @@
         "soul": 3
       },
       "leans": [
-        "marksman",
-        "fighter",
-        "medic",
-        "mage",
-        "scribe",
-        "trickster",
-        "channeler",
-        "defender",
-        "assassin",
-        "warden",
-        "guardian",
         "bard",
-        "hexer"
+        "defender",
+        "infiltrator",
+        "marksman",
+        "trickster"
       ],
       "attributes": {
         "endurance": 3,
@@ -1299,8 +1276,7 @@
         "soul": 1
       },
       "leans": [
-        "defender",
-        "fighter"
+        "defender"
       ],
       "attributes": {
         "endurance": 7,
@@ -1331,8 +1307,7 @@
         "soul": 1
       },
       "leans": [
-        "fighter",
-        "defender"
+        "fighter"
       ],
       "attributes": {
         "endurance": 3,
@@ -1362,8 +1337,7 @@
         "soul": 1
       },
       "leans": [
-        "marksman",
-        "assassin"
+        "marksman"
       ],
       "attributes": {
         "endurance": 3,
@@ -1393,9 +1367,7 @@
         "soul": 1
       },
       "leans": [
-        "assassin",
-        "marksman",
-        "mage"
+        "infiltrator"
       ],
       "attributes": {
         "endurance": 1,
@@ -1425,9 +1397,7 @@
         "soul": 1
       },
       "leans": [
-        "mage",
-        "warden",
-        "scribe"
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
@@ -1457,8 +1427,6 @@
         "soul": 1
       },
       "leans": [
-        "mage",
-        "channeler",
         "trickster"
       ],
       "attributes": {
@@ -1489,8 +1457,6 @@
         "soul": 7
       },
       "leans": [
-        "channeler",
-        "medic",
         "bard"
       ],
       "attributes": {
@@ -1521,8 +1487,7 @@
         "soul": 7
       },
       "leans": [
-        "channeler",
-        "warden"
+        "channeler"
       ],
       "attributes": {
         "endurance": 1,
@@ -1552,8 +1517,7 @@
         "soul": 7
       },
       "leans": [
-        "guardian",
-        "bard"
+        "guardian"
       ],
       "attributes": {
         "endurance": 1,

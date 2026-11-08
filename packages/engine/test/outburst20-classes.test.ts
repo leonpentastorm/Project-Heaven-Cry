@@ -4,6 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { d20, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 function rngFor(...ns: number[]): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -14,7 +16,7 @@ const A = (f: F, u: Unit, a: Record<string, any>) => f.act({ unitId: u.id, ...a 
 const perk = (f: F, u: Unit, id: string, a: Record<string, any> = {}) => f.act({ type: 'combat/perk', unitId: u.id, id, ...a } as any);
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 function cls(id: string, rank: 1 | 2 | 3, extra: CharSpec = {}): CharSpec {
-  const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
+  const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
   return { ...SOUL, ...extra, classId: id, level: 5, skills: { ...Object.fromEntries(sig.map((s, i) => [s, pts[i]])), ...(extra.skills || {}) } };
 }
 const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ ...SOUL, advancedClass: id, level: 5, ...extra });

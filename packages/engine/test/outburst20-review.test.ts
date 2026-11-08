@@ -6,6 +6,8 @@ import {
   d20, previewOutburstPlan, previewPump, pumpsAp, freePumps, condOn, stageMult, emit, CLASS, type Combat, type Unit, type OutburstDesign, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 function calmSeed(n = 60): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); }
 const SEED = calmSeed();
@@ -171,7 +173,7 @@ describe('a fight saved under 1.2 gets its free Pumps back', () => {
 });
 
 describe('the release preview (the same standard as Sigil\'s)', () => {
-  const cls = (id: string, rank: 1 | 3): CharSpec => { const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : [1, 1, 1]; return { archetype: 'stormcaller', kit: 'soul', classId: id, level: 5, skills: Object.fromEntries(sig.map((s, i) => [s, pts[i]])) }; };
+  const cls = (id: string, rank: 1 | 3): CharSpec => { const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : [1, 1, 1]; return { archetype: 'stormcaller', kit: 'soul', classId: id, level: 5, skills: Object.fromEntries(sig.map((s, i) => [s, pts[i]])) }; };
   it('Pumps are priced through outburst_pump (Shape): stage 1 → 3 with 2 AP is legal', () => {
     const f = fightWith([cls('channeler', 1)], [{}]); const u = f.turn(f.pc); const m = u.mg!; m.freePumps = 0; m.freePumpsMax = 0; m.mp = 500; u.ap = 9;
     const d = m.designs.find((x) => x.school === 'damage')!.id; f.foe.pos = '6,' + u.pos.split(',')[1];

@@ -5,6 +5,8 @@
 import { describe, expect, it } from 'vitest';
 import { d20, emit, objectsOf, condOn, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 function rngFor(n: number): number { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return s; } throw new Error('no seed'); }
 /** A seed whose next k d20 rolls are all 2–19 (no criticals, no natural 1s). */

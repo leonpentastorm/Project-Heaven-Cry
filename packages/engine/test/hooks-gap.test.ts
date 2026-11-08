@@ -2,6 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { harm, applyCond, blessing, emitStory, newRound, setStoryCond, glyphCost, condOn, throwItem, type Combat } from '../src';
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 

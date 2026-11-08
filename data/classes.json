@@ -1,135 +1,189 @@
 {
   "$schema_version": "1.0",
   "kind": "classes",
-  "source": "PHC Core Rules v1.0 (Classes) + PHC Class Roster, Revision 2",
+  "source": "PHC Core Rules v1.0 (Classes) + PHC Class Roster, Revision 3 (docs/design/class-roster-rev3-proposal.md, accepted 8 Nov 2026)",
+  "revision": 3,
   "assignment": {
     "unlock_level": 3,
-    "score": "sum of skill points in the class's 3 signature skills (trait bonuses never count)",
-    "eligible": "any base class whose score is among the character's two highest distinct scores (ties included)",
-    "tie_rule": "player chooses among all eligible classes; nobody is classless",
+    "score": "the class's attribute (each base class belongs to one of the 9 attributes)",
+    "eligible": "the class of the character's highest attribute; on a tie, any of the tied attributes' classes",
+    "tie_rule": "player chooses among the tied; nobody is classless",
+    "fixed": "the class picked at level 3 is kept for good; changing class is a separate system for later",
     "rank_thresholds": {
       "I": "on gaining the class",
-      "II": 13,
-      "III": 18
+      "II": 5,
+      "III": 8
     },
-    "rank_rule": "each rank unlocks the next signature move; rank uses the current signature total",
+    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one)",
+    "rank_thresholds_provisional": true,
+    "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
-      "either_parent_min": 15,
-      "other_parent_min": 9,
-      "needs_tutor": true,
-      "needs_parent_class": false
+      "live": false,
+      "shelved_text": "Advanced classes are being rebuilt; not learnable yet.",
+      "held_rule": "a character who holds an advanced class keeps the field, but gets none of its moves, resources or effects while advanced classes are shelved",
+      "hybrid_gate": {
+        "base_attribute_min": 6,
+        "partner_attribute_min": 5,
+        "level_min": 7,
+        "provisional": true
+      },
+      "squared_gate": {
+        "base_attribute_min": 9,
+        "level_min": 7,
+        "provisional": true
+      },
+      "hybrid_rule": "a hybrid pairs a base attribute with an attribute of another core",
+      "squared_rule": "a squared class pairs a base attribute with itself"
     },
-    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)",
-    "rank_thresholds_provisional": true
+    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)"
+  },
+  "migration": {
+    "from_revision": 2,
+    "class_ids": {
+      "medic": "bard",
+      "scribe": "mage",
+      "warden": "trickster",
+      "hexer": "channeler",
+      "assassin": "infiltrator"
+    }
   },
   "base": [
     {
-      "id": "marksman",
-      "name": "Marksman",
+      "id": "defender",
+      "name": "Defender",
+      "attribute": "endurance",
       "core": "body",
-      "economy": {
-        "runs_on": "ammo, weapons, technology",
-        "consumes": [
-          "ammo",
-          "supplies",
-          "gear"
-        ],
-        "produces": [
-          "kills (each death raises the ambient meter)"
-        ]
-      },
-      "role": "offense_ranged",
-      "tagline": "Guns for most; bows for the quiet ones.",
-      "signature": [
-        "dexterity",
-        "vigilant",
-        "reaction_speed"
+      "skills": [
+        "durability",
+        "pain_threshold",
+        "sensory"
       ],
+      "role": "defense",
+      "tagline": "The body that doesn't fall.",
       "resource": {
-        "id": "heat",
-        "max": "weapon heat_limit",
-        "per_turn": -2,
-        "rule": "Guns only: single +1, burst +2, auto +4 Heat; -1 to hit per 2 Heat; jam at the limit (2 AP to clear). Bows have no Heat or recoil, are silent, and scale with Raw Power."
+        "id": "guard",
+        "max": 5,
+        "rule": "Gained by Brace. Interpose (reaction): when an adjacent ally is hit, spend 1 Guard to take the hit instead; your armour applies. Guard is lost after combat."
       },
+      "resources": [
+        "guard"
+      ],
+      "foundation_for": [
+        "the emplaced gunner",
+        "the siege engineer",
+        "the plated knight",
+        "the bodyguard"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "fire_discipline",
-              "name": "Fire Discipline",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot gets +3 to hit instead of +2.",
-              "effects": [
-                {
-                  "op": "heat_mod",
-                  "action": "aimed_shot",
-                  "value": -1
-                },
-                {
-                  "op": "action_cost",
-                  "action": "burst",
-                  "value": -1,
-                  "uses": "per_turn"
-                },
-                {
-                  "op": "attack_mod",
-                  "context": "aimed_shot_with_bow",
-                  "value": 1
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
+              "ref": "defender.brace"
+            },
+            {
+              "ref": "defender.draw_fire"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "special_ammo",
-              "name": "Special Ammo",
+              "ref": "adamantile_knight.unbroken"
+            },
+            {
+              "id": "shrug_it_off",
+              "name": "Shrug It Off",
               "ap_cost": 0,
-              "uses": "per_rest",
-              "text": "You carry one magazine (or quiver) each of armour-piercing, hollow-point and incendiary, restocked at rest. You can switch ammo type as part of a reload.",
+              "uses": "at_will",
+              "text": "Reaction, 1 Guard: when you gain Bleeding, Slowed, Weakened or Prone, end it at once.",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "ammo",
-                  "value": 1,
-                  "when": "rest:each_special_type"
+                  "op": "reaction",
+                  "trigger": "condition_gained",
+                  "conditions": [
+                    "bleeding",
+                    "slowed",
+                    "weakened",
+                    "prone"
+                  ],
+                  "cost": {
+                    "resource": "guard",
+                    "value": 1
+                  }
+                },
+                {
+                  "op": "cleanse",
+                  "condition": [
+                    "bleeding",
+                    "slowed",
+                    "weakened",
+                    "prone"
+                  ],
+                  "target": "self",
+                  "when": "on_reaction"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "pain"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "killzone",
-              "name": "Killzone",
+              "ref": "defender.reactive_plate"
+            },
+            {
+              "id": "anchor",
+              "name": "Anchor",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "When you hold AP for Overwatch, you may hold enough for two shots: one each at the first two enemies that move into your line, both at +2 to hit.",
+              "text": "While Braced you can't be pushed, pulled or knocked Prone. An enemy that starts its turn next to you and moves away provokes your opportunity attack.",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "overwatch_double",
-                  "ap": 0,
-                  "uses": "at_will"
+                  "op": "anchor",
+                  "context": "while_braced",
+                  "resist": [
+                    "push",
+                    "pull",
+                    "prone"
+                  ]
                 },
                 {
-                  "op": "tn_mod",
-                  "context": "overwatch_shot",
-                  "value": 2
+                  "op": "free_attack",
+                  "kind": "opportunity",
+                  "when": "adjacent_enemy_moves_away_after_turn_start"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "zone_control"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
@@ -138,460 +192,442 @@
     {
       "id": "fighter",
       "name": "Fighter",
+      "attribute": "strength",
       "core": "body",
-      "economy": {
-        "runs_on": "ammo, weapons, technology",
-        "consumes": [
-          "ammo",
-          "supplies",
-          "gear"
-        ],
-        "produces": [
-          "kills (each death raises the ambient meter)"
-        ]
-      },
-      "role": "offense_melee",
-      "tagline": "Guns jam. Blades don't.",
-      "signature": [
-        "athletics",
+      "skills": [
         "raw_power",
-        "guts"
+        "guts",
+        "intimidation"
       ],
+      "role": "offense_melee",
+      "tagline": "Close in and break them.",
       "resource": {
         "id": "momentum",
         "max": 5,
         "rule": "+1 for each tile you move toward a target before a melee attack (max +2 per turn), +1 for each melee hit. Resets to 0 after combat or if you end a turn without attacking."
       },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
-            {
-              "id": "lunge",
-              "name": "Lunge",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Spend 1 Momentum: move up to 2 tiles as part of a melee attack. This movement provokes no opportunity attacks.",
-              "effects": [
-                {
-                  "op": "resource",
-                  "resource": "momentum",
-                  "value": -1,
-                  "when": "on_use"
-                },
-                {
-                  "op": "stat_mod",
-                  "stat": "move_in_attack",
-                  "value": 2
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
-            {
-              "id": "riposte",
-              "name": "Riposte",
-              "ap_cost": 0,
-              "uses": "reaction",
-              "text": "When a melee attack against you misses, spend 1 Momentum to make a melee attack against the attacker for 0 AP, adding your Counter bonus to hit.",
-              "effects": [
-                {
-                  "op": "resource",
-                  "resource": "momentum",
-                  "value": -1,
-                  "when": "reaction:melee_miss_against_self"
-                },
-                {
-                  "op": "grant_action",
-                  "action": "counter_attack",
-                  "ap": 0,
-                  "uses": "at_will"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "finisher",
-              "name": "Finisher",
-              "ap_cost": 3,
-              "uses": "at_will",
-              "text": "Spend all your Momentum on one melee strike: +20% damage per point spent (up to +100%).",
-              "effects": [
-                {
-                  "op": "damage_mult",
-                  "value": 0.2,
-                  "per": "momentum_spent",
-                  "max": 1.0
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "defender",
-      "name": "Defender",
-      "core": "body",
-      "economy": {
-        "runs_on": "ammo, weapons, technology",
-        "consumes": [
-          "ammo",
-          "supplies",
-          "gear"
-        ],
-        "produces": [
-          "kills (each death raises the ambient meter)"
-        ]
-      },
-      "role": "defense",
-      "tagline": "Someone has to stand in front.",
-      "signature": [
-        "durability",
-        "pain_threshold",
-        "guts"
+      "resources": [
+        "momentum"
       ],
-      "resource": {
-        "id": "guard",
-        "max": 5,
-        "rule": "Gained by Brace. Interpose (reaction): when an adjacent ally is hit, spend 1 Guard to take the hit instead; your armour applies. Guard is lost after combat."
-      },
+      "foundation_for": [
+        "the blade-scribe",
+        "the storm-hand",
+        "the brawler",
+        "the banner dancer",
+        "the berserker"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "brace",
-              "name": "Brace",
-              "ap_cost": 2,
-              "uses": "at_will",
-              "text": "Gain Guard equal to 1 + your Durability modifier (max 5) and become Braced (+2 Defense) until you move. Interpose is available whenever you hold Guard.",
-              "effects": [
-                {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": "1+mod(durability)",
-                  "when": "on_use"
-                },
-                {
-                  "op": "condition",
-                  "condition": "braced",
-                  "target": "self",
-                  "when": "on_use"
-                },
-                {
-                  "op": "stat_mod",
-                  "stat": "defense",
-                  "value": 2
-                },
-                {
-                  "op": "grant_action",
-                  "action": "interpose",
-                  "ap": 0,
-                  "uses": "at_will"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
+              "ref": "fighter.lunge"
+            },
             {
-              "id": "draw_fire",
-              "name": "Draw Fire",
+              "id": "shove",
+              "name": "Shove",
               "ap_cost": 1,
               "uses": "at_will",
-              "text": "Spend 1 Guard: one enemy you can see must attack you on its next turn, or take -2 to hit anyone else. Bosses and Celestials may ignore it at -2.",
+              "text": "Push an adjacent enemy 1 tile, or knock it Prone. It makes a Body save against 12 + your Body debuff strength.",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": -1,
-                  "when": "on_use"
+                  "op": "grant_action",
+                  "action": "class_shove",
+                  "ap": 1,
+                  "uses": "at_will",
+                  "range": 1,
+                  "target": "enemy_adjacent"
                 },
                 {
-                  "op": "condition",
-                  "condition": "taunted",
+                  "op": "knockback",
+                  "tiles": 1,
                   "target": "target",
-                  "when": "on_use"
-                }
-              ],
-              "adjudication": "hybrid",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "reactive_plate",
-              "name": "Reactive Plate",
-              "ap_cost": 0,
-              "uses": "reaction",
-              "text": "Your armour is bot-woven and hardens when struck. When you take damage, spend any Guard: each point cuts the damage by 10. Every 3 Guard you lose this way sheds bots: the ambient meter rises by 2.",
-              "effects": [
-                {
-                  "op": "stat_mod",
-                  "stat": "damage_reduction_per_guard",
-                  "value": 10
-                },
-                {
-                  "op": "meter",
-                  "value": 2,
-                  "when": "per_3_guard_lost"
+                  "save": "body",
+                  "tn": "12+debuff_strength:body",
+                  "alt": "prone"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "medic",
-      "name": "Medic",
-      "core": "body",
-      "economy": {
-        "runs_on": "ammo, weapons, technology",
-        "consumes": [
-          "ammo",
-          "supplies",
-          "gear"
-        ],
-        "produces": [
-          "kills (each death raises the ambient meter)"
-        ]
-      },
-      "role": "support",
-      "tagline": "Nobody stays behind.",
-      "signature": [
-        "sensory",
-        "camaraderie",
-        "proficiency"
-      ],
-      "resource": {
-        "id": "supplies",
-        "max": "3 + floor(proficiency / 2)",
-        "rule": "Stims, kits and med-drones. Restocked at rest."
-      },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
-            {
-              "id": "triage",
-              "name": "Triage",
-              "ap_cost": 2,
-              "uses": "at_will",
-              "text": "Heal an adjacent ally 20 x your Healing given multiplier and end their Bleeding. Costs no Supplies. You stabilise a Downed ally for 1 AP.",
-              "effects": [
-                {
-                  "op": "heal",
-                  "value": 20,
-                  "target": "ally_adjacent",
-                  "scale": "healing_given"
-                },
-                {
-                  "op": "condition",
-                  "condition": "bleeding",
-                  "target": "ally",
-                  "when": "remove"
-                },
-                {
-                  "op": "action_cost",
-                  "action": "stabilise",
-                  "value": -1
-                }
+              "provisional": true,
+              "origin": "fighter",
+              "new": true,
+              "fantasy_tags": [
+                "melee",
+                "push",
+                "control"
               ],
-              "adjudication": "engine",
-              "provisional": true
+              "attributes": [
+                "strength"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "stim_throw",
-              "name": "Stim Throw",
-              "ap_cost": 1,
-              "uses": "at_will",
-              "text": "Spend 1 Supply: an ally within 4 tiles heals 30 x your Healing given multiplier and stops Bleeding.",
-              "effects": [
-                {
-                  "op": "resource",
-                  "resource": "supplies",
-                  "value": -1,
-                  "when": "on_use"
-                },
-                {
-                  "op": "heal",
-                  "value": 30,
-                  "target": "ally_within_4",
-                  "scale": "healing_given"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
+              "ref": "fighter.riposte"
+            },
+            {
+              "ref": "shade.lingering_dread"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "field_surgery",
-              "name": "Field Surgery",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Out of combat, spend 1 Supply: treat one arm or leg injury, or clear every Body condition from one ally. Robot medics repair machines the same way.",
+              "ref": "fighter.finisher"
+            },
+            {
+              "id": "unstoppable",
+              "name": "Unstoppable",
+              "ap_cost": 1,
+              "uses": "per_scene",
+              "text": "Until your next turn, ignore Fear, Shaken, Slowed, Pinned and opportunity attacks, and gain 2 Momentum.",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "supplies",
-                  "value": -1,
+                  "op": "grant_action",
+                  "action": "unstoppable",
+                  "ap": 1,
+                  "uses": "per_scene"
+                },
+                {
+                  "op": "immunity",
+                  "conditions": [
+                    "fear",
+                    "shaken",
+                    "slowed",
+                    "pinned"
+                  ],
+                  "duration": "until_next_turn",
                   "when": "on_use"
                 },
                 {
-                  "op": "condition",
-                  "condition": "family:body",
-                  "target": "ally",
-                  "when": "remove"
+                  "op": "ignore_opportunity_attacks",
+                  "duration": "until_next_turn"
                 },
                 {
-                  "op": "condition",
-                  "condition": "injured",
-                  "target": "ally",
-                  "when": "remove",
-                  "location": "limb"
+                  "op": "resource",
+                  "resource": "momentum",
+                  "value": 2,
+                  "when": "on_use"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "fighter",
+              "new": true,
+              "fantasy_tags": [
+                "melee",
+                "momentum",
+                "fearless"
+              ],
+              "attributes": [
+                "strength"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
       }
     },
     {
-      "id": "assassin",
-      "name": "Assassin",
+      "id": "marksman",
+      "name": "Marksman",
+      "attribute": "agility",
       "core": "body",
-      "economy": {
-        "runs_on": "ammo, weapons, technology",
-        "consumes": [
-          "ammo",
-          "supplies",
-          "gear"
-        ],
-        "produces": [
-          "kills (each death raises the ambient meter)"
-        ]
-      },
-      "role": "debuff",
-      "tagline": "Stealth, poison, and the patience to wait for the right moment.",
-      "signature": [
-        "ingenuity",
-        "intimidation",
+      "skills": [
+        "athletics",
+        "dexterity",
         "reaction_speed"
       ],
+      "role": "offense_ranged",
+      "tagline": "The gun hand and quick feet.",
+      "resource": {
+        "id": "heat",
+        "max": "weapon heat_limit",
+        "per_turn": -2,
+        "rule": "Guns only: single +1, burst +2, auto +4 Heat; -1 to hit per 2 Heat; jam at the limit (2 AP to clear). Bows have no Heat or recoil, are silent, and scale with Raw Power."
+      },
+      "resources": [
+        "heat"
+      ],
+      "foundation_for": [
+        "the gunslinger",
+        "the heavy gunner",
+        "the ballistician",
+        "the spellslinger"
+      ],
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "ref": "marksman.fire_discipline"
+            },
+            {
+              "id": "speed_loader",
+              "name": "Speed Loader",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Your first reload each turn costs 1 AP less (minimum 1).",
+              "effects": [
+                {
+                  "op": "action_cost",
+                  "action": "reload",
+                  "value": -1,
+                  "min": 1,
+                  "uses": "per_turn"
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "marksman",
+              "new": true,
+              "fantasy_tags": [
+                "guns",
+                "reload"
+              ],
+              "attributes": [
+                "agility"
+              ],
+              "status": "active",
+              "handler": "pending"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 5,
+          "moves": [
+            {
+              "ref": "marksman.special_ammo"
+            },
+            {
+              "id": "duck_and_roll",
+              "name": "Duck and Roll",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Reaction: when a ranged attack targets you, step 1 tile first. If that puts you in cover, the attack is at -2; if it takes you out of sight, the attack has no target.",
+              "effects": [
+                {
+                  "op": "reaction",
+                  "trigger": "targeted_by_ranged_attack"
+                },
+                {
+                  "op": "free_move",
+                  "tiles": 1,
+                  "when": "on_reaction"
+                },
+                {
+                  "op": "to_hit_against_self",
+                  "value": -2,
+                  "context": "after_duck_into_cover"
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "marksman",
+              "new": true,
+              "fantasy_tags": [
+                "dodge",
+                "mobility",
+                "reaction"
+              ],
+              "attributes": [
+                "agility"
+              ],
+              "status": "active",
+              "handler": "pending"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 8,
+          "moves": [
+            {
+              "ref": "marksman.killzone"
+            },
+            {
+              "ref": "gunslinger.called_shot"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "infiltrator",
+      "name": "Infiltrator",
+      "attribute": "perception",
+      "core": "mind",
+      "skills": [
+        "ingenuity",
+        "proficiency",
+        "vigilant"
+      ],
+      "role": "debuff",
+      "tagline": "See first, strike first, fix what breaks.",
       "resource": {
         "id": "marks",
         "max": 3,
         "rule": "Up to 3 enemies Marked at once. Toxin doses: 2 + floor(ingenuity / 3), restocked at rest."
       },
+      "resources": [
+        "marks",
+        "toxins"
+      ],
+      "foundation_for": [
+        "the assassin",
+        "the sniper-analyst",
+        "the saboteur",
+        "the shade"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "mark",
-              "name": "Mark",
+              "ref": "assassin.mark"
+            },
+            {
+              "id": "vanish",
+              "name": "Vanish",
               "ap_cost": 1,
-              "uses": "at_will",
-              "text": "Mark an enemy you can see: it becomes Marked (your squad gets +1 to hit it; it can't become Hidden).",
+              "uses": "per_turn",
+              "text": "If no enemy can see you right now (fog, smoke, full cover), become Hidden.",
               "effects": [
                 {
+                  "op": "grant_action",
+                  "action": "vanish",
+                  "ap": 1,
+                  "uses": "per_turn",
+                  "requires_state": "unseen_by_enemies"
+                },
+                {
                   "op": "condition",
-                  "condition": "marked",
-                  "target": "target",
+                  "condition": "hidden",
+                  "target": "self",
                   "when": "on_use"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "infiltrator",
+              "new": true,
+              "fantasy_tags": [
+                "stealth",
+                "hide"
+              ],
+              "attributes": [
+                "perception"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "toxin",
-              "name": "Toxin",
-              "ap_cost": 1,
+              "ref": "assassin.toxin"
+            },
+            {
+              "id": "field_fix",
+              "name": "Field Fix",
+              "ap_cost": 2,
               "uses": "at_will",
-              "text": "Spend 1 toxin dose to coat a blade, dart or arrow. Your next hit also inflicts Weakened, Slowed or Bleeding (your choice; Body save).",
+              "text": "Adjacent: clear a jammed weapon, restore one item's durability, or repair a robot, drone or turret for 20.",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "toxin",
-                  "value": -1,
-                  "when": "on_use"
+                  "op": "grant_action",
+                  "action": "field_fix",
+                  "ap": 2,
+                  "uses": "at_will",
+                  "range": 1,
+                  "target": "ally_adjacent"
                 },
                 {
-                  "op": "condition",
-                  "condition": [
-                    "weakened",
-                    "slowed",
-                    "bleeding"
+                  "op": "field_repair",
+                  "choose": [
+                    "clear_jam",
+                    "restore_durability",
+                    "repair_machine"
                   ],
-                  "target": "target",
-                  "when": "next_hit",
-                  "choose": 1
+                  "repair": 20
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "infiltrator",
+              "new": true,
+              "fantasy_tags": [
+                "mechanic",
+                "repair",
+                "support"
+              ],
+              "attributes": [
+                "perception"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "execution",
-              "name": "Execution",
-              "ap_cost": 0,
+              "ref": "assassin.execution"
+            },
+            {
+              "id": "sabotage",
+              "name": "Sabotage",
+              "ap_cost": 2,
               "uses": "at_will",
-              "text": "Your hit on a Marked enemy at or below a quarter of its max HP kills it outright. Bosses and Celestials are immune.",
+              "text": "Adjacent: disable an enemy machine, turret, drone or barricade for 2 rounds. Or rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save).",
               "effects": [
                 {
-                  "op": "execute",
-                  "target": "target",
-                  "when": "hit_marked_below_25pct"
+                  "op": "grant_action",
+                  "action": "sabotage",
+                  "ap": 2,
+                  "uses": "at_will",
+                  "range": 1
+                },
+                {
+                  "op": "disable_machine",
+                  "duration_rounds": 2,
+                  "targets": [
+                    "machine",
+                    "turret",
+                    "drone",
+                    "barricade"
+                  ]
+                },
+                {
+                  "op": "rig_tile",
+                  "damage": 30,
+                  "condition": "pinned",
+                  "save": "body"
                 }
               ],
-              "adjudication": "engine",
-              "provisional": true
+              "adjudication": "hybrid",
+              "provisional": true,
+              "origin": "infiltrator",
+              "new": true,
+              "fantasy_tags": [
+                "mechanic",
+                "sabotage",
+                "trap"
+              ],
+              "attributes": [
+                "perception"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
@@ -600,130 +636,15 @@
     {
       "id": "mage",
       "name": "Mage",
+      "attribute": "intelligence",
       "core": "mind",
-      "economy": {
-        "runs_on": "Sigil magic through an Evoker",
-        "consumes": [
-          "mana_core"
-        ],
-        "produces": [
-          "mana (Vent raises the ambient meter by the Flux vented)"
-        ]
-      },
-      "role": "offense",
-      "tagline": "FIRE - SEEK - SPREAD, at range, as often as the cores hold out.",
-      "signature": [
+      "skills": [
         "brain_power",
-        "visualization",
-        "vigilant"
-      ],
-      "resource": {
-        "id": "flux",
-        "max": 6,
-        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
-        "also_uses": [
-          "mana_core"
-        ]
-      },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
-            {
-              "id": "barrage",
-              "name": "Barrage",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "The 2-charge damage words (FIRE, FREEZE, SHOCK, STONE and ACID) cost 1 charge less each; each glyph still costs at least 1. SPARK and GALE already cost 1.",
-              "effects": [
-                {
-                  "op": "word_cost",
-                  "words": [
-                    "fire",
-                    "shock",
-                    "freeze",
-                    "stone",
-                    "acid"
-                  ],
-                  "value": -1
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
-            {
-              "id": "overcharge",
-              "name": "Overcharge",
-              "ap_cost": 0,
-              "uses": "per_combat",
-              "text": "Once per combat, add one word to a spell beyond your Max Sigil words (never past 4 glyphs), for no charge and no AP. It still adds Flux.",
-              "effects": [
-                {
-                  "op": "word_cost",
-                  "words": [
-                    "*"
-                  ],
-                  "value": "free_one"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "payload",
-              "name": "Payload",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Evoke a Line with double area: a SPREAD radius or a PUSH cone's length doubles (both, if it has both), and a spell with neither gets one more missile, as one more TWICE. The Evoke adds Flux equal to its glyph count. A STAY, WAIT or WATCH spell can't carry it.",
-              "effects": [
-                {
-                  "op": "area_mult",
-                  "value": 2
-                },
-                {
-                  "op": "resource",
-                  "resource": "flux",
-                  "value": "per_glyph",
-                  "when": "on_cast"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "warden",
-      "name": "Warden",
-      "core": "mind",
-      "economy": {
-        "runs_on": "Sigil magic through an Evoker",
-        "consumes": [
-          "mana_core"
-        ],
-        "produces": [
-          "mana (Vent raises the ambient meter by the Flux vented)"
-        ]
-      },
-      "role": "defense",
-      "tagline": "WALL. HARDEN. HOLD.",
-      "signature": [
         "rumination",
-        "composure",
-        "analysis"
+        "eloquence"
       ],
+      "role": "offense",
+      "tagline": "The Sigil scholar: power, reach and the long script.",
       "resource": {
         "id": "flux",
         "max": 6,
@@ -732,185 +653,105 @@
           "mana_core"
         ]
       },
+      "resources": [
+        "flux"
+      ],
+      "foundation_for": [
+        "the blade-scribe",
+        "the spellslinger",
+        "the glyph mason",
+        "the grand sigilist",
+        "the stroke gambler",
+        "the circuit mage"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "raise_cover",
-              "name": "Raise Cover",
+              "ref": "mage.barrage"
+            },
+            {
+              "id": "core_change",
+              "name": "Core Change",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "You can Evoke a lone STAY glyph with no Subject as a cover rune, from a tile next to it: full cover on its tile and one tile next to it for 2 rounds + your Sigil duration bonus.",
+              "text": "Swapping a spent mana core costs 1 AP less (minimum 1).",
               "effects": [
                 {
-                  "op": "unlock_word",
-                  "word": "stay",
-                  "standalone": true
-                },
-                {
-                  "op": "state",
-                  "state": "full_cover",
-                  "tiles": 2
+                  "op": "action_cost",
+                  "action": "swap_core",
+                  "value": -1,
+                  "min": 1
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "mage",
+              "new": true,
+              "fantasy_tags": [
+                "sigil",
+                "cores",
+                "reload"
+              ],
+              "attributes": [
+                "intelligence"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "ward",
-              "name": "Ward",
-              "ap_cost": 2,
+              "ref": "mage.overcharge"
+            },
+            {
+              "id": "bleed_the_flux",
+              "name": "Bleed the Flux",
+              "ap_cost": 0,
               "uses": "at_will",
-              "text": "Spend 1-3 charge: an ally within 6 tiles gains a shield of 10 x charge spent x your Healing given multiplier. Adds 1 Flux per charge.",
+              "text": "Venting costs 1 AP less (minimum 0) and vents 1 more Flux.",
               "effects": [
                 {
-                  "op": "shield",
-                  "value": "10*charge",
-                  "target": "ally_within_6",
-                  "scale": "healing_given"
+                  "op": "action_cost",
+                  "action": "vent",
+                  "value": -1,
+                  "min": 0
                 },
                 {
                   "op": "resource",
                   "resource": "flux",
-                  "value": "charge",
-                  "when": "on_use"
+                  "value": -1,
+                  "when": "vent"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "mage",
+              "new": true,
+              "fantasy_tags": [
+                "sigil",
+                "flux"
+              ],
+              "attributes": [
+                "intelligence"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "seal",
-              "name": "Seal",
-              "ap_cost": 3,
-              "uses": "at_will",
-              "text": "Spend 2 charge: a 3x3-tile zone in range where, for 2 rounds, enemy Sigils cost double charge and enemy Soul spells cost double MP.",
-              "effects": [
-                {
-                  "op": "state",
-                  "state": "sealed_zone",
-                  "area": "3x3",
-                  "rounds": 2
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "scribe",
-      "name": "Scribe",
-      "core": "mind",
-      "economy": {
-        "runs_on": "Sigil magic through an Evoker",
-        "consumes": [
-          "mana_core"
-        ],
-        "produces": [
-          "mana (Vent raises the ambient meter by the Flux vented)"
-        ]
-      },
-      "role": "support",
-      "tagline": "Most sigils are written in a hurry. A Scribe's are written to last.",
-      "signature": [
-        "proficiency",
-        "eloquence",
-        "rumination"
-      ],
-      "resource": {
-        "id": "flux",
-        "max": 6,
-        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
-        "also_uses": [
-          "mana_core"
-        ]
-      },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
+              "ref": "mage.payload"
+            },
             {
-              "id": "quicken",
-              "name": "Quicken",
-              "ap_cost": 2,
-              "uses": "per_turn",
-              "text": "Spend 1 charge: an ally within 6 tiles gets +1 AP on their next turn (AP ceiling applies). On the area map the +1 lands on this overworld round's AP.",
-              "effects": [
-                {
-                  "op": "stat_mod",
-                  "stat": "ap",
-                  "value": 1,
-                  "target": "ally_within_6",
-                  "duration": "next_turn"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
-            {
-              "id": "inscribe_gear",
-              "name": "Inscribe Gear",
-              "ap_cost": 3,
-              "uses": "at_will",
-              "text": "Spend 2 charge (or do it out of combat): write a sigil onto an ally's weapon (+10% damage) or torso armour (+5 armour value) until the next rest. One inscription per item.",
-              "effects": [
-                {
-                  "op": "damage_mult",
-                  "value": 0.1,
-                  "target": "ally_weapon",
-                  "duration": "until_rest"
-                },
-                {
-                  "op": "stat_mod",
-                  "stat": "armor",
-                  "value": 5,
-                  "target": "ally",
-                  "duration": "until_rest"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "stored_spell",
-              "name": "Stored Spell",
-              "ap_cost": 0,
-              "uses": "per_rest",
-              "text": "Out of combat, write a whole Sigil spell (its words) onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP: it goes off from the object's tile with its own Reach, all around. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
-              "effects": [
-                {
-                  "op": "grant_action",
-                  "action": "trigger_stored_spell",
-                  "ap": 1,
-                  "uses": "per_rest"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
+              "ref": "scribe.stored_spell"
             }
           ]
         }
@@ -919,23 +760,15 @@
     {
       "id": "trickster",
       "name": "Trickster",
+      "attribute": "expression",
       "core": "mind",
-      "economy": {
-        "runs_on": "Sigil magic through an Evoker",
-        "consumes": [
-          "mana_core"
-        ],
-        "produces": [
-          "mana (Vent raises the ambient meter by the Flux vented)"
-        ]
-      },
-      "role": "debuff",
-      "tagline": "BIND. BLIND. UNMAKE.",
-      "signature": [
+      "skills": [
+        "visualization",
         "analysis",
-        "charisma",
-        "eloquence"
+        "charisma"
       ],
+      "role": "debuff",
+      "tagline": "Images, reading people, lying with a smile.",
       "resource": {
         "id": "flux",
         "max": 6,
@@ -944,306 +777,182 @@
           "mana_core"
         ]
       },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
-            {
-              "id": "bind",
-              "name": "Bind",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "The BIND word costs 1 charge less, and its Body save is against 14 + your debuff strength instead of 12.",
-              "effects": [
-                {
-                  "op": "word_cost",
-                  "words": [
-                    "bind"
-                  ],
-                  "value": -1
-                },
-                {
-                  "op": "tn_mod",
-                  "context": "save_vs_bind",
-                  "value": 2
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
-            {
-              "id": "blind_and_slow",
-              "name": "Blind and Slow",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff), if you don't already know them; each costs 1 charge less.",
-              "effects": [
-                {
-                  "op": "unlock_word",
-                  "word": "blind"
-                },
-                {
-                  "op": "unlock_word",
-                  "word": "slow"
-                },
-                {
-                  "op": "unlock_word",
-                  "word": "muddle"
-                },
-                {
-                  "op": "word_cost",
-                  "words": [
-                    "blind",
-                    "slow",
-                    "muddle"
-                  ],
-                  "value": -1
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "rewrite",
-              "name": "Rewrite",
-              "ap_cost": 3,
-              "uses": "at_will",
-              "text": "Spend 3 charge: one buff or helpful state on an enemy in range flips into its opposite until it ends (Braced becomes Prone, +2 to hit becomes -2, a shield becomes damage). Brain save.",
-              "effects": [
-                {
-                  "op": "convert_condition",
-                  "target": "target",
-                  "when": "on_use"
-                },
-                {
-                  "op": "narrator",
-                  "note": "Pick the opposite of exotic buffs."
-                }
-              ],
-              "adjudication": "hybrid",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "channeler",
-      "name": "Channeler",
-      "core": "soul",
-      "economy": {
-        "runs_on": "Soul magic through an Emanator",
-        "consumes": [
-          "ambient_mana"
-        ],
-        "produces": [
-          "mana_core (Crystallise)"
-        ]
-      },
-      "role": "offense",
-      "tagline": "Imagine the storm. The world agrees.",
-      "signature": [
-        "will_power",
-        "empathy",
-        "visualization"
+      "resources": [
+        "flux"
       ],
-      "resource": {
-        "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
-        "also_uses": [
-          "mp"
-        ]
-      },
-      "ranks": {
-        "I": {
-          "threshold": "gained",
-          "moves": [
-            {
-              "id": "shape",
-              "name": "Shape",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (rules 1.5; Empathy's free Pumps go first).",
-              "effects": [
-                {
-                  "op": "stat_mod",
-                  "stat": "pump_ap",
-                  "value": -1,
-                  "when": "first_pump_each_turn",
-                  "context": "damage design"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "II": {
-          "threshold": 13,
-          "moves": [
-            {
-              "id": "storm_front",
-              "name": "Storm Front",
-              "ap_cost": 0,
-              "uses": "per_turn",
-              "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
-              "effects": [
-                {
-                  "op": "area_mult",
-                  "value": 3,
-                  "kind": "targets"
-                },
-                {
-                  "op": "resource",
-                  "resource": "mp",
-                  "value": -10,
-                  "when": "on_cast"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        },
-        "III": {
-          "threshold": 18,
-          "moves": [
-            {
-              "id": "heart_surge",
-              "name": "Heart Surge",
-              "ap_cost": 0,
-              "uses": "per_turn",
-              "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands (rules 1.5).",
-              "effects": [
-                {
-                  "op": "stat_mod",
-                  "stat": "release_stage",
-                  "value": 1,
-                  "uses": "per_turn"
-                },
-                {
-                  "op": "resource",
-                  "resource": "strain",
-                  "value": "begin_strain",
-                  "when": "after_release"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "guardian",
-      "name": "Guardian",
-      "core": "soul",
-      "economy": {
-        "runs_on": "Soul magic through an Emanator",
-        "consumes": [
-          "ambient_mana"
-        ],
-        "produces": [
-          "mana_core (Crystallise)"
-        ]
-      },
-      "role": "defense",
-      "tagline": "If you can imagine it whole, it stays whole.",
-      "signature": [
-        "lore_master",
-        "conscience",
-        "faith"
+      "foundation_for": [
+        "the illusionist",
+        "the con artist",
+        "the duellist of minds",
+        "the stroke gambler"
       ],
-      "resource": {
-        "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
-        "also_uses": [
-          "mp"
-        ]
-      },
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "will_shield",
-              "name": "Will Shield",
+              "id": "read",
+              "name": "Read",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "A Buff-school cast (Soul cast AP, 20 MP base): an ally in range gains a shield of 30 x your Healing given multiplier until the end of combat.",
+              "text": "Analyze costs 1 AP and also tells you the target's intended next action.",
               "effects": [
                 {
-                  "op": "shield",
-                  "value": 30,
-                  "target": "ally_in_range",
-                  "scale": "healing_given",
-                  "duration": "combat"
+                  "op": "action_cost",
+                  "action": "analyze",
+                  "set": 1
+                },
+                {
+                  "op": "reveal",
+                  "what": "intended_action",
+                  "when": "on_analyze",
+                  "target": "target"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "analysis",
+                "reading",
+                "intel"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "handler": "pending"
+            },
+            {
+              "id": "false_image",
+              "name": "False Image",
+              "ap_cost": 2,
+              "uses": "at_will",
+              "text": "Spend 1 charge: a decoy of you stands on a tile within Sigil range for 2 rounds. Enemies who fail a Brain save treat it as you.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "false_image",
+                  "ap": 2,
+                  "uses": "at_will",
+                  "cost": {
+                    "resource": "charge",
+                    "value": 1
+                  }
+                },
+                {
+                  "op": "spawn_illusion",
+                  "of": "self",
+                  "range": "sigil_range",
+                  "duration_rounds": 2,
+                  "save": "brain"
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "illusion",
+                "decoy",
+                "sigil"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "drink_it_in",
-              "name": "Drink It In",
-              "ap_cost": 0,
-              "uses": "reaction",
-              "text": "When an enemy spell hits a shield you made, its bots feed your Emanator: gain MP equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP.",
+              "ref": "trickster.blind_and_slow"
+            },
+            {
+              "id": "silver_tongue",
+              "name": "Silver Tongue",
+              "ap_cost": 2,
+              "uses": "at_will",
+              "text": "A target within 6 tiles who can hear you makes a Brain save, or loses 2 AP on its next turn (bosses lose 1).",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "mp",
-                  "value": "spell_cost",
-                  "when": "reaction:enemy_spell_hits_your_shield"
+                  "op": "grant_action",
+                  "action": "silver_tongue",
+                  "ap": 2,
+                  "uses": "at_will",
+                  "range": 6,
+                  "target": "enemy"
+                },
+                {
+                  "op": "ap_loss",
+                  "value": 2,
+                  "boss_value": 1,
+                  "save": "brain",
+                  "when": "next_turn",
+                  "requires_state": "can_hear"
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "charisma",
+                "lies",
+                "ap"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "sanctuary",
-              "name": "Sanctuary",
-              "ap_cost": 0,
+              "ref": "trickster.rewrite"
+            },
+            {
+              "id": "sleight",
+              "name": "Sleight",
+              "ap_cost": 1,
               "uses": "per_scene",
-              "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn (your own heart's burn isn't halved).",
+              "text": "Swap places with your False Image or a willing ally within 6 tiles.",
               "effects": [
                 {
-                  "op": "state",
-                  "state": "sanctuary",
-                  "area": "3x3",
-                  "rounds": 1
+                  "op": "grant_action",
+                  "action": "sleight",
+                  "ap": 1,
+                  "uses": "per_scene",
+                  "range": 6,
+                  "target": "ally_or_own_illusion"
                 },
                 {
-                  "op": "damage_mult",
-                  "value": -0.5,
-                  "target": "allies_in_zone"
+                  "op": "swap_places",
+                  "range": 6
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "trick",
+                "teleport",
+                "illusion"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
@@ -1252,127 +961,126 @@
     {
       "id": "bard",
       "name": "Bard",
+      "attribute": "insight",
       "core": "soul",
-      "economy": {
-        "runs_on": "Soul magic through an Emanator",
-        "consumes": [
-          "ambient_mana"
-        ],
-        "produces": [
-          "mana_core (Crystallise)"
-        ]
-      },
-      "role": "support",
-      "tagline": "Your belief makes the squad better than it is.",
-      "signature": [
+      "skills": [
+        "empathy",
         "camaraderie",
-        "implication",
-        "authority"
+        "implication"
       ],
+      "role": "support",
+      "tagline": "Nobody stays behind.",
       "resource": {
-        "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
-        "also_uses": [
-          "mp"
-        ]
+        "id": "supplies",
+        "max": "3 + floor(proficiency / 2)",
+        "rule": "Stims, kits and med-drones. Restocked at rest."
       },
+      "resources": [
+        "supplies",
+        "mp",
+        "strain"
+      ],
+      "foundation_for": [
+        "the medic",
+        "the heart-binder",
+        "the devoted",
+        "the banner dancer"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "inspire",
-              "name": "Inspire",
-              "ap_cost": 1,
-              "uses": "at_will",
-              "text": "Spend 10 MP: an ally within 6 tiles gets +2 on their next roll. Adds no Strain.",
-              "effects": [
-                {
-                  "op": "resource",
-                  "resource": "mp",
-                  "value": -10,
-                  "when": "on_use"
-                },
-                {
-                  "op": "skill_mod_tag",
-                  "tag": "any",
-                  "value": 2,
-                  "target": "ally",
-                  "duration": "next_roll"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
+              "ref": "medic.triage"
+            },
+            {
+              "ref": "bard.inspire"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "mend",
-              "name": "Mend",
-              "ap_cost": 0,
-              "uses": "at_will",
-              "text": "A Buff-school cast that heals 40 x your Healing given multiplier x the ambient Healing multiplier: stronger in rich air.",
-              "effects": [
-                {
-                  "op": "heal",
-                  "value": 40,
-                  "target": "ally_in_range",
-                  "scale": "healing_given*ambient_healing"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true
+              "ref": "medic.stim_throw"
+            },
+            {
+              "ref": "bard.mend"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "gift",
-              "name": "Gift",
-              "ap_cost": 0,
-              "uses": "per_rest",
-              "text": "Out of combat, hand an ally one of your ready designs. They cast it once for 3 AP (Begin and Release), on your MP and your Strain; it goes off at stage 1 (rules 1.5).",
+              "ref": "medic.field_surgery"
+            },
+            {
+              "id": "rally",
+              "name": "Rally",
+              "ap_cost": 2,
+              "uses": "per_scene",
+              "text": "Every ally within 4 tiles heals 20 x your Healing given multiplier and loses Fear and Shaken.",
               "effects": [
                 {
                   "op": "grant_action",
-                  "action": "cast_gifted_design",
-                  "ap": 3,
-                  "uses": "per_rest"
+                  "action": "rally",
+                  "ap": 2,
+                  "uses": "per_scene"
+                },
+                {
+                  "op": "aura",
+                  "radius": 4,
+                  "target": "allies",
+                  "effects": [
+                    {
+                      "op": "heal",
+                      "value": 20,
+                      "scale": "healing_given",
+                      "target": "allies"
+                    },
+                    {
+                      "op": "cleanse",
+                      "condition": [
+                        "fear",
+                        "shaken"
+                      ],
+                      "target": "allies"
+                    }
+                  ]
                 }
               ],
-              "adjudication": "hybrid",
-              "provisional": true
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "bard",
+              "new": true,
+              "fantasy_tags": [
+                "heal",
+                "squad",
+                "fear"
+              ],
+              "attributes": [
+                "insight"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
       }
     },
     {
-      "id": "hexer",
-      "name": "Hexer",
+      "id": "channeler",
+      "name": "Channeler",
+      "attribute": "determination",
       "core": "soul",
-      "economy": {
-        "runs_on": "Soul magic through an Emanator",
-        "consumes": [
-          "ambient_mana"
-        ],
-        "produces": [
-          "mana_core (Crystallise)"
-        ]
-      },
-      "role": "debuff",
-      "tagline": "The bots can build a fireball. They can also build what someone fears most.",
-      "signature": [
-        "intimidation",
-        "implication",
-        "lore_master"
+      "skills": [
+        "will_power",
+        "lore_master",
+        "composure"
       ],
+      "role": "offense",
+      "tagline": "An iron will and a storm in the heart.",
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
@@ -1381,83 +1089,1922 @@
           "mp"
         ]
       },
+      "resources": [
+        "strain"
+      ],
+      "foundation_for": [
+        "the storm-hand",
+        "the vessel",
+        "the heartfed",
+        "the devoted",
+        "the twinbound"
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "dread",
-              "name": "Dread",
+              "ref": "channeler.shape"
+            },
+            {
+              "id": "iron_heart",
+              "name": "Iron Heart",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Status-school spells that inflict Fear cost 5 MP less, and Fear you inflict lasts 1 extra round.",
+              "text": "Your Strain limit is 1 higher.",
               "effects": [
                 {
-                  "op": "resource",
-                  "resource": "mp",
-                  "value": 5,
-                  "when": "cast_fear"
-                },
-                {
-                  "op": "condition",
-                  "condition": "fear",
-                  "target": "target",
-                  "when": "duration+1"
+                  "op": "stat_mod",
+                  "stat": "strain_limit",
+                  "value": 1
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "channeler",
+              "new": true,
+              "fantasy_tags": [
+                "soul",
+                "strain"
+              ],
+              "attributes": [
+                "determination"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "II": {
-          "threshold": 13,
+          "threshold": 5,
           "moves": [
             {
-              "id": "mind_fog",
-              "name": "Mind Fog",
+              "ref": "channeler.storm_front"
+            },
+            {
+              "id": "occult_library",
+              "name": "Occult Library",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Your Status spells can inflict a Left or Right Brain Debuff with +2 to the save TN.",
+              "text": "You learn one more tone, and you can keep one more design ready.",
               "effects": [
                 {
-                  "op": "tn_mod",
-                  "context": "save_vs_brain_debuff_from_you",
-                  "value": 2
+                  "op": "stat_mod",
+                  "stat": "tones_known",
+                  "value": 1
+                },
+                {
+                  "op": "stat_mod",
+                  "stat": "ready_designs",
+                  "value": 1
                 }
               ],
               "adjudication": "engine",
-              "provisional": true
+              "provisional": true,
+              "origin": "channeler",
+              "new": true,
+              "fantasy_tags": [
+                "soul",
+                "lore",
+                "designs"
+              ],
+              "attributes": [
+                "determination"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         },
         "III": {
-          "threshold": 18,
+          "threshold": 8,
           "moves": [
             {
-              "id": "puppet",
-              "name": "Puppet",
+              "ref": "channeler.heart_surge"
+            },
+            {
+              "id": "eye_of_the_storm",
+              "name": "Eye of the Storm",
               "ap_cost": 0,
               "uses": "per_scene",
-              "text": "Soul cast AP, 60 MP, Heart save: you choose the target's next action. It can't be made to harm itself directly. Bosses roll the save twice and keep the better.",
+              "text": "Once a scene: your next Release this turn adds no Strain, and its tone's rider counts one stage higher.",
               "effects": [
                 {
-                  "op": "condition",
-                  "condition": "puppeted",
-                  "target": "target",
-                  "when": "on_use"
+                  "op": "grant_action",
+                  "action": "eye_of_the_storm",
+                  "ap": 0,
+                  "uses": "per_scene"
                 },
                 {
-                  "op": "narrator",
-                  "note": "Rule on what counts as harming itself."
+                  "op": "release_mod",
+                  "strain": 0,
+                  "rider_stage": 1,
+                  "when": "next_release_this_turn"
                 }
               ],
-              "adjudication": "hybrid",
-              "provisional": true
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "channeler",
+              "new": true,
+              "fantasy_tags": [
+                "soul",
+                "strain",
+                "storm"
+              ],
+              "attributes": [
+                "determination"
+              ],
+              "status": "active",
+              "handler": "pending"
             }
           ]
         }
       }
+    },
+    {
+      "id": "guardian",
+      "name": "Guardian",
+      "attribute": "virtue",
+      "core": "soul",
+      "skills": [
+        "faith",
+        "conscience",
+        "authority"
+      ],
+      "role": "defense",
+      "tagline": "The saints judge, you deliver, and the squad follows.",
+      "resource": {
+        "id": "strain",
+        "max": "strain_limit (3 + floor(will_power / 2))",
+        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "also_uses": [
+          "mp"
+        ]
+      },
+      "resources": [
+        "mp",
+        "strain",
+        "devotion"
+      ],
+      "foundation_for": [
+        "the templar",
+        "the plated knight",
+        "the contractor-commander"
+      ],
+      "ranks": {
+        "I": {
+          "threshold": "gained",
+          "moves": [
+            {
+              "ref": "guardian.will_shield"
+            },
+            {
+              "id": "command",
+              "name": "Command",
+              "ap_cost": 1,
+              "uses": "per_turn",
+              "text": "An ally within 6 tiles who can hear you moves up to 2 tiles now, for free. Needs Leadership Squad (Authority 1).",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "command",
+                  "ap": 1,
+                  "uses": "per_turn",
+                  "range": 6,
+                  "target": "ally",
+                  "requires_state": "leadership_squad"
+                },
+                {
+                  "op": "free_move",
+                  "tiles": 2,
+                  "target": "ally",
+                  "when": "on_use"
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "guardian",
+              "new": true,
+              "fantasy_tags": [
+                "authority",
+                "command",
+                "mobility"
+              ],
+              "attributes": [
+                "virtue"
+              ],
+              "status": "active",
+              "handler": "pending"
+            }
+          ]
+        },
+        "II": {
+          "threshold": 5,
+          "moves": [
+            {
+              "ref": "lumeri_templar.under_the_eye"
+            },
+            {
+              "ref": "lumeri_templar.blessed_shells"
+            }
+          ]
+        },
+        "III": {
+          "threshold": 8,
+          "moves": [
+            {
+              "ref": "guardian.sanctuary"
+            },
+            {
+              "ref": "lumeri_templar.judgement"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "move_pool": {
+    "note": "The Revision 2 base moves under their old class ids (status active: a Revision 3 class names it; shelved: no class does, its code and tests stay).",
+    "moves": [
+      {
+        "id": "fire_discipline",
+        "name": "Fire Discipline",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot gets +3 to hit instead of +2.",
+        "effects": [
+          {
+            "op": "heat_mod",
+            "action": "aimed_shot",
+            "value": -1
+          },
+          {
+            "op": "action_cost",
+            "action": "burst",
+            "value": -1,
+            "uses": "per_turn"
+          },
+          {
+            "op": "attack_mod",
+            "context": "aimed_shot_with_bow",
+            "value": 1
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "marksman",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "guns",
+          "heat"
+        ],
+        "attributes": [
+          "agility"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "special_ammo",
+        "name": "Special Ammo",
+        "ap_cost": 0,
+        "uses": "per_rest",
+        "text": "You carry one magazine (or quiver) each of armour-piercing, hollow-point and incendiary, restocked at rest. You can switch ammo type as part of a reload.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "ammo",
+            "value": 1,
+            "when": "rest:each_special_type"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "marksman",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "guns",
+          "ammo"
+        ],
+        "attributes": [
+          "agility"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "killzone",
+        "name": "Killzone",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "When you hold AP for Overwatch, you may hold enough for two shots: one each at the first two enemies that move into your line, both at +2 to hit.",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "overwatch_double",
+            "ap": 0,
+            "uses": "at_will"
+          },
+          {
+            "op": "tn_mod",
+            "context": "overwatch_shot",
+            "value": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "marksman",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "guns",
+          "overwatch"
+        ],
+        "attributes": [
+          "agility",
+          "perception"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "lunge",
+        "name": "Lunge",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Spend 1 Momentum: move up to 2 tiles as part of a melee attack. This movement provokes no opportunity attacks.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "momentum",
+            "value": -1,
+            "when": "on_use"
+          },
+          {
+            "op": "stat_mod",
+            "stat": "move_in_attack",
+            "value": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "fighter",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "melee",
+          "momentum",
+          "mobility"
+        ],
+        "attributes": [
+          "strength",
+          "agility"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "riposte",
+        "name": "Riposte",
+        "ap_cost": 0,
+        "uses": "reaction",
+        "text": "When a melee attack against you misses, spend 1 Momentum to make a melee attack against the attacker for 0 AP, adding your Counter bonus to hit.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "momentum",
+            "value": -1,
+            "when": "reaction:melee_miss_against_self"
+          },
+          {
+            "op": "grant_action",
+            "action": "counter_attack",
+            "ap": 0,
+            "uses": "at_will"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "fighter",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "melee",
+          "counter",
+          "momentum"
+        ],
+        "attributes": [
+          "strength"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "finisher",
+        "name": "Finisher",
+        "ap_cost": 3,
+        "uses": "at_will",
+        "text": "Spend all your Momentum on one melee strike: +20% damage per point spent (up to +100%).",
+        "effects": [
+          {
+            "op": "damage_mult",
+            "value": 0.2,
+            "per": "momentum_spent",
+            "max": 1.0
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "fighter",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "melee",
+          "momentum",
+          "burst"
+        ],
+        "attributes": [
+          "strength"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "brace",
+        "name": "Brace",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "text": "Gain Guard equal to 1 + your Durability modifier (max 5) and become Braced (+2 Defense) until you move. Interpose is available whenever you hold Guard.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "guard",
+            "value": "1+mod(durability)",
+            "when": "on_use"
+          },
+          {
+            "op": "condition",
+            "condition": "braced",
+            "target": "self",
+            "when": "on_use"
+          },
+          {
+            "op": "stat_mod",
+            "stat": "defense",
+            "value": 2
+          },
+          {
+            "op": "grant_action",
+            "action": "interpose",
+            "ap": 0,
+            "uses": "at_will"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "defender",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "guard",
+          "tank",
+          "protect"
+        ],
+        "attributes": [
+          "endurance"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "draw_fire",
+        "name": "Draw Fire",
+        "ap_cost": 1,
+        "uses": "at_will",
+        "text": "Spend 1 Guard: one enemy you can see must attack you on its next turn, or take -2 to hit anyone else. Bosses and Celestials may ignore it at -2.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "guard",
+            "value": -1,
+            "when": "on_use"
+          },
+          {
+            "op": "condition",
+            "condition": "taunted",
+            "target": "target",
+            "when": "on_use"
+          }
+        ],
+        "adjudication": "hybrid",
+        "provisional": true,
+        "origin": "defender",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "guard",
+          "taunt",
+          "tank"
+        ],
+        "attributes": [
+          "endurance"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "reactive_plate",
+        "name": "Reactive Plate",
+        "ap_cost": 0,
+        "uses": "reaction",
+        "text": "Your armour is bot-woven and hardens when struck. When you take damage, spend any Guard: each point cuts the damage by 10. Every 3 Guard you lose this way sheds bots: the ambient meter rises by 2.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "damage_reduction_per_guard",
+            "value": 10
+          },
+          {
+            "op": "meter",
+            "value": 2,
+            "when": "per_3_guard_lost"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "defender",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "guard",
+          "armour",
+          "tank"
+        ],
+        "attributes": [
+          "endurance"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "triage",
+        "name": "Triage",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "text": "Heal an adjacent ally 20 x your Healing given multiplier and end their Bleeding. Costs no Supplies. You stabilise a Downed ally for 1 AP.",
+        "effects": [
+          {
+            "op": "heal",
+            "value": 20,
+            "target": "ally_adjacent",
+            "scale": "healing_given"
+          },
+          {
+            "op": "condition",
+            "condition": "bleeding",
+            "target": "ally",
+            "when": "remove"
+          },
+          {
+            "op": "action_cost",
+            "action": "stabilise",
+            "value": -1
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "medic",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "heal",
+          "support"
+        ],
+        "attributes": [
+          "insight"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "stim_throw",
+        "name": "Stim Throw",
+        "ap_cost": 1,
+        "uses": "at_will",
+        "text": "Spend 1 Supply: an ally within 4 tiles heals 30 x your Healing given multiplier and stops Bleeding.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "supplies",
+            "value": -1,
+            "when": "on_use"
+          },
+          {
+            "op": "heal",
+            "value": 30,
+            "target": "ally_within_4",
+            "scale": "healing_given"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "medic",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "heal",
+          "supplies",
+          "support"
+        ],
+        "attributes": [
+          "insight"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "field_surgery",
+        "name": "Field Surgery",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Out of combat, spend 1 Supply: treat one arm or leg injury, or clear every Body condition from one ally. Robot medics repair machines the same way.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "supplies",
+            "value": -1,
+            "when": "on_use"
+          },
+          {
+            "op": "condition",
+            "condition": "family:body",
+            "target": "ally",
+            "when": "remove"
+          },
+          {
+            "op": "condition",
+            "condition": "injured",
+            "target": "ally",
+            "when": "remove",
+            "location": "limb"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "medic",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "heal",
+          "supplies",
+          "injury"
+        ],
+        "attributes": [
+          "insight",
+          "perception"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "mark",
+        "name": "Mark",
+        "ap_cost": 1,
+        "uses": "at_will",
+        "text": "Mark an enemy you can see: it becomes Marked (your squad gets +1 to hit it; it can't become Hidden).",
+        "effects": [
+          {
+            "op": "condition",
+            "condition": "marked",
+            "target": "target",
+            "when": "on_use"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "assassin",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "mark",
+          "spotting",
+          "stealth"
+        ],
+        "attributes": [
+          "perception"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "toxin",
+        "name": "Toxin",
+        "ap_cost": 1,
+        "uses": "at_will",
+        "text": "Spend 1 toxin dose to coat a blade, dart or arrow. Your next hit also inflicts Weakened, Slowed or Bleeding (your choice; Body save).",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "toxin",
+            "value": -1,
+            "when": "on_use"
+          },
+          {
+            "op": "condition",
+            "condition": [
+              "weakened",
+              "slowed",
+              "bleeding"
+            ],
+            "target": "target",
+            "when": "next_hit",
+            "choose": 1
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "assassin",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "poison",
+          "debuff",
+          "stealth"
+        ],
+        "attributes": [
+          "perception"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "execution",
+        "name": "Execution",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Your hit on a Marked enemy at or below a quarter of its max HP kills it outright. Bosses and Celestials are immune.",
+        "effects": [
+          {
+            "op": "execute",
+            "target": "target",
+            "when": "hit_marked_below_25pct"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "assassin",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "mark",
+          "kill",
+          "stealth"
+        ],
+        "attributes": [
+          "perception"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "barrage",
+        "name": "Barrage",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "The 2-charge damage words (FIRE, FREEZE, SHOCK, STONE and ACID) cost 1 charge less each; each glyph still costs at least 1. SPARK and GALE already cost 1.",
+        "effects": [
+          {
+            "op": "word_cost",
+            "words": [
+              "fire",
+              "shock",
+              "freeze",
+              "stone",
+              "acid"
+            ],
+            "value": -1
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "mage",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "sigil",
+          "damage"
+        ],
+        "attributes": [
+          "intelligence"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "ap_cost": 0,
+        "uses": "per_combat",
+        "text": "Once per combat, add one word to a spell beyond your Max Sigil words (never past 4 glyphs), for no charge and no AP. It still adds Flux.",
+        "effects": [
+          {
+            "op": "word_cost",
+            "words": [
+              "*"
+            ],
+            "value": "free_one"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "mage",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "sigil",
+          "power"
+        ],
+        "attributes": [
+          "intelligence"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "payload",
+        "name": "Payload",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Evoke a Line with double area: a SPREAD radius or a PUSH cone's length doubles (both, if it has both), and a spell with neither gets one more missile, as one more TWICE. The Evoke adds Flux equal to its glyph count. A STAY, WAIT or WATCH spell can't carry it.",
+        "effects": [
+          {
+            "op": "area_mult",
+            "value": 2
+          },
+          {
+            "op": "resource",
+            "resource": "flux",
+            "value": "per_glyph",
+            "when": "on_cast"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "mage",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "sigil",
+          "area",
+          "flux"
+        ],
+        "attributes": [
+          "intelligence"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "raise_cover",
+        "name": "Raise Cover",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "You can Evoke a lone STAY glyph with no Subject as a cover rune, from a tile next to it: full cover on its tile and one tile next to it for 2 rounds + your Sigil duration bonus.",
+        "effects": [
+          {
+            "op": "unlock_word",
+            "word": "stay",
+            "standalone": true
+          },
+          {
+            "op": "state",
+            "state": "full_cover",
+            "tiles": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "warden",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "sigil",
+          "cover",
+          "walls"
+        ],
+        "attributes": [
+          "endurance",
+          "expression"
+        ],
+        "status": "shelved",
+        "future_home": "Warden (Endurance + Expression; batch 2)"
+      },
+      {
+        "id": "ward",
+        "name": "Ward",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "text": "Spend 1-3 charge: an ally within 6 tiles gains a shield of 10 x charge spent x your Healing given multiplier. Adds 1 Flux per charge.",
+        "effects": [
+          {
+            "op": "shield",
+            "value": "10*charge",
+            "target": "ally_within_6",
+            "scale": "healing_given"
+          },
+          {
+            "op": "resource",
+            "resource": "flux",
+            "value": "charge",
+            "when": "on_use"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "warden",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "sigil",
+          "shield",
+          "protect"
+        ],
+        "attributes": [
+          "endurance",
+          "expression"
+        ],
+        "status": "shelved",
+        "future_home": "Warden (Endurance + Expression; batch 2)"
+      },
+      {
+        "id": "seal",
+        "name": "Seal",
+        "ap_cost": 3,
+        "uses": "at_will",
+        "text": "Spend 2 charge: a 3x3-tile zone in range where, for 2 rounds, enemy Sigils cost double charge and enemy Soul spells cost double MP.",
+        "effects": [
+          {
+            "op": "state",
+            "state": "sealed_zone",
+            "area": "3x3",
+            "rounds": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "warden",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "sigil",
+          "anti_magic",
+          "zone"
+        ],
+        "attributes": [
+          "endurance",
+          "expression"
+        ],
+        "status": "shelved",
+        "future_home": "Warden (Endurance + Expression; batch 2)"
+      },
+      {
+        "id": "quicken",
+        "name": "Quicken",
+        "ap_cost": 2,
+        "uses": "per_turn",
+        "text": "Spend 1 charge: an ally within 6 tiles gets +1 AP on their next turn (AP ceiling applies). On the area map the +1 lands on this overworld round's AP.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ap",
+            "value": 1,
+            "target": "ally_within_6",
+            "duration": "next_turn"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "scribe",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "sigil",
+          "support",
+          "ap"
+        ],
+        "attributes": [
+          "intelligence",
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "a support Sigil hybrid (Intelligence + Insight or Virtue; batch 3)"
+      },
+      {
+        "id": "inscribe_gear",
+        "name": "Inscribe Gear",
+        "ap_cost": 3,
+        "uses": "at_will",
+        "text": "Spend 2 charge (or do it out of combat): write a sigil onto an ally's weapon (+10% damage) or torso armour (+5 armour value) until the next rest. One inscription per item.",
+        "effects": [
+          {
+            "op": "damage_mult",
+            "value": 0.1,
+            "target": "ally_weapon",
+            "duration": "until_rest"
+          },
+          {
+            "op": "stat_mod",
+            "stat": "armor",
+            "value": 5,
+            "target": "ally",
+            "duration": "until_rest"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "scribe",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "sigil",
+          "support",
+          "gear"
+        ],
+        "attributes": [
+          "intelligence",
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "a support Sigil hybrid (Intelligence + Insight or Virtue; batch 3)"
+      },
+      {
+        "id": "stored_spell",
+        "name": "Stored Spell",
+        "ap_cost": 0,
+        "uses": "per_rest",
+        "text": "Out of combat, write a whole Sigil spell (its words) onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP: it goes off from the object's tile with its own Reach, all around. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "trigger_stored_spell",
+            "ap": 1,
+            "uses": "per_rest"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "scribe",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "sigil",
+          "script",
+          "support"
+        ],
+        "attributes": [
+          "intelligence"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "bind",
+        "name": "Bind",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "The BIND word costs 1 charge less, and its Body save is against 14 + your debuff strength instead of 12.",
+        "effects": [
+          {
+            "op": "word_cost",
+            "words": [
+              "bind"
+            ],
+            "value": -1
+          },
+          {
+            "op": "tn_mod",
+            "context": "save_vs_bind",
+            "value": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "trickster",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "sigil",
+          "bind",
+          "debuff"
+        ],
+        "attributes": [
+          "strength",
+          "intelligence"
+        ],
+        "status": "shelved",
+        "future_home": "Blade Scribe (Strength + Intelligence; batch 2) or Berserker (Strength squared; batch 1)"
+      },
+      {
+        "id": "blind_and_slow",
+        "name": "Blind and Slow",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff), if you don't already know them; each costs 1 charge less.",
+        "effects": [
+          {
+            "op": "unlock_word",
+            "word": "blind"
+          },
+          {
+            "op": "unlock_word",
+            "word": "slow"
+          },
+          {
+            "op": "unlock_word",
+            "word": "muddle"
+          },
+          {
+            "op": "word_cost",
+            "words": [
+              "blind",
+              "slow",
+              "muddle"
+            ],
+            "value": -1
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "trickster",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "sigil",
+          "debuff",
+          "senses"
+        ],
+        "attributes": [
+          "expression"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "rewrite",
+        "name": "Rewrite",
+        "ap_cost": 3,
+        "uses": "at_will",
+        "text": "Spend 3 charge: one buff or helpful state on an enemy in range flips into its opposite until it ends (Braced becomes Prone, +2 to hit becomes -2, a shield becomes damage). Brain save.",
+        "effects": [
+          {
+            "op": "convert_condition",
+            "target": "target",
+            "when": "on_use"
+          },
+          {
+            "op": "narrator",
+            "note": "Pick the opposite of exotic buffs."
+          }
+        ],
+        "adjudication": "hybrid",
+        "provisional": true,
+        "origin": "trickster",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "sigil",
+          "debuff",
+          "trick"
+        ],
+        "attributes": [
+          "expression"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "shape",
+        "name": "Shape",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (rules 1.5; Empathy's free Pumps go first).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "pump_ap",
+            "value": -1,
+            "when": "first_pump_each_turn",
+            "context": "damage design"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "channeler",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "soul",
+          "pump",
+          "damage"
+        ],
+        "attributes": [
+          "determination"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "storm_front",
+        "name": "Storm Front",
+        "ap_cost": 0,
+        "uses": "per_turn",
+        "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
+        "effects": [
+          {
+            "op": "area_mult",
+            "value": 3,
+            "kind": "targets"
+          },
+          {
+            "op": "resource",
+            "resource": "mp",
+            "value": -10,
+            "when": "on_cast"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "channeler",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "soul",
+          "storm",
+          "chain"
+        ],
+        "attributes": [
+          "determination"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "heart_surge",
+        "name": "Heart Surge",
+        "ap_cost": 0,
+        "uses": "per_turn",
+        "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands (rules 1.5).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "release_stage",
+            "value": 1,
+            "uses": "per_turn"
+          },
+          {
+            "op": "resource",
+            "resource": "strain",
+            "value": "begin_strain",
+            "when": "after_release"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "channeler",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "soul",
+          "burst",
+          "strain"
+        ],
+        "attributes": [
+          "determination"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "will_shield",
+        "name": "Will Shield",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "A Buff-school cast (Soul cast AP, 20 MP base): an ally in range gains a shield of 30 x your Healing given multiplier until the end of combat.",
+        "effects": [
+          {
+            "op": "shield",
+            "value": 30,
+            "target": "ally_in_range",
+            "scale": "healing_given",
+            "duration": "combat"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "guardian",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "soul",
+          "shield",
+          "protect"
+        ],
+        "attributes": [
+          "virtue"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "drink_it_in",
+        "name": "Drink It In",
+        "ap_cost": 0,
+        "uses": "reaction",
+        "text": "When an enemy spell hits a shield you made, its bots feed your Emanator: gain MP equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "mp",
+            "value": "spell_cost",
+            "when": "reaction:enemy_spell_hits_your_shield"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "guardian",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "soul",
+          "shield",
+          "mp"
+        ],
+        "attributes": [
+          "virtue",
+          "endurance"
+        ],
+        "status": "shelved",
+        "future_home": "Saint (Virtue squared; batch 1) or Adamantile Knight (Endurance + Virtue; batch 2)"
+      },
+      {
+        "id": "sanctuary",
+        "name": "Sanctuary",
+        "ap_cost": 0,
+        "uses": "per_scene",
+        "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn (your own heart's burn isn't halved).",
+        "effects": [
+          {
+            "op": "state",
+            "state": "sanctuary",
+            "area": "3x3",
+            "rounds": 1
+          },
+          {
+            "op": "damage_mult",
+            "value": -0.5,
+            "target": "allies_in_zone"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "guardian",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "soul",
+          "zone",
+          "protect"
+        ],
+        "attributes": [
+          "virtue"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "inspire",
+        "name": "Inspire",
+        "ap_cost": 1,
+        "uses": "at_will",
+        "text": "Spend 10 MP: an ally within 6 tiles gets +2 on their next roll. Adds no Strain.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "mp",
+            "value": -10,
+            "when": "on_use"
+          },
+          {
+            "op": "skill_mod_tag",
+            "tag": "any",
+            "value": 2,
+            "target": "ally",
+            "duration": "next_roll"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "bard",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "soul",
+          "buff",
+          "support"
+        ],
+        "attributes": [
+          "insight"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "mend",
+        "name": "Mend",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "A Buff-school cast that heals 40 x your Healing given multiplier x the ambient Healing multiplier: stronger in rich air.",
+        "effects": [
+          {
+            "op": "heal",
+            "value": 40,
+            "target": "ally_in_range",
+            "scale": "healing_given*ambient_healing"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "bard",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "soul",
+          "heal"
+        ],
+        "attributes": [
+          "insight"
+        ],
+        "status": "active"
+      },
+      {
+        "id": "gift",
+        "name": "Gift",
+        "ap_cost": 0,
+        "uses": "per_rest",
+        "text": "Out of combat, hand an ally one of your ready designs. They cast it once for 3 AP (Begin and Release), on your MP and your Strain; it goes off at stage 1 (rules 1.5).",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "cast_gifted_design",
+            "ap": 3,
+            "uses": "per_rest"
+          }
+        ],
+        "adjudication": "hybrid",
+        "provisional": true,
+        "origin": "bard",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "soul",
+          "share",
+          "support"
+        ],
+        "attributes": [
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "Heartbinder (Insight squared; batch 1)"
+      },
+      {
+        "id": "dread",
+        "name": "Dread",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Status-school spells that inflict Fear cost 5 MP less, and Fear you inflict lasts 1 extra round.",
+        "effects": [
+          {
+            "op": "resource",
+            "resource": "mp",
+            "value": 5,
+            "when": "cast_fear"
+          },
+          {
+            "op": "condition",
+            "condition": "fear",
+            "target": "target",
+            "when": "duration+1"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "hexer",
+        "origin_rank": "I",
+        "fantasy_tags": [
+          "soul",
+          "fear",
+          "debuff"
+        ],
+        "attributes": [
+          "expression",
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "Hexer (Expression + Insight; batch 2)"
+      },
+      {
+        "id": "mind_fog",
+        "name": "Mind Fog",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Your Status spells can inflict a Left or Right Brain Debuff with +2 to the save TN.",
+        "effects": [
+          {
+            "op": "tn_mod",
+            "context": "save_vs_brain_debuff_from_you",
+            "value": 2
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "hexer",
+        "origin_rank": "II",
+        "fantasy_tags": [
+          "soul",
+          "brain_debuff",
+          "debuff"
+        ],
+        "attributes": [
+          "expression",
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "Hexer (Expression + Insight; batch 2)"
+      },
+      {
+        "id": "puppet",
+        "name": "Puppet",
+        "ap_cost": 0,
+        "uses": "per_scene",
+        "text": "Soul cast AP, 60 MP, Heart save: you choose the target's next action. It can't be made to harm itself directly. Bosses roll the save twice and keep the better.",
+        "effects": [
+          {
+            "op": "condition",
+            "condition": "puppeted",
+            "target": "target",
+            "when": "on_use"
+          },
+          {
+            "op": "narrator",
+            "note": "Rule on what counts as harming itself."
+          }
+        ],
+        "adjudication": "hybrid",
+        "provisional": true,
+        "origin": "hexer",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "soul",
+          "control",
+          "fear"
+        ],
+        "attributes": [
+          "expression",
+          "insight"
+        ],
+        "status": "shelved",
+        "future_home": "Hexer (Expression + Insight; batch 2)"
+      }
+    ],
+    "revision_2_classes": [
+      {
+        "id": "marksman",
+        "name": "Marksman",
+        "core": "body",
+        "signature": [
+          "dexterity",
+          "vigilant",
+          "reaction_speed"
+        ],
+        "resources": []
+      },
+      {
+        "id": "fighter",
+        "name": "Fighter",
+        "core": "body",
+        "signature": [
+          "athletics",
+          "raw_power",
+          "guts"
+        ],
+        "resources": [
+          "momentum"
+        ]
+      },
+      {
+        "id": "defender",
+        "name": "Defender",
+        "core": "body",
+        "signature": [
+          "durability",
+          "pain_threshold",
+          "guts"
+        ],
+        "resources": [
+          "guard"
+        ]
+      },
+      {
+        "id": "medic",
+        "name": "Medic",
+        "core": "body",
+        "signature": [
+          "sensory",
+          "camaraderie",
+          "proficiency"
+        ],
+        "resources": [
+          "supplies"
+        ]
+      },
+      {
+        "id": "assassin",
+        "name": "Assassin",
+        "core": "body",
+        "signature": [
+          "ingenuity",
+          "intimidation",
+          "reaction_speed"
+        ],
+        "resources": [
+          "marks",
+          "toxins"
+        ]
+      },
+      {
+        "id": "mage",
+        "name": "Mage",
+        "core": "mind",
+        "signature": [
+          "brain_power",
+          "visualization",
+          "vigilant"
+        ],
+        "resources": []
+      },
+      {
+        "id": "warden",
+        "name": "Warden",
+        "core": "mind",
+        "signature": [
+          "rumination",
+          "composure",
+          "analysis"
+        ],
+        "resources": []
+      },
+      {
+        "id": "scribe",
+        "name": "Scribe",
+        "core": "mind",
+        "signature": [
+          "proficiency",
+          "eloquence",
+          "rumination"
+        ],
+        "resources": []
+      },
+      {
+        "id": "trickster",
+        "name": "Trickster",
+        "core": "mind",
+        "signature": [
+          "analysis",
+          "charisma",
+          "eloquence"
+        ],
+        "resources": []
+      },
+      {
+        "id": "channeler",
+        "name": "Channeler",
+        "core": "soul",
+        "signature": [
+          "will_power",
+          "empathy",
+          "visualization"
+        ],
+        "resources": []
+      },
+      {
+        "id": "guardian",
+        "name": "Guardian",
+        "core": "soul",
+        "signature": [
+          "lore_master",
+          "conscience",
+          "faith"
+        ],
+        "resources": []
+      },
+      {
+        "id": "bard",
+        "name": "Bard",
+        "core": "soul",
+        "signature": [
+          "camaraderie",
+          "implication",
+          "authority"
+        ],
+        "resources": []
+      },
+      {
+        "id": "hexer",
+        "name": "Hexer",
+        "core": "soul",
+        "signature": [
+          "intimidation",
+          "implication",
+          "lore_master"
+        ],
+        "resources": []
+      }
+    ],
+    "revision_2_note": "The 13 Revision 2 base classes, for the record (where each pool move came from) and for the engine tests that still run the Revision 2 classes (test-only switch _setRevision2Classes). Not used in play."
+  },
+  "advanced_roadmap": [
+    {
+      "slot": "Juggernaut",
+      "kind": "squared",
+      "pair": [
+        "endurance",
+        "endurance"
+      ],
+      "batch": 1,
+      "fantasy": "Nothing gets through, ever",
+      "from": []
+    },
+    {
+      "slot": "Berserker",
+      "kind": "squared",
+      "pair": [
+        "strength",
+        "strength"
+      ],
+      "batch": 1,
+      "fantasy": "The stick, VERY MUCH",
+      "from": [
+        "banner_dancer.sweep",
+        "grand_sigilist.empty_hand"
+      ]
+    },
+    {
+      "slot": "Gunslinger",
+      "kind": "squared",
+      "pair": [
+        "agility",
+        "agility"
+      ],
+      "batch": 1,
+      "fantasy": "Pistols and footwork",
+      "from": [
+        "gunslinger"
+      ]
+    },
+    {
+      "slot": "Ghost",
+      "kind": "squared",
+      "pair": [
+        "perception",
+        "perception"
+      ],
+      "batch": 1,
+      "fantasy": "Unseen, unheard, one shot",
+      "from": [
+        "ccec_ballistician"
+      ]
+    },
+    {
+      "slot": "Grand Sigilist",
+      "kind": "squared",
+      "pair": [
+        "intelligence",
+        "intelligence"
+      ],
+      "batch": 1,
+      "fantasy": "One word over the whole field",
+      "from": [
+        "grand_sigilist"
+      ]
+    },
+    {
+      "slot": "Mirage",
+      "kind": "squared",
+      "pair": [
+        "expression",
+        "expression"
+      ],
+      "batch": 1,
+      "fantasy": "Nothing you see is real",
+      "from": [
+        "stroke_gambler"
+      ]
+    },
+    {
+      "slot": "Heartbinder",
+      "kind": "squared",
+      "pair": [
+        "insight",
+        "insight"
+      ],
+      "batch": 1,
+      "fantasy": "Heart linked to heart",
+      "from": [
+        "heartbinder"
+      ]
+    },
+    {
+      "slot": "Heartfed",
+      "kind": "squared",
+      "pair": [
+        "determination",
+        "determination"
+      ],
+      "batch": 1,
+      "fantasy": "Every feeling in the room is fuel",
+      "from": [
+        "heartfed"
+      ]
+    },
+    {
+      "slot": "Saint",
+      "kind": "squared",
+      "pair": [
+        "virtue",
+        "virtue"
+      ],
+      "batch": 1,
+      "fantasy": "The patron's own hand",
+      "from": [
+        "lumeri_templar"
+      ]
+    },
+    {
+      "slot": "Blade Scribe",
+      "kind": "hybrid",
+      "pair": [
+        "strength",
+        "intelligence"
+      ],
+      "batch": 2,
+      "fantasy": "Every cut writes a glyph",
+      "from": [
+        "blade_scribe"
+      ]
+    },
+    {
+      "slot": "Storm Hand",
+      "kind": "hybrid",
+      "pair": [
+        "strength",
+        "determination"
+      ],
+      "batch": 2,
+      "fantasy": "An element in the fist",
+      "from": [
+        "storm_hand"
+      ]
+    },
+    {
+      "slot": "Spellslinger",
+      "kind": "hybrid",
+      "pair": [
+        "agility",
+        "intelligence"
+      ],
+      "batch": 2,
+      "fantasy": "Spells in the magazine",
+      "from": [
+        "spellslinger"
+      ]
+    },
+    {
+      "slot": "Banner Dancer",
+      "kind": "hybrid",
+      "pair": [
+        "agility",
+        "insight"
+      ],
+      "batch": 2,
+      "fantasy": "An armourless skirmisher with rallying banners",
+      "from": [
+        "banner_dancer"
+      ]
+    },
+    {
+      "slot": "Adamantile Knight",
+      "kind": "hybrid",
+      "pair": [
+        "endurance",
+        "virtue"
+      ],
+      "batch": 2,
+      "fantasy": "Plate that turns blows into shields",
+      "from": [
+        "adamantile_knight"
+      ]
+    },
+    {
+      "slot": "Warden",
+      "kind": "hybrid",
+      "pair": [
+        "endurance",
+        "expression"
+      ],
+      "batch": 2,
+      "fantasy": "Walls, cover runes, turrets",
+      "from": [
+        "warden",
+        "siege_engineer"
+      ]
+    },
+    {
+      "slot": "Shade",
+      "kind": "hybrid",
+      "pair": [
+        "perception",
+        "determination"
+      ],
+      "batch": 2,
+      "fantasy": "Silent kills that leave nightmares",
+      "from": [
+        "shade"
+      ]
+    },
+    {
+      "slot": "Inquisitor",
+      "kind": "hybrid",
+      "pair": [
+        "perception",
+        "virtue"
+      ],
+      "batch": 2,
+      "fantasy": "Sees the sin, delivers the sentence",
+      "from": [
+        "rtc_contractor"
+      ]
+    },
+    {
+      "slot": "Hexer",
+      "kind": "hybrid",
+      "pair": [
+        "expression",
+        "insight"
+      ],
+      "batch": 2,
+      "fantasy": "Fear given a face",
+      "from": [
+        "hexer"
+      ]
     }
   ],
   "advanced": [
@@ -1503,7 +3050,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "gunslinger",
+          "fantasy_tags": [
+            "guns",
+            "pistol",
+            "initiative"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "shelved",
+          "future_home": "Gunslinger (Agility squared; batch 1)"
         },
         {
           "id": "six_for_six",
@@ -1519,7 +3077,18 @@
               "uses": "per_scene"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "origin": "gunslinger",
+          "fantasy_tags": [
+            "guns",
+            "pistol",
+            "fan"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "shelved",
+          "future_home": "Gunslinger (Agility squared; batch 1)"
         },
         {
           "id": "called_shot",
@@ -1542,9 +3111,27 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "gunslinger",
+          "fantasy_tags": [
+            "guns",
+            "precision",
+            "injury"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "active"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "agility",
+        "agility"
+      ],
+      "batch": 1,
+      "roadmap": "Gunslinger"
     },
     {
       "id": "hellraiser_heavy",
@@ -1593,7 +3180,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "hellraiser_heavy",
+          "fantasy_tags": [
+            "guns",
+            "heavy",
+            "emplaced"
+          ],
+          "attributes": [
+            "agility",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Hellraiser Heavy (Agility + Virtue or a Mind attribute; batch 3)"
         },
         {
           "id": "suppression",
@@ -1616,7 +3215,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "hellraiser_heavy",
+          "fantasy_tags": [
+            "guns",
+            "heavy",
+            "suppress"
+          ],
+          "attributes": [
+            "agility",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Hellraiser Heavy (Agility + Virtue or a Mind attribute; batch 3)"
         },
         {
           "id": "belt_discipline",
@@ -1636,9 +3247,29 @@
               "value": -4
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "origin": "hellraiser_heavy",
+          "fantasy_tags": [
+            "guns",
+            "heavy",
+            "heat"
+          ],
+          "attributes": [
+            "agility",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Hellraiser Heavy (Agility + Virtue or a Mind attribute; batch 3)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "agility",
+        "virtue"
+      ],
+      "batch": 3,
+      "roadmap": "Hellraiser Heavy"
     },
     {
       "id": "ccec_ballistician",
@@ -1687,7 +3318,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "ccec_ballistician",
+          "fantasy_tags": [
+            "mark",
+            "analysis",
+            "sniper"
+          ],
+          "attributes": [
+            "perception"
+          ],
+          "status": "shelved",
+          "future_home": "Ghost (Perception squared; batch 1)"
         },
         {
           "id": "weak_point",
@@ -1706,7 +3348,18 @@
               "value": 2
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "origin": "ccec_ballistician",
+          "fantasy_tags": [
+            "mark",
+            "sniper",
+            "crit"
+          ],
+          "attributes": [
+            "perception"
+          ],
+          "status": "shelved",
+          "future_home": "Ghost (Perception squared; batch 1)"
         },
         {
           "id": "one_shot",
@@ -1722,9 +3375,28 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "ccec_ballistician",
+          "fantasy_tags": [
+            "mark",
+            "sniper",
+            "burst"
+          ],
+          "attributes": [
+            "perception"
+          ],
+          "status": "shelved",
+          "future_home": "Ghost (Perception squared; batch 1)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "perception",
+        "perception"
+      ],
+      "batch": 1,
+      "roadmap": "Ghost"
     },
     {
       "id": "banner_dancer",
@@ -1772,7 +3444,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "banner_dancer",
+          "fantasy_tags": [
+            "skirmish",
+            "unarmoured",
+            "mobility"
+          ],
+          "attributes": [
+            "agility",
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Banner Dancer (Agility + Insight; batch 2)"
         },
         {
           "id": "rally_banner",
@@ -1789,7 +3473,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "banner_dancer",
+          "fantasy_tags": [
+            "banner",
+            "shield",
+            "support"
+          ],
+          "attributes": [
+            "agility",
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Banner Dancer (Agility + Insight; batch 2)"
         },
         {
           "id": "sweep",
@@ -1811,9 +3507,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "banner_dancer",
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "sweep"
+          ],
+          "attributes": [
+            "strength",
+            "agility"
+          ],
+          "status": "shelved",
+          "future_home": "Berserker (Strength squared; batch 1) or Banner Dancer (Agility + Insight; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "agility",
+        "insight"
+      ],
+      "batch": 2,
+      "roadmap": "Banner Dancer"
     },
     {
       "id": "rtc_contractor",
@@ -1857,7 +3573,19 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "rtc_contractor",
+          "fantasy_tags": [
+            "credits",
+            "supplies",
+            "support"
+          ],
+          "attributes": [
+            "perception",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Inquisitor (Perception + Virtue; batch 2)"
         },
         {
           "id": "strike_call",
@@ -1878,7 +3606,19 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "rtc_contractor",
+          "fantasy_tags": [
+            "credits",
+            "artillery",
+            "area"
+          ],
+          "attributes": [
+            "perception",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Inquisitor (Perception + Virtue; batch 2)"
         },
         {
           "id": "extraction",
@@ -1899,9 +3639,28 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "rtc_contractor",
+          "fantasy_tags": [
+            "credits",
+            "escape"
+          ],
+          "attributes": [
+            "perception",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Inquisitor (Perception + Virtue; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "perception",
+        "virtue"
+      ],
+      "batch": 2,
+      "roadmap": "Inquisitor"
     },
     {
       "id": "blade_scribe",
@@ -1945,7 +3704,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "blade_scribe",
+          "fantasy_tags": [
+            "melee",
+            "sigil"
+          ],
+          "attributes": [
+            "strength",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Blade Scribe (Strength + Intelligence; batch 2)"
         },
         {
           "id": "edge_sigil",
@@ -1961,7 +3731,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "blade_scribe",
+          "fantasy_tags": [
+            "melee",
+            "sigil",
+            "elemental"
+          ],
+          "attributes": [
+            "strength",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Blade Scribe (Strength + Intelligence; batch 2)"
         },
         {
           "id": "three_cut_script",
@@ -1978,9 +3760,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "blade_scribe",
+          "fantasy_tags": [
+            "melee",
+            "sigil",
+            "combo"
+          ],
+          "attributes": [
+            "strength",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Blade Scribe (Strength + Intelligence; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "strength",
+        "intelligence"
+      ],
+      "batch": 2,
+      "roadmap": "Blade Scribe"
     },
     {
       "id": "siege_engineer",
@@ -2023,7 +3825,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "siege_engineer",
+          "fantasy_tags": [
+            "cover",
+            "gear",
+            "walls"
+          ],
+          "attributes": [
+            "endurance",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Warden (Endurance + Expression; batch 2)"
         },
         {
           "id": "sentry_turret",
@@ -2039,7 +3853,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "siege_engineer",
+          "fantasy_tags": [
+            "turret",
+            "sigil",
+            "gear"
+          ],
+          "attributes": [
+            "endurance",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Warden (Endurance + Expression; batch 2)"
         },
         {
           "id": "bulwark_line",
@@ -2056,9 +3882,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "siege_engineer",
+          "fantasy_tags": [
+            "cover",
+            "walls",
+            "protect"
+          ],
+          "attributes": [
+            "endurance",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Warden (Endurance + Expression; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "endurance",
+        "expression"
+      ],
+      "batch": 2,
+      "roadmap": "Warden"
     },
     {
       "id": "spellslinger",
@@ -2102,7 +3948,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "spellslinger",
+          "fantasy_tags": [
+            "guns",
+            "sigil",
+            "ammo"
+          ],
+          "attributes": [
+            "agility",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Spellslinger (Agility + Intelligence; batch 2)"
         },
         {
           "id": "spell_magazine",
@@ -2119,7 +3977,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "spellslinger",
+          "fantasy_tags": [
+            "guns",
+            "sigil"
+          ],
+          "attributes": [
+            "agility",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Spellslinger (Agility + Intelligence; batch 2)"
         },
         {
           "id": "ricochet_glyph",
@@ -2135,9 +4004,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "spellslinger",
+          "fantasy_tags": [
+            "guns",
+            "sigil",
+            "ricochet"
+          ],
+          "attributes": [
+            "agility",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Spellslinger (Agility + Intelligence; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "agility",
+        "intelligence"
+      ],
+      "batch": 2,
+      "roadmap": "Spellslinger"
     },
     {
       "id": "storm_hand",
@@ -2186,7 +4075,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "storm_hand",
+          "fantasy_tags": [
+            "melee",
+            "soul",
+            "elemental"
+          ],
+          "attributes": [
+            "strength",
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Storm Hand (Strength + Determination; batch 2)"
         },
         {
           "id": "charged_by_battle",
@@ -2204,7 +4105,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "storm_hand",
+          "fantasy_tags": [
+            "melee",
+            "soul",
+            "charges"
+          ],
+          "attributes": [
+            "strength",
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Storm Hand (Strength + Determination; batch 2)"
         },
         {
           "id": "discharge",
@@ -2221,9 +4134,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "storm_hand",
+          "fantasy_tags": [
+            "melee",
+            "soul",
+            "area"
+          ],
+          "attributes": [
+            "strength",
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Storm Hand (Strength + Determination; batch 2)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "strength",
+        "determination"
+      ],
+      "batch": 2,
+      "roadmap": "Storm Hand"
     },
     {
       "id": "adamantile_knight",
@@ -2266,7 +4199,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "adamantile_knight",
+          "fantasy_tags": [
+            "guard",
+            "armour",
+            "shield"
+          ],
+          "attributes": [
+            "endurance",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Adamantile Knight (Endurance + Virtue; batch 2)"
         },
         {
           "id": "bulwark_of_will",
@@ -2284,7 +4229,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "adamantile_knight",
+          "fantasy_tags": [
+            "guard",
+            "shield"
+          ],
+          "attributes": [
+            "endurance",
+            "virtue"
+          ],
+          "status": "shelved",
+          "future_home": "Adamantile Knight (Endurance + Virtue; batch 2)"
         },
         {
           "id": "unbroken",
@@ -2306,9 +4262,27 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "adamantile_knight",
+          "fantasy_tags": [
+            "guard",
+            "tank",
+            "last_stand"
+          ],
+          "attributes": [
+            "endurance"
+          ],
+          "status": "active"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "endurance",
+        "virtue"
+      ],
+      "batch": 2,
+      "roadmap": "Adamantile Knight"
     },
     {
       "id": "shade",
@@ -2350,7 +4324,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "shade",
+          "fantasy_tags": [
+            "stealth",
+            "kill"
+          ],
+          "attributes": [
+            "perception",
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Shade (Perception + Determination; batch 2)"
         },
         {
           "id": "nightmare_mark",
@@ -2367,7 +4352,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "shade",
+          "fantasy_tags": [
+            "mark",
+            "fear",
+            "stealth"
+          ],
+          "attributes": [
+            "perception",
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Shade (Perception + Determination; batch 2)"
         },
         {
           "id": "lingering_dread",
@@ -2384,9 +4381,27 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "shade",
+          "fantasy_tags": [
+            "fear",
+            "kill",
+            "intimidation"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "perception",
+        "determination"
+      ],
+      "batch": 2,
+      "roadmap": "Shade"
     },
     {
       "id": "lumeri_templar",
@@ -2433,7 +4448,17 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "lumeri_templar",
+          "fantasy_tags": [
+            "faith",
+            "prayer",
+            "guns"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active"
         },
         {
           "id": "under_the_eye",
@@ -2450,7 +4475,17 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "lumeri_templar",
+          "fantasy_tags": [
+            "faith",
+            "aura",
+            "support"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active"
         },
         {
           "id": "judgement",
@@ -2471,7 +4506,17 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "lumeri_templar",
+          "fantasy_tags": [
+            "faith",
+            "devotion",
+            "burst"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active"
         }
       ],
       "alt_parents": [
@@ -2479,7 +4524,15 @@
           "fighter",
           "bard"
         ]
-      ]
+      ],
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "virtue",
+        "virtue"
+      ],
+      "batch": 1,
+      "roadmap": "Saint"
     },
     {
       "id": "stroke_gambler",
@@ -2523,7 +4576,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "stroke_gambler",
+          "fantasy_tags": [
+            "sigil",
+            "luck",
+            "dice"
+          ],
+          "attributes": [
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Mirage (Expression squared; batch 1)"
         },
         {
           "id": "stitch",
@@ -2539,7 +4603,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "stroke_gambler",
+          "fantasy_tags": [
+            "sigil",
+            "luck",
+            "dice"
+          ],
+          "attributes": [
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Mirage (Expression squared; batch 1)"
         },
         {
           "id": "house_edge",
@@ -2556,9 +4631,28 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "stroke_gambler",
+          "fantasy_tags": [
+            "sigil",
+            "luck",
+            "reroll"
+          ],
+          "attributes": [
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Mirage (Expression squared; batch 1)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "expression",
+        "expression"
+      ],
+      "batch": 1,
+      "roadmap": "Mirage"
     },
     {
       "id": "devoted",
@@ -2606,7 +4700,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "devoted",
+          "fantasy_tags": [
+            "soul",
+            "love",
+            "designs"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Devoted (Determination + Expression; batch 3)"
         },
         {
           "id": "hearts_own",
@@ -2622,7 +4728,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "devoted",
+          "fantasy_tags": [
+            "soul",
+            "love",
+            "strain"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Devoted (Determination + Expression; batch 3)"
         },
         {
           "id": "love_made_manifest",
@@ -2640,9 +4758,28 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "devoted",
+          "fantasy_tags": [
+            "soul",
+            "love",
+            "burst"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Devoted (Determination + Expression; batch 3)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "determination",
+        "expression"
+      ],
+      "batch": 3
     },
     {
       "id": "circuit_mage",
@@ -2686,7 +4823,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "circuit_mage",
+          "fantasy_tags": [
+            "sigil",
+            "soul",
+            "flux"
+          ],
+          "attributes": [
+            "intelligence",
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Circuit Mage (Intelligence + Insight; batch 3)"
         },
         {
           "id": "self_crystallise",
@@ -2709,7 +4858,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "circuit_mage",
+          "fantasy_tags": [
+            "soul",
+            "cores",
+            "mp"
+          ],
+          "attributes": [
+            "intelligence",
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Circuit Mage (Intelligence + Insight; batch 3)"
         },
         {
           "id": "fusion",
@@ -2730,9 +4891,28 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "circuit_mage",
+          "fantasy_tags": [
+            "sigil",
+            "soul",
+            "fusion"
+          ],
+          "attributes": [
+            "intelligence",
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Circuit Mage (Intelligence + Insight; batch 3)"
         }
-      ]
+      ],
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "intelligence",
+        "insight"
+      ],
+      "batch": 3
     },
     {
       "id": "glyph_mason",
@@ -2774,7 +4954,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "glyph_mason",
+          "fantasy_tags": [
+            "sigil",
+            "permanent",
+            "glyph"
+          ],
+          "attributes": [
+            "intelligence",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Glyph Mason (Intelligence + Endurance; batch 3)"
         },
         {
           "id": "survey",
@@ -2796,7 +4988,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "glyph_mason",
+          "fantasy_tags": [
+            "sigil",
+            "reach",
+            "glyph"
+          ],
+          "attributes": [
+            "intelligence",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Glyph Mason (Intelligence + Endurance; batch 3)"
         },
         {
           "id": "foundation",
@@ -2812,11 +5016,30 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "glyph_mason",
+          "fantasy_tags": [
+            "sigil",
+            "glyph",
+            "ap"
+          ],
+          "attributes": [
+            "intelligence",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Glyph Mason (Intelligence + Endurance; batch 3)"
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.2",
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "intelligence",
+        "endurance"
+      ],
+      "batch": 3
     },
     {
       "id": "grand_sigilist",
@@ -2860,7 +5083,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "grand_sigilist",
+          "fantasy_tags": [
+            "sigil",
+            "grand",
+            "area"
+          ],
+          "attributes": [
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Grand Sigilist (Intelligence squared; batch 1)"
         },
         {
           "id": "empty_hand",
@@ -2882,7 +5116,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "grand_sigilist",
+          "fantasy_tags": [
+            "unarmed",
+            "melee"
+          ],
+          "attributes": [
+            "strength",
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Berserker (Strength squared; batch 1)"
         },
         {
           "id": "earthed",
@@ -2896,11 +5141,30 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "grand_sigilist",
+          "fantasy_tags": [
+            "sigil",
+            "grand",
+            "unarmed"
+          ],
+          "attributes": [
+            "intelligence"
+          ],
+          "status": "shelved",
+          "future_home": "Grand Sigilist (Intelligence squared; batch 1)"
         }
       ],
       "provisional": true,
-      "rules": "1.2"
+      "rules": "1.2",
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "intelligence",
+        "intelligence"
+      ],
+      "batch": 1,
+      "roadmap": "Grand Sigilist"
     },
     {
       "id": "heartfed",
@@ -2942,7 +5206,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartfed",
+          "fantasy_tags": [
+            "soul",
+            "emotion",
+            "gauges"
+          ],
+          "attributes": [
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Heartfed (Determination squared; batch 1)"
         },
         {
           "id": "fed",
@@ -2959,7 +5234,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartfed",
+          "fantasy_tags": [
+            "soul",
+            "emotion",
+            "mp"
+          ],
+          "attributes": [
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Heartfed (Determination squared; batch 1)"
         },
         {
           "id": "overflow",
@@ -2973,11 +5259,30 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartfed",
+          "fantasy_tags": [
+            "soul",
+            "emotion",
+            "burst"
+          ],
+          "attributes": [
+            "determination"
+          ],
+          "status": "shelved",
+          "future_home": "Heartfed (Determination squared; batch 1)"
         }
       ],
       "provisional": true,
-      "rules": "1.5"
+      "rules": "1.5",
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "determination",
+        "determination"
+      ],
+      "batch": 1,
+      "roadmap": "Heartfed"
     },
     {
       "id": "heartbinder",
@@ -3019,7 +5324,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartbinder",
+          "fantasy_tags": [
+            "soul",
+            "link",
+            "support"
+          ],
+          "attributes": [
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Heartbinder (Insight squared; batch 1)"
         },
         {
           "id": "through",
@@ -3033,7 +5349,18 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartbinder",
+          "fantasy_tags": [
+            "soul",
+            "link",
+            "reach"
+          ],
+          "attributes": [
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Heartbinder (Insight squared; batch 1)"
         },
         {
           "id": "share",
@@ -3054,11 +5381,30 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "heartbinder",
+          "fantasy_tags": [
+            "soul",
+            "link",
+            "damage_share"
+          ],
+          "attributes": [
+            "insight"
+          ],
+          "status": "shelved",
+          "future_home": "Heartbinder (Insight squared; batch 1)"
         }
       ],
       "provisional": true,
-      "rules": "1.5"
+      "rules": "1.5",
+      "shelved": true,
+      "kind": "squared",
+      "pair": [
+        "insight",
+        "insight"
+      ],
+      "batch": 1,
+      "roadmap": "Heartbinder"
     },
     {
       "id": "vessel",
@@ -3102,7 +5448,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "vessel",
+          "fantasy_tags": [
+            "soul",
+            "body_form",
+            "melee"
+          ],
+          "attributes": [
+            "determination",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Vessel (Determination + Endurance; batch 3)"
         },
         {
           "id": "release_strike",
@@ -3118,7 +5476,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "vessel",
+          "fantasy_tags": [
+            "soul",
+            "body_form",
+            "burst"
+          ],
+          "attributes": [
+            "determination",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Vessel (Determination + Endurance; batch 3)"
         },
         {
           "id": "vessel_hands",
@@ -3140,11 +5510,29 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "vessel",
+          "fantasy_tags": [
+            "unarmed",
+            "melee"
+          ],
+          "attributes": [
+            "determination",
+            "endurance"
+          ],
+          "status": "shelved",
+          "future_home": "Vessel (Determination + Endurance; batch 3)"
         }
       ],
       "provisional": true,
-      "rules": "1.5"
+      "rules": "1.5",
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "determination",
+        "endurance"
+      ],
+      "batch": 3
     },
     {
       "id": "twinbound",
@@ -3186,7 +5574,19 @@
             }
           ],
           "adjudication": "hybrid",
-          "provisional": true
+          "provisional": true,
+          "origin": "twinbound",
+          "fantasy_tags": [
+            "soul",
+            "twin",
+            "summon"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Twinbound (Determination + Expression; batch 3)"
         },
         {
           "id": "call",
@@ -3203,7 +5603,19 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "twinbound",
+          "fantasy_tags": [
+            "soul",
+            "twin",
+            "summon"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Twinbound (Determination + Expression; batch 3)"
         },
         {
           "id": "bond",
@@ -3218,11 +5630,30 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "origin": "twinbound",
+          "fantasy_tags": [
+            "soul",
+            "twin",
+            "strain"
+          ],
+          "attributes": [
+            "determination",
+            "expression"
+          ],
+          "status": "shelved",
+          "future_home": "Twinbound (Determination + Expression; batch 3)"
         }
       ],
       "provisional": true,
-      "rules": "1.5"
+      "rules": "1.5",
+      "shelved": true,
+      "kind": "hybrid",
+      "pair": [
+        "determination",
+        "expression"
+      ],
+      "batch": 3
     }
   ]
 }

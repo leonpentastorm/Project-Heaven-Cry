@@ -3,6 +3,10 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, ADVANCED, type Sheet, newCharacter, startCombat } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo } from './resources';
+import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
+import { _setAdvancedLive } from '@engine';
+// Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
+beforeAllAdv(() => _setAdvancedLive(true)); afterAllAdv(() => _setAdvancedLive(null));
 
 const sheetFrom = (name = 'Test'): Sheet => {
   const a = ARCHETYPES[0];
@@ -150,10 +154,10 @@ describe('class resources, named from the data', () => {
     expect(classResInfo(c, 'charges').source).toBe(gain);
     expect(row(resourcesOf(u, c, g), 'res-momentum')).toBeTruthy();
   });
-  it('a Defender sees Guard; a Medic sees Supplies out of a fight too (they persist)', () => {
+  it('a Defender sees Guard; a Bard (the Medic moves, Revision 3) sees Supplies out of a fight too (they persist)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
     expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: '0 / 5' });
-    const m = fight((c) => { c.classId = 'medic'; });
+    const m = fight((c) => { c.classId = 'bard'; });
     const story = resourcesOf(null, m.c, { phase: 'story', story: { magic: {} } });
     expect(row(story, 'res-supplies')?.label).toBe('Supplies');
     expect(row(story, 'res-momentum')).toBeUndefined();

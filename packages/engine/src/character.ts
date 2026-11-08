@@ -1,6 +1,7 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, CLASS, CLASS_MIGRATION, CLASS_RULES } from './data';
+import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
@@ -45,8 +46,11 @@ export interface Character extends Sheet {
    * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
   outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[]; tones?: string[] };
   mp?: number; evoCharge?: number; learnedScene?: number;
-  /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). */
+  /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). Class
+   * Roster Revision 3 shelves every advanced class: the field is kept, but gives nothing until they come back. */
   advancedClass?: string | null;
+  /** Class roster revision the class was converted to (3 = Revision 3: medic → bard and so on). */
+  classRev?: number;
   /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
   uses?: Record<string, { s: string; n: number }>;
   // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
@@ -293,7 +297,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);
   const kit = KITS[s.kit] || KITS.medic;
   const c: Character = {
-    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, perks: [],
+    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })),
   };
@@ -551,20 +555,55 @@ export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: stri
   return null;
 }
 
-// ---------- classes (spec: Classes) ----------
-export function classTotals(skills: Record<string, number>) {
-  return CLASSES.map((k) => ({ id: k.id, name: k.name, core: k.core, total: k.signature.reduce((t, s) => t + (skills[s] || 0), 0) }));
+// ---------- classes (spec: Classes; Class Roster Revision 3) ----------
+/** The class roster revision (3: one base class per attribute). */
+export const CLASS_REV = 3;
+const RANK_AT: { II: number; III: number } = { II: Number(CLASS_RULES?.rank_thresholds?.II) || 5, III: Number(CLASS_RULES?.rank_thresholds?.III) || 8 };
+const attrOf = (c: { attrs?: Record<string, number> }, a: string) => c.attrs?.[a] || 1;
+/** Every base class with its attribute's value now (the class score; trait bonuses never count). */
+export function classTotals(c: Pick<Character, 'attrs'>) {
+  return CLASSES.map((k) => ({ id: k.id, name: k.name, core: k.core, attribute: k.attribute, total: attrOf(c, k.attribute) }));
 }
-/** Closest-class rule: any class whose signature total is among the two highest totals (ties included). */
-export function eligibleClasses(skills: Record<string, number>) {
-  const t = classTotals(skills);
-  const top = [...new Set(t.map((x) => x.total))].sort((a, b) => b - a).slice(0, 2);
-  return t.filter((x) => top.includes(x.total)).sort((a, b) => b.total - a.total);
+/** The level-3 rule: the class of your highest attribute; on a tie, any of the tied (the player chooses). */
+export function eligibleClasses(c: Pick<Character, 'attrs'>) {
+  const t = classTotals(c), top = Math.max(...t.map((x) => x.total));
+  return t.filter((x) => x.total === top);
 }
-export function classRank(c: Pick<Character, 'classId' | 'skills'>): number {
+/** Rank reads the class's own attribute: I on gaining it, II at 5, III at 8 (provisional), even if another attribute
+ * later grows higher. */
+export function classRank(c: Pick<Character, 'classId' | 'attrs'> & { skills?: Record<string, number> }): number {
   if (!c.classId) return 0;
-  const t = classTotals(c.skills).find((x) => x.id === c.classId)?.total; if (t == null) return 1;
-  return t >= 18 ? 3 : t >= 13 ? 2 : 1;
+  if (revision2Classes() && REV2_CLASSES[c.classId]) { // the test-only Revision 2 shells: signature totals 13 / 18
+    const t = REV2_CLASSES[c.classId].signature.reduce((n, s) => n + (c.skills?.[s] || 0), 0); return t >= 18 ? 3 : t >= 13 ? 2 : 1;
+  }
+  const k = CLASS[c.classId]; if (!k) return 1;
+  const v = attrOf(c, k.attribute);
+  return v >= RANK_AT.III ? 3 : v >= RANK_AT.II ? 2 : 1;
+}
+/** Why this character can't take this class at level 3, or null. The class is set for good once picked (changing class
+ * is a separate system for later). */
+export function classPickError(c: Character, classId: string): string | null {
+  if (c.level < 3) return 'Classes come at level 3.';
+  if (c.classId) return 'Your class is set; changing class is a separate system for later.';
+  if (!CLASS[classId]) return 'No such class.';
+  if (!eligibleClasses(c).some((x) => x.id === classId)) {
+    const top = eligibleClasses(c);
+    return 'Your class comes from your highest attribute: ' + top.map((x) => CLASS[x.id].name + ' (' + x.attribute + ' ' + x.total + ')').join(' or ') + '.';
+  }
+  return null;
+}
+/** A Revision 2 save's class under Revision 3 (medic → bard, scribe → mage, warden → trickster, hexer → channeler,
+ * assassin → infiltrator; the rest keep their id). Moves the new class doesn't list stop working; an advanced class is
+ * kept in the save but gives nothing while advanced classes are shelved. Runs once (c.classRev). Returns notes. */
+export function migrateCharacterClass(c: Character): string[] {
+  if (c.classRev === CLASS_REV) return [];
+  c.classRev = CLASS_REV;
+  const notes: string[] = [];
+  const to = c.classId ? CLASS_MIGRATION[c.classId] : undefined;
+  if (c.classId && to) { notes.push(c.name + ': the ' + c.classId.replace(/^./, (x) => x.toUpperCase()) + ' is now the ' + CLASS[to].name + ' (Class Roster Revision 3).'); c.classId = to; }
+  else if (c.classId && !CLASS[c.classId]) { notes.push(c.name + ': the class ' + c.classId + ' no longer exists; pick one again at the level-up screen.'); c.classId = null; }
+  if (c.advancedClass) notes.push(c.name + ': advanced classes are being rebuilt; the ' + c.advancedClass.replace(/_/g, ' ') + ' rests until they return.');
+  return notes;
 }
 setRankRule((c) => classRank(c));
 
@@ -697,30 +736,51 @@ const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
   charges: () => ({ id: 'charges', max: 3, persist: false }),
 };
-/** Which resources a class brings (base class) and which an advanced class carries over from a parent it needs
- * (Adamantile Knight: Guard; Shade: Marks; Storm Hand: Charges), provisional (spec 14). */
-const CLASS_RES: Record<string, string[]> = { fighter: ['momentum'], defender: ['guard'], medic: ['supplies'], assassin: ['marks', 'toxins'],
+/** Which resources a class brings. Base classes: their classes.json `resources` (Revision 3: the resources follow the
+ * moves; Heat, MP, Strain and Devotion are shared rules, so only the ones in RES_RULES count here). Advanced classes
+ * (shelved: they count only while active) carry over a parent's (Adamantile Knight: Guard; Shade: Marks; Storm Hand:
+ * Charges), provisional (spec 14). */
+const ADV_RES: Record<string, string[]> = {
   adamantile_knight: ['guard'], shade: ['marks'], storm_hand: ['charges'], gunslinger: ['momentum'], banner_dancer: ['momentum', 'supplies'], rtc_contractor: ['supplies'], ccec_ballistician: ['marks'] };
+export const classResIds = (classId: string | null | undefined): string[] =>
+  (classId && revision2Classes() && REV2_CLASSES[classId] ? REV2_CLASSES[classId].resources : classId && CLASS[classId] ? (CLASS[classId].resources || []).filter((r) => RES_RULES[r]) : []);
 export function classResources(c: Character): ClassResource[] {
-  const ids = [...new Set([...(c.classId ? CLASS_RES[c.classId] || [] : []), ...(c.advancedClass ? CLASS_RES[c.advancedClass] || [] : [])])];
+  const ids = [...new Set([...classResIds(c.classId), ...(advancedActive(c.advancedClass) ? ADV_RES[c.advancedClass!] || [] : [])])];
   return ids.map((id) => RES_RULES[id](c));
 }
 /** Refill the persisting resources (a long rest). */
 export function restockResources(c: Character) { for (const r of classResources(c)) if (r.persist) (c.res ||= {})[r.id] = r.max; }
 
-/** Can this character learn this advanced class (spec: Classes)? A signature total of 15 in one parent class and 9 in
- * the other (or an alternative parent pair), the tutor met (c.tutors, granted by the Narrator), and a patron where
- * the class needs one. Returns why not, or null. */
+/** The advanced-class gate by attribute pair (Class Roster Revision 3, section 7; provisional): a hybrid needs its base
+ * attribute at 6 and its partner (another core's) at 5, a squared class its attribute at 9, both from level 7. Keyed by
+ * `pair` and `kind` in the data, so a batch comes back by data alone. Returns why not, or null. */
+export function advancedPairError(c: Pick<Character, 'attrs' | 'level'>, adv: { kind?: string; pair?: string[] }): string | null {
+  const g = CLASS_RULES?.advanced || {}, hy = g.hybrid_gate || { base_attribute_min: 6, partner_attribute_min: 5, level_min: 7 }, sq = g.squared_gate || { base_attribute_min: 9, level_min: 7 };
+  const [a, b] = adv.pair || [];
+  if (!a || !b) return 'That advanced class has no attribute pair.';
+  const name = (x: string) => ATTRS.find((t) => t.id === x)?.name || x;
+  if (adv.kind === 'squared') {
+    if (c.level < sq.level_min) return 'Advanced classes come at level ' + sq.level_min + '.';
+    return attrOf(c, a) >= sq.base_attribute_min ? null : 'Needs ' + name(a) + ' ' + sq.base_attribute_min + ' (you have ' + attrOf(c, a) + ').';
+  }
+  if (c.level < hy.level_min) return 'Advanced classes come at level ' + hy.level_min + '.';
+  const miss = [...(attrOf(c, a) < hy.base_attribute_min ? [name(a) + ' ' + hy.base_attribute_min + ' (you have ' + attrOf(c, a) + ')'] : []), ...(attrOf(c, b) < hy.partner_attribute_min ? [name(b) + ' ' + hy.partner_attribute_min + ' (you have ' + attrOf(c, b) + ')'] : [])];
+  return miss.length ? 'Needs ' + miss.join(' and ') + '.' : null;
+}
+/** A medic: holds the Medic's moves (Revision 3: the Bard has Triage, Stim Throw and Field Surgery; an old Medic save
+ * before migration; an active advanced class with Medic as a parent). The 1 AP stim (hooks gap I14) reads it. */
+export const isMedicChar = (c: Pick<Character, 'classId' | 'advancedClass'> | null | undefined) => !!c && (c.classId === 'bard' || c.classId === 'medic' || (advancedActive(c.advancedClass) && !!ADVANCED[c.advancedClass!]?.parents?.includes('medic')));
+/** The shelved refusal (Class Roster Revision 3). */
+export const ADVANCED_SHELVED = String(CLASS_RULES?.advanced?.shelved_text || 'Advanced classes are being rebuilt; not learnable yet.');
+/** Can this character learn this advanced class (spec: Classes)? While advanced classes are shelved: never (the shelved
+ * refusal). Once a class is active again: its attribute pair (advancedPairError) and a patron where it needs one.
+ * Returns why not, or null. */
 export function advancedClassError(c: Character, advId: string, adv: any): string | null {
   if (!adv) return 'No such advanced class.';
+  if (!advancedActive(advId)) return ADVANCED_SHELVED;
   if (c.advancedClass === advId) return 'Already learned.';
   if (c.advancedClass) return 'One advanced class at a time (provisional).';
-  const tot = Object.fromEntries(classTotals(c.skills).map((t) => [t.id, t.total]));
-  const pairs: string[][] = [adv.parents || [], ...(adv.alt_parents || [])];
-  const ok = pairs.some(([a, b]) => (tot[a] >= 15 && tot[b] >= 9) || (tot[b] >= 15 && tot[a] >= 9));
-  if (!ok) { const [a, b] = adv.parents || []; return 'Needs a signature total of 15 in one parent and 9 in the other (' + a + ' ' + (tot[a] || 0) + ', ' + b + ' ' + (tot[b] || 0) + ').'; }
-  const tutor = adv.tutor || '';
-  if (!(c.tutors || []).some((t) => t === advId || t === tutor)) return 'Needs a tutor: ' + tutor + ' (the Narrator places one in the story).';
+  const why = advancedPairError(c, adv); if (why) return why;
   if ((adv.requires || []).some((r: any) => r.patron) && !c.patron) return 'Needs a patron.';
   return null;
 }

@@ -17,7 +17,7 @@ import {
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
-import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels } from '../character';
+import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar } from '../character';
 import { applyCond, condOn, condSource, unitDebuff, isBoon } from '../magic';
 import { d20 } from '../rng';
 import { HEARING } from '../tactics';
@@ -520,7 +520,7 @@ function heartbeat(h: Holder, foe: Unit, rng: Rng): boolean {
       if (!to || R[to] == null) { let best = -1; for (const k of Object.keys(R)) if (k !== u.pos && dist(k, foe.pos) > best) { best = dist(k, foe.pos); to = k; } }
       err = to && to !== u.pos ? moveUnit(cb, u, to, rng) : 'nowhere to go';
     } else if (mode === 'prone') err = u.prone ? 'already prone' : toggleProne(cb, u);
-    else if (mode === 'stim') { const t = unitById(cb, arm?.targetId); const c = h.c; err = !t || !c ? 'no one to stim' : useStim(cb, u, t, c, c.classId === 'medic'); }
+    else if (mode === 'stim') { const t = unitById(cb, arm?.targetId); const c = h.c; err = !t || !c ? 'no one to stim' : useStim(cb, u, t, c, isMedicChar(c)); }
     else err = reload(cb, u);
   } finally { u.ap = keep; }
   if (err) { say(cb, '(Between Heartbeats: ' + err + ')'); return false; }
@@ -951,7 +951,7 @@ register({
 // counts), you can't attack this turn until you've healed someone; only while you have a way to heal (stims, Medic,
 // a heal design: plan 6, so the lock can never softlock you). Companions don't count. The area map runs the same stims
 // and AP. The Narrator stages "two wounded, one stim" (brief).
-const canHeal = (h: Holder) => (h.c?.stims || 0) > 0 || h.c?.classId === 'medic' || !!h.u?.mg?.designs?.some((d: any) => d.option === 'heal' || d.school === 'heal');
+const canHeal = (h: Holder) => (h.c?.stims || 0) > 0 || isMedicChar(h.c) || !!h.u?.mg?.designs?.some((d: any) => d.option === 'heal' || d.school === 'heal');
 const healDesign = (d: any) => d?.option === 'heal' || d?.school === 'heal' || d?.option === 'mend';
 register({
   id: 'field_medic', claims: 'all', narrator: [2],
@@ -960,7 +960,7 @@ register({
     const base = ctx?.base ?? 1; return base > 1 ? -1 : 0;
   },
   actions: [{
-    id: 'thrown_stim', label: 'Thrown Stim', scope: ['combat', 'world'], ap: (h) => actionAp({ u: h.u }, 'stabilise', h.c?.classId === 'medic' ? 1 : 2).ap, uses: { per: 'per_combat', n: 1 }, target: 'ally', range: 3,
+    id: 'thrown_stim', label: 'Thrown Stim', scope: ['combat', 'world'], ap: (h) => actionAp({ u: h.u }, 'stabilise', isMedicChar(h.c) ? 1 : 2).ap, uses: { per: 'per_combat', n: 1 }, target: 'ally', range: 3,
     text: 'Stabilise a Downed ally up to 3 tiles away in line of sight with a thrown stim.',
     available: (h) => (!h.u ? false : (h.c?.stims || 0) <= 0 ? 'No stims left.' : true),
     preview: (h, args) => {
@@ -971,7 +971,7 @@ register({
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      const p = pettyGate(h, t, rng); if (p) { u.ap += actionAp({ u }, 'stabilise', h.c?.classId === 'medic' ? 1 : 2).ap; return null; }
+      const p = pettyGate(h, t, rng); if (p) { u.ap += actionAp({ u }, 'stabilise', isMedicChar(h.c) ? 1 : 2).ap; return null; }
       if (h.c) h.c.stims--; t.bleed = 0;
       healUnit(cb, t, 1, u, 'stim');
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 1, revive: true, thrown: true });
@@ -1006,7 +1006,7 @@ register({
       const g = ctx.g, c = h.c; if (!g || !c || c.dead) return; const pos = positionsOf(g), me = pos[c.id]; const st = stateOf({ ...h, g });
       delete st.mustHeal; if (!me) return;
       const hurt = Object.values(g.characters as Record<string, Character>).some((x) => x.id !== c.id && !x.dead && pos[x.id] && dist(pos[x.id], me) <= 5 && (x.hp <= 0 || x.hp * 4 < maxHp(x)));
-      if (hurt && ((c.stims || 0) > 0 || c.classId === 'medic')) { st.mustHeal = true; postStory({ ...h, g }, 'a squadmate is bleeding out (First, Do No Harm): no attacks until you heal someone.', { kind: 'system' }); }
+      if (hurt && ((c.stims || 0) > 0 || isMedicChar(c))) { st.mustHeal = true; postStory({ ...h, g }, 'a squadmate is bleeding out (First, Do No Harm): no attacks until you heal someone.', { kind: 'system' }); }
     },
   },
   brief: () => 'stage triage dilemmas: two wounded, one stim',

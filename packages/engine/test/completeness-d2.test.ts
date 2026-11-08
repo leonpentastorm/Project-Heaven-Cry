@@ -11,6 +11,8 @@ import {
   type GameState, type Combat, type Unit,
 } from '../src';
 import { fightWith, storyWith, withGame, sheetOf, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -259,7 +261,7 @@ describe('Insomniac, Rival, Rabbit\'s Foot, Company Man (items 49-52)', () => {
   });
   it('Rabbit\'s Foot: a taunted Ork still goes for the holder on its turn; an Interpose doesn\'t take its blow', () => {
     const run = (trait: boolean) => {
-      const f = fightWith([{ traits: trait ? ['rabbits_foot'] : [] }, { classId: 'defender', level: 5, skills: Object.fromEntries(CLASS.defender.signature.map((x: string) => [x, 1])) }], [{ at: 'C6', weapon: 'fists' }]);
+      const f = fightWith([{ traits: trait ? ['rabbits_foot'] : [] }, { classId: 'defender', level: 5, skills: Object.fromEntries(SIG('defender').map((x: string) => [x, 1])) }], [{ at: 'C6', weapon: 'fists' }]);
       const [h, def] = f.pcs, ork = f.foe; ork.kind = 'ork'; h.pos = '5,5'; def.pos = '4,5'; ork.pos = '6,5'; ork.ap = 6; ork.attack = 60;
       f.unit(def.id).res = { ...(f.unit(def.id).res || {}), guard: 3 }; f.unit(def.id).resMax = { ...(f.unit(def.id).resMax || {}), guard: 5 };
       f.unit(h.id).def = -40;

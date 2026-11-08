@@ -3,13 +3,15 @@
 import { describe, expect, it } from 'vitest';
 import { d20, beginTurn, applyDamage, harm, emit, checkOver, previewAttack, perkActionsFor, pendingPerkSteps, CLASS, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 type S = ReturnType<typeof storyWith>;
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
 const open = (cb: Combat) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; };
 function cls(id: string, rank: 1 | 2 | 3, extra: any = {}) {
-  const sig = CLASS[id].signature, pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
+  const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : rank === 2 ? [5, 4, 4] : [1, 1, 1];
   return { ...extra, classId: id, level: 5, skills: { ...Object.fromEntries(sig.map((s: string, i: number) => [s, pts[i]])), ...(extra.skills || {}) } };
 }
 function storyCheck(s: S, charId: string, skills: string[], extra: any = {}) {

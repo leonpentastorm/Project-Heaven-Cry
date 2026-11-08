@@ -9,6 +9,8 @@ import {
   WEAPON, d20, validateSheet, newCharacter, enemyTurn, weaponActions, COMPANION_KINDS, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng, sheetOf } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 const at = (cb: Combat, u: Unit, ref: string) => { const [x, y] = [ref.charCodeAt(0) - 65, +ref.slice(1) - 1]; u.pos = x + ',' + y; return u; };
 /** A rng whose next d20 is n (d20 = floor(next * 20) + 1, see rng.ts): searched, so it stays deterministic. */
@@ -262,10 +264,13 @@ describe('the story side (rules 1.3)', () => {
     const c = s.g.characters[id]; c.hp = 1;
     s.act({ type: 'rest', kind: 'long' } as any);
     expect(s.g.characters[id].hp).toBeGreaterThan(1); expect(s.g.restN).toBe(1);
-    // An advanced class: signatures 15 + 9 and a tutor.
-    Object.assign(s.g.characters[id].skills, { dexterity: 7, vigilant: 4, reaction_speed: 4, athletics: 3, raw_power: 3, guts: 3 });
-    expect(() => s.act({ type: 'levelup/advanced', charId: id, classId: 'gunslinger' } as any)).toThrow(/tutor/);
+    // An advanced class (on here by the test switch; Class Roster Rev 3 shelves them): the attribute pair gate, from level 7.
+    expect(() => s.act({ type: 'levelup/advanced', charId: id, classId: 'gunslinger' } as any)).toThrow(/level 7/);
+    s.g.characters[id].level = 7;
+    expect(() => s.act({ type: 'levelup/advanced', charId: id, classId: 'gunslinger' } as any)).toThrow(/Agility 9/);
+    s.g.characters[id].attrs.agility = 9;
     s.act({ type: 'narrator/turn', turn: { narration: 'An old drifter offers to teach.', tutors: [{ charId: id, classId: 'gunslinger' }] } } as any);
+    expect(s.g.characters[id].tutors).toContain('gunslinger');
     s.act({ type: 'levelup/advanced', charId: id, classId: 'gunslinger' } as any);
     expect(s.g.characters[id].advancedClass).toBe('gunslinger');
   });

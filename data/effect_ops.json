@@ -3513,6 +3513,156 @@
         "target": "self",
         "shield_all_sides": true
       }
+    },
+    {
+      "id": "anchor",
+      "tier": "bespoke",
+      "summary": "Defender Anchor: can't be pushed, pulled or knocked Prone while Braced (rules rev 3).",
+      "count": 1,
+      "params": [
+        "context",
+        "resist"
+      ],
+      "used_by": [
+        "classes:anchor"
+      ],
+      "example": {
+        "op": "anchor",
+        "context": "while_braced",
+        "resist": [
+          "push",
+          "pull",
+          "prone"
+        ]
+      }
+    },
+    {
+      "id": "ignore_opportunity_attacks",
+      "tier": "bespoke",
+      "summary": "Fighter Unstoppable: movement provokes no opportunity attacks for a duration.",
+      "count": 1,
+      "params": [
+        "duration"
+      ],
+      "used_by": [
+        "classes:unstoppable"
+      ],
+      "example": {
+        "op": "ignore_opportunity_attacks",
+        "duration": "until_next_turn"
+      }
+    },
+    {
+      "id": "field_repair",
+      "tier": "bespoke",
+      "summary": "Infiltrator Field Fix: clear a jam, restore durability, or repair a machine.",
+      "count": 1,
+      "params": [
+        "choose",
+        "repair"
+      ],
+      "used_by": [
+        "classes:field_fix"
+      ],
+      "example": {
+        "op": "field_repair",
+        "choose": [
+          "clear_jam",
+          "restore_durability",
+          "repair_machine"
+        ],
+        "repair": 20
+      }
+    },
+    {
+      "id": "disable_machine",
+      "tier": "bespoke",
+      "summary": "Infiltrator Sabotage: an enemy machine, turret, drone or barricade stops working for N rounds.",
+      "count": 1,
+      "params": [
+        "duration_rounds"
+      ],
+      "used_by": [
+        "classes:sabotage"
+      ],
+      "example": {
+        "op": "disable_machine",
+        "duration_rounds": 2
+      }
+    },
+    {
+      "id": "rig_tile",
+      "tier": "bespoke",
+      "summary": "Infiltrator Sabotage: a trapped tile; the next enemy to enter it takes damage and a condition (save).",
+      "count": 1,
+      "params": [
+        "condition",
+        "damage",
+        "save"
+      ],
+      "used_by": [
+        "classes:sabotage"
+      ],
+      "example": {
+        "op": "rig_tile",
+        "damage": 30,
+        "condition": "pinned",
+        "save": "body"
+      }
+    },
+    {
+      "id": "ap_loss",
+      "tier": "bespoke",
+      "summary": "Trickster Silver Tongue: the target loses AP on its next turn (save).",
+      "count": 1,
+      "params": [
+        "boss_value",
+        "save",
+        "value"
+      ],
+      "used_by": [
+        "classes:silver_tongue"
+      ],
+      "example": {
+        "op": "ap_loss",
+        "value": 2,
+        "boss_value": 1,
+        "save": "brain"
+      }
+    },
+    {
+      "id": "swap_places",
+      "tier": "bespoke",
+      "summary": "Trickster Sleight: swap tiles with a willing ally or your own illusion.",
+      "count": 1,
+      "params": [
+        "range"
+      ],
+      "used_by": [
+        "classes:sleight"
+      ],
+      "example": {
+        "op": "swap_places",
+        "range": 6
+      }
+    },
+    {
+      "id": "release_mod",
+      "tier": "bespoke",
+      "summary": "Channeler Eye of the Storm: the next Release adds no Strain and its rider counts a stage higher.",
+      "count": 1,
+      "params": [
+        "rider_stage",
+        "strain"
+      ],
+      "used_by": [
+        "classes:eye_of_the_storm"
+      ],
+      "example": {
+        "op": "release_mod",
+        "strain": 0,
+        "rider_stage": 1
+      }
     }
   ]
 }

@@ -6,6 +6,8 @@
 import { describe, expect, it } from 'vitest';
 import { d20, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 function calm(n = 40): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); }
 const SEED = calm();
@@ -165,7 +167,7 @@ describe('gap 19: the Evoker blade\'s Edge Word (item 487)', () => {
 
 describe('gap 23: Barrage and the 1.4 elements (item 486)', () => {
   it('FIRE, FREEZE, SHOCK, STONE and ACID cost 1 charge less; SPARK and GALE stay at 1', () => {
-    const sig = CLASS.mage.signature;
+    const sig = SIG('mage');
     const f = rig(['fire', 'freeze', 'shock', 'stone', 'acid', 'spark', 'gale'], ['14,9'], { spec: { classId: 'mage', level: 5, skills: Object.fromEntries(sig.map((s) => [s, 1])) } });
     const cost = (w: string) => withGame(f.g, () => previewDraw(f.cb, f.pc, w)).cost.charge;
     expect(['fire', 'freeze', 'shock', 'stone', 'acid', 'spark', 'gale'].map(cost)).toEqual([1, 1, 1, 1, 1, 1, 1]);
@@ -213,7 +215,7 @@ describe('gap 24: Bulwark traces the line of fire from where the spell comes fro
 
 describe('gap 20: class moves that cast give the grid their area, tiles and targets (item 489 c)', () => {
   it('Payload\'s preview carries the doubled Burst tiles, the area it may aim into and who it hits, marked as Sigil', () => {
-    const sig = CLASS.mage.signature;
+    const sig = SIG('mage');
     const f = rig(['spark', 'spread'], ['5,5', '9,5'], { spec: { classId: 'mage', level: 5, skills: Object.fromEntries(sig.map((s) => [s, 6])) } });
     line(f, ['spread', 'spark'], ['4,5', '3,5']);
     const pv: any = withGame(f.g, () => previewPerkAction({ u: f.pc, cb: f.cb, g: f.g }, 'class:mage.payload', { actionId: 'payload', tile: '3,5', choice: '5,5' }, 'combat'));

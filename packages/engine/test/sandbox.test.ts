@@ -4,6 +4,9 @@ import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
   WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf,
 } from '../src';
+import { beforeAll, afterAll } from 'vitest';
+import { _setAdvancedLive } from '../src';
+beforeAll(() => _setAdvancedLive(true)); afterAll(() => _setAdvancedLive(null)); // advanced classes on for the tools test (Class Roster Rev 3 shelves them)
 
 const sheetFrom = (archId: string, name: string, kit = 'soldier'): Sheet => {
   const a = ARCHETYPES.find((x) => x.id === archId)!;
@@ -251,11 +254,15 @@ describe('the tools', () => {
   });
   it('class (base with rank, advanced), level, skill', () => {
     let g = start(); const c = charOf(g);
-    g = apply(g, { type: 'sandbox/class', charId: c.id, classId: 'medic', rank: 3 }, HOST);
-    expect(charOf(g).classId).toBe('medic'); expect(classRank(charOf(g))).toBe(3);
+    g = apply(g, { type: 'sandbox/class', charId: c.id, classId: 'bard', rank: 3 }, HOST);
+    expect(charOf(g).classId).toBe('bard'); expect(charOf(g).attrs.insight).toBe(8); expect(classRank(charOf(g))).toBe(3);
+    // An advanced class (on here by the test switch): its attribute pair raised to the gate, seated with its first attribute's class.
     const adv = ADVANCED_CLASSES[0];
+    _setAdvancedLive(null); // as in play: shelved
+    expect(refused(g, { type: 'sandbox/class', charId: c.id, classId: adv.id })).toBe('Advanced classes are being rebuilt; not learnable yet.');
+    _setAdvancedLive(true);
     g = apply(g, { type: 'sandbox/class', charId: c.id, classId: adv.id }, HOST);
-    expect(g.sandbox!.advanced[c.id]).toBe(adv.id); expect(CLASS[charOf(g).classId!]).toBeTruthy(); expect(charOf(g).classId).toBe(adv.parents[0]);
+    expect(g.sandbox!.advanced[c.id]).toBe(adv.id); expect(CLASS[charOf(g).classId!]).toBeTruthy(); expect(charOf(g).classId).toBe('marksman'); expect(charOf(g).attrs.agility).toBe(9);
     g = apply(g, { type: 'sandbox/level', charId: c.id, level: 10 }, HOST);
     expect(charOf(g).level).toBe(10); expect(pc(g).maxHp).toBe(maxHp(charOf(g))); expect(pc(g).hp).toBe(pc(g).maxHp);
     g = apply(g, { type: 'sandbox/level', charId: c.id, level: 2 }, HOST); expect(charOf(g).level).toBe(2);

@@ -8,6 +8,8 @@ import {
   openWindow, active, combatReport, WEAPON, previewAttack, postStory, pendRuling, d20, type Unit, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 describe('collector (plan 2.2)', () => {
   it('a Tier II perk that replaces Tier I has Tier II effects only; class moves come by rank; an advanced class gives all its moves', () => {

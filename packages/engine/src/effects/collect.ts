@@ -1,7 +1,7 @@
 // Collecting a holder's active effects (plan 2.2): traits, perks at their tier (Mastered, Achieved and Ultimate
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
-import { PERK, PERKS, TRAITS, CLASSES, SKILL } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL, CLASS_MOVE_POOL } from '../data';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
@@ -10,6 +10,34 @@ const ADV: any[] = (classesJ as any).advanced || [];
 export const ADVANCED: Record<string, any> = Object.fromEntries(ADV.map((a) => [a.id, a]));
 export const BASE_CLASS: Record<string, any> = Object.fromEntries(CLASSES.map((k) => [k.id, k]));
 const RANKS = ['I', 'II', 'III'] as const;
+
+// ---------- advanced classes are shelved (Class Roster Revision 3) ----------
+// While classes.json assignment.advanced.live is false, an advanced class a character holds gives nothing: no moves,
+// resources or effects (the field stays in the save so it can come back). A class whose entry has `shelved: false`
+// would come back on its own once live is on. Tests that exercise the advanced moves' handlers turn them on with
+// _setAdvancedLive(true) (a test-only switch).
+const ADV_LIVE_DATA = !!(classesJ as any).assignment?.advanced?.live;
+let advOverride: boolean | null = null;
+/** Is this advanced class active right now (its moves, resources and effects count)? */
+export function advancedActive(id: string | null | undefined): boolean {
+  if (!id || !ADVANCED[id]) return false;
+  if (advOverride != null) return advOverride;
+  return ADV_LIVE_DATA && !ADVANCED[id].shelved;
+}
+/** Test-only: turn every advanced class on (true), off (false), or back to the data (null). */
+export function _setAdvancedLive(on: boolean | null) { advOverride = on; itemsCache.clear(); }
+
+// ---------- the Revision 2 classes, for tests only ----------
+// The engine tests written for Class Roster Revision 2 (a Warden's Ward, an Assassin's Mark at rank I) keep running the
+// pool moves' handlers through the 13 old class shells (classes.json move_pool.revision_2_classes): with the switch on,
+// a class id resolves to its Revision 2 moves by origin and old rank, and the rank reads the old signature totals
+// (13 / 18). Never on in play.
+export const REV2_CLASSES: Record<string, { id: string; name: string; core: string; signature: string[]; resources: string[] }> =
+  Object.fromEntries((((classesJ as any).move_pool?.revision_2_classes || []) as any[]).map((k) => [k.id, k]));
+let rev2 = false;
+export const revision2Classes = () => rev2;
+/** Test-only: hold the Revision 2 classes (true) or the Revision 3 ones (false, the default). */
+export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); }
 
 const isAction = (effects: any[], ap: any, perkType?: string | null) =>
   effects.some((e) => e && e.op === 'grant_action') || (typeof ap === 'number' && ap > 0) || (typeof ap === 'string' && !!ap) || perkType === 'active_skill';
@@ -53,16 +81,19 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
   }
   if (kind === 'class') {
     const [cls, mv] = id.split('.'); const found = classMove(cls, mv); if (!found) return null;
-    const { move, rank } = found, effects = [...(move.effects || [])];
+    const { move } = found, rank = (tier as string) || found.rank, effects = [...(move.effects || [])];
     return { key, kind, id, name: move.name, tier: rank as Tier, effects, effTier: effects.map(() => rank), text: move.text || '', adjudication: move.adjudication || 'engine', active: isAction(effects, move.ap_cost), bound: isAction(effects, move.ap_cost),
       ap: move.ap_cost ?? null, uses: move.uses || 'at_will', classId: cls, rank, provisional: !!move.provisional };
   }
   return null;
 }
+/** A class move by its key's parts ("class:<cls>.<mv>"): a new Revision 3 move under its class, or a pool or advanced
+ * move under its origin (its old key, whichever class names it now). rank: the rank a base class lists it at, else the
+ * pool move's old rank, else 'adv'. */
 export function classMove(cls: string, mv: string): { move: any; rank: string } | null {
-  const b = BASE_CLASS[cls];
-  if (b) for (const r of RANKS) { const m = (b.ranks?.[r]?.moves || []).find((x: any) => x.id === mv); if (m) return { move: m, rank: r }; }
-  const a = ADVANCED[cls]; if (a) { const m = (a.moves || []).find((x: any) => x.id === mv); if (m) return { move: m, rank: 'adv' }; }
+  const key = 'class:' + cls + '.' + mv;
+  for (const b of CLASSES as any[]) for (const r of RANKS) { const m = (b.ranks?.[r]?.moves || []).find((x: any) => x.key === key); if (m) return { move: m, rank: r }; }
+  const p = CLASS_MOVE_POOL[cls + '.' + mv]; if (p) return { move: p, rank: ADVANCED[cls] ? 'adv' : p.origin_rank || 'I' };
   return null;
 }
 export function splitKey(key: string): [ItemKind, string] {
@@ -83,14 +114,19 @@ export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'v
 export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
   SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });
 /** Does a holder hold anything at all (a quick skip for dispatch)? */
-export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || h.adv || h.skills?.length);
+export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || advancedActive(h.adv) || h.skills?.length);
 
 /** Class moves a holder has: base class moves up to its rank, and every move of its advanced class. */
 export function classMoveKeys(h: Held): { key: string; rank: string }[] {
   const out: { key: string; rank: string }[] = [];
-  const b = h.cls ? BASE_CLASS[h.cls] : null;
-  if (b) RANKS.slice(0, Math.max(1, Math.min(3, h.rank || 1))).forEach((r) => (b.ranks?.[r]?.moves || []).forEach((m: any) => out.push({ key: 'class:' + b.id + '.' + m.id, rank: r })));
-  const a = h.adv ? ADVANCED[h.adv] : null;
+  if (rev2 && h.cls && REV2_CLASSES[h.cls]) {
+    const n = Math.max(1, Math.min(3, h.rank || 1));
+    for (const m of Object.values(CLASS_MOVE_POOL)) if (m.origin === h.cls && !ADVANCED[m.origin] && RANKS.indexOf(m.origin_rank) < n) out.push({ key: 'class:' + m.origin + '.' + m.id, rank: m.origin_rank });
+  }
+  const b = h.cls && !rev2 ? BASE_CLASS[h.cls] : null;
+  // A rank's moves keep their own keys: Bard's Triage is "class:medic.triage", so the Medic's handler runs it.
+  if (b) RANKS.slice(0, Math.max(1, Math.min(3, h.rank || 1))).forEach((r) => (b.ranks?.[r]?.moves || []).forEach((m: any) => out.push({ key: m.key, rank: r })));
+  const a = h.adv && advancedActive(h.adv) ? ADVANCED[h.adv] : null;
   if (a) (a.moves || []).forEach((m: any) => out.push({ key: 'class:' + a.id + '.' + m.id, rank: 'adv' }));
   return out;
 }
@@ -109,7 +145,7 @@ export function itemsOf(h: Held): ItemInfo[] {
   return out;
 }
 const itemsCache = new Map<string, ItemInfo[]>();
-export const heldKey = (h: Held) => JSON.stringify([h.perks || [], h.traits || [], h.cls || null, h.rank || 0, h.adv || null, h.skills || []]);
+export const heldKey = (h: Held) => JSON.stringify([rev2, h.perks || [], h.traits || [], h.cls || null, h.rank || 0, advancedActive(h.adv) ? h.adv : null, h.skills || []]);
 
 /** Every effect of every item, flat (plan 2.2: effectsOf). */
 export function effectsOfHeld(h: Held): ActiveEffect[] {
@@ -124,8 +160,11 @@ export function allItems(): ItemInfo[] {
     else out.push(itemInfo('perk:' + p.id, p.tier)!);
   }
   for (const t of TRAITS) out.push(itemInfo('trait:' + t.id)!);
-  for (const b of CLASSES as any[]) for (const r of RANKS) for (const m of b.ranks?.[r]?.moves || []) out.push(itemInfo('class:' + b.id + '.' + m.id)!);
-  for (const a of ADV) for (const m of a.moves || []) out.push(itemInfo('class:' + a.id + '.' + m.id)!);
+  // Every class move once: the 9 classes' moves (new ones under their class, reused ones under their old key), then the
+  // rest of the pool and the advanced moves (shelved: their handlers and tests stay, so coverage still counts them).
+  const seen = new Set<string>();
+  for (const b of CLASSES as any[]) for (const r of RANKS) for (const m of b.ranks?.[r]?.moves || []) if (!seen.has(m.key)) { seen.add(m.key); out.push(itemInfo(m.key)!); }
+  for (const k of Object.keys(CLASS_MOVE_POOL)) if (!seen.has('class:' + k)) { seen.add('class:' + k); out.push(itemInfo('class:' + k)!); }
   for (const k of SKILL_ITEMS) out.push(itemInfo('skill:' + k)!);
   return out.filter(Boolean);
 }

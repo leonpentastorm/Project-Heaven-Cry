@@ -2,6 +2,10 @@
 // the dice table open, and the area map's planning overlays (reachable tiles and path; an attack's red reach).
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, type GameState, type Sheet } from '@engine';
+import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
+import { _setAdvancedLive } from '@engine';
+// Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
+beforeAllAdv(() => _setAdvancedLive(true)); afterAllAdv(() => _setAdvancedLive(null));
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' }, innerWidth: 1400, innerHeight: 900 });
 vi.stubGlobal('location', { search: '', hash: '' });

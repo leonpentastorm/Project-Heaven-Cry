@@ -88,9 +88,10 @@ function derive(skills, aSet, cSet) {
   const attrOver = Math.max(0, attrSpent - ATTR_PTS), traded = Math.ceil(attrOver / TRADE);
   const coreLeft = CORE_PTS - coreSpent - traded, attrLeft = ATTR_PTS + traded * TRADE - attrSpent;
   const ok = coreLeft >= 0 && Object.values(attr).every((v) => v <= STAT_CAP) && Object.values(core).every((v) => v <= STAT_CAP) && spent <= BUDGET;
-  const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, total: c.sig.reduce((t, s) => t + (skills[s] || 0), 0) }));
-  const top = [...new Set(totals.map((t) => t.total))].sort((a, b) => b - a).slice(0, 2);
-  const leans = spent ? totals.filter((t) => top.includes(t.total)).sort((a, b) => b.total - a.total) : [];
+  // Class Roster Revision 3: the class of the highest attribute (every tied one) is the one level 3 offers.
+  const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, total: attr[c.attribute] || 1 }));
+  const top = Math.max(...totals.map((t) => t.total));
+  const leans = spent ? totals.filter((t) => t.total === top) : [];
   return { attr, core, spent, leans, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
 

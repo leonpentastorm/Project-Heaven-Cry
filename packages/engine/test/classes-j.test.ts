@@ -4,6 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 /** A seed whose next d20 is n. */
 function rngFor(n: number): number { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return s; } throw new Error('no seed'); }

@@ -3,6 +3,8 @@
 import { describe, expect, it } from 'vitest';
 import { apply, newGame, perkActionsFor, bindGame, RuleError, ARCHETYPES, REST_INFO, type Action, type GameState, type Sheet } from '../src';
 import { storyWith } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 const INFUSE = 'class:storm_hand.gauntlet_infusion';
 const refused = (fn: () => unknown) => { try { fn(); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal'); };

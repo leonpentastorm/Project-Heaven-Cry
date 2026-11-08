@@ -20,10 +20,11 @@ export interface ClassIcon {
 export const CORE_INK: Record<CoreId, string> = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF' };
 const NEUTRAL_INK = '#A3AEC2';
 
-/** Base class cores (data/classes.json `core`). */
+/** Base class cores (data/classes.json `core`): the 9 Revision 3 classes, then the Revision 2 ids that live on as move
+ * origins and advanced classes' parents (medic, assassin, warden, scribe, hexer). */
 const BASE_CORE: Record<string, CoreId> = {
   marksman: 'body', fighter: 'body', defender: 'body', medic: 'body', assassin: 'body',
-  mage: 'mind', warden: 'mind', scribe: 'mind', trickster: 'mind',
+  infiltrator: 'mind', mage: 'mind', warden: 'mind', scribe: 'mind', trickster: 'mind',
   channeler: 'soul', guardian: 'soul', bard: 'soul', hexer: 'soul',
 };
 /** Advanced classes' first parent (data/classes.json `parents[0]`): it sets the core and the frame. */
@@ -71,6 +72,8 @@ export const CLASS_ICON_PATHS: Record<string, ClassIcon> = {
   assassin: { frame: 'body', paths: ['M12 5.6 V8.6', 'M7.4 8.6 Q12 12.6 16.6 8.6', 'M8.6 10.2 L7.8 11.4 M15.4 10.2 L16.2 11.4', 'M10.7 10.6 L12 18 L13.3 10.6'], dots: [[12, 4.8]] },
 
   // ── Mind ────────────────────────────────────────────────────────────────────────────────────────────────────
+  // Infiltrator (Revision 3, Perception): the Assassin's dagger-and-eye for now, in the Mind frame (its own emblem to come).
+  infiltrator: { frame: 'mind', paths: ['M12 5.6 V8.6', 'M7.4 8.6 Q12 12.6 16.6 8.6', 'M8.6 10.2 L7.8 11.4 M15.4 10.2 L16.2 11.4', 'M10.7 10.6 L12 18 L13.3 10.6'], dots: [[12, 4.8]] },
   // Mage: an open Sigil square firing a stroke out of it.
   mage: { frame: 'mind', paths: ['M7.5 10.5 V16.5 H13.5', 'M10.5 13.5 L16.5 7.5 M12.5 7.5 H16.5 V11.5'] },
   // Warden: a crenellated watchtower with a gate.

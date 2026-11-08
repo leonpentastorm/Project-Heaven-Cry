@@ -4,6 +4,10 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, newCharacter, startCombat, MAPS, type Character } from '@engine';
 import { actionGroups, catalogue, pkId, classOf, pickChoice, wantsDetail, perkEntries } from './commands';
+import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
+import { _setAdvancedLive } from '@engine';
+// Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
+beforeAllAdv(() => _setAdvancedLive(true)); afterAllAdv(() => _setAdvancedLive(null));
 
 const charWith = (o: Partial<Character> = {}): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];

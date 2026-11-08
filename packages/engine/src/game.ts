@@ -1,14 +1,14 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, CLASS, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS } from './data';
+import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
-  type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, eligibleClasses, grantAutomaticPerks, maxHp, mod, newCharacter,
+  type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils, migrateCharacterSoul, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { unitSees, reloadHands, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -17,7 +17,7 @@ import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp
 import { type MapObject, type Approach, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, triedThisScene } from './objects';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
-import { bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, pray, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, PATRON, changeDevotion, devotionOf, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
@@ -345,7 +345,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
-  for (const c of Object.values(g.characters || {})) { const notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c)]; if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441), rules 1.5 designs
+  for (const c of Object.values(g.characters || {})) { const notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c)]; if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); } // rules 1.4 words (item 441), rules 1.5 designs
   try { reduce(g, action, by); } finally { bindGame(was); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
@@ -513,21 +513,22 @@ function reduce(g: GameState, a: Action, by: string) {
       if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
-      // A class rank reached (signature total 13 or 18): say which move it brings (spec: Classes).
+      // A class rank reached (its attribute at 5 or 8): say which moves it brings (spec: Classes).
       if (c!.classId && rankBefore && classRank(c!) > rankBefore) { const r = ['', 'I', 'II', 'III'][classRank(c!)], mv = ((CLASS[c!.classId] as any).ranks?.[r]?.moves || []).map((m: any) => m.name).join(', ');
         push(g, { kind: 'system', text: c!.name + ' reaches ' + CLASS[c!.classId].name + ' ' + r + (mv ? ': ' + mv : '') + '.' }); }
       return;
     }
     case 'levelup/class': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (c!.level < 3) fail('Classes come at level 3.'); if (c!.classId) fail('Class already earned.');
-      if (!eligibleClasses(c!.skills).some((x) => x.id === a.classId)) fail('That class isn\'t one of your two closest.');
+      // Class Roster Revision 3: the class of the highest attribute (a tie: the player chooses), set for good.
+      const why = classPickError(c!, a.classId); if (why) fail(why);
       c!.classId = a.classId;
       push(g, { kind: 'system', text: c!.name + ' earns a class: ' + CLASS[a.classId].name + '.' });
       return;
     }
     case 'levelup/advanced': {
-      // Learning an advanced class (spec: Classes): 15 + 9 in its parents' signatures and a tutor the Narrator placed.
+      // Learning an advanced class (spec: Classes): shelved in Class Roster Revision 3 (the refusal says so); once a batch
+      // is back, its attribute pair decides (advancedPairError).
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const adv = (classesJ as any).advanced?.find((x: any) => x.id === a.classId);
       const why = advancedClassError(c!, a.classId, adv); if (why) fail(why);
@@ -909,7 +910,8 @@ function storyFields(g: GameState, t: NarratorTurn) {
   for (const x of (t.echo || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && Number.isFinite(x.n)) gainEcho(c, Math.max(-3, Math.min(3, Math.round(x.n))), x.why || 'the story', g); }
   for (const x of (t.karma || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && Number.isFinite(x.amount)) applyKarma(g, c, Math.max(-30, Math.min(30, Math.round(x.amount))), { unlawful: !!x.unlawful, why: x.why }); }
   for (const x of (t.identify || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && x.what) { const st = (c.state ||= {}), l: string[] = (st.identified ||= []); if (!l.includes(x.what)) l.push(String(x.what).slice(0, 60)); } }
-  for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
+  // Tutors (rules 1.3) only for advanced classes that are active again (Class Roster Revision 3 shelves them all).
+  for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv || !advancedActive(adv.id)) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
   for (const x of (t.patrons || []).slice(0, 4)) {
     const c = g.characters[x.charId]; if (!c) continue;
     if (x.patron && PATRON[x.patron] && c.patron !== x.patron) { c.patron = x.patron; c.devotion = 3; push(g, { kind: 'system', text: c.name + ' makes a pact with ' + PATRON[x.patron].name + ' (Devotion 3).' }); }
@@ -2195,7 +2197,6 @@ export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> 
 };
 /** Advanced classes (rules 1.2): the engine knows them by id for the tools; base classes are in CLASS. */
 /** A Medic, or an advanced class with Medic as a parent (the 1 AP stim: hooks gap I14). */
-const isMedicChar = (c: Character) => c.classId === 'medic' || (!!c.advancedClass && !!ADVANCED_CLASSES.find((x) => x.id === c.advancedClass)?.parents.includes('medic'));
 export const ADVANCED_CLASSES: { id: string; name: string; parents: string[]; summary?: string }[] = ((classesJ as any).advanced || []).map((x: any) => ({ id: x.id, name: x.name, parents: x.parents || [], summary: x.summary }));
 const TIER_COST: Record<string, number> = { minion: 1, soldier: 2, elite: 4, boss: 8 };
 /** Wave n's drill units (deterministic, so a wave can be replayed): a point budget of 2 + 1.5n; soldiers from wave 2,
@@ -2303,14 +2304,13 @@ function sbSetSkill(c: Character, id: string, p: number) {
   const core = sk.core as keyof Character['cores']; if ((c.cores[core] || 1) < (c.attrs[sk.attribute] || 1)) c.cores = { ...c.cores, [core]: c.attrs[sk.attribute] };
   grantAutomaticPerks(c);
 }
-/** Raise a class's signature skills, evenly, until their total reaches `total`. */
-function sbRaiseSignature(c: Character, classId: string, total: number) {
-  const sig = CLASS[classId]?.signature || [];
-  for (let guard = 0; guard < 40; guard++) {
-    const now = sig.reduce((t, s) => t + (c.skills[s] || 0), 0); if (now >= total) return;
-    const low = [...sig].sort((a, b) => (c.skills[a] || 0) - (c.skills[b] || 0))[0]; if ((c.skills[low] || 0) >= 10) return;
-    sbSetSkill(c, low, (c.skills[low] || 0) + 1);
-  }
+/** Raise a class's attribute (and its Core) to at least `v`: the Proving Ground's rank II (5) and III (8). */
+function sbRaiseAttr(c: Character, classId: string, v: number) {
+  const at = CLASS[classId]?.attribute; if (!at) return;
+  const core = (ATTRS.find((x) => x.id === at)?.core || 'body') as keyof Character['cores'];
+  if ((c.cores[core] || 1) < v) c.cores = { ...c.cores, [core]: v };
+  if ((c.attrs[at] || 1) < v) c.attrs = { ...c.attrs, [at]: v };
+  grantAutomaticPerks(c);
 }
 /** Put an item or weapon in the pack (weapons come with three magazines and loose rounds). Returns its pack index. */
 function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number {
@@ -2702,14 +2702,17 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (!a.classId) { c.classId = null; return; }
         const adv = ADVANCED_CLASSES.find((x) => x.id === a.classId);
         if (adv) {
-          // An advanced class needs 15 in one parent's signatures and 9 in the other (rules 1.2): brought up to that here.
-          sbRaiseSignature(c, adv.parents[0], 15); if (adv.parents[1]) sbRaiseSignature(c, adv.parents[1], 9);
-          c.classId = adv.parents[0]; sb.advanced[c.id] = adv.id; c.advancedClass = adv.id; return;
+          // Advanced classes are shelved (Class Roster Revision 3); once one is active again, the Proving Ground raises
+          // its attribute pair to the gate (hybrid 6 / 5, squared 9) and seats it with its first pair attribute's class.
+          if (!advancedActive(adv.id)) fail(ADVANCED_SHELVED);
+          const full: any = ((classesJ as any).advanced || []).find((x: any) => x.id === adv.id), [pa, pb] = full.pair || [], base = CLASSES.find((k) => k.attribute === pa);
+          if (base) { sbRaiseAttr(c, base.id, full.kind === 'squared' ? 9 : 6); const pbc = CLASSES.find((k) => k.attribute === pb); if (pbc && full.kind !== 'squared') sbRaiseAttr(c, pbc.id, 5); }
+          c.classId = base?.id || null; sb.advanced[c.id] = adv.id; c.advancedClass = adv.id; return;
         }
         if (!CLASS[a.classId]) fail('No such class.');
         c.classId = a.classId;
         const rank = Math.max(1, Math.min(3, Math.round(a.rank || 1)));
-        if (rank >= 2) sbRaiseSignature(c, a.classId, rank === 3 ? 18 : 13);
+        if (rank >= 2) sbRaiseAttr(c, a.classId, rank === 3 ? 8 : 5);
       });
       const adv = sb.advanced[c.id];
       sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (with ' + CLASS[c.classId!]?.name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');

@@ -2,10 +2,11 @@
 // signature totals and the progress to the next rank, every move by rank (earned or locked, with who runs it), the
 // closest base classes before one is earned, the advanced classes in reach with what is missing, and the uses left
 // on any item. Pure functions of the character (and the game, for the use counters), so they are testable.
-import { CLASS, ADVANCED, classTotals, classRank, eligibleClasses, advancedClassError, verdictFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
+import { CLASS, ADVANCED, ATTR, classTotals, classRank, eligibleClasses, advancedClassError, advancedActive, verdictFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 
-export const RANK_AT = { I: 0, II: 13, III: 18 } as const;
+/** Class Roster Revision 3: rank II at the class's attribute 5, rank III at 8 (provisional). */
+export const RANK_AT = { I: 0, II: 5, III: 8 } as const;
 const RANKS = ['I', 'II', 'III'] as const;
 export const ROMAN_RANK = ['', 'I', 'II', 'III'];
 
@@ -21,7 +22,8 @@ export const className = (id: string) => (CLASS as any)[id]?.name || ADVANCED[id
 export function classLabel(c: any): string {
   if (!c?.classId) return '';
   const base = className(c.classId) + ' ' + ROMAN_RANK[classRank(c)];
-  return c.advancedClass && ADVANCED[c.advancedClass] ? ADVANCED[c.advancedClass].name + ' (' + base + ')' : base;
+  // Advanced classes are shelved (Class Roster Revision 3): a held one isn't shown as active.
+  return c.advancedClass && ADVANCED[c.advancedClass] && advancedActive(c.advancedClass) ? ADVANCED[c.advancedClass].name + ' (' + base + ')' : base;
 }
 
 /** Uses left on an item (its actions' counters, else the item's own use limit), "1/1 combat left · 0/1 scene left". */
@@ -50,8 +52,9 @@ export function classMoves(g: any, c: any, clsId: string): MoveView[] {
   const k: any = (CLASS as any)[clsId]; if (!k) return [];
   const rank = c.classId === clsId ? classRank(c) : 0;
   return RANKS.flatMap((r, i) => ((k.ranks || {})[r]?.moves || []).map((m: any) => {
-    const key = 'class:' + clsId + '.' + m.id, v = verdictFor(key, r), earned = rank > i;
-    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + RANK_AT[r],
+    // A move keeps the key its handler runs under (Bard's Triage is class:medic.triage).
+    const key = m.key || 'class:' + clsId + '.' + m.id, v = verdictFor(key, r), earned = rank > i;
+    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + ((ATTR as any)[k.attribute]?.name || k.attribute) + ' ' + RANK_AT[r],
       badge: v.label, verdict: v.verdict, uses: earned ? usesLine(g, c, key, r) : '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' };
   }));
 }
@@ -62,44 +65,33 @@ export function advancedMoves(g: any, c: any, advId: string): MoveView[] {
     return { key, id: m.id, name: m.name, text: m.text || '', rank: 'ADVANCED', earned: true, unlock: '', badge: v.label, verdict: v.verdict, uses: usesLine(g, c, key, 'adv'), ap: m.ap_cost ? m.ap_cost + ' AP' : '' }; });
 }
 
-/** The signature skills of a class with the character's points, the total, and the progress to the next rank. */
+/** A class's attribute and its three skills with the character's points, and the progress to the next rank (Class
+ * Roster Revision 3: the rank reads the class's attribute, II at 5, III at 8). `total` is the attribute's value. */
 export function signatureOf(c: any, clsId: string) {
   const k: any = (CLASS as any)[clsId]; if (!k) return null;
-  const skills = (k.signature || []).map((s: string) => ({ id: s, name: (SKILL as any)[s]?.name || s, pts: c.skills?.[s] || 0 }));
-  const total = skills.reduce((t: number, s: any) => t + s.pts, 0), rank = total >= 18 ? 3 : total >= 13 ? 2 : 1;
-  const next = rank === 1 ? 13 : rank === 2 ? 18 : null, prev = rank === 1 ? 0 : rank === 2 ? 13 : 18;
-  return { skills, total, rank, next, pct: next ? Math.round((total - prev) / (next - prev) * 100) : 100,
-    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + next + ' · ' + (next - total) + ' to go' : 'Top rank' };
+  const skills = (k.skills || []).map((s: string) => ({ id: s, name: (SKILL as any)[s]?.name || s, pts: c.skills?.[s] || 0 }));
+  const total = c.attrs?.[k.attribute] || 1, rank = total >= RANK_AT.III ? 3 : total >= RANK_AT.II ? 2 : 1;
+  const next = rank === 1 ? RANK_AT.II : rank === 2 ? RANK_AT.III : null, prev = rank === 1 ? 1 : rank === 2 ? RANK_AT.II : RANK_AT.III;
+  const an = (ATTR as any)[k.attribute]?.name || k.attribute;
+  return { skills, total, rank, next, attribute: k.attribute, attributeName: an, pct: next ? Math.round((total - prev) / (next - prev) * 100) : 100,
+    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + an + ' ' + next + ' · ' + (next - total) + ' to go' : 'Top rank' };
 }
 
-/** Base classes by signature total, highest first; `offered` marks the closest-class options (the two highest totals). */
+/** Base classes by their attribute, highest first; `offered` marks the level-3 options (the highest attribute, ties included). */
 export function closestClasses(c: any, n = 4) {
-  const offered = new Set(eligibleClasses(c.skills || {}).map((x: any) => x.id));
-  return classTotals(c.skills || {}).sort((a: any, b: any) => b.total - a.total).slice(0, Math.max(n, offered.size))
+  const offered = new Set(eligibleClasses(c).map((x: any) => x.id));
+  return classTotals(c).sort((a: any, b: any) => b.total - a.total).slice(0, Math.max(n, offered.size))
     .map((t: any) => { const k: any = (CLASS as any)[t.id];
-      return { id: t.id, name: t.name, total: t.total, offered: offered.has(t.id), sig: (k.signature || []).map((s: string) => ((SKILL as any)[s]?.name || s) + ' ' + (c.skills?.[s] || 0)).join(' · '),
+      return { id: t.id, name: t.name, total: t.total, offered: offered.has(t.id), sig: ((ATTR as any)[k.attribute]?.name || k.attribute) + ' ' + t.total,
         move: k.ranks?.I?.moves?.[0]?.name || '', ...emblemOf(t.id) }; });
 }
 
-/** Advanced classes by how close the character is (the shortfall to 15 + 9 over the best parent pair), with what is missing. */
+/** Advanced classes (shelved in Class Roster Revision 3: each says why it can't be learned; an empty list once none is
+ * listed). Kept for the level-up panel; the UI pass decides how (or whether) to show them. */
 export function advancedInReach(c: any, n = 3) {
-  const tot: Record<string, number> = Object.fromEntries(classTotals(c.skills || {}).map((t: any) => [t.id, t.total]));
-  const short = (a: string, b: string) => Math.max(0, 15 - (tot[a] || 0)) + Math.max(0, 9 - (tot[b] || 0));
   return Object.values(ADVANCED).map((a: any) => {
-    const pairs: string[][] = [a.parents || [], ...(a.alt_parents || [])];
-    let best = { gap: Infinity, hi: '', lo: '' };
-    for (const [x, y] of pairs) for (const [hi, lo] of [[x, y], [y, x]]) { const s = short(hi, lo); if (s < best.gap) best = { gap: s, hi, lo }; }
-    const tutorMet = (c.tutors || []).some((t: string) => t === a.id || t === a.tutor);
-    const needsPatron = (a.requires || []).some((r: any) => r.patron), patronOk = !needsPatron || !!c.patron;
     const why = advancedClassError(c, a.id, a);
-    const missing = [
-      ...((tot[best.hi] || 0) < 15 ? [className(best.hi) + ' signature ' + (tot[best.hi] || 0) + '/15'] : []),
-      ...((tot[best.lo] || 0) < 9 ? [className(best.lo) + ' signature ' + (tot[best.lo] || 0) + '/9'] : []),
-      ...(tutorMet ? [] : ['a tutor: ' + (a.tutor || 'the Narrator places one')]),
-      ...(patronOk ? [] : ['a patron']),
-    ];
-    return { id: a.id, name: a.name, summary: a.summary || '', gap: best.gap + (tutorMet ? 0 : 1) + (patronOk ? 0 : 1),
-      parents: best.hi ? className(best.hi) + ' ' + (tot[best.hi] || 0) + '/15 · ' + className(best.lo) + ' ' + (tot[best.lo] || 0) + '/9' : '',
-      tutor: a.tutor || '', tutorMet, missing, ready: !why, why: why || '', ...emblemOf(a.id) };
+    return { id: a.id, name: a.name, summary: a.summary || '', gap: why ? 1 : 0, parents: (a.pair || []).map((x: string) => (ATTR as any)[x]?.name || x).join(' + '),
+      tutor: '', tutorMet: true, missing: why ? [why] : [], ready: !why, why: why || '', ...emblemOf(a.id) };
   }).sort((x, y) => x.gap - y.gap || x.name.localeCompare(y.name)).slice(0, n);
 }

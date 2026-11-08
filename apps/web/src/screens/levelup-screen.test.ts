@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // The level-up screen (Leon, 7 Nov 2026): perk steps as cards with both choices side by side on the left, the class
-// panel on the right (emblem, name, rank, signature progress, moves by rank with who runs them, advanced classes in
-// reach with what's missing and a Learn button once it's all there); the class choice at level 3 with emblems.
+// panel on the right (emblem, name, rank, attribute progress, moves by rank with who runs them, advanced classes
+// shelved in Class Roster Revision 3); the class choice at level 3 with emblems.
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, CLASS, type GameState, type Sheet } from '@engine';
 
@@ -60,10 +60,12 @@ describe('level-up screen', () => {
     expect(el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS[id].name);
     expect(el.querySelector('.phc-lu-rank')!.textContent).toBe('RANK I');
     const moves = Array.from(el.querySelectorAll('.phc-lu-move'));
-    expect(moves.length).toBe(3);
+    // Class Roster Revision 3: two moves a rank; II at the class's attribute 5, III at 8.
+    expect(moves.length).toBe(6);
     expect(moves[0].textContent).toMatch(/Engine runs it|Narrator rules it|Both/);
-    expect(moves[1].textContent).toContain('unlocks at 13');
-    expect(moves[2].textContent).toContain('unlocks at 18');
+    const an = ({ endurance: 'Endurance', strength: 'Strength', agility: 'Agility', perception: 'Perception', intelligence: 'Intelligence', expression: 'Expression', insight: 'Insight', determination: 'Determination', virtue: 'Virtue' } as any)[CLASS[id].attribute];
+    expect(moves[2].textContent).toContain('unlocks at ' + an + ' 5');
+    expect(moves[4].textContent).toContain('unlocks at ' + an + ' 8');
     expect(el.querySelector('.phc-lu-class-chip img')).toBeTruthy();
     root.unmount();
   });
@@ -79,25 +81,15 @@ describe('level-up screen', () => {
     expect(G.characters[c0.id].perks.length).toBe(1);
     root.unmount();
   });
-  it('advanced classes in reach: what is missing, and Learn once the tutor and totals are there', async () => {
-    const c0 = setup((c) => { c.level = 12; c.classId = 'marksman';
-      Object.assign(c.cores, { body: 10, mind: 10, soul: 10 }); for (const k of Object.keys(c.attrs)) c.attrs[k] = 10;
-      CLASS.marksman.signature.forEach((s: string) => { c.skills[s] = 5; });
-      CLASS.fighter.signature.forEach((s: string) => { c.skills[s] = 3; }); });
-    let m = await mount();
-    const gun = m.el.querySelector('.phc-lu-adv[data-class="gunslinger"]')!;
-    expect(gun).toBeTruthy();
-    expect(gun.textContent).toContain('Missing: a tutor');
-    expect(gun.querySelector('button.phc-lu-learn')).toBeNull();
-    m.root.unmount();
-    G.characters[c0.id].tutors = ['gunslinger']; snap = view();
-    m = await mount();
-    const learn = m.el.querySelector('.phc-lu-adv[data-class="gunslinger"] button.phc-lu-learn') as HTMLButtonElement;
-    expect(learn).toBeTruthy();
-    await React.act(async () => { learn.click(); });
-    expect(G.characters[c0.id].advancedClass).toBe('gunslinger');
-    expect(m.el.querySelector('.phc-lu-class-name')!.textContent).toBe('Gunslinger');
-    expect(m.el.querySelectorAll('.phc-lu-move').length).toBe(6); // 3 base + 3 advanced
+  it('advanced classes are shelved (Class Roster Revision 3): they say so, and there is no Learn button', async () => {
+    setup((c) => { c.level = 12; c.classId = 'marksman';
+      Object.assign(c.cores, { body: 10, mind: 10, soul: 10 }); for (const k of Object.keys(c.attrs)) c.attrs[k] = 10; c.tutors = ['gunslinger']; });
+    const m = await mount();
+    const adv = m.el.querySelector('.phc-lu-adv')!;
+    expect(adv).toBeTruthy();
+    expect(adv.textContent).toContain('Advanced classes are being rebuilt');
+    expect(m.el.querySelector('.phc-lu-adv button.phc-lu-learn')).toBeNull();
+    expect(m.el.querySelectorAll('.phc-lu-move').length).toBe(6); // the base class's 6 moves only
     m.root.unmount();
   });
 });

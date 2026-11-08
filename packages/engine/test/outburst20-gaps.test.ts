@@ -8,6 +8,8 @@ import {
   d20, previewOutburstPlan, condOn, PERK, PATRON, CLASS, type Combat, type Unit, type OutburstDesign, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 const withG = <T>(f: { g: any }, fn: () => T): T => withGame(f.g, fn);
 
@@ -165,7 +167,7 @@ describe('the preview lists everyone a release would reach, past its area too (s
     expect(p.affected.find((x: any) => x.unit === ally.id)).toMatchObject({ ally: true, via: 'push' });
   });
   it('Storm Front: the two arcs with their numbers and rolls, on a snap preview with the toggle and on the held release', () => {
-    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', classId: 'channeler', level: 5, skills: { [CLASS.channeler.signature[0]]: 5, [CLASS.channeler.signature[1]]: 4, [CLASS.channeler.signature[2]]: 4 } }], [{}, {}, {}, {}]);
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', classId: 'channeler', level: 5, skills: { [SIG('channeler')[0]]: 5, [SIG('channeler')[1]]: 4, [SIG('channeler')[2]]: 4 } }], [{}, {}, {}, {}]);
     const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = [];
     for (const x of cb.units) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.hidden = false; }
     Object.assign(f.pc.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0 });

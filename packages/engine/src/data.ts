@@ -18,7 +18,9 @@ export const CORES: CoreId[] = ['body', 'mind', 'soul'];
 export interface SkillDef { id: string; name: string; attribute: string; core: CoreId; slot: string; summary: string; overreach?: any; voice: any }
 export interface AttrDef { id: string; name: string; core: CoreId }
 export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[]; ammo?: string | null; weight_kg?: number; reload?: 'magazine' | 'loose'; magazine_kg?: number; reload_unit?: string; reload_ap?: number | null; damage_type?: string; explosive?: boolean; tags?: string[] }
-export interface ClassDef { id: string; name: string; core: CoreId; role: string; signature: string[]; ranks: any; resource: any }
+/** A base class (Class Roster Revision 3: one per attribute). ranks[r].moves are resolved: every move carries `key`, the
+ * item key its handler runs under ("class:<origin>.<moveId>"), so a move reused from the pool keeps its old key. */
+export interface ClassDef { id: string; name: string; attribute: string; core: CoreId; role: string; skills: string[]; ranks: any; resource: any; resources: string[]; tagline?: string }
 export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastered' | 'achieved' | 'ultimate'; skills: string[]; requires: any[]; text: string; tiers?: any; deed?: string; flavour?: string }
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }
 export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number }
@@ -27,7 +29,22 @@ export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
 export const RULES: any = rulesJ;
 export const WEAPONS: WeaponDef[] = (weaponsJ as any).items;
-export const CLASSES: ClassDef[] = (classesJ as any).base;
+/** The move pool (Revision 2 base moves under their old class ids) and the advanced classes' moves, by "<origin>.<moveId>". */
+export const CLASS_MOVE_POOL: Record<string, any> = Object.fromEntries([
+  ...(((classesJ as any).move_pool?.moves || []) as any[]).map((m) => [m.origin + '.' + m.id, m]),
+  ...(((classesJ as any).advanced || []) as any[]).flatMap((a) => (a.moves || []).map((m: any) => [a.id + '.' + m.id, { origin: a.id, ...m }])),
+]);
+/** One rank entry resolved: a {ref} to its pool or advanced move (keeping the old key), or a new move under its class. */
+export function resolveClassMove(clsId: string, m: any): any {
+  if (m && m.ref) { const x = CLASS_MOVE_POOL[m.ref]; if (!x) throw new Error('classes.json: ' + clsId + ' names an unknown move ' + m.ref); return { ...x, key: 'class:' + m.ref, ref: m.ref }; }
+  return { ...m, origin: m.origin || clsId, key: 'class:' + (m.origin || clsId) + '.' + m.id };
+}
+export const CLASSES: ClassDef[] = ((classesJ as any).base as any[]).map((b) => ({
+  ...b, ranks: Object.fromEntries(Object.entries(b.ranks || {}).map(([r, v]: [string, any]) => [r, { ...v, moves: (v.moves || []).map((m: any) => resolveClassMove(b.id, m)) }])),
+}));
+/** Revision 2 class ids and the Revision 3 class an old save's class becomes (medic → bard …). */
+export const CLASS_MIGRATION: Record<string, string> = (classesJ as any).migration?.class_ids || {};
+export const CLASS_RULES: any = (classesJ as any).assignment;
 export const PERKS: PerkDef[] = (perksJ as any).items;
 export const TRAITS: TraitDef[] = (traitsJ as any).items;
 export const ENEMIES: EnemyTier[] = (enemiesJ as any).items;

@@ -2,7 +2,7 @@
 // Narrator can look up by key ("weapon:service_pistol", "condition:bleeding") when a moment needs it, instead of
 // carrying all of it in every prompt. Entries describe what a thing is and does in words; the engine still owns
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
-import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
+import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, ATTR, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
 import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
@@ -29,11 +29,13 @@ function build(): WikiEntry[] {
     w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
   for (const c of (conditionsJ as any).items) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
-  for (const c of CLASSES as any[]) add('class:' + c.id, c.name, line(c.name + ' (' + c.core + ' class).', c.tagline, 'Signature skills: ' + (c.signature || []).map((x: string) => SKILL[x]?.name || x).join(', ') + '.'));
-  for (const c of (classesJ as any).advanced || []) add('class:' + c.id, c.name, line(c.name + ' (advanced; from ' + (c.parents || []).join(' and ') + ').', c.summary, c.tutor ? 'Tutor: ' + c.tutor : ''));
-  // Class moves, "class:<classId>.<moveId>", as characterBrief names them.
-  for (const c of CLASSES as any[]) for (const r of ['I', 'II', 'III']) for (const m of c.ranks?.[r]?.moves || []) add('class:' + c.id + '.' + m.id, m.name, line(m.name + ' (' + c.name + ' rank ' + r + ').', who('class:' + c.id + '.' + m.id), m.text));
-  for (const c of (classesJ as any).advanced || []) for (const m of c.moves || []) add('class:' + c.id + '.' + m.id, m.name, line(m.name + ' (' + c.name + ', advanced).', who('class:' + c.id + '.' + m.id), m.text));
+  // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).
+  for (const c of CLASSES as any[]) add('class:' + c.id, c.name, line(c.name + ' (' + c.core + ' class, ' + (ATTR[c.attribute]?.name || c.attribute) + ').', c.tagline, 'Skills: ' + (c.skills || []).map((x: string) => SKILL[x]?.name || x).join(', ') + '. Earned at level 3 by the highest attribute; rank II at ' + (ATTR[c.attribute]?.name || c.attribute) + ' 5, rank III at 8.'));
+  for (const c of (classesJ as any).advanced || []) add('class:' + c.id, c.name, line(c.name + ' (advanced, shelved: advanced classes are being rebuilt; not learnable yet).', c.summary));
+  // Class moves, by the key they run under ("class:<origin>.<moveId>": Bard's Triage is class:medic.triage), as characterBrief names them.
+  const seen = new Set<string>();
+  for (const c of CLASSES as any[]) for (const r of ['I', 'II', 'III']) for (const m of c.ranks?.[r]?.moves || []) { seen.add(m.key); add(m.key, m.name, line(m.name + ' (' + c.name + ' rank ' + r + ').', who(m.key), m.text)); }
+  for (const c of (classesJ as any).advanced || []) for (const m of c.moves || []) if (!seen.has('class:' + c.id + '.' + m.id)) add('class:' + c.id + '.' + m.id, m.name, line(m.name + ' (' + c.name + ', advanced; shelved).', who('class:' + c.id + '.' + m.id), m.text));
   for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Tenets: ' + (p.tenets || []).join('; ') + '.', 'Taboos: ' + (p.taboos || []).join('; ') + '.', 'Blessings: ' + (p.blessings || []).map((b: any) => b.name).join(', ') + '.'));
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));

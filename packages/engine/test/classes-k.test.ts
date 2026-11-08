@@ -8,6 +8,8 @@ import {
   coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
+import { useRevision2Classes, SIG } from './helpers/legacy';
+useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
 /** A seed whose next d20s are ns. */

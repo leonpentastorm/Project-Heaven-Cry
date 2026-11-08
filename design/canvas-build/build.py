@@ -149,14 +149,18 @@ def attrs():
     return [{"id": i, "name": a[i]["name"], "core": a[i]["core"], "ink": INK[i], "fx": ATTR_FX[i]} for i in order]
 
 def classes():
-    return [{"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "sig": b["signature"]} for b in load("classes.json")["base"]]
+    # Class Roster Revision 3: one class per attribute; "sig" is the class's three skills (its attribute's).
+    return [{"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "attribute": b["attribute"], "sig": b["skills"]} for b in load("classes.json")["base"]]
 
 def classes_full():
     out = []
     for b in load("classes.json")["base"]:
         m = b["ranks"]["I"]["moves"][0]
+        if "ref" in m:  # a move named from the pool or an advanced class (Revision 3)
+            d = load("classes.json"); o, mid = m["ref"].split(".")
+            m = next((x for x in d["move_pool"]["moves"] if x["origin"] == o and x["id"] == mid), None) or next(x for a in d["advanced"] if a["id"] == o for x in a["moves"] if x["id"] == mid)
         res = b["resource"]
-        out.append({"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "sig": b["signature"],
+        out.append({"id": b["id"], "name": b["name"], "core": b["core"], "role": b["role"], "attribute": b["attribute"], "sig": b["skills"],
                     "resource": res["id"].capitalize() + (" (max " + str(res["max"]) + ")" if res.get("max") else ""),
                     "move": m["name"].upper(), "moveText": m["text"]})
     return out
