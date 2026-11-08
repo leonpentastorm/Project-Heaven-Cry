@@ -6,6 +6,7 @@ import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
+import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
@@ -15,7 +16,7 @@ const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZ
 export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle';
 
 // ---------- what the layer knows about the game right now ----------
-interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean }
+interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean; charId?: string }
 let units = new Map<string, UnitInfo>();
 let seenTiles: Set<string> | null = null;
 const ROBOT = /drone|robot|\bbot\b|turret|automaton|mech\b|android|construct|sentry/i;
@@ -24,10 +25,10 @@ export function setContext(g: GameState | null, screen: string) {
   units = new Map(); seenTiles = null;
   if (!g) return;
   if (screen === 'combat' && g.combat) {
-    for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name), dead: !!u.dead });
+    for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name), dead: !!u.dead, charId: u.charId || undefined });
     try { seenTiles = visibility(g.combat, 'pc').tiles; } catch { seenTiles = null; }
   } else {
-    for (const c of Object.values(g.characters)) { const p = g.story.positions?.[c.id]; if (p) units.set('pc-' + c.id, { pos: p, name: c.name, side: 'pc', robot: false }); }
+    for (const c of Object.values(g.characters)) { const p = g.story.positions?.[c.id]; if (p) units.set('pc-' + c.id, { pos: p, name: c.name, side: 'pc', robot: false, charId: c.id }); }
     for (const n of g.story.npcs || []) units.set(n.id, { pos: n.pos, name: n.name, side: 'foe', robot: ROBOT.test(n.name) });
   }
 }
@@ -571,6 +572,8 @@ const H: Record<string, Handler> = {
 /** The Soul heart's handlers (fx/soul.ts), lent this layer's fog-aware lookups. They override the 1.2 names they share. */
 const SOUL_KIT = { at, tokOf, posOf: (id: string | null | undefined) => unit(id)?.pos, play };
 Object.assign(H, soulHandlers(SOUL_KIT));
+// Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
+Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; } }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
@@ -759,6 +762,7 @@ function beatOf(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const kb = classBeat(e); if (kb !== undefined) return kb;
+  const fb = faithBeat(e); if (fb !== undefined) return fb;
   if (e.k === 'explode' && e.what === 'discharge') return 520;
   switch (e.k) {
     case 'turn': return 140;
