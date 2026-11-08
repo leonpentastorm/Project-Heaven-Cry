@@ -85,7 +85,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       const p = where(e); if (!p) return;
       play('crystal', p, { rate: 1.2, gain: 0.35 });
       mark(witnessedUri(), { ...p, y: p.y - p.s * 0.95 }, p.s * 0.75, 1500, { glow: accentOf(e.patron, e.accent), from: 0.2, to: 1 });
-      floatText('WITNESSED', p, FAITH_INK, { small: true, delay: 300 });
+      // The word itself is the engine's condition float (play.ts cond): only the eye here, so it never reads twice.
     },
     // Intervention: a sharp bell, the mark flashing at the trigger.
     intervention(e: any) {

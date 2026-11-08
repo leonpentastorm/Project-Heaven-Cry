@@ -6,15 +6,16 @@ import { prayAction, pickerFor, oddsText, FAITH_INK } from '../game/faithView';
 import { accentOf, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog } from './faithTab';
 
-const NEED = { unit: 'Click who it goes to.', two: 'Click two on the grid.', tile: 'Click a tile.' };
+const NEED = { unit: 'Click who it goes to.', two: 'Click two on the grid.', tile: 'Click a tile in sight.' };
 const SIDE = { ally: 'an ally', enemy: 'an enemy', any: 'anyone' };
 
 /** The chosen prayer: its picks (S.target, S.target2, S.tile), the engine's verdict, the payload, and the grid click. */
-export function prayerView(g, cb, cur, sel, S) {
+export function prayerView(g, cb, cur, sel, S, seen) {
   const pv0 = previewPrayer(g, cur.id, sel.kind, sel.id), pk = pickerFor(pv0.target), valid = new Set(pv0.targets || []);
   const nameOf = (id) => (cb.units.find((u) => u.id === id) || {}).name || id;
   const chosen = pk.kind === 'unit' ? [S.target].filter((id) => id && valid.has(id)) : pk.kind === 'two' ? [S.target, S.target2].filter((id) => id && valid.has(id)) : [];
-  const tile = pk.kind === 'tile' ? S.tile || null : null;
+  // A place is aimed at a tile in sight (the engine refuses others; its preview doesn't check sight yet).
+  const inSight = (k) => !seen || seen.has(k), tile = pk.kind === 'tile' && S.tile && inSight(S.tile) ? S.tile : null;
   const args = pk.kind === 'unit' && chosen[0] ? { targetId: chosen[0] } : pk.kind === 'two' ? { ...(chosen[0] ? { targetId: chosen[0] } : {}), ...(chosen[1] ? { targetId2: chosen[1] } : {}) } : tile ? { tile } : {};
   const missing = pk.kind === 'none' ? '' : pk.kind === 'tile' ? (tile ? '' : NEED.tile) : pk.kind === 'two' ? (chosen.length < 2 ? (chosen.length ? 'Click a second one.' : NEED.two) : '')
     : chosen.length ? '' : !valid.size ? 'No one in sight to pray for.' : 'Click ' + (pk.dead ? 'a fallen ally' : pk.downed ? 'a Downed ally' : pk.self ? 'yourself or an ally' : SIDE[pk.side] || 'a target') + '.';
@@ -32,7 +33,7 @@ export function prayerView(g, cb, cur, sel, S) {
     },
     /** A grid click while this prayer is chosen: the state patch, or null to let the screen handle it. */
     click(u, k) {
-      if (pk.kind === 'tile') return { tile: k };
+      if (pk.kind === 'tile') return inSight(k) ? { tile: k } : { tile: null };
       if (!u || !valid.has(u.id)) return null;
       if (pk.kind === 'unit') return { target: u.id };
       if (pk.kind === 'two') { const now = chosen.includes(u.id) ? chosen.filter((x) => x !== u.id) : [...chosen, u.id].slice(-2); return { target: now[0] || null, target2: now[1] || null }; }

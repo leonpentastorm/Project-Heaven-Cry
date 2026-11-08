@@ -531,7 +531,7 @@ export class CombatLogic extends DCLogic {
     const simpleTry = isMagic && SIMPLE[S.action] ? tryIt((c, u) => SIMPLE[S.action](c, u)) : null;
     // Where the chosen spell reaches and whom it would touch (for the grid overlay).
     // A prayer (Blessing 2.0; screens/faithCombat.js): its targets picked on the grid, the engine's preview as the verdict.
-    const prSel = mineTurn ? parsePray(S.action) : null, pr = prSel ? prayerView(g, cb, cur, prSel, S) : null;
+    const prSel = mineTurn ? parsePray(S.action) : null, pr = prSel ? prayerView(g, cb, cur, prSel, S, vis.tiles) : null;
     this._pr = pr;
     const soulAct = S.action === 'outburst' || S.action === 'release' || S.action === 'syphon' || S.action === 'crystallise' || HEART_ACTS.includes(S.action);
     const famInk = pr ? pr.ink : soulAct ? SOUL_INK : SIGIL_GLOW;
