@@ -12,7 +12,7 @@
 //   miracle      {patron, id, at, area, name?, line?}          the full-screen answer (under 2.5 s, skippable), then the area
 // Fog: every map effect goes through the kit's at() (null where the viewer can't see); a Miracle's answer is heard by
 // everyone. Reduce motion: still marks and short fades, no rays or particles.
-import type { FxEvent } from '@engine';
+import { FAITH_PATRON, type FxEvent } from '@engine';
 import { reducedMotion, type Sfx } from '../sfx';
 import { type Pt, anim, after, burst, floatText, put, ring } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
@@ -116,7 +116,8 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     miracle(e: any) {
       play('soul_choir' as Sfx, null, { rate: 0.85, gain: 0.9 });
       const acc = accentOf(e.patron, e.accent);
-      miracleOverlay({ patron: e.patron, name: e.name, line: e.line, accent: acc });
+      const pd = FAITH_PATRON[e.patron];
+      miracleOverlay({ patron: e.patron, name: e.name || pd?.miracle?.name, line: e.line || pd?.lines?.miracle?.[0], accent: acc });
       const area: string[] = Array.isArray(e.area) && e.area.length ? e.area : e.at ? [e.at] : [];
       area.slice(0, 25).forEach((k, i) => { const q = at(k); if (q) after(() => { rays(q, acc, 3, 700); if (!reducedMotion()) burst('glow', q, q.s * 1.3, 700, { color: acc, blend: 'screen' }); }, (reducedMotion() ? 300 : 1500) + i * 25); });
     },
