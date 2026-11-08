@@ -720,7 +720,6 @@ export class CombatLogic extends DCLogic {
     ];
     const legend = [...g.players.filter((p) => cb.units.some((u) => owner(u) === p.id)).map((p) => ({ name: p.name + '\'s', style: 'width: 14px; height: 14px; border-radius: 50%; border: 3px solid ' + p.color }))];
     // ---------- the squad panel: you, then your allies (hover a row for the full card) ----------
-    const bar = (pct, col) => 'display: block; height: 100%; width: ' + Math.max(0, Math.min(100, pct)) + '%; background: ' + col;
     /** An HP bar's layers: the red fill drops at once, the white chip under it trails (CSS .phc-hp-fill / .phc-hp-chip). */
     const abar = (pct, col) => 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(0, Math.min(100, pct)) + '%; background: ' + col;
     const myU = (mineTurn ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || null;
