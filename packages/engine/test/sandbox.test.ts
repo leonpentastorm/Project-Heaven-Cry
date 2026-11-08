@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
-  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf,
+  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf, SKILL,
 } from '../src';
 import { beforeAll, afterAll } from 'vitest';
 import { _setAdvancedLive } from '../src';
@@ -268,6 +268,18 @@ describe('the tools', () => {
     g = apply(g, { type: 'sandbox/level', charId: c.id, level: 2 }, HOST); expect(charOf(g).level).toBe(2);
     g = apply(g, { type: 'sandbox/skill', charId: c.id, skill: 'brain_power', points: 7 }, HOST);
     const ch = charOf(g); expect(ch.skills.brain_power).toBe(7); expect(ch.attrs.intelligence).toBeGreaterThanOrEqual(7); expect(ch.cores.mind).toBeGreaterThanOrEqual(7);
+  });
+  it('max every skill at once: 10 everywhere, every attribute and core follow, the Mastered perks come; 0 clears them', () => {
+    let g = start(); const c = charOf(g);
+    g = apply(g, { type: 'sandbox/skills', charId: c.id, points: 10 }, HOST);
+    const ch = charOf(g);
+    expect(Object.keys(SKILL).every((id) => ch.skills[id] === 10)).toBe(true);
+    expect(Object.values(ch.attrs).every((v) => v === 10)).toBe(true); expect(Object.values(ch.cores).every((v) => v === 10)).toBe(true);
+    expect(ch.perks.length).toBeGreaterThan(0);
+    expect(pc(g).maxHp).toBe(maxHp(ch));
+    g = apply(g, { type: 'sandbox/skills', charId: c.id, points: 0 }, HOST);
+    expect(Object.values(charOf(g).skills).every((v) => !v)).toBe(true);
+    expect(refused(g, { type: 'sandbox/skills', charId: 'nobody', points: 10 })).toBeTruthy();
   });
   it('refill: HP, AP on its turn, ammo, MP, charge, cores; learn any word, school and module; designs', () => {
     let g = start(); const c = charOf(g);

@@ -7,7 +7,16 @@ import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
   lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions } from '@engine';
-import { act, getState, go } from '../game/store';
+import { act as actNow, getState, go, toast } from '../game/store';
+import { turnsBusyUntil } from '../game/fx/play';
+/** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
+ *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
+const act = (a) => {
+  if (a && /^combat\//.test(a.type) && a.type !== 'combat/say' && typeof performance !== 'undefined' && performance.now() < turnsBusyUntil()) {
+    toast('Wait: the other turns are still playing out.'); return null;
+  }
+  return actNow(a);
+};
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { castFight } from '../game/cast';
