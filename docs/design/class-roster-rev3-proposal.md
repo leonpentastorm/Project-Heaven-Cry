@@ -254,3 +254,68 @@ All shelved moves stay in the engine and tests, and can't be learned.
    - Infiltrator is new.
    - Bard reads as a medic now. Keep "Bard", or call it "Medic"?
 7. **Two moves per rank** doubles what a class gives at level 3. Too much?
+
+## 7. Advanced roadmap (far future, built in batches; Leon, 8 Nov 2026)
+
+There are two kinds of advanced class:
+
+- **Squared:** one per base class, for "when you like hitting with a stick VERY MUCH". The base attribute doubled.
+- **Hybrid:** a base class mixed with an attribute from **another core**:
+  - Body mixes with Mind or Soul.
+  - Mind mixes with Body or Soul.
+  - Soul mixes with Body or Mind.
+
+Each class has 6 possible hybrid partners. That gives 27 hybrids, and 36 advanced classes with the squared ones.
+Every class gets at least 2 hybrids.
+
+Gates (provisional):
+
+- A hybrid needs the base attribute at 6 and the partner attribute at 5, from level 7.
+- A squared class needs the base attribute at 9, from level 7.
+
+Advanced classes keep every base move (section 3).
+
+### Batch 1: the 9 squared classes
+
+Names are working titles; an old class in brackets lends its moves.
+
+| Class | Squared | Fantasy |
+|---|---|---|
+| Endurance² | Juggernaut | Nothing gets through, ever |
+| Strength² | Berserker | The stick, VERY MUCH (Empty Hand, Sweep) |
+| Agility² | Gunslinger | Pistols and footwork (The Draw, Six for Six) |
+| Perception² | Ghost | Unseen, unheard, one shot (One Shot) |
+| Intelligence² | Grand Sigilist | One word over the whole field (Enlarge, Earthed) |
+| Expression² | Mirage | Nothing you see is real (Stroke Gambler's dice) |
+| Insight² | Heartbinder | Heart linked to heart (Link, Through, Share) |
+| Determination² | Heartfed | Every feeling in the room is fuel |
+| Virtue² | Saint | The patron's own hand (Lumeri Templar's leftovers) |
+
+### Batch 2: 9 hybrids, two per class (a ring)
+
+| Hybrid | Pair | Fantasy | Moves from |
+|---|---|---|---|
+| Blade Scribe | Strength + Intelligence | Every cut writes a glyph | Blade Scribe |
+| Storm Hand | Strength + Determination | An element in the fist | Storm Hand |
+| Spellslinger | Agility + Intelligence | Spells in the magazine | Spellslinger |
+| Banner Dancer | Agility + Insight | An armourless skirmisher with rallying banners | Banner Dancer |
+| Adamantile Knight | Endurance + Virtue | Plate that turns blows into shields | Adamantile Knight |
+| Warden | Endurance + Expression | Walls, cover runes, turrets | Warden, Siege Engineer |
+| Shade | Perception + Determination | Silent kills that leave nightmares | Shade |
+| Inquisitor | Perception + Virtue | Sees the sin, delivers the sentence | RTC Contractor (or new) |
+| Hexer | Expression + Insight | Fear given a face | Hexer |
+
+Each attribute appears exactly twice, so after batch 2 every base class has its squared class and 2 hybrids.
+
+### Batch 3 and on: the other 18 hybrids, in whatever order playtests ask for.
+
+**Same-core pairs are out of the scheme.** For example Strength + Agility, Intelligence + Expression, Determination + Insight.
+
+- Their old classes move to a squared class or to a hybrid: Gunslinger, Hellraiser Heavy, Stroke Gambler, Glyph Mason, Devoted.
+- Hellraiser Heavy, Glyph Mason, Devoted, Circuit Mage, Vessel and Twinbound wait for batch 3 cross-core pairs:
+  - Hellraiser: Agility + Virtue or Mind.
+  - Glyph Mason: Intelligence + Endurance.
+  - Devoted: Determination + Expression.
+  - Circuit Mage: Intelligence + Insight.
+  - Vessel: Determination + Endurance.
+  - Twinbound: Determination + Expression.
