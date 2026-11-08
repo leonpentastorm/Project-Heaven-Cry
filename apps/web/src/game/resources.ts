@@ -11,7 +11,7 @@
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator,
-  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, devotionOf, PATRON, COMPANION_KINDS, MODULE, isMelee, canJam } from '@engine';
+  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
 export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY';
@@ -272,12 +272,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
       hint: (rule || info.label + ' (' + info.source + ').') + spend });
   }
-  // ---- a patron's Devotion (prayer) ----
-  if (c?.patron && (PATRON as any)[c.patron]) {
-    const dv = devotionOf(c);
-    rows.push({ key: 'devotion', label: 'Devotion', value: dv + ' / 10', now: dv, max: 10, kind: 'pips', colour: RES_INK.faith, sub: (PATRON as any)[c.patron].name,
-      hint: 'Your standing with ' + (PATRON as any)[c.patron].name + ': half of it adds to prayer rolls; a Miracle needs 5.' });
-  }
+  // ---- faith (Blessing 2.0, rules 1.6): Devotion with its gates, Witnessed, the vow; an Atheist's pieces ----
+  rows.push(...faithRows(u, c));
   // ---- companions (drone, beast, twin) ----
   const comps: { key: string; name: string; hp: number; max: number; kind: string }[] = [];
   if (u && cb) for (const x of cb.units) { if (x.ctrl && x.ctrl === u.charId) comps.push({ key: x.id, name: x.name, hp: x.dead ? 0 : x.hp, max: x.maxHp, kind: x.companion || '' }); }
@@ -364,4 +360,28 @@ export function resRowView(r: ResRow, compact = false) {
 /** The block's values for a template: every row, and the 2–3 most urgent for the narrow bars. */
 export function resView(rows: ResRow[], urgent = 3) {
   return { has: rows.length > 0, rows: rows.map((r) => resRowView(r)), urgent: urgentRows(rows, urgent).map((r) => resRowView(r, true)), hasUrgent: rows.length > 0 };
+}
+
+/** The faith rows (Blessing 2.0): a Faithful's Devotion (0–10, the next gate in words), Witnessed and the vow; an
+ *  Atheist's knowledge pieces per patron. Read from the engine (beliefOf, devotionNow, the unit's conditions and vow). */
+export function faithRows(u: any | null, c: any | null): ResRow[] {
+  if (!c) return [];
+  const rows: ResRow[] = [], b = (E as any).beliefOf ? (E as any).beliefOf(c) : null; if (!b) return rows;
+  const P: Record<string, any> = (E as any).FAITH_PATRON || {}, G: any = (E as any).GATE || { 1: 3, 2: 5, 3: 7, miracle: 7 };
+  if (b.kind === 'faithful') {
+    const p = P[b.patron], dv = (E as any).devotionNow ? (E as any).devotionNow(c) : c.devotion ?? 3;
+    const next = dv < G[1] ? 'Hymn I at ' + G[1] : dv < G[2] ? 'Hymn II at ' + G[2] : dv < G[3] ? 'Hymn III and the Miracle at ' + G[3] : 'every Hymn open';
+    rows.push({ key: 'devotion', label: 'Devotion', value: dv + ' / 10', now: dv, max: 10, kind: 'pips', colour: RES_INK.faith, sub: (p?.name || b.patron) + ' · ' + next,
+      ...(dv >= G[3] ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
+      hint: 'Your standing with ' + (p?.name || 'your patron') + ': Hymn I at ' + G[1] + ', II at ' + G[2] + ', III at ' + G[3] + '; the Miracle needs Faith 7 and Devotion ' + G.miracle + ' and spends it all. What they like raises it; their taboos lower it.' });
+    const wit = !!u && !!(u.conds && u.conds.witnessed);
+    if (wit) rows.push({ key: 'witnessed', label: 'Witnessed', value: 'WATCHED', kind: 'text', colour: RES_INK.faith, level: 'ready', sub: p?.name, hint: (p?.name || 'Your patron') + ' is watching until your next turn: what they like gets +2, taboos cost double.' });
+    const vow = (u && u.vow) || c.vow;
+    if (vow) { const vd = ((E as any).VOW || {})[vow.id]; rows.push({ key: 'vow', label: 'Vow', value: vow.state.toUpperCase(), kind: 'text', colour: vow.state === 'broken' ? RES_INK.muted : RES_INK.faith, sub: vd?.words || vow.id,
+      ...(vow.state === 'broken' ? { warn: 'BROKEN' as ResWarn, level: 'alert' as const } : {}), hint: (vd?.words || 'Your vow') + ' Kept at the end of the fight: +1 Devotion. Broken: −2.' }); }
+  } else {
+    for (const [id, n] of Object.entries(c.faithPieces || {}) as [string, number][]) if (n > 0) rows.push({ key: 'piece-' + id, label: P[id]?.name || id, value: Math.min(3, n) + ' / 3', now: Math.min(3, n), max: 3, kind: 'pips', colour: RES_INK.faith, sub: 'Pieces (Atheist)',
+      hint: 'Knowledge pieces of ' + (P[id]?.name || id) + ': each unlocks their next Hymn, prayed by dice (TN 14 / 16 / 18).' });
+  }
+  return rows;
 }

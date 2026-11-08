@@ -57,3 +57,20 @@ describe('faith views', () => {
     expect(BELIEF_TEXT.faith3).toMatch(/Faith 3/);
   });
 });
+
+import { faithRows } from './resources';
+describe('faith resource rows', () => {
+  it('a Faithful: Devotion with the next gate; a vow; Witnessed when watched', () => {
+    const { c } = game({ kind: 'faithful', patron: 'old_overcast' });
+    const rows = faithRows({ conds: { witnessed: 1 }, vow: { id: 'stand', state: 'sworn' } }, c);
+    expect(rows.map((r) => r.key)).toEqual(['devotion', 'witnessed', 'vow']);
+    expect(rows[0]).toMatchObject({ value: '3 / 10', kind: 'pips' }); expect(rows[0].sub).toMatch(/Hymn II at 5/);
+    expect(rows[2].value).toBe('SWORN');
+    expect(faithRows({ vow: { id: 'stand', state: 'broken' } }, c)[1]).toMatchObject({ warn: 'BROKEN', level: 'alert' });
+  });
+  it('an Atheist: the pieces per patron', () => {
+    const { c } = game({ kind: 'atheist' }); (c as any).faithPieces = { mother_ember: 2 };
+    const rows = faithRows(null, c);
+    expect(rows.map((r) => r.label + ' ' + r.value)).toEqual([FAITH_PATRONS.find((x: any) => x.id === 'mother_ember').name + ' 2 / 3']);
+  });
+});
