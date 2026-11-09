@@ -1,17 +1,21 @@
-# Art pipeline helper from the 2026 deliveries (moved from scripts/ in 0.0.1). It was written for the old per-delivery
-# folders (revisions/vN, previews/, sources/); its paths were rewritten to where those files are now, but before reusing it
-# for new work, point its outputs at the 0.0.1 layout in art/README.md (production flat by use, the rest in art/_archive/).
+# Art pipeline helper from the 2026 deliveries (moved from scripts/ in 0.0.1). Rebuilds the title screen's front layer
+# from its native render and foreground-placement.json, and regenerates the review previews, the small layered PSD and
+# technical-review.json. Paths follow the 0.0.1 layout (art/README.md): the masters flat in art/ui/title-screen/, the
+# native renders and previews in art/_archive/ui/title-screen/. Revision 5 (9 Nov 2026): placement may set
+# "overscan": "mirror", which continues whatever touches the right and bottom of the placed render into the overscan
+# by reflection (so the rock never shows a cut edge when the layer slides), and "alpha_floor": n, which makes every
+# pixel at alpha n or more fully opaque.
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import struct, json, hashlib, itertools, zlib
 
 ROOT=Path(__file__).resolve().parents[2]
-ART=ROOT/'art/ui/title-screen'; PRE=ART/'previews'
+ART=ROOT/'art/ui/title-screen'; ARCH=ROOT/'art/_archive/ui/title-screen'; PRE=ARCH/'previews'
 PRE.mkdir(parents=True,exist_ok=True)
 W,H=4096,2304; SAFE=(256,144,3840,2160)
 hashfile=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-sources={name:ART/'source-renders'/f'title-{name}-native.png' for name in ['back','mid','front']}
+sources={name:ARCH/'source-renders'/f'title-{name}-native.png' for name in ['back','mid','front']}
 layers={}; native={}
 placement=json.loads((ART/'foreground-placement.json').read_text())
 for name,path in sources.items():
@@ -21,7 +25,16 @@ for name,path in sources.items():
    layers[name]=Image.open(ART/f'title-{name}.png').convert('RGBA')
   else:
    export=Image.new('RGBA',(W,H))
-   export.alpha_composite(im.convert('RGBA').resize(tuple(placement['scaled_dimensions']),Image.Resampling.LANCZOS),tuple(placement['destination_xy']))
+   placed=im.convert('RGBA').resize(tuple(placement['scaled_dimensions']),Image.Resampling.LANCZOS)
+   x0,y0=placement['destination_xy']
+   if placement.get('alpha_floor'):
+    # a generator's "opaque" can be 252/255: snap the near-opaque to opaque, so nothing behind ghosts through
+    a=np.asarray(placed).copy(); al=a[...,3]; al[al>=placement['alpha_floor']]=255; placed=Image.fromarray(a)
+   if placement.get('overscan')=='mirror':
+    # reflect into the right and bottom margins only (the top and left of the render are empty)
+    a=np.asarray(placed); r=max(0,W-(x0+placed.width)); b=max(0,H-(y0+placed.height))
+    placed=Image.fromarray(np.pad(a,((0,b),(0,r),(0,0)),mode='symmetric'))
+   export.alpha_composite(placed,(x0,y0))
    export.save(ART/'title-front.png',optimize=True)
    layers[name]=export
 def composite(shifts=None):
@@ -49,7 +62,7 @@ zone.save(PRE/'safe-zones.jpg',quality=94)
 # Technical test typography is a separate preview; never bake it into masters.
 textpreview=view.convert('RGB').resize((1920,1080),Image.Resampling.LANCZOS)
 td=ImageDraw.Draw(textpreview);mask=Image.new('L',textpreview.size);md=ImageDraw.Draw(mask)
-titlefont=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf',72)
+titlefont=next((ImageFont.truetype(f,72) for f in ['/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf','/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'] if Path(f).exists()),None) or font(72)
 for y,text in [(190,'PROJECT HEAVEN'),(272,'CRY')]:
  td.text((40,y),text,font=titlefont,fill='white');md.text((40,y),text,font=titlefont,fill=255)
 for i,text in enumerate(['CONTINUE','NEW GAME','JOIN A FRIEND','CHARACTERS','SAVED GAMES','SETTINGS','CREDITS']):
@@ -106,8 +119,9 @@ def write_psd(destination, pixel_layers, size):
   merged=b''.join(c.tobytes() for c in full.convert('RGB').split())
   compressed=zlib.compress(merged,6);f.write(compressed)
   assert zlib.decompress(compressed)==merged
-(ROOT/'production').mkdir(parents=True,exist_ok=True)
-write_psd(ROOT/'production/title-screen-4k.psd',layers,(W,H))
+# The full-size 4096 × 2304 PSD is too big for the repository; write it outside it when wanted (PHC_TITLE_PSD4K=path).
+import os
+if os.environ.get('PHC_TITLE_PSD4K'): write_psd(Path(os.environ['PHC_TITLE_PSD4K']),layers,(W,H))
 psd_size=(1672,941)
 write_psd(ART/'title-screen.psd',{n:im.resize(psd_size,Image.Resampling.LANCZOS) for n,im in layers.items()},psd_size)
 
