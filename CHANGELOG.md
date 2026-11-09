@@ -38,6 +38,9 @@ Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `do
   - enemy cut-ins;
   - reduced motion;
   - the slimmer crit strip.
+## 0.9.1 — 9 November 2026
+
+Straight to `develop` (an art brief fix): **the title heroes look at the god, as a fixed rule**. Leon: Revision 5's squad "still looks at nothing". Close up, their faces turn left, only 10–20° above level, while the god's face is almost straight above them. The title-screen brief (`art/briefs/title-screen.md`) now fixes the target: the god's face at screen x 69%, y 5%, 65–90° above level from the outcrop. It adds a guide image (`art/briefs/title-screen/gaze-guide.jpg`: the scene, the squad's place, the face and each hero's sightline) and a sightline check before any front layer ships. The front layer itself waits for the corrected painting.
 
 ## 0.9.0 — 9 November 2026
 
