@@ -1,4 +1,4 @@
-# Faith 2.2 "the god shows up": hand-off (rules 1.6.3, decision 110, branch `feature/faith-presence`)
+# Faith 2.2 "the god shows up": hand-off (rules 1.6.3, decision 111, branch `feature/faith-presence`)
 
 The design is `docs/design/faith-presence-spec.md` (Leon's accepted direction, 9 Nov 2026). Once written into the rules
 spec, `docs/rules/PHC-Core-Rules-v1.0.md` wins.
@@ -7,7 +7,7 @@ spec, `docs/rules/PHC-Core-Rules-v1.0.md` wins.
 
 - **Spec:** the 1.6.3 revision note; Witnessed and Interventions rewritten; the grant bank in the voice lines; the patron
   table's intervention column and the condition row; items 603, 608 and 620 superseded; section 14 items 738–746, all
-  PROVISIONAL. Decision 110.
+  PROVISIONAL. Decision 111.
 - **Data:** `patrons.json` `prayer.witnessed.until = [fight_end, intervention]`; the `prayer.intervention` block (once a
   fight, twice from Devotion 7; 20 + 4 × Devotion, × Blessing power); the widened triggers (the Quartermaster's
   `you_reload`, `core_dry`, `mp_out`; the Laughing Mask's `enemy_misses_you`); the 11th line bank, `grant` (24 lines, `{name}`).
@@ -57,7 +57,7 @@ spec, `docs/rules/PHC-Core-Rules-v1.0.md` wins.
   game, a left room or a hidden tab (`clearFx`) closes everything.
 - **Everyone sees it:** it is the `miracle` fx event, played by every screen's FxLayer like any other effect.
 - **The grant line in the log:** kept. The cut-in shows it, and the engine's `patron_line {event: 'grant'}` still makes a
-  card in the combat or story log. The log is the record; a skipped cut-in leaves nowhere else to read it. (Decision 110.)
+  card in the combat or story log. The log is the record; a skipped cut-in leaves nowhere else to read it. (Decision 111.)
 
 **Assets** (the project's sound and VFX rule: sourced, credited, only tints, rings, lines and panels in CSS)
 

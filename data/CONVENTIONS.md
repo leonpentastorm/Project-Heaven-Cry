@@ -69,6 +69,20 @@ Every rule-bearing item carries both:
 - Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`).
 - Campaign zones may carry `tags`, `terrain`, `in_city`, `urban`, `fear`, `upper_realm`, `faction`; zone NPCs `kind` and `tags`.
 
+## Sigil words (sigils.json, rules 1.4 and 1.10)
+- Each word carries `inflection` (rules 1.10, Sigil 1.5): `{"text": "...", "effects": [{"op": "inflection", "stat": "<stat>", "value": n}], "provisional": true}`,
+  the small upgrade a Mastered word (30 uses) gives its caster. `stat` is one the engine runs: `cond_rounds`, `save_tn`, `to_hit`,
+  `damage_pct`, `push_tiles`, `shield_pct`, `heal_pct`, `charge`, `flux`, `lasts_rounds`, `radius`, `teleport_tiles`,
+  `barrier_hp_pct`, `move_tiles`, `range`, `turret_def`, `pull_tiles`, `jump_radius`, `leech`, `mult`, `radius_at_4`,
+  `cone_length`, `spare_downed`. Any other stat goes to the Narrator with the `text`.
+- `grammar.study` (study per Evoke, thresholds, copying, Mastery study) and `grammar.word_mastery` (Practised and Mastered
+  use counts) hold the growth numbers; both are provisional.
+- `grammar.shape.junction` (rules 1.10): the Junctions gate (`gate_skill`, `gate_points`: Brain Power 10), provisional.
+- `objects.json` `sigil_mark` carries `mark`: the Investigate approach the engine writes on every mark (`label`, `skills`,
+  `pick: "best"`), the `ages` and `damages`, their defaults, the TN table `tn[age][damage]` (8/12/16/20 only) and the
+  `study` a success gives. Campaign marks give `word` (a sigils.json id) and optional `age` and `damage`; the validator
+  checks them.
+
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.

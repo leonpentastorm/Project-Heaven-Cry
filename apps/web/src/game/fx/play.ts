@@ -374,7 +374,10 @@ const H: Record<string, Handler> = {
     const s = svg(40, 40, '<path d="M4 12 V4 H12 M28 4 H36 V12 M36 28 V36 H28 M12 36 H4 V28" fill="none" stroke="#FFFFFF" stroke-width="3"/>');
     const box = put(s, p, p.s * 1.3, p.s * 1.3, 700);
     anim(box, [{ transform: 'scale(1.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.4 }, { opacity: 0.2, offset: 0.6 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }], { duration: 700, fill: 'forwards' });
-    play('sigil_draw', p, { rate: 1.8, gain: 0.5 }); floatText('ANALYZED', p, WHITE, { small: true, delay: 300 });
+    play('sigil_draw', p, { rate: 1.8, gain: 0.5 });
+    // Rules 1.10: Analyze aimed at a glyph or a trace reads (copies) its word.
+    if (e.glyph) { play('sg_study', p, { delay: 260 }); floatText('COPIED', p, SIGIL_INK, { small: true, delay: 300 }); }
+    else floatText('ANALYZED', p, WHITE, { small: true, delay: 300 });
   },
   // pickup and pile: fx/world.ts (rules 1.9, the pick-up names what was taken).
   cover() { /* folded into the shot */ },
@@ -391,6 +394,14 @@ const H: Record<string, Handler> = {
     squares(p, el.id === 'raw' ? SIGIL_INK : el.ink, 6, 0.5, 600, 300);
     // Each word is a note: a pattern drawn word by word plays a short melody.
     play('sigil_draw', p, { rate: NOTE[(hash(e.word) % NOTE.length)] });
+    // Sigil 1.5 (rules 1.10): the glyph joins a stroke (a Line grows, or a junction joins two): a glassy link after the note.
+    if (e.effect === 'extends') play('sg_join', p, { delay: 240, rate: e.junction ? 0.85 : 1 });
+  },
+  // Sigil 1.5 (rules 1.10): an Evoke's study crossed a threshold, or a word became Mastered and its inflection came on.
+  sigil_growth(e) {
+    const p = at(e.at), now: string[] = e.mastered || [];
+    if (now.length) { play('sg_inflect', p, { delay: 300 }); if (p) { ring(p, SIGIL_INK, 800, { from: 0.6, to: 2.2, width: 2, delay: 300 }); floatText('INFLECTION ON · ' + now.map((w) => w.toUpperCase()).join(' · '), p, SIGIL_INK, { small: true, delay: 300 }); } }
+    else { play('sg_study', p, { delay: 200, gain: 0.7 }); if (p) floatText('A NEW WORD CAN BE LEARNED', p, SIGIL_INK, { small: true, delay: 200 }); }
   },
   glyph_fade(e) { const p = at(e.tile); if (!p) return; fallingSquares(p, MUTED, 5, 500); floatText((e.word || '').toUpperCase() + ' FADES', p, MUTED, { small: true }); },
   scuff(e) { const p = at(e.at); if (p) { dust(p, p.s); squares(p, MUTED, 6, 0.4, 400); } play('step', p, { rate: 0.7 }); },

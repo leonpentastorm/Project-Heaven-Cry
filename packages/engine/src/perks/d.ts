@@ -18,7 +18,7 @@ import {
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
-  RESONANCE_BONUS, resonates, type Affected,
+  RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -361,9 +361,14 @@ register({
 // (STAY, WAIT, WATCH) can't carry an Outburst. Pay both: the Evoke's charge and AP now, the Outburst's MP and Strain
 // already paid at Begin. Args: tile = a glyph of the Line, choice = the aim (as an Evoke's), aims = TWICE's others.
 // =====================================================================================================================
+/** The Evoke options a fused cast carries: its aims, and the stroke picked at a junction glyph (as game.ts evokeOptsOf). */
+function fusedOpts(args: any) {
+  const st = args?.stroke;
+  return { ...(args?.aims?.length ? { aims: args.aims as string[] } : {}), ...(st && st !== 'new' && !String(st).startsWith('junction:') ? { stroke: String(st) } : {}) };
+}
 function fusedPlan(h: Holder, args: any) {
-  const u = h.u!, cb = h.cb!, opts = args?.aims?.length ? { aims: args.aims as string[] } : {};
-  const pv = previewEvoke(cb, u, args.tile, args.choice, opts);
+  const u = h.u!, cb = h.cb!;
+  const pv = previewEvoke(cb, u, args.tile, args.choice, fusedOpts(args));
   if (!pv.ok) return { pv, why: pv.why || 'Can\'t fire that.' };
   const sp: any = pv.spell;
   if (sp?.stay || sp?.wait || sp?.watch) return { pv, why: 'A placed spell (STAY, WAIT, WATCH) can\'t carry an Outburst.' };
@@ -380,7 +385,7 @@ register({
   id: 'twin_discipline', claims: 'all',
   actions: [{
     id: 'fused', label: 'Fused Evoke', scope: ['combat', 'world'], target: 'tile',
-    ap: (h, args) => { const u = h.u, cb = h.cb; if (!u || !cb || !args?.tile) return SPELL_AP.evoke; const pv = previewEvoke(cb, u, args.tile, args.choice); return pv.ap ?? SPELL_AP.evoke; },
+    ap: (h, args) => { const u = h.u, cb = h.cb; if (!u || !cb || !args?.tile) return SPELL_AP.evoke; const pv = previewEvoke(cb, u, args.tile, args.choice, fusedOpts(args)); return pv.ap ?? SPELL_AP.evoke; },
     text: 'Fire a Sigil Line with your held Outburst inside it: the Sigil\'s words set where it reaches and what it covers, the Outburst the school. Evoke charge and AP.',
     available: (h) => { const m = h.u?.mg; if (!m || !m.evoker || !m.emanator) return false; return m.held ? true : 'Begin and hold an Outburst first.'; },
     preview: (h, args) => {
@@ -420,18 +425,27 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
     fused: true, design: d.id, school: d.school, fizzle: !hits.length });
   log(cb, u.name + ' fuses ' + d.name + ' into ' + name + ' (Twin Discipline, a Line of ' + p.tiles.length + ', ' + (pv.facing?.mode || 'along') + ', ' + pv.charge + ' charge)' + (hits.length ? '' : ': it finds no one') + '.');
   const s = stateOf(h), mods0 = [...d.modules], range0 = m.soulRange;
+  let released = 0;
   try {
-    for (const x of hits) {
-      const t = x.unit; if (t.dead) continue;
-      s.fusing = { mult: x.mult };
-      // Rules 1.5: the Sigil decides the area, so each creature takes the held Outburst as a Bolt (its shape, Size,
-      // Random and Far set aside; Ether implied: classes/soul.ts asBolt).
-      m.held = { ...held };
-      u.ap += SPELL_AP.release; const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { u.ap -= SPELL_AP.release; break; }
-    }
+    // One release per creature, but one cast: practice is held back during the loop and granted once after it
+    // (rules 1.8 section 5: 1, +1 per stage past 1, +1 per feeling), as for a single release.
+    practiceOnce(cb, u, () => {
+      for (const x of hits) {
+        const t = x.unit; if (t.dead) continue;
+        s.fusing = { mult: x.mult };
+        // Rules 1.5: the Sigil decides the area, so each creature takes the held Outburst as a Bolt (its shape, Size,
+        // Random and Far set aside; Ether implied: classes/soul.ts asBolt).
+        m.held = { ...held };
+        u.ap += SPELL_AP.release; const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { u.ap -= SPELL_AP.release; break; }
+        released++;
+      }
+    }, () => (released ? 1 + Math.max(0, (held.stage ?? 0) - 1) + (held.felt || []).length : 0));
   } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
+  // It is an Evoke too (spec 1.5 section 2.1): the Line earns study and its words their uses.
+  const grew = evokeGrowth(cb, u, p.words, p.glyphs.length, hits.some((x) => x.unit.side !== u.side));
+  if (grew.length) log(cb, grew.join(' '));
   // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Parallel Thought and Clean Draw.
-  const used = new Set(p.glyphs.filter((g: any) => !g.keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
+  fadePattern(cb, p); // rules 1.10 (item 919): a junction stays in its other stroke; the strokes left are tidied
   const pt = holderOf({ u, cb, c: h.c }, 'parallel_thought'); if (pt) ptEvoked({ ...pt, u, cb }, cb);
   const cd = holderOf({ u, cb, c: h.c }, 'clean_draw'); if (cd) cleanEvoked({ ...cd, u, cb }, cb, p.glyphs);
   return null;

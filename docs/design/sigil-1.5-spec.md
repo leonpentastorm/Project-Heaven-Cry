@@ -1,6 +1,7 @@
 # Sigil 1.5: the language grows (spec, 9 Nov 2026)
 
-Status: **accepted direction (Leon, 9 Nov 2026). Rules revision 1.9.** Every number here is provisional, for the
+Status: **accepted direction (Leon, 9 Nov 2026). Rules revision 1.10** (written as 1.9; World Play 1.1 took 1.9 on
+develop first, so the spec's items for this are 901–923). Every number here is provisional, for the
 damage balance pass. Built on rules 1.4 (`docs/design/sigil-1.4-proposal.md` and the spec's "Rules revision 1.4"),
 which this keeps and extends. **This is the only file to hand over**; it links the rest:
 
@@ -160,7 +161,7 @@ These mirror Outburst 4.0's gated modules. They come back with their classes; mo
 ## Build split
 
 - **Part A: spec, data and engine.**
-  - Rules 1.9 in the spec.
+  - Rules 1.10 in the spec (items 901–923).
   - Strokes, the stroke picker and split-on-scuff.
   - Study, copying, `sigil_mark` and Investigate.
   - Mastery study and the Mastered word.

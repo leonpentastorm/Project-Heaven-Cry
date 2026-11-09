@@ -21,7 +21,7 @@ export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map(
 export interface Approach {
   label: string; skills: string[]; tn: number; stakes: string;
   /** What success does by itself (rules 1.7 adds loot, advance, and on people ally and inform; safe: a hazard's safe path). */
-  success: '' | 'remove' | 'open' | 'reveal' | 'disarm' | 'loot' | 'advance' | 'ally' | 'inform' | 'safe';
+  success: '' | 'remove' | 'open' | 'reveal' | 'disarm' | 'loot' | 'advance' | 'ally' | 'inform' | 'safe' | 'study';
   /** What failure does by itself (rules 1.7; hostile on people; hazard: one tile of the hazard on the actor). */
   fail?: '' | 'hurt' | 'alarm' | 'condition' | 'jam' | 'lose' | 'hostile' | 'hazard';
   /** advance: the objective it completes ("mission/objective" or a bare objective id). */
@@ -56,10 +56,36 @@ export interface MapObject {
   seq?: number;
   /** Jammed: locked for the rest of this scene number (a failed approach's jam). */
   jam?: number;
+  /** A sigil mark (rules 1.10, Sigil 1.5): the word drawn into the world, its age and damage (they set the TN). */
+  word?: string; age?: string; damage?: string;
+}
+
+// ---------- sigil marks (rules 1.10, Sigil 1.5; spec items 921-922) ----------
+const MK: any = (OBJ.sigil_mark as any)?.mark || {};
+export const MARK = {
+  label: String(MK.label || 'Investigate the sigil'), skills: (MK.skills || ['analysis', 'rumination']) as string[], pick: (MK.pick || 'best') as 'best',
+  ages: (MK.ages || ['fresh', 'old', 'ancient']) as string[], damages: (MK.damages || ['intact', 'worn', 'broken']) as string[],
+  age: String(MK.default_age || 'old'), damage: String(MK.default_damage || 'intact'), tn: (MK.tn || {}) as Record<string, Record<string, number>>, study: Number(MK.study ?? 3),
+};
+/** A mark's TN by its age and damage (objects.json sigil_mark.mark.tn). */
+export const markTn = (age?: string, damage?: string) => MARK.tn[MARK.ages.includes(age || '') ? age! : MARK.age]?.[MARK.damages.includes(damage || '') ? damage! : MARK.damage] ?? 12;
+/** The engine's own Investigate approach on a sigil mark: always first, its TN from the mark's age and damage. Other
+ * approaches (the Narrator's) stay after it. Idempotent; keeps the tries already made. */
+export function ensureMark(o: MapObject): MapObject {
+  if (o.kind !== 'sigil_mark') return o;
+  if (o.age && !MARK.ages.includes(o.age)) delete o.age; if (o.damage && !MARK.damages.includes(o.damage)) delete o.damage;
+  const tn = markTn(o.age, o.damage), list = o.approaches || (o.approaches = []);
+  const i = list.findIndex((a) => a.success === 'study'), old = i >= 0 ? list.splice(i, 1)[0] : null;
+  list.unshift({ label: MARK.label, skills: [...MARK.skills], pick: MARK.pick, tn, stakes: 'Read the word drawn here, and copy it for study.', success: 'study', tries: old?.tries || [], ...(old?.gone ? { gone: true } : {}) });
+  return o;
 }
 
 export function makeObject(id: string, kind: string, pos: string, extra: Partial<MapObject> = {}): MapObject {
   const k = OBJ[kind] || OBJ.poi;
+  if (k.id === 'sigil_mark') return ensureMark(makeObject0(id, k, pos, extra));
+  return makeObject0(id, k, pos, extra);
+}
+function makeObject0(id: string, k: ObjKind, pos: string, extra: Partial<MapObject>): MapObject {
   return { id, kind: k.id, pos, name: extra.name || k.name, text: extra.text || '', approaches: extra.approaches || [],
     ...(k.hp != null ? { hp: k.hp, max: k.hp } : {}), ...(k.hidden ? { hidden: true } : {}), ...(k.door ? { open: false } : {}),
     ...Object.fromEntries(Object.entries(extra).filter(([key]) => !['name', 'text', 'approaches'].includes(key))) } as MapObject;

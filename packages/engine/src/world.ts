@@ -3,12 +3,13 @@
 // clear aim in every area (the HERE card and markers), and typed attempts rolled like buttons. The Narrator places
 // things and writes their choices; the engine runs every roll, cost and effect here, deterministically (g.rng).
 // The reducer (game.ts) calls in; game.ts's private helpers come through its `_world` object at call time.
-import { SKILL, TN_LADDER, WEAPON } from './data';
-import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg } from './character';
+import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
+import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
+import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
 import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
 import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
 import { gearBonus, gearHas } from './character';
-import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy } from './objects';
+import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
 import { applyCond, isCondition } from './magic';
 import { songMod } from './music';
@@ -465,6 +466,7 @@ export function tryApproach(g: GameState, c: Character, by: string, targetId: st
   if (t!.kind === 'obj' && t!.o.resolved) fail('That\'s already dealt with.');
   if (t!.kind === 'obj' && jammed(g, t!.o)) fail(t!.o.name + ' is jammed for now.');
   if (triedBy(ap!, c.id)) fail(c.name + ' already tried that.');
+  if (t!.kind === 'obj' && ap!.success === 'study' && t!.o.kind === 'sigil_mark') { const w = markWord(t!.o); if (!w) fail('The mark is too far gone to hold a word.'); if (knowsWord(c, w)) fail(c.name + ' knows ' + SIGIL[w].word + ' already.'); }
   const skills = (ap!.pick === 'best' ? [bestSkill(g, c, ap!.skills)] : ap!.skills).filter((s) => SKILL[s]); if (!skills.length) fail('That approach has no skill to roll.');
   const I = W();
   I.push(g, { kind: 'player', who: by, text: c.name + (t!.kind === 'npc' ? ' tries with ' + t!.n.name + ': ' : ' tries: ') + ap!.label + ' (' + nameOf(t!) + ', ' + refOf(p) + ').', head: c.name });
@@ -483,13 +485,36 @@ export function approachResult(g: GameState, ck: Check) {
   ap.tries.push({ charId: c.id, name: c.name, ok, total: ck.roll?.total || 0, scene: g.story.scene.n });
   canon(g, c.name + (ok ? ' succeeded at' : ' failed at') + ' "' + ap.label + '" on ' + nm + ' (scene ' + g.story.scene.n + ').', [c.name, nm], 2);
   let effect = '';
-  if (ok) effect = success(g, c, t, ap, p);
+  if (ok) effect = success(g, c, t, ap, p, !!ck.roll?.crit);
   else effect = failure(g, c, t, ap, p);
   worldFx(g, 'approach', { unit: 'pc-' + c.id, target: idOf(t), kind: t.kind, at: p, label: ap.label, ok, effect: effect || null });
   worldEvent(g, 'approach', c.name + ' ' + (ok ? 'succeeded' : 'failed') + ' at "' + ap.label + '" on ' + nm + ' (' + idOf(t) + ')' + (effect ? ': ' + effect : '') + '.');
   I.closeRoundIfDone(g);
 }
-function success(g: GameState, c: Character, t: Target, ap: Approach, p: string): string {
+// ---------- sigil marks (rules 1.10, Sigil 1.5; spec items 921-922) ----------
+/** The word a sigil mark holds (a real Sigil word id), or ''. */
+export const markWord = (o: MapObject): string => { const w = String(o.word || '').toLowerCase(); return SIGIL[w] ? w : ''; };
+/** A successful Investigate: the word copied for study (+3, on the known-to-study list); a critical teaches it outright
+ * when a slot is free (not the scene's one new thing: it is study). Returns the effect for the event line. */
+function investigateMark(g: GameState, c: Character, o: MapObject, crit: boolean): string {
+  const I = W(), say = (x: string) => I.push(g, { kind: 'system', text: x, charId: c.id }), w = markWord(o);
+  if (!w) return '';
+  (o as any).copiedBy = [...new Set([...((o as any).copiedBy || []), c.id])];
+  const name = SIGIL[w].word;
+  if (knowsWord(c, w)) { say(c.name + ' knows ' + name + ' already.'); return 'known'; }
+  if (crit && (c.sigils || []).length < wordsKnownCap(c)) {
+    c.sigils = [...(c.sigils || []), w]; learnedElsewhere(c, w);
+    say(c.name + ' reads the mark at ' + refOf(o.pos) + ' at a glance: a critical teaches the Sigil word ' + name + ' outright.');
+    worldFx(g, 'sigil_learned', { unit: 'pc-' + c.id, at: o.pos, word: w, why: 'mark' });
+    return 'learned ' + name;
+  }
+  const had = growthOf(c).toStudy.includes(w);
+  const lines = had ? [c.name + ' reads ' + name + ' again: already on the known-to-study list.'] : copyWord(c, w, MARK.study, 'a sigil mark');
+  if (crit) lines.push('A critical, but ' + c.name + ' knows as many words as Brain Power allows (' + wordsKnownCap(c) + '): ' + name + ' stays on the known-to-study list.');
+  for (const l of lines) say(l);
+  return had ? 'already copied ' + name : 'copied ' + name;
+}
+function success(g: GameState, c: Character, t: Target, ap: Approach, p: string, crit = false): string {
   const I = W(), say = (x: string) => I.push(g, { kind: 'system', text: x });
   const s = ap.success;
   if (s === 'advance') { const key = ap.objective || ''; const done = markObjective(g, key, 'done', (e) => I.push(g, e)); return done ? 'objective ' + key + ' done' : ''; }
@@ -508,6 +533,7 @@ function success(g: GameState, c: Character, t: Target, ap: Approach, p: string)
     return '';
   }
   const o = t.o;
+  if (s === 'study') return o.kind === 'sigil_mark' ? investigateMark(g, c, o, crit) : '';
   if (s === 'loot') { const n = takeItems(g, c, o); return n ? 'took ' + n + ' things' : 'nothing inside'; }
   if (s === 'remove' || s === 'disarm') {
     g.story.objects = storyObjects(g).filter((x) => x !== o);
@@ -605,7 +631,7 @@ export function npcView(g: GameState, tokenId: string, charId?: string) {
 export function approachOptions(g: GameState, targetId: string, charId?: string): TalkOption[] {
   const t = targetOf(g, targetId); if (!t || hiddenT(t)) return [];
   const c = charId ? g.characters[charId] : undefined, at = c ? positionsOf(g)[c.id] : undefined;
-  return approachesOf(t).map((a, i) => { if (a.gone) return null; const tried = !!c && triedBy(a, c.id), far = !!c && (!at || dist(at, posOf(t, at)) > rangeOf(t)), why = tried ? 'Already tried.' : far ? 'Get closer.' : '', pv = c ? previewOdds(g, c, a.skills, a.tn, a.pick) : null;
+  return approachesOf(t).map((a, i) => { if (a.gone) return null; const tried = !!c && triedBy(a, c.id), far = !!c && (!at || dist(at, posOf(t, at)) > rangeOf(t)), known = !!c && a.success === 'study' && t.kind === 'obj' && !!markWord(t.o) && knowsWord(c, markWord(t.o)), why = tried ? 'Already tried.' : known ? 'You know that word.' : far ? 'Get closer.' : '', pv = c ? previewOdds(g, c, a.skills, a.tn, a.pick) : null;
     return { kind: 'approach' as const, idx: i, label: a.label, ap: WORLD_AP.attempt, skills: a.skills, tn: a.tn, success: a.success, ...(a.fail ? { fail: a.fail } : {}), ...(pv ? { odds: pv.chance, mod: pv.mod } : {}), tried, available: !why, ...(why ? { why } : {}) }; }).filter(Boolean) as TalkOption[];
 }
 

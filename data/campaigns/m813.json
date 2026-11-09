@@ -500,7 +500,7 @@
           "kind": "terminal",
           "at": "B9",
           "name": "Enemy drop pod",
-          "text": "The enemy's pod, abandoned in a hurry. A sigil is burned into its hatch, still faintly glowing; its console still blinks.",
+          "text": "The enemy's pod, abandoned in a hurry. Its hatch lies open beside it, a sigil burned into the metal and still faintly glowing; its console still blinks.",
           "approaches": [
             {
               "label": "Read its logs",
@@ -512,13 +512,13 @@
               "success": ""
             },
             {
-              "label": "Copy the sigil on the hatch",
+              "label": "Work out what the hatch sigil did",
               "skills": [
                 "brain_power",
                 "visualization"
               ],
               "tn": 16,
-              "stakes": "Sigil magic, burned into metal: what it did, and whether it could be drawn again.",
+              "stakes": "Sigil magic, burned into metal: what it steered, and who drew it. (The word itself is on the hatch: investigate it there.)",
               "success": ""
             },
             {
@@ -571,6 +571,15 @@
             }
           ],
           "sprite": "sprite-obj-terminal-field"
+        },
+        {
+          "kind": "sigil_mark",
+          "at": "B10",
+          "name": "Sigil on the pod hatch",
+          "word": "seek",
+          "age": "fresh",
+          "damage": "worn",
+          "text": "The pod's hatch, blown off and lying in the dirt. A Sigil word is burned into it, still glowing: whatever steered the pod down."
         }
       ],
       "exits": [
@@ -1185,6 +1194,15 @@
           "name": "Infirmary lamp",
           "text": "A field lamp on the medical bay.",
           "sprite": "sprite-obj-field-lamp"
+        },
+        {
+          "kind": "sigil_mark",
+          "at": "J2",
+          "name": "Sigil plate over the cradles",
+          "word": "mend",
+          "age": "old",
+          "damage": "worn",
+          "text": "A slate Sigil plate bolted to the wall over the repair cradles. Its word is half worn away where the medics touch it for luck on the way in."
         }
       ],
       "exits": [
@@ -1417,6 +1435,15 @@
           "at": "P9",
           "name": "Bay doors",
           "text": "Beyond the glass, the black hole. The doors are rated to vent the room into it."
+        },
+        {
+          "kind": "sigil_mark",
+          "at": "O9",
+          "name": "Warding post at the bay doors",
+          "word": "ward",
+          "age": "old",
+          "damage": "intact",
+          "text": "A steel post beside the bay doors, a Sigil word cut deep into it by whoever built the bay. The doors have never vented while it stood."
         }
       ],
       "exits": [],

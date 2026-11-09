@@ -5,8 +5,8 @@
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
 import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
-import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf } from '@engine';
-import { glyphUri, scratchUri, SIGIL_INK, SIGIL_GLOW } from './glyphs';
+import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
+import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
 import { grandLook, grandTint } from './fx/grand';
 
 export const HOSTILE_INK = '#F65157', ALLY_INK = '#FFFFFF', SPARED_INK = '#6FEA77', MUTED_INK = '#A3AEC2';
@@ -57,21 +57,83 @@ export interface DrawWord {
   effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; effectText: string; after: string[]; fades: string | null; overload: boolean; capLeft: number;
   /** One short line under the word: "2 ch · 1 AP · extends", or "2 ch · tile taken" when refused. */ sub: string;
   /** Refused: the reason in a few words (shortWhy); '' when the word can be drawn. */ hint: string; title: string; img: string;
+  /** Rules 1.10 strokes (engine previewDraw): the picker's choices for this word on this tile (none when nothing is near
+   * or it stacks), the default, the pick in force ('new' starts a Line), and the tiles of the stroke it makes (the
+   * joining line; [] when it starts one). A junction also gives its second stroke's words and tiles. */
+  strokes: any[]; defaultStroke: string; stroke: string; joins: string[]; junction: boolean; words2: string[]; joins2: string[];
 }
-const EFFECT_TEXT = { starts: 'starts a new Line', extends: 'extends the Line', breaks: 'breaks the shape (a bend or a cluster)', stacks: 'stacks on this tile' };
-/** Each word you know, as the engine would draw it on your own tile now (spec 9.1). */
-export function drawStrip(cb: any, u: any): { tile: string; words: DrawWord[] } {
+const EFFECT_TEXT = { starts: 'starts a new Line', extends: 'extends the Line', breaks: 'joins old glyphs that don\'t make a Line', stacks: 'stacks on this tile' };
+/** Each word you know, as the engine would draw it on your own tile now (spec 9.1). stroke (rules 1.10): the stroke
+ * picked on the draw step (an id, 'new' or 'junction:…'); one the tile doesn't offer falls back to the engine's default. */
+export function drawStrip(cb: any, u: any, stroke?: string | null): { tile: string; words: DrawWord[]; stroke: string | null } {
   const c = view(cb), words: string[] = (u && u.mg && u.mg.words) || [];
-  return { tile: u ? u.pos : '', words: words.filter((w) => SIGIL[w]).map((w) => {
-    const pv: any = previewDraw(c as any, u, w), ok = !!pv.ok;
-    const effectText = pv.effect ? EFFECT_TEXT[pv.effect as keyof typeof EFFECT_TEXT] + (pv.effect === 'extends' || pv.effect === 'breaks' ? ': ' + pv.words.map(up).join(' · ') : '') : '';
+  // The choices are the tile's (any word shows them): a pick no longer offered (you moved, a glyph faded) is dropped.
+  const offered = (() => { if (!stroke || !u) return false; for (const w of words) { if (!SIGIL[w]) continue; const p: any = previewDraw(view(cb) as any, u, w); if ((p.strokes || []).length) return (p.strokes || []).some((x: any) => x.id === stroke); } return false; })();
+  const pick = offered ? stroke! : undefined;
+  return { tile: u ? u.pos : '', stroke: pick || null, words: words.filter((w) => SIGIL[w]).map((w) => {
+    const pv: any = previewDraw(c as any, u, w, undefined, pick), ok = !!pv.ok;
+    const effectText = pv.effect ? EFFECT_TEXT[pv.effect as keyof typeof EFFECT_TEXT] + (pv.effect === 'extends' ? ': ' + pv.words.map(up).join(' · ') + (pv.junction ? ((pv.words2 || []).length > 1 ? ', and the Line ' + (pv.words2 || []).map(up).join(' · ') : ', and starts a new Line') + ' (a junction)' : '') : pv.effect === 'breaks' ? ': ' + pv.words.map(up).join(' · ') : '') : '';
     const cost = pv.cost || { ap: 0, charge: SIGIL[w].charge, flux: SIGIL[w].flux ?? 1 };
     const fades = pv.fades ? up(pv.fades.word) + ' at ' + refOf(pv.fades.pos) : null;
     const hint = ok ? '' : shortWhy(pv.why);
     const sub = ok ? cost.charge + ' ch · ' + cost.ap + ' AP' + (pv.effect ? ' · ' + pv.effect : '') : SIGIL[w].charge + ' ch · ' + hint;
     const title = up(w) + ' · ' + wordClassName(w) + ' · charge ' + SIGIL[w].charge + (ok ? ', ' + cost.ap + ' AP, +' + cost.flux + ' Flux: ' + effectText + (fades ? '; ' + fades + ' fades (your cap)' : '') + (pv.overload ? '; WARNING: this overloads your Evoker' : '') : '. CAN\'T NOW: ' + pv.why) + '. ' + (SIGIL[w].text || '');
-    return { id: w, word: up(w), cls: wordClassName(w), ok, why: ok ? null : pv.why || 'Not now.', cost, effect: pv.effect || null, effectText, after: pv.words || [], fades, overload: !!pv.overload, capLeft: pv.capLeft ?? 0, sub, hint, title, img: glyphUri(w, ok ? SIGIL_INK : '#7F8BA1') };
+    return { id: w, word: up(w), cls: wordClassName(w), ok, why: ok ? null : pv.why || 'Not now.', cost, effect: pv.effect || null, effectText, after: pv.words || [], fades, overload: !!pv.overload, capLeft: pv.capLeft ?? 0, sub, hint, title, img: glyphUri(w, ok ? SIGIL_INK : '#7F8BA1'),
+      strokes: pv.strokes || [], defaultStroke: pv.defaultStroke || 'new', stroke: pv.stroke || pick || 'new', joins: pv.joins || [], junction: !!pv.junction, words2: pv.words2 || [], joins2: pv.joins2 || [] };
   }) };
+}
+
+// ---------- rules 1.10: the stroke picker on the draw step ----------
+export interface StrokeButton { key: string; label: string; title: string; ok: boolean; on: boolean; isDefault: boolean; junction: boolean; mine: boolean }
+/** The draw step's stroke picker for the word picked (spec 1.3): one button per stroke it could extend ("extends
+ * FIRE·SEEK", an ally's named), the junctions when allowed, and "new Line"; the one in force is on (the engine's default
+ * until you pick). Empty when there's no choice (nothing near, or it stacks). */
+export function strokeButtons(dw: DrawWord | null | undefined): StrokeButton[] {
+  if (!dw || !(dw.strokes || []).length) return [];
+  // Plain extensions first, then new Line, then the junctions (when allowed).
+  const rank = (s: any) => (s.junction ? 2 : s.id === 'new' ? 1 : 0);
+  return [...dw.strokes].sort((a: any, b: any) => rank(a) - rank(b)).map((s: any) => {
+    const ally = !s.mine && s.id !== 'new' ? ' (' + s.ownerName + '\'s)' : '';
+    const label = s.id === 'new' ? 'new Line' : s.junction ? String(s.label).replace('junction: extends ', 'junction: ').replace(' and ', ' + ').replace(' + a new Line', ' + new Line') : s.label + ally;
+    const what = s.id === 'new' ? 'Start a new Line here: it joins nothing.' : s.junction ? 'A junction: one glyph in two Lines. ' + up(s.label.replace(/^junction: /, '')) + '. It reads ' + (s.words || []).map(up).join(' · ') + ' and ' + ((s.words2 || []).length > 1 ? (s.words2 || []).map(up).join(' · ') : 'starts a new Line') + '.' : 'Extend this Line: it reads ' + (s.words || []).map(up).join(' · ') + '.';
+    return { key: s.id, label, title: what + (s.isDefault ? ' (default)' : '') + (s.ok ? '' : ' CAN\'T: ' + (s.why || 'not now.')), ok: !!s.ok, on: s.id === dw.stroke, isDefault: !!s.isDefault, junction: !!s.junction, mine: !!s.mine };
+  });
+}
+
+// ---------- rules 1.10: strokes on the map ----------
+export interface StrokeLayer {
+  /** Join marks by tile (game/glyphs.ts joinUri draws them). */ tiles: Record<string, JoinSeg[]>;
+  /** The hovered glyph's stroke(s): their tiles, and their words in order ("FIRE · SEEK"; a junction's two joined by " / "). */
+  hot: Set<string>; hotText: string;
+}
+const stepOf = (a: string, b: string): [number, number] | null => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number), dx = bx - ax, dy = by - ay; return Math.max(Math.abs(dx), Math.abs(dy)) === 1 ? [dx, dy] : null; };
+/** The stroke layer for a map (spec 1.10): a faint line joins the glyphs of each stroke (a junction shows both of its
+ * joins); hovering a glyph lights its whole stroke and names its words. Hostile strokes show only between tiles you can
+ * see, their unknown words as "?". preview: the draw step's joining tiles (dashed). Old 1.4 glyphs (no strokeId) join
+ * nothing. Pure. */
+export function strokeLayer(glyphs: any[], o: { side?: 'pc' | 'foe'; seen?: (k: string) => boolean; hover?: string | null; knows?: (w: string) => boolean; preview?: string[][] } = {}): StrokeLayer {
+  const side = o.side || 'pc', seen = o.seen || (() => true), knows = o.knows || (() => false), out: StrokeLayer = { tiles: {}, hot: new Set(), hotText: '' };
+  const gs = glyphs || [], vis = (g: any) => g.side === side || seen(g.pos);
+  const hereG = o.hover ? gs.filter((g: any) => g.pos === o.hover && vis(g)) : [];
+  const hotStrokes = new Map<string, any>();
+  for (const g of hereG) for (const st of strokesOfGlyph(gs, g)) hotStrokes.set(st.id, st);
+  const add = (k: string, seg: JoinSeg) => { const l = (out.tiles[k] ||= []); if (!l.some((x) => x.d[0] === seg.d[0] && x.d[1] === seg.d[1] && x.kind === seg.kind)) l.push(seg); };
+  const pair = (a: string, b: string, kind: JoinSeg['kind']) => { const d = stepOf(a, b); if (!d) return; add(a, { d, kind }); add(b, { d: [0 - d[0] || 0, 0 - d[1] || 0], kind }); };
+  for (const st of strokeRuns(gs)) {
+    const ours = st.side === side, hot = hotStrokes.has(st.id);
+    for (let i = 1; i < st.tiles.length; i++) { const a = st.tiles[i - 1], b = st.tiles[i]; if (!ours && !(seen(a) && seen(b))) continue; pair(a, b, hot ? 'hot' : ours ? 'line' : 'foe'); }
+  }
+  for (const t of o.preview || []) for (let i = 1; i < t.length; i++) pair(t[i - 1], t[i], 'preview');
+  if (hereG.length) {
+    const read = (w: string, sd: string) => (sd === side || knows(w) ? up(w) : '?');
+    // A hostile stroke lights and names only its glyphs on tiles you can see (fog of war hides the rest and its length).
+    if (hotStrokes.size) {
+      for (const st of hotStrokes.values()) for (const k of st.tiles) if (st.side === side || seen(k)) out.hot.add(k);
+      out.hotText = [...hotStrokes.values()].map((st) => { const gl = st.glyphs.filter((g: any) => st.side === side || seen(g.pos)); return gl.map((g: any) => read(g.word, st.side)).join(' · ') + (st.glyphs.length < 2 ? ' (alone)' : ''); }).join(' / ');
+    }
+    else { out.hot.add(o.hover!); out.hotText = hereG.map((g: any) => read(g.word, g.side)).join(' · '); }
+  }
+  return out;
 }
 
 // ---------- glyphs on the map ----------
@@ -83,6 +145,32 @@ export function glyphMark(gl: any, side: 'pc' | 'foe', knows: (w: string) => boo
     title: ours ? up(gl.word) + ' (' + (gl.who || 'yours') + life + ')' : readable ? 'hostile ' + up(gl.word) + life : 'an unreadable hostile glyph (you don\'t know the word)' };
 }
 
+// ---------- rules 1.10: word mastery on the draw keyboards (spec 3.4, 5.3) ----------
+export interface WordMasteryChip { uses: number; tier: 'new' | 'practised' | 'mastered'; hasStar: boolean; star: string; starAlt: string; text: string }
+/** Each known word's use count and star for a keyboard chip: a hollow star when Practised, filled when Mastered, always
+ * with its word (PRACTISED, MASTERED) and the count. No character (an enemy, a companion): no chips. */
+export function wordMasteryChips(c: any): Record<string, WordMasteryChip> {
+  if (!c) return {};
+  const TIER = { new: 'new', practised: 'PRACTISED', mastered: 'MASTERED' } as const, out: Record<string, WordMasteryChip> = {};
+  for (const w of sigilGrowthView(c).words) out[w.word] = { uses: w.uses, tier: w.tier, hasStar: w.tier !== 'new', star: starUri(w.tier), starAlt: TIER[w.tier],
+    text: (w.tier === 'new' ? '' : TIER[w.tier] + ' · ') + w.uses + (w.uses === 1 ? ' use' : ' uses') + (w.tier === 'mastered' ? ' (its inflection is on)' : ' / ' + (w.tier === 'new' ? w.practisedAt : w.masteredAt)) };
+  return out;
+}
+
+// ---------- rules 1.10: Read (copying a glyph or a trace) ----------
+/** What a character could Read on a tile (the engine's readable(), for the screens): another side's glyphs and any
+ * trace, of words it doesn't know, not yet copied by it. Pure. */
+export function readableAt(glyphs: any[], traces: any[], tile: string, side: 'pc' | 'foe', knows: (w: string) => boolean, charId?: string | null): { word: string; trace: boolean }[] {
+  return [...(glyphs || []).filter((g: any) => g.pos === tile && g.side !== side).map((g: any) => ({ g, trace: false })), ...(traces || []).filter((t: any) => t.pos === tile).map((t: any) => ({ g: t, trace: true }))]
+    .filter(({ g }) => !knows(g.word) && !(charId && (g.copiedBy || []).includes(charId))).map(({ g, trace }) => ({ word: g.word, trace }));
+}
+/** A scuffed glyph's trace on the map: a faint scratch (its word unread until copied), with its rounds left. */
+export function traceMark(t: any, knows: (w: string) => boolean): { src: string; title: string; style: string } {
+  const w = knows(t.word) ? up(t.word) : 'an unknown word', left = t.left != null ? ', ' + t.left + (t.left === 1 ? ' round' : ' rounds') + ' left' : '';
+  return { src: knows(t.word) ? glyphUri(t.word, '#7F8BA1') : scratchUri('#7F8BA1'), title: 'a trace of ' + w + ' (scuffed; Analyze to read it' + left + ')',
+    style: 'width: 16px; height: 16px; border-radius: 3px; opacity: 0.55; background: rgba(5, 7, 11, 0.4); box-shadow: 0 0 0 1px rgba(127, 139, 161, 0.6)' };
+}
+
 // ---------- 2. while building: the pattern panel ----------
 export interface PatternPanel {
   has: boolean; tile: string; tiles: string[]; shape: string; words: { key: string; word: string; img: string; readable: boolean; cls: string }[]; readable: boolean; ours: boolean;
@@ -90,9 +178,9 @@ export interface PatternPanel {
 }
 /** The Line under a glyph, as the screen shows it while building (spec 9.2): words in order, valid or why not, glyphs
  * left before your cap, charge/AP/Flux now and after Evoke, the overload warning. Words you can't read stay marks. */
-export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: string) => boolean): PatternPanel | null {
+export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: string) => boolean, stroke?: string | null): PatternPanel | null {
   if (!tile || !(cb.glyphs || []).some((g: any) => g.pos === tile)) return null;
-  const c = view(cb), pa: any = patternAt(c as any, tile, u), start = (cb.glyphs || []).find((g: any) => g.pos === tile);
+  const c = view(cb), pa: any = patternAt(c as any, tile, u, stroke || undefined), start = (cb.glyphs || []).find((g: any) => g.pos === tile);
   const ours = !!u && start && start.side === u.side;
   const read = (w: string) => ours || knows(w), allRead = pa.words.every(read);
   const words = pa.words.map((w: string, i: number) => ({ key: i + w, word: read(w) ? up(w) : '?', img: read(w) ? glyphUri(w, ours ? SIGIL_INK : HOSTILE_INK) : scratchUri(HOSTILE_INK), readable: read(w), cls: read(w) ? wordClassName(w) : 'unread' }));
@@ -131,7 +219,7 @@ export function spellSummary(words: string[]): string {
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 // ---------- 3–8. Evoke: where to stand, the area, delivery, burst, who is affected, fizzle ----------
-export interface EvokeChoice { aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
+export interface EvokeChoice { /** Rules 1.10 Junctions: which of a junction's strokes to Evoke. */ stroke?: string | null; aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
 export interface SgMark { key: string; text: string; style: string; title: string }
 export interface SgTile { layer: string; marks: SgMark[]; note: string }
 export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string; /** A summary row (LEECH's heal, NULL's catch), not a creature the spell affects. */ extra?: boolean }
@@ -143,6 +231,7 @@ export interface EvokeView {
   /** LEECH: the caster's heal if every hit lands (engine plan.leech), or null. */ leech: { heal: number; restored: number; expected: number } | null;
   /** NULL: what it would unmake that this viewer may know of (never the other side's unspotted traps). */ nulls: { kind: string; tiles: string[]; mine: boolean }[];
   facing: string; range: number | null; ap: number; charge: number; fizzle: boolean; fizzleText: string;
+  /** Rules 1.10 Junctions: on a junction's tile, its two strokes (words in order), the one read now on. */ junction: { key: string; label: string; on: boolean; ok: boolean }[];
   affected: AffectedRow[]; tiles: Record<string, SgTile>; orders: string[] | null; order: string; payload: any | null; plan: any;
   /** Visualization · Paint the Field (items 450, 485): the free Burst words this caster may add (none if the spell has a
    * Burst or the caster doesn't hold it), and the one picked. */ paints: string[]; paint: string | null;
@@ -162,12 +251,18 @@ const ORDERS_DEFAULT = ['halt', 'kneel', 'drop', 'move'];
  * to its missiles), STEP's landing tile, COMMAND's order; hover: the tile under the cursor, previewed as the next pick. */
 export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {}, hover?: string | null, knows: (w: string) => boolean = () => false): EvokeView {
   const c = view(cb), aims = [...(choice.aims || [])];
-  const pat: any = findPattern(c as any, tile, u?.pos);
-  const panel = patternPanel(cb, tile, u, knows);
+  // A junction's tile (rules 1.10) reads the stroke picked, else the engine's choice; both are offered on the pad.
+  const pa0: any = patternAt(view(cb) as any, tile, u), jx: any[] = (pa0 && pa0.junction) || [];
+  const strokeSel = choice.stroke && jx.some((x: any) => x.id === choice.stroke) ? choice.stroke : undefined;
+  const pat: any = findPattern(c as any, tile, u?.pos, strokeSel);
+  const panel = patternPanel(cb, tile, u, knows, strokeSel);
   const out: EvokeView = { tile, stage: 'none', ok: false, why: '', hint: '', pattern: panel, origins: [], hereOk: false, area: new Set(), pickable: new Set(), stepTo: new Set(), missilesNeeded: 1, aims, orderTo: new Set(), leech: null, nulls: [],
-    facing: '', range: null, ap: 0, charge: 0, fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null, paints: [], paint: null, orderPath: [] };
+    facing: '', range: null, ap: 0, charge: 0, junction: [], fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null, paints: [], paint: null, orderPath: [] };
   const T = (k: string) => (out.tiles[k] ||= { layer: '', marks: [], note: '' });
   const mark = (k: string, m: SgMark, note?: string) => { const t = T(k); if (!t.marks.some((x) => x.key === m.key)) t.marks.push(m); if (note) t.note += (t.note ? ' · ' : '') + note; };
+  const start0 = (cb.glyphs || []).find((g: any) => g.pos === tile), readW = (w: string) => ((u && start0 && start0.side === u.side) || knows(w) ? up(w) : '?');
+  const cur = typeof pat === 'string' ? null : pat.strokeId;
+  out.junction = jx.length > 1 ? jx.map((x: any) => ({ key: x.id, label: x.words.map(readW).join(' · ') + (x.tiles.length < 2 ? ' (alone)' : ''), on: x.id === (strokeSel || cur), ok: x.tiles.length >= 2 || x.words.length >= 2 })) : [];
   if (typeof pat === 'string' || !u) { out.why = typeof pat === 'string' ? pat : 'No caster.'; out.hint = out.why; return out; }
   for (const k of pat.tiles) mark(k, { key: 'pat', text: '', style: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; border: 2px solid ' + SIGIL_GLOW + '; box-shadow: inset 0 0 8px rgba(79, 200, 223, 0.35)', title: 'the Line' }, 'part of the Line');
   // 3. Where to stand: every tile within reach with its facing arrow, or why it's refused.
@@ -187,7 +282,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   const paint = choice.paint && out.paints.includes(choice.paint) ? choice.paint : null; out.paint = paint;
   const opts = (extraAim?: string | null) => {
     const list = [...aims]; if (extraAim && !list.includes(extraAim)) { if (list.length >= out.missilesNeeded) list[list.length - 1] = extraAim; else list.push(extraAim); }
-    return { aim: list[0], o: { ...(list.length > 1 ? { aims: list } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) } };
+    return { aim: list[0], o: { ...(strokeSel ? { stroke: strokeSel } : {}), ...(list.length > 1 ? { aims: list } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) } };
   };
   const a0 = opts(null), base: any = planEvoke(c as any, u, tile, a0.aim, a0.o);
   out.ap = base.ap; out.charge = base.charge; out.range = base.range ?? null;
@@ -307,7 +402,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   else { out.stage = 'aim'; out.hint = base.why || 'Pick another target.'; }
   out.ok = out.stage === 'ready' && !!base.ok; out.why = base.ok ? '' : base.why || '';
   if (out.ok || (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded)) {
-    out.payload = { tile, aim: aims[0], ...(aims.length > 1 ? { aims } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(out.orders && choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) };
+    out.payload = { tile, aim: aims[0], ...(strokeSel ? { stroke: strokeSel } : {}), ...(aims.length > 1 ? { aims } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(out.orders && choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) };
   }
   if (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded && base.ok) { out.stage = 'ready'; out.ok = true; out.hint = 'Confirm: the engine aims the other missile' + (out.missilesNeeded - aims.length > 1 ? 's' : '') + ' at the nearest target, or pick ' + (out.missilesNeeded - aims.length > 1 ? 'them' : 'it') + '.'; }
   return out;

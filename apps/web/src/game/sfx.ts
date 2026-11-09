@@ -43,7 +43,9 @@ export type ElementSfx = 'el_fire' | 'el_freeze' | 'el_shatter' | 'el_shock' | '
   | 'el_fire_loop' | 'el_freeze_loop' | 'el_shock_loop' | 'el_gale_loop' | 'el_acid_loop';
 /** Sigil word cues (rules 1.4): STEP, MASK, LEECH, NULL, the boons, traps, turrets, a fizzle. */
 export type WordSfx = 'sg_blink' | 'sg_mask' | 'sg_leech' | 'sg_null' | 'sg_quicken' | 'sg_sharpen' | 'sg_mend' | 'sg_ward' | 'sg_command' | 'sg_trap_set' | 'sg_trap_sprung'
-  | 'sg_light' | 'sg_turret' | 'sg_turret_break' | 'sg_fizzle' | 'sg_cleanse';
+  | 'sg_light' | 'sg_turret' | 'sg_turret_break' | 'sg_fizzle' | 'sg_cleanse'
+  // Sigil 1.5 (rules 1.10): a glyph joining a stroke, a word's inflection coming on (Mastered), a word copied or learned.
+  | 'sg_join' | 'sg_inflect' | 'sg_study';
 /** The looping sounds (a field's bed under the fight); they play through setSfxLoops, never through sfx(). */
 export const LOOP_SFX: Sfx[] = ['el_fire_loop', 'el_freeze_loop', 'el_shock_loop', 'el_gale_loop', 'el_acid_loop',
   'soul_fire_loop', 'soul_storm_loop', 'soul_frost_loop', 'soul_stone_loop', 'soul_gale_loop', 'soul_acid_loop'];
@@ -77,6 +79,7 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   sg_blink: CB('sg_blink'), sg_mask: CB('sg_mask'), sg_leech: CB('sg_leech'), sg_null: CB('sg_null'), sg_quicken: CB('sg_quicken'), sg_sharpen: CB('sg_sharpen'), sg_mend: CB('sg_mend'),
   sg_ward: CB('sg_ward'), sg_command: CB('sg_command'), sg_trap_set: CB('sg_trap_set'), sg_trap_sprung: CB('sg_trap_sprung'), sg_light: CB('sg_light'), sg_turret: CB('sg_turret'),
   sg_turret_break: CB('sg_turret_break'), sg_fizzle: CB('sg_fizzle'), sg_cleanse: CB('sg_cleanse'),
+  sg_join: CB('sg_join'), sg_inflect: CB('sg_inflect'), sg_study: CB('sg_study'),
   soul_breath_in: CB('soul_breath_in'), soul_breath_out: CB('soul_breath_out'), soul_sigh: CB('soul_sigh'), soul_gasp: CB('soul_gasp'),
   soul_thump: CB('soul_thump'), soul_choir: CB('soul_choir'), soul_crack: CB('soul_crack'),
   soul_fire_loop: CB('el_fire_loop'), soul_storm_loop: CB('el_shock_loop'), soul_frost_loop: CB('el_freeze_loop'), soul_stone_loop: CB('soul_stone_loop'),
@@ -100,6 +103,7 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   el_fire: 'hit', el_freeze: 'hit', el_shatter: 'miss', el_shock: 'evoke', el_zap: 'draw', el_stone: 'hit', el_stone_rise: 'hit', el_stone_crumble: 'down', el_gale: 'miss', el_spark: 'draw', el_acid: 'hit',
   sg_blink: 'evoke', sg_mask: 'release', sg_leech: 'outburst', sg_null: 'overload', sg_quicken: 'start', sg_sharpen: 'melee', sg_mend: 'start', sg_ward: 'draw', sg_command: 'evoke',
   sg_trap_set: 'draw', sg_trap_sprung: 'evoke', sg_light: 'start', sg_turret: 'draw', sg_turret_break: 'hit', sg_fizzle: 'error', sg_cleanse: 'draw',
+  sg_join: 'toggle', sg_inflect: 'start', sg_study: 'start',
   soul_breath_in: 'outburst', soul_breath_out: 'release', soul_sigh: 'release', soul_gasp: 'miss', soul_thump: 'outburst', soul_choir: 'outburst', soul_crack: 'short',
   miracle_sting: 'start',
 };
@@ -114,6 +118,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   el_fire_loop: 0.16, el_freeze_loop: 0.08, el_shock_loop: 0.07, el_gale_loop: 0.12, el_acid_loop: 0.12,
   sg_blink: 0.4, sg_mask: 0.35, sg_leech: 0.4, sg_null: 0.45, sg_quicken: 0.35, sg_sharpen: 0.35, sg_mend: 0.35, sg_ward: 0.35, sg_command: 0.35,
   sg_trap_set: 0.2, sg_trap_sprung: 0.45, sg_light: 0.3, sg_turret: 0.35, sg_turret_break: 0.4, sg_fizzle: 0.35, sg_cleanse: 0.35,
+  sg_join: 0.3, sg_inflect: 0.45, sg_study: 0.4,
   soul_breath_in: 0.4, soul_breath_out: 0.32, soul_sigh: 0.3, soul_gasp: 0.42, soul_thump: 0.55, soul_choir: 0.32, soul_crack: 0.5,
   soul_fire_loop: 0.12, soul_storm_loop: 0.06, soul_frost_loop: 0.07, soul_stone_loop: 0.14, soul_gale_loop: 0.1, soul_acid_loop: 0.1,
   // Feelings: the pump layer sits under the thump (0.55); residue stings are quieter still.

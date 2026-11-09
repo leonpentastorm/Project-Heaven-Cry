@@ -2,10 +2,10 @@
 // Narrator steers by (beginning, middle, end, secrets), an opening, a cast and suggested fights. Built-in campaigns live
 // in data/campaigns/; a host can load their own file in the same format (docs/design/campaign-format.md).
 import { type MapDef, keyOf } from './combat';
-import { OBJ } from './objects';
+import { OBJ, MARK } from './objects';
 import type { Track } from './music';
 import { type Mission, type BoardNpc, validateMissions } from './missions';
-import { SKILL, TN_LADDER, ENEMY, WEAPON } from './data';
+import { SKILL, TN_LADDER, ENEMY, WEAPON, SIGIL } from './data';
 import { CASTER } from './ai-sigil';
 import { type Drops, type LootTable, LOOT_TABLES, knownDropId } from './loot';
 import m813J from '../../../data/campaigns/m813.json';
@@ -19,6 +19,8 @@ export interface CampaignObject {
   /** Art: a sprite asset id (else the campaign's sprite for its kind), its box in tiles if bigger than one, an NPC portrait. */
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
   approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: '' | 'remove' | 'open' | 'reveal' | 'disarm' }[];
+  /** A sigil mark (rules 1.10): the Sigil word drawn there, its age (fresh, old, ancient) and damage (intact, worn, broken). */
+  word?: string; age?: string; damage?: string;
 }
 export interface CampaignZone {
   id: string; name: string; summary: string; w: number; h: number;
@@ -119,6 +121,11 @@ export function validateCampaign(c: any): string[] {
     for (const r of z.start || []) at(r, 'start');
     for (const o of z.objects || []) {
       need(OBJ[o.kind], z.id + ': unknown object kind "' + o.kind + '".'); at(o.at, (o.name || o.kind));
+      if (o.kind === 'sigil_mark') {
+        need(!!SIGIL[String(o.word || '').toLowerCase()], z.id + ': the sigil mark "' + (o.name || o.at) + '" needs a known Sigil word (word).');
+        need(o.age == null || MARK.ages.includes(o.age), z.id + ': the sigil mark "' + (o.name || o.at) + '" has an unknown age (' + MARK.ages.join(', ') + ').');
+        need(o.damage == null || MARK.damages.includes(o.damage), z.id + ': the sigil mark "' + (o.name || o.at) + '" has unknown damage (' + MARK.damages.join(', ') + ').');
+      }
       for (const a of o.approaches || []) {
         need(a.label && Array.isArray(a.skills) && a.skills.length && a.skills.every((s: string) => SKILL[s]), z.id + ': an approach on "' + (o.name || o.kind) + '" has unknown skills.');
         need(TN_LADDER.includes(a.tn), z.id + ': approach "' + a.label + '" needs a TN of 8, 12, 16 or 20.');

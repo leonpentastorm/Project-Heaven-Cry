@@ -8,6 +8,44 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.6.0 — 9 November 2026
+
+Branch `feature/mana-forecast`: **the mana meter becomes a forecast panel** (decision 110; Leon: the meter leaves the combat header and becomes a movable module beside the map, read like a weather forecast).
+
+- **Its own panel:** the header chip is gone. "Mana forecast" sits just above the map by default and moves like the legend and the log (drag its grip, or focus the grip and use the arrow keys; Reset brings it back). Narrow windows put it right under the map; short windows (620 px high or less) keep it in the map column with the grips hidden.
+- **Read like the weather:** a sky icon and a headline ("RICH AIR · 24 / 40"), a gauge of the four bands with a marker, one line on what the air is doing, and the trend (the meter at each round's start, so "+5 this round · −3 last round"; kept per fight in the browser).
+- **The outlook:** how far to the next band up and down, in deaths and Crystallises ("Flooded at 30: 6 to go (2 deaths)").
+- **More ▸:** what this band does (Outburst cost, Syphon, magical healing, rider stage shift, Strain) and what moves the meter, all read from `data/rules.json`. Over the map it opens as a dropdown, so the map keeps its size.
+- **Engine fix:** a beast's death now raises the meter by +3 (rules.json `beast_death`); it gave +5 like a person. Robots, turrets and drones still give +2.
+- Tests: `manaForecast.test.ts`, `mana-meter.test.ts`, the new e2e `apps/web/e2e/mana-forecast.mjs`; `layout.mjs` and `magic.mjs` updated.
+
+## 0.5.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **Sigil 1.5, rules revision 1.10** (`docs/design/sigil-1.5-spec.md`; spec section 14 items 901–923, all provisional). Sigil 1.5 was first numbered 1.9 / 671–693; it moved to 1.10 / 901–923 because World Play 1.1 took those numbers. **Lines of 5 are dropped** (Leon); Junctions stay.
+
+- **Strokes (the playtest fix):** a Line is what you drew as one. Glyphs that touch no longer join, poison or block. Two Lines can run side by side, cross or end next to each other.
+  - A new glyph extends a stroke only at its end, along its axis, up to 4 glyphs.
+  - A picker on the draw step names each option ("extends FIRE·SEEK", "new Line"). The default is the stroke you last drew into.
+  - An ally's Line is extended only when you pick it.
+  - Scuffing a middle glyph splits the stroke. Old glyphs keep the 1.4 reading until they fade.
+  - Enemies draw strokes too.
+  - On screen, faint lines join a stroke's glyphs, and hovering lights the whole stroke.
+- **Study:** every Evoke earns study: 1, +1 per glyph past 2, +1 if it hit an enemy. At 6, then every +8, you learn a word of your choice within your cap. A study bar and a "Learn a word" chooser are on the MAGIC tab.
+- **Copying:** Analyze or Read an enemy's glyph or a scuffed glyph's trace for study toward that word. **Sigil marks** on the map (doors, ruins, posts; 3 in M813, the Narrator can place more) have an Investigate approach (Analysis or Rumination); a critical teaches the word outright.
+- **Mastery:** each Mastery level in Brain Power, Rumination or Eloquence gives +5 study. Mastered gives a free word over the cap.
+- **Word mastery:** each word counts its uses. At 10 it is Practised (hollow star). At 30 it is Mastered (filled star) and unlocks its **inflection**, a small upgrade always on for you. All 40 are drafted, provisional, for Leon.
+- **Junctions** (Brain Power Mastered): one glyph shared by two Lines. It fades when the second Line is Evoked.
+- **One shared workshop** for both magics: collapsible groups that remember their state, on the MAGIC tab and in the Proving Ground. Sigil is grouped by its five word groups; Outburst 4.0's codex moved onto the same component.
+- **Proving Ground:** grant study, set a word's uses, place a sigil mark, toggle Junctions.
+- **Sound:** stroke join, inflection unlock and Investigate success are reused Kenney CC0 interface sounds, credited. Proper magic sounds can replace them.
+- **Fixed while merging with Outburst 4.0:** a fused Evoke (Twin Discipline) now gives practice once, and earns study and word uses. STEP meets residue.
+- **Waiting on Leon:**
+  - the 40 inflections;
+  - copying gives +2 study per glyph read (or should it be once per word?);
+  - the Narrator gives a word once a scene, where the Sigil 1.5 spec said once a long rest (item 914);
+  - study thresholds and the 10 / 30 word-mastery counts;
+  - the Junction gate.
+
 ## 0.4.0 — 9 November 2026
 
 Branch `feature/faith-2.1`: **Faith 2.1, rules revisions 1.6.1 and 1.6.2** (decision 107; `docs/design/faith-2.1-spec.md`; spec section 14 items 701–737, all provisional; hand-off `docs/design/handoffs/faith-2.1-HANDOFF.md`). Playtest: a character reached Devotion 10 on the area map by turn 3. The +2-a-fight cap lived on the fight unit, and the area map rebuilds units on every action, so every action was a fresh +1.
