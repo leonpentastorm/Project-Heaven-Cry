@@ -27,6 +27,8 @@ describe('presentation events', () => {
     expect(reload(cb, u)).toBeNull();
     const rl = after(cb, n0).find((x) => x.k === 'reload')!;
     expect(rl).toMatchObject({ unit: u.id, at: u.pos, how: 'mag' }); expect(rl.dur).toBeGreaterThan(500);
+    // the counts the reload card draws (fx/reload.ts): what was in the gun, what is in it now, its size
+    expect(rl).toMatchObject({ left: 0, ammo: 7 }); expect(rl.cap).toBeGreaterThanOrEqual(7);
     n0 = cb.fxSeq!; u.jammed = true; u.ap = 9; expect(clearJam(cb, u)).toBeNull();
     expect(after(cb, n0).map((x) => x.k)).toEqual(['clear']);
   });

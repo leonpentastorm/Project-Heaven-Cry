@@ -1349,13 +1349,14 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
   else if (u.mags && !u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
   emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}), ...(tactical ? { tactical: true } : {}) });
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
-  if (!u.mags) { u.ap -= rAp; u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag') }); cb.log.push(u.name + ' reloads.'); return null; }
+  // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
+  if (!u.mags) { const was = u.ammo; u.ap -= rAp; u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag'), left: was, ammo: u.ammo, cap: w.magazine }); cb.log.push(u.name + ' reloads.'); return null; }
   if (w.reload === 'loose') {
     const room = w.magazine - u.ammo, take = Math.min(room, u.loose || 0);
     if (room <= 0) return 'Already full.';
     if (!take) return 'No rounds left to load.';
     u.ap -= rAp; u.ammo += take; u.loose = (u.loose || 0) - take; u.jammed = false;
-    emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'loose', rounds: take, dur: rDur('loose') });
+    emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'loose', rounds: take, dur: rDur('loose'), ammo: u.ammo, cap: w.magazine });
     cb.log.push(u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
     return null;
   }
@@ -1367,7 +1368,7 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
   if (tactical) { u.mags.push(left); if (types) types.push(leftType); }
   if (types) u.magTypes = types;
   u.ap -= rAp; u.ammo = fresh; u.ammoType = freshType; u.jammed = false;
-  emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'mag', dur: rDur('mag'), ...(tactical ? { tactical: true } : {}) });
+  emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'mag', dur: rDur('mag'), left, ammo: fresh, cap: magazineSize(w.id, u.mods) ?? w.magazine, ...(tactical ? { tactical: true } : {}) });
   if (tactical) cb.log.push(u.name + ' reloads (tactical) and puts ' + what + ' back in the pack (' + u.mags.length + ' spare).');
   else { cb.log.push(u.name + ' reloads and drops ' + what + ' (' + u.mags.length + ' spare left).'); dropToPile(cb, u.pos, [magItem(u.weapon, left, leftType)]); } // no tile in the log: the pile shows it, under fog (review fix)
   return null;
@@ -1417,7 +1418,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   cb.log.push(u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
   if (kept && !tactical) dropToPile(cb, u.pos, [magItem(ow.id, left, leftType)]);
   // The picture (no rules): the off-hand gun's reload, or, with both guns, the off hand's part of the main reload's event.
-  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', ...(kept && tactical ? { tactical: true } : {}), ...(looseTake ? { rounds: looseTake } : {}) };
+  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', left, ammo: fresh, cap: ow.magazine, ...(kept && tactical ? { tactical: true } : {}), ...(looseTake ? { rounds: looseTake } : {}) };
   if (mainFx) mainFx.off = off;
   else emitFx(cb, 'reload', { unit: u.id, at: u.pos, ...off, hand: 'off', dur: ap <= 1 ? 800 : off.how === 'loose' ? 1400 : 1200 });
   return null;

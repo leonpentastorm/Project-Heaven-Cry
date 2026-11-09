@@ -249,6 +249,11 @@ function fresh(shell: Shell): Pic {
   return { w: W, h: P.h, smoke: P.smoke, glow: P.glow, el: () => pic(W, P.h, (id) => '<defs>' + lin(id('n'), col) + '</defs><path d="' + tip + '" fill="url(#' + id('n') + ')" stroke="#4A2412" stroke-width="0.45"/><svg x="0" y="0" width="' + P.w + '" height="' + P.h + '" viewBox="0 0 ' + P.w + ' ' + P.h + '" overflow="visible">' + P.el().innerHTML + '</svg>') };
 }
 
+/** The pictures, for the reload card (fx/reload.ts): a magazine (upright), a fresh round (nose right), an arrow or bolt. */
+export const magPicture = (m: Mag) => { const P = MAGS[m]; return { w: P.w, h: P.h, glow: P.glow, el: P.el }; };
+export const roundPicture = (s: Shell) => { const P = fresh(s); return { w: P.w, h: P.h, glow: P.glow, el: P.el }; };
+export const arrowPicture = (bolt = false) => arrowPic(bolt);
+
 // ---------- behind the portrait ----------
 /** A portrait on screen: its centre and size, its shape, and the frame ring drawn round it (its box-shadow spread). */
 export interface Who { x: number; y: number; w: number; h: number; round: boolean; ring: number }

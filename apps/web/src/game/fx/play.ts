@@ -15,6 +15,7 @@ import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUT
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
+import { reloadCard } from './reload';
 import { type Pt, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -232,7 +233,9 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
     if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, rounds || 2)) : 1, aim, ms * 0.8); return; }
     if (br.bow === 'crossbow' && how !== 'mag') { after(() => drawArrow(who, aim, { ms: ms * 0.6, bolt: true }), delay + ms * 0.15); return; }
     if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
-    if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * 0.12, tactical });
+    // a speed reload's magazine leaves the reload card falling toward the unit (fx/reload.ts) and reaches it about a
+    // third of the way in: from there it drops out from under the portrait to the ground, where the pile is
+    if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * (tactical || br.mag === 'fuel_can' ? 0.12 : 0.3), tactical });
   };
   one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
   if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
@@ -351,8 +354,9 @@ const H: Record<string, Handler> = {
     else if (kind === 'shells') { play('reload_shells', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) }); play('rack', p, { delay: ms * 0.8 }); }
     else if (e.how === 'loose') { for (let i = 0; i < n; i++) play('round_in', p, { delay: each(i, n), rate: jitter() }); play('mag_in', p, { delay: ms * 0.85 }); }
     else play(cat === 'rifle' || cat === 'heavy' || cat === 'smg' ? 'reload_rifle' : cat === 'pistol' || cat === 'revolver' ? 'reload_pistol' : 'reload_mag', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) });
-    if (p) timerRing(e.at, ms, WHITE, kind === 'fuel' ? 'REFUEL' : 'RELOAD');
-    if (p) reloadPieces(e, p, ms);
+    // the reload card over the unit (fx/reload.ts): the magazine out and in, large, and the count; it replaces the timer
+    // ring, which a pile's stack on the tile hid (Leon, 9 Nov 2026)
+    if (p) { reloadCard(e, e.at, ms); reloadPieces(e, p, ms); }
   },
   load(e) {
     const p = at(e.at), ms = e.dur || 1400, n = Math.max(2, Math.min(8, Math.ceil((e.rounds || 5) / 2)));
