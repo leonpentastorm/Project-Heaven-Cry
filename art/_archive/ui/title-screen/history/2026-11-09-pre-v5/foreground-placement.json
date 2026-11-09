@@ -1,0 +1,21 @@
+{
+  "revision": 4,
+  "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
+  "native_dimensions": [
+    1774,
+    887
+  ],
+  "destination_xy": [
+    2096,
+    1304
+  ],
+  "scaled_dimensions": [
+    2000,
+    1000
+  ],
+  "canvas": [
+    4096,
+    2304
+  ],
+  "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
+}

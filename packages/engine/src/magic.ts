@@ -2,18 +2,18 @@
 // the facing rule, Reach, Delivery, Burst, KIN), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
-import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, type SigilDef, type ToneRider } from './data';
+import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
-import { canSurrender, surrender } from './tactics';
+import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
@@ -105,7 +105,8 @@ const CONDS: Record<string, CondDef> = {
   last_turn: { name: 'Last Turn', fam: 'body', rounds: 1, boon: true, text: 'Still standing on borrowed time.' },
   quickened: { name: 'Quickened', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 AP on your next turn (within the ceiling of 9).' },
   sharpened: { name: 'Sharpened', fam: 'body', rounds: 1, boon: true, text: 'Your next attack: +3 to hit and ×1.25 damage (until that attack, or the end of your next turn).' },
-  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 1, boon: true, text: 'Your patron is watching (rules 1.6): attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion.' },
+  // Rules 1.6.3 (item 738): until the fight ends or the patron intervenes (faith.ts ends it), so it never ticks.
+  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching (rules 1.6.3) until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion XP.' },
   smitten: { name: 'Smitten', fam: 'heart', rounds: 1, text: 'You can\'t attack the one who smote you, or the allies linked to them (Sweet Nothings).' },
   hopeful: { name: 'Hopeful (+2)', fam: 'heart', rounds: 1, boon: true, text: 'Your next attack or spell roll gets +2 (Hope, rules 1.8).' },
   scorned: { name: 'Scorned', fam: 'heart', rounds: 2, noSave: true, text: '−2 to attack the one who scorned you (Contempt, rules 1.8).' },
@@ -138,14 +139,14 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
   if (a !== b) emitFx(cb, 'mana', { band: b, mana: now });
   if (a !== b) cb.log.push('The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
 }
-/** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. Rules
+/** Deaths release bots (spec: the meter): +5 a person, +3 a beast, +2 a robot. Called once per turn; each death counts once. Rules
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
  * area map's throwaway fight rolls none (item 697). */
 export function noteDeaths(cb: Combat, rng?: Rng) {
   const seen = new Set(cb.deadSeen || []);
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
     seen.add(u.id); cb.deadSeen = [...seen];
-    shiftMana(cb, ['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell');
+    shiftMana(cb, deathMana(u), u.name + ' fell');
     if (rng && !cb.overworld) rollDeathDrops(cb, rng, u);
   }
   cb.deadSeen = [...seen];
@@ -499,7 +500,9 @@ export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = coreAp(u);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (m.cores < 1) return 'No spare cores.';
-  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
+  const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';
+  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */
@@ -1009,6 +1012,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
       const r = d20(rng), rf = rollFor(cb, u, d, t, ign || !!REL?.ignoreCover), tot = r + rf.bonus + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add;
       if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }
       crit = r === 20; out.push('hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base * (crit ? 2 : 1) + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
+      if (crit) noteCrit(cb, u, t, 'outburst'); // the spotlight's crit (decision 113): presentation only
     } else out.push((primary ? '' : 'and ') + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + (primary ? bonusDmg(tone, rs) : 0), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))).replace(/^ · /, ''));
     return { landed: true, crit, line: '' };
   }

@@ -13,7 +13,7 @@ import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx'
 import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
 import { VoiceSettings } from '../game/voiceSettings';
 import { resetTips } from '../game/tips';
-import { CREDITS } from '../game/credits';
+import { CREDITS, licenceUrl } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
 
@@ -514,6 +514,13 @@ function SettingsPanel() {
     <VoiceSettings />
     <span style={lab}>COMFORT</span>
     <label style={row}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
+    {/* Spotlight cut-ins (decision 113): the torn strips for a big moment, and the slowed attack after them. */}
+    <div role="group" aria-label="Cut-ins" style={row}>Cut-ins
+      {([['all', 'All'], ['scene', 'Once per scene'], ['off', 'Off']] as const).map(([v, label]) => (
+        <button key={v} type="button" data-phc-cutins={v} aria-pressed={(p.cutins || 'all') === v} onClick={() => setUiPrefs({ cutins: v })}
+          style={{ ...btn, ...((p.cutins || 'all') === v ? { background: '#1C2536', borderColor: '#E7EBF3', color: '#FFFFFF' } : { color: ink.muted }) }}>{(p.cutins || 'all') === v ? '● ' : ''}{label}</button>
+      ))}
+    </div>
     <div style={row}><button type="button" style={btn} onClick={() => { resetTips(); alert('Tips will show again.'); }}>Show tips again</button></div>
   </>;
 }
@@ -523,7 +530,7 @@ function CreditsPanel() {
     {CREDITS.map((g) => (
       <div key={g.group} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={lab}>{g.group.toUpperCase()}</span>
-        {g.items.map((c, i) => <span key={i} style={{ fontSize: 14, lineHeight: 1.5 }}>{c.what} · <span style={{ color: ink.muted }}>{c.who}{c.licence ? ' · ' + c.licence : ''}</span>{c.url && <> · <a href={c.url} target="_blank" rel="noreferrer" style={{ color: '#8BDEEE' }}>source</a></>}</span>)}
+        {g.items.map((c, i) => <span key={i} style={{ fontSize: 14, lineHeight: 1.5 }}>{c.what} · <span style={{ color: ink.muted }}>{c.who}{c.licence ? ' · ' : ''}{c.licence && (licenceUrl(c.licence) ? <a href={licenceUrl(c.licence)} target="_blank" rel="noreferrer license" style={{ color: '#8BDEEE' }}>{c.licence}</a> : c.licence)}</span>{c.url && <> · <a href={c.url} target="_blank" rel="noreferrer" style={{ color: '#8BDEEE' }}>source</a></>}</span>)}
       </div>
     ))}
   </>;

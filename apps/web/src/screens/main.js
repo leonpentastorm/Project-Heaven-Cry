@@ -28,7 +28,7 @@ import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
-import { faithTabVals, patronLineCard } from './faithTab';
+import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { approachOptions, sigilGrowthView } from '@engine';
@@ -503,6 +503,8 @@ export class MainLogic extends DCLogic {
         oocHeadStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (nar ? '#E7EBF3' : '#A3AEC2'), oocTextStyle: 'font-size: 14px; line-height: 1.5; color: ' + (nar ? '#E7EBF3' : '#A3AEC2') }; }
       // A patron's answer (Blessing 2.0): the mark, the name and the line, edged in the patron's accent.
       const pl = patronLineCard(e); if (pl) return { ...base, isPatron: true, ...pl };
+      // A pact, a switch, a grudge or apostasy (Faith 2.2, spec 2.5): a small portrait beside the card; a grudge's greyed.
+      const fe = faithEventCard(e); if (fe) return { ...base, isFaithEvent: true, ...fe };
       if (e.kind === 'scene') return { ...base, isScene: true, text: e.text.toUpperCase() };
       if (e.kind === 'art') return { ...base, isArt: true, img: ART(e.art), zoom: zoomer(this, ART_BIG(e.art), e.text, 'world') };
       if (e.kind === 'narration') {

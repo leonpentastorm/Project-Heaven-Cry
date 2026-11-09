@@ -20,6 +20,8 @@ Use `catalog.characters['orren-vask']` for Orren Vask's character portrait and `
 
 The catalog maps asset IDs to files; it does not implement gameplay rules, skill levels or trait effects. Bind these stable IDs to the game's own data model. Display names such as **Vigilant**, **Will Power** and **Lore Master** are preserved as supplied.
 
+Character and patron portraits carry `eye_line` (`{x, y}`, fractions of the 4:5 image): where the eyes are, for the spotlight cut-in's strip crop. The web game reads them from `apps/web/src/game/eyelines.json` (written by `npm run assets`, keyed by asset name); see [art/README.md](../art/README.md).
+
 ## 2. Import and display
 
 | Asset | Source | Colour/alpha | Display |

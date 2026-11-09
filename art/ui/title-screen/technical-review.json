@@ -25,8 +25,8 @@
       941
     ],
     "front": [
-      1774,
-      887
+      1672,
+      941
     ]
   },
   "back_preserved": "5ab63288cb2e6efd57f6989781a75ecab80dd1f92fc3e5ddb38bbe4fb3342f36",
@@ -58,11 +58,11 @@
       "top40_max_alpha": 1
     },
     "front": {
-      "transparent_pixels": 7875612,
-      "partial_alpha_pixels": 1560425,
-      "opaque_pixels": 1147,
-      "left38_max_alpha": 0,
-      "top40_max_alpha": 0
+      "transparent_pixels": 7652539,
+      "partial_alpha_pixels": 193624,
+      "opaque_pixels": 1591021,
+      "left38_max_alpha": 1,
+      "top40_max_alpha": 1
     }
   },
   "psd_layers": [
@@ -76,27 +76,28 @@
     941
   ],
   "foreground_placement": {
-    "revision": 4,
+    "revision": 5,
     "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
     "native_dimensions": [
-      1774,
-      887
+      1672,
+      941
     ],
     "destination_xy": [
-      2096,
-      1304
+      256,
+      144
     ],
     "scaled_dimensions": [
-      2000,
-      1000
+      3584,
+      2016
     ],
+    "overscan": "mirror",
     "canvas": [
       4096,
       2304
     ],
-    "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
+    "notes": "Revision 5 (Leon, 9 Nov 2026): a full 16:9 frame composed for the screen (a wide shot: the squad small on a rock outcrop at the right, all looking up at the Celestial; the left 58% empty). Placed 1:1 on the central safe rect (the window shows exactly this frame at 16:9); the rock is mirrored into the right and bottom overscan. The render's near-opaque pixels (alpha 245\u2013254; it painted the rock at 252\u2013253) are made opaque. Uniform resize, no sharpening.",
+    "alpha_floor": 245
   },
-  "visual_review": "Reviewed corrected native foreground and composite/phone/alpha-edge previews. Mage glove grip, crossbow stock and transverse bow, and angry/pensive lead read clearly. Five heroes preserved; lead and Celestial retained in phone crop. No visible matte halo.",
-  "full_repository_validation": "Not completed: partial checkout lacks art/catalog.json and historical collections. Focused title-screen validation run separately.",
-  "revision": 4
+  "visual_review": "pending",
+  "full_repository_validation": "not run by this export script"
 }

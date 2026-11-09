@@ -187,3 +187,15 @@ describe('the Proving Ground', () => {
     expect(h.story.entries.some((e) => /an Evoker \(in the pack: your two-handed .* fills both hands; swap it into a hand to cast\)/.test(String(e.text)))).toBe(true);
   });
 });
+
+describe('the spent core\'s picture names the Evoker that throws it out (fx only)', () => {
+  it('an off-hand Evoker, an Evoker blade in the hand', () => {
+    const last = (f: F) => (f.g.combat!.fx || []).filter((e) => e.k === 'core').pop();
+    const f = fight(() => {});
+    let u = f.turn(f.sig); f.act({ type: 'combat/core', unitId: u.id });
+    expect(last(f)).toMatchObject({ k: 'core', unit: u.id, focus: 'evoker' });
+    const b = fight((a) => { a.weapon = 'evoker_blade'; a.offHand = null; });
+    u = b.turn(b.sig); expect(u.mg!.evoker).toBe(true); b.act({ type: 'combat/core', unitId: u.id });
+    expect(last(b)).toMatchObject({ k: 'core', focus: 'evoker_blade' });
+  });
+});

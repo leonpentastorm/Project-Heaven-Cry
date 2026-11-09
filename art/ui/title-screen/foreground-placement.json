@@ -1,21 +1,23 @@
 {
-  "revision": 4,
+  "revision": 5,
   "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
   "native_dimensions": [
-    1774,
-    887
+    1672,
+    941
   ],
   "destination_xy": [
-    2096,
-    1304
+    256,
+    144
   ],
   "scaled_dimensions": [
-    2000,
-    1000
+    3584,
+    2016
   ],
+  "overscan": "mirror",
   "canvas": [
     4096,
     2304
   ],
-  "notes": "One correction pass on fresh repaint v3: fitted mage glove, recognizable crossbow and angry/pensive lead. Uniform resize and placement; no sharpening."
+  "notes": "Revision 5 (Leon, 9 Nov 2026): a full 16:9 frame composed for the screen (a wide shot: the squad small on a rock outcrop at the right, all looking up at the Celestial; the left 58% empty). Placed 1:1 on the central safe rect (the window shows exactly this frame at 16:9); the rock is mirrored into the right and bottom overscan. The render's near-opaque pixels (alpha 245\u2013254; it painted the rock at 252\u2013253) are made opaque. Uniform resize, no sharpening.",
+  "alpha_floor": 245
 }

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PATRON_IDS, WHISPER_IDS, VOW_IDS, PATRON_MARK_PATHS, WHISPER_PATHS, VOW_PATHS, PATRON_ACCENT, FAITH_INK, FAITH_GOLD, accentOf,
-  patronMarkUri, patronMarkSvg, prayerFile, prayerIconUri, vowIconUri, witnessedUri, patronPortrait } from './faithArt';
+  patronMarkUri, patronMarkSvg, prayerFile, prayerIconUri, vowIconUri, witnessedUri, patronPortrait, PORTRAIT_FACE, faceOf, faceImgStyle, patronFace } from './faithArt';
 
 const svgOf = (u: string) => decodeURIComponent(u.replace('data:image/svg+xml,', ''));
 describe('Blessing art placeholders', () => {
@@ -59,5 +59,18 @@ describe('Blessing art placeholders', () => {
     const repo = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
     const palette = JSON.parse(readFileSync(resolve(repo, 'art/style-guide/palette.json'), 'utf8'));
     expect(String(palette.ui.states.faith_light).toUpperCase()).toBe(FAITH_GOLD);
+  });
+  it('Faith 2.2: each portrait\'s face box (the Hymn\'s crop, the cards\' crops) lies inside its painting', () => {
+    for (const id of PATRON_IDS) {
+      const f = faceOf(id); expect(PORTRAIT_FACE[id], id).toBeTruthy();
+      // The square, as fractions of the 800 × 1000 painting: inside on every side.
+      expect(f.x - f.s / 2, id).toBeGreaterThanOrEqual(0); expect(f.x + f.s / 2, id).toBeLessThanOrEqual(1);
+      expect(f.y - (f.s * 0.8) / 2, id).toBeGreaterThanOrEqual(0); expect(f.y + (f.s * 0.8) / 2, id).toBeLessThanOrEqual(1);
+    }
+    expect(faceOf('toll_keeper')).toBe(PORTRAIT_FACE.the_toll_keeper); expect(faceOf('counting_weaver')).toBe(PORTRAIT_FACE.the_counting_weaver);
+    // Nerukhan: the image is 1/0.36 of the box wide, shifted so the face's centre is the box's centre.
+    expect(faceImgStyle('nerukhan')).toBe('position: absolute; display: block; max-width: none; width: 277.78%; height: auto; left: -97.22%; top: -9.03%');
+    const p = patronFace('mother_ember'); expect(p.painted).toBe(true); expect(p.src).toMatch(/patron-mother_ember/);
+    const none = patronFace('a_future_patron'); expect(none.painted).toBe(false); expect(none.src).toMatch(/^data:image\/svg/); expect(none.imgStyle).toMatch(/inset: 12%/);
   });
 });

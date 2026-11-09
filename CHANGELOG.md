@@ -8,6 +8,101 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.10.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `docs/design/cutin-spec.md`).
+
+- **The look:** when a big moment lands, the screen blurs a little and dims. Torn strips slide across showing the characters' eyes from their painted portraits. The tear is inked in the character's highest-attribute colour; a god's strip uses the patron's accent. Captions are in Spectral, with a small label in Chakra Petch. Several characters in one moment stack their strips.
+- **What fires it:**
+  - a natural 20 on a Hard or Heroic check;
+  - taking down an elite or boss;
+  - a revive;
+  - an Ultimate;
+  - a legendary deed;
+  - Play my song;
+  - **a patron's intervention:** the god's strip over the fighter's, with the patron's line and what it did;
+  - **your side's critical hits** in a fight: a short, slimmer strip, about 0.9 s.
+
+  One action shows one cut-in, the biggest moment in it.
+- **In a fight** the cut-in plays before the action, then that action plays back 15% slower. The casings, magazines and the bow's draw slow with it.
+- **The Miracle** keeps Faith 2.2's full scene. Strips and the Miracle share one queue and never overlap.
+- **Settings:** Cut-ins All / Once per scene / Off. Reduced motion means no slide and no slow-mo. Any click or key skips.
+- **Framing:** every portrait has an eye line (`eye_line` in `art/catalog.json`). Uploaded portraits get a Cut-in framing slider in character creation.
+- **Co-op:** every player in the room sees the cut-in.
+- **Known:** the `title` e2e suite fails at "the press" step on develop too, since 0.9.0's title front layer. It is not caused by this branch.
+- **Waiting on Leon:** cutin-spec.md section 10:
+  - trait songs;
+  - the Ultimate caption;
+  - a revive's two strips;
+  - a god's slow-mo;
+  - enemy cut-ins;
+  - reduced motion;
+  - the slimmer crit strip.
+## 0.9.1 — 9 November 2026
+
+Straight to `develop` (an art brief fix): **the title heroes look at the god, as a fixed rule**. Leon: Revision 5's squad "still looks at nothing". Close up, their faces turn left, only 10–20° above level, while the god's face is almost straight above them. The title-screen brief (`art/briefs/title-screen.md`) now fixes the target: the god's face at screen x 69%, y 5%, 65–90° above level from the outcrop. It adds a guide image (`art/briefs/title-screen/gaze-guide.jpg`: the scene, the squad's place, the face and each hero's sightline) and a sightline check before any front layer ships. The front layer itself waits for the corrected painting.
+
+## 0.9.0 — 9 November 2026
+
+Branch `feature/title-front-v5`: **the title screen's front layer, Revision 5**. Leon: the heroes looked like they were facing a wall, not the god, and the picture didn't show how much bigger the god is than a person.
+
+- **A wide shot from Leon's layout sketch:** the five heroes stand small on the lip of a rock outcrop at the right, all looking and pointing up and to the left at the Celestial, ready. The god now towers over them. The left of the screen stays clear for the title and menu.
+- **Fitting it in:** a full 16:9 frame placed 1:1 on what the screen shows. The rock is mirrored into the overscan, so the parallax never shows a cut edge. The render's near-opaque rock (alpha 252) is made fully opaque. Back and middle layers are unchanged; Revision 4 is archived.
+- **Tooling:** `tools/art/rebuild_title_screen.py` now follows the repository layout, and its placement can mirror the overscan and floor the alpha. The 4K PSD is written only on request. Previews, manifest, checksums and the technical review are regenerated; `validate_art.py` passes, with menu sample-text contrast unchanged at 5.6:1.
+
+## 0.8.0 — 9 November 2026
+
+Branch `feature/shell-casings`: **brass, what weapons throw off, drawn in SVG** (decision 112; Leon: casings behind the portrait on every shot with faint smoke, an Evoker ejecting its mana core like a casing, a shell for every weapon type, the Evokers and the enchanted guns, the archer's draw, a magazine dropping to the ground on a reload; "behind" is the opposite of the shot's direction).
+
+- **Casings:** every shot throws its casing out from behind the shooter's portrait, away from the target, in an arc with a ground shadow, then a hop; it lies there a moment and fades. A faint wisp of smoke comes off it. Each gun has its own: pistol and rifle brass, the .700's big case, belt links on the machine guns, red shotgun hulls, a 40 mm case.
+- **The enchanted guns:** the spellslinger pistol's casing is sigil-etched and glows; the censer gun's hull is blessed ivory and gold, with a violet incense wisp; the core rifle throws a spent core charge whose light goes out.
+- **Evoker cores:** taking a fresh core, an Evoker throws out the spent one, opposite its last Evoke (or a random way before the first). Each Evoker has its own: the Evoker's hexagonal core, the Evoker blade's shard, the grand staff's orb in a brass cage. Its light fades and a cold mist leaks out.
+- **Bows:** the shot waits for the draw: an arrow is pulled from the quiver behind the archer, swung over to point at the target and loosed. A crossbow's bolt is already on; its reload sets one from behind.
+- **Reloads:**
+  - A magazine drops straight down and is gone the moment it lands; each gun has its own (pistol, stick, curved, box, drum, belt box, shotgun box, sigil-etched, bolt box, fuel can). A tactical reload drops it into view and takes it back up into the pack.
+  - Revolvers keep their brass and drop it all straight out of the cylinder, then fresh rounds go in.
+  - A double barrel (and the parlour pistol) breaks open, kicks both hulls out behind and takes two fresh ones.
+  - A pump gun throws its hull a beat after the shot (the pump), and lever and bolt rifles a beat after theirs; at the reload, shells and rounds are fed in one by one.
+- **Engine (pictures only):** the core event names the Evoker. An off-hand gun's reload now has its own event (with both guns, the main event carries the off hand's part). A Trick Shot ricochet's shot is marked, so it throws no second casing.
+- Tests: `fx/brass.test.ts`, engine tests in `focus.test.ts` and `world-play-11-review.test.ts`, the new e2e `apps/web/e2e/brass.mjs`.
+
+## 0.7.0 — 9 November 2026
+
+Branch `feature/faith-presence`: **Faith 2.2, rules revision 1.6.3: the god shows up** (decision 111; `docs/design/faith-presence-spec.md`; spec items 738–747, all provisional; hand-off `docs/design/handoffs/faith-presence-HANDOFF.md`). The patrons' portraits only appeared at character creation, and interventions almost never fired.
+
+- **Witnessed** (Leon): a successful Hymn (or a Miracle) makes you Witnessed until the fight ends or your patron intervenes.
+- **Interventions:**
+  - each one ends Witnessed;
+  - once a fight, twice from Devotion 7;
+  - Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 × Devotion (× Blessing power);
+  - wider triggers: the Laughing Mask fires on any enemy miss against you. The Quartermaster (Leon) fires on any reload of yours (it's free), on your Evoker's core running dry (a fresh core, your spares untouched) and on your MP running out (25% of your max back);
+  - the patron's own act never counts as the devoted's deed (no XP, taboo or vow effects).
+- **The `grant` line bank** (the 11th): the god calls the devoted by name when granting a Miracle ("ROOK. THE SAINTS HAVE HEARD YOU. I GRANT THEE THIS REQUEST.").
+- **The Miracle cut-in:**
+  1. the screen dims under light in the god's colour;
+  2. the portrait cuts in over everything, larger than the map;
+  3. the god calls your name;
+  4. the view zooms to the map, the Miracle plays, and a box says what it did.
+
+  Skippable, reduced motion respected, seen by everyone in the room. Built on a reusable `showCutIn` (`apps/web/src/game/cutIn.ts`). The sound sting is "30_revive_03" by leohpaz (CC BY 4.0, credited).
+- **The patron on screen:**
+  - a Whisper's icon rises over the head; a Hymn shows a square crop of the god's portrait;
+  - the faith tab header shows the portrait (click for the large view);
+  - pact, switch, farewell and grudge cards carry a small portrait (greyed for a grudge), and voice-line cards a round crop.
+- **The intervention cut-in is left as a trigger:** `playIntervention()` in `cutIn.ts` (spec section 3) for the implementer building the cut-in UI.
+- **Waiting on Leon:** item 747. Should Witnessed's +2 to liked-tag attacks, and the Guardian's Under the Eye, keep their old one-turn length now that Witnessed lasts the fight?
+
+## 0.6.0 — 9 November 2026
+
+Branch `feature/mana-forecast`: **the mana meter becomes a forecast panel** (decision 110; Leon: the meter leaves the combat header and becomes a movable module beside the map, read like a weather forecast).
+
+- **Its own panel:** the header chip is gone. "Mana forecast" sits just above the map by default and moves like the legend and the log (drag its grip, or focus the grip and use the arrow keys; Reset brings it back). Narrow windows put it right under the map; short windows (620 px high or less) keep it in the map column with the grips hidden.
+- **Read like the weather:** a sky icon and a headline ("RICH AIR · 24 / 40"), a gauge of the four bands with a marker, one line on what the air is doing, and the trend (the meter at each round's start, so "+5 this round · −3 last round"; kept per fight in the browser).
+- **The outlook:** how far to the next band up and down, in deaths and Crystallises ("Flooded at 30: 6 to go (2 deaths)").
+- **More ▸:** what this band does (Outburst cost, Syphon, magical healing, rider stage shift, Strain) and what moves the meter, all read from `data/rules.json`. Over the map it opens as a dropdown, so the map keeps its size.
+- **Engine fix:** a beast's death now raises the meter by +3 (rules.json `beast_death`); it gave +5 like a person. Robots, turrets and drones still give +2.
+- Tests: `manaForecast.test.ts`, `mana-meter.test.ts`, the new e2e `apps/web/e2e/mana-forecast.mjs`; `layout.mjs` and `magic.mjs` updated.
+
 ## 0.5.0 — 9 November 2026
 
 Branch `claude/awesome-babbage-8gngk8`: **Sigil 1.5, rules revision 1.10** (`docs/design/sigil-1.5-spec.md`; spec section 14 items 901–923, all provisional). Sigil 1.5 was first numbered 1.9 / 671–693; it moved to 1.10 / 901–923 because World Play 1.1 took those numbers. **Lines of 5 are dropped** (Leon); Junctions stay.

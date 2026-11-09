@@ -30,6 +30,15 @@ Seen from behind or three-quarter behind, looking out toward the city: we see th
 
 Mixed builds, ages and skin tones (the set rule from the archetype brief). Nobody in the squad is a copy of a character from any other game, film or comic (the Unspoken Name).
 
+### The gaze: they look at the god (a fixed rule; Leon, 9 November 2026)
+
+Every hero looks at the god's **face**, and every raised arm, weapon or glyph aims at it. This holds for every revision of the front layer.
+
+- **The target:** the god's face is the bright head inside the rings, at **screen x 69%, y 5%** (canvas 2745, 250 in the 4096 × 2304 layer; the screen shows the central rect 256,144 → 3840,2160).
+- **The angle:** from the squad's place on the outcrop (Revision 5: heads at screen x 62–83%, y 45–55%), the face is **almost straight up: 65–90° above level**. That means heads thrown far back, chins high, faces toward the sky, the lead's gauntlet reaching nearly straight up. "Up and to the left" is wrong: generators read it as "look left", and Revision 5 came back looking level into empty sky.
+- **The guide:** `title-screen/gaze-guide.jpg` is the scene without the squad. It shows the squad's place faded, the face marked, and a sightline from each head. Attach it whenever the front is painted or corrected.
+- **The check before shipping:** on the composite, draw each hero's line of sight from the head. Every line must end on the god's head or upper body. A line into empty sky or the menu zone fails.
+
 ### The Celestial (back layer)
 
 Celestials are people from the layer above who play god inside the world. They appear only through a cause, and an appearance is a very big deal (World Bible). Paint the **scale and wrongness** of that.

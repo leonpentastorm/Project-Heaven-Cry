@@ -177,6 +177,12 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Presentation events (shots, hits, reloads, spells…) for the client's effects layer, newest last, capped at FX_CAP.
    * Numbered by fxSeq; they carry no rules and nothing reads them back (see FxEvent). */
   fx?: FxEvent[]; fxSeq?: number;
+  /** The first fx number of the action being resolved (spotlight.ts markAction): a spotlight moment's `from`, so the
+   * client can slow that action's playback. Set and cleared by the reducer; never read by a rule. */
+  actFrom?: number;
+  /** Party crits in the action being resolved (noteCrit; spotlight.ts critMoment turns the first into a 'crit' spotlight at
+   * the action's end, unless a bigger moment came in the same action). Presentation only; never read by a rule. */
+  critNotes?: { unit: string; target: string; via: 'weapon' | 'sigil' | 'outburst'; n: number }[];
   /** An off-turn window (On My Mark, Supreme Command): active(cb) is the queue's head while it is open (effects/actions.ts). */
   window?: { kind: string; queue: { unitId: string; ap?: number; limit?: number; done?: number }[]; saved: Record<string, number>; by?: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
@@ -773,6 +779,14 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
 }
 
+/** A party crit for the spotlight (decision 113; spotlight.ts critMoment): a player's character or a companion lands a
+ *  critical hit (a weapon attack, or a damaging Sigil or Outburst spell) on the other side. The first of an action is
+ *  kept, with the fx number it came at. Presentation only: no rule reads it. */
+export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | null | undefined, via: 'weapon' | 'sigil' | 'outburst') {
+  if (!by || !tgt || tgt.side === by.side || !(by.charId || by.companion)) return;
+  const notes = (cb.critNotes ||= []); if (notes.length >= 4) return;
+  notes.push({ unit: by.id, target: tgt.id, via, n: cb.fxSeq || 0 });
+}
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string }
 export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
@@ -830,6 +844,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
+    if (crit) noteCrit(cb, att, tgt, 'weapon'); // the spotlight's crit (decision 113): presentation only
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && !immune({ u: tgt }, 'bleed')) { tgt.bleed = 3; injury += ' · Bleeding'; }
     if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);
@@ -1374,13 +1389,15 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   if (pc && ow.reload === 'magazine' && !shared && !u.offMags) u.offMags = [];
   const pool = ow.reload === 'loose' ? null : shared ? u.mags : u.offMags;
   if (hand === 'off' && offFull) return 'Already full.';
+  let mainFx: FxEvent | null = null;
   if (hand === 'both') {
     const w = WEAPON[u.weapon]; if (w.magazine == null) return 'Your main hand holds no gun.';
     if (offFull && u.ammo >= w.magazine) return 'Already full.';
     if (offFull) return 'The off-hand gun is full: reload the main gun alone.';
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
-    const keep = u.ap; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    const keep = u.ap, seq = cb.fxSeq || 0; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
   // What goes in: a loose gun takes rounds (a character's from its loose rounds of that calibre); a magazine gun its
   // fullest spare, whose type it takes (item 680; the shared pool's types when both hands hold the same model).
@@ -1399,6 +1416,10 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   // The log names no tile (review fix: the pile shows where it fell, under fog).
   cb.log.push(u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
   if (kept && !tactical) dropToPile(cb, u.pos, [magItem(ow.id, left, leftType)]);
+  // The picture (no rules): the off-hand gun's reload, or, with both guns, the off hand's part of the main reload's event.
+  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', ...(kept && tactical ? { tactical: true } : {}), ...(looseTake ? { rounds: looseTake } : {}) };
+  if (mainFx) mainFx.off = off;
+  else emitFx(cb, 'reload', { unit: u.id, at: u.pos, ...off, hand: 'off', dur: ap <= 1 ? 800 : off.how === 'loose' ? 1400 : 1200 });
   return null;
 }
 /** The type of spare i of the off-hand gun's pool (the main hand's spares when both hands hold the same model), taken out. */

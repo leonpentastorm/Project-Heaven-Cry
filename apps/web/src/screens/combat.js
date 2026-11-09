@@ -6,7 +6,7 @@ import { reducedMotion, sfx } from '../game/sfx';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
-  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit } from '@engine';
+  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
@@ -19,6 +19,7 @@ const act = (a) => {
 };
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
+import { forecastVals } from '../game/manaForecast';
 import { castFight } from '../game/cast';
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
@@ -30,7 +31,8 @@ import { backpackView } from '../game/backpack';
 import { lootLogLine } from '../game/worldView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
-import { prayerView, vowPromptVals, patronLogCard } from './faithCombat';
+import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
+import { FAITH_GOLD } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
@@ -196,7 +198,9 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   // The enemies' turns started playing: grey the action panel out now (Leon: no acting until it's really your turn).
   window.addEventListener('phc-fx-hold', () => { if (LIVE && onScreen()) LIVE.setState({}); });
-  window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
+  // Crossing the narrow (1000 px wide) or very short (620 px high) line changes where panels go: render again then.
+  let sizeClass = '';
+  window.addEventListener('resize', () => { if (!LIVE || !onScreen()) return; const c = (window.innerWidth < 1000 ? 'n' : 'w') + (window.innerHeight <= 620 ? 's' : 't'); if (c !== sizeClass) { sizeClass = c; LIVE.setState({}); } LIVE.fitGrid(); });
 }
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
@@ -257,8 +261,20 @@ function pickerVals(self, cb, P, V, whyOpt) {
 const chipWhy = (t) => { const s = String(t || '').split(/[:.]/)[0].trim(); return s.length > 34 ? s.slice(0, 32) + '…' : s; };
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
-const condChips = (u) => [...Object.entries(u.conds || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + n + (n === 1 ? ' round' : ' rounds') + ' left.',
-  style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') })),
+/** Witnessed lasts until the fight ends or the patron intervenes (rules 1.6.3), not for a count of rounds: its chip's
+ *  title says so ("Witnessed: until the fight ends or <patron> acts"), as the FAITH tab's header does. */
+const patronNameOf = (u, g) => { const c = g && u.charId ? g.characters[u.charId] : null, p = c && c.patron ? FAITH_PATRON[c.patron] : null; return p ? String(p.name) : ''; };
+export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
+/** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
+const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
+const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; ';
+/** Witnessed is your patron watching (a boon), not a harm: the faith light and the eye, a short label (the how-long is in
+ *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
+const WITNESSED_CHIP = COND_CHIP + 'white-space: nowrap; border: 1px solid var(--faith-light, ' + FAITH_GOLD + '); color: var(--faith-light, ' + FAITH_GOLD + ')';
+export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id, n]) => n > 0 && !(id === 'witnessed' && g && g.combat && g.combat.over)).map(([id, n]) => id === 'witnessed'
+  ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
+  : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + n + (n === 1 ? ' round' : ' rounds') + ' left.',
+    style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + u.shield + ' SHIELD', t: 'A shield of ' + u.shield + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 
 export class CombatLogic extends DCLogic {
@@ -436,9 +452,14 @@ export class CombatLogic extends DCLogic {
   }
   /** The bindings the layout's grips, splitter and Reset use (templates/combat.template.html). */
   layoutVals(hidden) {
-    const pl = placement(LAYOUT, hidden), o = pl.order;
+    // Very short windows (620 px or less): the action column has no room to spare, so any panel moved there (the mana
+    // forecast, the legend, the log) shows in the map zone instead, under the map; the stored layout is unchanged.
+    const W = typeof window !== 'undefined' ? window : null, narrow = !!W && W.innerWidth < 1000, short = !!W && W.innerHeight <= 620;
+    const pl0 = placement(LAYOUT, hidden), pl = short && !hidden ? { ...placement(LAYOUT, true), swap: pl0.swap, width: pl0.width } : pl0, o = pl.order;
     const panel = (n) => 'position: relative; order: ' + n + '; flex: none; min-width: 0';
-    const side = '; flex: 0 1 auto; min-height: 64px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin';
+    // In the action zone an extra gives up its height before the turn box does (a high shrink factor): down to 64 px, then
+    // it scrolls inside, so the footer (Confirm, End turn) never spills under it on a short window.
+    const side = '; flex: 0 100 auto; min-height: 64px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin';
     const grip = (id) => (e) => startPanelDrag(e.nativeEvent || e, id, LAYOUT, (l) => this.setLayout(l));
     const gripKey = (id) => (e) => { const n = keyMovePanel(e.nativeEvent || e, id, LAYOUT); if (!n) return; e.preventDefault(); this.setLayout(n);
       if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => requestAnimationFrame(() => { const b = id === 'actions' ? document.querySelector('.phc-cb-bar .phc-grip') : document.querySelector('[data-phc-panel="' + id + '"] > .phc-grip'); if (b && b.focus) b.focus(); })); };
@@ -447,11 +468,15 @@ export class CombatLogic extends DCLogic {
     const live = (w) => { this._liveW = w; const el = sec(); if (el) el.style.flex = '0 1 ' + w + 'px'; this.fitGrid(); };
     return {
       swap: pl.swap, custom: !isDefault(LAYOUT), reset: () => this.setLayout(DEFAULT_LAYOUT),
+      sideExtras: !hidden && (pl.manaIn === 'sideZone' || pl.legendIn === 'sideZone' || pl.logIn === 'sideZone'),
+      // The forecast's details drop down over the map only where that works: above the map, on a wide, tall-enough window.
+      manaDrop: pl.manaIn === 'mapZone' && o.mana < o.map && !narrow && !short,
       // In the action zone the legend and the log take what room they need up to a cap, then scroll, so the actions keep theirs.
       mapStyle: panel(o.map), legendStyle: panel(o.legend) + (pl.legendIn === 'sideZone' ? side : ''), logStyle: panel(o.log) + (pl.logIn === 'sideZone' ? side : ''),
+      manaStyle: panel(o.mana) + (pl.manaIn === 'sideZone' ? side : ''), manaMap: pl.manaIn === 'mapZone', manaSide: pl.manaIn === 'sideZone',
       legendMap: pl.legendIn === 'mapZone', legendSide: pl.legendIn === 'sideZone', logMap: pl.logIn === 'mapZone', logSide: pl.logIn === 'sideZone',
-      grip: { map: grip('map'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
-      gripKey: { map: gripKey('map'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
+      grip: { map: grip('map'), mana: grip('mana'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
+      gripKey: { map: gripKey('map'), mana: gripKey('mana'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
       splitNow: pl.width ? Math.round((pl.width / rowW()) * 100) : 50,
       splitDown: (e) => { const bar = e.currentTarget, row = bar && bar.parentElement; if (!row) return; startSplit(e.nativeEvent || e, bar, row, pl.swap, live, (w) => this.setLayout({ ...LAYOUT, width: w })); },
       splitKey: (e) => { const el = sec(); const cur = LAYOUT.width || (el ? el.getBoundingClientRect().width : 600); const r = splitKey(e.nativeEvent || e, cur, rowW(), pl.swap);
@@ -468,12 +493,17 @@ export class CombatLogic extends DCLogic {
     if (!sec || !row || !cb) return;
     // Anything that changes the room (the header wrapping, the window) refits: watch the grid's column itself.
     if (this._roEl !== sec && typeof ResizeObserver !== 'undefined') { if (this._ro) this._ro.disconnect(); this._ro = new ResizeObserver(() => { if (LIVE === this) this.fitGrid(); }); this._ro.observe(sec); this._roEl = sec; }
+    // The panels in the map zone (the mana forecast wraps or opens, the legend grows) change the room too: watch them.
+    if (this._ro) for (const pnl of sec.querySelectorAll(':scope > [data-phc-panel]')) if (!(this._roSeen ||= new WeakSet()).has(pnl)) { this._roSeen.add(pnl); this._ro.observe(pnl); }
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
     const sized = !narrow && !PANEL_HIDDEN && (LAYOUT.width || this._liveW);
     // The map's size toolbar sits above the grid: Auto leaves it its room.
     const tb = sec.querySelector('.phc-mapzoom'), toolH = tb ? tb.offsetHeight + 6 : 0;
-    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH;
+    // Panels set above the map in its zone (the mana forecast by default; the legend or log if moved there) take their room too.
+    const mapP = sec.querySelector(':scope > [data-phc-panel="map"]'), mapOrd = mapP ? Number(getComputedStyle(mapP).order) || 0 : 0, gap = parseFloat(getComputedStyle(sec).rowGap) || 0;
+    const panelsAboveH = [...sec.querySelectorAll(':scope > [data-phc-panel]')].filter((p) => p !== mapP && (Number(getComputedStyle(p).order) || 0) < mapOrd).reduce((t, p) => t + p.offsetHeight + gap, 0);
+    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH - panelsAboveH;
     // Manual: the player's own size (the map scrolls inside its zone when bigger).
     if (ZOOM.mode === 'manual') { if (ZOOM.scale !== (this._zoom || 1)) { this._zoom = ZOOM.scale; this.setState({}); } return; }
     // Auto: the largest size that fits, growing past 100% on big screens (up to the manual maximum).
@@ -483,7 +513,7 @@ export class CombatLogic extends DCLogic {
     if (PANEL_HIDDEN && !narrow) {
       const r = sec.getBoundingClientRect(), miniRight = getState().game?.sandbox ? 64 : 20;
       const besideW = window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2);
-      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16);
+      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH;
       fit = Math.max(Math.min(fit, besideW / natW), Math.min(fit, aboveH / natH));
     }
     const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, fit) * 100) / 100;
@@ -718,7 +748,7 @@ export class CombatLogic extends DCLogic {
       const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k), note = notesAt(cb.map, k)[0];
       const gls = (glyphAt[k] || []).filter((gl) => gl.side === 'pc' || vis.tiles.has(k)), trs = vis.tiles.has(k) ? traceAt[k] || [] : [], sgT = sgTiles[k], mk = markStyle(k, u), mTag = magicTag(k);
       const sgLayer = [sgT && sgT.layer, sgDim && !evV.area.has(k) && !evV.pickable.has(k) && !evV.stepTo.has(k) && !evV.orderTo.has(k) && k !== cur.pos ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
-      const magicNote = (gls.length ? ' · glyphs: ' + gls.map(glyphName).join(', ') : '') + (trs.length ? ' · ' + trs.map((t) => traceMark(t, knows).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (u && u.mg && u.mg.held ? ' · holding an Outburst (stage ' + u.mg.held.stage + ')' : '') + (u && (u.side === 'pc' || u.analyzedBy) ? condChips(u).map((c) => ' · ' + c.k.toLowerCase()).join('') : '');
+      const magicNote = (gls.length ? ' · glyphs: ' + gls.map(glyphName).join(', ') : '') + (trs.length ? ' · ' + trs.map((t) => traceMark(t, knows).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (u && u.mg && u.mg.held ? ' · holding an Outburst (stage ' + u.mg.held.stage + ')' : '') + (u && (u.side === 'pc' || u.analyzedBy) ? condChips(u, g).map((c) => ' · ' + c.k.toLowerCase()).join('') : '');
       let bg = '#0D1119', border = '1px solid #151C29';
       if (solid.has(k)) { bg = '#1C2536'; border = '1px solid #232D3F'; }
       const cv = covers[k], ob = allObjs.find((o) => o.pos === k && !(cv && (o.kind === 'crate' || o.kind === 'pillar')) && o.kind !== 'rubble' && o.kind !== 'pile');
@@ -901,7 +931,7 @@ export class CombatLogic extends DCLogic {
       breakdown: pv && pv.ok ? hitBreakdown(pv) : '' } : null;
     const curOwner = cur ? playerOf(owner(cur)) : null;
     /** A unit's magic in a line: Evoker, heart, shield, conditions. */
-    const magicLine = (u) => { const m = u.mg, cs = condChips(u); let t = '';
+    const magicLine = (u) => { const m = u.mg, cs = condChips(u, g); let t = '';
       if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + FLUX_MAX + ' · Charge ' + m.charge;
       if (m && m.emanator) t += ' · MP ' + Math.round(m.mp) + '/' + m.mpMax;
       const hh = m ? heldOutburstOf(m) : null;
@@ -932,9 +962,9 @@ export class CombatLogic extends DCLogic {
       line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims + ' · Echo ' + mc.echo,
       // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
       // urgent resources sit in their own row under it (me.res.urgent).
-      miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU).map((c) => c.k)].join(' · ') : ''),
-      fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU)], noFx: !effectsOf(myU).length && !condChips(myU).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
-    const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
+      miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
+      fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU, g)], noFx: !effectsOf(myU).length && !condChips(myU, g).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
+    const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u, g).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: ART(u.img) || u.img || '', hasImg: !!u.img, short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
         fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
         imgStyle: 'width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #000; flex: none; border: 2px solid ' + (p ? p.color : '#7FD4FF') + (u.downed || u.dead ? '; opacity: 0.5' : '') }; });
@@ -1046,6 +1076,8 @@ export class CombatLogic extends DCLogic {
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
+      // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
+      ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
@@ -1105,7 +1137,10 @@ export class CombatLogic extends DCLogic {
       leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
-      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
+      // With a panel moved into the action column (the forecast, the legend or the log) the turn box keeps a floor of
+      // 320 px on your turn (YOUR TURN, AP and the tabs about 130, a usable tab panel, the footer about 113), so the extra
+      // gives up its room first (it scrolls inside) and the footer never spills under it; the tab panel still scrolls.
+      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: ' + (lay.sideExtras && mineTurn ? '320px' : '0') + '; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
       panelOpen: !hidden, panelHidden: hidden, togglePanel: () => this.togglePanel(), asideCls: mineTurn ? 'phc-mine' : '', mini, quick,
       canCustomise: !!myU && !cb.over, customise: () => openCustomise(myU && myU.charId),
       pad, magicLegend, hasMagicLegend: magicLegend.length > 0, bp,
@@ -1115,8 +1150,8 @@ export class CombatLogic extends DCLogic {
         const cs = list.map((o) => { const n = o.itemCount ?? (o.items || []).length, why = o.searched || !n ? 'empty' : o.locked ? 'locked' : cur.ap < 1 ? 'needs 1 AP' : '';
           return { key: o.id, label: 'Search ' + o.name + ' · 1 AP', sub: why || 'holds ' + n + (n === 1 ? ' thing' : ' things'), off: !!why, go: () => { if (!why) act({ type: 'combat/search', unitId: cur.id, objId: o.id }); } }; });
         return { cbSearch: cs, hasCbSearch: cs.length > 0 }; })(),
-      manaText: 'MANA ' + mana + ' · ' + BAND_NAME[band.id], manaTitle: 'The ambient mana meter (0 to 40): ' + BAND_NAME[band.id] + ' air. Deaths and vented Flux raise it; Outbursts, Syphon and Crystallise draw it down.',
-      manaStyle: 'padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid #232D3F; color: #A3AEC2', showMana: anyMagic,
+      // The mana forecast (game/manaForecast.ts): the air as weather, in its own movable panel (it left the header).
+      fc: forecastVals(cb, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen }), lay.manaDrop),
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),

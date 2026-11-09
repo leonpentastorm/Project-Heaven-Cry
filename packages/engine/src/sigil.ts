@@ -14,7 +14,7 @@ import {
 } from './sigilwords';
 export * from './sigilwords';
 import {
-  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx,
+  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost,
 } from './combat';
 import { type Rng, d20 } from './rng';
@@ -983,6 +983,7 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
       line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
     }
     dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
+    if (crit) noteCrit(cb, by, t, 'sigil'); // the spotlight's crit (decision 113): presentation only
     if (!t.dead) {
       // FIRE's inflection (rules 1.10): its Burning lasts a round past being put out (tactics extinguish reads 'linger').
       if (crit && sp.uniqueSubjects.includes('fire')) line += applyCond(cb, rng, by, t, 'burning', undefined, undefined, iv(sp, 'fire', 'cond_rounds') ? { arg: 'linger:' + iv(sp, 'fire', 'cond_rounds') } : {});

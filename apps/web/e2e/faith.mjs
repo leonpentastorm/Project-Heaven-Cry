@@ -47,6 +47,17 @@ ok('the panel: Mother Ember, Devotion 3 with its XP toward 4 (DEVOTION 3 · 0/25
 ok('the Miracle\'s heading gives its gate and price', /✦ MIRACLE · AT DEVOTION 10 · ONCE A SESSION · COSTS 5 LEVELS/.test(txt));
 ok('the panel shows the day (DAY 1), no cooldown and no grudge', /DAY 1/.test(await panel.locator('[data-faith-day]').textContent()) && (await panel.locator('[data-faith-cooldown]').count()) === 0 && (await panel.locator('[data-faith-grudge]').count()) === 0);
 ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.test((await panel.locator('[role="meter"]').getAttribute('aria-valuetext')) || ''));
+// Faith 2.2 (spec 2.4): your patron's portrait beside the Devotion meter; a click opens it large.
+{ const port = panel.locator('[data-faith-portrait="mother_ember"]');
+  ok('the faith tab\'s header: Mother Ember\'s portrait beside the Devotion words', (await port.count()) === 1 && /patron-mother_ember/.test((await port.locator('img').getAttribute('src')) || '') && (await panel.locator('section[aria-label="Belief"] [data-devotion-label]').count()) === 1);
+  const pb = await port.boundingBox();
+  ok('a 4:5 portrait (' + (pb ? Math.round(pb.width) + ' × ' + Math.round(pb.height) : 'none') + ')', !!pb && Math.abs(pb.width / pb.height - 0.8) < 0.02);
+  const fit = await panel.evaluate((el) => { const h = el.querySelector('section[aria-label="Belief"]').getBoundingClientRect(); return [...el.querySelectorAll('[role="meter"] span')].every((s) => { const r = s.getBoundingClientRect(); return r.right <= h.right + 0.5 && r.left >= h.left - 0.5; }); });
+  ok('the meter\'s gate words stay inside the header', fit);
+  await port.click(); const lb = p.getByRole('dialog', { name: /Mother Ember/ });
+  const up = await lb.waitFor({ timeout: 3000 }).then(() => true, () => false);
+  ok('a click opens it large (the lightbox, the -lg painting)', up && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
+  if (up) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); } }
 ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
 ok('6 Whispers, 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 6 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
@@ -61,7 +72,13 @@ ok('a Whisper with a target opens the party chips', opened);
 if (opened) { const grp = panel.locator('[role="group"][aria-label="Choose the target"]'); await grp.getByRole('button').first().click();
   ok('picking someone gives the verdict and Pray', /Pray/.test(await grp.textContent()));
   const n0 = await p.evaluate(() => window.__phc.getState().game.story.entries.length);
-  await grp.locator('[data-prayer-confirm]').click(); await p.waitForTimeout(600);
+  await grp.locator('[data-prayer-confirm]').click();
+  // Faith 2.2 (spec 2.1): on the area map too, the Whisper's icon rises over the head of the one who prays.
+  const onMap = await p.evaluate(() => { const g = window.__phc.getState().game, c = Object.values(g.characters)[0]; return !!g.story.positions?.[c.id]; });
+  const wUp = await p.locator('[data-phc-faith-whisper]').first().waitFor({ timeout: 2500 }).then(() => true, () => false);
+  ok('the story Whisper: its icon over your token on the area map (' + (onMap ? 'on the map' : 'no token on the map') + ')', !onMap || wUp);
+  if (wUp && SHOTS) await p.screenshot({ path: SHOTS + '/faith-story-whisper.png' });
+  await p.waitForTimeout(600);
   const said = await p.evaluate((n0) => window.__phc.getState().game.story.entries.slice(n0).map((e) => (e.head || '') + ' ' + e.text).join(' | '), n0);
   ok('Pray: the story answers (' + said.slice(0, 90) + ')', /ANSWERED|SILENCE/.test(said));
   ok('and the next Whisper waits: "One Whisper a round."', /One Whisper a round/.test(await panel.textContent())); }
