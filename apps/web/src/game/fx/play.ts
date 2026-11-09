@@ -77,7 +77,7 @@ const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
 const aims = new Map<string, number>();
 const aimFor = (id: string | null | undefined, guess?: number) => (id && aims.has(id) ? aims.get(id)! : guess ?? (unit(id)?.side === 'pc' ? 0 : Math.PI));
 /** Does this shot wait for the archer's draw (a bow, not a crossbow: its bolt is already on)? */
-const drawsArrow = (e: FxEvent) => !reducedMotion() && brassOf(e.weapon || '', e.cat || '').bow === 'bow';
+const drawsArrow = (e: FxEvent) => !e.ricochet && !reducedMotion() && brassOf(e.weapon || '', e.cat || '').bow === 'bow';
 
 // ---------- weapons ----------
 type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam';
@@ -212,15 +212,15 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
   const who = whoOf(tokOf(e.unit, e.at));
   if (!who) return;
   const aim = aimFor(e.unit);
-  const one = (weapon: string, cat: string, how: string, tactical: boolean, delay: number) => {
+  const one = (weapon: string, cat: string, how: string, tactical: boolean, rounds: number | undefined, delay: number) => {
     const br = brassOf(weapon, cat), size = Math.max(1, Math.min(6, Number((WEAPON as any)[weapon]?.magazine) || 6));
-    if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, e.rounds || 2)) : 1, aim, ms * 0.8); return; }
+    if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, rounds || 2)) : 1, aim, ms * 0.8); return; }
     if (br.bow === 'crossbow' && how !== 'mag') { after(() => drawArrow(who, aim, { ms: ms * 0.6, bolt: true }), delay + ms * 0.15); return; }
-    if (br.load) loadRounds(who, br, e.rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
+    if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
     if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * 0.12, tactical });
   };
-  one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, 0);
-  if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, 160);
+  one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
+  if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
 }
 
 // ---------- event handlers ----------
@@ -245,8 +245,9 @@ const H: Record<string, Handler> = {
     if (!toP) { if (!silent && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw }); return; }
     const shooterTok = shooterSeen ? tokOf(e.unit, e.from) : null;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
-    const aim = from ? angle(from, toP) : aimFor(e.unit);
-    if (e.unit) aims.set(e.unit, aim);
+    // a Trick Shot ricochet flies on from the first target: no draw, no casing, no recoil, and the shooter's aim stays
+    const rico = !!e.ricochet, aim = from && !rico ? angle(from, toP) : aimFor(e.unit);
+    if (e.unit && !rico) aims.set(e.unit, aim);
     if (draw) {
       if (from && shooterTok) { drawArrow(whoOf(shooterTok), aim, { ms: draw }); play('swish', from, { rate: 1.7 * jitter(), gain: 0.35 }); }
       after(() => fire(), draw);
@@ -256,10 +257,10 @@ const H: Record<string, Handler> = {
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
       if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow') mp = muzzle(from, toP, g.color);
-      if (from && shooterTok) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
+      if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
-      if (from && shooterTok && br.when === 'shot') { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
+      if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
       const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' ? 1.1 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
@@ -913,7 +914,9 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number }
     const wait = t - now;
     if (wait <= 4) playFx(e, stream);
     else { const id: number = window.setTimeout(() => { timers = timers.filter((x) => x !== id); playFx(e, stream); }, wait); timers.push(id); }
-    t += beatOf(e) * speed;
+    // a bow's draw holds its full time even when a backlog plays faster (the arrow can't fly before it is loosed)
+    const held = drawsArrow(e) && mineOnly(e) ? DRAW_MS : 0;
+    t += (beatOf(e) - held) * speed + held;
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.

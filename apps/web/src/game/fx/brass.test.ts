@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { refOf, WEAPONS } from '@engine';
 import { setLayer } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { DRAW_MS, arcFrames, behindOf, brassOf, coreOf } from './brass';
+import { DRAW_MS, arcFrames, behindOf, brassOf, coreOf, whoOf } from './brass';
 import * as sfxMod from '../sfx';
 
 function grid(w = 8, h = 6) {
@@ -132,5 +132,19 @@ describe('the pictures over the grid', () => {
     expect(run({ k: 'core', unit: 'u', at: '1,1', dur: 1000, focus: 'grand_staff' }).seen).toContain('core:staff');
     expect(run({ k: 'core', unit: 'u', at: '1,1', dur: 1000 }).seen).toContain('core:evoker');
     clearFx(); vi.advanceTimersByTime(5000); vi.useRealTimers();
+  });
+  it('a Trick Shot ricochet (a shot flying on from the first target) throws no second casing and draws no second arrow', () => {
+    vi.useFakeTimers();
+    const rico = (weapon: string, cat: string) => run({ k: 'shot', unit: 'u', target: 't2', from: '3,1', to: '5,2', weapon, cat, hit: true, dmg: 3, chain: true, ricochet: true }).seen;
+    expect(rico('service_pistol', 'pistol').some((p) => /^shell:/.test(p))).toBe(false);
+    expect(rico('longbow', 'bow')).not.toContain('arrow');
+    clearFx(); vi.advanceTimersByTime(5000); vi.useRealTimers();
+  });
+  it('the hole covers the white ring round a squad member\'s portrait (its box-shadow spread)', () => {
+    grid();
+    const img = document.createElement('img'); img.setAttribute('style', 'border-radius: 50%; box-shadow: 0 0 0 3px #fff');
+    (img as any).getBoundingClientRect = () => ({ left: 0, top: 0, width: 38, height: 38, right: 38, bottom: 38 });
+    expect(whoOf(img)).toMatchObject({ w: 38, round: true, ring: 3 });
+    img.setAttribute('style', 'border-radius: 4px'); expect(whoOf(img)!.ring).toBe(0);
   });
 });

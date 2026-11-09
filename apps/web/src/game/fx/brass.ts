@@ -250,41 +250,64 @@ function fresh(shell: Shell): Pic {
 }
 
 // ---------- behind the portrait ----------
-export interface Who { x: number; y: number; w: number; h: number; round: boolean }
+/** A portrait on screen: its centre and size, its shape, and the frame ring drawn round it (its box-shadow spread). */
+export interface Who { x: number; y: number; w: number; h: number; round: boolean; ring: number }
 /** Where a token (a portrait) is on screen now. */
 export function whoOf(tok: HTMLElement | null): Who | null {
   if (!tok) return null;
   const r = tok.getBoundingClientRect(); if (!r.width || !r.height) return null;
   const br = (tok.getAttribute('style') || '') + ' ' + (tok.style?.borderRadius || '');
-  return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height, round: /border-radius:\s*50%/.test(br) };
+  // the white ring round a squad member's portrait is a box-shadow spread: the hole covers it too
+  let ring = 0;
+  try { const m = /(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(-?[\d.]+)px/.exec(getComputedStyle(tok).boxShadow || tok.style?.boxShadow || (/box-shadow:\s*([^;]+)/.exec(tok.getAttribute('style') || '') || [])[1] || ''); if (m) ring = Math.max(0, Math.min(8, Number(m[4]) || 0)); } catch { /* */ }
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height, round: /border-radius:\s*50%/.test(br), ring };
 }
-/** A full-layer box with the portrait cut out of it (hidden): what goes in it is hidden where the portrait covers it,
- *  so it seems to come out from behind. Open (hidden false): the plain layer, for smoke (soft smoke cut by the
- *  portrait's outline would draw a hard halo round it). A browser without clip-path paths shows it all in front. */
-function behind(who: Who, ms: number, hidden = true): HTMLElement | null {
+/** A box round the portrait (big enough for everything thrown from it) with the portrait cut out of it (hidden): what
+ *  goes in it is hidden where the portrait covers it, so it seems to come out from behind. Open (hidden false): no
+ *  cut, for smoke (soft smoke cut by the portrait's outline would draw a hard halo round it). One box per portrait is
+ *  shared while it has pieces (a burst is one clip mask, not one per casing); share false gives a box of its own (the
+ *  draw lifts its clip). A browser without clip-path paths shows it all in front. Pieces are placed in viewport
+ *  coordinates through org(). */
+const SHARED = new Map<string, { box: HTMLElement; until: number }>();
+function behind(who: Who, ms: number, hidden = true, share = true): HTMLElement | null {
   const L = layerEl(); if (!L) return null;
+  const key = share ? (hidden ? 'h' : 'o') + Math.round(who.x) + ',' + Math.round(who.y) + ',' + Math.round(who.w) : '';
+  const now = Date.now();
+  if (key) {
+    const had = SHARED.get(key);
+    if (had && had.box.isConnected && had.box.parentElement === L) { had.until = Math.max(had.until, now + ms); return had.box; }
+  }
+  const half = Math.max(who.w, who.h) * 3.6, ox = who.x - half, oy = who.y - half, S = half * 2;
   const box = document.createElement('div');
   box.setAttribute('data-fx', hidden ? 'brass' : 'brass-air');
-  box.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:visible';
-  if (hidden) box.style.clipPath = holePath(who);
+  box.style.cssText = 'position:absolute;left:' + ox + 'px;top:' + oy + 'px;width:' + S + 'px;height:' + S + 'px;pointer-events:none;overflow:visible';
+  (box as any)._o = { x: ox, y: oy };
+  if (hidden) box.style.clipPath = holePath(who, ox, oy, S);
   L.appendChild(box);
-  setTimeout(() => box.remove(), ms + 80);
+  if (!key) { setTimeout(() => box.remove(), ms + 80); return box; }
+  const rec = { box, until: now + ms };
+  SHARED.set(key, rec);
+  const sweep = () => { const left = rec.until - Date.now(); if (left > 0) { setTimeout(sweep, left + 80); return; } box.remove(); if (SHARED.get(key) === rec) SHARED.delete(key); };
+  setTimeout(sweep, ms + 80);
   return box;
 }
-function holePath(who: Who): string {
-  const W = Math.max(innerWidth || 0, 4000), H = Math.max(innerHeight || 0, 4000), rx = who.w / 2, ry = who.h / 2, l = who.x - rx, t = who.y - ry, r = who.round ? 0 : Math.min(4, rx);
-  const outer = 'M-50 -50 H' + W + ' V' + H + ' H-50 Z ';
-  const hole = who.round ? 'M' + l + ' ' + who.y + ' A' + rx + ' ' + ry + ' 0 1 0 ' + (l + who.w) + ' ' + who.y + ' A' + rx + ' ' + ry + ' 0 1 0 ' + l + ' ' + who.y + ' Z'
-    : 'M' + (l + r) + ' ' + t + ' H' + (l + who.w - r) + ' Q' + (l + who.w) + ' ' + t + ' ' + (l + who.w) + ' ' + (t + r) + ' V' + (t + who.h - r) + ' Q' + (l + who.w) + ' ' + (t + who.h) + ' ' + (l + who.w - r) + ' ' + (t + who.h) + ' H' + (l + r) + ' Q' + l + ' ' + (t + who.h) + ' ' + l + ' ' + (t + who.h - r) + ' V' + (t + r) + ' Q' + l + ' ' + t + ' ' + (l + r) + ' ' + t + ' Z';
+/** Where a box sits on the page (its pieces are placed relative to it). */
+const org = (box: HTMLElement): { x: number; y: number } => (box as any)._o || { x: 0, y: 0 };
+function holePath(who: Who, ox: number, oy: number, S: number): string {
+  const rx = who.w / 2 + who.ring, ry = who.h / 2 + who.ring, cx = who.x - ox, cy = who.y - oy, l = cx - rx, t = cy - ry, W = rx * 2, H = ry * 2, r = who.round ? 0 : Math.min(4 + who.ring, rx);
+  const outer = 'M0 0 H' + S + ' V' + S + ' H0 Z ';
+  const hole = who.round ? 'M' + l + ' ' + cy + ' A' + rx + ' ' + ry + ' 0 1 0 ' + (l + W) + ' ' + cy + ' A' + rx + ' ' + ry + ' 0 1 0 ' + l + ' ' + cy + ' Z'
+    : 'M' + (l + r) + ' ' + t + ' H' + (l + W - r) + ' Q' + (l + W) + ' ' + t + ' ' + (l + W) + ' ' + (t + r) + ' V' + (t + H - r) + ' Q' + (l + W) + ' ' + (t + H) + ' ' + (l + W - r) + ' ' + (t + H) + ' H' + (l + r) + ' Q' + l + ' ' + (t + H) + ' ' + l + ' ' + (t + H - r) + ' V' + (t + r) + ' Q' + l + ' ' + t + ' ' + (l + r) + ' ' + t + ' Z';
   return 'path(evenodd, "' + outer + hole + '")';
 }
 /** A node in a box at a viewport point (its centre), w × h px. */
 function piece(parent: HTMLElement, el: Element, x: number, y: number, w: number, h: number, glow?: string, tag?: string): HTMLElement {
-  const d = document.createElement('div');
-  d.style.cssText = 'position:absolute;left:' + (x - w / 2) + 'px;top:' + (y - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;will-change:transform,opacity'
+  const d = document.createElement('div'), o = org(parent);
+  d.style.cssText = 'position:absolute;left:' + (x - o.x - w / 2) + 'px;top:' + (y - o.y - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;will-change:transform,opacity'
     + (glow ? ';filter:drop-shadow(0 0 ' + Math.max(1.5, w * 0.12).toFixed(1) + 'px ' + glow + ')' : ';filter:drop-shadow(0 1px 0.6px rgba(0,0,0,.65))');
   if (tag) d.setAttribute('data-fx-piece', tag);
   d.appendChild(el); parent.appendChild(d);
+  setTimeout(() => d.remove(), 6000); // a shared box outlives its pieces: none of them stays
   return d;
 }
 
@@ -293,8 +316,8 @@ function piece(parent: HTMLElement, el: Element, x: number, y: number, w: number
 function wisp(parent: HTMLElement, x: number, y: number, size: number, tint: string, o: { ms?: number; delay?: number; drift?: number; dy?: number; rise?: number; alpha?: number } = {}) {
   const ms = o.ms ?? 1100, a = o.alpha ?? 0.5;
   const run = () => {
-    const d = document.createElement('div');
-    d.style.cssText = 'position:absolute;left:' + (x - size / 2) + 'px;top:' + (y - size / 2) + 'px;width:' + size + 'px;height:' + size + 'px;border-radius:50%;'
+    const d = document.createElement('div'), at = org(parent);
+    d.style.cssText = 'position:absolute;left:' + (x - at.x - size / 2) + 'px;top:' + (y - at.y - size / 2) + 'px;width:' + size + 'px;height:' + size + 'px;border-radius:50%;'
       + 'background:radial-gradient(circle at 50% 55%,' + tint + a + ') 0%,' + tint + (a * 0.45).toFixed(3) + ') 42%,' + tint + '0) 72%);filter:blur(' + Math.max(1, size * 0.08).toFixed(1) + 'px);will-change:transform,opacity';
     parent.appendChild(d);
     const dx = o.drift ?? 0, dy = o.dy ?? 0, rise = o.rise ?? size * 1.2;
@@ -315,6 +338,11 @@ const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 const BIG = 1.4;
 /** Behind a unit aiming at angle a (radians, screen: 0 = right, π/2 = down): the opposite way. */
 export const behindOf = (aim: number) => aim + Math.PI;
+/** A throw toward the bottom of the screen loses most of its lift (the lift is drawn upward, which would cancel the
+ *  way it goes and keep it behind the portrait) and goes a little further, so it clears the portrait early. */
+const downward = (dir: number) => Math.max(0, Math.sin(dir));
+const lifted = (dir: number, height: number) => height * (1 - 0.7 * downward(dir));
+const reach = (dir: number, dist: number) => dist * (1 + 0.35 * downward(dir));
 export interface Arc { dir: number; dist: number; height: number; ms: number; hop: number; spin: number; rest: number; fade: number }
 /** A throw seen from above (the grid is a map): the piece travels dist px along dir (radians) while it rises height px
  *  and comes down, hops a little further, lies still for rest ms and fades over fade ms. Its height shows as a lift on
@@ -346,9 +374,9 @@ function toss(who: Who, P: Pic, len: number, t: Arc, o: { delay?: number; smoke?
     const box = behind(who, f.total + 100); if (!box) { live--; return; }
     const w = len * u, h = (len * P.h / P.w) * u;
     // the shadow (on the ground, also behind the portrait until it clears it), then the piece
-    const sh = document.createElement('div');
-    sh.style.cssText = 'position:absolute;left:' + (ox - w * 0.45) + 'px;top:' + (oy + h * 0.2) + 'px;width:' + w * 0.9 + 'px;height:' + h * 0.6 + 'px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),rgba(0,0,0,0));will-change:transform,opacity';
-    box.appendChild(sh); anim(sh, f.shadow, { duration: f.total, easing: 'linear', fill: 'forwards' });
+    const sh = document.createElement('div'), bo = org(box);
+    sh.style.cssText = 'position:absolute;left:' + (ox - bo.x - w * 0.45) + 'px;top:' + (oy - bo.y + h * 0.2) + 'px;width:' + w * 0.9 + 'px;height:' + h * 0.6 + 'px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),rgba(0,0,0,0));will-change:transform,opacity';
+    box.appendChild(sh); anim(sh, f.shadow, { duration: f.total, easing: 'linear', fill: 'forwards' }); setTimeout(() => sh.remove(), f.total + 60);
     const el = piece(box, P.el(), ox, oy, w, h, P.glow, o.tag);
     anim(el, f.piece, { duration: f.total, easing: 'linear', fill: 'forwards' });
     const ember = el.querySelector('.phc-ember'); if (ember) anim(ember, [{ opacity: 1 }, { opacity: 0.12 }], { duration: Math.max(300, f.total * 0.7), easing: 'ease-out', fill: 'forwards' });
@@ -394,8 +422,10 @@ function drop(who: Who, P: Pic, w: number, h: number, o: { x?: number; y0?: numb
  *  portrait, out of sight. */
 function feed(who: Who, P: Pic, len: number, side: number, o: { delay?: number; tag?: string } = {}) {
   const run = () => {
+    if (live >= CAP) return;
     const u = who.w / 38, w = len * u, h = (len * P.h / P.w) * u, ms = 380;
     const box = behind(who, ms); if (!box) return;
+    live++; setTimeout(() => { live = Math.max(0, live - 1); }, ms);
     const x0 = who.x + side * who.w * 0.52, y0 = who.y + who.h * 0.5;
     const el = piece(box, P.el(), x0, y0, w, h, P.glow, o.tag);
     const r0 = side > 0 ? -60 : -120;
@@ -411,7 +441,7 @@ export function ejectShell(who: Who | null, shell: Shell | null, aim: number, o:
   if (!who || !shell || reducedMotion()) return;
   const P = SHELLS[shell], u = who.w / 38, big = shell === 'big_rifle' || shell === 'grenade_40', len = P.w * (shell === 'grenade_40' ? 0.62 : 0.5) * BIG;
   const dir = behindOf(aim) + rnd(-0.45, 0.45);
-  toss(who, P, len, { dir, dist: rnd(0.85, 1.25) * who.w * (big ? 0.85 : 1), height: rnd(0.45, 0.65) * who.h, ms: big ? 420 : 360, hop: rnd(4, 9) * u, spin: rnd(540, 980) * (Math.random() < 0.5 ? -1 : 1) * (big ? 0.6 : 1), rest: 220, fade: 260 }, { delay: o.delay, tag: 'shell:' + shell });
+  toss(who, P, len, { dir, dist: reach(dir, rnd(0.85, 1.25) * who.w * (big ? 0.85 : 1)), height: lifted(dir, rnd(0.45, 0.65) * who.h), ms: big ? 420 : 360, hop: rnd(4, 9) * u, spin: rnd(540, 980) * (Math.random() < 0.5 ? -1 : 1) * (big ? 0.6 : 1), rest: 220, fade: 260 }, { delay: o.delay, tag: 'shell:' + shell });
   if (shell === 'linked_rifle') toss(who, LINK, 4.5 * BIG, { dir: dir + rnd(-0.3, 0.3), dist: rnd(0.6, 0.85) * who.w, height: 0.35 * who.h, ms: 320, hop: 3 * u, spin: rnd(-700, 700), rest: 160, fade: 220 }, { delay: (o.delay || 0) + 30, smoke: false, tag: 'link' });
 }
 /** The spent core an Evoker ejects when it takes a fresh one: thrown out behind like a casing, larger and slower,
@@ -419,7 +449,7 @@ export function ejectShell(who: Who | null, shell: Shell | null, aim: number, o:
 export function ejectCore(who: Who | null, core: Core, aim: number, o: { delay?: number } = {}) {
   if (!who || reducedMotion()) return;
   const P = CORES[core], u = who.w / 38, heavy = core === 'staff', dir = behindOf(aim) + rnd(-0.3, 0.3);
-  toss(who, P, P.w * (core === 'blade' ? 0.5 : 0.55) * BIG, { dir, dist: rnd(1.0, 1.3) * who.w * (heavy ? 0.85 : 1), height: (heavy ? 0.8 : 0.6) * who.h, ms: heavy ? 560 : 480, hop: rnd(4, 8) * u, spin: rnd(300, 620) * (Math.random() < 0.5 ? -1 : 1) * (heavy ? 0.5 : 1), rest: 380, fade: 320 }, { delay: o.delay, tag: 'core:' + core });
+  toss(who, P, P.w * (core === 'blade' ? 0.5 : 0.55) * BIG, { dir, dist: reach(dir, rnd(1.0, 1.3) * who.w * (heavy ? 0.85 : 1)), height: lifted(dir, (heavy ? 0.8 : 0.6) * who.h), ms: heavy ? 560 : 480, hop: rnd(4, 8) * u, spin: rnd(300, 620) * (Math.random() < 0.5 ? -1 : 1) * (heavy ? 0.5 : 1), rest: 380, fade: 320 }, { delay: o.delay, tag: 'core:' + core });
   const L = behind(who, 1700, false); if (!L) return;
   const cx = Math.cos(dir), cy = Math.sin(dir), rx = who.x + cx * who.w * 0.5, ry = who.y + cy * who.h * 0.5;
   for (let i = 0; i < 3; i++) wisp(L, rx + cx * i * 3 * u, ry + cy * i * 3 * u, (13 + i * 3) * u, SIGIL_SMOKE, { drift: cx * 9 * u, dy: cy * 9 * u, rise: 18 * u, ms: 1300, delay: (o.delay || 0) + i * 110, alpha: 0.32 });
@@ -458,7 +488,7 @@ export function loadRounds(who: Who | null, b: Brass, n: number, aim: number, ms
   }
   if (b.load === 'break') {
     // it breaks open: the extractor kicks both hulls out behind with a pop of smoke; two fresh ones go in
-    for (let i = 0; i < 2; i++) toss(who, S, len, { dir: behindOf(aim) + rnd(-0.35, 0.35), dist: rnd(0.7, 1.0) * who.w, height: 0.55 * who.h, ms: 380, hop: 5 * u, spin: rnd(400, 800) * (i ? 1 : -1), rest: 200, fade: 240 }, { delay: d0 + i * 45, tag: 'shell:' + b.shell });
+    for (let i = 0; i < 2; i++) { const dir = behindOf(aim) + rnd(-0.35, 0.35); toss(who, S, len, { dir, dist: reach(dir, rnd(0.7, 1.0) * who.w), height: lifted(dir, 0.55 * who.h), ms: 380, hop: 5 * u, spin: rnd(400, 800) * (i ? 1 : -1), rest: 200, fade: 240 }, { delay: d0 + i * 45, tag: 'shell:' + b.shell }); }
     for (let i = 0; i < k; i++) feed(who, F, flen, side, { delay: d0 + ms * 0.4 + i * ms * 0.2, tag: 'round:' + b.shell });
     return;
   }
@@ -470,33 +500,37 @@ export const DRAW_MS = 560;
  *  point at the target, drawn back a touch, and gone as it is loosed (the shot's own arrow flies from there). A
  *  crossbow's reload does the same with a bolt, set in place. */
 export function drawArrow(who: Who | null, aim: number, o: { ms?: number; bolt?: boolean } = {}) {
-  if (!who || reducedMotion()) return;
+  if (!who || reducedMotion() || live >= CAP) return;
   const ms = o.ms ?? DRAW_MS, u = who.w / 38, len = (o.bolt ? 32 : 42) * u, h = len * 10 / 60;
-  const box = behind(who, ms + 120); if (!box) return;
+  const box = behind(who, ms + 120, true, false); if (!box) return;
   const el = piece(box, arrowPic(o.bolt), who.x, who.y, len, h, undefined, o.bolt ? 'bolt' : 'arrow');
   el.style.transformOrigin = '50% 50%';
-  const fx = Math.cos(aim), fy = Math.sin(aim), bx = -fx, by = -fy;
-  // the quiver: behind the shoulder, the side away from the target; the arrow comes out pointing up and back
-  const qx = bx * who.w * 0.3, qy = by * who.h * 0.3 - who.h * 0.35;
-  const deg = (r: number) => (r * 180) / Math.PI, up = deg(Math.atan2(by - 1.6, bx));
-  let to = deg(aim); while (to - up > 180) to -= 360; while (to - up < -180) to += 360;
+  const fx = Math.cos(aim), fy = Math.sin(aim), deg = (r: number) => (r * 180) / Math.PI;
+  // the quiver: over the shoulder on the side away from the target (shooting straight up or down: the right shoulder)
+  const side = Math.abs(fx) >= 0.35 ? -Math.sign(fx) : 1, qx = side * who.w * 0.3, qy = -who.h * 0.3;
+  // it comes out pointing up and back, and swings at least 60° over into the aim
+  let to = deg(aim), up = deg(Math.atan2(-1.6, side * 0.7));
+  while (to - up > 180) to -= 360; while (to - up < -180) to += 360;
+  if (Math.abs(to - up) < 60) up = to + (side > 0 ? 60 : -60);
+  // at the top of the swing the whole arrow is clear of the portrait's top edge: the clip comes off there, unseen
+  const mid = (up + to) / 2, apexY = -(who.h / 2 + who.ring + (len / 2) * Math.abs(Math.sin((mid * Math.PI) / 180)) + 2 * u), apexX = (qx + fx * who.w * 0.45) * 0.3;
   const T = (x: number, y: number, r: number) => 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' + r.toFixed(0) + 'deg)';
-  const front = { x: fx * who.w * 0.45, y: fy * who.h * 0.45 }, pull = { x: front.x - fx * who.w * 0.14, y: front.y - fy * who.h * 0.14 };
+  const front = { x: fx * who.w * 0.45, y: fy * who.h * 0.45 }, pull = { x: front.x - fx * who.w * 0.14, y: front.y - fy * who.h * 0.14 }, E = 'ease-in-out';
   anim(el, [
-    { transform: T(qx, qy + who.h * 0.5, up), opacity: 0, offset: 0 },
-    { transform: T(qx, qy + who.h * 0.28, up), opacity: 1, offset: 0.1 },
-    { transform: T(qx * 0.7, qy - who.h * 0.12, up), opacity: 1, offset: 0.34 },
-    { transform: T((qx + front.x) * 0.3, Math.min(qy, front.y) - who.h * 0.18, (up + to) / 2), opacity: 1, offset: 0.52 },
-    { transform: T(front.x, front.y, to), opacity: 1, offset: 0.74 },
-    { transform: T(pull.x, pull.y, to), opacity: 1, offset: 0.9 },
+    { transform: T(qx, qy + who.h * 0.55, up), opacity: 0, offset: 0, easing: E },
+    { transform: T(qx, qy + who.h * 0.3, up), opacity: 1, offset: 0.12, easing: E },
+    { transform: T(qx * 0.8, qy - who.h * 0.1, up), opacity: 1, offset: 0.3, easing: E },
+    { transform: T(apexX, apexY, mid), opacity: 1, offset: 0.5, easing: E },
+    { transform: T(front.x, front.y, to), opacity: 1, offset: 0.74, easing: E },
+    { transform: T(pull.x, pull.y, to), opacity: 1, offset: 0.9, easing: E },
     { transform: T(pull.x, pull.y, to), opacity: 0, offset: 1 },
-  ], { duration: ms, easing: 'cubic-bezier(.35,.1,.3,1)', fill: 'forwards' });
-  // over the top it comes in front of the portrait
-  setTimeout(() => { box.style.clipPath = 'none'; }, ms * 0.48);
+  ], { duration: ms, easing: 'linear', fill: 'forwards' });
+  // over the top it comes in front of the portrait (the timing is linear, so 0.5 is the apex)
+  setTimeout(() => { box.style.clipPath = 'none'; }, ms * 0.5);
 }
 /** A bow's reload: arrows slid down into the quiver behind the archer (n of them, one after another). */
 export function stowArrows(who: Who | null, n: number, aim: number, ms: number) {
-  if (!who || reducedMotion()) return;
+  if (!who || reducedMotion() || live >= CAP) return;
   const u = who.w / 38, len = 42 * u, h = len * 10 / 60, bx = -Math.cos(aim), by = -Math.sin(aim);
   const box = behind(who, ms + 200); if (!box) return;
   for (let i = 0; i < n; i++) {

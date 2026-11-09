@@ -1402,9 +1402,9 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   cb.log.push(u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
   if (kept && !tactical) dropToPile(cb, u.pos, [magItem(ow.id, left, leftType)]);
   // The picture (no rules): the off-hand gun's reload, or, with both guns, the off hand's part of the main reload's event.
-  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', ...(kept && tactical ? { tactical: true } : {}) };
+  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', ...(kept && tactical ? { tactical: true } : {}), ...(looseTake ? { rounds: looseTake } : {}) };
   if (mainFx) mainFx.off = off;
-  else emitFx(cb, 'reload', { unit: u.id, at: u.pos, ...off, hand: 'off', dur: ap <= 1 ? 800 : off.how === 'loose' ? 1400 : 1200, ...(looseTake ? { rounds: looseTake } : {}) });
+  else emitFx(cb, 'reload', { unit: u.id, at: u.pos, ...off, hand: 'off', dur: ap <= 1 ? 800 : off.how === 'loose' ? 1400 : 1200 });
   return null;
 }
 /** The type of spare i of the off-hand gun's pool (the main hand's spares when both hands hold the same model), taken out. */
