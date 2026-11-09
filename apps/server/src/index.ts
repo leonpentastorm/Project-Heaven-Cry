@@ -16,10 +16,28 @@ export default {
       return env.ROOMS.get(env.ROOMS.idFromName(m[1])).fetch(req);
     }
     if (url.pathname === '/health') return new Response('ok');
+    if (url.pathname.startsWith('/hf/')) return hfModel(req, url);
     if (env.ASSETS) return env.ASSETS.fetch(req); // local dev (wrangler.dev.jsonc)
     return serveSite(req, env, ctx);
   },
 } satisfies ExportedHandler<Env>;
+
+/** The Narrator's voice model (Kokoro), fetched from Hugging Face by the Worker and passed on from this origin, so a
+ * browser never talks to Hugging Face itself (blocked networks, content blockers, CORS). Only that one model repo is
+ * served; the edge caches each file. */
+const HF_ALLOWED = /^\/hf\/onnx-community\/Kokoro-82M-v1\.0-ONNX\/resolve\/[\w.-]+\/[\w./-]+$/;
+async function hfModel(req: Request, url: URL): Promise<Response> {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
+  if (!HF_ALLOWED.test(url.pathname) || url.pathname.includes('..')) return new Response('Not found', { status: 404 });
+  const upstream = 'https://huggingface.co/' + url.pathname.slice(4);
+  const headers: Record<string, string> = {};
+  const range = req.headers.get('range'); if (range) headers.range = range;
+  const r = await fetch(upstream, { method: req.method, headers, redirect: 'follow', cf: { cacheEverything: true, cacheTtl: 60 * 60 * 24 * 30 } } as RequestInit);
+  const out = new Headers();
+  for (const h of ['content-type', 'content-length', 'content-range', 'accept-ranges', 'etag', 'last-modified']) { const v = r.headers.get(h); if (v) out.set(h, v); }
+  out.set('cache-control', r.ok ? 'public, max-age=2592000' : 'no-store');
+  return new Response(r.body, { status: r.status, headers: out });
+}
 
 /** The built web game, from Workers KV (uploaded by tools/deploy_site.py), cached at the edge. */
 async function serveSite(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {

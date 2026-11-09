@@ -16,6 +16,16 @@ export interface Progress { loaded: number; total: number }
 (env.backends.onnx as any).wasm.wasmPaths = { wasm: new URL(ortWasm, location.href).href };
 // Cache the model in the browser (the Cache API): downloaded once, then a few seconds to load.
 env.useBrowserCache = true;
+// The model comes through this site's Worker (/hf/…), not from Hugging Face directly: testers' browsers failed to fetch it
+// there (blocked networks, content blockers). Same files, same cache keys by file name.
+env.remoteHost = new URL('/hf/', location.href).href;
+// kokoro-js fetches its voice files (voices/<id>.bin) from Hugging Face with its own code: send those through /hf/ too.
+const HF_KOKORO = /^https:\/\/huggingface\.co\/(onnx-community\/Kokoro-82M-v1\.0-ONNX\/resolve\/.+)$/;
+const realFetch = globalThis.fetch.bind(globalThis);
+globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+  const u = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, m = u.match(HF_KOKORO);
+  return realFetch(m ? new URL('/hf/' + m[1], location.href).href : input, init);
+}) as typeof fetch;
 env.allowLocalModels = false;
 
 /** Load one plan, reporting bytes downloaded across the model's files. */
