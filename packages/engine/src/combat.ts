@@ -376,7 +376,9 @@ export function defaultObjects(map: MapDef): MapObject[] {
   let n = 0; const id = () => 'm' + (++n);
   return [...map.cover.map((k) => makeObject(id(), 'crate', k)), ...(map.full || []).map((k) => makeObject(id(), 'pillar', k)),
     ...(map.objects || []).map((o) => { const k = keyOf(o.at, map); if (!k) return null;
-      const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })) });
+      const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })),
+        // A sigil mark (rules 1.9): its word, age and damage (makeObject gives it its Investigate approach).
+        ...((o as any).kind === 'sigil_mark' ? { word: String((o as any).word || '').toLowerCase(), ...((o as any).age ? { age: (o as any).age } : {}), ...((o as any).damage ? { damage: (o as any).damage } : {}) } : {}) });
       if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.to) ob.to = o.to;
       if (o.sprite) ob.sprite = o.sprite; if (o.spriteBox) ob.spriteBox = o.spriteBox; if (o.portrait) ob.portrait = o.portrait; return ob; }).filter(Boolean) as MapObject[]];
 }

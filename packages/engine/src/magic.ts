@@ -22,6 +22,8 @@ type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on the ground. strokeId (rules 1.9, Sigil 1.5): the stroke it was drawn into (sigil.ts strokeRuns); a glyph
  * without one is an old 1.4 glyph, read by the touching-group rule until it fades. */
 export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number; strokeId?: string;
+  /** Rules 1.9 Junctions (Brain Power Mastered): the second stroke a crossing glyph belongs to. */
+  strokeId2?: string;
   /** Rules 1.9: the characters who have copied this glyph's word (Read, or Analyzing its drawer): once each. */
   copiedBy?: string[] }
 /** Rules 1.9: what a scuffed glyph leaves for a while (its word can still be read and copied); not a glyph. */
@@ -426,7 +428,7 @@ export {
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
-  strokeRuns, strokeOf, strokeOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, glyphDrawer, type Stroke, type StrokeOption,
+  strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8 } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */

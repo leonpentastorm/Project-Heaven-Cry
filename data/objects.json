@@ -277,6 +277,57 @@
       "text": "A crate, a body, a locker: something holding things. Search it (1 AP, adjacent) to take everything inside; a locked one opens through its approaches first.",
       "adjudication": "engine",
       "provisional": true
+    },
+    {
+      "id": "sigil_mark",
+      "name": "Sigil mark",
+      "glyph": "✶",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall (rules 1.9). Investigate it (2 AP, adjacent): Analysis or Rumination, the TN by its age and damage. Success copies the word for study; a critical teaches it.",
+      "adjudication": "engine",
+      "provisional": true,
+      "mark": {
+        "label": "Investigate the sigil",
+        "skills": [
+          "analysis",
+          "rumination"
+        ],
+        "pick": "best",
+        "ages": [
+          "fresh",
+          "old",
+          "ancient"
+        ],
+        "damages": [
+          "intact",
+          "worn",
+          "broken"
+        ],
+        "default_age": "old",
+        "default_damage": "intact",
+        "tn": {
+          "fresh": {
+            "intact": 8,
+            "worn": 12,
+            "broken": 16
+          },
+          "old": {
+            "intact": 12,
+            "worn": 16,
+            "broken": 20
+          },
+          "ancient": {
+            "intact": 16,
+            "worn": 20,
+            "broken": 20
+          }
+        },
+        "study": 3,
+        "provisional": true
+      }
     }
   ]
 }

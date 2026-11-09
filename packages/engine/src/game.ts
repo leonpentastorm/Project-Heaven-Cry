@@ -14,7 +14,7 @@ import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
-import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches } from './objects';
+import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
@@ -236,7 +236,9 @@ export type NarratorTurn = {
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: NarratorApproach[];
-    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[] }[];
+    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[];
+    /** Rules 1.9: a sigil mark's word (a Sigil word id), age (fresh, old, ancient) and damage (intact, worn, broken). */
+    word?: string; age?: string; damage?: string }[];
   endScene?: { summary: string } | null;
   /** Memory upkeep (spec: The Narrator's memory): people, threads, facts, factions and pins to add or update. */
   memory?: MemOp[];
@@ -302,7 +304,7 @@ export type Action =
   | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
     /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective' }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string; /** Rules 1.9: the stroke it extends (an id from previewDraw's strokes) or 'new'; none takes the default. */ stroke?: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string; /** Rules 1.9: the stroke it extends (an id from previewDraw's strokes) or 'new'; none takes the default. */ stroke?: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push'; /** Rules 1.9 Junctions: on a junction's tile, which stroke to Evoke. */ stroke?: string } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
@@ -1460,11 +1462,15 @@ function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[nu
     if (approaches.length) existing.approaches = mergeApproaches(existing.approaches, approaches);
     if (op.hidden === false) existing.hidden = false; if (op.locked != null && (kindOf(existing).door || isCache(existing))) existing.locked = op.locked;
     if (Array.isArray(op.items) && op.items.length) { existing.items = cleanItems(op.items); delete existing.searched; }
+    if (existing.kind === 'sigil_mark') { if (op.age) existing.age = String(op.age); if (op.damage) existing.damage = String(op.damage); ensureMark(existing); } // its Investigate stays first
     return;
   }
   const k = keyOf(op.at, map); if (!k || !OBJ[op.kind] || map.solid.includes(k)) return;
+  // Rules 1.9: a sigil mark needs a real word (the engine writes its Investigate approach; makeObject).
+  const markW = op.kind === 'sigil_mark' ? String(op.word || '').trim().toLowerCase() : ''; if (op.kind === 'sigil_mark' && !SIGIL[markW]) return;
   if (OBJ[op.kind].blocks_move && (objs.some((o) => o.pos === k && blocksMove(o)) || Object.values(positionsOf(g)).includes(k))) return;
-  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })) });
+  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })),
+    ...(markW ? { word: markW, ...(op.age ? { age: String(op.age) } : {}), ...(op.damage ? { damage: String(op.damage) } : {}) } : {}) });
   if (op.hidden != null && OBJ[op.kind].trap) o.hidden = op.hidden; if (op.locked && (kindOf(o).door || op.kind === 'cache')) o.locked = true;
   if (op.kind === 'cache' || (Array.isArray(op.items) && op.items.length)) o.items = cleanItems(op.items); // rules 1.7: a cache's contents
   objs.push(o);
@@ -1664,8 +1670,8 @@ const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outbu
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
-function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }) {
-  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
+function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; stroke?: string }) {
+  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.stroke && a.stroke !== 'new' && !a.stroke.startsWith('junction:') ? { stroke: String(a.stroke) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
 function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; stroke?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
@@ -2261,6 +2267,8 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
 export interface Sandbox {
   /** ready: gearing up (sandboxNext is this wave); fighting; cleared / fallen: the last fight's result, gearing up again. */
   wave: number; best: number; attempt: number; ai: boolean;
+  /** Rules 1.9: Junctions on for every character here (testing; normally Brain Power Mastered). */
+  junctions?: boolean;
   /** Endless waves: after a cleared wave the next one comes by itself after a short pause (the host's client sends sandbox/wave). */
   auto: boolean;
   state: 'ready' | 'fighting' | 'cleared' | 'fallen';
@@ -2319,6 +2327,7 @@ export type SandboxAction =
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string }
   // Rules 1.9: grant study; set a known word's use count (30 makes it a Mastered word, its inflection on).
   | { type: 'sandbox/study'; charId: string; study: number } | { type: 'sandbox/word-uses'; charId: string; word: string; uses: number }
+  | { type: 'sandbox/mark'; at: string; word: string; age?: string; damage?: string; name?: string; text?: string } | { type: 'sandbox/junctions'; on: boolean }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
   | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number }
@@ -2761,6 +2770,16 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
+    // Rules 1.9 (Sigil 1.5) tools: place a sigil mark (while gearing up); Junctions on for everyone here.
+    case 'sandbox/mark': {
+      fieldOnly(); if (!gearing) fail('Place things while gearing up (stop the fight first).');
+      const w = String(a.word || '').trim().toLowerCase(); if (!SIGIL[w]) fail('No such word.');
+      const before = storyObjects(g).length;
+      applyObjectOp(g, { action: 'place', id: '', kind: 'sigil_mark', at: a.at, name: a.name || 'Sigil mark: ' + SIGIL[w].word, text: a.text || 'A Sigil word cut into the wall.', approaches: [], word: w, ...(a.age ? { age: a.age } : {}), ...(a.damage ? { damage: a.damage } : {}) });
+      if (storyObjects(g).length === before) fail('Nothing can go there.');
+      const o = storyObjects(g).at(-1)!; sbLog(g, o.name + ' (' + (o.age || MARK.age) + ', ' + (o.damage || MARK.damage) + ', TN ' + o.approaches[0].tn + ') at ' + refOf(o.pos) + ' [' + o.id + '].'); return;
+    }
+    case 'sandbox/junctions': { hostOnly(); sb.junctions = !!a.on; sbLog(g, 'Junctions ' + (sb.junctions ? 'on for everyone here: a glyph may join two strokes.' : 'off: Brain Power Mastered only.')); return; }
     case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
     case 'sandbox/faith': {
       const c = mine(a.charId), lines: string[] = [];

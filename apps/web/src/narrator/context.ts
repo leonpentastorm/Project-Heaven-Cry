@@ -177,6 +177,7 @@ MAP OBJECTS AND POINTS OF INTEREST
 - Mix approaches across Body, Mind and Soul skills, the way a good event offers brute force, cleverness and talk. Example: a rune-marked barricade could take Raw Power + Durability to break down (remove), Ingenuity + Lore Master to read the rune (""), or Charisma to talk the guard into opening it (remove).
 - Also success loot (the actor gets its items) and advance (marks objective done). Risky approaches get a fail the engine applies: hurt (damage by TN), alarm (hidden hostiles wake; start the fight if it fits), condition (failCondition), jam (locked this scene, approach gone), lose (failItem), or "". Never write numbers. Each character tries each approach once.
 - A cache (kind cache, items[] in the loot shape) is a crate, a body or a locker: Search empties it into the pack; locked needs open or loot first.
+- A sigil_mark (word, optional age and damage) is an old Sigil word on a door, ruin, Keystone, warding post or wall plate; the engine writes its Investigate. A few per campaign, where the word belongs.
 - hazards[]: kind minefield, fire, radiation, gas or collapse; severity light or heavy; tiles or rect {from, to}; hidden (mines, radiation, gas). The engine fires them per tile entered and gives each a safe-path and a disarm approach.
 - triggers[]: when enter (tiles or rect), examine (objId) or objective; then spawn (npcs[] place shapes), fight (spawn, then the fight, difficulty) or reveal (ids); text shows when it fires. Once each, without you; SINCE YOUR LAST TURN says what fired.
 
@@ -356,7 +357,7 @@ export function turnPrompt(g: GameState): string {
   const objs = storyObjects({ ...g, story: { ...g.story, objects: g.story.objects ? [...g.story.objects] : undefined } })
     // Plain cover and exits are the engine's business (exits are listed with the zones); POIs, hazards, doors and anything with approaches stay.
     .filter((o) => o.approaches.length || !['crate', 'pillar', 'rubble', 'low_wall', 'barricade', 'exit'].includes(o.kind));
-  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null && o.hp <= 0 ? ', broken' : o.hp != null && o.max && o.hp < o.max ? ', damaged' : ''}${o.resolved ? ', dealt with' : ''}${o.items ? ', holds: ' + (o.items.map((x) => (x.qty > 1 ? x.qty + '× ' : '') + (x.name || x.item)).join(', ') || 'nothing') : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
+  const objText = objs.map((o) => `${o.id} ${o.name} (${o.kind}${o.hidden ? ', hidden' : ''}${o.locked ? ', locked' : ''}${o.open ? ', open' : ''}${o.hp != null && o.hp <= 0 ? ', broken' : o.hp != null && o.max && o.hp < o.max ? ', damaged' : ''}${o.resolved ? ', dealt with' : ''}${o.kind === 'sigil_mark' ? ', the word ' + String(o.word || '?').toUpperCase() + ' (' + (o.age || 'old') + ', ' + (o.damage || 'intact') + ')' : ''}${o.items ? ', holds: ' + (o.items.map((x) => (x.qty > 1 ? x.qty + '× ' : '') + (x.name || x.item)).join(', ') || 'nothing') : ''}) at ${refOf(o.pos)}${o.text ? ': ' + o.text : ''}`
     + (o.approaches.length ? '\n    approaches: ' + apText(o.approaches) : '')).join('\n  ');
   const mus = g.music?.now ? g.characters[g.music.now.charId] : null;
   const music = mus ? `\n\nMUSIC: ${mus.name}'s song is playing for the room (${g.music!.now!.layer === 'pin' ? 'kept on by their music trait' : g.music!.now!.reason}). You may let it colour the scene; never name the song or the artist.` : '';
@@ -490,6 +491,7 @@ export function submitTool(g: GameState) {
     name: { type: 'string' }, text: { type: 'string' }, hidden: { type: 'boolean' }, locked: { type: 'boolean' },
     approaches: { type: 'array', items: APPROACH },
     items: { type: 'array', description: 'cache: its contents (loot shape)', items: { type: 'object', properties: { item: ST, qty: { type: 'integer' }, rarity: ST, name: ST, text: ST }, required: ['item', 'qty'] } },
+    word: { type: 'string', description: 'sigil_mark: its Sigil word id' }, age: { type: 'string', enum: ['fresh', 'old', 'ancient'] }, damage: { type: 'string', enum: ['intact', 'worn', 'broken'] },
   }, required: ['action'] } };
   // Plain text, not an enum: tool definitions must not change during a session, or the whole prompt cache resets.
   schema.properties.moment = { type: 'string', description: 'A story moment id from STORY MOMENTS OPEN HERE (an illustration to show now), or empty' };

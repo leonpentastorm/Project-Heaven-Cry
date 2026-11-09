@@ -51,6 +51,12 @@
         "stack": "a second glyph on a tile joins the stroke of the glyph already there",
         "split": "removing a middle glyph splits the stroke; the part with the oldest glyph keeps the id",
         "provisional": true
+      },
+      "junction": {
+        "gate_skill": "brain_power",
+        "gate_points": 10,
+        "text": "at Brain Power Mastered, a glyph may belong to two strokes (a crossing): it extends two strokes at once, or extends one and starts a new one; evoking either Line counts it as a word of that Line, and it fades when the second Line is Evoked (rules 1.9, items 687-690)",
+        "provisional": true
       }
     },
     "draw": {

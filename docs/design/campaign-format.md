@@ -86,6 +86,12 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 - `door` (can be `locked`), `hole`, `trap` (`hidden` until spotted);
 - hazards: `fire`, `toxic`; `barrel`, `rubble`;
 - `container`, `terminal`, `poi`, `exit`.
+- `sigil_mark` (rules 1.9, Sigil 1.5): a Sigil word drawn into the world (carved on a door or a ruin, a Keystone, a warding
+  post, an old Sigil plate fixed to a wall). It takes `word` (one of the 40 Sigil word ids, lower case: `"mend"`) and
+  optionally `age` (`fresh`, `old` the default, `ancient`) and `damage` (`intact` the default, `worn`, `broken`). The
+  engine gives it its **Investigate** approach by itself (Analysis or Rumination, the TN by age and damage; success
+  copies the word for study, a critical teaches it): don't write one. You may add other approaches. Example:
+  `{ "kind": "sigil_mark", "at": "J2", "name": "Plate over the cradles", "word": "mend", "age": "old", "damage": "worn", "text": "A slate Sigil plate bolted over the repair cradles." }`
 
 **Approaches** are the ways to deal with an object, written ahead so players can try them without the Narrator setting anything up:
 

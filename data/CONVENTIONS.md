@@ -77,6 +77,11 @@ Every rule-bearing item carries both:
   `cone_length`, `spare_downed`. Any other stat goes to the Narrator with the `text`.
 - `grammar.study` (study per Evoke, thresholds, copying, Mastery study) and `grammar.word_mastery` (Practised and Mastered
   use counts) hold the growth numbers; both are provisional.
+- `grammar.shape.junction` (rules 1.9): the Junctions gate (`gate_skill`, `gate_points`: Brain Power 10), provisional.
+- `objects.json` `sigil_mark` carries `mark`: the Investigate approach the engine writes on every mark (`label`, `skills`,
+  `pick: "best"`), the `ages` and `damages`, their defaults, the TN table `tn[age][damage]` (8/12/16/20 only) and the
+  `study` a success gives. Campaign marks give `word` (a sigils.json id) and optional `age` and `damage`; the validator
+  checks them.
 
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
