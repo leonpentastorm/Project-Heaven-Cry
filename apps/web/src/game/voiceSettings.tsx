@@ -3,7 +3,7 @@
 // not, and test the voice (the device and the time to the first audio). Buttons and selects only.
 import React from 'react';
 import {
-  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, setVoiceDevice, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
+  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, setVoiceDevice, voiceRender, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
   waitForKokoro, bestVoice, voiceScore, probeVoice, EDGE_NOTE, MODEL_MB, CORES, CORE_VOICE, type BVoice,
 } from './voice';
 
@@ -43,6 +43,17 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
   const fallback = bestVoice(browserVoices());
   const where = s.device === 'webgpu' ? 'WebGPU' + (s.gpu ? ' (' + s.gpu + ')' : '') : 'the CPU' + (s.fellBack ? ' (WebGPU failed: ' + s.fellBack + ')' : s.gpu && !/adapter /.test(s.gpu) && s.device === 'wasm' ? ' (' + s.gpu + ')' : '');
   const test = s.test;
+  // Render on GPU | Render on CPU (Leon, 9 Nov 2026): the player picks. The GPU is the default and is tried first (the
+  // warm-up's speech check falls back to the CPU if it makes noise); the CPU works everywhere, a little slower to start.
+  const render = voiceRender(), noGpu = /no WebGPU|no adapter|adapter error/.test(s.gpu || ''), busy = s.status === 'loading' || s.status === 'installing';
+  const seg = (on: boolean, off: boolean): React.CSSProperties => ({ ...btn(on), flex: '1 1 0', opacity: off ? 0.45 : 1, cursor: off ? 'not-allowed' : 'pointer' });
+  const renderRow = s.status !== 'loading' && s.status !== 'installing' && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div role="group" aria-label="Render the voice on" style={{ ...row, flexWrap: 'nowrap' }}>
+      <button type="button" data-voice-render="gpu" aria-pressed={render === 'gpu'} disabled={busy || noGpu} title={noGpu ? 'No GPU here: ' + s.gpu : 'Faster to start each line. If your GPU makes noise instead of speech, the CPU takes over.'} style={seg(render === 'gpu', busy || noGpu)} onClick={() => { if (render !== 'gpu' || (s.status === 'ready' && s.device !== 'webgpu')) setVoiceDevice('gpu'); }}>{render === 'gpu' ? '✓ ' : ''}Render by GPU</button>
+      <button type="button" data-voice-render="cpu" aria-pressed={render === 'cpu'} disabled={busy} title="Works on every computer; a little slower to start each line." style={seg(render === 'cpu', busy)} onClick={() => { if (render !== 'cpu') setVoiceDevice('cpu'); }}>{render === 'cpu' ? '✓ ' : ''}Render by CPU</button>
+    </div>
+    <span style={note}>{noGpu ? 'No GPU voice in this browser: ' + s.gpu + '.' : render === 'gpu' && s.device === 'wasm' && s.fellBack ? 'Your GPU was picked, but ' + s.fellBack + ', so the CPU reads.' : render === 'gpu' ? 'GPU: faster. If it sounds like buzzing, pick the CPU.' : 'CPU: works on every computer.'}</span>
+  </div>;
 
   return <div data-phc-voice-settings="" style={{ display: 'flex', flexDirection: 'column', gap: compact ? 8 : 12 }}>
     {/* Kokoro: install, progress, ready, failed */}
@@ -71,9 +82,8 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
       {s.status === 'ready' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.ok }}>✓ </span>Ready · Kokoro on {where}</span>
         <span style={note}>{s.device === 'webgpu' ? 'Running on your GPU' + (s.dtype ? ' (' + s.dtype + ')' : '') + '.' : 'Running on the CPU: a little slower to start each line.'}{s.likeness != null ? ' Warm-up check: sounds like speech (' + Math.round(s.likeness * 100) + '%).' : ''}</span>
-        {s.device === 'webgpu' && <div style={row}><button type="button" data-voice-cpu="" style={btn()} onClick={() => setVoiceDevice('cpu')}>Sounds wrong? Use the CPU</button></div>}
-        {s.device === 'wasm' && (s.forced || s.fellBack) && <div style={row}><button type="button" data-voice-gpu="" style={btn()} onClick={() => setVoiceDevice('auto')}>Try the GPU again</button></div>}
       </>}
+      {renderRow}
       {s.status === 'failed' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.bad }}>✕ </span>Failed: {s.error}</span>
         <span style={note}>The browser's voice reads instead{fallback ? ' (' + fallback.name + ')' : ''}.</span>

@@ -137,8 +137,8 @@ The cause is not the GPU. Six things together sent almost every line to the brow
    frame by frame, with a fingerprint of the fp32 model on the CPU (`apps/web/src/game/voiceCheck.ts`,
    `voiceReference.json`, made by `tools/voice_reference.mjs`). The real model scores 0.94–0.99 and speech-shaped noise
    or buzz 0.38–0.84; under 0.88 the plan fails and the next is tried (the CPU). A GPU that made noise is remembered per
-   adapter (`phc.voiceGpuNoise`) and skipped. Settings shows the dtype and the check's score, with **Sounds wrong? Use
-   the CPU** on the GPU and **Try the GPU again** on the CPU. If `phc.voicePlan` was set for check 6, remove it:
+   adapter (`phc.voiceGpuNoise`) and skipped. Settings shows the dtype and the check's score, and (Leon, 9 Nov 2026) the player picks **Render by GPU** or
+   **Render by CPU**. If `phc.voicePlan` was set for check 6, remove it:
    `localStorage.removeItem('phc.voicePlan')`.
 7. If something fails, Settings shows **Failed: <reason>** and the console has `[voice] Kokoro fp32 on webgpu failed: …`.
    Send those lines.

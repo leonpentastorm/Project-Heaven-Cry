@@ -8,6 +8,14 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.10.2 — 9 November 2026
+
+Hotfix on `develop`: **Render by GPU | Render by CPU** (Leon: let the player choose; an NVIDIA laptop runs the GPU voice well, his RDNA 4 desktop buzzes).
+- Settings › VOICE has two buttons, **Render by GPU** (the default) and **Render by CPU**. The choice is kept in the browser.
+- **Before the install** the choice sets what's downloaded (about 326 MB for the GPU, 92 MB for the CPU). **After it**, the voice reloads on the chosen device.
+- **Render by GPU** forgets a GPU remembered as noisy and tries it again. The speech check still guards it: if the GPU makes noise, the CPU reads, and the panel says why ("Your GPU was picked, but …").
+- They replace 0.10.1's "Sounds wrong? Use the CPU" and "Try the GPU again" buttons. `voice.mjs` covers both choices before and after the install.
+
 ## 0.10.1 — 9 November 2026
 
 Hotfix on `develop`: **the Narrator's voice made muffled buzzing on Leon's GPU** (Kokoro on WebGPU, AMD RDNA 4 with shader-f16).

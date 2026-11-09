@@ -237,14 +237,21 @@ export function loadVoice(opts: { retry?: boolean } = {}): Promise<any> {
   })().catch((e) => { put({ status: 'failed', error: msg(e) }); return null; });
   return ttsP;
 }
-/** Settings: run Kokoro on the CPU from now on ('cpu'), or go back to the automatic choice ('auto': the GPU is tried
- *  again, even one that made noise before). Reloads the voice. */
-export function setVoiceDevice(which: 'cpu' | 'auto'): Promise<any> {
+/** Settings › VOICE "Render on GPU | Render on CPU" (Leon, 9 Nov 2026: a player picks; an NVIDIA laptop runs the GPU
+ *  well, his RDNA 4 desktop buzzes). 'cpu' keeps Kokoro on the CPU from now on (localStorage 'phc.voicePlan');
+ *  'gpu' (or 'auto') goes back to the GPU first, forgetting a GPU remembered as noisy; the speech check still guards it
+ *  and the CPU still takes over if the GPU makes noise. Reloads the voice when it is installed or loaded; before the
+ *  install it only changes what the install will download. */
+export function setVoiceDevice(which: 'cpu' | 'gpu' | 'auto'): Promise<any> {
   try { if (which === 'cpu') localStorage.setItem('phc.voicePlan', JSON.stringify({ device: 'wasm', dtype: 'q8' })); else localStorage.removeItem('phc.voicePlan'); } catch { /* */ }
-  if (which === 'auto') setGpuNoise(null);
+  if (which !== 'cpu') setGpuNoise(null);
+  put({ forced: which === 'cpu', planMB: 0 });
+  if (!prefs.install && state.status === 'idle') return probeVoice();
   stopVoice(); ttsP = null; cache.clear();
   return loadVoice({ retry: true });
 }
+/** The player's choice in Settings: 'cpu' when the CPU is forced, else 'gpu' (the GPU first, the CPU as the fallback). */
+export const voiceRender = (): 'gpu' | 'cpu' => { const f = forced(); return f && f[0].device === 'wasm' ? 'cpu' : 'gpu'; };
 /** The Settings button: opt in, remember it, start the download. */
 export function installVoice(): Promise<any> { setVoicePrefs({ install: true }); return loadVoice({ retry: true }); }
 
@@ -351,5 +358,5 @@ export function testVoice(voice = prefs.voice): Promise<VoiceTest> {
   });
 }
 
-// Diagnostics in the console (and the e2e): window.__phcVoice.state(), .test(), .load(), .device('cpu' | 'auto').
-if (typeof window !== 'undefined') (window as any).__phcVoice = { state: () => state, prefs: () => prefs, chip: () => voiceChip(), say: (id: string, text: string) => { hold(id); return speak(id, text); }, test: testVoice, load: loadVoice, device: (w: 'cpu' | 'auto') => setVoiceDevice(w), voices: () => rankVoices(bvoices) };
+// Diagnostics in the console (and the e2e): window.__phcVoice.state(), .test(), .load(), .device('cpu' | 'gpu').
+if (typeof window !== 'undefined') (window as any).__phcVoice = { state: () => state, prefs: () => prefs, chip: () => voiceChip(), say: (id: string, text: string) => { hold(id); return speak(id, text); }, test: testVoice, load: loadVoice, device: (w: 'cpu' | 'gpu' | 'auto') => setVoiceDevice(w), voices: () => rankVoices(bvoices) };
